@@ -12,10 +12,10 @@ kv_namespaces = [
 IMG_PROXY = ""  #图片代理链接，用于处理图片不显示
 OPEN_TRANSLATE = "true"
 USE_MODEL_PLATFORM = "GEMINI" #GEMINI, OPEN
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"
+# GEMINI_API_KEY 在环境变量中设置
 GEMINI_API_URL = "https://api-proxy.me/gemini" #网上公共的代理api
 DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-preview-05-20"
-OPENAI_API_KEY = "sk-xxxxxx" # Replace with your actual OpenAI API Key
+# OPENAI_API_KEY 在环境变量中设置
 OPENAI_API_URL = "https://api.deepseek.com" # Or your OpenAI compatible API URL
 DEFAULT_OPEN_MODEL = "deepseek-chat"
 FOLO_COOKIE_KV_KEY = "folo_auth_cookie" 
@@ -38,7 +38,7 @@ TWITTER_FETCH_PAGES = "3"
 REDDIT_LIST_ID = "167576006499975168" 
 REDDIT_FETCH_PAGES = "2" 
 PROJECTS_API_URL = "https://git-trending.justlikemaki.vip/topone/?since=daily"
-GITHUB_TOKEN = "YOUR_GITHUB_TOKEN_HERE"  # 请替换为你的实际 GitHub Token
+# GITHUB_TOKEN 在环境变量中设置
 GITHUB_REPO_OWNER = "DylanDDeng"  # 请替换为你的 GitHub 用户名
 GITHUB_REPO_NAME = "ai-bubblebrain-daily-news"  # 请替换为你的仓库名
 GITHUB_BRANCH = "main"
