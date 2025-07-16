@@ -1,0 +1,74 @@
+name: Auto Sync Daily to Hugo
+
+on:
+  push:
+    paths:
+      - 'daily/*.md'
+  workflow_dispatch:
+
+jobs:
+  sync-daily:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Sync daily content to Hugo
+      run: |
+        echo "🔄 同步每日内容到 Hugo..."
+        
+        # 确保目录存在
+        mkdir -p content/daily
+        
+        # 同步所有 daily/*.md 文件
+        for file in daily/*.md; do
+          if [ -f "$file" ] && [ "$(basename "$file")" != "SUMMARY.md" ]; then
+            filename=$(basename "$file")
+            date_str="${filename%.md}"
+            
+            # 检查 content/daily 中是否已存在
+            if [ ! -f "content/daily/$filename" ]; then
+              echo "📄 处理: $filename"
+              
+              # 生成 Hugo front matter
+              cat > "content/daily/$filename" <<EOF
+---
+title: "AI 洞察日报 - $date_str"
+date: ${date_str}T09:00:00+08:00
+description: "AI 洞察日报 - $(date -d "$date_str" '+%Y年%m月%d日' 2>/dev/null || echo "$date_str")"
+categories:
+  - 日报
+tags:
+  - AI
+  - 人工智能
+  - 行业动态
+draft: false
+---
+
+EOF
+              # 添加原始内容
+              cat "$file" >> "content/daily/$filename"
+              echo "✅ 已同步: $filename"
+            else
+              echo "⏭️  跳过已存在: $filename"
+            fi
+          fi
+        done
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # 检查是否有更改
+        if [ -n "$(git status --porcelain content/daily/)" ]; then
+          git add content/daily/
+          git commit -m "Auto sync: 同步每日内容到 Hugo [skip ci]"
+          git push
+          echo "✅ 更改已推送"
+        else
+          echo "ℹ️  没有需要同步的内容"
+        fi

@@ -2,7 +2,7 @@
 
 # 构建配置
 [build]
-  command = "hugo --minify"
+  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify"
   publish = "public"
 
 # 构建环境变量

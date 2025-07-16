@@ -3,6 +3,7 @@ import { getISODate, formatMarkdownText, replaceImageProxy,formatDateToGMT12With
 import { getGitHubFileSha, createOrUpdateGitHubFile } from '../github.js';
 import { storeInKV } from '../kv.js';
 import { marked } from '../marked.esm.js';
+import { triggerGitHubWorkflow } from './triggerGitHubWorkflow.js';
 
 export async function handleCommitToGitHub(request, env) {
     if (request.method !== 'POST') {
@@ -27,7 +28,33 @@ export async function handleCommitToGitHub(request, env) {
         const filesToCommit = [];
 
         if (dailyMd) {
-            filesToCommit.push({ path: `daily/${dateStr}.md`, content: formatMarkdownText(dailyMd), description: "Daily Summary File" });
+            // Generate Hugo front matter
+            const hugoFrontMatter = `---
+title: "AI 洞察日报 - ${dateStr}"
+date: ${dateStr}T09:00:00+08:00
+description: "AI 洞察日报 - ${new Date(dateStr).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}"
+categories:
+  - 日报
+tags:
+  - AI
+  - 人工智能
+  - 行业动态
+draft: false
+---
+
+`;
+            // Commit to both daily/ (for backward compatibility) and content/daily/ (for Hugo)
+            const formattedContent = formatMarkdownText(dailyMd);
+            filesToCommit.push({ 
+                path: `daily/${dateStr}.md`, 
+                content: formattedContent, 
+                description: "Daily Summary File" 
+            });
+            filesToCommit.push({ 
+                path: `content/daily/${dateStr}.md`, 
+                content: hugoFrontMatter + formattedContent, 
+                description: "Hugo Daily Summary File" 
+            });
             report.content_html = marked.parse(formatMarkdownText(env.IMG_PROXY, dailyMd));
             storeInKV(env.DATA_KV, `${dateStr}-report`, report);
         }
@@ -53,7 +80,19 @@ export async function handleCommitToGitHub(request, env) {
             }
         }
         
-        return new Response(JSON.stringify({ status: 'success', date: dateStr, results: results }), { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
+        // Optionally trigger GitHub workflow for immediate deployment
+        const triggerWorkflow = formData.get('trigger_workflow');
+        let workflowResult = null;
+        if (triggerWorkflow === 'true' && results.some(r => r.status === 'Success')) {
+            workflowResult = await triggerGitHubWorkflow(env);
+        }
+        
+        return new Response(JSON.stringify({ 
+            status: 'success', 
+            date: dateStr, 
+            results: results,
+            workflow: workflowResult 
+        }), { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
 
     } catch (error) {
         console.error("Error in /commitToGitHub:", error);
