@@ -1,0 +1,23 @@
+# Cloudflare Pages 配置文件
+
+# 构建配置
+[build]
+  command = "hugo --minify"
+  publish = "public"
+
+# 构建环境变量
+[build.environment]
+  HUGO_VERSION = "0.147.9"
+  NODE_VERSION = "18"
+
+# 预览部署配置（用于 Pull Request）
+[context.preview]
+  command = "hugo --minify -b $CF_PAGES_URL"
+
+# 生产部署配置
+[context.production]
+  command = "hugo --minify"
+  
+# 环境变量示例（如果需要）
+[env]
+  # 可以在这里添加任何需要的环境变量
