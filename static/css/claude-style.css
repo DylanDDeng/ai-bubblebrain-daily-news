@@ -1,0 +1,314 @@
+/* Claude 风格自定义样式 */
+
+/* 字体设置 - 优化中文显示 */
+:root {
+  --font-primary: "STKaiti", "KaiTi", "楷体", "STSong", "SimSun", "宋体", "Georgia", "Times New Roman", serif;
+  --font-secondary: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", sans-serif;
+  --font-mono: "SF Mono", "Monaco", "Consolas", "Courier New", monospace;
+  
+  /* Claude 配色方案 */
+  --claude-bg: #faf9f7;
+  --claude-bg-dark: #2b2b2b;
+  --claude-primary: #d4a574;
+  --claude-accent: #c97b3a;
+  --claude-text: #3d3d3d;
+  --claude-text-light: #6b6b6b;
+  --claude-border: #e8e5e0;
+  --claude-shadow: rgba(0, 0, 0, 0.05);
+  
+  /* 间距 */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+}
+
+/* 暗色模式 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --claude-bg: #1a1a1a;
+    --claude-bg-secondary: #2d2d2d;
+    --claude-primary: #e6c896;
+    --claude-accent: #d4a574;
+    --claude-text: #e8e5e0;
+    --claude-text-light: #b8b5b0;
+    --claude-border: #3d3d3d;
+    --claude-shadow: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* 全局样式重置 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--claude-bg);
+  color: var(--claude-text);
+  line-height: 1.8;
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 主容器 */
+.container, main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--spacing-lg);
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  color: var(--claude-primary);
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--claude-accent), var(--claude-primary));
+  margin: var(--spacing-md) auto;
+  border-radius: 2px;
+}
+
+h2 {
+  font-size: 1.8rem;
+  margin-top: var(--spacing-xl);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--claude-border);
+}
+
+h3 {
+  font-size: 1.4rem;
+  color: var(--claude-accent);
+}
+
+/* 段落和文本 */
+p {
+  margin-bottom: var(--spacing-md);
+  text-align: justify;
+}
+
+/* 链接样式 */
+a {
+  color: var(--claude-accent);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+a:hover {
+  color: var(--claude-primary);
+}
+
+a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--claude-primary);
+  transition: width 0.3s ease;
+}
+
+a:hover::after {
+  width: 100%;
+}
+
+/* 代码块样式 */
+pre {
+  background-color: var(--claude-bg-secondary, #f6f5f3);
+  border: 1px solid var(--claude-border);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: var(--spacing-md) 0;
+}
+
+code {
+  font-family: var(--font-mono);
+  background-color: var(--claude-bg-secondary, #f6f5f3);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* 引用块样式 */
+blockquote {
+  border-left: 4px solid var(--claude-primary);
+  margin: var(--spacing-lg) 0;
+  padding-left: var(--spacing-md);
+  font-style: italic;
+  color: var(--claude-text-light);
+  background-color: var(--claude-bg-secondary, #f9f8f6);
+  padding: var(--spacing-md);
+  border-radius: 0 8px 8px 0;
+}
+
+/* 列表样式 */
+ul, ol {
+  margin-bottom: var(--spacing-md);
+  padding-left: var(--spacing-lg);
+}
+
+li {
+  margin-bottom: var(--spacing-xs);
+}
+
+/* 文章列表卡片 */
+.post-card, article.bg-white {
+  background-color: white;
+  border: 1px solid var(--claude-border);
+  border-radius: 12px;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px var(--claude-shadow);
+}
+
+.post-card:hover, article.bg-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--claude-shadow);
+  border-color: var(--claude-primary);
+}
+
+/* 日期样式 */
+time {
+  color: var(--claude-text-light);
+  font-family: var(--font-secondary);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* 导航栏 */
+nav {
+  background-color: white;
+  border-bottom: 1px solid var(--claude-border);
+  padding: var(--spacing-md) 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  background-color: rgba(250, 249, 247, 0.95);
+}
+
+/* 页脚 */
+footer {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--claude-border);
+  text-align: center;
+  color: var(--claude-text-light);
+  font-size: 0.9rem;
+}
+
+/* 按钮样式 */
+button, .btn {
+  background-color: var(--claude-primary);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 8px;
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--claude-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--claude-shadow);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+  
+  .container, main {
+    padding: var(--spacing-md);
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+article, .post-card {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--claude-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--claude-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--claude-accent);
+}
+
+/* 特殊样式 - AI 洞察日报标题 */
+.site-title {
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--claude-accent), var(--claude-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin: var(--spacing-xl) 0;
+}

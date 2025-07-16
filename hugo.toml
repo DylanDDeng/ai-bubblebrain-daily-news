@@ -1,0 +1,84 @@
+baseURL = 'https://bubblenews.today/'
+languageCode = 'zh-CN'
+title = 'AI 洞察日报'
+# theme = 'hextra'  # 暂时禁用主题，使用自定义样式
+
+# Enable Git info for lastmod
+enableGitInfo = true
+
+# Permalinks configuration
+[permalinks]
+  daily = '/daily/:year/:month/:contentbasename/'
+
+# Menu configuration
+[[menu.main]]
+  name = '主页'
+  pageRef = '/'
+  weight = 10
+
+[[menu.main]]
+  name = '每日洞察'
+  pageRef = '/daily'
+  weight = 20
+
+[[menu.main]]
+  name = 'RSS'
+  url = '/index.xml'
+  weight = 30
+
+# Markup configuration
+[markup]
+  defaultMarkdownHandler = 'goldmark'
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    anchorLineNos = false
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ''
+    hl_inline = false
+    lineAnchors = ''
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = true
+    noHl = false
+    style = 'monokai'
+    tabWidth = 4
+
+# Params configuration
+[params]
+  description = 'AI 洞察日报 - 每日精选AI行业动态、技术趋势和深度分析'
+  # Enable dark mode
+  darkMode = true
+  
+  # Search configuration
+  [params.search]
+    enable = true
+    type = "flexsearch"
+    maxResults = 10
+  
+  # Footer configuration
+  [params.footer]
+    enable = true
+    text = 'AI 洞察日报 - 为AI从业者提供每日行业动态'
+
+# Output formats
+[outputs]
+  home = ['HTML', 'RSS', 'JSON']
+  section = ['HTML', 'RSS']
+
+# RSS configuration
+[outputFormats.RSS]
+  mediatype = "application/rss+xml"
+  baseName = "rss"
+
+# Language configuration
+[languages]
+  [languages.zh-CN]
+    languageName = '中文'
+    weight = 1
+  [languages.en]
+    languageName = 'English'
+    weight = 2

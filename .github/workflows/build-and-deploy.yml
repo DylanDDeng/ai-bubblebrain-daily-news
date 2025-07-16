@@ -1,0 +1,79 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    # Run daily at 2 AM UTC (10 AM Beijing Time)
+    - cron: '0 2 * * *'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: true  # Fetch Hugo themes
+        fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+
+    - name: Setup Hugo
+      uses: peaceiris/actions-hugo@v2
+      with:
+        hugo-version: 'latest'
+        extended: true
+
+    - name: Setup mdBook
+      uses: peaceiris/actions-mdbook@v2
+      with:
+        mdbook-version: 'latest'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Sync daily content to Hugo
+      run: |
+        # Create daily directory if it doesn't exist
+        mkdir -p daily
+        
+        # Run sync script if daily files exist
+        if [ "$(ls -A daily/*.md 2>/dev/null | grep -v SUMMARY.md)" ]; then
+          bash scripts/sync-daily-to-hugo.sh
+        else
+          echo "No daily files to sync"
+        fi
+
+    - name: Build with mdBook
+      run: |
+        # Build mdBook for backward compatibility
+        mdbook build
+        # Move mdBook output to a subdirectory
+        mkdir -p public/mdbook
+        mv book/* public/mdbook/ || true
+
+    - name: Build with Hugo
+      run: |
+        # Build Hugo site
+        hugo --minify
+        # Hugo output is already in public/ directory
+
+    - name: Generate RSS feed
+      run: |
+        # If there's a custom RSS generation script, run it
+        if [ -f "scripts/generate-rss.sh" ]; then
+          bash scripts/generate-rss.sh
+        fi
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        # cname: ai-insights.yourdomain.com  # 域名会从 static/CNAME 文件读取

@@ -1,0 +1,191 @@
+name: Build Daily Journal
+
+on:
+  # 每天UTC时间0点自动触发 (对应北京时间早上8点)
+  schedule:
+    - cron: '0 0 * * *'
+    
+  # 手动触发
+  workflow_dispatch:
+  
+jobs:
+  build-book:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_PROXY_URL: ${{ vars.IMAGE_PROXY_URL }} # 从仓库变量中读取
+      
+    # 需要写入权限来提交生成的文件和归档的日刊
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # 明确指定要检出的分支
+          ref: 'book' # <-- 请将 'book' 替换为你的目标分支名
+          
+      - name: Install mdBook
+        run: |
+          mkdir -p $HOME/.cargo/bin
+          export PATH=$HOME/.cargo/bin:$PATH
+          curl -sL https://github.com/rust-lang/mdBook/releases/download/v0.4.51/mdbook-v0.4.51-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C $HOME/.cargo/bin
+
+      - name: Archive old notes
+        id: archive
+        run: |
+          echo "开始检查并归档旧的日刊..."
+          # 查找最新文件以确定当前月份
+          LATEST_DAILY_FILE=$(find daily -type f -name "*.md" | sort -r | head -n 1)
+          if [ -z "$LATEST_DAILY_FILE" ]; then
+            echo "在 'daily' 目录中没有找到任何 .md 文件，跳过归档步骤。"
+            exit 0
+          fi
+          
+          LATEST_MONTH=$(basename "$LATEST_DAILY_FILE" .md | cut -d'-' -f1,2)
+          echo "当前最新月份是: $LATEST_MONTH"
+
+          # 仅遍历 daily/ 根目录下的 md 文件进行归档
+          for file in daily/*.md; do
+            # 如果根目录下没有md文件，循环会匹配到 "daily/*.md" 字符串，需要跳过
+            [ -e "$file" ] || continue
+            
+            FILE_MONTH=$(basename "$file" .md | cut -d'-' -f1,2)
+            
+            if [ "$FILE_MONTH" != "$LATEST_MONTH" ]; then
+              TARGET_DIR="daily/$FILE_MONTH"
+              mkdir -p "$TARGET_DIR"
+              echo "归档文件: $file -> $TARGET_DIR/"
+              mv "$file" "$TARGET_DIR/"
+            fi
+          done
+          echo "文件归档检查完成。"
+
+      - name: Prepare source files for mdBook
+        run: |
+          echo "准备 mdBook 构建源文件..."
+          # 确保 src 目录存在，并清空旧的 daily 内容
+          mkdir -p src
+          rm -rf src/daily/
+          # 递归复制归档后的 `daily` 目录到 `src`
+          cp -r daily/ src/
+          echo "源文件已复制到 src/daily/。"
+
+      - name: Replace image URLs in src directory
+        run: |
+          echo "开始替换 src/daily/ 目录及其子目录下所有 Markdown 文件的内容..."
+          echo "使用的代理前缀: ${{ env.IMAGE_PROXY_URL }}"
+          # 在 src/daily 目录中执行替换，而不是在原始的 daily 目录
+          find src/daily -type f -name "*.md" -exec sed -i \
+            -e 's|upload.chinaz.com|pic.chinaz.com|g' \
+            -e 's|https://pic.chinaz.com|${{ env.IMAGE_PROXY_URL }}https://pic.chinaz.com|g' {} +
+          echo "URL 替换完成。"
+      
+      - name: Generate SUMMARY.md from final file structure
+        id: generate_summary
+        run: |
+          # 注意：此时 src/daily 目录已由上一步准备好并处理完毕
+          
+          SUMMARY_FILE="src/SUMMARY.md"
+          
+          # 查找逻辑不变，仍然从原始的 daily 目录中查找最新文件
+          LATEST_DAILY_FILE=$(find daily -type f -name "*.md" | sort -r | head -n 1)
+
+          if [ -z "$LATEST_DAILY_FILE" ]; then
+            echo "错误：在 'daily' 目录中没有找到任何 .md 文件。"
+            exit 1
+          fi
+
+          # 最新的文件还在 'daily' 根目录下，复制它作为 'Today' 页面到 src 目录
+          LATEST_FILENAME=$(basename "$LATEST_DAILY_FILE")
+          cp "$LATEST_DAILY_FILE" "src/$LATEST_FILENAME"
+
+          # 开始写入 SUMMARY.md
+          echo "# Summary" > "$SUMMARY_FILE"
+          echo "" >> "$SUMMARY_FILE"
+          echo "[Today]($LATEST_FILENAME)" >> "$SUMMARY_FILE"
+          echo "" >> "$SUMMARY_FILE"
+
+          # --- 生成按月分组的列表 ---
+          current_month=""
+          # 查找逻辑不变，目录结构基于原始的 daily 目录
+          for file in $(find daily -type f -name "*.md" | sort -r); do
+            filename_only=$(basename "$file" .md)
+            month=$(echo "$filename_only" | cut -d'-' -f1,2)
+            
+            if [ "$month" != "$current_month" ]; then
+              echo "# $month" >> "$SUMMARY_FILE"
+              current_month=$month
+            fi
+
+            link_title=$(echo "$filename_only" | cut -d'-' -f2,3)
+            relative_path=${file#daily/}
+            
+            # 生成的链接将是正确的 'daily/...' 路径
+            echo "- [${link_title}-日刊](daily/$relative_path)" >> "$SUMMARY_FILE"
+          done
+          
+          echo "SUMMARY.md 已成功生成，内容如下:"
+          cat "$SUMMARY_FILE"
+
+      - name: Build the book
+        run: |
+          mdbook build
+
+      - name: Organize output files
+        run: |
+          echo "正在组织输出文件..."
+          rm -rf today/book/
+          mkdir -p today
+          cp -rf book/. today/book/
+          rm -rf book
+          echo "输出文件已移动到 today/book。"
+
+      - name: Add Clarity tracking to book.js
+        run: |
+          TOC_FILE="today/book/book.js"
+          FORWARD_CODE='${{ vars.FORWARD_CODE }}'
+          CLARITY_CODE='${{ vars.CLARITY_CODE }}'
+
+          if [ -f "$TOC_FILE" ]; then
+            echo "Appending Forward and Clarity tracking code to $TOC_FILE"
+            printf "\n%s\n" "$FORWARD_CODE" >> "$TOC_FILE"
+            printf "\n%s\n" "$CLARITY_CODE" >> "$TOC_FILE"
+            echo "Tracking codes appended."
+          else
+            echo "Warning: $TOC_FILE not found. Skipping tracking code injection."
+          fi
+
+      - name: Download RSS Feed
+        run: |
+          if [ -z "${{ vars.RSS_FEED_URL }}" ]; then
+            echo "警告: RSS_FEED_URL 仓库变量未设置或为空，跳过下载。"
+          else
+            echo "正在从 ${{ vars.RSS_FEED_URL }} 下载 RSS Feed..."
+            if wget -O rss.xml "${{ vars.RSS_FEED_URL }}" --timeout=30 --tries=3; then
+              echo "RSS Feed 已成功下载到 rss.xml"
+            else
+              echo "错误: 下载 RSS Feed 失败。wget 返回错误码 $?。"
+            fi
+          fi
+          
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add src/SUMMARY.md today/ daily/
+          if [ -f "rss.xml" ]; then
+            git add rss.xml
+          else
+            echo "rss.xml 未找到，不添加到提交中。"
+          fi
+
+          if git diff --staged --quiet; then
+            echo "没有文件变更，无需提交。"
+          else
+            echo "检测到文件变更，正在提交..."
+            git commit -m "docs: 自动构建日刊并归档旧月份 (`date -u`)"
+            git push
+          fi

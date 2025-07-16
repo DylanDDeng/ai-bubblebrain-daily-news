@@ -1,0 +1,110 @@
+{{ define "main" }}
+<div class="home-container">
+    <!-- 主标题 -->
+    <h1 class="site-title">{{ .Site.Title }}</h1>
+    
+    <!-- 网站描述 -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <p style="font-size: 1.2rem; color: var(--claude-text-light); font-style: italic;">
+            {{ .Site.Params.description }}
+        </p>
+    </div>
+
+    <!-- 特色内容展示 -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
+            <h3 style="color: var(--claude-accent);">📰 行业新闻</h3>
+            <p>精选AI领域最新动态</p>
+        </div>
+        <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
+            <h3 style="color: var(--claude-accent);">💻 开源项目</h3>
+            <p>GitHub热门AI项目追踪</p>
+        </div>
+        <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
+            <h3 style="color: var(--claude-accent);">📄 学术论文</h3>
+            <p>前沿研究成果解读</p>
+        </div>
+    </div>
+
+    <!-- 最新日报 -->
+    <section>
+        <h2 style="text-align: center; margin-bottom: 2rem;">最新洞察</h2>
+        
+        {{ $dailyPages := where .Site.RegularPages "Section" "daily" }}
+        {{ if $dailyPages }}
+            <div class="recent-posts">
+                {{ range first 5 ($dailyPages.ByDate.Reverse) }}
+                    <article class="post-card">
+                        <h3>
+                            <a href="{{ .Permalink }}" style="color: var(--claude-text); font-size: 1.3rem;">
+                                {{ .Title }}
+                            </a>
+                        </h3>
+                        <time datetime="{{ .Date.Format "2006-01-02" }}">
+                            {{ .Date.Format "2006年01月02日" }}
+                        </time>
+                        {{ with .Description }}
+                            <p style="margin-top: 1rem; color: var(--claude-text-light);">{{ . }}</p>
+                        {{ else }}
+                            <p style="margin-top: 1rem; color: var(--claude-text-light);">
+                                {{ .Summary | truncate 150 }}
+                            </p>
+                        {{ end }}
+                        <div style="margin-top: 1rem;">
+                            <a href="{{ .Permalink }}" class="read-more" style="color: var(--claude-accent); font-weight: 500;">
+                                阅读全文 →
+                            </a>
+                        </div>
+                    </article>
+                {{ end }}
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="/daily/" class="btn" style="display: inline-block; text-decoration: none;">
+                    查看所有日报
+                </a>
+            </div>
+        {{ else }}
+            <div style="text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
+                <p style="color: var(--claude-text-light); font-size: 1.1rem;">暂无日报内容</p>
+                <p style="color: var(--claude-text-light); margin-top: 1rem;">请稍后再来查看</p>
+            </div>
+        {{ end }}
+    </section>
+
+    <!-- 订阅提示 -->
+    <div style="text-align: center; margin-top: 4rem; padding: 2rem; background: linear-gradient(135deg, #faf9f7, #f6f5f3); border-radius: 12px;">
+        <h3 style="color: var(--claude-accent);">订阅我们</h3>
+        <p>通过 RSS 订阅，及时获取最新AI洞察</p>
+        <a href="/index.xml" class="btn" style="margin-top: 1rem; display: inline-block; text-decoration: none;">
+            订阅 RSS
+        </a>
+    </div>
+</div>
+
+<style>
+.feature-card {
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px var(--claude-shadow);
+    border-color: var(--claude-primary) !important;
+}
+
+.recent-posts {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.read-more::after {
+    content: "";
+    transition: all 0.3s ease;
+}
+
+.read-more:hover {
+    padding-right: 0.5rem;
+}
+</style>
+{{ end }}

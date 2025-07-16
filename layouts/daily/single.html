@@ -1,0 +1,171 @@
+{{ define "main" }}
+<article class="daily-article">
+  <!-- 文章头部 -->
+  <header style="text-align: center; margin-bottom: 3rem;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">{{ .Title }}</h1>
+    <div class="article-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}" style="font-style: italic;">
+        {{ .Date.Format "2006年01月02日" }}
+      </time>
+      {{ if .Params.categories }}
+        {{ range .Params.categories }}
+          <span style="margin: 0 0.5rem; color: var(--claude-text-light);">•</span>
+          <span class="category-tag">{{ . }}</span>
+        {{ end }}
+      {{ end }}
+    </div>
+  </header>
+  
+  <!-- 文章内容 -->
+  <div class="article-content">
+    {{ .Content }}
+  </div>
+  
+  <!-- 文章底部导航 -->
+  <footer class="article-footer">
+    <div class="article-nav">
+      <div class="nav-prev">
+        {{ with .PrevInSection }}
+          <span style="color: var(--claude-text-light); font-size: 0.9rem;">上一篇</span>
+          <a href="{{ .Permalink }}">
+            ← {{ .Title }}
+          </a>
+        {{ end }}
+      </div>
+      <div class="nav-next">
+        {{ with .NextInSection }}
+          <span style="color: var(--claude-text-light); font-size: 0.9rem;">下一篇</span>
+          <a href="{{ .Permalink }}">
+            {{ .Title }} →
+          </a>
+        {{ end }}
+      </div>
+    </div>
+    
+    <!-- 返回列表 -->
+    <div style="text-align: center; margin-top: 2rem;">
+      <a href="/daily/" class="btn" style="display: inline-block; text-decoration: none;">
+        返回日报列表
+      </a>
+    </div>
+  </footer>
+</article>
+
+<style>
+.daily-article {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.article-meta {
+  color: var(--claude-text-light);
+  font-size: 1rem;
+}
+
+.category-tag {
+  background-color: var(--claude-bg-secondary, #f6f5f3);
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--claude-accent);
+  border: 1px solid var(--claude-border);
+}
+
+.article-content {
+  line-height: 1.9;
+  font-size: 1.1rem;
+}
+
+.article-content h2 {
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--claude-border);
+}
+
+.article-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.article-content p {
+  margin-bottom: 1.5rem;
+}
+
+.article-content ul li,
+.article-content ol li {
+  margin-bottom: 0.8rem;
+  line-height: 1.8;
+}
+
+.article-content blockquote {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: var(--claude-bg-secondary, #f9f8f6);
+  border-left: 4px solid var(--claude-primary);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+
+.article-content pre {
+  margin: 2rem 0;
+}
+
+.article-footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--claude-border);
+}
+
+.article-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.nav-prev,
+.nav-next {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-prev {
+  align-items: flex-start;
+}
+
+.nav-next {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.article-nav a {
+  font-size: 1.1rem;
+  color: var(--claude-accent);
+  font-weight: 500;
+}
+
+.article-nav a:hover {
+  color: var(--claude-primary);
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .daily-article {
+    padding: 1rem;
+  }
+  
+  .article-nav {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .nav-next {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+</style>
+{{ end }}

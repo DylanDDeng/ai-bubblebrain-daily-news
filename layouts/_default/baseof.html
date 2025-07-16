@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
+    <meta name="description" content="{{ .Description | default .Site.Params.description }}">
+    
+    <!-- 引入自定义 Claude 风格 CSS -->
+    <link rel="stylesheet" href="{{ "css/claude-style.css" | relURL }}">
+    
+    <!-- RSS -->
+    {{ range .AlternativeOutputFormats -}}
+        <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}">
+    {{ end -}}
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <a href="{{ .Site.BaseURL }}" style="font-size: 1.5rem; font-weight: bold; color: var(--claude-primary);">
+                    {{ .Site.Title }}
+                </a>
+                <div>
+                    {{ range .Site.Menus.main }}
+                        <a href="{{ .URL }}" style="margin-left: 2rem;">{{ .Name }}</a>
+                    {{ end }}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main>
+        <div class="container">
+            {{ block "main" . }}{{ end }}
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <p>{{ .Site.Params.footer.text | default "© 2024 AI 洞察日报" }}</p>
+            <p style="font-size: 0.8rem; margin-top: 0.5rem;">
+                基于 <a href="https://gohugo.io/" target="_blank">Hugo</a> 构建 · 
+                Claude 风格设计
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
