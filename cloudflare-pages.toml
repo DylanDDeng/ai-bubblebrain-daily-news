@@ -16,7 +16,7 @@
 
 # 生产部署配置
 [context.production]
-  command = "hugo --minify"
+  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify -b https://bubblenews.today/"
   
 # 环境变量示例（如果需要）
 [env]
