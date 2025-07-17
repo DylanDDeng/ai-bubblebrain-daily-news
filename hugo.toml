@@ -6,6 +6,9 @@ title = 'AI 洞察日报'
 # Enable Git info for lastmod
 enableGitInfo = true
 
+# Build future content
+buildFuture = true
+
 # Permalinks configuration
 [permalinks]
   daily = '/daily/:year/:month/:contentbasename/'

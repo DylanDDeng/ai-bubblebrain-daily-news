@@ -2,7 +2,7 @@
 
 # 构建配置
 [build]
-  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify"
+  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify --buildFuture"
   publish = "public"
 
 # 构建环境变量
@@ -12,11 +12,11 @@
 
 # 预览部署配置（用于 Pull Request）
 [context.preview]
-  command = "hugo --minify -b $CF_PAGES_URL"
+  command = "hugo --minify --buildFuture -b $CF_PAGES_URL"
 
 # 生产部署配置
 [context.production]
-  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify -b https://bubblenews.today/"
+  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify --buildFuture -b https://bubblenews.today/"
   
 # 环境变量示例（如果需要）
 [env]
