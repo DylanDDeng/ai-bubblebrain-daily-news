@@ -1,5 +1,5 @@
 /* Claude 风格自定义样式 */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Josefin+Sans:wght@400;600&display=swap");
 
 /* 字体设置 - 优化中文显示 */
 :root {
@@ -121,6 +121,16 @@ p {
 .post-card time {
   font-family: "Inter", var(--font-secondary);
   color: #9C9589;
+}
+
+#today,
+#today strong,
+#todays-ai-news,
+#todays-ai-news strong,
+#today-s-ai-news,
+#today-s-ai-news strong {
+  font-family: "Josefin Sans", "Inter", var(--font-secondary);
+  color: #FFFFFF;
 }
 
 /* 链接样式 */
