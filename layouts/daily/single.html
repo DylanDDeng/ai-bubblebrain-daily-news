@@ -9,7 +9,7 @@
       </time>
       {{ if .Params.categories }}
         {{ range .Params.categories }}
-          <span style="margin: 0 0.5rem; color: var(--claude-text-light);">•</span>
+          <span style="margin: 0 0.5rem; color: #9C9589;">•</span>
           <span class="category-tag">{{ . }}</span>
         {{ end }}
       {{ end }}
@@ -26,7 +26,7 @@
     <div class="article-nav">
       <div class="nav-prev">
         {{ with .PrevInSection }}
-          <span style="color: var(--claude-text-light); font-size: 0.9rem;">上一篇</span>
+          <span style="color: #9C9589; font-size: 0.9rem; font-family: 'Inter', var(--font-secondary);">上一篇</span>
           <a href="{{ .Permalink }}">
             ← {{ .Title }}
           </a>
@@ -34,7 +34,7 @@
       </div>
       <div class="nav-next">
         {{ with .NextInSection }}
-          <span style="color: var(--claude-text-light); font-size: 0.9rem;">下一篇</span>
+          <span style="color: #9C9589; font-size: 0.9rem; font-family: 'Inter', var(--font-secondary);">下一篇</span>
           <a href="{{ .Permalink }}">
             {{ .Title }} →
           </a>
@@ -59,8 +59,9 @@
 }
 
 .article-meta {
-  color: var(--claude-text-light);
+  color: #9C9589;
   font-size: 1rem;
+  font-family: "Inter", var(--font-secondary);
 }
 
 .category-tag {
@@ -75,6 +76,8 @@
 .article-content {
   line-height: 1.9;
   font-size: 1.1rem;
+  color: #9C9589;
+  font-family: "Inter", var(--font-secondary);
 }
 
 .article-content h2 {

@@ -1,4 +1,5 @@
 /* Claude 风格自定义样式 */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 /* 字体设置 - 优化中文显示 */
 :root {
@@ -107,6 +108,21 @@ p {
   text-align: justify;
 }
 
+/* 新闻内容基础字体与颜色 */
+.article-content,
+.article-content p,
+.article-content li,
+.article-content blockquote,
+.article-content span,
+.daily-card .card-content,
+.daily-card .card-content p,
+.post-card p,
+.daily-card time,
+.post-card time {
+  font-family: "Inter", var(--font-secondary);
+  color: #9C9589;
+}
+
 /* 链接样式 */
 a {
   color: var(--claude-accent);
@@ -166,7 +182,7 @@ blockquote {
   margin: var(--spacing-lg) 0;
   padding-left: var(--spacing-md);
   font-style: italic;
-  color: var(--claude-text-light);
+  color: #9C9589;
   background-color: var(--claude-bg-secondary, #f9f8f6);
   padding: var(--spacing-md);
   border-radius: 0 8px 8px 0;
