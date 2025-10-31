@@ -20,36 +20,36 @@
   <div class="article-content">
     {{ .Content }}
   </div>
-  
-  <!-- 文章底部导航 -->
-  <footer class="article-footer">
-    <div class="article-nav">
-      <div class="nav-prev">
-        {{ with .PrevInSection }}
-          <span style="color: #9C9589; font-size: 0.9rem; font-family: 'Inter', var(--font-secondary);">上一篇</span>
-          <a href="{{ .Permalink }}">
-            ← {{ .Title }}
-          </a>
-        {{ end }}
-      </div>
-      <div class="nav-next">
-        {{ with .NextInSection }}
-          <span style="color: #9C9589; font-size: 0.9rem; font-family: 'Inter', var(--font-secondary);">下一篇</span>
-          <a href="{{ .Permalink }}">
-            {{ .Title }} →
-          </a>
-        {{ end }}
-      </div>
-    </div>
-    
-    <!-- 返回列表 -->
-    <div style="text-align: center; margin-top: 2rem;">
-      <a href="/daily/" class="btn" style="display: inline-block; text-decoration: none;">
-        返回日报列表
-      </a>
-    </div>
-  </footer>
 </article>
+
+<!-- 文章底部导航 -->
+<footer class="article-footer">
+  <div class="article-nav">
+    <div class="nav-prev">
+      {{ with .PrevInSection }}
+        <span style="color: #9C9589; font-size: 0.9rem; font-family: 'Inter', var(--font-secondary);">上一篇</span>
+        <a href="{{ .Permalink }}">
+          ← {{ .Title }}
+        </a>
+      {{ end }}
+    </div>
+    <div class="nav-next">
+      {{ with .NextInSection }}
+        <span style="color: #9C9589; font-size: 0.9rem; font-family: 'Inter', var(--font-secondary);">下一篇</span>
+        <a href="{{ .Permalink }}">
+          {{ .Title }} →
+        </a>
+      {{ end }}
+    </div>
+  </div>
+  
+  <!-- 返回列表 -->
+  <div style="text-align: center; margin-top: 2rem;">
+    <a href="/daily/" class="btn" style="display: inline-block; text-decoration: none;">
+      返回日报列表
+    </a>
+  </div>
+</footer>
 
 <style>
 .daily-article {
@@ -144,8 +144,9 @@
 }
 
 .article-footer {
-  margin-top: 4rem;
-  padding-top: 2rem;
+  max-width: 800px;
+  margin: 3rem auto 0;
+  padding: 2rem 2.5rem 0;
   border-top: 2px solid var(--claude-border);
 }
 
@@ -186,6 +187,10 @@
 @media (max-width: 768px) {
   .daily-article {
     padding: 1rem;
+  }
+  
+  .article-footer {
+    padding: 2rem 1rem 0;
   }
   
   .article-nav {
