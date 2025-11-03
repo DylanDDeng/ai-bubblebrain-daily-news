@@ -64,20 +64,50 @@
 }
 
 .daily-card {
-  background: white;
-  border: 1px solid var(--claude-border);
+  position: relative;
+  background: #E0D4C6;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: 16px;
   padding: 2rem;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.12);
+  overflow: visible;
+}
+
+.daily-card::before,
+.daily-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.daily-card::before {
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(75% 75% at 100% 100%, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.08) 45%, transparent 75%);
+  transform: translate(28px, 42px);
+  filter: blur(10px);
+  opacity: 0.85;
+}
+
+.daily-card::after {
+  width: 140px;
+  height: 140px;
+  background: linear-gradient(135deg, #F0E1D2 0%, #EAD7C4 60%, rgba(255, 255, 255, 0.92) 100%);
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: -14px 14px 28px rgba(0, 0, 0, 0.18);
 }
 
 .daily-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px var(--claude-shadow);
-  border-color: var(--claude-primary);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.16);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .card-header {
@@ -96,9 +126,16 @@
 .card-content {
   flex: 1;
   margin-bottom: 1.5rem;
-  line-height: 1.8;
-  color: #9C9589;
   font-family: "Inter", var(--font-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 100%;
+  color: #6F655B;
+}
+
+.card-content p {
+  margin-bottom: 0.9rem;
 }
 
 .card-footer {
@@ -149,7 +186,8 @@
 /* 暗色模式适配 */
 @media (prefers-color-scheme: dark) {
   .daily-card {
-    background: var(--claude-bg-dark);
+    background: #E0D4C6;
+    color: #4a4138;
   }
   
   .empty-state {
