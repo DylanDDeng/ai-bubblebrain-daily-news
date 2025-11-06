@@ -63,32 +63,6 @@
   overflow: hidden;
 }
 
-.daily-article::before,
-.daily-article::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 160px;
-  height: 160px;
-  pointer-events: none;
-}
-
-.daily-article::before {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 70%);
-  clip-path: polygon(0 100%, 100% 0, 100% 100%);
-  transform: translate(38px, 40px) rotate(2deg);
-  filter: blur(3px);
-  opacity: 0.75;
-}
-
-.daily-article::after {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, #E0D4C6 65%, #D0BDA2 100%);
-  clip-path: polygon(0 100%, 100% 0, 100% 100%);
-  box-shadow: -14px 14px 26px rgba(0, 0, 0, 0.16);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-}
-
 .article-meta {
   color: #9C9589;
   font-size: 1rem;
