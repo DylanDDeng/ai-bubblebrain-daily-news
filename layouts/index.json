@@ -1,0 +1,23 @@
+{{- $dailyPages := where .Site.RegularPages "Section" "daily" -}}
+{{- $sortedDaily := $dailyPages.ByDate.Reverse -}}
+{
+  "site": {
+    "title": {{ .Site.Title | jsonify }},
+    "description": {{ .Site.Params.description | default "" | jsonify }},
+    "baseURL": {{ .Site.BaseURL | jsonify }},
+    "generatedAt": {{ now.UTC.Format "2006-01-02T15:04:05Z07:00" | jsonify }}
+  },
+  "count": {{ len $sortedDaily }},
+  "items": [
+  {{- range $index, $page := $sortedDaily }}
+    {{- if gt $index 0 }},{{ end }}
+    {
+      "title": {{ $page.Title | jsonify }},
+      "permalink": {{ $page.Permalink | jsonify }},
+      "date": {{ $page.Date.Format "2006-01-02" | jsonify }},
+      "updated": {{ $page.Lastmod.Format "2006-01-02T15:04:05Z07:00" | jsonify }},
+      "summary": {{ with $page.Description }}{{ . | plainify | jsonify }}{{ else }}{{ ($page.Summary | plainify | truncate 200) | jsonify }}{{ end }}
+    }
+  {{- end }}
+  ]
+}

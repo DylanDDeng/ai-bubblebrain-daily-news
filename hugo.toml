@@ -8,6 +8,7 @@ enableGitInfo = true
 
 # Build future content
 buildFuture = true
+disableKinds = ['taxonomy', 'term']
 
 # Permalinks configuration
 [permalinks]
