@@ -60,7 +60,7 @@ workers_dev = true
 # ========================
 **LOGIN_USERNAME** = "your_login_username"
 **LOGIN_PASSWORD** = "your_login_password"
-DAILY_TITLE = "AI洞察日报"
+DAILY_TITLE = "Bubble's Brain 阅读手册"
 PODCAST_TITLE = "来生小酒馆"
 PODCAST_BEGIN = "嘿，亲爱的V，欢迎收听新一期的来生情报站，我是你们的老朋友，何夕2077"
 PODCAST_END = "今天的情报就到这里，注意隐蔽，赶紧撤离"
@@ -143,7 +143,7 @@ TWITTER_FETCH_PAGES = "2"
   ```bash
   wrangler deploy
   ```
-  部署成功后，Wrangler 会返回一个公开的 `*.workers.dev` 域名，您的 AI 洞察日报服务已在线上运行！
+  部署成功后，Wrangler 会返回一个公开的 `*.workers.dev` 域名，您的 Bubble's Brain 阅读手册服务已在线上运行！
 
 ### 🗓️ 定时生成日报站点 (可选)
 

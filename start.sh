@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# AI 洞察日报快速启动脚本
+# Bubble's Brain 阅读手册快速启动脚本
 
-echo "🚀 AI 洞察日报 - 快速启动"
+echo "🚀 Bubble's Brain 阅读手册 - 快速启动"
 echo "========================="
 echo ""
 

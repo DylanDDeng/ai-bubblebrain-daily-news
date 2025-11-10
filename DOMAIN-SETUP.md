@@ -1,6 +1,6 @@
 # 🌐 Cloudflare 自定义域名配置指南
 
-本指南将帮助您为 AI 洞察日报配置 Cloudflare 自定义域名。
+本指南将帮助您为 Bubble's Brain 阅读手册配置 Cloudflare 自定义域名。
 
 ## 📋 配置步骤
 
@@ -143,7 +143,7 @@ nslookup your-domain.com
 
 ## 🎉 完成！
 
-配置完成后，您的 AI 洞察日报将通过自定义域名访问，享受 Cloudflare 的全球 CDN 加速和安全防护。
+配置完成后，您的 Bubble's Brain 阅读手册将通过自定义域名访问，享受 Cloudflare 的全球 CDN 加速和安全防护。
 
 ## 📌 后续维护
 

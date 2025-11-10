@@ -13,7 +13,7 @@
   {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
 
   {{ if $paginator.Pages }}
-    <!-- 日报列表 -->
+    <!-- 阅读手册列表 -->
     <div class="daily-grid">
       {{ range $paginator.Pages }}
         <article class="daily-card">
@@ -38,7 +38,7 @@
           
           <div class="card-footer">
             <a href="{{ .Permalink }}" class="read-more">
-              深入阅读 →
+              打开卡片 →
             </a>
           </div>
         </article>
@@ -46,7 +46,7 @@
     </div>
 
     {{ if gt $paginator.TotalPages 1 }}
-      <nav class="pagination" aria-label="每日洞察分页导航">
+      <nav class="pagination" aria-label="阅读手册分页导航">
         {{ if $paginator.HasPrev }}
           <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
         {{ else }}
@@ -72,8 +72,8 @@
     {{ end }}
   {{ else }}
     <div class="empty-state">
-      <p style="font-size: 1.2rem; color: var(--claude-text-light);">暂无日报内容</p>
-      <p style="color: var(--claude-text-light); margin-top: 1rem;">请稍后再来查看</p>
+      <p style="font-size: 1.2rem; color: var(--claude-text-light);">暂无阅读内容</p>
+      <p style="color: var(--claude-text-light); margin-top: 1rem;">稍后再来探索新的卡片</p>
     </div>
   {{ end }}
 </div>

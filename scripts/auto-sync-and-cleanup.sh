@@ -24,14 +24,14 @@ add_hugo_frontmatter() {
     local date="$2"
     
     # Extract title from first heading or use default
-    local title=$(grep -m 1 "^#" "$file" | sed 's/^#\s*//' || echo "AI 洞察日报 - $date")
+    local title=$(grep -m 1 "^#" "$file" | sed 's/^#\s*//' || echo "Bubble's Brain 阅读手册 - $date")
     
     # Create temporary file with front matter
     cat > "$HUGO_CONTENT_DIR/${date}.md.tmp" <<EOF
 ---
 title: "$title"
 date: ${date}T09:00:00+08:00
-description: "AI 洞察日报 - $(date -d "$date" "+%Y年%m月%d日" 2>/dev/null || echo "$date")"
+description: "Bubble's Brain 阅读手册 - $(date -d "$date" "+%Y年%m月%d日" 2>/dev/null || echo "$date")"
 categories:
   - 日报
 tags:

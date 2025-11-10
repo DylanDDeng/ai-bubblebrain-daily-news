@@ -39,13 +39,13 @@ async function syncDailyToHugo() {
             
             // Extract title from content (usually first # heading)
             const titleMatch = content.match(/^#\s+(.+)$/m);
-            const title = titleMatch ? titleMatch[1] : `AI 洞察日报 - ${date}`;
+            const title = titleMatch ? titleMatch[1] : `Bubble's Brain 阅读手册 - ${date}`;
             
             // Create Hugo front matter
             const frontMatter = `---
 title: "${title}"
 date: ${date}T09:00:00+08:00
-description: "AI 洞察日报 - ${new Date(date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}"
+description: "Bubble's Brain 阅读手册 - ${new Date(date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}"
 categories:
   - 日报
 tags:

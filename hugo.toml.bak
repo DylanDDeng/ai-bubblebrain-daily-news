@@ -1,6 +1,6 @@
 baseURL = '/'  # Use relative URLs for local testing
 languageCode = 'zh-CN'
-title = 'AI 洞察日报'
+title = 'Bubble's Brain 阅读手册'
 # theme = 'hextra'  # 暂时禁用主题，使用自定义样式
 
 # Enable Git info for lastmod
@@ -49,7 +49,7 @@ enableGitInfo = true
 
 # Params configuration
 [params]
-  description = 'AI 洞察日报 - 每日精选AI行业动态、技术趋势和深度分析'
+  description = 'Bubble's Brain 阅读手册 - 每日精选AI行业动态、技术趋势和深度分析'
   # Enable dark mode
   darkMode = true
   
@@ -62,7 +62,7 @@ enableGitInfo = true
   # Footer configuration
   [params.footer]
     enable = true
-    text = 'AI 洞察日报 - 为AI从业者提供每日行业动态'
+    text = 'Bubble's Brain 阅读手册 - 为AI从业者提供每日行业动态'
 
 # Output formats
 [outputs]

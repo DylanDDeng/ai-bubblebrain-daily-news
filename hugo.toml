@@ -1,6 +1,6 @@
 baseURL = 'https://bubblenews.today/'
 languageCode = 'zh-CN'
-title = 'AI 洞察日报'
+title = "Bubble's Brain 阅读手册"
 # theme = 'hextra'  # 暂时禁用主题，使用自定义样式
 
 # Enable Git info for lastmod
@@ -21,14 +21,19 @@ disableKinds = ['taxonomy', 'term']
   weight = 10
 
 [[menu.main]]
-  name = '每日洞察'
+  name = '阅读手册'
   pageRef = '/daily'
   weight = 20
 
 [[menu.main]]
+  name = '关于'
+  pageRef = '/about'
+  weight = 30
+
+[[menu.main]]
   name = 'RSS'
   url = '/index.xml'
-  weight = 30
+  weight = 40
 
 # Markup configuration
 [markup]
@@ -53,7 +58,7 @@ disableKinds = ['taxonomy', 'term']
 
 # Params configuration
 [params]
-  description = 'AI 洞察日报 - 每日精选AI行业动态、技术趋势和深度分析'
+  description = "Bubble's Brain 阅读手册 - 深度解析 AI 行业知识图谱与实践路径"
   # Enable dark mode
   darkMode = true
   
@@ -66,7 +71,7 @@ disableKinds = ['taxonomy', 'term']
   # Footer configuration
   [params.footer]
     enable = true
-    text = 'AI 洞察日报 - 为AI从业者提供每日行业动态'
+    text = "Bubble's Brain 阅读手册 - 为探索者提供系统化 AI 知识地图"
 
 # Output formats
 [outputs]

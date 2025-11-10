@@ -36,9 +36,9 @@ jobs:
               # 生成 Hugo front matter
               cat > "content/daily/$filename" <<EOF
 ---
-title: "AI 洞察日报 - $date_str"
+title: "Bubble's Brain 阅读手册 - $date_str"
 date: ${date_str}T09:00:00+08:00
-description: "AI 洞察日报 - $(date -d "$date_str" '+%Y年%m月%d日' 2>/dev/null || echo "$date_str")"
+description: "Bubble's Brain 阅读手册 - $(date -d "$date_str" '+%Y年%m月%d日' 2>/dev/null || echo "$date_str")"
 categories:
   - 日报
 tags:

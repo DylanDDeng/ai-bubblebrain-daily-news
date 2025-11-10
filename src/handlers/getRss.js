@@ -79,7 +79,7 @@ export async function handleRss(request, env) {
   const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>AI洞察日报 RSS Feed</title>
+    <title>Bubble's Brain 阅读手册 RSS Feed</title>
     <link>${env.BOOK_LINK}</link>
     <description> 近 ${days} 天的AI日报</description>
     <language>zh-cn</language>

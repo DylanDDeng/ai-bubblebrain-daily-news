@@ -68,7 +68,7 @@ hugo --minify
 
 ```toml
 baseURL = 'https://your-domain.com/'  # 你的域名
-title = 'AI 洞察日报'                   # 站点标题
+title = 'Bubble's Brain 阅读手册'                   # 站点标题
 ```
 
 ### 修改主题样式

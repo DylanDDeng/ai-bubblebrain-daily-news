@@ -1,7 +1,7 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
 date: {{ .Date }}
-description: "AI 洞察日报 - {{ .Date.Format "2006年01月02日" }}"
+description: "Bubble's Brain 阅读手册 - {{ .Date.Format "2006年01月02日" }}"
 categories:
   - 日报
 tags:
@@ -25,4 +25,4 @@ draft: false
 
 ---
 
-*本日报由 AI 洞察日报自动生成*
+*本日报由 Bubble's Brain 阅读手册自动生成*

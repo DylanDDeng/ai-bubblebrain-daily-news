@@ -32,14 +32,14 @@ for file in "$DAILY_DIR"/*.md; do
             cp "$file" "$HUGO_CONTENT_DIR/$basename"
         else
             # Extract title from first heading and clean it (remove all # and markdown)
-            title=$(grep -m 1 "^#" "$file" | sed 's/^#\+\s*//' | sed 's/[#\*\`]//g' | sed 's/^[[:space:]]*//' || echo "AI 洞察日报 - $date")
+            title=$(grep -m 1 "^#" "$file" | sed 's/^#\+\s*//' | sed 's/[#\*\`]//g' | sed 's/^[[:space:]]*//' || echo "Bubble's Brain 阅读手册 - $date")
             
             # Create Hugo file with front matter
             cat > "$HUGO_CONTENT_DIR/$basename" <<EOF
 ---
 title: "$title"
 date: ${date}T09:00:00+08:00
-description: "AI 洞察日报 - $(date -d "$date" "+%Y年%m月%d日" 2>/dev/null || date -j -f "%Y-%m-%d" "$date" "+%Y年%m月%d日" 2>/dev/null || echo "$date")"
+description: "Bubble's Brain 阅读手册 - $(date -d "$date" "+%Y年%m月%d日" 2>/dev/null || date -j -f "%Y-%m-%d" "$date" "+%Y年%m月%d日" 2>/dev/null || echo "$date")"
 categories:
   - 日报
 tags:

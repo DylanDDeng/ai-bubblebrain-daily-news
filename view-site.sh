@@ -2,7 +2,7 @@
 
 # 快速查看站点脚本
 
-echo "🚀 启动 AI 洞察日报 Hugo 站点..."
+echo "🚀 启动 Bubble's Brain 阅读手册 Hugo 站点..."
 echo ""
 
 # 检查是否有内容需要同步

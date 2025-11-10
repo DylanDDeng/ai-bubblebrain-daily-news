@@ -13,22 +13,22 @@
     <!-- 特色内容展示 -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
         <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-            <h3 style="color: var(--claude-accent);">📰 行业新闻</h3>
-            <p>精选AI领域最新动态</p>
+            <h3 style="color: var(--claude-accent);">🧭 行业雷达</h3>
+            <p>洞察政策、资本与产品动向</p>
         </div>
         <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-            <h3 style="color: var(--claude-accent);">💻 开源项目</h3>
-            <p>GitHub热门AI项目追踪</p>
+            <h3 style="color: var(--claude-accent);">🧪 技术内参</h3>
+            <p>串起模型突破与方法论</p>
         </div>
         <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-            <h3 style="color: var(--claude-accent);">📄 学术论文</h3>
-            <p>前沿研究成果解读</p>
+            <h3 style="color: var(--claude-accent);">🛠️ 实践手册</h3>
+            <p>沉淀工具链与落地经验</p>
         </div>
     </div>
 
     <!-- 最新日报 -->
     <section>
-        <h2 style="text-align: center; margin-bottom: 2rem;">最新洞察</h2>
+        <h2 style="text-align: center; margin-bottom: 2rem;">最新阅读卡片</h2>
         
         {{ $dailyPages := where .Site.RegularPages "Section" "daily" }}
         {{ if $dailyPages }}
@@ -61,13 +61,13 @@
             
             <div style="text-align: center; margin-top: 2rem;">
                 <a href="/daily/" class="btn" style="display: inline-block; text-decoration: none;">
-                    查看所有日报
+                    浏览完整手册
                 </a>
             </div>
         {{ else }}
             <div style="text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-                <p style="color: var(--claude-text-light); font-size: 1.1rem;">暂无日报内容</p>
-                <p style="color: var(--claude-text-light); margin-top: 1rem;">请稍后再来查看</p>
+                <p style="color: var(--claude-text-light); font-size: 1.1rem;">暂时没有可读卡片</p>
+                <p style="color: var(--claude-text-light); margin-top: 1rem;">稍后再来，新的知识正在酝酿</p>
             </div>
         {{ end }}
     </section>
@@ -75,7 +75,7 @@
     <!-- 订阅提示 -->
     <div style="text-align: center; margin-top: 4rem; padding: 2rem; background: linear-gradient(135deg, var(--claude-bg), #f6f5f3); border-radius: 12px;">
         <h3 style="color: var(--claude-accent);">订阅我们</h3>
-        <p>通过 RSS 订阅，及时获取最新AI洞察</p>
+        <p>通过 RSS 守护你的每日阅读节奏</p>
         <a href="/index.xml" class="btn" style="margin-top: 1rem; display: inline-block; text-decoration: none;">
             订阅 RSS
         </a>
