@@ -11,12 +11,12 @@ kv_namespaces = [
 [vars]
 IMG_PROXY = ""  #图片代理链接，用于处理图片不显示
 OPEN_TRANSLATE = "true"
-USE_MODEL_PLATFORM = "OPEN" #GEMINI, OPEN
+USE_MODEL_PLATFORM = "GEMINI" #GEMINI, OPEN
 # GEMINI_API_KEY 在环境变量中设置
 GEMINI_API_URL = "https://api-proxy.me/gemini" #网上公共的代理api
 DEFAULT_GEMINI_MODEL = "gemini-2.5-pro"
 # OPENAI_API_KEY 在环境变量中设置
-OPENAI_API_URL = "https://api.deepseek.com" # Or your OpenAI compatible API URL
+OPENAI_API_URL = "https:// api.deepseek.com" # Or your OpenAI compatible API URL
 DEFAULT_OPEN_MODEL = "deepseek-chat"
 FOLO_COOKIE_KV_KEY = "folo_auth_cookie" 
 FOLO_DATA_API = "https://api.follow.is/entries"
