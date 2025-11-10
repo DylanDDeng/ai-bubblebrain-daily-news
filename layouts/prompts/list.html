@@ -1,0 +1,234 @@
+{{ define "main" }}
+<div class="prompt-list-container">
+  <header class="prompt-hero">
+    <p class="eyebrow">Bubble's Brain · Prompt Library</p>
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}
+      <p class="lead">{{ . }}</p>
+    {{ end }}
+  </header>
+
+  {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
+
+  {{ if $paginator.Pages }}
+    <div class="prompt-grid">
+      {{ range $paginator.Pages }}
+        {{ $model := .Params.model | default "任意大模型" }}
+        {{ $tone := .Params.tone }}
+        {{ $tags := .Params.tags }}
+        <article class="prompt-card">
+          <div class="prompt-meta">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+            {{ if and $tags (gt (len $tags) 0) }}
+              <div class="prompt-tags">
+                {{ range $index, $tag := $tags }}
+                  {{ if lt $index 3 }}
+                    <span>{{ $tag }}</span>
+                  {{ end }}
+                {{ end }}
+              </div>
+            {{ end }}
+          </div>
+
+          <h2>
+            <a href="{{ .Permalink }}">{{ .Title }}</a>
+          </h2>
+
+          <p class="prompt-summary">
+            {{ with .Description }}
+              {{ . }}
+            {{ else }}
+              {{ .Summary | truncate 140 }}
+            {{ end }}
+          </p>
+
+          <div class="prompt-footer">
+            <div class="prompt-pillset">
+              <span class="prompt-pill">推荐模型：{{ $model }}</span>
+              {{ if $tone }}
+                <span class="prompt-pill">语气：{{ $tone }}</span>
+              {{ end }}
+            </div>
+            <a class="prompt-link" href="{{ .Permalink }}">查看提示词 →</a>
+          </div>
+        </article>
+      {{ end }}
+    </div>
+
+    {{ if gt $paginator.TotalPages 1 }}
+      <nav class="pagination" aria-label="提示词分页导航">
+        {{ if $paginator.HasPrev }}
+          <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
+        {{ else }}
+          <span class="pagination-link disabled">← 上一页</span>
+        {{ end }}
+
+        <div class="pagination-pages">
+          {{ range $pager := $paginator.Pagers }}
+            {{ if eq $pager.PageNumber $paginator.PageNumber }}
+              <span class="pagination-page current">{{ $pager.PageNumber }}</span>
+            {{ else }}
+              <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
+            {{ end }}
+          {{ end }}
+        </div>
+
+        {{ if $paginator.HasNext }}
+          <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
+        {{ else }}
+          <span class="pagination-link disabled">下一页 →</span>
+        {{ end }}
+      </nav>
+    {{ end }}
+  {{ else }}
+    <div class="empty-state">
+      <p>暂时还没有提示词卡片。</p>
+      <p>稍后回来会有新的灵感。</p>
+    </div>
+  {{ end }}
+</div>
+
+<style>
+.prompt-list-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.prompt-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  color: var(--claude-text-light);
+}
+
+.prompt-hero h1 {
+  margin: 0.5rem 0;
+  font-size: 2.6rem;
+}
+
+.prompt-hero .lead {
+  max-width: 60ch;
+  margin: 0 auto;
+  color: var(--claude-text-light);
+}
+
+.prompt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.prompt-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--claude-border);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prompt-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+.prompt-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--claude-text-light);
+}
+
+.prompt-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.prompt-tags span {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.prompt-card h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.prompt-card a {
+  text-decoration: none;
+  color: var(--claude-text);
+}
+
+.prompt-card a:hover {
+  color: var(--claude-accent);
+}
+
+.prompt-summary {
+  color: #6F655B;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.prompt-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.prompt-pillset {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.prompt-pill {
+  background: var(--claude-bg);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.prompt-link {
+  color: var(--claude-accent);
+  font-weight: 500;
+}
+
+.prompt-link:hover {
+  color: var(--claude-primary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border: 1px solid var(--claude-border);
+  border-radius: 16px;
+  margin-top: 2rem;
+}
+
+@media (max-width: 720px) {
+  .prompt-card {
+    padding: 1.25rem;
+  }
+
+  .prompt-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+}
+</style>
+{{ end }}

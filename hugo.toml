@@ -26,13 +26,18 @@ disableKinds = ['taxonomy', 'term']
   weight = 20
 
 [[menu.main]]
-  name = '关于'
-  pageRef = '/about'
+  name = 'Prompt收录'
+  pageRef = '/prompts'
   weight = 30
 
 [[menu.main]]
   name = 'RSS'
   url = '/index.xml'
+  weight = 50
+
+[[menu.main]]
+  name = '关于'
+  pageRef = '/about'
   weight = 40
 
 # Markup configuration

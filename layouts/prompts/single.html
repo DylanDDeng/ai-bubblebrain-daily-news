@@ -1,0 +1,136 @@
+{{ define "main" }}
+<article class="prompt-article">
+  <header class="prompt-article-header">
+    <p class="eyebrow">Prompt Library</p>
+    <h1>{{ .Title }}</h1>
+    <div class="prompt-article-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+      {{ with .Params.model }}
+        <span class="meta-pill">推荐模型：{{ . }}</span>
+      {{ end }}
+      {{ with .Params.tone }}
+        <span class="meta-pill">语气建议：{{ . }}</span>
+      {{ end }}
+    </div>
+    {{ with .Description }}
+      <p class="lead">{{ . }}</p>
+    {{ end }}
+    {{ with .Params.tags }}
+      <div class="tag-row">
+        {{ range . }}
+          <span>{{ . }}</span>
+        {{ end }}
+      </div>
+    {{ end }}
+  </header>
+
+  <div class="prompt-article-body">
+    {{ .Content }}
+  </div>
+
+  <footer class="prompt-article-footer">
+    <a class="back-link" href="/prompts/">← 返回提示词收录</a>
+  </footer>
+</article>
+
+<style>
+.prompt-article {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+.prompt-article-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.prompt-article-header h1 {
+  margin: 0.5rem 0;
+  font-size: 2.4rem;
+}
+
+.prompt-article-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: var(--claude-text-light);
+}
+
+.meta-pill {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.2rem 0.8rem;
+  border-radius: 999px;
+}
+
+.tag-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.tag-row span {
+  border: 1px solid var(--claude-border);
+  border-radius: 999px;
+  padding: 0.2rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--claude-accent);
+}
+
+.lead {
+  color: var(--claude-text-light);
+  max-width: 60ch;
+  margin: 0.75rem auto 0;
+}
+
+.prompt-article-body {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--claude-border);
+  padding: 2.5rem;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+  line-height: 1.75;
+}
+
+.prompt-article-body pre {
+  background: #111;
+  color: #f6f6f6;
+  padding: 1rem;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.prompt-article-body code {
+  font-family: "JetBrains Mono", monospace;
+}
+
+.prompt-article-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.back-link {
+  color: var(--claude-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  color: var(--claude-primary);
+}
+
+@media (max-width: 720px) {
+  .prompt-article-body {
+    padding: 1.5rem;
+  }
+
+  .prompt-article-header h1 {
+    font-size: 2rem;
+  }
+}
+</style>
+{{ end }}

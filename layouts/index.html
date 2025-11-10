@@ -72,6 +72,50 @@
         {{ end }}
     </section>
 
+    <!-- Prompt 预告 -->
+    <section style="margin-top: 4rem;">
+        <h2 style="text-align: center; margin-bottom: 1.5rem;">提示词收录</h2>
+        <p style="text-align: center; color: var(--claude-text-light); max-width: 60ch; margin: 0 auto 2rem;">
+            复用我们沉淀的 Prompt 资产，快速切换到策略、研究或创作模式。
+        </p>
+
+        {{ $promptPages := where .Site.RegularPages "Section" "prompts" }}
+        {{ if $promptPages }}
+            <div class="prompt-preview-grid">
+                {{ range first 3 ($promptPages.ByDate.Reverse) }}
+                    <article class="prompt-preview-card">
+                        <div class="prompt-preview-meta">
+                            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+                            {{ with .Params.model }}
+                                <span>{{ . }}</span>
+                            {{ end }}
+                        </div>
+                        <h3>
+                            <a href="{{ .Permalink }}">{{ .Title }}</a>
+                        </h3>
+                        <p>
+                            {{ with .Description }}
+                                {{ . }}
+                            {{ else }}
+                                {{ .Summary | truncate 120 }}
+                            {{ end }}
+                        </p>
+                        <a class="prompt-preview-link" href="{{ .Permalink }}">查看提示词 →</a>
+                    </article>
+                {{ end }}
+            </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="/prompts/" class="btn" style="display: inline-block; text-decoration: none;">
+                    浏览全部提示词
+                </a>
+            </div>
+        {{ else }}
+            <div style="text-align: center; padding: 2.5rem; border: 1px dashed var(--claude-border); border-radius: 12px;">
+                <p style="color: var(--claude-text-light);">提示词收录即将上线，敬请期待。</p>
+            </div>
+        {{ end }}
+    </section>
+
     <!-- 订阅提示 -->
     <div style="text-align: center; margin-top: 4rem; padding: 2rem; background: linear-gradient(135deg, var(--claude-bg), #f6f5f3); border-radius: 12px;">
         <h3 style="color: var(--claude-accent);">订阅我们</h3>
@@ -105,6 +149,47 @@
 
 .read-more:hover {
     padding-right: 0.5rem;
+}
+
+.prompt-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.prompt-preview-card {
+    border: 1px solid var(--claude-border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.prompt-preview-card h3 {
+    margin: 0;
+}
+
+.prompt-preview-card a {
+    text-decoration: none;
+    color: var(--claude-text);
+}
+
+.prompt-preview-card a:hover {
+    color: var(--claude-accent);
+}
+
+.prompt-preview-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--claude-text-light);
+}
+
+.prompt-preview-link {
+    color: var(--claude-accent);
+    font-weight: 500;
 }
 </style>
 {{ end }}
