@@ -15,10 +15,6 @@ disableKinds = ['taxonomy', 'term']
   daily = '/daily/:year/:month/:contentbasename/'
 
 # Menu configuration
-[[menu.main]]
-  name = '主页'
-  pageRef = '/'
-  weight = 10
 
 [[menu.main]]
   name = '资讯日报'
