@@ -21,7 +21,7 @@ disableKinds = ['taxonomy', 'term']
   weight = 10
 
 [[menu.main]]
-  name = '阅读手册'
+  name = '资讯日报'
   pageRef = '/daily'
   weight = 20
 
@@ -58,7 +58,7 @@ disableKinds = ['taxonomy', 'term']
 
 # Params configuration
 [params]
-  description = "Bubble's Brain 阅读手册 - 深度解析 AI 行业知识图谱与实践路径"
+  description = "整个知识库包含了AI 领域非常多的东西，深度和难度各不相同。 但是我坚信每个人获取自己想要的信息内容的权利是相同的，无论你是 AI 小白，还是有技术背景的大佬，我希望都能在这里找到你想要的内容。"
   # Enable dark mode
   darkMode = true
   
