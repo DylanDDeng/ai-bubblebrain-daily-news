@@ -8,7 +8,7 @@
     {{ end }}
   </header>
 
-  {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
+  {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 5 }}
 
   {{ if $paginator.Pages }}
     <div class="prompt-grid">
@@ -217,6 +217,53 @@
   border: 1px solid var(--claude-border);
   border-radius: 16px;
   margin-top: 2rem;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.pagination-link {
+  color: var(--claude-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.pagination-link.disabled {
+  color: var(--claude-text-light);
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-page {
+  min-width: 36px;
+  text-align: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--claude-text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pagination-page:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.pagination-page.current {
+  background: var(--claude-accent);
+  color: white;
 }
 
 @media (max-width: 720px) {
