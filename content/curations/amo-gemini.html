@@ -1,0 +1,431 @@
+---
+title: "AMO-Bench 论文精选"
+date: 2025-02-06T11:00:00+08:00
+kicker: "论文精选"
+summary: "收集 AMO-Bench 与 Gemini 系列论文、指标与可视化，希望快速补齐数学推理研究的背景。"
+description: "围绕 AMO-Bench 发布的论文要点、难题拆解、模型对比图，配套引用 footnote。"
+reading_time: "10 min"
+topics: ["Paper Digest", "Math Reasoning", "Agent"]
+cta_label: "打开论文集"
+layout: "amo-gemini"
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息图：AMO-Bench</title>
+    <style>
+        /* 导入字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:wght@500;700&display=swap');
+
+        /* * 核心风格与美学
+         * 主题: 温和、理性、日光感
+         * 美学: 纸感与留白，细线与衬线体
+         */
+        :root {
+            --bg-color: #f9f9f8; /* 暖白背景 */
+            --text-color: #2b2b2b; /* 深灰文字 */
+            --border-color: #e6e6e6; /* 细线边框 */
+            --accent-color: #b0c4de; /* 浅灰蓝（点缀）*/
+            --card-bg: #ffffff; /* 卡片白底 */
+            --footer-bg: #f0f0f0;
+            --footer-text: #777;
+            
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            font-weight: 300;
+        }
+
+        /* 顶部导航 */
+        header {
+            padding: 2rem 3rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-family: var(--font-serif);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        /* * 布局与结构
+         * 响应式两栏网格，强调留白与呼吸感
+         */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem;
+        }
+
+        .main-title {
+            font-family: var(--font-serif);
+            font-size: 3.5rem;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            max-width: 80%;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            max-width: 70%;
+            margin-bottom: 3rem;
+            color: #555;
+        }
+
+        /* 网格系统 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        @media (min-width: 900px) {
+            .grid-container {
+                /* 左为文本逻辑线 (2fr)，右为视觉展示 (1fr) */
+                grid-template-columns: 2fr 1fr;
+            }
+
+            .main-title {
+                font-size: 4.5rem;
+            }
+        }
+
+        .text-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .visual-column {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        /* * 卡片模块
+         * 白底、细边框，如印在高级纸张上
+         */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .card-title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin: 0 0 1rem 0;
+        }
+
+        .card-subtitle {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #888;
+            margin: -1rem 0 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .card p, .card ul {
+            margin-bottom: 1rem;
+        }
+
+        .card ul {
+            padding-left: 1.5rem;
+        }
+
+        .card li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* 引用/重点突出 */
+        blockquote {
+            border-left: 3px solid var(--accent-color);
+            margin: 2rem 0;
+            padding: 0.5rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 400;
+            background-color: #fdfdfd;
+        }
+
+        /* * 特殊模块：数据可视化 
+         */
+        .bar-chart-container {
+            width: 100%;
+        }
+
+        .bar-group {
+            margin-bottom: 2rem;
+        }
+
+        .bar-group-title {
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            color: #555;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .bar-label {
+            width: 50%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 1rem;
+            font-weight: 400;
+        }
+
+        .bar-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            background: #f0f0f0;
+            height: 24px;
+        }
+        
+        .bar {
+            height: 100%;
+            background-color: var(--text-color);
+            transition: width 1s ease-out;
+        }
+        
+        .bar-value {
+            padding-left: 0.75rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        /* 特定颜色 */
+        .bar.math500 { background-color: #dcdcdc; } /* 饱和的灰色 */
+        .bar.amo-bench { background-color: var(--accent-color); } /* 突出的蓝色 */
+
+
+        /* * 特殊模块：流程图 
+         */
+        .process-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            gap: 0.5rem;
+        }
+
+        .process-step {
+            font-weight: 500;
+            background: #f9f9f9;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .process-arrow {
+            color: #aaa;
+            font-weight: 700;
+        }
+
+        /* 底部脚注 */
+        footer {
+            text-align: center;
+            padding: 2.5rem;
+            margin-top: 3rem;
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* 打印样式 */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+            }
+            header, footer {
+                display: none;
+            }
+            .container {
+                padding: 0;
+            }
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                border: 1px solid #ccc;
+                box-shadow: none;
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            .bar {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">BubbleBrain</div>
+    </header>
+
+    <div class="container">
+        
+        <h1 class="main-title">饱和的终结：AMO-Bench</h1>
+        <p class="subtitle">一份新的奥林匹克级数学基准，揭示了顶级大型语言模型 (LLM) 的真实推理极限。</p>
+
+        <div class="grid-container">
+            
+            <div class="text-column">
+
+                <div class="card">
+                    <h2 class="card-title">“饱和” 的问题</h2>
+                    [cite_start]<p>为什么需要新的基准？因为现有的数学基准（如 AIME24/25）正面临严重的“性能饱和”问题 [cite: 12, 76]。</p>
+                    [cite_start]<p>近期的研究结果显示，顶尖的 LLM 在这些测试上已经能够取得惊人的成绩，部分甚至超过了 90% 的准确率 [cite: 75][cite_start]。这种高分使得这些基准逐渐失去了区分和评估模型进一步发展的能力 [cite: 12, 76]。</p>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">AMO-Bench：高级数学推理</h2>
+                    [cite_start]<p>为了解决这一问题，研究人员推出了 AMO-Bench，一个包含50个人工精心制作问题的高级数学推理基准 [cite: 10]。</p>
+                    <p>其核心特征确保了评估的严格性：</p>
+                    <ul>
+                        [cite_start]<li><strong>极高难度：</strong> 所有问题均经过专家交叉验证，确保其难度达到或超过国际数学奥林匹克 (IMO) 的标准 [cite: 13, 85]。</li>
+                        [cite_start]<li><strong>完全原创：</strong> 全部50个问题均为全新创建 [cite: 83][cite_start]，以防止模型通过“数据记忆”已有竞赛题库而获得虚高分数 [cite: 13]。</li>
+                        [cite_start]<li><strong>自动评分：</strong> 每个问题都设计为只需要一个最终答案（而非完整的证明过程） [cite: 14][cite_start]，这使得大规模的自动评分成为可能，保证了评估的高效和一致性 [cite: 87]。</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">核心发现：LLM仍在挣扎</h2>
+                    <p>在 AMO-Bench 的严格考验下，当代 LLM 的“光环”迅速褪去。</p>
+                    
+                    <blockquote>
+                        [cite_start]实验结果显示，即便是表现最好的模型 GPT-5-Thinking (High)，其准确率也仅为 52.4% [cite: 15, 92, 320]。
+                    </blockquote>
+                    
+                    [cite_start]<p>更重要的是，绝大多数 LLM 在此基准上的得分都低于 40% [cite: 15, 92, 320]。</p>
+                    [cite_start]<p>这些并不理想的成绩清晰地表明，尽管 LLM 在许多任务上取得了长足进步，但其在复杂数学推理方面的能力仍有巨大且显著的提升空间 [cite: 17, 321]。</p>
+                </div>
+
+            </div>
+            
+            <div class="visual-column">
+
+                <div class="card">
+                    <h2 class="card-title">性能对比</h2>
+                    <h3 class="card-subtitle">AMO-Bench vs. MATH500 (数据源: 图1)</h3>
+                    
+                    <div class="bar-chart-container">
+                        <div class="bar-group">
+                            <div class="bar-group-title">MATH500 (已饱和)</div>
+                            
+                            <div class="bar-item">
+                                <div class="bar-label">GPT-5-Thinking (High)</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar math500" style="width: 99.6%;"></div>
+                                </div>
+                                [cite_start]<div class="bar-value">99.6% [cite: 54]</div>
+                            </div>
+                            
+                            <div class="bar-item">
+                                <div class="bar-label">LongCat-Flash-Thinking</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar math500" style="width: 99.2%;"></div>
+                                </div>
+                                [cite_start]<div class="bar-value">99.2% [cite: 53]</div>
+                            </div>
+
+                            <div class="bar-item">
+                                <div class="bar-label">Gemini-2.5-Pro</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar math500" style="width: 98.8%;"></div>
+                                </div>
+                                [cite_start]<div class="bar-value">98.8% [cite: 55]</div>
+                            </div>
+                        </div>
+
+                        <div class="bar-group">
+                            <div class="bar-group-title">AMO-Bench (新挑战)</div>
+                            
+                            <div class="bar-item">
+                                <div class="bar-label">GPT-5-Thinking (High)</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar amo-bench" style="width: 52.4%;"></div>
+                                </div>
+                                [cite_start]<div class="bar-value">52.4% [cite: 42]</div>
+                            </div>
+                            
+                            <div class="bar-item">
+                                <div class="bar-label">LongCat-Flash-Thinking</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar amo-bench" style="width: 43.6%;"></div>
+                                </div>
+                                [cite_start]<div class="bar-value">43.6% [cite: 45]</div>
+                            </div>
+
+                            <div class="bar-item">
+                                <div class="bar-label">Gemini-2.5-Pro</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar amo-bench" style="width: 38.7%;"></div>
+                                </div>
+                                [cite_start]<div class="bar-value">38.7% [cite: 44, 48, 49]</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">基准的构建流程</h2>
+                    <h3 class="card-subtitle">确保质量、原创性与难度</h3>
+                    [cite_start]<p>AMO-Bench 的构建采用了一个全面的多阶段流程 [cite: 140]，以保证其极高的标准：</p>
+                    <div class="process-flow">
+                        <div class="process-step">人类专家<br>(Data Creation)</div>
+                        <span class="process-arrow">→</span>
+                        [cite_start]<div class="process-step">质量审查 [cite: 145]<br>(Quality Review)</div>
+                        <span class="process-arrow">→</span>
+                        [cite_start]<div class="process-step">独创性审查 [cite: 149]<br>(Originality Review)</div>
+                        <span class="process-arrow">→</span>
+                        [cite_start]<div class="process-step">难度审查 [cite: 154]<br>(Difficulty Review)</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        内容基于 arXiv:2510.26768v1 [cs.CL] 30 Oct 2025 (用户上传文件)
+    </footer>
+
+</body>
+</html>

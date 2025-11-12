@@ -1,0 +1,94 @@
+{{ define "main" }}
+<article class="curation-single">
+    <div class="curation-single-meta">
+        {{ with .Params.kicker }}<span class="curation-pill">{{ . }}</span>{{ end }}
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+        {{ with .Params.reading_time }}<span>{{ . }}</span>{{ end }}
+    </div>
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.summary }}
+        <p class="curation-single-summary">{{ . }}</p>
+    {{ end }}
+    {{ with .Params.topics }}
+        <div class="curation-single-tags">
+            {{ range . }}<span>{{ . }}</span>{{ end }}
+        </div>
+    {{ end }}
+    <div class="curation-content">
+        {{ .Content }}
+    </div>
+    <div class="curation-single-footer">
+        <a href="/curations/" class="back-link">← 返回内容精选</a>
+    </div>
+</article>
+
+<style>
+.curation-single {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+}
+
+.curation-single-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--claude-text-light);
+    align-items: center;
+}
+
+.curation-pill {
+    background: var(--claude-bg);
+    color: var(--claude-accent);
+    border-radius: 999px;
+    padding: 0.1rem 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.curation-single-summary {
+    font-size: 1.2rem;
+    color: var(--claude-text-light);
+    margin-top: 1rem;
+}
+
+.curation-single-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 2rem;
+}
+
+.curation-single-tags span {
+    border: 1px solid var(--claude-border);
+    border-radius: 999px;
+    padding: 0.2rem 0.85rem;
+    font-size: 0.8rem;
+}
+
+.curation-content {
+    line-height: 1.75;
+    color: var(--claude-text);
+}
+
+.curation-content h2,
+.curation-content h3 {
+    margin-top: 2rem;
+}
+
+.curation-content ul,
+.curation-content ol {
+    padding-left: 1.25rem;
+}
+
+.curation-single-footer {
+    margin-top: 2.5rem;
+}
+
+.back-link {
+    color: var(--claude-accent);
+    text-decoration: none;
+}
+</style>
+{{ end }}

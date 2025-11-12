@@ -1,33 +1,69 @@
 {{ define "main" }}
 <div class="home-container">
-    <!-- 主标题 -->
-    <h1 class="site-title">{{ .Site.Title }}</h1>
-    
-    <!-- 网站描述 -->
-    <div style="text-align: center; margin-bottom: 3rem;">
-        <p style="font-size: 1.2rem; color: var(--claude-text-light); font-style: italic;">
+    <section class="hero-intro">
+        <h1 class="site-title">{{ .Site.Title }}</h1>
+        <div class="hero-meta">
+            <span>产业纵深</span>
+            <span class="hero-dot"></span>
+            <span>技术脉络</span>
+            <span class="hero-dot"></span>
+            <span>落地方法</span>
+        </div>
+        <p class="hero-description">
             {{ .Site.Params.description }}
         </p>
-    </div>
+        <div class="hero-cta">
+            <a href="#latest-reading" class="btn">查看最新阅读卡片</a>
+            <a href="/prompts/" class="btn btn-ghost">探索提示词</a>
+        </div>
+        <div class="hero-note">
+            每天 15 分钟，建立自己的 Bubble's Brain，做更聪明的产品与研究决策。
+        </div>
+    </section>
 
-    <!-- 特色内容展示 -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-        <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-            <h3 style="color: var(--claude-accent);">🧭 行业雷达</h3>
-            <p>洞察政策、资本与产品动向</p>
-        </div>
-        <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-            <h3 style="color: var(--claude-accent);">🧪 技术内参</h3>
-            <p>串起模型突破与方法论</p>
-        </div>
-        <div class="feature-card" style="text-align: center; padding: 2rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-            <h3 style="color: var(--claude-accent);">🛠️ 实践手册</h3>
-            <p>沉淀工具链与落地经验</p>
-        </div>
-    </div>
+    <!-- 内容精选 -->
+    {{ $curations := where .Site.RegularPages "Section" "curations" }}
+    {{ if $curations }}
+        <section id="curations" class="curation-highlight">
+            <div class="section-heading">
+                <p class="section-label">内容精选</p>
+                <h2>更长周期的深入阅读</h2>
+                <p>从团队的深度研究笔记中挑选，提供可直接复用的框架与动作清单。</p>
+            </div>
+            <div class="curation-highlight-grid">
+                {{ range first 3 ($curations.ByDate.Reverse) }}
+                    <article class="curation-highlight-card">
+                        {{ with .Params.kicker }}
+                            <span class="curation-kicker">{{ . }}</span>
+                        {{ end }}
+                        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+                        <p>
+                            {{ with .Params.summary }}
+                                {{ . }}
+                            {{ else }}
+                                {{ .Summary | plainify | truncate 140 }}
+                            {{ end }}
+                        </p>
+                        <div class="curation-meta">
+                            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+                            {{ with .Params.reading_time }}
+                                <span>{{ . }}</span>
+                            {{ end }}
+                        </div>
+                        <a class="curation-link" href="{{ .RelPermalink }}">
+                            {{ with .Params.cta_label }}{{ . }}{{ else }}展开摘要{{ end }} →
+                        </a>
+                    </article>
+                {{ end }}
+            </div>
+            <div class="curation-cta">
+                <a href="/curations/" class="btn btn-ghost">浏览全部内容精选</a>
+            </div>
+        </section>
+    {{ end }}
 
     <!-- 最新日报 -->
-    <section>
+    <section id="latest-reading" class="latest-section">
         <h2 style="text-align: center; margin-bottom: 2rem;">最新阅读卡片</h2>
         
         {{ $dailyPages := where .Site.RegularPages "Section" "daily" }}
@@ -127,19 +163,141 @@
 </div>
 
 <style>
-.feature-card {
-    transition: all 0.3s ease;
+.hero-intro {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px var(--claude-shadow);
-    border-color: var(--claude-primary) !important;
+.hero-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--claude-text-light);
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.hero-dot {
+    width: 4px;
+    height: 4px;
+    background: var(--claude-border);
+    border-radius: 999px;
+    display: inline-block;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    color: var(--claude-text-light);
+    font-style: italic;
+    margin: 0 auto;
+    max-width: 60ch;
+}
+
+.hero-cta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+.hero-cta .btn {
+    min-width: 180px;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--claude-text);
+    border: 1px solid var(--claude-border);
+}
+
+.btn-ghost:hover {
+    border-color: var(--claude-accent);
+    color: var(--claude-accent);
+}
+
+.hero-note {
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+    color: var(--claude-text-light);
+}
+
+.latest-section {
+    margin-top: 1rem;
+}
+
+.section-heading {
+    text-align: center;
+    max-width: 60ch;
+    margin: 0 auto 2rem;
+}
+
+.section-label {
+    color: var(--claude-accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+.curation-highlight {
+    margin-top: 3rem;
+}
+
+.curation-highlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+.curation-highlight-card {
+    border: 1px solid var(--claude-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.curation-highlight-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 26px var(--claude-shadow);
+}
+
+.curation-kicker {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--claude-text-light);
+}
+
+.curation-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--claude-text-light);
+}
+
+.curation-link {
+    color: var(--claude-accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.curation-cta {
+    text-align: center;
+    margin-top: 1.75rem;
 }
 
 .recent-posts {
     display: grid;
     gap: 1.5rem;
+    margin-top: 1rem;
 }
 
 .read-more::after {
