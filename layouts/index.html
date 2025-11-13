@@ -21,12 +21,12 @@
         </div>
     </section>
 
-    <!-- 内容精选 -->
+    <!-- 论文精选 -->
     {{ $curations := where .Site.RegularPages "Section" "curations" }}
     {{ if $curations }}
         <section id="curations" class="curation-highlight">
             <div class="section-heading">
-                <p class="section-label">内容精选</p>
+                <p class="section-label">论文精选</p>
                 <h2>更长周期的深入阅读</h2>
                 <p>从团队的深度研究笔记中挑选，提供可直接复用的框架与动作清单。</p>
             </div>
@@ -57,7 +57,7 @@
                 {{ end }}
             </div>
             <div class="curation-cta">
-                <a href="/curations/" class="btn btn-ghost">浏览全部内容精选</a>
+                <a href="/curations/" class="btn btn-ghost">浏览全部论文精选</a>
             </div>
         </section>
     {{ end }}

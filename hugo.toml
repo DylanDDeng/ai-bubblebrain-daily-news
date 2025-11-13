@@ -27,6 +27,11 @@ disableKinds = ['taxonomy', 'term']
   weight = 30
 
 [[menu.main]]
+  name = '论文精选'
+  pageRef = '/curations'
+  weight = 35
+
+[[menu.main]]
   name = 'RSS'
   url = '/index.xml'
   weight = 50

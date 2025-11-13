@@ -1,11 +1,13 @@
 ---
 title: "Hacker News 内容编辑"
 slug: "hacker-news-content-editor"
-description: "适用于Gemini"
+description: "适用于Gemini、K2等文笔好的模型"
 date: 2025-11-13
 tags: ["内容创作",]
 model: "K2" 
----
+---  
+
+**来源宝玉** 
 
 ```text 
 角色定位：Hacker News 洞察家与社区编辑
