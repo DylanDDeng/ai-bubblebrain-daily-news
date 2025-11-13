@@ -1,259 +1,66 @@
 {{ define "main" }}
 <div class="home-container">
-    <section class="hero-intro">
-        <h1 class="site-title">{{ .Site.Title }}</h1>
-        <div class="hero-meta">
-            <span>产业纵深</span>
-            <span class="hero-dot"></span>
-            <span>技术脉络</span>
-            <span class="hero-dot"></span>
-            <span>落地方法</span>
-        </div>
-        <p class="hero-description">
-            {{ .Site.Params.description }}
-        </p>
-        <div class="hero-cta">
-            <a href="#latest-reading" class="btn">查看最新阅读卡片</a>
-            <a href="/prompts/" class="btn btn-ghost">探索提示词</a>
-        </div>
-        <div class="hero-note">
-            每天 15 分钟，建立自己的 Bubble's Brain，做更聪明的产品与研究决策。
-        </div>
-    </section>
-
-    <!-- 论文精选 -->
-    {{ $curations := where .Site.RegularPages "Section" "curations" }}
-    {{ if $curations }}
-        <section id="curations" class="curation-highlight">
-            <div class="section-heading">
-                <p class="section-label">论文精选</p>
-                <h2>更长周期的深入阅读</h2>
-                <p>从团队的深度研究笔记中挑选，提供可直接复用的框架与动作清单。</p>
-            </div>
-            <div class="curation-highlight-grid">
-                {{ range first 3 ($curations.ByDate.Reverse) }}
-                    <article class="curation-highlight-card">
-                        {{ with .Params.kicker }}
-                            <span class="curation-kicker">{{ . }}</span>
-                        {{ end }}
-                        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-                        <p>
-                            {{ with .Params.summary }}
-                                {{ . }}
-                            {{ else }}
-                                {{ .Summary | plainify | truncate 140 }}
-                            {{ end }}
-                        </p>
-                        <div class="curation-meta">
-                            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
-                            {{ with .Params.reading_time }}
-                                <span>{{ . }}</span>
-                            {{ end }}
-                        </div>
-                        <a class="curation-link" href="{{ .RelPermalink }}">
-                            {{ with .Params.cta_label }}{{ . }}{{ else }}展开摘要{{ end }} →
-                        </a>
-                    </article>
-                {{ end }}
-            </div>
-            <div class="curation-cta">
-                <a href="/curations/" class="btn btn-ghost">浏览全部论文精选</a>
-            </div>
-        </section>
-    {{ end }}
-
-    <!-- 最新日报 -->
     <section id="latest-reading" class="latest-section">
-        <h2 style="text-align: center; margin-bottom: 2rem;">最新阅读卡片</h2>
-        
+        <div class="latest-header">
+            <h1>最新阅读卡片</h1>
+            <p>聚焦每日资讯更新，优先展示 Bubble's Brain 最新的日报内容。</p>
+        </div>
+
         {{ $dailyPages := where .Site.RegularPages "Section" "daily" }}
         {{ if $dailyPages }}
             <div class="recent-posts">
                 {{ range first 5 ($dailyPages.ByDate.Reverse) }}
                     <article class="post-card">
                         <h3>
-                            <a href="{{ .Permalink }}" style="color: var(--claude-text); font-size: 1.3rem;">
-                                {{ .Title }}
-                            </a>
+                            <a href="{{ .Permalink }}">{{ .Title }}</a>
                         </h3>
                         <time datetime="{{ .Date.Format "2006-01-02" }}">
                             {{ .Date.Format "2006年01月02日" }}
                         </time>
                         {{ with .Description }}
-                            <p style="margin-top: 1rem; color: var(--claude-text-light);">{{ . }}</p>
+                            <p>{{ . }}</p>
                         {{ else }}
-                            <p style="margin-top: 1rem; color: var(--claude-text-light);">
-                                {{ .Summary | truncate 150 }}
-                            </p>
+                            <p>{{ .Summary | truncate 150 }}</p>
                         {{ end }}
-                        <div style="margin-top: 1rem;">
-                            <a href="{{ .Permalink }}" class="read-more" style="color: var(--claude-accent); font-weight: 500;">
-                                阅读全文 →
-                            </a>
-                        </div>
+                        <a href="{{ .Permalink }}" class="read-more">阅读全文 →</a>
                     </article>
                 {{ end }}
             </div>
-            
-            <div style="text-align: center; margin-top: 2rem;">
-                <a href="/daily/" class="btn" style="display: inline-block; text-decoration: none;">
-                    浏览完整手册
-                </a>
+
+            <div class="latest-cta">
+                <a href="/daily/" class="btn">浏览完整手册</a>
             </div>
         {{ else }}
-            <div style="text-align: center; padding: 3rem; background: white; border-radius: 12px; border: 1px solid var(--claude-border);">
-                <p style="color: var(--claude-text-light); font-size: 1.1rem;">暂时没有可读卡片</p>
-                <p style="color: var(--claude-text-light); margin-top: 1rem;">稍后再来，新的知识正在酝酿</p>
+            <div class="latest-empty">
+                <p>暂时没有可读卡片，稍后再来，新的知识正在酝酿。</p>
             </div>
         {{ end }}
     </section>
-
-    <!-- Prompt 预告 -->
-    <section style="margin-top: 4rem;">
-        <h2 style="text-align: center; margin-bottom: 1.5rem;">提示词收录</h2>
-        <p style="text-align: center; color: var(--claude-text-light); max-width: 60ch; margin: 0 auto 2rem;">
-            复用我们沉淀的 Prompt 资产，快速切换到策略、研究或创作模式。
-        </p>
-
-        {{ $promptPages := where .Site.RegularPages "Section" "prompts" }}
-        {{ if $promptPages }}
-            <div class="prompt-preview-grid">
-                {{ range first 3 ($promptPages.ByDate.Reverse) }}
-                    <article class="prompt-preview-card">
-                        <div class="prompt-preview-meta">
-                            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
-                            {{ with .Params.model }}
-                                <span>{{ . }}</span>
-                            {{ end }}
-                        </div>
-                        <h3>
-                            <a href="{{ .Permalink }}">{{ .Title }}</a>
-                        </h3>
-                        <p>
-                            {{ with .Description }}
-                                {{ . }}
-                            {{ else }}
-                                {{ .Summary | truncate 120 }}
-                            {{ end }}
-                        </p>
-                        <a class="prompt-preview-link" href="{{ .Permalink }}">查看提示词 →</a>
-                    </article>
-                {{ end }}
-            </div>
-            <div style="text-align: center; margin-top: 2rem;">
-                <a href="/prompts/" class="btn" style="display: inline-block; text-decoration: none;">
-                    浏览全部提示词
-                </a>
-            </div>
-        {{ else }}
-            <div style="text-align: center; padding: 2.5rem; border: 1px dashed var(--claude-border); border-radius: 12px;">
-                <p style="color: var(--claude-text-light);">提示词收录即将上线，敬请期待。</p>
-            </div>
-        {{ end }}
-    </section>
-
-    <!-- 订阅提示 -->
-    <div style="text-align: center; margin-top: 4rem; padding: 2rem; background: linear-gradient(135deg, var(--claude-bg), #f6f5f3); border-radius: 12px;">
-        <h3 style="color: var(--claude-accent);">订阅我们</h3>
-        <p>通过 RSS 守护你的每日阅读节奏</p>
-        <a href="/index.xml" class="btn" style="margin-top: 1rem; display: inline-block; text-decoration: none;">
-            订阅 RSS
-        </a>
-    </div>
 </div>
 
 <style>
-.hero-intro {
+.latest-section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+}
+
+.latest-header {
     text-align: center;
     margin-bottom: 2rem;
 }
 
-.hero-meta {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.6rem;
+.latest-header p {
     color: var(--claude-text-light);
-    font-size: 0.95rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
 }
 
-.hero-dot {
-    width: 4px;
-    height: 4px;
-    background: var(--claude-border);
-    border-radius: 999px;
-    display: inline-block;
-}
-
-.hero-description {
-    font-size: 1.2rem;
-    color: var(--claude-text-light);
-    font-style: italic;
-    margin: 0 auto;
-    max-width: 60ch;
-}
-
-.hero-cta {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1.5rem;
-}
-
-.hero-cta .btn {
-    min-width: 180px;
-}
-
-.btn-ghost {
-    background: transparent;
-    color: var(--claude-text);
-    border: 1px solid var(--claude-border);
-}
-
-.btn-ghost:hover {
-    border-color: var(--claude-accent);
-    color: var(--claude-accent);
-}
-
-.hero-note {
-    margin-top: 1.25rem;
-    font-size: 0.95rem;
-    color: var(--claude-text-light);
-}
-
-.latest-section {
-    margin-top: 1rem;
-}
-
-.section-heading {
-    text-align: center;
-    max-width: 60ch;
-    margin: 0 auto 2rem;
-}
-
-.section-label {
-    color: var(--claude-accent);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    margin-bottom: 0.75rem;
-}
-
-.curation-highlight {
-    margin-top: 3rem;
-}
-
-.curation-highlight-grid {
+.recent-posts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 
-.curation-highlight-card {
+.post-card {
     border: 1px solid var(--claude-border);
     border-radius: 16px;
     padding: 1.5rem;
@@ -261,93 +68,55 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.curation-highlight-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 26px var(--claude-shadow);
-}
-
-.curation-kicker {
-    font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--claude-text-light);
-}
-
-.curation-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--claude-text-light);
-}
-
-.curation-link {
-    color: var(--claude-accent);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.curation-cta {
-    text-align: center;
-    margin-top: 1.75rem;
-}
-
-.recent-posts {
-    display: grid;
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.read-more::after {
-    content: "";
-    transition: all 0.3s ease;
-}
-
-.read-more:hover {
-    padding-right: 0.5rem;
-}
-
-.prompt-preview-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-}
-
-.prompt-preview-card {
-    border: 1px solid var(--claude-border);
-    border-radius: 14px;
-    padding: 1.5rem;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.prompt-preview-card h3 {
+.post-card h3 {
     margin: 0;
+    font-size: 1.3rem;
 }
 
-.prompt-preview-card a {
-    text-decoration: none;
+.post-card h3 a {
     color: var(--claude-text);
+    text-decoration: none;
 }
 
-.prompt-preview-card a:hover {
+.post-card h3 a:hover {
     color: var(--claude-accent);
 }
 
-.prompt-preview-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
+.post-card time {
+    font-size: 0.9rem;
     color: var(--claude-text-light);
 }
 
-.prompt-preview-link {
+.post-card p {
+    margin: 0;
+    color: var(--claude-text-light);
+}
+
+.read-more {
     color: var(--claude-accent);
     font-weight: 500;
+    text-decoration: none;
+}
+
+.latest-cta {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.latest-cta .btn {
+    display: inline-block;
+    text-decoration: none;
+}
+
+.latest-empty {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--claude-border);
+    color: var(--claude-text-light);
 }
 </style>
 {{ end }}
