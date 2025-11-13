@@ -56,8 +56,85 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 主容器 */
-.container, main {
+/* 布局结构 */
+.layout-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--claude-bg);
+}
+
+.nav-sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--claude-bg-secondary);
+  border-right: 1px solid var(--claude-border);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.nav-logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--claude-primary);
+  text-decoration: none;
+}
+
+.nav-logo::after {
+  display: none;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  display: block;
+  font-family: var(--font-secondary);
+  font-size: 0.95rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  color: var(--claude-text);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link::after {
+  display: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--claude-primary);
+  color: #fff;
+}
+
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--claude-bg);
+}
+
+main {
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.footer-note {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: var(--claude-text-light);
+}
+
+/* 主容器 (保留旧组件兼容) */
+.container {
   max-width: 800px;
   margin: 0 auto;
   padding: var(--spacing-lg);
@@ -274,6 +351,34 @@ button:hover, .btn:hover {
   background-color: var(--claude-accent);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--claude-shadow);
+}
+
+@media (max-width: 900px) {
+  .layout-shell {
+    flex-direction: column;
+  }
+
+  .nav-sidebar {
+    width: 100%;
+    min-height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--claude-border);
+  }
+
+  .nav-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+  }
+
+  .nav-link {
+    border-radius: 8px;
+  }
+
+  .container {
+    padding: var(--spacing-lg);
+  }
 }
 
 /* 响应式设计 */
