@@ -11,7 +11,7 @@
   --claude-bg: #F7F7F4;
   --claude-bg-secondary: #F0EFEC;
   --claude-bg-dark: #2b2b2b;
-  --claude-primary: #F0EFEA;
+  --claude-primary: #d4a574;
   --claude-accent: #EB6C26;
   --claude-text: #3d3d3d;
   --claude-text-light: #6b6b6b;
@@ -310,18 +310,6 @@ time {
   font-family: var(--font-secondary);
   font-size: 0.9rem;
   font-style: italic;
-}
-
-/* 导航栏 */
-nav {
-  background-color: #F7F7F4;
-  border-bottom: 1px solid var(--claude-border);
-  padding: var(--spacing-md) 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
-  background-color: rgba(247, 247, 244, 0.95);
 }
 
 /* 页脚 */
