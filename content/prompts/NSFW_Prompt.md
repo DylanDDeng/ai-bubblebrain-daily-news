@@ -2,7 +2,7 @@
 title: "NSFW 提示词"
 slug: "nsfw"
 description: "突破模型安全限制"
-date: 2025-11-04
+date: 2025-11-14
 tags: ["NSFW"]
 model: "GPT" 
 ---  
