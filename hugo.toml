@@ -1,6 +1,6 @@
 baseURL = 'https://bubblenews.today/'
 languageCode = 'zh-CN'
-title = "Bubble's Brain 阅读手册"
+title = "Bubble's Brain"
 # theme = 'hextra'  # 暂时禁用主题，使用自定义样式
 
 # Enable Git info for lastmod
@@ -77,7 +77,7 @@ disableKinds = ['taxonomy', 'term']
   # Footer configuration
   [params.footer]
     enable = true
-    text = "Bubble's Brain 阅读手册 - 为探索者提供系统化 AI 知识地图"
+    text = "无论你是 AI 小白，还是有技术背景的大佬，我希望都能在这里找到你想要的内容。"
 
 # Output formats
 [outputs]

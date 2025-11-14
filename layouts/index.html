@@ -3,7 +3,7 @@
     <section id="latest-reading" class="latest-section">
         <div class="latest-header">
             <h1>最新资讯日报</h1>
-            <p>聚焦每日资讯更新，优先展示 Bubble's Brain 最新的日报内容。</p>
+            <p>聚焦每日资讯更新。</p>
         </div>
 
         {{ $dailyPages := where .Site.RegularPages "Section" "daily" }}
@@ -28,7 +28,7 @@
             </div>
 
             <div class="latest-cta">
-                <a href="/daily/" class="btn">浏览完整手册</a>
+                <a href="/daily/" class="btn">浏览完整资讯日报</a>
             </div>
         {{ else }}
             <div class="latest-empty">
