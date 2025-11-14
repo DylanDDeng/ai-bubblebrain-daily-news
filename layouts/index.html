@@ -1,122 +1,117 @@
 {{ define "main" }}
-<div class="home-container">
-    <section id="latest-reading" class="latest-section">
-        <div class="latest-header">
-            <h1>最新资讯日报</h1>
-            <p>聚焦每日资讯更新。</p>
-        </div>
-
-        {{ $dailyPages := where .Site.RegularPages "Section" "daily" }}
-        {{ if $dailyPages }}
-            <div class="recent-posts">
-                {{ range first 5 ($dailyPages.ByDate.Reverse) }}
-                    <article class="post-card">
-                        <h3>
-                            <a href="{{ .Permalink }}">{{ .Title }}</a>
-                        </h3>
-                        <time datetime="{{ .Date.Format "2006-01-02" }}">
-                            {{ .Date.Format "2006年01月02日" }}
-                        </time>
-                        {{ with .Description }}
-                            <p>{{ . }}</p>
-                        {{ else }}
-                            <p>{{ .Summary | truncate 150 }}</p>
-                        {{ end }}
-                        <a href="{{ .Permalink }}" class="read-more">阅读全文 →</a>
-                    </article>
-                {{ end }}
-            </div>
-
-            <div class="latest-cta">
-                <a href="/daily/" class="btn">浏览完整资讯日报</a>
-            </div>
-        {{ else }}
-            <div class="latest-empty">
-                <p>暂时没有可读卡片，稍后再来，新的知识正在酝酿。</p>
-            </div>
-        {{ end }}
+{{ $about := site.GetPage "section" "about" }}
+<div class="about-home">
+  {{ if $about }}
+    <section class="about-hero">
+      <p class="about-eyebrow">{{ or $about.Params.description "关于 Bubble's Brain" }}</p>
+      <h1>{{ $about.Title }}</h1>
+      <div class="about-content">
+        {{ $about.Content }}
+      </div>
+      <div class="about-cta">
+        <a class="btn primary" href="/daily/">查看资讯日报</a>
+        <a class="btn secondary" href="/prompts/">浏览 Prompt 收录</a>
+      </div>
     </section>
+  {{ else }}
+    <section class="about-hero">
+      <h1>Bubble's Brain</h1>
+      <p class="about-eyebrow">内容正在准备，请稍后重试。</p>
+    </section>
+  {{ end }}
 </div>
 
 <style>
-.latest-section {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
+.about-home {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
 }
 
-.latest-header {
-    text-align: center;
-    margin-bottom: 2rem;
+.about-hero {
+  background: white;
+  border: 1px solid var(--claude-border);
+  border-radius: 28px;
+  padding: 3rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
 }
 
-.latest-header p {
-    color: var(--claude-text-light);
-    margin-top: 0.5rem;
+.about-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.8rem;
+  color: var(--claude-text-light);
+  margin-bottom: 1rem;
 }
 
-.recent-posts {
-    display: grid;
-    gap: 1.5rem;
+.about-hero h1 {
+  margin: 0 0 1.5rem 0;
+  font-size: 2.7rem;
+  color: var(--claude-primary);
 }
 
-.post-card {
-    border: 1px solid var(--claude-border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    background: white;
-    display: flex;
+.about-content :is(h2, h3, h4) {
+  color: var(--claude-text);
+  margin-top: 2.5rem;
+}
+
+.about-content p,
+.about-content li {
+  color: var(--claude-text);
+}
+
+.about-content ul {
+  padding-left: 1.2rem;
+}
+
+.about-cta {
+  margin-top: 3rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.about-cta .btn {
+  padding: 0.85rem 1.8rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-cta .btn.primary {
+  background: var(--claude-primary);
+  color: white;
+}
+
+.about-cta .btn.secondary {
+  background: var(--claude-bg-secondary);
+  color: var(--claude-text);
+  border: 1px solid var(--claude-border);
+}
+
+.about-cta .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 720px) {
+  .about-hero {
+    padding: 2rem;
+  }
+
+  .about-hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .about-cta {
     flex-direction: column;
-    gap: 0.75rem;
-}
+  }
 
-.post-card h3 {
-    margin: 0;
-    font-size: 1.3rem;
-}
-
-.post-card h3 a {
-    color: var(--claude-text);
-    text-decoration: none;
-}
-
-.post-card h3 a:hover {
-    color: var(--claude-accent);
-}
-
-.post-card time {
-    font-size: 0.9rem;
-    color: var(--claude-text-light);
-}
-
-.post-card p {
-    margin: 0;
-    color: var(--claude-text-light);
-}
-
-.read-more {
-    color: var(--claude-accent);
-    font-weight: 500;
-    text-decoration: none;
-}
-
-.latest-cta {
+  .about-cta .btn {
     text-align: center;
-    margin-top: 2rem;
-}
-
-.latest-cta .btn {
-    display: inline-block;
-    text-decoration: none;
-}
-
-.latest-empty {
-    text-align: center;
-    padding: 3rem;
-    background: white;
-    border-radius: 12px;
-    border: 1px solid var(--claude-border);
-    color: var(--claude-text-light);
+    width: 100%;
+  }
 }
 </style>
 {{ end }}
