@@ -1,0 +1,160 @@
+<style>
+.daily-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.daily-card {
+  position: relative;
+  background: #F0EFEA;
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.daily-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.16);
+}
+
+.card-header {
+  margin-bottom: 1.5rem;
+}
+
+.card-header h2 a {
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.card-header h2 a:hover {
+  color: var(--claude-primary) !important;
+}
+
+.card-content {
+  flex: 1;
+  margin-bottom: 1.5rem;
+  font-family: "Inter", var(--font-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 100%;
+  color: #6F655B;
+}
+
+.card-content p {
+  margin-bottom: 0.9rem;
+}
+
+.card-footer {
+  border-top: 1px solid var(--claude-border);
+  padding-top: 1rem;
+}
+
+.read-more {
+  color: var(--claude-accent);
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.read-more:hover {
+  color: var(--claude-primary);
+  transform: translateX(5px);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--claude-border);
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+@media (max-width: 768px) {
+  .daily-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .daily-list-container {
+    padding: 1rem;
+  }
+  
+  .daily-card {
+    padding: 1.5rem;
+  }
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.pagination-link {
+  color: var(--claude-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.pagination-link.disabled {
+  color: var(--claude-text-light);
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-page {
+  min-width: 36px;
+  text-align: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--claude-text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.pagination-page:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.pagination-page.current {
+  background: var(--claude-accent);
+  color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  .daily-card {
+    background: #E0D4C6;
+    color: #4a4138;
+  }
+  
+  .empty-state {
+    background: var(--claude-bg-dark);
+  }
+}
+</style>
