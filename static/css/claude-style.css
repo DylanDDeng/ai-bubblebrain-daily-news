@@ -205,6 +205,28 @@ p {
   color: #9C9589;
 }
 
+.article-content img,
+.article-content video,
+.article-content picture,
+.article-content iframe {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: var(--spacing-md) auto;
+  border-radius: 12px;
+}
+
+.article-content figure {
+  margin: var(--spacing-lg) auto;
+  text-align: center;
+}
+
+.article-content figcaption {
+  font-size: 0.9rem;
+  color: var(--claude-text-light);
+  margin-top: 0.5rem;
+}
+
 #today,
 #today strong,
 #todays-ai-news,
