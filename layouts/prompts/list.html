@@ -43,13 +43,14 @@
             {{ end }}
           </div>
 
+          <div class="prompt-pillset">
+            <span class="prompt-pill">推荐模型：{{ $model }}</span>
+            {{ if $tone }}
+              <span class="prompt-pill">语气：{{ $tone }}</span>
+            {{ end }}
+          </div>
+
           <div class="card-footer">
-            <div class="prompt-pillset">
-              <span class="prompt-pill">推荐模型：{{ $model }}</span>
-              {{ if $tone }}
-                <span class="prompt-pill">语气：{{ $tone }}</span>
-              {{ end }}
-            </div>
             <a class="read-more" href="{{ .Permalink }}">查看提示词 →</a>
           </div>
         </article>
@@ -144,6 +145,10 @@
   border-radius: 999px;
   padding: 0.3rem 0.9rem;
   font-size: 0.85rem;
+}
+
+.prompt-card .prompt-pillset {
+  margin-bottom: 1rem;
 }
 </style>
 {{ end }}
