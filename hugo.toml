@@ -22,6 +22,16 @@ disableKinds = ['taxonomy', 'term']
   weight = 20
 
 [[menu.main]]
+  name = '内容精选'
+  pageRef = '/highlights'
+  weight = 22
+
+[[menu.main]]
+  name = '我的发布内容'
+  pageRef = '/my-publish'
+  weight = 24
+
+[[menu.main]]
   name = 'Prompt收录'
   pageRef = '/prompts'
   weight = 30
