@@ -1,7 +1,3 @@
----
-title: "Prompt收录"
-description: "Prompt收录"
----
 
 # 提示词收录
 
