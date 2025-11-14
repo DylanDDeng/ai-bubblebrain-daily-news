@@ -108,10 +108,14 @@ body {
   display: none;
 }
 
-.nav-link:hover,
+.nav-link:hover {
+  background: #EDECE7;
+  color: var(--claude-primary);
+}
+
 .nav-link.active {
-  background: var(--claude-primary);
-  color: #fff;
+  background: transparent;
+  color: var(--claude-primary);
 }
 
 .layout-main {
