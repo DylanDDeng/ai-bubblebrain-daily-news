@@ -8,8 +8,8 @@
   --font-mono: "Inter", monospace;
   
   /* Claude 配色方案 */
-  --claude-bg: #F9F6F5;
-  --claude-bg-secondary: #f2ece9;
+  --claude-bg: #F7F7F4;
+  --claude-bg-secondary: #F0EFEC;
   --claude-bg-dark: #2b2b2b;
   --claude-primary: #d4a574;
   --claude-accent: #c97b3a;
@@ -241,7 +241,7 @@ a:hover::after {
 
 /* 代码块样式 */
 pre {
-  background-color: var(--claude-bg-secondary, #f6f5f3);
+  background-color: var(--claude-bg-secondary, #F0EFEC);
   border: 1px solid var(--claude-border);
   border-radius: 8px;
   padding: var(--spacing-md);
@@ -254,7 +254,7 @@ pre {
 
 code {
   font-family: var(--font-mono);
-  background-color: var(--claude-bg-secondary, #f6f5f3);
+  background-color: var(--claude-bg-secondary, #F0EFEC);
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-size: 0.9em;
@@ -272,7 +272,7 @@ blockquote {
   padding-left: var(--spacing-md);
   font-style: italic;
   color: #9C9589;
-  background-color: var(--claude-bg-secondary, #f9f8f6);
+  background-color: var(--claude-bg-secondary, #F0EFEC);
   padding: var(--spacing-md);
   border-radius: 0 8px 8px 0;
 }
@@ -314,14 +314,14 @@ time {
 
 /* 导航栏 */
 nav {
-  background-color: #F9F6F5;
+  background-color: #F7F7F4;
   border-bottom: 1px solid var(--claude-border);
   padding: var(--spacing-md) 0;
   position: sticky;
   top: 0;
   z-index: 100;
   backdrop-filter: blur(10px);
-  background-color: rgba(249, 246, 245, 0.95);
+  background-color: rgba(247, 247, 244, 0.95);
 }
 
 /* 页脚 */
