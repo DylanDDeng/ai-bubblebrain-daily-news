@@ -1,140 +1,147 @@
 {{ define "main" }}
-<div class="curations-page">
-    <section class="curations-hero">
-        <p class="curations-label">论文精选</p>
-        <h1>{{ .Title }}</h1>
-        {{ with .Params.description }}
-            <p class="curations-description">{{ . }}</p>
-        {{ end }}
-        {{ with .Content }}
-            <div class="curations-body">{{ . }}</div>
-        {{ end }}
-    </section>
+<div class="daily-list-container">
+  <header class="curations-hero">
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.description }}
+      <p class="lead">{{ . }}</p>
+    {{ end }}
+    {{ with .Content }}
+      <div class="curations-body">{{ . }}</div>
+    {{ end }}
+  </header>
 
-    <section class="curations-grid">
-        {{ range .Pages.ByDate.Reverse }}
-            <article class="curation-card">
-                {{ with .Params.kicker }}
-                    <span class="curation-kicker">{{ . }}</span>
-                {{ end }}
-                <h2>
-                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                </h2>
-                <p class="curation-summary">
-                    {{ with .Params.summary }}
-                        {{ . }}
-                    {{ else }}
-                        {{ .Summary | plainify | truncate 120 }}
-                    {{ end }}
-                </p>
-                <div class="curation-meta">
-                    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
-                    {{ with .Params.reading_time }}
-                        <span>{{ . }}</span>
-                    {{ end }}
-                </div>
-                {{ with .Params.topics }}
-                    <div class="curation-tags">
-                        {{ range . }}<span>{{ . }}</span>{{ end }}
-                    </div>
-                {{ end }}
-                <a class="curation-link" href="{{ .RelPermalink }}">
-                    {{ with .Params.cta_label }}{{ . }}{{ else }}展开摘要{{ end }} →
-                </a>
-            </article>
+  {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 9 }}
+
+  {{ if $paginator.Pages }}
+    <div class="daily-grid">
+      {{ range $paginator.Pages }}
+        <article class="daily-card curation-card">
+          <div class="card-header">
+            <h2 style="margin: 0;">
+              <a href="{{ .Permalink }}" style="color: var(--claude-text); font-size: 1.4rem; font-weight: 600;">
+                {{ .Title }}
+              </a>
+            </h2>
+            <time datetime="{{ .Date.Format "2006-01-02" }}" style="display: block; margin-top: 0.5rem;">
+              {{ .Date.Format "2006年01月02日" }}
+            </time>
+          </div>
+
+          <div class="card-content">
+            {{ with .Params.summary }}
+              <p>{{ . }}</p>
+            {{ else }}
+              <p>{{ .Summary | plainify | truncate 200 }}</p>
+            {{ end }}
+
+            <div class="curation-meta">
+              {{ with .Params.reading_time }}
+                <span>{{ . }}</span>
+              {{ end }}
+              {{ with .Params.kicker }}
+                <span>{{ . }}</span>
+              {{ end }}
+            </div>
+
+            {{ with .Params.topics }}
+              <div class="curation-tags">
+                {{ range . }}<span>{{ . }}</span>{{ end }}
+              </div>
+            {{ end }}
+          </div>
+
+          <div class="prompt-pillset">
+            {{ with .Params.cta_label }}
+              <span class="prompt-pill">{{ . }}</span>
+            {{ else }}
+              <span class="prompt-pill">论文摘要</span>
+            {{ end }}
+          </div>
+
+          <div class="card-footer">
+            <a class="read-more" href="{{ .Permalink }}">展开摘要 →</a>
+          </div>
+        </article>
+      {{ end }}
+    </div>
+
+    {{ if gt $paginator.TotalPages 1 }}
+      <nav class="pagination" aria-label="论文精选分页导航">
+        {{ if $paginator.HasPrev }}
+          <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
+        {{ else }}
+          <span class="pagination-link disabled">← 上一页</span>
         {{ end }}
-    </section>
+
+        <div class="pagination-pages">
+          {{ range $pager := $paginator.Pagers }}
+            {{ if eq $pager.PageNumber $paginator.PageNumber }}
+              <span class="pagination-page current">{{ $pager.PageNumber }}</span>
+            {{ else }}
+              <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
+            {{ end }}
+          {{ end }}
+        </div>
+
+        {{ if $paginator.HasNext }}
+          <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
+        {{ else }}
+          <span class="pagination-link disabled">下一页 →</span>
+        {{ end }}
+      </nav>
+    {{ end }}
+  {{ else }}
+    <div class="empty-state">
+      <p>暂未收录精选论文。</p>
+      <p>稍后再来看看新的深度解读。</p>
+    </div>
+  {{ end }}
 </div>
 
+{{ partial "daily-section-styles.html" . }}
+
 <style>
-.curations-page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
-}
-
 .curations-hero {
-    text-align: center;
-    margin-bottom: 3rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
 }
 
-.curations-label {
-    color: var(--claude-accent);
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-}
-
-.curations-description {
-    color: var(--claude-text-light);
-    max-width: 60ch;
-    margin: 0.5rem auto 0;
+.curations-hero .lead {
+  max-width: 60ch;
+  margin: 0 auto;
+  color: var(--claude-text-light);
 }
 
 .curations-body {
-    margin-top: 1.5rem;
-    color: var(--claude-text-light);
-}
-
-.curations-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
-
-.curation-card {
-    border: 1px solid var(--claude-border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.curation-card:hover {
-    box-shadow: 0 12px 30px var(--claude-shadow);
-    transform: translateY(-4px);
-}
-
-.curation-kicker {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--claude-text-light);
-}
-
-.curation-summary {
-    color: var(--claude-text-light);
+  margin-top: 1.5rem;
+  color: var(--claude-text-light);
 }
 
 .curation-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: var(--claude-text-light);
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--claude-text-light);
+  margin: 0.5rem 0 0.75rem;
 }
 
 .curation-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
 }
 
 .curation-tags span {
-    background: var(--claude-bg);
-    color: var(--claude-text-light);
-    border-radius: 999px;
-    padding: 0.15rem 0.75rem;
-    font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--claude-text);
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
 }
 
-.curation-link {
-    color: var(--claude-accent);
-    font-weight: 600;
-    text-decoration: none;
+.curation-card .prompt-pillset {
+  margin: 1rem 0 0;
 }
 </style>
 {{ end }}

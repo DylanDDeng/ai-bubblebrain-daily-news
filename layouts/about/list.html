@@ -1,24 +1,16 @@
 {{ define "main" }}
-{{ $about := site.GetPage "section" "about" }}
 <div class="about-home">
-  {{ if $about }}
-    <section class="about-hero">
-      <p class="about-eyebrow">{{ or $about.Params.description "关于 Bubble's Brain" }}</p>
-      <h1>{{ $about.Title }}</h1>
-      <div class="about-content">
-        {{ $about.Content }}
-      </div>
-      <div class="about-cta">
-        <a class="btn primary" href="/daily/">查看资讯日报</a>
-        <a class="btn secondary" href="/prompts/">浏览 Prompt 收录</a>
-      </div>
-    </section>
-  {{ else }}
-    <section class="about-hero">
-      <h1>Bubble's Brain</h1>
-      <p class="about-eyebrow">内容正在准备，请稍后重试。</p>
-    </section>
-  {{ end }}
+  <section class="about-hero">
+    <p class="about-eyebrow">{{ .Params.description | default "关于 Bubble's Brain" }}</p>
+    <h1>{{ .Title }}</h1>
+    <div class="about-content">
+      {{ .Content }}
+    </div>
+    <div class="about-cta">
+      <a class="btn primary" href="/daily/">查看资讯日报</a>
+      <a class="btn secondary" href="/prompts/">浏览 Prompt 收录</a>
+    </div>
+  </section>
 </div>
 
 <style>
