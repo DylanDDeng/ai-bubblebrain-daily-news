@@ -6,10 +6,6 @@
     <div class="about-content">
       {{ .Content }}
     </div>
-    <div class="about-cta">
-      <a class="btn primary" href="/daily/">查看资讯日报</a>
-      <a class="btn secondary" href="/prompts/">浏览 Prompt 收录</a>
-    </div>
   </section>
 </div>
 
@@ -56,37 +52,6 @@
   padding-left: 1.2rem;
 }
 
-.about-cta {
-  margin-top: 3rem;
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.about-cta .btn {
-  padding: 0.85rem 1.8rem;
-  border-radius: 999px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.about-cta .btn.primary {
-  background: var(--claude-primary);
-  color: white;
-}
-
-.about-cta .btn.secondary {
-  background: var(--claude-bg-secondary);
-  color: var(--claude-text);
-  border: 1px solid var(--claude-border);
-}
-
-.about-cta .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-}
-
 @media (max-width: 720px) {
   .about-hero {
     padding: 2rem;
@@ -95,15 +60,6 @@
 
   .about-hero h1 {
     font-size: 2.2rem;
-  }
-
-  .about-cta {
-    flex-direction: column;
-  }
-
-  .about-cta .btn {
-    text-align: center;
-    width: 100%;
   }
 }
 </style>
