@@ -1,6 +1,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const cards = document.querySelectorAll('.about-hero');
+  const selectors = ['.about-hero', '.daily-card', '.page-list-item'];
+  const cards = document.querySelectorAll(selectors.join(', '));
+  if (!cards.length) return;
+
+  const interactiveSelector = 'a, button, input, textarea, select, label';
+
   cards.forEach((card) => {
     let isDragging = false;
     let activePointer = null;
@@ -23,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     card.addEventListener('pointerdown', (event) => {
+      if (event.button !== undefined && event.button !== 0) return;
+      if (event.target.closest(interactiveSelector)) return;
       isDragging = true;
       activePointer = event.pointerId;
       card.setPointerCapture(activePointer);
@@ -48,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('pointerleave', () => {
       if (!isDragging) return;
       isDragging = false;
+      if (activePointer !== null) {
+        card.releasePointerCapture(activePointer);
+      }
       activePointer = null;
       resetTilt();
     });

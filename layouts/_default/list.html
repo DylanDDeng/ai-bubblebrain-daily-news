@@ -84,6 +84,10 @@
   border-radius: 1rem;
   border: 1px solid var(--claude-border);
   background: var(--claude-bg);
+  transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  transform-style: preserve-3d;
 }
 
 .page-list-item h3 {
