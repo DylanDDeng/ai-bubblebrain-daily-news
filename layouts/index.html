@@ -30,6 +30,8 @@
   border-radius: 24px;
   padding: 3rem;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
+  transition: transform 0.4s ease, box-shadow 0.3s ease;
 }
 
 .about-eyebrow {
@@ -67,4 +69,5 @@
   }
 }
 </style>
+{{ partial "about-tilt.html" . }}
 {{ end }}

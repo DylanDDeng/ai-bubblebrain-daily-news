@@ -1,0 +1,56 @@
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const cards = document.querySelectorAll('.about-hero');
+  cards.forEach((card) => {
+    let isDragging = false;
+    let activePointer = null;
+
+    const updateTilt = (event) => {
+      const rect = card.getBoundingClientRect();
+      const offsetX = event.clientX - (rect.left + rect.width / 2);
+      const offsetY = event.clientY - (rect.top + rect.height / 2);
+      const rotateY = (offsetX / (rect.width / 2)) * 10;
+      const rotateX = (-offsetY / (rect.height / 2)) * 10;
+      card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    };
+
+    const resetTilt = () => {
+      card.style.transition = 'transform 0.5s ease';
+      card.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
+      setTimeout(() => {
+        card.style.transition = '';
+      }, 500);
+    };
+
+    card.addEventListener('pointerdown', (event) => {
+      isDragging = true;
+      activePointer = event.pointerId;
+      card.setPointerCapture(activePointer);
+      card.style.transition = '';
+      updateTilt(event);
+    });
+
+    card.addEventListener('pointermove', (event) => {
+      if (!isDragging || event.pointerId !== activePointer) return;
+      updateTilt(event);
+    });
+
+    const endDrag = (event) => {
+      if (!isDragging || event.pointerId !== activePointer) return;
+      isDragging = false;
+      card.releasePointerCapture(activePointer);
+      activePointer = null;
+      resetTilt();
+    };
+
+    card.addEventListener('pointerup', endDrag);
+    card.addEventListener('pointercancel', endDrag);
+    card.addEventListener('pointerleave', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      activePointer = null;
+      resetTilt();
+    });
+  });
+});
+</script>
