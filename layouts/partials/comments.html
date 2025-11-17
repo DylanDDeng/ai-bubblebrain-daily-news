@@ -1,0 +1,17 @@
+{{ $cusdis := .Site.Params.cusdis }}
+{{ $host := $cusdis.host | default "https://cusdis.com" }}
+{{ $appID := $cusdis.app_id | default $cusdis.appId }}
+{{ if and $cusdis $appID }}
+<section class="comments-section">
+  <h2 class="comments-title">留言讨论</h2>
+  <div
+    id="cusdis_thread"
+    data-host="{{ $host }}"
+    data-app-id="{{ $appID }}"
+    data-page-id="{{ .RelPermalink }}"
+    data-page-url="{{ .Permalink }}"
+    data-page-title="{{ .Title }}"
+  ></div>
+  <script async defer src="{{ printf "%s/js/cusdis.es.js" $host }}"></script>
+</section>
+{{ end }}
