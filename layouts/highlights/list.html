@@ -1,80 +1,79 @@
 {{ define "main" }}
-<div class="daily-list-container">
-  <header style="text-align: center; margin-bottom: 3rem;">
-    <h1 class="site-title" style="font-size: 2.5rem;">{{ .Title }}</h1>
-    {{ with .Description }}
-      <p style="font-size: 1.1rem; color: var(--claude-text-light); font-style: italic; margin-top: 1rem;">
-        {{ . }}
-      </p>
-    {{ end }}
-  </header>
-
-  {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
-
-  {{ if $paginator.Pages }}
-    <div class="daily-grid">
-      {{ range $paginator.Pages }}
-        <article class="daily-card">
-          <div class="card-header">
-            <h2 style="margin: 0;">
-              <a href="{{ .Permalink }}" style="color: var(--claude-text); font-size: 1.4rem; font-weight: 600;">
-                {{ .Title }}
-              </a>
-            </h2>
-            <time datetime="{{ .Date.Format "2006-01-02" }}" style="display: block; margin-top: 0.5rem;">
-              {{ .Date.Format "2006年01月02日" }}
-            </time>
-          </div>
-          
-          <div class="card-content">
-            {{ with .Description }}
-              <p>{{ . }}</p>
-            {{ else }}
-              <p>{{ .Summary | truncate 200 }}</p>
-            {{ end }}
-          </div>
-          
-          <div class="card-footer">
-            <a href="{{ .Permalink }}" class="read-more">
-              打开卡片 →
-            </a>
-          </div>
-        </article>
+<section class="section">
+  <div class="section-narrow daily-list-container">
+    <header class="page-header">
+      <p class="page-eyebrow">精选内容</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
       {{ end }}
-    </div>
+    </header>
 
-    {{ if gt $paginator.TotalPages 1 }}
-      <nav class="pagination" aria-label="精选内容分页导航">
-        {{ if $paginator.HasPrev }}
-          <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
-        {{ else }}
-          <span class="pagination-link disabled">← 上一页</span>
+    {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
+
+    {{ if $paginator.Pages }}
+      <div class="daily-grid">
+        {{ range $paginator.Pages }}
+          <article class="daily-card reveal-text">
+            <div class="card-header">
+              <h2>
+                <a href="{{ .Permalink }}">{{ .Title }}</a>
+              </h2>
+              <time datetime="{{ .Date.Format "2006-01-02" }}">
+                {{ .Date.Format "2006年01月02日" }}
+              </time>
+            </div>
+            
+            <div class="card-content">
+              {{ with .Description }}
+                <p>{{ . }}</p>
+              {{ else }}
+                <p>{{ .Summary | truncate 200 }}</p>
+              {{ end }}
+            </div>
+            
+            <div class="card-footer">
+              <a href="{{ .Permalink }}" class="read-more">
+                打开卡片 →
+              </a>
+            </div>
+          </article>
         {{ end }}
+      </div>
 
-        <div class="pagination-pages">
-          {{ range $pager := $paginator.Pagers }}
-            {{ if eq $pager.PageNumber $paginator.PageNumber }}
-              <span class="pagination-page current">{{ $pager.PageNumber }}</span>
-            {{ else }}
-              <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
-            {{ end }}
+      {{ if gt $paginator.TotalPages 1 }}
+        <nav class="pagination" aria-label="精选内容分页导航">
+          {{ if $paginator.HasPrev }}
+            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
+          {{ else }}
+            <span class="pagination-link disabled">← 上一页</span>
           {{ end }}
-        </div>
 
-        {{ if $paginator.HasNext }}
-          <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
-        {{ else }}
-          <span class="pagination-link disabled">下一页 →</span>
-        {{ end }}
-      </nav>
+          <div class="pagination-pages">
+            {{ range $pager := $paginator.Pagers }}
+              {{ if eq $pager.PageNumber $paginator.PageNumber }}
+                <span class="pagination-page current">{{ $pager.PageNumber }}</span>
+              {{ else }}
+                <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
+              {{ end }}
+            {{ end }}
+          </div>
+
+          {{ if $paginator.HasNext }}
+            <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
+          {{ else }}
+            <span class="pagination-link disabled">下一页 →</span>
+          {{ end }}
+        </nav>
+      {{ end }}
+    {{ else }}
+      <div class="empty-state">
+        <p>暂无内容</p>
+        <p>稍后再来探索新的卡片</p>
+      </div>
     {{ end }}
-  {{ else }}
-    <div class="empty-state">
-      <p style="font-size: 1.2rem; color: var(--claude-text-light);">暂无内容</p>
-      <p style="color: var(--claude-text-light); margin-top: 1rem;">稍后再来探索新的卡片</p>
-    </div>
-  {{ end }}
-</div>
+  </div>
+</section>
 
 {{ partial "daily-section-styles.html" . }}
 {{ end }}

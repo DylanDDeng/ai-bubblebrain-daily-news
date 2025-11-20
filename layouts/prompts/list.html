@@ -1,94 +1,94 @@
 {{ define "main" }}
-<div class="daily-list-container">
-  <header class="prompt-hero">
-    <p class="eyebrow">Bubble's Brain · Prompt Library</p>
-    <h1>{{ .Title }}</h1>
-    {{ with .Description }}
-      <p class="lead">{{ . }}</p>
-    {{ end }}
-  </header>
-
-  {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 9 }}
-
-  {{ if $paginator.Pages }}
-    <div class="daily-grid">
-      {{ range $paginator.Pages }}
-        {{ $model := .Params.model | default "任意大模型" }}
-        {{ $tone := .Params.tone }}
-        {{ $tags := .Params.tags }}
-        <article class="daily-card prompt-card">
-          <div class="card-header">
-            <h2 style="margin: 0;">
-              <a href="{{ .Permalink }}" style="color: var(--claude-text); font-size: 1.4rem; font-weight: 600;">
-                {{ .Title }}
-              </a>
-            </h2>
-            <time datetime="{{ .Date.Format "2006-01-02" }}" style="display: block; margin-top: 0.5rem;">
-              {{ .Date.Format "2006年01月02日" }}
-            </time>
-          </div>
-
-          <div class="card-content">
-            {{ with .Description }}
-              <p>{{ . }}</p>
-            {{ else }}
-              <p>{{ .Summary | truncate 200 }}</p>
-            {{ end }}
-            {{ if and $tags (gt (len $tags) 0) }}
-              <div class="prompt-tags">
-                {{ range $index, $tag := $tags }}
-                  {{ if lt $index 3 }}<span>{{ $tag }}</span>{{ end }}
-                {{ end }}
-              </div>
-            {{ end }}
-          </div>
-
-          <div class="prompt-pillset">
-            <span class="prompt-pill">推荐模型：{{ $model }}</span>
-            {{ if $tone }}
-              <span class="prompt-pill">语气：{{ $tone }}</span>
-            {{ end }}
-          </div>
-
-          <div class="card-footer">
-            <a class="read-more" href="{{ .Permalink }}">查看提示词 →</a>
-          </div>
-        </article>
+<section class="section">
+  <div class="section-narrow daily-list-container">
+    <header class="prompt-hero">
+      <p class="page-eyebrow">Bubble's Brain · Prompt Library</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
       {{ end }}
-    </div>
+    </header>
 
-    {{ if gt $paginator.TotalPages 1 }}
-      <nav class="pagination" aria-label="提示词分页导航">
-        {{ if $paginator.HasPrev }}
-          <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
-        {{ else }}
-          <span class="pagination-link disabled">← 上一页</span>
+    {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 9 }}
+
+    {{ if $paginator.Pages }}
+      <div class="daily-grid">
+        {{ range $paginator.Pages }}
+          {{ $model := .Params.model | default "任意大模型" }}
+          {{ $tone := .Params.tone }}
+          {{ $tags := .Params.tags }}
+          <article class="daily-card prompt-card reveal-text">
+            <div class="card-header">
+              <h2>
+                <a href="{{ .Permalink }}">{{ .Title }}</a>
+              </h2>
+              <time datetime="{{ .Date.Format "2006-01-02" }}">
+                {{ .Date.Format "2006年01月02日" }}
+              </time>
+            </div>
+
+            <div class="card-content">
+              {{ with .Description }}
+                <p>{{ . }}</p>
+              {{ else }}
+                <p>{{ .Summary | truncate 200 }}</p>
+              {{ end }}
+              {{ if and $tags (gt (len $tags) 0) }}
+                <div class="prompt-tags">
+                  {{ range $index, $tag := $tags }}
+                    {{ if lt $index 3 }}<span>{{ $tag }}</span>{{ end }}
+                  {{ end }}
+                </div>
+              {{ end }}
+            </div>
+
+            <div class="prompt-pillset">
+              <span class="prompt-pill">推荐模型：{{ $model }}</span>
+              {{ if $tone }}
+                <span class="prompt-pill">语气：{{ $tone }}</span>
+              {{ end }}
+            </div>
+
+            <div class="card-footer">
+              <a class="read-more" href="{{ .Permalink }}">查看提示词 →</a>
+            </div>
+          </article>
         {{ end }}
+      </div>
 
-        <div class="pagination-pages">
-          {{ range $pager := $paginator.Pagers }}
-            {{ if eq $pager.PageNumber $paginator.PageNumber }}
-              <span class="pagination-page current">{{ $pager.PageNumber }}</span>
-            {{ else }}
-              <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
-            {{ end }}
+      {{ if gt $paginator.TotalPages 1 }}
+        <nav class="pagination" aria-label="提示词分页导航">
+          {{ if $paginator.HasPrev }}
+            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
+          {{ else }}
+            <span class="pagination-link disabled">← 上一页</span>
           {{ end }}
-        </div>
 
-        {{ if $paginator.HasNext }}
-          <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
-        {{ else }}
-          <span class="pagination-link disabled">下一页 →</span>
-        {{ end }}
-      </nav>
+          <div class="pagination-pages">
+            {{ range $pager := $paginator.Pagers }}
+              {{ if eq $pager.PageNumber $paginator.PageNumber }}
+                <span class="pagination-page current">{{ $pager.PageNumber }}</span>
+              {{ else }}
+                <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
+              {{ end }}
+            {{ end }}
+          </div>
+
+          {{ if $paginator.HasNext }}
+            <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
+          {{ else }}
+            <span class="pagination-link disabled">下一页 →</span>
+          {{ end }}
+        </nav>
+      {{ end }}
+    {{ else }}
+      <div class="empty-state">
+        <p>暂时还没有提示词卡片。</p>
+        <p>稍后回来会有新的灵感。</p>
+      </div>
     {{ end }}
-  {{ else }}
-    <div class="empty-state">
-      <p>暂时还没有提示词卡片。</p>
-      <p>稍后回来会有新的灵感。</p>
-    </div>
-  {{ end }}
-</div>
+  </div>
+</section>
 
 {{ partial "daily-section-styles.html" . }}
 
@@ -98,22 +98,17 @@
   margin-bottom: 2.5rem;
 }
 
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.8rem;
-  color: var(--claude-text-light);
-}
-
 .prompt-hero h1 {
   margin: 0.5rem 0;
   font-size: 2.6rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
 }
 
-.prompt-hero .lead {
+.prompt-hero .page-desc {
   max-width: 60ch;
-  margin: 0 auto;
-  color: var(--claude-text-light);
+  margin: 0.5rem auto 0;
 }
 
 .prompt-card .card-content p {
@@ -128,8 +123,8 @@
 }
 
 .prompt-tags span {
-  background: rgba(0, 0, 0, 0.05);
-  padding: 0.1rem 0.6rem;
+  background: var(--surface-highlight);
+  padding: 0.2rem 0.6rem;
   border-radius: 999px;
   font-size: 0.8rem;
 }
@@ -138,17 +133,16 @@
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  margin: 1rem 0;
 }
 
 .prompt-pill {
-  background: var(--claude-bg);
+  background: var(--surface-highlight);
   border-radius: 999px;
-  padding: 0.3rem 0.9rem;
-  font-size: 0.85rem;
-}
-
-.prompt-card .prompt-pillset {
-  margin-bottom: 1rem;
+  padding: 0.35rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  border: 1px solid var(--border);
 }
 </style>
 {{ end }}

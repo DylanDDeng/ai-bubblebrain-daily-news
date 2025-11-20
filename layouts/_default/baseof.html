@@ -6,8 +6,8 @@
     <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
     <meta name="description" content="{{ .Description | default .Site.Params.description }}">
     
-    <!-- 引入自定义 Claude 风格 CSS -->
-    <link rel="stylesheet" href="{{ "css/claude-style.css" | relURL }}">
+    <!-- Noir Luxury 样式 -->
+    <link rel="stylesheet" href="{{ "css/noir.css" | relURL }}">
     
     <!-- RSS -->
     {{ range .AlternativeOutputFormats -}}
@@ -15,34 +15,32 @@
     {{ end -}}
 </head>
 <body>
-    <div class="layout-shell">
-        <aside class="nav-sidebar">
-            <a href="{{ .Site.BaseURL }}" class="nav-logo">{{ .Site.Title }}</a>
-            <nav class="nav-links">
-                {{ $currentPage := . }}
-                {{ range .Site.Menus.main }}
-                    {{ $isActive := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}
-                    <a class="nav-link{{ if $isActive }} active{{ end }}" href="{{ .URL | relLangURL }}">
-                        {{ .Name }}
-                    </a>
-                {{ end }}
-            </nav>
-        </aside>
+    <div class="noise-overlay"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 
-        <div class="layout-main">
-            <main>
-                <div class="container">
-                    {{ block "main" . }}{{ end }}
-                </div>
-            </main>
+    <header class="nav-bar">
+        <a href="{{ .Site.BaseURL }}" class="nav-logo">{{ .Site.Title }}</a>
+        <nav class="nav-links">
+            {{ $currentPage := . }}
+            {{ range .Site.Menus.main }}
+                {{ $isActive := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}
+                <a class="{{ if $isActive }}active{{ end }}" href="{{ .URL | relLangURL }}">
+                    {{ .Name }}
+                </a>
+            {{ end }}
+        </nav>
+    </header>
 
-            <footer>
-                <div class="container">
-                    <p>{{ .Site.Params.footer.text | default "© 2024 Bubble's Brain 阅读手册" }}</p>
-                </div>
-            </footer>
-        </div>
-    </div>
+    <main class="page-shell">
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    <footer>
+        <p>{{ .Site.Params.footer.text | default "© 2024 Bubble's Brain 阅读手册" }}</p>
+    </footer>
+
+    <script src="{{ "js/noir.js" | relURL }}"></script>
     {{ partial "about-tilt.html" . }}
 </body>
 </html>

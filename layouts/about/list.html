@@ -1,69 +1,13 @@
 {{ define "main" }}
-<div class="about-home">
-  <section class="about-hero">
-    <p class="about-eyebrow">{{ .Params.description | default "关于 Bubble's Brain" }}</p>
-    <h1>{{ .Title }}</h1>
-    <div class="about-content">
+<section class="section">
+  <div class="section-narrow page-surface">
+    <header class="page-header">
+      <p class="page-eyebrow">{{ .Params.description | default "关于 Bubble's Brain" }}</p>
+      <h1>{{ .Title }}</h1>
+    </header>
+    <div class="page-body">
       {{ .Content }}
     </div>
-  </section>
-</div>
-
-<style>
-.about-home {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 5rem;
-}
-
-.about-hero {
-  background: #F0EFEA;
-  border: 1px solid var(--claude-border);
-  border-radius: 24px;
-  padding: 3rem;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-  transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-}
-
-.about-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.8rem;
-  color: var(--claude-text-light);
-  margin-bottom: 1rem;
-}
-
-.about-hero h1 {
-  margin: 0 0 1.5rem 0;
-  font-size: 14px;
-  color: #6F655B;
-}
-
-.about-content :is(h2, h3, h4) {
-  color: #6F655B;
-  margin-top: 2.5rem;
-}
-
-.about-content p,
-.about-content li {
-  font-size: 14px;
-  color: #6F655B;
-}
-
-.about-content ul {
-  padding-left: 1.2rem;
-}
-
-@media (max-width: 720px) {
-  .about-hero {
-    padding: 2rem;
-    border-radius: 20px;
-  }
-
-  .about-hero h1 {
-    font-size: 14px;
-  }
-}
-</style>
+  </div>
+</section>
 {{ end }}

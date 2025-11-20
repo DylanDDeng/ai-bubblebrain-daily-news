@@ -1,73 +1,123 @@
 {{ define "main" }}
 {{ $about := site.GetPage "section" "about" }}
-<div class="about-home">
-  {{ if $about }}
-    <section class="about-hero">
-      <p class="about-eyebrow">{{ or $about.Params.description "关于 Bubble's Brain" }}</p>
-      <h1>{{ $about.Title }}</h1>
-      <div class="about-content">
+{{ $latestDaily := first 1 (sort (where site.RegularPages "Section" "daily") "Date" "desc") }}
+{{ $latestHighlight := first 1 (sort (where site.RegularPages "Section" "highlights") "Date" "desc") }}
+{{ $latestPrompt := first 1 (sort (where site.RegularPages "Section" "prompts") "Date" "desc") }}
+{{ $latestCuration := first 1 (sort (where site.RegularPages "Section" "curations") "Date" "desc") }}
+{{ $latestPublish := first 1 (sort (where site.RegularPages "Section" "my-publish") "Date" "desc") }}
+
+<section class="section hero">
+  <div class="section-narrow">
+    <div class="reveal-text">
+      <h1>Bubble's</h1>
+      <h1><span class="indent">Brain</span></h1>
+    </div>
+
+    <div class="hero-image-container">
+      <img src="https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=2600&auto=format&fit=crop" alt="Architecture" class="hero-img">
+    </div>
+
+    <div class="hero-meta reveal-text">
+      <span>Est. 2024</span>
+      <span>Scroll to Explore</span>
+      <span>Global // Digital</span>
+    </div>
+  </div>
+</section>
+
+<section class="section grid-section">
+  <div class="section-narrow">
+    <div class="section-title">The Collection</div>
+
+    <div class="bento-grid">
+      <div class="card card-lg">
+        <div>
+          <div class="card-number">01</div>
+          <h3>资讯日报</h3>
+        </div>
+        {{ with index $latestDaily 0 }}
+          <p>{{ .Description | default (.Summary | plainify) | default "每日精选资讯，保持对 AI 世界的敏锐洞察。" | truncate 140 }}</p>
+          <a class="card-link" href="{{ .RelPermalink }}">阅读 {{ .Title }}</a>
+        {{ else }}
+          <p>每日精选资讯，保持对 AI 世界的敏锐洞察。</p>
+          <span class="card-link">内容准备中</span>
+        {{ end }}
+      </div>
+
+      <div class="card card-sm card-tall">
+        <div>
+          <div class="card-number">02</div>
+          <h3>内容精选</h3>
+        </div>
+        <div>
+          {{ with index $latestHighlight 0 }}
+            <p>{{ .Description | default (.Summary | plainify) | default "高质量阅读清单，挑选值得深入的文章与项目。" | truncate 120 }}</p>
+            <a class="card-link" href="{{ .RelPermalink }}">查看 {{ .Title }}</a>
+          {{ else }}
+            <p>高质量阅读清单，挑选值得深入的文章与项目。</p>
+            <span class="card-link">内容准备中</span>
+          {{ end }}
+        </div>
+      </div>
+
+      <div class="card card-sm">
+        <div>
+          <div class="card-number">03</div>
+          <h3>Prompt 收录</h3>
+        </div>
+        {{ with index $latestPrompt 0 }}
+          <p>{{ .Description | default (.Summary | plainify) | default "保留可复用的提示词和灵感片段。" | truncate 120 }}</p>
+          <a class="card-link" href="{{ .RelPermalink }}">查看 {{ .Title }}</a>
+        {{ else }}
+          <p>保留可复用的提示词和灵感片段。</p>
+          <span class="card-link">内容准备中</span>
+        {{ end }}
+      </div>
+
+      <div class="card card-sm">
+        <div>
+          <div class="card-number">04</div>
+          <h3>论文精选</h3>
+        </div>
+        {{ with index $latestCuration 0 }}
+          <p>{{ .Description | default (.Summary | plainify) | default "浓缩值得追踪的论文与思考。" | truncate 120 }}</p>
+          <a class="card-link" href="{{ .RelPermalink }}">查看 {{ .Title }}</a>
+        {{ else }}
+          <p>浓缩值得追踪的论文与思考。</p>
+          <span class="card-link">内容准备中</span>
+        {{ end }}
+      </div>
+
+      <div class="card card-lg">
+        <div>
+          <div class="card-number">05</div>
+          <h3>我的发布内容</h3>
+        </div>
+        <div style="display:flex; align-items:center; justify-content: space-between; gap: 1rem;">
+          {{ with index $latestPublish 0 }}
+            <p style="text-align:left;">{{ .Description | default (.Summary | plainify) | default "个人实践与观察，持续更新。" | truncate 160 }}</p>
+            <a class="card-link" href="{{ .RelPermalink }}">前往 {{ .Title }}</a>
+          {{ else }}
+            <p style="text-align:left;">个人实践与观察，持续更新。</p>
+            <span class="card-link">内容准备中</span>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ if $about }}
+  <section class="section">
+    <div class="section-narrow page-surface">
+      <div class="page-header">
+        <span class="page-eyebrow">{{ or $about.Params.description "关于 Bubble's Brain" }}</span>
+        <h1>{{ $about.Title }}</h1>
+      </div>
+      <div class="page-body">
         {{ $about.Content }}
       </div>
-    </section>
-  {{ else }}
-    <section class="about-hero">
-      <h1>Bubble's Brain</h1>
-      <p class="about-eyebrow">内容正在准备，请稍后重试。</p>
-    </section>
-  {{ end }}
-</div>
-
-<style>
-.about-home {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 3rem 1.5rem 5rem;
-}
-
-.about-hero {
-  background: #F0EFEA;
-  border: 1px solid var(--claude-border);
-  border-radius: 24px;
-  padding: 3rem;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-  transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-}
-
-.about-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: 0.8rem;
-  color: var(--claude-text-light);
-  margin-bottom: 1rem;
-}
-
-.about-hero h1 {
-  margin: 0 0 1.5rem 0;
-  font-size: 14px;
-  color: #6F655B;
-}
-
-.about-content :is(h2, h3, h4) {
-  color: #6F655B;
-  margin-top: 2.5rem;
-}
-
-.about-content p,
-.about-content li {
-  font-size: 14px;
-  color: #6F655B;
-}
-
-.about-content ul {
-  padding-left: 1.2rem;
-}
-
-@media (max-width: 720px) {
-  .about-hero {
-    padding: 2rem;
-    border-radius: 20px;
-  }
-}
-</style>
+    </div>
+  </section>
+{{ end }}
 {{ end }}

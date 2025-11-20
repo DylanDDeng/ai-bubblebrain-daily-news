@@ -1,57 +1,65 @@
 <style>
 .daily-list-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  padding: 0 var(--page-padding) 4rem;
 }
 
 .daily-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
 
 .daily-card {
   position: relative;
-  background: #F0EFEA;
-  border-radius: 16px;
-  padding: 2rem;
-  transition: all 0.3s ease;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1.75rem;
+  transition: transform 0.3s ease, background 0.3s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
-  transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
-  transform-style: preserve-3d;
 }
 
 .daily-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.16);
+  background: var(--surface-highlight);
 }
 
 .card-header {
   margin-bottom: 1.5rem;
 }
 
+.card-header h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
 .card-header h2 a {
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, letter-spacing 0.2s ease;
 }
 
 .card-header h2 a:hover {
-  color: var(--claude-primary) !important;
+  letter-spacing: 0.02em;
+}
+
+.card-header time {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
 }
 
 .card-content {
   flex: 1;
   margin-bottom: 1.5rem;
-  font-family: "Inter", var(--font-secondary);
-  font-size: 14px;
-  font-weight: 400;
-  font-style: normal;
-  line-height: 100%;
-  color: #6F655B;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.7;
 }
 
 .card-content p {
@@ -59,32 +67,34 @@
 }
 
 .card-footer {
-  border-top: 1px solid var(--claude-border);
+  border-top: 1px solid var(--border);
   padding-top: 1rem;
 }
 
 .read-more {
-  color: var(--claude-accent);
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.3s ease;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  transition: color 0.2s ease, transform 0.2s ease;
   position: relative;
   display: inline-block;
 }
 
 .read-more:hover {
-  color: var(--claude-primary);
+  color: var(--accent);
   transform: translateX(5px);
 }
 
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: white;
-  border-radius: 16px;
-  border: 1px solid var(--claude-border);
+  background: var(--surface);
+  border: 1px solid var(--border);
   margin: 2rem auto;
   max-width: 500px;
+  color: var(--text-muted);
 }
 
 @media (max-width: 768px) {
@@ -94,7 +104,7 @@
   }
   
   .daily-list-container {
-    padding: 1rem;
+    padding: 0 1.5rem 3rem;
   }
   
   .daily-card {
@@ -112,14 +122,14 @@
 }
 
 .pagination-link {
-  color: var(--claude-accent);
+  color: var(--text-muted);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   transition: color 0.2s ease;
 }
 
 .pagination-link.disabled {
-  color: var(--claude-text-light);
+  color: var(--text-muted);
   cursor: not-allowed;
 }
 
@@ -133,30 +143,20 @@
   min-width: 36px;
   text-align: center;
   padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--claude-text);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .pagination-page:hover {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--surface-highlight);
 }
 
 .pagination-page.current {
-  background: var(--claude-accent);
-  color: white;
-}
-
-@media (prefers-color-scheme: dark) {
-  .daily-card {
-    background: #E0D4C6;
-    color: #4a4138;
-  }
-  
-  .empty-state {
-    background: var(--claude-bg-dark);
-  }
+  background: var(--accent);
+  color: #000;
 }
 </style>

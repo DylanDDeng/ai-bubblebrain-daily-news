@@ -1,6 +1,6 @@
 {{ define "main" }}
-<div class="page-container">
-  <section class="page-content">
+<section class="section">
+  <div class="section-narrow page-surface">
     <header class="page-header">
       <p class="page-eyebrow">Bubble's Brain 阅读手册</p>
       <h1>{{ .Title }}</h1>
@@ -27,90 +27,6 @@
         {{ end }}
       </div>
     {{ end }}
-  </section>
-</div>
-
-<style>
-.page-container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
-}
-
-.page-content {
-  background: white;
-  border: 1px solid var(--claude-border);
-  border-radius: 16px;
-  padding: 2.5rem;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
-}
-
-.page-header {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.page-eyebrow {
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 0.2em;
-  color: var(--claude-text-light);
-  margin-bottom: 0.5rem;
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: 2.4rem;
-}
-
-.page-desc {
-  color: var(--claude-text-light);
-  max-width: 60ch;
-  margin: 0.75rem auto 0;
-}
-
-.page-body :is(p, ul, ol) {
-  line-height: 1.7;
-}
-
-.page-list {
-  margin-top: 2.5rem;
-  display: grid;
-  gap: 1.5rem;
-}
-
-.page-list-item {
-  padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid var(--claude-border);
-  background: var(--claude-bg);
-  transform: perspective(1200px) rotateX(0deg) rotateY(0deg);
-  transition: transform 0.4s ease, box-shadow 0.3s ease;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-  transform-style: preserve-3d;
-}
-
-.page-list-item h3 {
-  margin: 0 0 0.5rem;
-}
-
-.page-list-item a {
-  text-decoration: none;
-  color: var(--claude-text);
-}
-
-.page-list-item a:hover {
-  color: var(--claude-accent);
-}
-
-@media (max-width: 768px) {
-  .page-content {
-    padding: 1.75rem;
-  }
-
-  .page-header h1 {
-    font-size: 2rem;
-  }
-}
-</style>
+  </div>
+</section>
 {{ end }}
