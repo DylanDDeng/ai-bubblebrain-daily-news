@@ -1,0 +1,465 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-narrow gallery-shell">
+    <header class="page-header gallery-hero">
+      <p class="page-eyebrow">AI Imagery Showcase</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
+      {{ end }}
+      <div class="gallery-legend">
+        <span>图源：图床 URL</span>
+        <span>数据：{{ "gallery.json" | relURL }}</span>
+        <span>点击卡片查看作者与 prompt</span>
+      </div>
+    </header>
+
+    <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
+    <div id="gallery-empty" class="gallery-empty" hidden>
+      <p>暂时还没有展品。</p>
+      <p>更新根目录的 gallery.json 后刷新页面即可获取最新内容。</p>
+    </div>
+  </div>
+</section>
+
+<div class="gallery-modal" id="gallery-modal" aria-hidden="true">
+  <div class="gallery-modal__backdrop" data-close></div>
+  <div class="gallery-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="gallery-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <div class="gallery-modal__body">
+      <div class="gallery-modal__image">
+        <img id="modal-image" alt="" loading="lazy">
+      </div>
+      <div class="gallery-modal__meta">
+        <p class="modal-eyebrow" id="modal-source"></p>
+        <h2 id="modal-title"></h2>
+        <div class="gallery-pillset">
+          <span class="meta-pill" id="modal-author"></span>
+          <span class="meta-pill" id="modal-model"></span>
+        </div>
+        <div class="gallery-tags" id="modal-tags"></div>
+        <div class="gallery-prompt-block">
+          <p class="prompt-label">Prompt</p>
+          <p id="modal-prompt"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const dataUrl = "{{ "gallery.json" | relURL }}";
+  const grid = document.getElementById("gallery-grid");
+  const empty = document.getElementById("gallery-empty");
+  const modal = document.getElementById("gallery-modal");
+  const modalImage = document.getElementById("modal-image");
+  const modalTitle = document.getElementById("modal-title");
+  const modalAuthor = document.getElementById("modal-author");
+  const modalModel = document.getElementById("modal-model");
+  const modalSource = document.getElementById("modal-source");
+  const modalPrompt = document.getElementById("modal-prompt");
+  const modalTags = document.getElementById("modal-tags");
+  const closeTargets = modal.querySelectorAll("[data-close]");
+  let activeFocus = null;
+
+  function setEmpty(isEmpty) {
+    empty.hidden = !isEmpty;
+  }
+
+  function render(items) {
+    if (!items || !items.length) {
+      setEmpty(true);
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+
+    items.forEach((item) => {
+      const card = document.createElement("article");
+      card.className = "gallery-card reveal-text";
+      card.setAttribute("tabindex", "0");
+      card.dataset.id = item.id || "";
+
+      const imgWrap = document.createElement("div");
+      imgWrap.className = "gallery-thumb";
+      const img = document.createElement("img");
+      img.src = item.thumb || item.full;
+      img.alt = item.title || "AI 生成图片";
+      img.loading = "lazy";
+      imgWrap.appendChild(img);
+
+      const meta = document.createElement("div");
+      meta.className = "gallery-card__meta";
+      const eyebrow = document.createElement("p");
+      eyebrow.className = "gallery-eyebrow";
+      eyebrow.textContent = item.source || "AI Model";
+      const title = document.createElement("h3");
+      title.textContent = item.title || "未命名作品";
+      const footer = document.createElement("div");
+      footer.className = "gallery-card__footer";
+      const author = document.createElement("span");
+      author.className = "gallery-author";
+      author.textContent = item.author ? `by ${item.author}` : "未知作者";
+      const promptHint = document.createElement("span");
+      promptHint.className = "gallery-hint";
+      promptHint.textContent = "查看 prompt →";
+
+      footer.appendChild(author);
+      footer.appendChild(promptHint);
+
+      meta.appendChild(eyebrow);
+      meta.appendChild(title);
+      meta.appendChild(footer);
+
+      card.appendChild(imgWrap);
+      card.appendChild(meta);
+
+      card.addEventListener("click", () => openModal(item));
+      card.addEventListener("keypress", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openModal(item);
+        }
+      });
+
+      frag.appendChild(card);
+    });
+
+    grid.appendChild(frag);
+
+    requestAnimationFrame(() => {
+      grid.querySelectorAll(".reveal-text").forEach((el, index) => {
+        setTimeout(() => el.classList.add("active"), index * 60);
+      });
+    });
+  }
+
+  function openModal(item) {
+    activeFocus = document.activeElement;
+    modalImage.src = item.full || item.thumb;
+    modalImage.alt = item.title || "AI 生成图片";
+    modalTitle.textContent = item.title || "未命名作品";
+    modalAuthor.textContent = item.author ? `作者：${item.author}` : "作者：未知";
+    modalModel.textContent = item.source ? `来源 / 模型：${item.source}` : "来源：未知";
+    modalSource.textContent = item.source || "";
+    modalPrompt.textContent = item.prompt || "暂无 prompt";
+
+    modalTags.innerHTML = "";
+    if (item.tags && item.tags.length) {
+      item.tags.forEach((tag) => {
+        const span = document.createElement("span");
+        span.textContent = tag;
+        modalTags.appendChild(span);
+      });
+    }
+
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    modal.querySelector(".gallery-modal__close").focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (activeFocus) {
+      activeFocus.focus();
+    }
+  }
+
+  closeTargets.forEach((el) => {
+    el.addEventListener("click", closeModal);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal.classList.contains("open")) {
+      closeModal();
+    }
+  });
+
+  fetch(dataUrl)
+    .then((res) => {
+      if (!res.ok) throw new Error("网络异常");
+      return res.json();
+    })
+    .then((items) => render(items))
+    .catch(() => {
+      setEmpty(true);
+    });
+})();
+</script>
+
+<style>
+.gallery-shell {
+  padding-bottom: 5rem;
+}
+
+.gallery-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.gallery-hero h1 {
+  margin: 0.35rem 0;
+  font-size: 2.8rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.gallery-legend {
+  margin-top: 1rem;
+  display: inline-flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.gallery-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease;
+  outline: none;
+}
+
+.gallery-card:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+}
+
+.gallery-card:hover {
+  transform: translateY(-6px);
+  background: var(--surface-highlight);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.gallery-thumb {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-highlight);
+  aspect-ratio: 4 / 5;
+}
+
+.gallery-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.gallery-card:hover .gallery-thumb img {
+  transform: scale(1.03);
+}
+
+.gallery-card__meta {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gallery-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.gallery-card h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+
+.gallery-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.gallery-author {
+  color: var(--text-main);
+}
+
+.gallery-hint {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.gallery-empty {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+}
+
+.gallery-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.gallery-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gallery-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.gallery-modal__dialog {
+  position: relative;
+  max-width: 1000px;
+  width: min(92vw, 1000px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.gallery-modal__body {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.gallery-modal__image {
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-modal__image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.gallery-modal__meta h2 {
+  margin: 0.3rem 0 0.8rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.modal-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.gallery-pillset {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.gallery-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.gallery-tags span {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.gallery-prompt-block {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  color: var(--text-main);
+}
+
+.prompt-label {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.gallery-modal__close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.gallery-modal__close:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .gallery-modal__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery-modal__dialog {
+    width: 94vw;
+  }
+}
+</style>
+{{ end }}

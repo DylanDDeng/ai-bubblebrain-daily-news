@@ -32,6 +32,11 @@ disableKinds = ['taxonomy', 'term']
   weight = 24
 
 [[menu.main]]
+  name = 'AI 生图'
+  pageRef = '/ai-gallery'
+  weight = 26
+
+[[menu.main]]
   name = 'Prompt收录'
   pageRef = '/prompts'
   weight = 30
