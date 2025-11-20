@@ -29,6 +29,11 @@
     <div class="gallery-modal__body">
       <div class="gallery-modal__image">
         <img id="modal-image" alt="" loading="lazy">
+        <div class="gallery-modal__controls">
+          <button class="gallery-nav" type="button" data-prev aria-label="上一张">←</button>
+          <div class="gallery-counter" id="modal-counter"></div>
+          <button class="gallery-nav" type="button" data-next aria-label="下一张">→</button>
+        </div>
       </div>
       <div class="gallery-modal__meta">
         <p class="modal-eyebrow" id="modal-source"></p>
@@ -37,6 +42,7 @@
           <span class="meta-pill" id="modal-author"></span>
           <span class="meta-pill" id="modal-model"></span>
         </div>
+        <div class="gallery-caption" id="modal-caption"></div>
         <div class="gallery-tags" id="modal-tags"></div>
         <div class="gallery-prompt-block">
           <p class="prompt-label">Prompt</p>
@@ -60,8 +66,45 @@
   const modalSource = document.getElementById("modal-source");
   const modalPrompt = document.getElementById("modal-prompt");
   const modalTags = document.getElementById("modal-tags");
+  const modalCounter = document.getElementById("modal-counter");
+  const modalCaption = document.getElementById("modal-caption");
   const closeTargets = modal.querySelectorAll("[data-close]");
+  const prevBtn = modal.querySelector("[data-prev]");
+  const nextBtn = modal.querySelector("[data-next]");
   let activeFocus = null;
+  let currentImages = [];
+  let currentIndex = 0;
+  let currentItemTitle = "";
+
+  const normalizeImages = (item) => {
+    const arr = Array.isArray(item.images) ? item.images : [];
+    const normalized = arr
+      .map((img) => {
+        if (typeof img === "string") {
+          return { thumb: img, full: img, caption: "" };
+        }
+        const url = img.url || img.src;
+        return {
+          thumb: img.thumb || url || img.full || item.thumb || item.full,
+          full: img.full || url || img.thumb || item.full || item.thumb,
+          caption: img.caption || img.alt || ""
+        };
+      })
+      .filter((img) => img.full || img.thumb);
+
+    if (normalized.length) return normalized;
+
+    const fallback = item.full || item.thumb;
+    if (fallback) {
+      return [{
+        thumb: item.thumb || fallback,
+        full: fallback,
+        caption: item.title || ""
+      }];
+    }
+
+    return [];
+  };
 
   function setEmpty(isEmpty) {
     empty.hidden = !isEmpty;
@@ -76,6 +119,10 @@
     const frag = document.createDocumentFragment();
 
     items.forEach((item) => {
+      const images = normalizeImages(item);
+      const primary = images[0] || {};
+      if (!primary.thumb && !primary.full) return;
+
       const card = document.createElement("article");
       card.className = "gallery-card reveal-text";
       card.setAttribute("tabindex", "0");
@@ -84,10 +131,17 @@
       const imgWrap = document.createElement("div");
       imgWrap.className = "gallery-thumb";
       const img = document.createElement("img");
-      img.src = item.thumb || item.full;
+      img.src = primary.thumb || primary.full;
       img.alt = item.title || "AI 生成图片";
       img.loading = "lazy";
       imgWrap.appendChild(img);
+
+      if (images.length > 1) {
+        const count = document.createElement("span");
+        count.className = "gallery-count";
+        count.textContent = `${images.length} 图`;
+        imgWrap.appendChild(count);
+      }
 
       const meta = document.createElement("div");
       meta.className = "gallery-card__meta";
@@ -137,9 +191,11 @@
 
   function openModal(item) {
     activeFocus = document.activeElement;
-    modalImage.src = item.full || item.thumb;
-    modalImage.alt = item.title || "AI 生成图片";
-    modalTitle.textContent = item.title || "未命名作品";
+    currentImages = normalizeImages(item);
+    currentIndex = 0;
+    currentItemTitle = item.title || "未命名作品";
+
+    modalTitle.textContent = currentItemTitle;
     modalAuthor.textContent = item.author ? `作者：${item.author}` : "作者：未知";
     modalModel.textContent = item.source ? `来源 / 模型：${item.source}` : "来源：未知";
     modalSource.textContent = item.source || "";
@@ -154,10 +210,47 @@
       });
     }
 
+    setActiveImage(0);
+
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     modal.querySelector(".gallery-modal__close").focus();
+  }
+
+  function setActiveImage(index) {
+    if (!currentImages.length) {
+      modalImage.src = "";
+      modalImage.alt = "暂无图片";
+      if (modalCounter) modalCounter.textContent = "";
+      if (modalCaption) modalCaption.textContent = "";
+      return;
+    }
+
+    const len = currentImages.length;
+    currentIndex = ((index % len) + len) % len;
+    const active = currentImages[currentIndex];
+
+    modalImage.src = active.full || active.thumb;
+    modalImage.alt = active.caption ? `${currentItemTitle} - ${active.caption}` : currentItemTitle;
+    if (modalCounter) {
+      modalCounter.textContent = len > 1 ? `${currentIndex + 1} / ${len}` : "单张";
+    }
+    if (modalCaption) {
+      modalCaption.textContent = active.caption || "";
+    }
+
+    const disableNav = len <= 1;
+    [prevBtn, nextBtn].forEach((btn) => {
+      if (!btn) return;
+      btn.disabled = disableNav;
+      btn.classList.toggle("is-disabled", disableNav);
+    });
+  }
+
+  function stepImage(delta) {
+    if (!currentImages.length || currentImages.length === 1) return;
+    setActiveImage(currentIndex + delta);
   }
 
   function closeModal() {
@@ -173,9 +266,25 @@
     el.addEventListener("click", closeModal);
   });
 
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => stepImage(-1));
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => stepImage(1));
+  }
+
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && modal.classList.contains("open")) {
-      closeModal();
+    if (!modal.classList.contains("open")) return;
+
+    if (event.key === "Escape") {
+      return closeModal();
+    }
+    if (event.key === "ArrowLeft") {
+      return stepImage(-1);
+    }
+    if (event.key === "ArrowRight") {
+      return stepImage(1);
     }
   });
 
@@ -256,6 +365,18 @@
   overflow: hidden;
   background: var(--surface-highlight);
   aspect-ratio: 4 / 5;
+}
+
+.gallery-count {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
 }
 
 .gallery-thumb img {
@@ -367,12 +488,55 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .gallery-modal__image img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
+}
+
+.gallery-modal__controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.gallery-nav {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.gallery-nav:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gallery-nav.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gallery-counter {
+  min-width: 64px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  letter-spacing: 0.05em;
 }
 
 .gallery-modal__meta h2 {
@@ -395,6 +559,12 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   margin: 0.5rem 0 0.75rem;
+}
+
+.gallery-caption {
+  color: var(--text-muted);
+  margin: 0.25rem 0 0.75rem;
+  min-height: 1.2em;
 }
 
 .gallery-tags {
