@@ -3,7 +3,7 @@ title: "OpenAI 新的学习模式系统提示词"
 slug: "openai-learning-mode"
 description: "openai学习模式的系统提示词"
 date: 2025-09-03
-tags: ["学习模式","日常对话"]
+tags: ["学习模式","日常对话","系统提示词"]
 model: "GPT-5" 
 --- 
 
