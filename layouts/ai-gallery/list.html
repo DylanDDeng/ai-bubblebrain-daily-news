@@ -7,11 +7,6 @@
       {{ with .Description }}
         <p class="page-desc">{{ . }}</p>
       {{ end }}
-      <div class="gallery-legend">
-        <span>图源：图床 URL</span>
-        <span>数据：{{ "gallery.json" | relURL }}</span>
-        <span>点击卡片查看作者与 prompt</span>
-      </div>
     </header>
 
     <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
@@ -55,7 +50,7 @@
 
 <script>
 (() => {
-  const dataUrl = "{{ "gallery.json" | relURL }}";
+  const dataUrl = "{{ "/gallery.json" | relURL }}";
   const grid = document.getElementById("gallery-grid");
   const empty = document.getElementById("gallery-empty");
   const modal = document.getElementById("gallery-modal");
@@ -77,13 +72,13 @@
   let currentItemTitle = "";
 
   const normalizeImages = (item) => {
-    const arr = Array.isArray(item.images) ? item.images : [];
+    const arr = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
     const normalized = arr
       .map((img) => {
         if (typeof img === "string") {
           return { thumb: img, full: img, caption: "" };
         }
-        const url = img.url || img.src;
+        const url = img.url || img.src || img.link;
         return {
           thumb: img.thumb || url || img.full || item.thumb || item.full,
           full: img.full || url || img.thumb || item.full || item.thumb,
