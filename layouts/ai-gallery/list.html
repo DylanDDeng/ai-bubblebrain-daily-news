@@ -9,10 +9,16 @@
       {{ end }}
     </header>
 
+    <div class="gallery-filter-row" id="gallery-filters" aria-label="按标签筛选"></div>
+
     <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
     <div id="gallery-empty" class="gallery-empty" hidden>
       <p>暂时还没有展品。</p>
       <p>更新根目录的 gallery.json 后刷新页面即可获取最新内容。</p>
+    </div>
+    <div id="gallery-empty-filter" class="gallery-empty" hidden>
+      <p>当前标签下没有匹配的展品。</p>
+      <p>切换其他标签试试看。</p>
     </div>
   </div>
 </section>
@@ -63,6 +69,7 @@
   const modalTags = document.getElementById("modal-tags");
   const modalCounter = document.getElementById("modal-counter");
   const modalCaption = document.getElementById("modal-caption");
+  const filtersWrap = document.getElementById("gallery-filters");
   const closeTargets = modal.querySelectorAll("[data-close]");
   const prevBtn = modal.querySelector("[data-prev]");
   const nextBtn = modal.querySelector("[data-next]");
@@ -70,6 +77,7 @@
   let currentImages = [];
   let currentIndex = 0;
   let currentItemTitle = "";
+  let currentFilter = "all";
 
   const normalizeImages = (item) => {
     const arr = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
@@ -105,6 +113,42 @@
     empty.hidden = !isEmpty;
   }
 
+  function setFilterEmpty(isEmpty) {
+    const filterEmpty = document.getElementById("gallery-empty-filter");
+    if (filterEmpty) filterEmpty.hidden = !isEmpty;
+  }
+
+  function renderFilters(tags) {
+    if (!filtersWrap) return;
+    filtersWrap.innerHTML = "";
+
+    const frag = document.createDocumentFragment();
+    const allBtn = document.createElement("button");
+    allBtn.className = "gallery-filter-pill active";
+    allBtn.textContent = "全部";
+    allBtn.setAttribute("data-tag", "all");
+    frag.appendChild(allBtn);
+
+    tags.forEach((tag) => {
+      const btn = document.createElement("button");
+      btn.className = "gallery-filter-pill";
+      btn.textContent = tag;
+      btn.setAttribute("data-tag", tag);
+      frag.appendChild(btn);
+    });
+
+    filtersWrap.appendChild(frag);
+
+    filtersWrap.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentFilter = btn.dataset.tag || "all";
+        filtersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter();
+      });
+    });
+  }
+
   function render(items) {
     if (!items || !items.length) {
       setEmpty(true);
@@ -112,6 +156,7 @@
     }
 
     const frag = document.createDocumentFragment();
+    const allTags = new Set();
 
     items.forEach((item) => {
       const images = normalizeImages(item);
@@ -122,6 +167,16 @@
       card.className = "gallery-card reveal-text";
       card.setAttribute("tabindex", "0");
       card.dataset.id = item.id || "";
+      if (item.tags && item.tags.length) {
+        const tagStr = item.tags
+          .map((t) => (t || "").toString().trim())
+          .filter(Boolean)
+          .join(",");
+        card.dataset.tags = tagStr.toLowerCase();
+        item.tags.forEach((t) => {
+          if (t) allTags.add(t.toString().trim());
+        });
+      }
 
       const imgWrap = document.createElement("div");
       imgWrap.className = "gallery-thumb";
@@ -176,6 +231,8 @@
     });
 
     grid.appendChild(frag);
+    renderFilters(Array.from(allTags));
+    applyFilter();
 
     requestAnimationFrame(() => {
       grid.querySelectorAll(".reveal-text").forEach((el, index) => {
@@ -246,6 +303,20 @@
   function stepImage(delta) {
     if (!currentImages.length || currentImages.length === 1) return;
     setActiveImage(currentIndex + delta);
+  }
+
+  function applyFilter() {
+    const cards = grid.querySelectorAll(".gallery-card");
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const tags = (card.dataset.tags || "").split(",").filter(Boolean);
+      const match = currentFilter === "all" || tags.includes(currentFilter.toLowerCase());
+      card.style.display = match ? "" : "none";
+      if (match) visibleCount += 1;
+    });
+
+    setFilterEmpty(visibleCount === 0 && cards.length > 0 && currentFilter !== "all");
   }
 
   function closeModal() {
@@ -325,6 +396,34 @@
   padding: 0.65rem 1rem;
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+.gallery-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 2rem;
+}
+
+.gallery-filter-pill {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.gallery-filter-pill:hover {
+  border-color: var(--accent);
+}
+
+.gallery-filter-pill.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
 }
 
 .gallery-grid {
