@@ -12,6 +12,7 @@
     <div class="gallery-filter-row" id="gallery-filters" aria-label="按标签筛选"></div>
 
     <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
+    <nav id="gallery-pagination" class="pagination" aria-label="AI生图分页导航" hidden></nav>
     <div id="gallery-empty" class="gallery-empty" hidden>
       <p>暂时还没有展品。</p>
       <p>更新根目录的 gallery.json 后刷新页面即可获取最新内容。</p>
@@ -59,6 +60,7 @@
   const dataUrl = "{{ "/gallery.json" | relURL }}";
   const grid = document.getElementById("gallery-grid");
   const empty = document.getElementById("gallery-empty");
+  const pagination = document.getElementById("gallery-pagination");
   const modal = document.getElementById("gallery-modal");
   const modalImage = document.getElementById("modal-image");
   const modalTitle = document.getElementById("modal-title");
@@ -73,8 +75,12 @@
   const closeTargets = modal.querySelectorAll("[data-close]");
   const prevBtn = modal.querySelector("[data-prev]");
   const nextBtn = modal.querySelector("[data-next]");
+  const pageSize = 20;
   let activeFocus = null;
   let currentImages = [];
+  let allItems = [];
+  let filteredItems = [];
+  let currentPage = 1;
   let currentIndex = 0;
   let currentItemTitle = "";
   let currentFilter = "all";
@@ -118,6 +124,18 @@
     if (filterEmpty) filterEmpty.hidden = !isEmpty;
   }
 
+  function collectTags(items) {
+    const tags = new Set();
+    items.forEach((item) => {
+      if (Array.isArray(item.tags)) {
+        item.tags.forEach((tag) => {
+          if (tag) tags.add(tag.toString().trim());
+        });
+      }
+    });
+    return Array.from(tags).filter(Boolean);
+  }
+
   function renderFilters(tags) {
     if (!filtersWrap) return;
     filtersWrap.innerHTML = "";
@@ -149,96 +167,213 @@
     });
   }
 
-  function render(items) {
-    if (!items || !items.length) {
-      setEmpty(true);
+  function buildCard(item) {
+    const images = normalizeImages(item);
+    const primary = images[0] || {};
+    if (!primary.thumb && !primary.full) return null;
+
+    const card = document.createElement("article");
+    card.className = "gallery-card reveal-text";
+    card.setAttribute("tabindex", "0");
+    card.dataset.id = item.id || "";
+    if (item.tags && item.tags.length) {
+      const tagStr = item.tags
+        .map((t) => (t || "").toString().trim())
+        .filter(Boolean)
+        .join(",");
+      card.dataset.tags = tagStr.toLowerCase();
+    }
+
+    const imgWrap = document.createElement("div");
+    imgWrap.className = "gallery-thumb";
+    const img = document.createElement("img");
+    img.src = primary.thumb || primary.full;
+    img.alt = item.title || "AI 生成图片";
+    img.loading = "lazy";
+    imgWrap.appendChild(img);
+
+    if (images.length > 1) {
+      const count = document.createElement("span");
+      count.className = "gallery-count";
+      count.textContent = `${images.length} 图`;
+      imgWrap.appendChild(count);
+    }
+
+    const meta = document.createElement("div");
+    meta.className = "gallery-card__meta";
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "gallery-eyebrow";
+    eyebrow.textContent = item.source || "AI Model";
+    const title = document.createElement("h3");
+    title.textContent = item.title || "未命名作品";
+    const footer = document.createElement("div");
+    footer.className = "gallery-card__footer";
+    const author = document.createElement("span");
+    author.className = "gallery-author";
+    author.textContent = item.author ? `by ${item.author}` : "未知作者";
+    const promptHint = document.createElement("span");
+    promptHint.className = "gallery-hint";
+    promptHint.textContent = "查看 prompt →";
+
+    footer.appendChild(author);
+    footer.appendChild(promptHint);
+
+    meta.appendChild(eyebrow);
+    meta.appendChild(title);
+    meta.appendChild(footer);
+
+    card.appendChild(imgWrap);
+    card.appendChild(meta);
+
+    card.addEventListener("click", () => openModal(item));
+    card.addEventListener("keypress", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openModal(item);
+      }
+    });
+
+    return card;
+  }
+
+  function renderGrid() {
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const totalItems = filteredItems.length;
+    if (!totalItems) {
+      if (pagination) {
+        pagination.hidden = true;
+        pagination.innerHTML = "";
+      }
       return;
     }
 
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage - 1) * pageSize;
+    const pageItems = filteredItems.slice(start, start + pageSize);
+
     const frag = document.createDocumentFragment();
-    const allTags = new Set();
-
-    items.forEach((item) => {
-      const images = normalizeImages(item);
-      const primary = images[0] || {};
-      if (!primary.thumb && !primary.full) return;
-
-      const card = document.createElement("article");
-      card.className = "gallery-card reveal-text";
-      card.setAttribute("tabindex", "0");
-      card.dataset.id = item.id || "";
-      if (item.tags && item.tags.length) {
-        const tagStr = item.tags
-          .map((t) => (t || "").toString().trim())
-          .filter(Boolean)
-          .join(",");
-        card.dataset.tags = tagStr.toLowerCase();
-        item.tags.forEach((t) => {
-          if (t) allTags.add(t.toString().trim());
-        });
-      }
-
-      const imgWrap = document.createElement("div");
-      imgWrap.className = "gallery-thumb";
-      const img = document.createElement("img");
-      img.src = primary.thumb || primary.full;
-      img.alt = item.title || "AI 生成图片";
-      img.loading = "lazy";
-      imgWrap.appendChild(img);
-
-      if (images.length > 1) {
-        const count = document.createElement("span");
-        count.className = "gallery-count";
-        count.textContent = `${images.length} 图`;
-        imgWrap.appendChild(count);
-      }
-
-      const meta = document.createElement("div");
-      meta.className = "gallery-card__meta";
-      const eyebrow = document.createElement("p");
-      eyebrow.className = "gallery-eyebrow";
-      eyebrow.textContent = item.source || "AI Model";
-      const title = document.createElement("h3");
-      title.textContent = item.title || "未命名作品";
-      const footer = document.createElement("div");
-      footer.className = "gallery-card__footer";
-      const author = document.createElement("span");
-      author.className = "gallery-author";
-      author.textContent = item.author ? `by ${item.author}` : "未知作者";
-      const promptHint = document.createElement("span");
-      promptHint.className = "gallery-hint";
-      promptHint.textContent = "查看 prompt →";
-
-      footer.appendChild(author);
-      footer.appendChild(promptHint);
-
-      meta.appendChild(eyebrow);
-      meta.appendChild(title);
-      meta.appendChild(footer);
-
-      card.appendChild(imgWrap);
-      card.appendChild(meta);
-
-      card.addEventListener("click", () => openModal(item));
-      card.addEventListener("keypress", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openModal(item);
-        }
-      });
-
-      frag.appendChild(card);
+    pageItems.forEach((item) => {
+      const card = buildCard(item);
+      if (card) frag.appendChild(card);
     });
 
     grid.appendChild(frag);
-    renderFilters(Array.from(allTags));
-    applyFilter();
 
     requestAnimationFrame(() => {
       grid.querySelectorAll(".reveal-text").forEach((el, index) => {
         setTimeout(() => el.classList.add("active"), index * 60);
       });
     });
+  }
+
+  function goToPage(pageNumber) {
+    const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+    currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
+    renderGrid();
+    renderPagination();
+  }
+
+  function renderPagination() {
+    if (!pagination) return;
+    const totalPages = Math.ceil(filteredItems.length / pageSize);
+
+    if (totalPages <= 1) {
+      pagination.hidden = true;
+      pagination.innerHTML = "";
+      return;
+    }
+
+    pagination.hidden = false;
+    pagination.innerHTML = "";
+
+    const prev =
+      currentPage > 1
+        ? Object.assign(document.createElement("a"), { href: "#" })
+        : document.createElement("span");
+    prev.className = "pagination-link" + (currentPage === 1 ? " disabled" : "");
+    prev.textContent = "← 上一页";
+    if (currentPage > 1) {
+      prev.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToPage(currentPage - 1);
+      });
+    }
+    pagination.appendChild(prev);
+
+    const pagesWrap = document.createElement("div");
+    pagesWrap.className = "pagination-pages";
+    for (let i = 1; i <= totalPages; i += 1) {
+      if (i === currentPage) {
+        const span = document.createElement("span");
+        span.className = "pagination-page current";
+        span.textContent = i;
+        pagesWrap.appendChild(span);
+      } else {
+        const link = document.createElement("a");
+        link.className = "pagination-page";
+        link.href = "#";
+        link.textContent = i;
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          goToPage(i);
+        });
+        pagesWrap.appendChild(link);
+      }
+    }
+    pagination.appendChild(pagesWrap);
+
+    const next =
+      currentPage < totalPages
+        ? Object.assign(document.createElement("a"), { href: "#" })
+        : document.createElement("span");
+    next.className = "pagination-link" + (currentPage === totalPages ? " disabled" : "");
+    next.textContent = "下一页 →";
+    if (currentPage < totalPages) {
+      next.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToPage(currentPage + 1);
+      });
+    }
+    pagination.appendChild(next);
+  }
+
+  function applyFilter() {
+    if (!allItems.length) return;
+
+    if (currentFilter === "all") {
+      filteredItems = [...allItems];
+    } else {
+      const filterLower = currentFilter.toLowerCase();
+      filteredItems = allItems.filter((item) => {
+        const tags = Array.isArray(item.tags) ? item.tags : [];
+        return tags.some((tag) => (tag || "").toString().trim().toLowerCase() === filterLower);
+      });
+    }
+
+    setFilterEmpty(filteredItems.length === 0 && currentFilter !== "all");
+    currentPage = 1;
+    renderGrid();
+    renderPagination();
+  }
+
+  function render(items) {
+    if (!items || !items.length) {
+      setEmpty(true);
+      return;
+    }
+
+    setEmpty(false);
+    allItems = items;
+    filteredItems = [...allItems];
+    currentPage = 1;
+    renderFilters(collectTags(allItems));
+    setFilterEmpty(false);
+    renderGrid();
+    renderPagination();
   }
 
   function openModal(item) {
@@ -303,20 +438,6 @@
   function stepImage(delta) {
     if (!currentImages.length || currentImages.length === 1) return;
     setActiveImage(currentIndex + delta);
-  }
-
-  function applyFilter() {
-    const cards = grid.querySelectorAll(".gallery-card");
-    let visibleCount = 0;
-
-    cards.forEach((card) => {
-      const tags = (card.dataset.tags || "").split(",").filter(Boolean);
-      const match = currentFilter === "all" || tags.includes(currentFilter.toLowerCase());
-      card.style.display = match ? "" : "none";
-      if (match) visibleCount += 1;
-    });
-
-    setFilterEmpty(visibleCount === 0 && cards.length > 0 && currentFilter !== "all");
   }
 
   function closeModal() {
@@ -534,6 +655,54 @@
   border: 1px solid var(--border);
   background: var(--surface-highlight);
   color: var(--text-muted);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.pagination-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.pagination-link.disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-page {
+  min-width: 36px;
+  text-align: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.pagination-page:hover {
+  background: var(--surface-highlight);
+}
+
+.pagination-page.current {
+  background: var(--accent);
+  color: #000;
 }
 
 .gallery-modal {
