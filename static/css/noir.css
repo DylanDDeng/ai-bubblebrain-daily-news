@@ -17,7 +17,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  cursor: none;
 }
 
 body {
@@ -28,6 +27,7 @@ body {
   width: 100%;
   line-height: 1.7;
   letter-spacing: 0.01em;
+  cursor: default;
 }
 
 a {
@@ -51,32 +51,6 @@ a:hover {
   z-index: 999;
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-}
-
-/* Custom cursor */
-.cursor-dot,
-.cursor-outline {
-  position: fixed;
-  top: 0;
-  left: 0;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  z-index: 10000;
-  pointer-events: none;
-}
-
-.cursor-dot {
-  width: 6px;
-  height: 6px;
-  background-color: white;
-}
-
-.cursor-outline {
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: width 0.2s, height 0.2s, background-color 0.2s;
-  mix-blend-mode: difference;
 }
 
 /* Layout */
@@ -647,16 +621,6 @@ footer {
 @media (max-width: 768px) {
   :root {
     --page-padding: 1.5rem;
-  }
-
-  body,
-  * {
-    cursor: auto;
-  }
-
-  .cursor-dot,
-  .cursor-outline {
-    display: none;
   }
 
   .nav-links {
