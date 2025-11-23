@@ -1,7 +1,7 @@
 {{ define "main" }}
 <section class="section">
-  <div class="section-narrow daily-list-container">
-    <header class="page-header">
+  <div class="section-narrow highlight-shell">
+    <header class="page-header gallery-hero">
       <p class="page-eyebrow">精选内容</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}
@@ -9,71 +9,589 @@
       {{ end }}
     </header>
 
-    {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
+    <div class="highlight-filter-row" id="highlight-filters" aria-label="按标签筛选"></div>
 
-    {{ if $paginator.Pages }}
-      <div class="daily-grid">
-        {{ range $paginator.Pages }}
-          <article class="daily-card reveal-text">
-            <div class="card-header">
-              <h2>
-                <a href="{{ .Permalink }}">{{ .Title }}</a>
-              </h2>
-              <time datetime="{{ .Date.Format "2006-01-02" }}">
-                {{ .Date.Format "2006年01月02日" }}
-              </time>
-            </div>
-            
-            <div class="card-content">
-              {{ with .Description }}
-                <p>{{ . }}</p>
-              {{ else }}
-                <p>{{ .Summary | truncate 200 }}</p>
-              {{ end }}
-            </div>
-            
-            <div class="card-footer">
-              <a href="{{ .Permalink }}" class="read-more">
-                打开卡片 →
-              </a>
-            </div>
-          </article>
-        {{ end }}
-      </div>
-
-      {{ if gt $paginator.TotalPages 1 }}
-        <nav class="pagination" aria-label="精选内容分页导航">
-          {{ if $paginator.HasPrev }}
-            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
-          {{ else }}
-            <span class="pagination-link disabled">← 上一页</span>
-          {{ end }}
-
-          <div class="pagination-pages">
-            {{ range $pager := $paginator.Pagers }}
-              {{ if eq $pager.PageNumber $paginator.PageNumber }}
-                <span class="pagination-page current">{{ $pager.PageNumber }}</span>
-              {{ else }}
-                <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
-              {{ end }}
-            {{ end }}
-          </div>
-
-          {{ if $paginator.HasNext }}
-            <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
-          {{ else }}
-            <span class="pagination-link disabled">下一页 →</span>
-          {{ end }}
-        </nav>
-      {{ end }}
-    {{ else }}
-      <div class="empty-state">
-        <p>暂无内容</p>
-        <p>稍后再来探索新的卡片</p>
-      </div>
-    {{ end }}
+    <div id="highlight-grid" class="highlight-grid" aria-live="polite"></div>
+    <div id="highlight-empty" class="highlight-empty" hidden>
+      <p>还没有上架精选内容。</p>
+      <p>在根目录新增 highlights.json 即可配置。</p>
+    </div>
+    <div id="highlight-empty-filter" class="highlight-empty" hidden>
+      <p>当前标签没有匹配的精选内容。</p>
+      <p>切换其他标签试试。</p>
+    </div>
   </div>
 </section>
 
-{{ partial "daily-section-styles.html" . }}
+<div class="highlight-modal" id="highlight-modal" aria-hidden="true">
+  <div class="highlight-modal__backdrop" data-close></div>
+  <div class="highlight-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="highlight-modal-title">
+    <button class="highlight-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <div class="highlight-modal__body">
+      <div class="highlight-modal__image">
+        <img id="highlight-modal-image" alt="">
+      </div>
+      <div class="highlight-modal__meta">
+        <p class="modal-eyebrow" id="highlight-modal-source">精选内容</p>
+        <h2 id="highlight-modal-title"></h2>
+        <div class="highlight-modal__tags" id="highlight-modal-tags"></div>
+        <p class="highlight-modal__desc" id="highlight-modal-desc"></p>
+        <a class="highlight-link" id="highlight-modal-original" target="_blank" rel="noopener noreferrer">阅读原文 →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const dataUrl = "{{ "/highlights.json" | relURL }}";
+  const grid = document.getElementById("highlight-grid");
+  const empty = document.getElementById("highlight-empty");
+  const filtersWrap = document.getElementById("highlight-filters");
+  const filterEmpty = document.getElementById("highlight-empty-filter");
+  const modal = document.getElementById("highlight-modal");
+  const modalImage = document.getElementById("highlight-modal-image");
+  const modalTitle = document.getElementById("highlight-modal-title");
+  const modalSource = document.getElementById("highlight-modal-source");
+  const modalTags = document.getElementById("highlight-modal-tags");
+  const modalDesc = document.getElementById("highlight-modal-desc");
+  const modalOriginal = document.getElementById("highlight-modal-original");
+  const pageSize = 24;
+  let allItems = [];
+  let filteredItems = [];
+  let currentPage = 1;
+  let currentFilter = "all";
+
+  function setEmpty(isEmpty) {
+    if (empty) empty.hidden = !isEmpty;
+  }
+
+  function setFilterEmpty(isEmpty) {
+    if (filterEmpty) filterEmpty.hidden = !isEmpty;
+  }
+
+  function collectTags(items) {
+    const tags = new Set();
+    items.forEach((item) => {
+      const arr = Array.isArray(item.tags) ? item.tags : [];
+      arr.forEach((tag) => {
+        if (tag) tags.add(tag.toString().trim());
+      });
+    });
+    return Array.from(tags).filter(Boolean);
+  }
+
+  function renderFilters(tags) {
+    if (!filtersWrap) return;
+    filtersWrap.innerHTML = "";
+
+    const frag = document.createDocumentFragment();
+    const allBtn = document.createElement("button");
+    allBtn.className = "highlight-filter-pill active";
+    allBtn.textContent = `全部 @${allItems.length}`;
+    allBtn.dataset.tag = "all";
+    frag.appendChild(allBtn);
+
+    tags.forEach((tag) => {
+      const btn = document.createElement("button");
+      btn.className = "highlight-filter-pill";
+      btn.textContent = `${tag}`;
+      btn.dataset.tag = tag;
+      frag.appendChild(btn);
+    });
+
+    filtersWrap.appendChild(frag);
+
+    filtersWrap.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentFilter = btn.dataset.tag || "all";
+        filtersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter();
+      });
+    });
+  }
+
+  function buildCard(item) {
+    if (!item) return null;
+    const card = document.createElement("article");
+    card.className = "highlight-card reveal-text";
+    card.setAttribute("tabindex", "0");
+
+    const imgWrap = document.createElement("div");
+    imgWrap.className = "highlight-thumb";
+    const img = document.createElement("img");
+    img.src = item.thumb || item.full || "";
+    img.alt = item.title || "精选内容";
+    img.loading = "lazy";
+    imgWrap.appendChild(img);
+    imgWrap.addEventListener("click", () => openModal(item));
+
+    const meta = document.createElement("div");
+    meta.className = "highlight-card__meta";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "highlight-eyebrow";
+    eyebrow.textContent = item.eyebrow || "内容精选";
+
+    const title = document.createElement("h3");
+    title.textContent = item.title || "未命名精选";
+
+    const desc = document.createElement("p");
+    desc.className = "highlight-desc";
+    desc.textContent = item.description || "";
+
+    const tagRow = document.createElement("div");
+    tagRow.className = "highlight-tags";
+    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
+      const span = document.createElement("span");
+      span.textContent = tag;
+      tagRow.appendChild(span);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "highlight-card__actions";
+
+    const viewBtn = document.createElement("button");
+    viewBtn.type = "button";
+    viewBtn.className = "highlight-btn";
+    viewBtn.textContent = "查看卡片";
+    viewBtn.addEventListener("click", () => openModal(item));
+    actions.appendChild(viewBtn);
+
+    if (item.originalUrl) {
+      const sourceLink = document.createElement("a");
+      sourceLink.className = "highlight-link";
+      sourceLink.href = item.originalUrl;
+      sourceLink.target = "_blank";
+      sourceLink.rel = "noopener noreferrer";
+      sourceLink.textContent = "阅读原文 →";
+      actions.appendChild(sourceLink);
+    }
+
+    meta.appendChild(eyebrow);
+    meta.appendChild(title);
+    if (desc.textContent) meta.appendChild(desc);
+    if (tagRow.children.length) meta.appendChild(tagRow);
+    meta.appendChild(actions);
+
+    card.appendChild(imgWrap);
+    card.appendChild(meta);
+
+    return card;
+  }
+
+  function renderGrid() {
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const totalItems = filteredItems.length;
+    if (!totalItems) return;
+
+    const start = (currentPage - 1) * pageSize;
+    const pageItems = filteredItems.slice(start, start + pageSize);
+
+    const frag = document.createDocumentFragment();
+    pageItems.forEach((item) => {
+      const card = buildCard(item);
+      if (card) frag.appendChild(card);
+    });
+
+    grid.appendChild(frag);
+
+    requestAnimationFrame(() => {
+      grid.querySelectorAll(".reveal-text").forEach((el, index) => {
+        setTimeout(() => el.classList.add("active"), index * 50);
+      });
+    });
+  }
+
+  function applyFilter() {
+    if (!allItems.length) return;
+
+    if (currentFilter === "all") {
+      filteredItems = [...allItems];
+    } else {
+      const filterLower = currentFilter.toLowerCase();
+      filteredItems = allItems.filter((item) =>
+        (Array.isArray(item.tags) ? item.tags : []).some(
+          (tag) => (tag || "").toString().trim().toLowerCase() === filterLower
+        )
+      );
+    }
+
+    setFilterEmpty(filteredItems.length === 0 && currentFilter !== "all");
+    currentPage = 1;
+    renderGrid();
+  }
+
+  function openModal(item) {
+    if (!modal) return;
+    const imgUrl = item.full || item.thumb || "";
+    modalImage.src = imgUrl;
+    modalImage.alt = item.title || "精选内容";
+    modalTitle.textContent = item.title || "精选内容";
+    if (modalSource) {
+      modalSource.textContent = item.source || "精选内容";
+    }
+    modalTags.innerHTML = "";
+    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
+      const span = document.createElement("span");
+      span.textContent = tag;
+      modalTags.appendChild(span);
+    });
+    modalDesc.textContent = item.description || "";
+    if (item.originalUrl) {
+      modalOriginal.href = item.originalUrl;
+      modalOriginal.style.display = "";
+    } else {
+      modalOriginal.style.display = "none";
+    }
+
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  if (modal) {
+    modal.querySelectorAll("[data-close]").forEach((el) => {
+      el.addEventListener("click", closeModal);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.classList.contains("open")) {
+        closeModal();
+      }
+    });
+  }
+
+  function render(items) {
+    if (!items || !items.length) {
+      setEmpty(true);
+      return;
+    }
+
+    setEmpty(false);
+    allItems = items;
+    filteredItems = [...allItems];
+    currentPage = 1;
+    renderFilters(collectTags(allItems));
+    setFilterEmpty(false);
+    renderGrid();
+  }
+
+  fetch(dataUrl)
+    .then((res) => {
+      if (!res.ok) throw new Error("网络异常");
+      return res.json();
+    })
+    .then((items) => render(items))
+    .catch(() => {
+      setEmpty(true);
+    });
+})();
+</script>
+
+<style>
+.highlight-shell {
+  padding-bottom: 5rem;
+}
+
+.gallery-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.gallery-hero h1 {
+  margin: 0.35rem 0;
+  font-size: 2.8rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.highlight-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 2rem;
+}
+
+.highlight-filter-pill {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.highlight-filter-pill:hover {
+  border-color: var(--accent);
+}
+
+.highlight-filter-pill.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.highlight-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease;
+  outline: none;
+}
+
+.highlight-card:hover {
+  transform: translateY(-6px);
+  background: var(--surface-highlight);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.highlight-thumb {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-highlight);
+  aspect-ratio: 16 / 9;
+  cursor: zoom-in;
+}
+
+.highlight-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.highlight-card:hover .highlight-thumb img {
+  transform: scale(1.03);
+}
+
+.highlight-card__meta {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.highlight-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.highlight-card h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+
+.highlight-desc {
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.highlight-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.highlight-tags span {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.highlight-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+  align-items: center;
+}
+
+.highlight-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  color: var(--text-main);
+  background: transparent;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.highlight-btn:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.highlight-link {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  margin-left: 0.35rem;
+}
+
+.highlight-link:hover {
+  text-decoration: underline;
+}
+
+.highlight-empty {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+}
+
+.highlight-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.highlight-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.highlight-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.highlight-modal__dialog {
+  position: relative;
+  max-width: 960px;
+  width: min(92vw, 960px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.highlight-modal__body {
+  display: grid;
+  grid-template-columns: 1fr 0.9fr;
+  gap: 1.25rem;
+  padding: 1.25rem;
+}
+
+.highlight-modal__image {
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlight-modal__image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.highlight-modal__meta h2 {
+  margin: 0.3rem 0 0.8rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.highlight-modal__tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.highlight-modal__tags span {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.highlight-modal__desc {
+  color: var(--text-muted);
+  margin: 0.25rem 0 0.75rem;
+  line-height: 1.6;
+}
+
+.highlight-modal__close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.highlight-modal__close:hover {
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .highlight-modal__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .highlight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .highlight-modal__dialog {
+    width: 94vw;
+  }
+}
+</style>
 {{ end }}
