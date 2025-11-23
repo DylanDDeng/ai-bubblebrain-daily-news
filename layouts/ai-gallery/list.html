@@ -136,6 +136,22 @@
     return Array.from(tags).filter(Boolean);
   }
 
+  function collectTagCounts(items) {
+    const counts = Object.create(null);
+    items.forEach((item) => {
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      const uniq = new Set(
+        tags
+          .map((t) => (t || "").toString().trim())
+          .filter(Boolean)
+      );
+      uniq.forEach((tag) => {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    });
+    return counts;
+  }
+
   function renderFilters(tags) {
     if (!filtersWrap) return;
     filtersWrap.innerHTML = "";
@@ -143,14 +159,15 @@
     const frag = document.createDocumentFragment();
     const allBtn = document.createElement("button");
     allBtn.className = "gallery-filter-pill active";
-    allBtn.textContent = "全部";
+    const counts = collectTagCounts(allItems);
+    allBtn.textContent = `全部 @${allItems.length}`;
     allBtn.setAttribute("data-tag", "all");
     frag.appendChild(allBtn);
 
     tags.forEach((tag) => {
       const btn = document.createElement("button");
       btn.className = "gallery-filter-pill";
-      btn.textContent = tag;
+      btn.textContent = `${tag} @${counts[tag] || 0}`;
       btn.setAttribute("data-tag", tag);
       frag.appendChild(btn);
     });
