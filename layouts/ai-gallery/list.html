@@ -9,7 +9,12 @@
       {{ end }}
     </header>
 
-    <div class="gallery-filter-row" id="gallery-filters" aria-label="按标签筛选"></div>
+    <div class="gallery-actions">
+      <div class="gallery-search">
+        <input type="search" id="gallery-search" placeholder="搜索标题 / Prompt / 作者" aria-label="搜索作品">
+      </div>
+      <div class="gallery-filter-row" id="gallery-filters" aria-label="按标签筛选"></div>
+    </div>
 
     <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
     <nav id="gallery-pagination" class="pagination" aria-label="AI生图分页导航" hidden></nav>
@@ -72,6 +77,7 @@
   const modalCounter = document.getElementById("modal-counter");
   const modalCaption = document.getElementById("modal-caption");
   const filtersWrap = document.getElementById("gallery-filters");
+  const searchInput = document.getElementById("gallery-search");
   const closeTargets = modal.querySelectorAll("[data-close]");
   const prevBtn = modal.querySelector("[data-prev]");
   const nextBtn = modal.querySelector("[data-next]");
@@ -84,6 +90,7 @@
   let currentIndex = 0;
   let currentItemTitle = "";
   let currentFilter = "all";
+  let searchTerm = "";
 
   const normalizeImages = (item) => {
     const arr = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
@@ -361,17 +368,30 @@
   function applyFilter() {
     if (!allItems.length) return;
 
-    if (currentFilter === "all") {
-      filteredItems = [...allItems];
-    } else {
-      const filterLower = currentFilter.toLowerCase();
-      filteredItems = allItems.filter((item) => {
-        const tags = Array.isArray(item.tags) ? item.tags : [];
-        return tags.some((tag) => (tag || "").toString().trim().toLowerCase() === filterLower);
-      });
-    }
+    const term = searchTerm.trim().toLowerCase();
+    const matchesSearch = (item) => {
+      if (!term) return true;
+      const haystack = [
+        item.title,
+        item.prompt,
+        item.author
+      ]
+        .map((v) => (v || "").toString().toLowerCase())
+        .join(" ");
+      return haystack.includes(term);
+    };
 
-    setFilterEmpty(filteredItems.length === 0 && currentFilter !== "all");
+    const byTag = (item) => {
+      if (currentFilter === "all") return true;
+      const filterLower = currentFilter.toLowerCase();
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      return tags.some((tag) => (tag || "").toString().trim().toLowerCase() === filterLower);
+    };
+
+    filteredItems = allItems.filter((item) => byTag(item) && matchesSearch(item));
+
+    const noMatch = filteredItems.length === 0;
+    setFilterEmpty(noMatch && (currentFilter !== "all" || term));
     currentPage = 1;
     renderGrid();
     renderPagination();
@@ -492,6 +512,13 @@
     }
   });
 
+  if (searchInput) {
+    searchInput.addEventListener("input", (event) => {
+      searchTerm = event.target.value || "";
+      applyFilter();
+    });
+  }
+
   fetch(dataUrl)
     .then((res) => {
       if (!res.ok) throw new Error("网络异常");
@@ -520,6 +547,37 @@
   font-family: "Cormorant Garamond", serif;
   font-weight: 300;
   letter-spacing: -0.01em;
+}
+
+.gallery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0 2rem;
+}
+
+.gallery-search {
+  flex: 1 1 260px;
+  max-width: 420px;
+}
+
+.gallery-search input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gallery-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
 .gallery-legend {
@@ -897,6 +955,21 @@
 }
 
 @media (max-width: 900px) {
+  .gallery-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .gallery-filter-row {
+    justify-content: flex-start;
+  }
+
+  .gallery-search {
+    max-width: none;
+    width: 100%;
+  }
+
   .gallery-modal__body {
     grid-template-columns: 1fr;
   }
