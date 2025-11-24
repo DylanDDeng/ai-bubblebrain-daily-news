@@ -81,6 +81,7 @@
   const closeTargets = modal.querySelectorAll("[data-close]");
   const prevBtn = modal.querySelector("[data-prev]");
   const nextBtn = modal.querySelector("[data-next]");
+  const MAX_TAGS_VISIBLE = 8;
   const pageSize = 20;
   let activeFocus = null;
   let currentImages = [];
@@ -91,6 +92,7 @@
   let currentItemTitle = "";
   let currentFilter = "all";
   let searchTerm = "";
+  let filtersCollapsed = true;
 
   const normalizeImages = (item) => {
     const arr = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
@@ -163,6 +165,15 @@
     if (!filtersWrap) return;
     filtersWrap.innerHTML = "";
 
+    const visibleTags = (() => {
+      if (!filtersCollapsed) return tags;
+      const base = tags.slice(0, MAX_TAGS_VISIBLE);
+      if (currentFilter !== "all" && tags.includes(currentFilter) && !base.includes(currentFilter)) {
+        base.push(currentFilter);
+      }
+      return base;
+    })();
+
     const frag = document.createDocumentFragment();
     const allBtn = document.createElement("button");
     allBtn.className = "gallery-filter-pill active";
@@ -171,13 +182,27 @@
     allBtn.setAttribute("data-tag", "all");
     frag.appendChild(allBtn);
 
-    tags.forEach((tag) => {
+    visibleTags.forEach((tag) => {
       const btn = document.createElement("button");
       btn.className = "gallery-filter-pill";
       btn.textContent = `${tag} @${counts[tag] || 0}`;
       btn.setAttribute("data-tag", tag);
       frag.appendChild(btn);
     });
+
+    if (tags.length > MAX_TAGS_VISIBLE) {
+      const toggle = document.createElement("button");
+      toggle.className = "gallery-filter-toggle";
+      toggle.type = "button";
+      toggle.textContent = filtersCollapsed
+        ? `展开全部标签 (${tags.length - MAX_TAGS_VISIBLE})`
+        : "收起标签";
+      toggle.addEventListener("click", () => {
+        filtersCollapsed = !filtersCollapsed;
+        renderFilters(tags);
+      });
+      frag.appendChild(toggle);
+    }
 
     filtersWrap.appendChild(frag);
 
@@ -599,6 +624,7 @@
   flex-wrap: wrap;
   gap: 0.6rem;
   margin: 1rem 0 2rem;
+  align-items: center;
 }
 
 .gallery-filter-pill {
@@ -619,6 +645,24 @@
 .gallery-filter-pill.active {
   background: var(--accent);
   color: #000;
+  border-color: var(--accent);
+}
+
+.gallery-filter-toggle {
+  border: 1px dashed var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  margin-left: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.gallery-filter-toggle:hover {
+  color: var(--accent);
   border-color: var(--accent);
 }
 
@@ -959,10 +1003,6 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0.6rem;
-  }
-
-  .gallery-filter-row {
-    justify-content: flex-start;
   }
 
   .gallery-search {
