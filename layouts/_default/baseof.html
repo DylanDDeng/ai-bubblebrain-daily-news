@@ -5,22 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
     <meta name="description" content="{{ .Description | default .Site.Params.description }}">
-    
-    <!-- Noir Luxury 样式 -->
-    <link rel="stylesheet" href="{{ "css/noir.css" | relURL }}">
-    
     <!-- Baidu Tongji -->
     <script>
       var _hmt = _hmt || [];
       (function() {
         var hm = document.createElement("script");
         hm.src = "https://hm.baidu.com/hm.js?fb8ac45f7858d4b9d4cb135449d1b46c";
-        hm.async = true;
         var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(hm, s);
       })();
     </script>
 
+    <!-- Noir Luxury 样式 -->
+    <link rel="stylesheet" href="{{ "css/noir.css" | relURL }}">
+    
     <!-- RSS -->
     {{ range .AlternativeOutputFormats -}}
         <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}">
