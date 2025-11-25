@@ -516,7 +516,17 @@
 .eval-modal__dialog--wide {
   max-width: 1200px;
   width: min(96vw, 1200px);
-  max-height: 120vh;
+  height: 85vh;
+}
+
+.eval-modal__dialog--wide .eval-modal__body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.eval-modal__dialog--wide .answer-content iframe {
+  height: 70vh !important;
+  min-height: 500px;
 }
 
 .eval-modal__header {
