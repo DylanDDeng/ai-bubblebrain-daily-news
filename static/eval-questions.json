@@ -41,25 +41,20 @@
       }
     }
   },
-  {
+    {
     "id": "q003",
-    "title": "图像生成：赛博朋克城市",
-    "category": "图像生成",
-    "difficulty": "简单",
-    "question": "生成一张赛博朋克风格的未来城市夜景图片。",
+    "title": "洗衣机工作原理动画",
+    "category": "SVG动画",
+    "difficulty": "中等",
+    "question": "用SVG动画展示洗衣机的工作原理，包括进水、洗涤、排水、脱水四个阶段，要有交互控制。",
     "answers": {
-      "gemini-3": {
-        "type": "image",
-        "content": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800",
-        "alt": "Gemini生成的赛博朋克城市"
-      },
-      "gpt-5": {
-        "type": "image",
-        "content": "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=800",
-        "alt": "GPT-5生成的赛博朋克城市"
+      "claude-opus-4.5": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.5-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
-  },
+  }
+  ,
   {
     "id": "q004",
     "title": "数学推理：鸡兔同笼",
