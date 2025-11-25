@@ -47,6 +47,11 @@ disableKinds = ['taxonomy', 'term']
   weight = 35
 
 [[menu.main]]
+  name = '模型评测'
+  pageRef = '/model-evals'
+  weight = 36
+
+[[menu.main]]
   name = 'RSS'
   url = '/index.xml'
   weight = 50

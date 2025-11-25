@@ -1,0 +1,38 @@
+[
+  {
+    "id": "claude-opus-4",
+    "name": "Claude Opus 4",
+    "company": "Anthropic",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/7/78/Anthropic_logo.svg",
+    "releaseDate": "2025-05",
+    "description": "Anthropic最强大的模型，擅长复杂推理和代码生成",
+    "tags": ["推理", "代码", "多模态"]
+  },
+  {
+    "id": "gpt-5",
+    "name": "GPT-5",
+    "company": "OpenAI",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
+    "releaseDate": "2025-03",
+    "description": "OpenAI旗舰模型，具备强大的通用能力",
+    "tags": ["通用", "推理", "创意"]
+  },
+  {
+    "id": "gemini-3",
+    "name": "Gemini 3",
+    "company": "Google",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg",
+    "releaseDate": "2025-04",
+    "description": "Google最新多模态模型，原生支持多种媒体类型",
+    "tags": ["多模态", "搜索", "代码"]
+  },
+  {
+    "id": "deepseek-v3",
+    "name": "DeepSeek V3",
+    "company": "DeepSeek",
+    "logo": "https://www.deepseek.com/logo.svg",
+    "releaseDate": "2025-01",
+    "description": "国产开源大模型，性价比极高",
+    "tags": ["开源", "代码", "推理"]
+  }
+]

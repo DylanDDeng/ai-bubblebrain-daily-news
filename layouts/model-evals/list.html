@@ -1,0 +1,763 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-narrow eval-shell">
+    <header class="page-header gallery-hero">
+      <p class="page-eyebrow">Bubble's Brain</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Params.description }}
+        <p class="page-desc">{{ . }}</p>
+      {{ end }}
+    </header>
+
+    <div id="model-grid" class="eval-grid" aria-live="polite"></div>
+    <div id="model-empty" class="eval-empty" hidden>
+      <p>暂未收录模型评测。</p>
+      <p>在 static 目录新增 model-evals.json 即可配置。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 题目列表弹框 -->
+<div class="eval-modal" id="questions-modal" aria-hidden="true">
+  <div class="eval-modal__backdrop" data-close></div>
+  <div class="eval-modal__dialog" role="dialog" aria-modal="true">
+    <button class="eval-modal__close" type="button" data-close aria-label="关闭">&times;</button>
+    <div class="eval-modal__header">
+      <h2 id="modal-model-name">模型评测题目</h2>
+      <p id="modal-model-company" class="modal-company"></p>
+    </div>
+    <div class="eval-modal__body">
+      <div class="question-filters" id="question-filters"></div>
+      <div class="question-list" id="question-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 回答详情弹框 -->
+<div class="eval-modal" id="answer-modal" aria-hidden="true">
+  <div class="eval-modal__backdrop" data-close></div>
+  <div class="eval-modal__dialog eval-modal__dialog--wide" role="dialog" aria-modal="true">
+    <button class="eval-modal__close" type="button" data-close aria-label="关闭">&times;</button>
+    <div class="eval-modal__header">
+      <p class="answer-breadcrumb"><span id="answer-model"></span> / <span id="answer-category"></span></p>
+      <h2 id="answer-title">回答详情</h2>
+    </div>
+    <div class="eval-modal__body">
+      <div class="answer-question">
+        <h4>题目</h4>
+        <p id="answer-question-text"></p>
+      </div>
+      <div class="answer-content" id="answer-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const modelsUrl = "{{ "/model-evals.json" | relURL }}";
+  const questionsUrl = "{{ "/eval-questions.json" | relURL }}";
+  const grid = document.getElementById("model-grid");
+  const empty = document.getElementById("model-empty");
+
+  const questionsModal = document.getElementById("questions-modal");
+  const modalModelName = document.getElementById("modal-model-name");
+  const modalModelCompany = document.getElementById("modal-model-company");
+  const questionFilters = document.getElementById("question-filters");
+  const questionList = document.getElementById("question-list");
+
+  const answerModal = document.getElementById("answer-modal");
+  const answerModel = document.getElementById("answer-model");
+  const answerCategory = document.getElementById("answer-category");
+  const answerTitle = document.getElementById("answer-title");
+  const answerQuestionText = document.getElementById("answer-question-text");
+  const answerContent = document.getElementById("answer-content");
+
+  let allModels = [];
+  let allQuestions = [];
+  let currentModelId = null;
+  let currentCategory = "all";
+
+  function setEmpty(show) {
+    if (empty) empty.hidden = !show;
+  }
+
+  function buildModelCard(model) {
+    const card = document.createElement("article");
+    card.className = "eval-card reveal-text";
+
+    const logoWrap = document.createElement("div");
+    logoWrap.className = "eval-card__logo";
+    if (model.logo) {
+      const img = document.createElement("img");
+      img.src = model.logo;
+      img.alt = model.company;
+      img.onerror = function() { this.style.display = 'none'; };
+      logoWrap.appendChild(img);
+    } else {
+      logoWrap.textContent = model.company?.charAt(0) || "?";
+    }
+
+    const meta = document.createElement("div");
+    meta.className = "eval-card__meta";
+
+    const company = document.createElement("p");
+    company.className = "eval-card__company";
+    company.textContent = model.company || "";
+
+    const name = document.createElement("h3");
+    name.textContent = model.name || "未知模型";
+
+    const desc = document.createElement("p");
+    desc.className = "eval-card__desc";
+    desc.textContent = model.description || "";
+
+    const tagRow = document.createElement("div");
+    tagRow.className = "eval-card__tags";
+    (model.tags || []).forEach(tag => {
+      const span = document.createElement("span");
+      span.textContent = tag;
+      tagRow.appendChild(span);
+    });
+
+    const btn = document.createElement("button");
+    btn.className = "eval-btn";
+    btn.textContent = "查看评测题目";
+    btn.addEventListener("click", () => openQuestionsModal(model));
+
+    meta.appendChild(company);
+    meta.appendChild(name);
+    if (desc.textContent) meta.appendChild(desc);
+    if (tagRow.children.length) meta.appendChild(tagRow);
+    meta.appendChild(btn);
+
+    card.appendChild(logoWrap);
+    card.appendChild(meta);
+
+    return card;
+  }
+
+  function renderModels() {
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    if (!allModels.length) {
+      setEmpty(true);
+      return;
+    }
+    setEmpty(false);
+
+    const frag = document.createDocumentFragment();
+    allModels.forEach(model => {
+      frag.appendChild(buildModelCard(model));
+    });
+    grid.appendChild(frag);
+
+    requestAnimationFrame(() => {
+      grid.querySelectorAll(".reveal-text").forEach((el, i) => {
+        setTimeout(() => el.classList.add("active"), i * 60);
+      });
+    });
+  }
+
+  function getModelQuestions(modelId) {
+    return allQuestions.filter(q => q.answers && q.answers[modelId]);
+  }
+
+  function collectCategories(questions) {
+    const cats = new Set();
+    questions.forEach(q => {
+      if (q.category) cats.add(q.category);
+    });
+    return Array.from(cats);
+  }
+
+  function renderQuestionFilters(categories, questions) {
+    questionFilters.innerHTML = "";
+    const frag = document.createDocumentFragment();
+
+    const allBtn = document.createElement("button");
+    allBtn.className = "eval-filter-pill active";
+    allBtn.textContent = `全部 (${questions.length})`;
+    allBtn.dataset.cat = "all";
+    frag.appendChild(allBtn);
+
+    categories.forEach(cat => {
+      const count = questions.filter(q => q.category === cat).length;
+      const btn = document.createElement("button");
+      btn.className = "eval-filter-pill";
+      btn.textContent = `${cat} (${count})`;
+      btn.dataset.cat = cat;
+      frag.appendChild(btn);
+    });
+
+    questionFilters.appendChild(frag);
+
+    questionFilters.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentCategory = btn.dataset.cat;
+        questionFilters.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderQuestionList();
+      });
+    });
+  }
+
+  function renderQuestionList() {
+    const questions = getModelQuestions(currentModelId);
+    let filtered = questions;
+    if (currentCategory !== "all") {
+      filtered = questions.filter(q => q.category === currentCategory);
+    }
+
+    questionList.innerHTML = "";
+    if (!filtered.length) {
+      questionList.innerHTML = '<p class="no-questions">该分类下暂无评测题目</p>';
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    filtered.forEach(q => {
+      const item = document.createElement("div");
+      item.className = "question-item";
+
+      const header = document.createElement("div");
+      header.className = "question-item__header";
+
+      const title = document.createElement("h4");
+      title.textContent = q.title;
+
+      const badges = document.createElement("div");
+      badges.className = "question-item__badges";
+
+      const catBadge = document.createElement("span");
+      catBadge.className = "badge badge--cat";
+      catBadge.textContent = q.category;
+      badges.appendChild(catBadge);
+
+      if (q.difficulty) {
+        const diffBadge = document.createElement("span");
+        diffBadge.className = "badge badge--diff";
+        diffBadge.textContent = q.difficulty;
+        badges.appendChild(diffBadge);
+      }
+
+      header.appendChild(title);
+      header.appendChild(badges);
+
+      const questionText = document.createElement("p");
+      questionText.className = "question-item__text";
+      questionText.textContent = q.question;
+
+      const viewBtn = document.createElement("button");
+      viewBtn.className = "eval-btn eval-btn--sm";
+      viewBtn.textContent = "查看回答 \u2192";
+      viewBtn.addEventListener("click", () => openAnswerModal(q));
+
+      item.appendChild(header);
+      item.appendChild(questionText);
+      item.appendChild(viewBtn);
+
+      frag.appendChild(item);
+    });
+
+    questionList.appendChild(frag);
+  }
+
+  function openQuestionsModal(model) {
+    currentModelId = model.id;
+    currentCategory = "all";
+
+    modalModelName.textContent = model.name + " 评测题目";
+    modalModelCompany.textContent = model.company;
+
+    const questions = getModelQuestions(model.id);
+    const categories = collectCategories(questions);
+
+    renderQuestionFilters(categories, questions);
+    renderQuestionList();
+
+    questionsModal.classList.add("open");
+    questionsModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function openAnswerModal(question) {
+    const model = allModels.find(m => m.id === currentModelId);
+    const answer = question.answers[currentModelId];
+
+    answerModel.textContent = model?.name || currentModelId;
+    answerCategory.textContent = question.category;
+    answerTitle.textContent = question.title;
+    answerQuestionText.textContent = question.question;
+
+    answerContent.innerHTML = "";
+
+    if (answer.type === "html") {
+      answerContent.innerHTML = answer.content;
+    } else if (answer.type === "image") {
+      const img = document.createElement("img");
+      img.src = answer.content;
+      img.alt = answer.alt || "模型生成图片";
+      img.className = "answer-image";
+      answerContent.appendChild(img);
+    } else {
+      const pre = document.createElement("pre");
+      pre.className = "answer-text";
+      pre.textContent = answer.content;
+      answerContent.appendChild(pre);
+    }
+
+    answerModal.classList.add("open");
+    answerModal.setAttribute("aria-hidden", "false");
+  }
+
+  function closeModal(modal) {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    if (!questionsModal.classList.contains("open") && !answerModal.classList.contains("open")) {
+      document.body.style.overflow = "";
+    }
+  }
+
+  [questionsModal, answerModal].forEach(modal => {
+    if (!modal) return;
+    modal.querySelectorAll("[data-close]").forEach(el => {
+      el.addEventListener("click", () => closeModal(modal));
+    });
+  });
+
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      if (answerModal.classList.contains("open")) {
+        closeModal(answerModal);
+      } else if (questionsModal.classList.contains("open")) {
+        closeModal(questionsModal);
+      }
+    }
+  });
+
+  Promise.all([
+    fetch(modelsUrl).then(r => r.json()),
+    fetch(questionsUrl).then(r => r.json())
+  ])
+    .then(([models, questions]) => {
+      allModels = models || [];
+      allQuestions = questions || [];
+      renderModels();
+    })
+    .catch(() => setEmpty(true));
+})();
+</script>
+
+<style>
+.eval-shell {
+  padding-bottom: 5rem;
+}
+
+.eval-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.eval-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease;
+}
+
+.eval-card:hover {
+  transform: translateY(-6px);
+  background: var(--surface-highlight);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.eval-card__logo {
+  width: 100%;
+  height: 140px;
+  background: var(--surface-highlight);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.eval-card__logo img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.eval-card__meta {
+  flex: 1;
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.eval-card__company {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.eval-card h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  font-size: 1.6rem;
+}
+
+.eval-card__desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0.25rem 0;
+  line-height: 1.5;
+}
+
+.eval-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.eval-card__tags span {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.8rem;
+}
+
+.eval-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  color: var(--text-main);
+  background: transparent;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  margin-top: 0.5rem;
+  width: fit-content;
+}
+
+.eval-btn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+.eval-btn--sm {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+  margin-top: 0.75rem;
+}
+
+.eval-empty {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+}
+
+/* Modal */
+.eval-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.eval-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.eval-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.eval-modal__dialog {
+  position: relative;
+  max-width: 680px;
+  width: min(92vw, 680px);
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.eval-modal__dialog--wide {
+  max-width: 900px;
+  width: min(94vw, 900px);
+}
+
+.eval-modal__header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.eval-modal__header h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-size: 1.8rem;
+}
+
+.modal-company {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.eval-modal__body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.eval-modal__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.eval-modal__close:hover {
+  color: var(--accent);
+}
+
+/* Question Filters */
+.eval-filter-pill {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.eval-filter-pill:hover {
+  border-color: var(--accent);
+}
+
+.eval-filter-pill.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.question-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Question List */
+.question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.question-item {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  padding: 1.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.question-item:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.question-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.question-item h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.question-item__badges {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.badge--cat {
+  background: var(--accent);
+  color: #000;
+}
+
+.badge--diff {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.question-item__text {
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.no-questions {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem;
+}
+
+/* Answer Modal */
+.answer-breadcrumb {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.answer-question {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.answer-question h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.answer-question p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.answer-content {
+  line-height: 1.7;
+}
+
+.answer-content pre,
+.answer-text {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "Manrope", monospace;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.answer-content code {
+  font-family: "Manrope", monospace;
+}
+
+.answer-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.answer-content th,
+.answer-content td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.answer-content th {
+  background: var(--surface-highlight);
+}
+
+.answer-image {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+  .eval-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .eval-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .eval-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .eval-modal__dialog {
+    width: 96vw;
+    max-height: 90vh;
+  }
+
+  .question-item__header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+</style>
+{{ end }}
