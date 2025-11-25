@@ -10,9 +10,9 @@
         "type": "html",
         "content": "<iframe src='/eval-demos/claude-opus-4-5-shanghai-voxel.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
-      "gpt-5": {
-        "type": "text",
-        "content": "河内塔3盘解法（7步）：\n\n步骤：A→C, A→B, C→B, A→C, B→A, B→C, A→C\n\n这是递归思想的经典应用：先把上面n-1个盘子移到辅助柱，再把最大盘移到目标柱，最后把n-1个盘子移到目标柱。"
+      "gpt-5.1-codex-max-high": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-voxel-shanghai.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
       "gemini-3": {
         "type": "html",
