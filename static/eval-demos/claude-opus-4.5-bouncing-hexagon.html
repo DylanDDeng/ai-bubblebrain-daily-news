@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旋转六边形内的弹跳球</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+        #info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            z-index: 100;
+        }
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-weight: 500;
+        }
+        .btn-reset { background: linear-gradient(135deg, #e57373, #ef5350); }
+        .btn-gravity { background: linear-gradient(135deg, #64b5f6, #42a5f5); }
+        .btn-speed { background: linear-gradient(135deg, #81c784, #66bb6a); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <div>⬆️⬇️ 调整重力 | ⬅️➡️ 调整旋转速度</div>
+        <div>点击添加新球 | 空格键重置</div>
+    </div>
+    <div id="controls">
+        <button class="btn btn-reset" onclick="resetBalls()">🔄 重置</button>
+        <button class="btn btn-gravity" onclick="toggleGravity()">🌍 重力开关</button>
+        <button class="btn btn-speed" onclick="reverseRotation()">↩️ 反转旋转</button>
+    </div>
+
+    <script>
+        // 物理参数
+        let gravity = 0.5;
+        let gravityEnabled = true;
+        let restitution = 0.85;  // 弹性系数
+        let friction = 0.99;     // 摩擦系数
+        let rotationSpeed = 0.01;
+
+        // 六边形参数
+        let hexRadius = 280;
+        let hexAngle = 0;
+        let hexCenter;
+
+        // 球数组
+        let balls = [];
+        const NUM_BALLS = 10;
+
+        // 颜色数组
+        const COLORS = [
+            [255, 107, 107],  // 红
+            [78, 205, 196],   // 青
+            [255, 230, 109],  // 黄
+            [170, 111, 255],  // 紫
+            [255, 171, 76],   // 橙
+            [46, 213, 115],   // 绿
+            [255, 121, 198],  // 粉
+            [116, 185, 255],  // 蓝
+            [253, 203, 110],  // 金
+            [0, 210, 211],    // 青绿
+        ];
+
+        class Ball {
+            constructor(x, y, r, color) {
+                this.pos = createVector(x, y);
+                this.vel = createVector(random(-5, 5), random(-5, 5));
+                this.acc = createVector(0, 0);
+                this.r = r;
+                this.mass = r * r;
+                this.color = color;
+                this.trail = [];
+                this.maxTrail = 15;
+            }
+
+            applyForce(force) {
+                let f = p5.Vector.div(force, this.mass);
+                this.acc.add(f);
+            }
+
+            update() {
+                // 应用重力
+                if (gravityEnabled) {
+                    this.applyForce(createVector(0, gravity * this.mass));
+                }
+
+                // 更新速度和位置
+                this.vel.add(this.acc);
+                this.vel.mult(friction);
+                this.pos.add(this.vel);
+                this.acc.mult(0);
+
+                // 更新轨迹
+                this.trail.push(this.pos.copy());
+                if (this.trail.length > this.maxTrail) {
+                    this.trail.shift();
+                }
+            }
+
+            draw() {
+                // 绘制轨迹
+                noFill();
+                beginShape();
+                for (let i = 0; i < this.trail.length; i++) {
+                    let alpha = map(i, 0, this.trail.length, 0, 150);
+                    stroke(this.color[0], this.color[1], this.color[2], alpha);
+                    strokeWeight(map(i, 0, this.trail.length, 1, this.r * 0.8));
+                    vertex(this.trail[i].x, this.trail[i].y);
+                }
+                endShape();
+
+                // 绘制球体（带渐变效果）
+                noStroke();
+
+                // 外发光
+                for (let i = 5; i > 0; i--) {
+                    fill(this.color[0], this.color[1], this.color[2], 20);
+                    ellipse(this.pos.x, this.pos.y, this.r * 2 + i * 8);
+                }
+
+                // 主体
+                fill(this.color[0], this.color[1], this.color[2]);
+                ellipse(this.pos.x, this.pos.y, this.r * 2);
+
+                // 高光
+                fill(255, 255, 255, 180);
+                ellipse(this.pos.x - this.r * 0.3, this.pos.y - this.r * 0.3, this.r * 0.6);
+            }
+        }
+
+        function setup() {
+            let canvas = createCanvas(windowWidth, windowHeight);
+            hexCenter = createVector(width / 2, height / 2);
+            hexRadius = min(width, height) * 0.38;
+            resetBalls();
+        }
+
+        function resetBalls() {
+            balls = [];
+            for (let i = 0; i < NUM_BALLS; i++) {
+                let angle = random(TWO_PI);
+                let dist = random(50, hexRadius * 0.5);
+                let x = hexCenter.x + cos(angle) * dist;
+                let y = hexCenter.y + sin(angle) * dist;
+                let r = random(15, 30);
+                balls.push(new Ball(x, y, r, COLORS[i % COLORS.length]));
+            }
+        }
+
+        function draw() {
+            background(26, 26, 46);
+
+            // 更新六边形角度
+            hexAngle += rotationSpeed;
+
+            // 绘制背景装饰
+            drawBackground();
+
+            // 绘制六边形
+            drawHexagon();
+
+            // 更新和绘制球
+            for (let ball of balls) {
+                ball.update();
+                checkHexagonCollision(ball);
+            }
+
+            // 球之间的碰撞
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    checkBallCollision(balls[i], balls[j]);
+                }
+            }
+
+            // 绘制球
+            for (let ball of balls) {
+                ball.draw();
+            }
+
+            // 绘制信息
+            drawInfo();
+        }
+
+        function drawBackground() {
+            // 绘制旋转的背景线条
+            push();
+            translate(hexCenter.x, hexCenter.y);
+            stroke(255, 255, 255, 10);
+            strokeWeight(1);
+            for (let i = 0; i < 12; i++) {
+                let angle = i * PI / 6 + hexAngle * 0.5;
+                line(0, 0, cos(angle) * max(width, height), sin(angle) * max(width, height));
+            }
+            pop();
+        }
+
+        function drawHexagon() {
+            push();
+            translate(hexCenter.x, hexCenter.y);
+            rotate(hexAngle);
+
+            // 绘制外发光
+            noFill();
+            for (let i = 5; i > 0; i--) {
+                stroke(100, 200, 255, 30 - i * 5);
+                strokeWeight(i * 3);
+                beginShape();
+                for (let j = 0; j < 6; j++) {
+                    let angle = j * PI / 3 - PI / 6;
+                    vertex(cos(angle) * hexRadius, sin(angle) * hexRadius);
+                }
+                endShape(CLOSE);
+            }
+
+            // 主六边形
+            stroke(100, 200, 255);
+            strokeWeight(4);
+            beginShape();
+            for (let i = 0; i < 6; i++) {
+                let angle = i * PI / 3 - PI / 6;
+                vertex(cos(angle) * hexRadius, sin(angle) * hexRadius);
+            }
+            endShape(CLOSE);
+
+            // 顶点装饰
+            fill(100, 200, 255);
+            noStroke();
+            for (let i = 0; i < 6; i++) {
+                let angle = i * PI / 3 - PI / 6;
+                ellipse(cos(angle) * hexRadius, sin(angle) * hexRadius, 12);
+            }
+
+            pop();
+        }
+
+        function getHexagonVertices() {
+            let vertices = [];
+            for (let i = 0; i < 6; i++) {
+                let angle = i * PI / 3 - PI / 6 + hexAngle;
+                vertices.push(createVector(
+                    hexCenter.x + cos(angle) * hexRadius,
+                    hexCenter.y + sin(angle) * hexRadius
+                ));
+            }
+            return vertices;
+        }
+
+        function checkHexagonCollision(ball) {
+            let vertices = getHexagonVertices();
+
+            for (let i = 0; i < 6; i++) {
+                let v1 = vertices[i];
+                let v2 = vertices[(i + 1) % 6];
+
+                // 计算墙壁法向量（指向内部）
+                let edge = p5.Vector.sub(v2, v1);
+                let normal = createVector(-edge.y, edge.x);
+                normal.normalize();
+
+                // 检查法向量是否指向中心
+                let toCenter = p5.Vector.sub(hexCenter, v1);
+                if (normal.dot(toCenter) < 0) {
+                    normal.mult(-1);
+                }
+
+                // 计算球到墙壁的距离
+                let ballToV1 = p5.Vector.sub(ball.pos, v1);
+                let distance = ballToV1.dot(normal);
+
+                // 计算球在边上的投影点
+                let edgeLength = edge.mag();
+                let projection = ballToV1.dot(edge) / edgeLength;
+
+                // 检查是否在边的范围内
+                if (projection >= 0 && projection <= edgeLength) {
+                    if (distance < ball.r) {
+                        // 计算墙壁在碰撞点的速度（由于旋转）
+                        let collisionPoint = p5.Vector.add(v1, p5.Vector.mult(edge, projection / edgeLength));
+                        let radiusVec = p5.Vector.sub(collisionPoint, hexCenter);
+
+                        // 墙壁速度 = ω × r（垂直于半径向量）
+                        let wallVel = createVector(-radiusVec.y, radiusVec.x);
+                        wallVel.mult(rotationSpeed);
+
+                        // 相对速度
+                        let relVel = p5.Vector.sub(ball.vel, wallVel);
+                        let velNormal = relVel.dot(normal);
+
+                        // 只在球向墙壁移动时处理碰撞
+                        if (velNormal < 0) {
+                            // 反射速度
+                            let impulse = p5.Vector.mult(normal, -velNormal * (1 + restitution));
+                            ball.vel.add(impulse);
+
+                            // 添加墙壁速度的影响
+                            ball.vel.add(p5.Vector.mult(wallVel, 0.5));
+
+                            // 应用切向摩擦
+                            let tangent = createVector(-normal.y, normal.x);
+                            let velTangent = relVel.dot(tangent);
+                            ball.vel.sub(p5.Vector.mult(tangent, velTangent * (1 - friction)));
+                        }
+
+                        // 将球推出墙壁
+                        let overlap = ball.r - distance;
+                        ball.pos.add(p5.Vector.mult(normal, overlap + 1));
+                    }
+                }
+            }
+
+            // 检查与顶点的碰撞
+            for (let v of vertices) {
+                let dist = p5.Vector.dist(ball.pos, v);
+                if (dist < ball.r) {
+                    let normal = p5.Vector.sub(ball.pos, v);
+                    normal.normalize();
+
+                    let velNormal = ball.vel.dot(normal);
+                    if (velNormal < 0) {
+                        let impulse = p5.Vector.mult(normal, -velNormal * (1 + restitution));
+                        ball.vel.add(impulse);
+                    }
+
+                    let overlap = ball.r - dist;
+                    ball.pos.add(p5.Vector.mult(normal, overlap + 1));
+                }
+            }
+        }
+
+        function checkBallCollision(ball1, ball2) {
+            let dist = p5.Vector.dist(ball1.pos, ball2.pos);
+            let minDist = ball1.r + ball2.r;
+
+            if (dist < minDist && dist > 0) {
+                // 碰撞法向量
+                let normal = p5.Vector.sub(ball2.pos, ball1.pos);
+                normal.normalize();
+
+                // 相对速度
+                let relVel = p5.Vector.sub(ball1.vel, ball2.vel);
+                let velNormal = relVel.dot(normal);
+
+                // 只在球靠近时处理
+                if (velNormal > 0) {
+                    // 计算冲量（考虑质量）
+                    let totalMass = ball1.mass + ball2.mass;
+                    let impulse = (2 * velNormal * restitution) / totalMass;
+
+                    ball1.vel.sub(p5.Vector.mult(normal, impulse * ball2.mass));
+                    ball2.vel.add(p5.Vector.mult(normal, impulse * ball1.mass));
+                }
+
+                // 分离重叠的球
+                let overlap = minDist - dist;
+                let separation = p5.Vector.mult(normal, overlap / 2 + 1);
+                ball1.pos.sub(separation);
+                ball2.pos.add(separation);
+            }
+        }
+
+        function drawInfo() {
+            fill(255, 255, 255, 200);
+            noStroke();
+            textSize(14);
+            textAlign(RIGHT, TOP);
+            text(`球数: ${balls.length}`, width - 20, 20);
+            text(`重力: ${gravityEnabled ? gravity.toFixed(2) : '关闭'}`, width - 20, 40);
+            text(`旋转速度: ${(rotationSpeed * 100).toFixed(1)}`, width - 20, 60);
+            text(`弹性: ${(restitution * 100).toFixed(0)}%`, width - 20, 80);
+        }
+
+        function keyPressed() {
+            if (keyCode === UP_ARROW) {
+                gravity = min(gravity + 0.1, 2);
+            } else if (keyCode === DOWN_ARROW) {
+                gravity = max(gravity - 0.1, 0);
+            } else if (keyCode === LEFT_ARROW) {
+                rotationSpeed = max(rotationSpeed - 0.005, -0.05);
+            } else if (keyCode === RIGHT_ARROW) {
+                rotationSpeed = min(rotationSpeed + 0.005, 0.05);
+            } else if (key === ' ') {
+                resetBalls();
+            }
+        }
+
+        function mousePressed() {
+            // 检查是否点击在六边形内
+            let vertices = getHexagonVertices();
+            if (isInsideHexagon(mouseX, mouseY, vertices)) {
+                let r = random(15, 30);
+                let color = COLORS[balls.length % COLORS.length];
+                balls.push(new Ball(mouseX, mouseY, r, color));
+            }
+        }
+
+        function isInsideHexagon(x, y, vertices) {
+            let inside = true;
+            for (let i = 0; i < 6; i++) {
+                let v1 = vertices[i];
+                let v2 = vertices[(i + 1) % 6];
+                let edge = p5.Vector.sub(v2, v1);
+                let toPoint = createVector(x - v1.x, y - v1.y);
+                let cross = edge.x * toPoint.y - edge.y * toPoint.x;
+                if (cross > 0) {
+                    inside = false;
+                    break;
+                }
+            }
+            return inside;
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+            hexCenter = createVector(width / 2, height / 2);
+            hexRadius = min(width, height) * 0.38;
+        }
+
+        function toggleGravity() {
+            gravityEnabled = !gravityEnabled;
+        }
+
+        function reverseRotation() {
+            rotationSpeed *= -1;
+        }
+    </script>
+</body>
+</html>

@@ -44,7 +44,7 @@
     {
     "id": "q003",
     "title": "洗衣机工作原理动画",
-    "category": "SVG动画",
+    "category": "代码能力",
     "difficulty": "中等",
     "question": "用SVG动画展示洗衣机的工作原理，包括进水、洗涤、排水、脱水四个阶段，要有交互控制。",
     "answers": {
@@ -57,14 +57,14 @@
   ,
   {
     "id": "q004",
-    "title": "数学推理：鸡兔同笼",
-    "category": "数学推理",
-    "difficulty": "简单",
-    "question": "笼子里有鸡和兔子共35只，数脚有94只，问鸡和兔子各有多少只？",
+    "title": "小球动画",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "使用 p5.js创建 10 个彩色球在旋转六边形内弹跳的效果，考虑重力，弹性，摩擦和碰撞。写进一个HTML 文件",
     "answers": {
-      "claude-opus-4": {
-        "type": "text",
-        "content": "设鸡有x只，兔有y只。\n\n根据题意：\n- x + y = 35（总数）\n- 2x + 4y = 94（脚数）\n\n由第一个方程：x = 35 - y\n代入第二个方程：2(35 - y) + 4y = 94\n70 - 2y + 4y = 94\n2y = 24\ny = 12\n\n所以 x = 35 - 12 = 23\n\n答：鸡23只，兔子12只。\n\n验证：23×2 + 12×4 = 46 + 48 = 94 ✓"
+      "claude-opus-4.5": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.5-bouncing-hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
       "gpt-5": {
         "type": "text",
