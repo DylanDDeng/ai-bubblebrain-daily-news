@@ -30,9 +30,9 @@ export async function handleCommitToGitHub(request, env) {
         if (dailyMd) {
             // Generate Hugo front matter
             const hugoFrontMatter = `---
-title: "Bubble's Brain 阅读手册 - ${dateStr}"
+title: "Bubble's Brain - ${dateStr}"
 date: ${dateStr}T09:00:00+08:00
-description: "Bubble's Brain 阅读手册 - ${new Date(dateStr).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}"
+description: "Bubble's Brain - ${new Date(dateStr).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}"
 categories:
   - 日报
 tags:
