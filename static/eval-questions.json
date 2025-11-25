@@ -22,14 +22,14 @@
   },
   {
     "id": "q002",
-    "title": "代码生成：快速排序",
+    "title": "做个网站介绍自己",
     "category": "代码能力",
-    "difficulty": "中等",
-    "question": "请用Python实现快速排序算法，要求代码简洁且包含注释。",
+    "difficulty": "低级",
+    "question": "Make a website presenting yourself",
     "answers": {
-      "claude-opus-4": {
+      "claude-opus-4.5": {
         "type": "html",
-        "content": "<pre><code class='language-python'>def quicksort(arr):\n    \"\"\"快速排序实现\"\"\"\n    if len(arr) <= 1:\n        return arr\n    \n    pivot = arr[len(arr) // 2]  # 选择中间元素作为基准\n    left = [x for x in arr if x < pivot]    # 小于基准的元素\n    middle = [x for x in arr if x == pivot] # 等于基准的元素\n    right = [x for x in arr if x > pivot]   # 大于基准的元素\n    \n    return quicksort(left) + middle + quicksort(right)\n\n# 测试\nprint(quicksort([3, 6, 8, 10, 1, 2, 1]))  # [1, 1, 2, 3, 6, 8, 10]</code></pre>"
+        "content": "<iframe src='/eval-demos/claude-opus-4.5.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
       "gpt-5": {
         "type": "html",
