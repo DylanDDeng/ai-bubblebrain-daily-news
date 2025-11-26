@@ -31,9 +31,9 @@
         "type": "html",
         "content": "<iframe src='/eval-demos/claude-opus-4.5.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
-      "gpt-5": {
+      "gpt-5.1-codex-max-high": {
         "type": "html",
-        "content": "<pre><code class='language-python'>def quicksort(arr, low=0, high=None):\n    \"\"\"原地快速排序，节省空间\"\"\"\n    if high is None:\n        high = len(arr) - 1\n    \n    if low < high:\n        # 分区操作\n        pivot_idx = partition(arr, low, high)\n        quicksort(arr, low, pivot_idx - 1)\n        quicksort(arr, pivot_idx + 1, high)\n    return arr\n\ndef partition(arr, low, high):\n    pivot = arr[high]\n    i = low - 1\n    for j in range(low, high):\n        if arr[j] <= pivot:\n            i += 1\n            arr[i], arr[j] = arr[j], arr[i]\n    arr[i + 1], arr[high] = arr[high], arr[i + 1]\n    return i + 1</code></pre>"
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-about-codex.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
       "deepseek-v3": {
         "type": "html",

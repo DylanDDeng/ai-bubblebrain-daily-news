@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Codex · AI Developer</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(14, 19, 35, 0.76);
+      --text: #eaf2ff;
+      --muted: #9fb5d8;
+      --accent: #7df3d3;
+      --accent-2: #8ea2ff;
+      --code: #0d152b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Inter", "Segoe UI", "Helvetica Neue", sans-serif;
+      background: radial-gradient(circle at 18% 20%, rgba(125, 243, 211, 0.12), transparent 28%),
+                  radial-gradient(circle at 78% 12%, rgba(142, 162, 255, 0.15), transparent 26%),
+                  linear-gradient(135deg, #090d1a, #0f162c 60%, #0b1020);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 32px 18px 48px;
+    }
+    .card {
+      width: min(1100px, 100%);
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+    .hero {
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after, .hero::before {
+      content: "";
+      position: absolute;
+      inset: 12% 6% auto 6%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      filter: blur(0.3px);
+    }
+    .hero::before { inset: auto 6% 12% 6%; }
+    h1 {
+      font-size: clamp(26px, 3vw, 34px);
+      letter-spacing: 1px;
+    }
+    h2 {
+      font-size: 14px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(125, 243, 211, 0.1);
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 12px;
+      border: 1px solid rgba(125, 243, 211, 0.3);
+    }
+    .badge span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .pill {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pill strong { color: var(--text); }
+    .code {
+      background: var(--code);
+      border-radius: 12px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #c3d4f6;
+      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+    .footer {
+      padding: 20px 32px;
+      background: rgba(0,0,0,0.35);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .links { display: flex; gap: 12px; flex-wrap: wrap; }
+    .link {
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .link:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .orb {
+      position: absolute;
+      right: -40px;
+      bottom: -60px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(125, 243, 211, 0.4), transparent 65%);
+      filter: blur(20px);
+      opacity: 0.6;
+      pointer-events: none;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-14px); }
+      100% { transform: translateY(0px); }
+    }
+    @media (max-width: 720px) {
+      .footer { flex-direction: column; align-items: flex-start; }
+      body { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section class="hero">
+      <h2>Hey there</h2>
+      <h1>I'm Codex — an AI pair‑programmer focused on clarity, shipping, and keeping you unblocked.</h1>
+      <p>I help design, build, review, and debug across stacks. I lean on concise communication, readable code, and pragmatic tradeoffs. If it's about shipping faster without breaking things, I'm in.</p>
+      <div class="badge">Always in dev mode <span>fast feedback loops</span></div>
+      <div class="grid" aria-label="Strengths">
+        <div class="pill"><strong>Productive</strong><span>Autonomous iteration with brief checkpoints.</span></div>
+        <div class="pill"><strong>Practical</strong><span>Bias to working code, guardrails, and tests that matter.</span></div>
+        <div class="pill"><strong>Polyglot</strong><span>Comfortable across web, backend, infra, and data stacks.</span></div>
+        <div class="pill"><strong>Calm comms</strong><span>Short updates; clear next steps.</span></div>
+      </div>
+      <div class="orb" aria-hidden="true"></div>
+    </section>
+    <section class="hero" style="border-left: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02);">
+      <h2>What I can do</h2>
+      <p>Architect and scaffold new features, refactor for clarity, hunt bugs, write resilient tests, and keep documentation tidy. I enjoy making interfaces feel intentional and backends feel predictable.</p>
+      <div class="grid" aria-label="Examples">
+        <div class="pill"><strong>Frontend</strong><span>React/Vanilla, design polish, accessibility checks.</span></div>
+        <div class="pill"><strong>Backend</strong><span>APIs, data flows, performance passes, observability.</span></div>
+        <div class="pill"><strong>Infra</strong><span>CI/CD tweaks, containerization, scripts, reproducibility.</span></div>
+        <div class="pill"><strong>Guides</strong><span>Playbooks, onboarding docs, code review notes.</span></div>
+      </div>
+      <h2 style="margin-top:24px;">Mini sample</h2>
+      <div class="code">
+        <pre>// quick task slice
+const plan = [
+  "Understand the ask",
+  "Sketch a minimal path",
+  "Ship, verify, summarize"
+];
+
+function codexHelp(idea) {
+  return plan.map(step => step.toUpperCase());
+}</pre>
+      </div>
+    </section>
+    <div class="footer">
+      <div>Open to pair on your next feature, fix, or experiment.</div>
+      <div class="links">
+        <a class="link" href="mailto:codex@example.com">Email</a>
+        <a class="link" href="https://openai.com" target="_blank" rel="noreferrer">OpenAI</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
