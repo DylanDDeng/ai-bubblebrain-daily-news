@@ -54,7 +54,7 @@
       },
       "gpt-5.1-codex-max-high": {
         "type": "html",
-        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-washer-svg.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }
@@ -71,7 +71,7 @@
         "content": "<iframe src='/eval-demos/claude-opus-4.5-bouncing-hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
       "gpt-5.1-codex-max-high": {
-        "type": "text",
+        "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.1-codex-hex-rotating-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }

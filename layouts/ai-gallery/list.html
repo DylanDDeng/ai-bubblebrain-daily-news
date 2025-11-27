@@ -52,7 +52,16 @@
         <div class="gallery-caption" id="modal-caption"></div>
         <div class="gallery-tags" id="modal-tags"></div>
         <div class="gallery-prompt-block">
-          <p class="prompt-label">Prompt</p>
+          <div class="prompt-header">
+            <p class="prompt-label">Prompt</p>
+            <button class="prompt-copy-btn" id="copy-prompt-btn" type="button" aria-label="复制提示词">
+              <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span class="copy-text">复制提示词</span>
+            </button>
+          </div>
           <p id="modal-prompt"></p>
         </div>
       </div>
@@ -438,17 +447,20 @@
     renderPagination();
   }
 
+  let currentPrompt = "";
+
   function openModal(item) {
     activeFocus = document.activeElement;
     currentImages = normalizeImages(item);
     currentIndex = 0;
     currentItemTitle = item.title || "未命名作品";
+    currentPrompt = item.prompt || "暂无 prompt";
 
     modalTitle.textContent = currentItemTitle;
     modalAuthor.textContent = item.author ? `作者：${item.author}` : "作者：未知";
     modalModel.textContent = item.source ? `来源 / 模型：${item.source}` : "来源：未知";
     modalSource.textContent = item.source || "";
-    modalPrompt.textContent = item.prompt || "暂无 prompt";
+    modalPrompt.textContent = currentPrompt;
 
     modalTags.innerHTML = "";
     if (item.tags && item.tags.length) {
@@ -541,6 +553,37 @@
     searchInput.addEventListener("input", (event) => {
       searchTerm = event.target.value || "";
       applyFilter();
+    });
+  }
+
+  const copyBtn = document.getElementById("copy-prompt-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      if (!currentPrompt || currentPrompt === "暂无 prompt") {
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(currentPrompt);
+        const copyText = copyBtn.querySelector(".copy-text");
+        const originalText = copyText.textContent;
+        copyText.textContent = "已复制";
+        copyBtn.classList.add("copied");
+        
+        setTimeout(() => {
+          copyText.textContent = originalText;
+          copyBtn.classList.remove("copied");
+        }, 2000);
+      } catch (err) {
+        console.error("复制失败:", err);
+        const copyText = copyBtn.querySelector(".copy-text");
+        const originalText = copyText.textContent;
+        copyText.textContent = "复制失败";
+        
+        setTimeout(() => {
+          copyText.textContent = originalText;
+        }, 2000);
+      }
     });
   }
 
@@ -972,12 +1015,61 @@
   color: var(--text-main);
 }
 
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
 .prompt-label {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-size: 0.78rem;
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
+  margin: 0;
+}
+
+.prompt-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.prompt-copy-btn:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.prompt-copy-btn:active {
+  transform: scale(0.95);
+}
+
+.prompt-copy-btn.copied {
+  background: #4ade80;
+  color: #000;
+  border-color: #4ade80;
+}
+
+.copy-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.copy-text {
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .gallery-modal__close {
