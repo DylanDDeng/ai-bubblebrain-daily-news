@@ -51,6 +51,10 @@
       "claude-opus-4.5": {
         "type": "html",
         "content": "<iframe src='/eval-demos/claude-opus-4.5-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.1-codex-max-high": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }
@@ -66,9 +70,9 @@
         "type": "html",
         "content": "<iframe src='/eval-demos/claude-opus-4.5-bouncing-hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
-      "gpt-5": {
+      "gpt-5.1-codex-max-high": {
         "type": "text",
-        "content": "巧解：假设所有动物都是鸡（2只脚）\n35 × 2 = 70只脚\n实际脚数：94只\n多出：94 - 70 = 24只脚\n\n每只兔子比鸡多2只脚\n兔子数量：24 ÷ 2 = 12只\n鸡的数量：35 - 12 = 23只\n\n答案：鸡23只，兔子12只"
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-hex-rotating-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },

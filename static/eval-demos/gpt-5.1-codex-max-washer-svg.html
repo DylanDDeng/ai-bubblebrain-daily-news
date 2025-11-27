@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG 洗衣机四阶段演示</title>
+  <style>
+    :root {
+      --bg: #0a182c;
+      --bg-2: #0f2438;
+      --panel: #0c1e31;
+      --panel-2: #0f2b45;
+      --text: #e8f2ff;
+      --muted: #9ab2cf;
+      --accent: #5ce7ff;
+      --accent-2: #f3c56b;
+      --accent-3: #7cf5c4;
+      --border: rgba(255, 255, 255, 0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Space Grotesk", "Avenir Next", "Futura", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(92, 231, 255, 0.12), transparent 28%),
+        radial-gradient(circle at 78% 12%, rgba(124, 245, 196, 0.12), transparent 24%),
+        linear-gradient(135deg, var(--bg), #07101e 35%, #0b1a2c);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 26px 18px 42px;
+    }
+    main {
+      width: min(1200px, 100%);
+      background: linear-gradient(155deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+    header {
+      padding: 22px 24px 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+    .eyebrow {
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    h1 {
+      font-size: clamp(24px, 3vw, 32px);
+      letter-spacing: 0.5px;
+    }
+    header p {
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 620px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 18px;
+      padding: 10px 16px 20px;
+    }
+    .viz-card, .control-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .viz-card::after, .viz-card::before {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(40px);
+      opacity: 0.5;
+    }
+    .viz-card::after {
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(92, 231, 255, 0.16), transparent 70%);
+      right: -80px; bottom: -90px;
+    }
+    .viz-card::before {
+      width: 180px; height: 180px;
+      background: radial-gradient(circle, rgba(124, 245, 196, 0.16), transparent 68%);
+      left: -70px; top: -70px;
+    }
+    svg { width: 100%; height: auto; display: block; }
+    .control-card {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chip-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      gap: 10px;
+    }
+    .chip {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .chip:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.16); }
+    .chip.active { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(92, 231, 255, 0.4); background: rgba(92, 231, 255, 0.08); }
+    .chip .label { font-weight: 600; }
+    .chip .time { color: var(--muted); font-size: 13px; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+    button:hover { transform: translateY(-1px); border-color: rgba(255, 255, 255, 0.18); }
+    button.primary { background: linear-gradient(135deg, var(--accent), #7ee8ff); color: #0a182c; border-color: rgba(0,0,0,0.06); }
+    button.ghost { background: rgba(255, 255, 255, 0.05); }
+    .status-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+    }
+    .progress {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+    .progress .fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.2s ease;
+    }
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 6px;
+    }
+    .legend strong { color: var(--text); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(92, 231, 255, 0.1);
+      border: 1px solid rgba(92, 231, 255, 0.3);
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+    .phase-label {
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr; }
+      .chip-row { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      body { padding: 14px; }
+      header { padding: 16px; }
+      .controls { flex-direction: column; }
+      button { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <div class="eyebrow">SVG 动画实验</div>
+        <h1>洗衣机四阶段 · 可视化</h1>
+        <p>进水、洗涤、排水、脱水的全过程通过 SVG 动态呈现。点击阶段卡片或播放控制，可以观察水位、旋转、泡沫与流动的变化。</p>
+      </div>
+      <div class="badge" aria-live="polite">
+        <span id="phase-label">待机</span>
+      </div>
+    </header>
+    <section class="grid">
+      <div class="viz-card">
+        <svg viewBox="0 0 960 560" role="img" aria-label="洗衣机工作原理演示">
+          <defs>
+            <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#0f2a44" />
+              <stop offset="100%" stop-color="#0a1626" />
+            </linearGradient>
+            <linearGradient id="doorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1a354f" />
+              <stop offset="100%" stop-color="#0b2338" />
+            </linearGradient>
+            <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#7ef2ff" stop-opacity="0.95" />
+              <stop offset="100%" stop-color="#1f9bd6" stop-opacity="0.88" />
+            </linearGradient>
+            <linearGradient id="foamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.6)" />
+              <stop offset="100%" stop-color="rgba(255,255,255,0.35)" />
+            </linearGradient>
+            <radialGradient id="drumGlow" cx="50%" cy="48%" r="70%">
+              <stop offset="0%" stop-color="rgba(124,245,196,0.25)" />
+              <stop offset="80%" stop-color="rgba(14,27,45,0.4)" />
+              <stop offset="100%" stop-color="rgba(9,20,35,0.9)" />
+            </radialGradient>
+            <clipPath id="drumClip">
+              <circle cx="520" cy="300" r="128" />
+            </clipPath>
+            <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="rgba(0,0,0,0.45)" />
+            </filter>
+          </defs>
+
+          <rect x="180" y="70" width="560" height="420" rx="26" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.08)" />
+          <rect x="200" y="90" width="520" height="60" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" />
+          <circle cx="250" cy="120" r="8" fill="#7cf5c4" />
+          <circle cx="280" cy="120" r="8" fill="#5ce7ff" />
+          <circle cx="310" cy="120" r="8" fill="#f3c56b" />
+
+          <rect x="220" y="170" width="140" height="260" rx="18" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.07)" />
+          <text x="240" y="206" fill="#9ab2cf" font-size="14" letter-spacing="1.4">PROGRAM</text>
+          <rect x="240" y="220" width="100" height="12" rx="6" fill="rgba(255,255,255,0.08)" />
+          <rect x="240" y="246" width="80" height="12" rx="6" fill="rgba(255,255,255,0.08)" />
+          <rect x="240" y="272" width="110" height="12" rx="6" fill="rgba(255,255,255,0.08)" />
+          <rect x="240" y="312" width="40" height="40" rx="10" fill="rgba(243,197,107,0.15)" stroke="rgba(243,197,107,0.8)" />
+
+          <g filter="url(#shadow)">
+            <circle cx="520" cy="300" r="164" fill="url(#doorGrad)" stroke="rgba(124,245,196,0.14)" stroke-width="12" />
+            <circle cx="520" cy="300" r="136" fill="rgba(12,29,48,0.8)" stroke="rgba(92,231,255,0.35)" stroke-width="8" />
+            <circle cx="520" cy="300" r="130" fill="url(#drumGlow)" />
+          </g>
+
+          <g clip-path="url(#drumClip)">
+            <rect id="water-level" x="392" y="428" width="256" height="0" fill="url(#waterGrad)" opacity="0.95" />
+            <path id="foam" d="" fill="url(#foamGrad)" opacity="0.55" />
+            <g id="drum-spin">
+              <circle class="cloth cloth-1" cx="520" cy="212" r="16" fill="#f0a868" opacity="0.9" />
+              <circle class="cloth cloth-2" cx="462" cy="256" r="12" fill="#6ef2c4" opacity="0.92" />
+              <circle class="cloth cloth-3" cx="580" cy="260" r="14" fill="#5bb9ff" opacity="0.92" />
+              <rect class="cloth cloth-4" x="506" y="330" width="28" height="12" rx="6" fill="#f7e479" opacity="0.9" />
+              <circle class="bubble" cx="520" cy="280" r="4" fill="rgba(255,255,255,0.8)" />
+              <circle class="bubble" cx="552" cy="306" r="3" fill="rgba(255,255,255,0.7)" />
+              <circle class="bubble" cx="490" cy="322" r="3.6" fill="rgba(255,255,255,0.65)" />
+            </g>
+          </g>
+
+          <circle cx="520" cy="300" r="158" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8" />
+          <circle cx="520" cy="300" r="174" fill="none" stroke="rgba(124,245,196,0.1)" stroke-width="4" stroke-dasharray="12 12" />
+
+          <g id="spin-lines" stroke="rgba(92,231,255,0.4)" stroke-width="4" stroke-linecap="round" opacity="0">
+            <line x1="520" y1="118" x2="520" y2="78" />
+            <line x1="520" y1="482" x2="520" y2="522" />
+            <line x1="698" y1="300" x2="738" y2="300" />
+            <line x1="302" y1="300" x2="262" y2="300" />
+            <line x1="638" y1="182" x2="674" y2="146" />
+            <line x1="402" y1="182" x2="366" y2="146" />
+            <line x1="638" y1="418" x2="674" y2="454" />
+            <line x1="402" y1="418" x2="366" y2="454" />
+          </g>
+
+          <path id="inlet-stream" d="M520 150 C520 120 440 120 440 170" fill="none" stroke="rgba(92,231,255,0.7)" stroke-width="8" stroke-linecap="round" stroke-dasharray="6 10" opacity="0" />
+          <path id="drain-jet" d="M520 428 C520 470 520 500 530 520" fill="none" stroke="rgba(243,197,107,0.8)" stroke-width="8" stroke-linecap="round" stroke-dasharray="8 10" opacity="0" />
+
+          <rect x="690" y="170" width="80" height="80" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" />
+          <circle cx="730" cy="210" r="26" fill="rgba(92,231,255,0.16)" stroke="rgba(92,231,255,0.5)" stroke-width="4" />
+          <text x="700" y="217" fill="#e8f2ff" font-size="14" font-weight="700">状态</text>
+          <text id="overlay-phase" x="700" y="236" fill="#9ab2cf" font-size="12" letter-spacing="1.2">待机</text>
+        </svg>
+      </div>
+      <div class="control-card">
+        <div class="chip-row" id="stage-buttons">
+          <button class="chip" data-stage="fill"><span class="label">进水</span><span class="time">2.6s</span></button>
+          <button class="chip" data-stage="wash"><span class="label">洗涤</span><span class="time">3.6s</span></button>
+          <button class="chip" data-stage="drain"><span class="label">排水</span><span class="time">2.2s</span></button>
+          <button class="chip" data-stage="spin"><span class="label">脱水</span><span class="time">3.0s</span></button>
+        </div>
+        <div class="controls">
+          <button class="primary" id="play-toggle">开始演示</button>
+          <button class="ghost" id="reset">重置水位</button>
+        </div>
+        <div class="status-row">
+          <div class="progress" aria-label="阶段进度">
+            <div class="fill" id="progress-fill"></div>
+          </div>
+          <span class="phase-label" id="phase-pill">待机</span>
+        </div>
+        <div class="legend">
+          <div><strong>交互</strong><br>点击阶段卡片可跳转，开始/暂停按钮控制流转。</div>
+          <div><strong>动态</strong><br>水位、泡沫、旋转速度随阶段变化，入水/排水有导向线。</div>
+          <div><strong>提示</strong><br>脱水前会自动排空水位，便于观察转速和离心效果。</div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const drumCenter = { x: 520, y: 300, r: 128 };
+    const phases = [
+      { id: "fill", label: "进水", duration: 2600 },
+      { id: "wash", label: "洗涤", duration: 3600 },
+      { id: "drain", label: "排水", duration: 2200 },
+      { id: "spin", label: "脱水", duration: 3000 },
+    ];
+
+    const waterRect = document.getElementById("water-level");
+    const foamPath = document.getElementById("foam");
+    const drumSpin = document.getElementById("drum-spin");
+    const spinLines = document.getElementById("spin-lines");
+    const inletStream = document.getElementById("inlet-stream");
+    const drainJet = document.getElementById("drain-jet");
+    const overlayPhase = document.getElementById("overlay-phase");
+    const phaseLabel = document.getElementById("phase-label");
+    const stageButtons = Array.from(document.querySelectorAll("#stage-buttons .chip"));
+    const playToggle = document.getElementById("play-toggle");
+    const resetBtn = document.getElementById("reset");
+    const progressFill = document.getElementById("progress-fill");
+    const phasePill = document.getElementById("phase-pill");
+
+    let waterLevel = 0;
+    let startWater = 0;
+    let targetWater = 0;
+    let drumAngle = 0;
+    let phaseIndex = 0;
+    let playing = false;
+    let phaseStarted = performance.now();
+    let pausedAt = null;
+
+    function setPhase(index) {
+      phaseIndex = index;
+      const phase = phases[phaseIndex];
+      phaseStarted = performance.now();
+      pausedAt = playing ? null : phaseStarted;
+      startWater = waterLevel;
+      if (phase.id === "fill" || phase.id === "wash") targetWater = 0.68;
+      if (phase.id === "drain" || phase.id === "spin") targetWater = 0;
+      updatePhaseUI(phase);
+    }
+
+    function updatePhaseUI(phase) {
+      phaseLabel.textContent = phase.label;
+      overlayPhase.textContent = phase.label;
+      phasePill.textContent = phase.label;
+      stageButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.stage === phase.id));
+    }
+
+    function easeInOut(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+    function clamp(v, min, max) { return Math.min(max, Math.max(min, v)); }
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function drawWater(time, phaseId, progress) {
+      const levelFactor = clamp(waterLevel, 0, 1);
+      const drumHeight = drumCenter.r * 2;
+      const height = levelFactor * drumHeight;
+      const y = (drumCenter.y + drumCenter.r) - height;
+      waterRect.setAttribute("y", y);
+      waterRect.setAttribute("height", height);
+
+      const left = drumCenter.x - drumCenter.r;
+      const right = drumCenter.x + drumCenter.r;
+      const waveAmp = Math.max(1.5, levelFactor * 14) * levelFactor;
+      const waveFreq = 0.0024;
+      const wavePoints = [];
+      for (let i = 0; i <= 6; i++) {
+        const x = left + (right - left) * (i / 6);
+        const offset = Math.sin(time * waveFreq + i * 0.9) * waveAmp;
+        const yPoint = y + offset;
+        wavePoints.push({ x, y: yPoint });
+      }
+      let path = `M ${left},${drumCenter.y + drumCenter.r} L ${left},${wavePoints[0].y}`;
+      for (let i = 1; i < wavePoints.length; i++) {
+        const prev = wavePoints[i - 1];
+        const curr = wavePoints[i];
+        path += ` Q ${prev.x} ${prev.y} ${curr.x} ${curr.y}`;
+      }
+      path += ` L ${right},${drumCenter.y + drumCenter.r} Z`;
+      foamPath.setAttribute("d", path);
+
+      inletStream.setAttribute("opacity", phaseId === "fill" ? 0.9 : 0);
+      drainJet.setAttribute("opacity", phaseId === "drain" ? 0.9 : 0);
+      const spinIntensity = phaseId === "spin" ? 1 : 0;
+      spinLines.setAttribute("opacity", lerp(parseFloat(spinLines.getAttribute("opacity")), spinIntensity, 0.1).toFixed(2));
+
+      const dashOffset = Math.max(0, 16 - progress * 16);
+      inletStream.setAttribute("stroke-dashoffset", dashOffset);
+      drainJet.setAttribute("stroke-dashoffset", dashOffset);
+    }
+
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const phase = phases[phaseIndex];
+      const currentTime = pausedAt || now;
+      const elapsed = currentTime - phaseStarted;
+      const t = clamp(elapsed / phase.duration, 0, 1);
+      progressFill.style.width = `${(t * 100).toFixed(1)}%`;
+
+      if (playing) {
+        switch (phase.id) {
+          case "fill":
+            waterLevel = lerp(startWater, targetWater, easeOut(t));
+            drumAngle += 0.5;
+            break;
+          case "wash":
+            waterLevel = lerp(waterLevel, targetWater, 0.02);
+            drumAngle += Math.sin(now * 0.003) * 1.2;
+            break;
+          case "drain":
+            waterLevel = lerp(startWater, targetWater, easeInOut(t));
+            drumAngle += 0.8;
+            break;
+          case "spin":
+            waterLevel = lerp(waterLevel, targetWater, 0.05);
+            drumAngle += 5.5;
+            break;
+        }
+      }
+
+      const rotate = `translate(${drumCenter.x} ${drumCenter.y}) rotate(${drumAngle}) translate(${-drumCenter.x} ${-drumCenter.y})`;
+      drumSpin.setAttribute("transform", rotate);
+      drawWater(now, phase.id, t);
+
+      if (playing && t >= 1) {
+        const next = (phaseIndex + 1) % phases.length;
+        setPhase(next);
+      }
+    }
+
+    stageButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const stageId = btn.dataset.stage;
+        const idx = phases.findIndex(p => p.id === stageId);
+        playing = true;
+        setPhase(idx);
+        playToggle.textContent = "暂停";
+      });
+    });
+
+    playToggle.addEventListener("click", () => {
+      const now = performance.now();
+      if (playing) {
+        pausedAt = now;
+        playing = false;
+        playToggle.textContent = "开始演示";
+      } else {
+        if (pausedAt) {
+          phaseStarted += now - pausedAt;
+          pausedAt = null;
+        }
+        playing = true;
+        playToggle.textContent = "暂停";
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      waterLevel = 0;
+      drumAngle = 0;
+      playing = false;
+      playToggle.textContent = "开始演示";
+      setPhase(0);
+      progressFill.style.width = "0%";
+    });
+
+    // 初始状态
+    setPhase(0);
+    animate(0);
+  </script>
+</body>
+</html>

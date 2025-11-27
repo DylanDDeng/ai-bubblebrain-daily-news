@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>旋转六边形内的彩色球弹跳 · p5.js</title>
+  <style>
+    :root {
+      --bg: #050b18;
+      --panel: #0b1629;
+      --text: #e6f1ff;
+      --muted: #9ab1cb;
+      --accent: #6df0ff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 20% 20%, rgba(109, 240, 255, 0.08), transparent 28%),
+                  radial-gradient(circle at 80% 12%, rgba(116, 200, 255, 0.09), transparent 28%),
+                  linear-gradient(135deg, var(--bg), #081020 50%, #0a1526);
+      color: var(--text);
+      font-family: "Space Grotesk", "Inter", system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+    }
+    .card {
+      width: min(980px, 100%);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      position: relative;
+    }
+    .header {
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      flex-wrap: wrap;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .header h1 { font-size: 20px; letter-spacing: 0.4px; }
+    .header p { color: var(--muted); font-size: 14px; }
+    .badge {
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(109, 240, 255, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(109, 240, 255, 0.4);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+    #canvas-holder { width: 100%; background: #050b18; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div>
+        <h1>旋转六边形 · 彩球弹跳</h1>
+        <p>p5.js 场景：10 个彩色球在旋转六边形内弹跳，考虑重力、弹性、摩擦和球-球/球-壁碰撞。</p>
+      </div>
+      <div class="badge">p5.js</div>
+    </div>
+    <div id="canvas-holder"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  <script>
+    const BALL_COUNT = 10;
+    const HEX_RADIUS = 260;
+    const GRAVITY = 0.18;
+    const RESTITUTION = 0.86;
+    const WALL_FRICTION = 0.96;
+    const AIR_FRICTION = 0.999;
+    const BALL_FRICTION = 0.98;
+    const HEX_ROT_SPEED = 0.01;
+
+    let balls = [];
+    let hexAngle = 0;
+    let center;
+    let hexLocalVerts = [];
+
+    function setup() {
+      const holder = document.getElementById("canvas-holder");
+      const sketchWidth = holder.clientWidth || 960;
+      const sketchHeight = Math.min(window.innerHeight - 120, 720);
+      const canvas = createCanvas(sketchWidth, sketchHeight);
+      canvas.parent("canvas-holder");
+      center = createVector(width / 2, height / 2);
+      colorMode(HSB, 360, 100, 100, 1);
+      hexLocalVerts = buildHexVerts(HEX_RADIUS);
+      spawnBalls();
+    }
+
+    function windowResized() {
+      const holder = document.getElementById("canvas-holder");
+      const sketchWidth = holder.clientWidth || 960;
+      const sketchHeight = Math.min(window.innerHeight - 120, 720);
+      resizeCanvas(sketchWidth, sketchHeight);
+      center.set(width / 2, height / 2);
+    }
+
+    function buildHexVerts(r) {
+      const verts = [];
+      for (let i = 0; i < 6; i++) {
+        const a = PI / 6 + i * PI / 3; // flat-top hex
+        verts.push(createVector(cos(a) * r, sin(a) * r));
+      }
+      return verts;
+    }
+
+    function spawnBalls() {
+      balls = [];
+      for (let i = 0; i < BALL_COUNT; i++) {
+        const radius = random(14, 22);
+        let pos;
+        // rejection sampling to stay inside hex
+        do {
+          pos = createVector(random(center.x - 120, center.x + 120), random(center.y - 120, center.y + 120));
+        } while (!isInsideHex(pos, radius, 0));
+        const vel = p5.Vector.random2D().mult(random(1, 3));
+        const hue = random(0, 360);
+        balls.push({
+          pos,
+          vel,
+          r: radius,
+          mass: radius * radius * 0.02,
+          color: color(hue, 80, 100, 0.95)
+        });
+      }
+    }
+
+    function draw() {
+      background(10, 12, 24);
+      hexAngle += HEX_ROT_SPEED;
+      const hexWorld = hexLocalVerts.map(v => v.copy().rotate(hexAngle).add(center));
+
+      drawHex(hexWorld);
+      applyPhysics(hexWorld);
+      drawBalls();
+      drawOverlay();
+    }
+
+    function drawHex(verts) {
+      noFill();
+      stroke(109, 50, 100);
+      strokeWeight(3);
+      beginShape();
+      verts.forEach(v => vertex(v.x, v.y));
+      endShape(CLOSE);
+      stroke(109, 40, 80, 0.3);
+      strokeWeight(1);
+      for (let i = 0; i < verts.length; i++) {
+        const mid = p5.Vector.add(verts[i], verts[(i + 1) % 6]).mult(0.5);
+        const dir = p5.Vector.sub(mid, center).normalize().mult(22);
+        line(mid.x, mid.y, mid.x + dir.x, mid.y + dir.y);
+      }
+    }
+
+    function applyPhysics(hexWorld) {
+      balls.forEach(b => {
+        b.vel.y += GRAVITY;
+        b.vel.mult(AIR_FRICTION);
+        b.pos.add(b.vel);
+      });
+
+      handleBallCollisions();
+      balls.forEach(b => handleWallCollision(b, hexWorld));
+    }
+
+    function handleBallCollisions() {
+      for (let i = 0; i < balls.length; i++) {
+        for (let j = i + 1; j < balls.length; j++) {
+          const a = balls[i];
+          const b = balls[j];
+          const diff = p5.Vector.sub(b.pos, a.pos);
+          const dist = diff.mag();
+          const minDist = a.r + b.r;
+          if (dist === 0 || dist >= minDist) continue;
+
+          const n = diff.copy().div(dist);
+          const penetration = minDist - dist;
+          // positional correction
+          const totalMass = a.mass + b.mass;
+          const corrA = n.copy().mult(-penetration * (b.mass / totalMass));
+          const corrB = n.copy().mult(penetration * (a.mass / totalMass));
+          a.pos.add(corrA);
+          b.pos.add(corrB);
+
+          const relVel = p5.Vector.sub(b.vel, a.vel);
+          const velAlongNormal = relVel.dot(n);
+          if (velAlongNormal > 0) continue;
+
+          const e = RESTITUTION;
+          const jImpulse = -(1 + e) * velAlongNormal / (1 / a.mass + 1 / b.mass);
+          const impulse = n.copy().mult(jImpulse);
+          a.vel.sub(p5.Vector.div(impulse, a.mass));
+          b.vel.add(p5.Vector.div(impulse, b.mass));
+
+          // tangential friction
+          const tangent = relVel.copy().sub(n.copy().mult(velAlongNormal));
+          tangent.mult(BALL_FRICTION);
+          const adjust = tangent.mult(0.5);
+          a.vel.add(adjust);
+          b.vel.sub(adjust);
+        }
+      }
+    }
+
+    function handleWallCollision(ball, verts) {
+      for (let i = 0; i < verts.length; i++) {
+        const v1 = verts[i];
+        const v2 = verts[(i + 1) % verts.length];
+        const edge = p5.Vector.sub(v2, v1);
+        const normal = createVector(edge.y, -edge.x).normalize(); // outward for CCW verts
+        const dist = p5.Vector.sub(ball.pos, v1).dot(normal);
+        if (dist > -ball.r) {
+          const penetration = dist + ball.r;
+          ball.pos.sub(p5.Vector.mult(normal, penetration));
+          const velAlongNormal = ball.vel.dot(normal);
+          if (velAlongNormal > 0) continue;
+          const tangent = ball.vel.copy().sub(normal.copy().mult(velAlongNormal));
+          ball.vel = tangent.mult(WALL_FRICTION).add(normal.copy().mult(-velAlongNormal * RESTITUTION));
+        }
+      }
+    }
+
+    function isInsideHex(p, radius, angleOffset) {
+      const verts = hexLocalVerts.map(v => v.copy().rotate(angleOffset).add(center));
+      for (let i = 0; i < verts.length; i++) {
+        const v1 = verts[i];
+        const v2 = verts[(i + 1) % verts.length];
+        const edge = p5.Vector.sub(v2, v1);
+        const normal = createVector(edge.y, -edge.x);
+        const dist = p5.Vector.sub(p, v1).dot(normal);
+        if (dist > -radius) return false;
+      }
+      return true;
+    }
+
+    function drawBalls() {
+      noStroke();
+      balls.forEach(b => {
+        fill(b.color);
+        circle(b.pos.x, b.pos.y, b.r * 2);
+        fill(0, 0, 100, 0.12);
+        circle(b.pos.x - b.r * 0.3, b.pos.y - b.r * 0.3, b.r);
+      });
+    }
+
+    function drawOverlay() {
+      noStroke();
+      fill(0, 0, 0, 0.3);
+      rect(14, 14, 220, 70, 10);
+      fill(0, 0, 100, 0.9);
+      textSize(14);
+      text("Controls:", 26, 36);
+      fill(200, 10, 90);
+      text("· 刷新页面重置演示", 26, 56);
+      text("· 六边形持续旋转，保持碰撞", 26, 74);
+    }
+  </script>
+</body>
+</html>
