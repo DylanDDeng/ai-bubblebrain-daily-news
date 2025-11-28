@@ -39,6 +39,11 @@
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-about-codex.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
+
+      "claude-opus-4.1":{
+        "type":"html",
+        "content":"<iframe src='/eval-demos/claude-opus-4.1.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
       "deepseek-v3": {
         "type": "html",
         "content": "<pre><code class='language-python'># 简洁的Pythonic快排\ndef qsort(a):\n    return a if len(a) <= 1 else qsort([x for x in a[1:] if x < a[0]]) + [a[0]] + qsort([x for x in a[1:] if x >= a[0]])</code></pre>"

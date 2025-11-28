@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude - AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        nav .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .typing-text {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            min-height: 30px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* About Section */
+        .about {
+            padding: 5rem 2rem;
+            background: var(--bg-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .about-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ai-avatar {
+            width: 200px;
+            height: 200px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Capabilities Section */
+        .capabilities {
+            padding: 5rem 2rem;
+        }
+
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .capability-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+        }
+
+        .capability-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .capability-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .capability-card h3 {
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .capability-card p {
+            color: var(--text-light);
+        }
+
+        /* How I Help Section */
+        .help {
+            padding: 5rem 2rem;
+            background: var(--bg-light);
+        }
+
+        .help-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .help-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .help-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .about-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">Claude</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#capabilities">Capabilities</a></li>
+                <li><a href="#help">How I Help</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Hi, I'm Claude</h1>
+            <p class="subtitle">Your AI Assistant</p>
+            <div class="typing-text" id="typing"></div>
+            <a href="#about" class="cta-button">Learn More About Me</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-grid">
+                <div class="about-text">
+                    <p>I'm Claude, an AI assistant created by Anthropic to be helpful, harmless, and honest. I'm here to assist you with a wide variety of tasks, from answering questions and providing analysis to helping with creative projects and problem-solving.</p>
+                    <br>
+                    <p>I aim to be thoughtful, nuanced, and thorough in my responses. I can engage in discussions on topics ranging from science and technology to philosophy and the arts. My goal is to be a useful tool that enhances your productivity and creativity while maintaining high ethical standards.</p>
+                </div>
+                <div class="about-image">
+                    <div class="ai-avatar">
+                        <span>🤖</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Section -->
+    <section id="capabilities" class="capabilities">
+        <div class="container">
+            <h2 class="section-title">What I Can Do</h2>
+            <div class="capabilities-grid">
+                <div class="capability-card">
+                    <div class="capability-icon">💬</div>
+                    <h3>Conversation</h3>
+                    <p>Engage in natural, thoughtful dialogue on virtually any topic</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">📝</div>
+                    <h3>Writing</h3>
+                    <p>Help with essays, emails, creative writing, and content creation</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">💻</div>
+                    <h3>Coding</h3>
+                    <p>Assist with programming, debugging, and explaining code</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">🔍</div>
+                    <h3>Analysis</h3>
+                    <p>Provide detailed analysis and insights on complex topics</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">🎨</div>
+                    <h3>Creativity</h3>
+                    <p>Brainstorm ideas and help with creative projects</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">📚</div>
+                    <h3>Learning</h3>
+                    <p>Explain concepts and help you understand new subjects</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How I Help Section -->
+    <section id="help" class="help">
+        <div class="container">
+            <h2 class="section-title">How I Can Help You</h2>
+            <div class="help-cards">
+                <div class="help-card">
+                    <h3>Professional Support</h3>
+                    <p>Whether you need help drafting documents, preparing presentations, or solving business problems, I'm here to enhance your professional productivity.</p>
+                </div>
+                <div class="help-card">
+                    <h3>Educational Assistance</h3>
+                    <p>I can help explain complex concepts, assist with homework, provide study guidance, and support your learning journey across various subjects.</p>
+                </div>
+                <div class="help-card">
+                    <h3>Personal Projects</h3>
+                    <p>From creative writing to coding projects, I'm here to brainstorm, provide feedback, and help bring your personal ideas to life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3>Let's Work Together</h3>
+            <p>I'm always ready to help. Feel free to ask me anything!</p>
+            <div class="social-links">
+                <a href="#">💡 Ideas</a>
+                <a href="#">🚀 Projects</a>
+                <a href="#">📧 Contact</a>
+            </div>
+            <p style="margin-top: 2rem; opacity: 0.7;">Created by Claude | Powered by Anthropic</p>
+        </div>
+    </footer>
+
+    <script>
+        // Typing animation
+        const texts = [
+            "I can help you write and edit content...",
+            "I can assist with coding and technical tasks...",
+            "I can answer your questions thoughtfully...",
+            "I can help you learn and explore new topics...",
+            "I'm here to make your work easier..."
+        ];
+        
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingSpeed = 100;
+        const deletingSpeed = 50;
+        const pauseTime = 2000;
+        
+        function typeText() {
+            const currentText = texts[textIndex];
+            const typingElement = document.getElementById('typing');
+            
+            if (!isDeleting) {
+                typingElement.textContent = currentText.substring(0, charIndex + 1);
+                charIndex++;
+                
+                if (charIndex === currentText.length) {
+                    isDeleting = true;
+                    setTimeout(typeText, pauseTime);
+                    return;
+                }
+            } else {
+                typingElement.textContent = currentText.substring(0, charIndex - 1);
+                charIndex--;
+                
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % texts.length;
+                }
+            }
+            
+            setTimeout(typeText, isDeleting ? deletingSpeed : typingSpeed);
+        }
+        
+        // Start typing animation
+        typeText();
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 1s ease both';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.capability-card, .help-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
