@@ -1,4 +1,9 @@
 {{ define "main" }}
+{{ $dailyDataFile := resources.Get "daily.json" }}
+{{ $dailyData := slice }}
+{{ if $dailyDataFile }}
+  {{ $dailyData = $dailyDataFile | transform.Unmarshal }}
+{{ end }}
 <section class="section">
   <div class="section-narrow daily-list-container">
     <header class="page-header">
@@ -14,7 +19,19 @@
     {{ if $paginator.Pages }}
       <div class="daily-grid">
         {{ range $paginator.Pages }}
+          {{ $dateId := .Date.Format "2006-01-02" }}
+          {{ $coverImage := "" }}
+          {{ range $dailyData }}
+            {{ if eq .id $dateId }}
+              {{ $coverImage = .cover }}
+            {{ end }}
+          {{ end }}
           <article class="daily-card reveal-text">
+            {{ if $coverImage }}
+            <div class="card-cover">
+              <img src="{{ $coverImage }}" alt="{{ .Title }}封面">
+            </div>
+            {{ end }}
             <div class="card-header">
               <h2>
                 <a href="{{ .Permalink }}">{{ .Title }}</a>
