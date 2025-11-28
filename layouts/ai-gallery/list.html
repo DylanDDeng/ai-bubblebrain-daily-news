@@ -71,7 +71,7 @@
 
 <script>
 (() => {
-  const dataUrl = "{{ "/gallery.json" | relURL }}";
+  const dataUrl = "/gallery.json";
   const grid = document.getElementById("gallery-grid");
   const empty = document.getElementById("gallery-empty");
   const pagination = document.getElementById("gallery-pagination");
@@ -589,11 +589,16 @@
 
   fetch(dataUrl)
     .then((res) => {
-      if (!res.ok) throw new Error("网络异常");
+      console.log('fetch response:', res.status, res.statusText);
+      if (!res.ok) throw new Error(`网络异常: ${res.status}`);
       return res.json();
     })
-    .then((items) => render(items))
-    .catch(() => {
+    .then((items) => {
+      console.log('gallery items loaded:', items.length);
+      render(items);
+    })
+    .catch((err) => {
+      console.error('加载gallery.json失败:', err);
       setEmpty(true);
     });
 })();
