@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海体素艺术场景 - Shanghai Voxel Art</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            background: linear-gradient(to bottom, #87CEEB 0%, #FFE4B5 50%, #FFA07A 100%);
+            font-family: 'Arial', sans-serif;
+        }
+        
+        #canvas {
+            display: block;
+        }
+        
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 14px;
+            z-index: 100;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: none;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: rgba(255,255,255,1);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h2>🏙️ 上海体素艺术 Shanghai Voxel Art</h2>
+        <p>🖱️ 鼠标拖动旋转视角 | 滚轮缩放</p>
+        <p>⌨️ 按空格键切换日夜模式</p>
+    </div>
+    <div id="loading">加载中...</div>
+    <div class="controls">
+        <button onclick="toggleAnimation()">暂停/播放动画</button>
+        <button onclick="toggleDayNight()">切换日夜</button>
+        <button onclick="resetCamera()">重置视角</button>
+    </div>
+    <canvas id="canvas"></canvas>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer;
+        let voxels = [];
+        let isAnimating = true;
+        let isDayTime = true;
+        let mouseX = 0, mouseY = 0;
+        let targetRotationX = 0, targetRotationY = 0;
+        let clouds = [];
+        let boats = [];
+        let lights = [];
+        let particleSystem;
+
+        // 颜色主题
+        const colors = {
+            orientalPearl: {
+                sphere: 0xFF69B4,
+                pillar: 0xE6E6FA,
+                base: 0x9370DB
+            },
+            skyscraper: {
+                glass: 0x87CEEB,
+                steel: 0xC0C0C0,
+                dark: 0x2F4F4F,
+                gold: 0xFFD700
+            },
+            bund: {
+                classic: 0xF5DEB3,
+                roof: 0x8B4513,
+                window: 0x4682B4
+            },
+            water: 0x4682B4,
+            ground: 0x3CB371,
+            road: 0x696969,
+            tree: 0x228B22,
+            light: 0xFFFF00,
+            boat: 0xFFFFFF,
+            cloud: 0xFFFFFF
+        };
+
+        function init() {
+            // 场景设置
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x87CEEB, 100, 500);
+
+            // 相机设置
+            camera = new THREE.PerspectiveCamera(
+                60,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(100, 80, 150);
+            camera.lookAt(0, 0, 0);
+
+            // 渲染器设置
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('canvas'),
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            // 光照
+            setupLights();
+
+            // 创建场景元素
+            createGround();
+            createWater();
+            createOrientalPearlTower();
+            createSkyscrapers();
+            createBundBuildings();
+            createTrees();
+            createRoads();
+            createClouds();
+            createBoats();
+            createParticles();
+
+            // 事件监听
+            setupEventListeners();
+
+            // 开始动画
+            animate();
+        }
+
+        function setupLights() {
+            // 环境光
+            const ambientLight = new THREE.AmbientLight(0x404040, 1.2);
+            scene.add(ambientLight);
+
+            // 主方向光（太阳）
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(50, 100, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.camera.left = -100;
+            directionalLight.shadow.camera.right = 100;
+            directionalLight.shadow.camera.top = 100;
+            directionalLight.shadow.camera.bottom = -100;
+            scene.add(directionalLight);
+
+            // 半球光
+            const hemisphereLight = new THREE.HemisphereLight(0x87CEEB, 0x545454, 0.8);
+            scene.add(hemisphereLight);
+        }
+
+        function createVoxel(x, y, z, size, color) {
+            const geometry = new THREE.BoxGeometry(size, size, size);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: color,
+                flatShading: true
+            });
+            const voxel = new THREE.Mesh(geometry, material);
+            voxel.position.set(x, y, z);
+            voxel.castShadow = true;
+            voxel.receiveShadow = true;
+            
+            // 添加边框效果
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x000000, 
+                opacity: 0.1,
+                transparent: true 
+            });
+            const line = new THREE.LineSegments(edges, lineMaterial);
+            voxel.add(line);
+            
+            scene.add(voxel);
+            voxels.push(voxel);
+            return voxel;
+        }
+
+        function createGround() {
+            const groundSize = 200;
+            const voxelSize = 4;
+            for (let x = -groundSize/2; x < groundSize/2; x += voxelSize) {
+                for (let z = -groundSize/2; z < groundSize/2; z += voxelSize) {
+                    const height = Math.random() * 2;
+                    const color = Math.random() > 0.5 ? colors.ground : 0x2E7D32;
+                    createVoxel(x, -height, z, voxelSize, color);
+                }
+            }
+        }
+
+        function createWater() {
+            const waterSize = 200;
+            const voxelSize = 6;
+            for (let x = -waterSize/2; x < -30; x += voxelSize) {
+                for (let z = -waterSize/2; z < waterSize/2; z += voxelSize) {
+                    const waterVoxel = createVoxel(x, -2, z, voxelSize, colors.water);
+                    waterVoxel.material.opacity = 0.7;
+                    waterVoxel.material.transparent = true;
+                    // 添加波浪动画
+                    waterVoxel.userData = {
+                        initialY: waterVoxel.position.y,
+                        offset: Math.random() * Math.PI * 2
+                    };
+                }
+            }
+        }
+
+        function createOrientalPearlTower() {
+            const centerX = 20;
+            const centerZ = 0;
+            
+            // 底座
+            for (let i = 0; i < 5; i++) {
+                const size = 12 - i * 2;
+                for (let x = -size/2; x < size/2; x += 2) {
+                    for (let z = -size/2; z < size/2; z += 2) {
+                        createVoxel(centerX + x, i * 2, centerZ + z, 2, colors.orientalPearl.base);
+                    }
+                }
+            }
+            
+            // 主柱
+            for (let y = 10; y < 80; y += 2) {
+                createVoxel(centerX, y, centerZ, 3, colors.orientalPearl.pillar);
+            }
+            
+            // 球体1（下）
+            createSphere(centerX, 25, centerZ, 8, colors.orientalPearl.sphere);
+            
+            // 球体2（上）
+            createSphere(centerX, 55, centerZ, 6, colors.orientalPearl.sphere);
+            
+            // 顶部尖塔
+            for (let y = 80; y < 100; y += 2) {
+                const size = 2 - (y - 80) / 20;
+                createVoxel(centerX, y, centerZ, Math.max(size, 0.5), colors.orientalPearl.pillar);
+            }
+            
+            // 装饰灯光
+            for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 4) {
+                const lightX = centerX + Math.cos(angle) * 10;
+                const lightZ = centerZ + Math.sin(angle) * 10;
+                const light = createVoxel(lightX, 25, lightZ, 1, colors.light);
+                light.material.emissive = colors.light;
+                light.material.emissiveIntensity = 0.5;
+                lights.push(light);
+            }
+        }
+
+        function createSphere(x, y, z, radius, color) {
+            const step = 2;
+            for (let theta = 0; theta < Math.PI; theta += Math.PI / 8) {
+                for (let phi = 0; phi < Math.PI * 2; phi += Math.PI / 8) {
+                    const px = x + radius * Math.sin(theta) * Math.cos(phi);
+                    const py = y + radius * Math.cos(theta);
+                    const pz = z + radius * Math.sin(theta) * Math.sin(phi);
+                    createVoxel(px, py, pz, step, color);
+                }
+            }
+        }
+
+        function createSkyscrapers() {
+            // 上海中心大厦
+            createSkyscraper(40, 0, 20, 8, 120, colors.skyscraper.glass);
+            
+            // 金茂大厦
+            createSkyscraper(40, 0, -20, 6, 88, colors.skyscraper.gold);
+            
+            // 环球金融中心
+            createSkyscraper(60, 0, 0, 7, 100, colors.skyscraper.dark);
+            
+            // 其他摩天楼
+            for (let i = 0; i < 5; i++) {
+                const x = 30 + Math.random() * 40;
+                const z = -40 + Math.random() * 80;
+                const height = 40 + Math.random() * 60;
+                const width = 4 + Math.random() * 4;
+                const color = Object.values(colors.skyscraper)[Math.floor(Math.random() * 4)];
+                createSkyscraper(x, 0, z, width, height, color);
+            }
+        }
+
+        function createSkyscraper(x, y, z, width, height, color) {
+            const levels = Math.floor(height / 4);
+            for (let level = 0; level < levels; level++) {
+                const currentWidth = width * (1 - level / levels * 0.2);
+                for (let dx = -currentWidth/2; dx < currentWidth/2; dx += 2) {
+                    for (let dz = -currentWidth/2; dz < currentWidth/2; dz += 2) {
+                        const voxel = createVoxel(x + dx, y + level * 4, z + dz, 2, color);
+                        
+                        // 窗户效果
+                        if (Math.random() > 0.3 && level % 2 === 0) {
+                            voxel.material.emissive = colors.light;
+                            voxel.material.emissiveIntensity = 0.2;
+                        }
+                    }
+                }
+            }
+            
+            // 顶部装饰
+            createVoxel(x, y + height, z, 2, colors.light);
+        }
+
+        function createBundBuildings() {
+            // 外滩建筑群
+            for (let i = 0; i < 8; i++) {
+                const x = -20;
+                const z = -60 + i * 15;
+                const height = 20 + Math.random() * 15;
+                
+                // 建筑主体
+                for (let y = 0; y < height; y += 3) {
+                    for (let dx = -6; dx < 6; dx += 3) {
+                        for (let dz = -4; dz < 4; dz += 3) {
+                            createVoxel(x + dx, y, z + dz, 3, colors.bund.classic);
+                        }
+                    }
+                }
+                
+                // 屋顶
+                for (let dx = -4; dx < 4; dx += 2) {
+                    for (let dz = -3; dz < 3; dz += 2) {
+                        createVoxel(x + dx, height, z + dz, 2, colors.bund.roof);
+                    }
+                }
+            }
+        }
+
+        function createTrees() {
+            for (let i = 0; i < 30; i++) {
+                const x = -10 + Math.random() * 80;
+                const z = -80 + Math.random() * 160;
+                
+                if (Math.abs(x) > 30 || Math.abs(z) > 30) {
+                    // 树干
+                    for (let y = 0; y < 6; y += 2) {
+                        createVoxel(x, y, z, 1.5, 0x8B4513);
+                    }
+                    
+                    // 树冠
+                    for (let dy = 6; dy < 12; dy += 2) {
+                        const radius = 4 - (dy - 6) / 2;
+                        for (let dx = -radius; dx < radius; dx += 2) {
+                            for (let dz = -radius; dz < radius; dz += 2) {
+                                if (Math.sqrt(dx*dx + dz*dz) < radius) {
+                                    createVoxel(x + dx, dy, z + dz, 2, colors.tree);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function createRoads() {
+            // 主要道路
+            for (let x = -100; x < 100; x += 4) {
+                createVoxel(x, 0.1, 30, 4, colors.road);
+                createVoxel(x, 0.1, -30, 4, colors.road);
+            }
+            
+            for (let z = -100; z < 100; z += 4) {
+                createVoxel(0, 0.1, z, 4, colors.road);
+                createVoxel(70, 0.1, z, 4, colors.road);
+            }
+            
+            // 道路标线
+            for (let x = -100; x < 100; x += 8) {
+                createVoxel(x, 0.2, 30, 2, 0xFFFFFF);
+                createVoxel(x, 0.2, -30, 2, 0xFFFFFF);
+            }
+        }
+
+        function createClouds() {
+            for (let i = 0; i < 8; i++) {
+                const cloud = new THREE.Group();
+                const x = -100 + Math.random() * 200;
+                const y = 80 + Math.random() * 40;
+                const z = -100 + Math.random() * 200;
+                
+                // 云朵形状
+                for (let j = 0; j < 5; j++) {
+                    const geometry = new THREE.BoxGeometry(
+                        8 + Math.random() * 4,
+                        4 + Math.random() * 2,
+                        8 + Math.random() * 4
+                    );
+                    const material = new THREE.MeshPhongMaterial({
+                        color: colors.cloud,
+                        opacity: 0.8,
+                        transparent: true
+                    });
+                    const part = new THREE.Mesh(geometry, material);
+                    part.position.set(
+                        Math.random() * 10 - 5,
+                        Math.random() * 3,
+                        Math.random() * 10 - 5
+                    );
+                    cloud.add(part);
+                }
+                
+                cloud.position.set(x, y, z);
+                cloud.userData = {
+                    speed: 0.05 + Math.random() * 0.1,
+                    initialX: x
+                };
+                scene.add(cloud);
+                clouds.push(cloud);
+            }
+        }
+
+        function createBoats() {
+            for (let i = 0; i < 3; i++) {
+                const boat = new THREE.Group();
+                
+                // 船体
+                const hull = new THREE.Mesh(
+                    new THREE.BoxGeometry(8, 2, 4),
+                    new THREE.MeshPhongMaterial({ color: colors.boat })
+                );
+                boat.add(hull);
+                
+                // 船舱
+                const cabin = new THREE.Mesh(
+                    new THREE.BoxGeometry(4, 2, 3),
+                    new THREE.MeshPhongMaterial({ color: 0xFF6347 })
+                );
+                cabin.position.y = 2;
+                boat.add(cabin);
+                
+                boat.position.set(
+                    -60 - Math.random() * 20,
+                    0,
+                    -40 + i * 30
+                );
+                boat.userData = {
+                    speed: 0.1 + Math.random() * 0.1,
+                    initialZ: boat.position.z
+                };
+                scene.add(boat);
+                boats.push(boat);
+            }
+        }
+
+        function createParticles() {
+            const particleCount = 100;
+            const particles = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+
+            for (let i = 0; i < particleCount; i++) {
+                positions.push(
+                    Math.random() * 200 - 100,
+                    Math.random() * 100,
+                    Math.random() * 200 - 100
+                );
+                colors.push(1, 1, 0.5);
+            }
+
+            particles.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            particles.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const particleMaterial = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            particleSystem = new THREE.Points(particles, particleMaterial);
+            scene.add(particleSystem);
+        }
+
+        function setupEventListeners() {
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('wheel', onMouseWheel);
+            window.addEventListener('keydown', onKeyDown);
+            
+            // 触摸支持
+            window.addEventListener('touchstart', onTouchStart);
+            window.addEventListener('touchmove', onTouchMove);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.001;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.001;
+        }
+
+        function onMouseWheel(event) {
+            const zoomSpeed = 5;
+            camera.position.z += event.deltaY * 0.01 * zoomSpeed;
+            camera.position.z = Math.max(50, Math.min(300, camera.position.z));
+        }
+
+        function onKeyDown(event) {
+            if (event.code === 'Space') {
+                toggleDayNight();
+            }
+        }
+
+        function onTouchStart(event) {
+            if (event.touches.length === 1) {
+                mouseX = (event.touches[0].clientX - window.innerWidth / 2) * 0.001;
+                mouseY = (event.touches[0].clientY - window.innerHeight / 2) * 0.001;
+            }
+        }
+
+        function onTouchMove(event) {
+            if (event.touches.length === 1) {
+                event.preventDefault();
+                mouseX = (event.touches[0].clientX - window.innerWidth / 2) * 0.001;
+                mouseY = (event.touches[0].clientY - window.innerHeight / 2) * 0.001;
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isAnimating) {
+                const time = Date.now() * 0.001;
+
+                // 相机旋转
+                targetRotationX += (mouseX - targetRotationX) * 0.05;
+                targetRotationY += (mouseY - targetRotationY) * 0.05;
+                
+                camera.position.x = Math.cos(targetRotationX) * 150;
+                camera.position.z = Math.sin(targetRotationX) * 150;
+                camera.position.y = 80 + targetRotationY * 50;
+                camera.lookAt(scene.position);
+
+                // 水面波动
+                scene.children.forEach(child => {
+                    if (child.userData && child.userData.initialY !== undefined) {
+                        child.position.y = child.userData.initialY + Math.sin(time + child.userData.offset) * 0.5;
+                    }
+                });
+
+                // 云朵移动
+                clouds.forEach(cloud => {
+                    cloud.position.x += cloud.userData.speed;
+                    if (cloud.position.x > 150) {
+                        cloud.position.x = -150;
+                    }
+                });
+
+                // 船只移动
+                boats.forEach(boat => {
+                    boat.position.z += boat.userData.speed;
+                    boat.rotation.y = Math.sin(time) * 0.1;
+                    if (boat.position.z > 80) {
+                        boat.position.z = -80;
+                    }
+                });
+
+                // 灯光闪烁
+                lights.forEach((light, index) => {
+                    light.material.emissiveIntensity = 0.5 + Math.sin(time * 2 + index) * 0.3;
+                });
+
+                // 粒子动画
+                if (particleSystem) {
+                    particleSystem.rotation.y = time * 0.1;
+                    const positions = particleSystem.geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i + 1] += Math.sin(time + i) * 0.01;
+                    }
+                    particleSystem.geometry.attributes.position.needsUpdate = true;
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        function toggleAnimation() {
+            isAnimating = !isAnimating;
+        }
+
+        function toggleDayNight() {
+            isDayTime = !isDayTime;
+            
+            if (isDayTime) {
+                scene.fog.color.setHex(0x87CEEB);
+                renderer.setClearColor(0x87CEEB);
+                scene.children.forEach(child => {
+                    if (child instanceof THREE.AmbientLight) {
+                        child.intensity = 1.2;
+                    }
+                    if (child instanceof THREE.DirectionalLight) {
+                        child.intensity = 1;
+                    }
+                });
+            } else {
+                scene.fog.color.setHex(0x000033);
+                renderer.setClearColor(0x000033);
+                scene.children.forEach(child => {
+                    if (child instanceof THREE.AmbientLight) {
+                        child.intensity = 0.3;
+                    }
+                    if (child instanceof THREE.DirectionalLight) {
+                        child.intensity = 0.2;
+                    }
+                });
+                
+                // 夜晚增强建筑灯光
+                voxels.forEach(voxel => {
+                    if (voxel.material.emissive) {
+                        voxel.material.emissiveIntensity = isDayTime ? 0.2 : 0.8;
+                    }
+                });
+            }
+        }
+
+        function resetCamera() {
+            camera.position.set(100, 80, 150);
+            camera.lookAt(0, 0, 0);
+            targetRotationX = 0;
+            targetRotationY = 0;
+        }
+
+        // 初始化场景
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

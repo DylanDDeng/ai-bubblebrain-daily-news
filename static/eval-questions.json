@@ -14,6 +14,10 @@
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-voxel-shanghai.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
+      "claude-opus-4.1": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.1-shanghai-voxel.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
       "gemini-3": {
         "type": "html",
         "content": "<div class='solution'><h4>河内塔解法</h4><table><tr><th>步骤</th><th>操作</th><th>A柱</th><th>B柱</th><th>C柱</th></tr><tr><td>初始</td><td>-</td><td>1,2,3</td><td>-</td><td>-</td></tr><tr><td>1</td><td>A→C</td><td>2,3</td><td>-</td><td>1</td></tr><tr><td>2</td><td>A→B</td><td>3</td><td>2</td><td>1</td></tr><tr><td>3</td><td>C→B</td><td>3</td><td>1,2</td><td>-</td></tr><tr><td>4</td><td>A→C</td><td>-</td><td>1,2</td><td>3</td></tr><tr><td>5</td><td>B→A</td><td>1</td><td>2</td><td>3</td></tr><tr><td>6</td><td>B→C</td><td>1</td><td>-</td><td>2,3</td></tr><tr><td>7</td><td>A→C</td><td>-</td><td>-</td><td>1,2,3</td></tr></table></div>"
