@@ -37,6 +37,11 @@ disableKinds = ['taxonomy', 'term']
   weight = 26
 
 [[menu.main]]
+  name = 'AI 工具'
+  pageRef = '/ai-tools'
+  weight = 28
+
+[[menu.main]]
   name = 'Prompt收录'
   pageRef = '/prompts'
   weight = 30

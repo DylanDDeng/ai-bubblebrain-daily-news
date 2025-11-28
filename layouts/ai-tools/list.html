@@ -1,0 +1,837 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-narrow tools-shell">
+    <header class="page-header tools-hero">
+      <p class="page-eyebrow">AI Tools Collection</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
+      {{ end }}
+    </header>
+
+    <div class="tools-actions">
+      <div class="tools-search">
+        <input type="search" id="tools-search" placeholder="搜索名称 / 领域 / 公司" aria-label="搜索AI工具">
+      </div>
+      <div class="tools-filter-row" id="tools-filters" aria-label="按领域筛选"></div>
+    </div>
+
+    <div id="tools-grid" class="tools-grid" aria-live="polite"></div>
+    <nav id="tools-pagination" class="pagination" aria-label="AI工具分页导航" hidden></nav>
+    <div id="tools-empty" class="tools-empty" hidden>
+      <p>暂时还没有AI工具。</p>
+      <p>更新 ai-tools.json 后刷新页面即可获取最新内容。</p>
+    </div>
+    <div id="tools-empty-filter" class="tools-empty" hidden>
+      <p>当前筛选条件下没有匹配的工具。</p>
+      <p>切换其他筛选条件试试看。</p>
+    </div>
+  </div>
+</section>
+
+<div class="tools-modal" id="tools-modal" aria-hidden="true">
+  <div class="tools-modal__backdrop" data-close></div>
+  <div class="tools-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="tools-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <div class="tools-modal__body">
+      <div class="tools-modal__logo">
+        <img id="modal-logo" alt="" loading="lazy">
+      </div>
+      <div class="tools-modal__meta">
+        <h2 id="modal-title"></h2>
+        <div class="tools-pillset">
+          <span class="meta-pill" id="modal-domain"></span>
+          <span class="meta-pill" id="modal-company"></span>
+        </div>
+        <div class="tools-link-block">
+          <a id="modal-link" href="#" target="_blank" rel="noopener noreferrer" class="tools-visit-btn">
+            访问工具 →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const dataUrl = "/ai-tools.json";
+  const grid = document.getElementById("tools-grid");
+  const empty = document.getElementById("tools-empty");
+  const pagination = document.getElementById("tools-pagination");
+  const modal = document.getElementById("tools-modal");
+  const modalLogo = document.getElementById("modal-logo");
+  const modalTitle = document.getElementById("modal-title");
+  const modalDomain = document.getElementById("modal-domain");
+  const modalCompany = document.getElementById("modal-company");
+  const modalLink = document.getElementById("modal-link");
+  const filtersWrap = document.getElementById("tools-filters");
+  const searchInput = document.getElementById("tools-search");
+  const closeTargets = modal.querySelectorAll("[data-close]");
+  const MAX_TAGS_VISIBLE = 8;
+  const pageSize = 20;
+  let activeFocus = null;
+  let allItems = [];
+  let filteredItems = [];
+  let currentPage = 1;
+  let currentFilter = "all";
+  let searchTerm = "";
+  let filtersCollapsed = true;
+
+  function setEmpty(isEmpty) {
+    empty.hidden = !isEmpty;
+  }
+
+  function setFilterEmpty(isEmpty) {
+    const filterEmpty = document.getElementById("tools-empty-filter");
+    if (filterEmpty) filterEmpty.hidden = !isEmpty;
+  }
+
+  function collectDomains(items) {
+    const domains = new Set();
+    items.forEach((item) => {
+      if (item.domain) {
+        domains.add(item.domain.toString().trim());
+      }
+    });
+    return Array.from(domains).filter(Boolean);
+  }
+
+  function collectDomainCounts(items) {
+    const counts = Object.create(null);
+    items.forEach((item) => {
+      const domain = (item.domain || "").toString().trim();
+      if (domain) {
+        counts[domain] = (counts[domain] || 0) + 1;
+      }
+    });
+    return counts;
+  }
+
+  function renderFilters(domains) {
+    if (!filtersWrap) return;
+    filtersWrap.innerHTML = "";
+
+    const visibleDomains = (() => {
+      if (!filtersCollapsed) return domains;
+      const base = domains.slice(0, MAX_TAGS_VISIBLE);
+      if (currentFilter !== "all" && domains.includes(currentFilter) && !base.includes(currentFilter)) {
+        base.push(currentFilter);
+      }
+      return base;
+    })();
+
+    const frag = document.createDocumentFragment();
+    const allBtn = document.createElement("button");
+    allBtn.className = "tools-filter-pill active";
+    const counts = collectDomainCounts(allItems);
+    allBtn.textContent = `全部 @${allItems.length}`;
+    allBtn.setAttribute("data-domain", "all");
+    frag.appendChild(allBtn);
+
+    visibleDomains.forEach((domain) => {
+      const btn = document.createElement("button");
+      btn.className = "tools-filter-pill";
+      btn.textContent = `${domain} @${counts[domain] || 0}`;
+      btn.setAttribute("data-domain", domain);
+      frag.appendChild(btn);
+    });
+
+    if (domains.length > MAX_TAGS_VISIBLE) {
+      const toggle = document.createElement("button");
+      toggle.className = "tools-filter-toggle";
+      toggle.type = "button";
+      toggle.textContent = filtersCollapsed
+        ? `展开全部领域 (${domains.length - MAX_TAGS_VISIBLE})`
+        : "收起领域";
+      toggle.addEventListener("click", () => {
+        filtersCollapsed = !filtersCollapsed;
+        renderFilters(domains);
+      });
+      frag.appendChild(toggle);
+    }
+
+    filtersWrap.appendChild(frag);
+
+    filtersWrap.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentFilter = btn.dataset.domain || "all";
+        filtersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter();
+      });
+    });
+  }
+
+  function buildCard(item) {
+    const card = document.createElement("article");
+    card.className = "tools-card reveal-text";
+    card.setAttribute("tabindex", "0");
+    card.dataset.id = item.id || "";
+    if (item.domain) {
+      card.dataset.domain = item.domain.toLowerCase();
+    }
+
+    const logoWrap = document.createElement("div");
+    logoWrap.className = "tools-logo";
+    const logo = document.createElement("img");
+    logo.src = item.logo || "";
+    logo.alt = item.name || "AI工具";
+    logo.loading = "lazy";
+    logoWrap.appendChild(logo);
+
+    const meta = document.createElement("div");
+    meta.className = "tools-card__meta";
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "tools-eyebrow";
+    eyebrow.textContent = item.domain || "AI工具";
+    const title = document.createElement("h3");
+    title.textContent = item.name || "未命名工具";
+    const footer = document.createElement("div");
+    footer.className = "tools-card__footer";
+    const company = document.createElement("span");
+    company.className = "tools-company";
+    company.textContent = item.company ? `${item.company}` : "未知公司";
+    const hint = document.createElement("span");
+    hint.className = "tools-hint";
+    hint.textContent = "查看详情 →";
+
+    footer.appendChild(company);
+    footer.appendChild(hint);
+
+    meta.appendChild(eyebrow);
+    meta.appendChild(title);
+    meta.appendChild(footer);
+
+    card.appendChild(logoWrap);
+    card.appendChild(meta);
+
+    card.addEventListener("click", () => openModal(item));
+    card.addEventListener("keypress", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openModal(item);
+      }
+    });
+
+    return card;
+  }
+
+  function renderGrid() {
+    if (!grid) return;
+    grid.innerHTML = "";
+
+    const totalItems = filteredItems.length;
+    if (!totalItems) {
+      if (pagination) {
+        pagination.hidden = true;
+        pagination.innerHTML = "";
+      }
+      return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    const start = (currentPage - 1) * pageSize;
+    const pageItems = filteredItems.slice(start, start + pageSize);
+
+    const frag = document.createDocumentFragment();
+    pageItems.forEach((item) => {
+      const card = buildCard(item);
+      if (card) frag.appendChild(card);
+    });
+
+    grid.appendChild(frag);
+
+    requestAnimationFrame(() => {
+      grid.querySelectorAll(".reveal-text").forEach((el, index) => {
+        setTimeout(() => el.classList.add("active"), index * 60);
+      });
+    });
+  }
+
+  function goToPage(pageNumber) {
+    const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+    currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
+    renderGrid();
+    renderPagination();
+  }
+
+  function renderPagination() {
+    if (!pagination) return;
+    const totalPages = Math.ceil(filteredItems.length / pageSize);
+
+    if (totalPages <= 1) {
+      pagination.hidden = true;
+      pagination.innerHTML = "";
+      return;
+    }
+
+    pagination.hidden = false;
+    pagination.innerHTML = "";
+
+    const prev =
+      currentPage > 1
+        ? Object.assign(document.createElement("a"), { href: "#" })
+        : document.createElement("span");
+    prev.className = "pagination-link" + (currentPage === 1 ? " disabled" : "");
+    prev.textContent = "← 上一页";
+    if (currentPage > 1) {
+      prev.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToPage(currentPage - 1);
+      });
+    }
+    pagination.appendChild(prev);
+
+    const pagesWrap = document.createElement("div");
+    pagesWrap.className = "pagination-pages";
+    for (let i = 1; i <= totalPages; i += 1) {
+      if (i === currentPage) {
+        const span = document.createElement("span");
+        span.className = "pagination-page current";
+        span.textContent = i;
+        pagesWrap.appendChild(span);
+      } else {
+        const link = document.createElement("a");
+        link.className = "pagination-page";
+        link.href = "#";
+        link.textContent = i;
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          goToPage(i);
+        });
+        pagesWrap.appendChild(link);
+      }
+    }
+    pagination.appendChild(pagesWrap);
+
+    const next =
+      currentPage < totalPages
+        ? Object.assign(document.createElement("a"), { href: "#" })
+        : document.createElement("span");
+    next.className = "pagination-link" + (currentPage === totalPages ? " disabled" : "");
+    next.textContent = "下一页 →";
+    if (currentPage < totalPages) {
+      next.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToPage(currentPage + 1);
+      });
+    }
+    pagination.appendChild(next);
+  }
+
+  function applyFilter() {
+    if (!allItems.length) return;
+
+    const term = searchTerm.trim().toLowerCase();
+    const matchesSearch = (item) => {
+      if (!term) return true;
+      const haystack = [
+        item.name,
+        item.domain,
+        item.company
+      ]
+        .map((v) => (v || "").toString().toLowerCase())
+        .join(" ");
+      return haystack.includes(term);
+    };
+
+    const byDomain = (item) => {
+      if (currentFilter === "all") return true;
+      const filterLower = currentFilter.toLowerCase();
+      const domain = (item.domain || "").toString().trim().toLowerCase();
+      return domain === filterLower;
+    };
+
+    filteredItems = allItems.filter((item) => byDomain(item) && matchesSearch(item));
+
+    const noMatch = filteredItems.length === 0;
+    setFilterEmpty(noMatch && (currentFilter !== "all" || term));
+    currentPage = 1;
+    renderGrid();
+    renderPagination();
+  }
+
+  function render(items) {
+    if (!items || !items.length) {
+      setEmpty(true);
+      return;
+    }
+
+    setEmpty(false);
+    allItems = items;
+    filteredItems = [...allItems];
+    currentPage = 1;
+    renderFilters(collectDomains(allItems));
+    setFilterEmpty(false);
+    renderGrid();
+    renderPagination();
+  }
+
+  function openModal(item) {
+    activeFocus = document.activeElement;
+
+    modalTitle.textContent = item.name || "未命名工具";
+    modalDomain.textContent = item.domain ? `领域：${item.domain}` : "领域：未知";
+    modalCompany.textContent = item.company ? `公司：${item.company}` : "公司：未知";
+    modalLogo.src = item.logo || "";
+    modalLogo.alt = item.name || "AI工具";
+    modalLink.href = item.url || "#";
+
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    modal.querySelector(".tools-modal__close").focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (activeFocus) {
+      activeFocus.focus();
+    }
+  }
+
+  closeTargets.forEach((el) => {
+    el.addEventListener("click", closeModal);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (!modal.classList.contains("open")) return;
+    if (event.key === "Escape") {
+      return closeModal();
+    }
+  });
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (event) => {
+      searchTerm = event.target.value || "";
+      applyFilter();
+    });
+  }
+
+  fetch(dataUrl)
+    .then((res) => {
+      console.log('fetch response:', res.status, res.statusText);
+      if (!res.ok) throw new Error(`网络异常: ${res.status}`);
+      return res.json();
+    })
+    .then((items) => {
+      console.log('AI tools loaded:', items.length);
+      render(items);
+    })
+    .catch((err) => {
+      console.error('加载ai-tools.json失败:', err);
+      setEmpty(true);
+    });
+})();
+</script>
+
+<style>
+.tools-shell {
+  padding-bottom: 5rem;
+}
+
+.tools-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.tools-hero h1 {
+  margin: 0.35rem 0;
+  font-size: 2.8rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.tools-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1rem 0 2rem;
+}
+
+.tools-search {
+  flex: 1 1 260px;
+  max-width: 420px;
+}
+
+.tools-search input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tools-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+.tools-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 2rem;
+  align-items: center;
+}
+
+.tools-filter-pill {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.tools-filter-pill:hover {
+  border-color: var(--accent);
+}
+
+.tools-filter-pill.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.tools-filter-toggle {
+  border: 1px dashed var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  margin-left: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.tools-filter-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.tools-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease;
+  outline: none;
+  cursor: pointer;
+}
+
+.tools-card:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+}
+
+.tools-card:hover {
+  transform: translateY(-6px);
+  background: var(--surface-highlight);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.tools-logo {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-highlight);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tools-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.tools-card:hover .tools-logo img {
+  transform: scale(1.05);
+}
+
+.tools-card__meta {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tools-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.tools-card h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+
+.tools-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.tools-company {
+  color: var(--text-main);
+}
+
+.tools-hint {
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.tools-empty {
+  margin-top: 2rem;
+  text-align: center;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.pagination-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.pagination-link.disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-page {
+  min-width: 36px;
+  text-align: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.pagination-page:hover {
+  background: var(--surface-highlight);
+}
+
+.pagination-page.current {
+  background: var(--accent);
+  color: #000;
+}
+
+.tools-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.tools-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tools-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.tools-modal__dialog {
+  position: relative;
+  max-width: 600px;
+  width: min(92vw, 600px);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.tools-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.tools-modal__logo {
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tools-modal__logo img {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+}
+
+.tools-modal__meta h2 {
+  margin: 0.3rem 0 0.8rem;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.tools-pillset {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.meta-pill {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.tools-link-block {
+  margin-top: 1rem;
+}
+
+.tools-visit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.tools-visit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.tools-modal__close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.tools-modal__close:hover {
+  color: var(--accent);
+}
+
+.reveal-text {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-text.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  .tools-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .tools-search {
+    max-width: none;
+    width: 100%;
+  }
+
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tools-modal__dialog {
+    width: 94vw;
+  }
+}
+</style>
+{{ end }}
