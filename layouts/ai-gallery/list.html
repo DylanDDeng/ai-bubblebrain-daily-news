@@ -624,16 +624,15 @@
 
 .gallery-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 0.8rem;
-  align-items: center;
-  justify-content: space-between;
   margin: 1rem 0 2rem;
 }
 
 .gallery-search {
-  flex: 1 1 260px;
-  max-width: 420px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .gallery-search input {
@@ -671,8 +670,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
-  margin: 1rem 0 2rem;
-  align-items: center;
+  justify-content: center;
 }
 
 .gallery-filter-pill {
