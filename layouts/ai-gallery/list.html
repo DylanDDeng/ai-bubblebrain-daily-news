@@ -1018,6 +1018,33 @@
   color: var(--text-main);
 }
 
+.gallery-prompt-block #modal-prompt {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;
+  line-height: 1.6;
+  padding-right: 0.5rem;
+}
+
+.gallery-prompt-block #modal-prompt::-webkit-scrollbar {
+  width: 8px;
+}
+
+.gallery-prompt-block #modal-prompt::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 4px;
+}
+
+.gallery-prompt-block #modal-prompt::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.gallery-prompt-block #modal-prompt::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 .prompt-header {
   display: flex;
   align-items: center;
