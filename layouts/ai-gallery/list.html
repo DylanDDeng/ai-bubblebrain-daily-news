@@ -11,7 +11,7 @@
 
     <div class="gallery-actions">
       <div class="gallery-search">
-        <input type="search" id="gallery-search" placeholder="搜索标题 / Prompt / 作者" aria-label="搜索作品">
+        <input type="search" id="gallery-search" placeholder="搜索标题 / Prompt / 作者 / 模型" aria-label="搜索作品">
       </div>
       <div class="gallery-filter-row" id="gallery-filters" aria-label="按标签筛选"></div>
     </div>
@@ -408,7 +408,8 @@
       const haystack = [
         item.title,
         item.prompt,
-        item.author
+        item.author,
+        item.source
       ]
         .map((v) => (v || "").toString().toLowerCase())
         .join(" ");
