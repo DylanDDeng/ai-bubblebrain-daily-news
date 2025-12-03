@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素上海：建筑风景</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 50%, #4a69bd 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+            background: rgba(12, 36, 97, 0.7);
+            border-bottom: 2px solid #fbc531;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            color: #fbc531;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        #scene-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #info-panel {
+            width: 320px;
+            background: rgba(12, 36, 97, 0.85);
+            padding: 25px;
+            border-left: 2px solid #fbc531;
+            overflow-y: auto;
+            z-index: 10;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #fbc531;
+            border-bottom: 1px solid rgba(251, 197, 49, 0.5);
+            padding-bottom: 10px;
+        }
+        
+        .building-list {
+            list-style-type: none;
+            margin-bottom: 30px;
+        }
+        
+        .building-item {
+            background: rgba(30, 55, 153, 0.6);
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #fbc531;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .building-item:hover {
+            background: rgba(74, 105, 189, 0.7);
+            transform: translateX(5px);
+        }
+        
+        .building-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .building-desc {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        .controls {
+            margin-top: 20px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .slider-value {
+            margin-left: 10px;
+            min-width: 40px;
+            font-weight: bold;
+            color: #fbc531;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fbc531;
+            cursor: pointer;
+        }
+        
+        button {
+            background: #fbc531;
+            color: #0c2461;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+        
+        button:hover {
+            background: #ffd869;
+            transform: translateY(-2px);
+        }
+        
+        .instructions {
+            background: rgba(30, 55, 153, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .instructions h3 {
+            color: #fbc531;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .voxel-count {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(12, 36, 97, 0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            border: 1px solid rgba(251, 197, 49, 0.3);
+            z-index: 10;
+        }
+        
+        .voxel-count strong {
+            color: #fbc531;
+        }
+        
+        .time-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(12, 36, 97, 0.8);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            border: 1px solid rgba(251, 197, 49, 0.3);
+            z-index: 10;
+        }
+        
+        .time-display strong {
+            color: #fbc531;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(12, 36, 97, 0.7);
+            z-index: 10;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            #info-panel {
+                width: 100%;
+                height: 40vh;
+                border-left: none;
+                border-top: 2px solid #fbc531;
+            }
+            
+            .voxel-count, .time-display {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>体素上海：建筑风景</h1>
+        <p class="subtitle">一个色彩丰富、精心设计的体素艺术场景，展示上海标志性建筑。使用鼠标与场景交互，控制日夜循环，体验震撼的体素城市景观。</p>
+    </header>
+    
+    <div class="container">
+        <div id="scene-container">
+            <div class="voxel-count"><strong>体素数量:</strong> <span id="voxel-count">0</span></div>
+            <div class="time-display"><strong>时间:</strong> <span id="time-display">白天</span></div>
+        </div>
+        
+        <div id="info-panel">
+            <h2 class="panel-title">上海地标建筑</h2>
+            
+            <ul class="building-list">
+                <li class="building-item" data-building="oriental-pearl">
+                    <div class="building-name">东方明珠广播电视塔</div>
+                    <div class="building-desc">高468米，由11个球体组成，是上海最具代表性的建筑之一。</div>
+                </li>
+                <li class="building-item" data-building="shanghai-tower">
+                    <div class="building-name">上海中心大厦</div>
+                    <div class="building-desc">中国第一高楼，高632米，拥有独特的螺旋式上升造型。</div>
+                </li>
+                <li class="building-item" data-building="jinmao-tower">
+                    <div class="building-name">金茂大厦</div>
+                    <div class="building-desc">高420.5米，融合中国传统塔型建筑与现代科技。</div>
+                </li>
+                <li class="building-item" data-building="world-financial-center">
+                    <div class="building-name">上海环球金融中心</div>
+                    <div class="building-desc">高492米，顶部梯形开口设计减少风压，形似开瓶器。</div>
+                </li>
+                <li class="building-item" data-building="the-bund">
+                    <div class="building-name">外滩建筑群</div>
+                    <div class="building-desc">汇集哥特式、罗马式、巴洛克式等52幢风格各异的大楼。</div>
+                </li>
+            </ul>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label class="control-label">旋转速度</label>
+                    <div class="slider-container">
+                        <input type="range" id="rotation-speed" min="0" max="2" step="0.1" value="0.5">
+                        <span class="slider-value" id="rotation-value">0.5</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label class="control-label">日夜循环速度</label>
+                    <div class="slider-container">
+                        <input type="range" id="day-night-speed" min="0.1" max="2" step="0.1" value="0.8">
+                        <span class="slider-value" id="day-night-value">0.8</span>
+                    </div>
+                </div>
+                
+                <button id="reset-view">重置视角</button>
+                <button id="toggle-animation">暂停动画</button>
+                <button id="randomize-colors">随机色彩</button>
+            </div>
+            
+            <div class="instructions">
+                <h3>操作指南</h3>
+                <ul>
+                    <li><strong>鼠标左键拖动：</strong>旋转场景</li>
+                    <li><strong>鼠标滚轮：</strong>缩放场景</li>
+                    <li><strong>鼠标右键拖动：</strong>平移场景</li>
+                    <li><strong>点击建筑名称：</strong>聚焦到该建筑</li>
+                    <li><strong>使用控制面板：</strong>调整场景参数</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>体素上海建筑风景 | 使用 Three.js 实现 | 设计：创意体素艺术场景</p>
+    </footer>
+
+    <!-- Three.js 库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- 轨道控制器 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    
+    <script>
+        // 主Three.js场景
+        let scene, camera, renderer, controls;
+        let buildings = [];
+        let voxelCount = 0;
+        let dayNightCycle = 0;
+        let isAnimating = true;
+        
+        // 初始化场景
+        function init() {
+            // 创建场景
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x0c2461, 100, 500);
+            
+            // 创建相机
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(120, 80, 120);
+            
+            // 创建渲染器
+            const container = document.getElementById('scene-container');
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            // 添加轨道控制器
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 50;
+            controls.maxDistance = 500;
+            
+            // 添加光源
+            addLights();
+            
+            // 创建地面
+            createGround();
+            
+            // 创建黄浦江
+            createHuangpuRiver();
+            
+            // 创建体素建筑
+            createVoxelBuildings();
+            
+            // 添加事件监听器
+            setupEventListeners();
+            
+            // 初始更新体素计数
+            updateVoxelCount();
+            
+            // 开始动画循环
+            animate();
+        }
+        
+        // 添加光源
+        function addLights() {
+            // 环境光
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            // 平行光（太阳）
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(100, 200, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.left = -200;
+            directionalLight.shadow.camera.right = 200;
+            directionalLight.shadow.camera.top = 200;
+            directionalLight.shadow.camera.bottom = -200;
+            scene.add(directionalLight);
+            
+            // 点光源（建筑灯光）
+            const pointLight1 = new THREE.PointLight(0xffcc00, 0.6, 300);
+            pointLight1.position.set(0, 50, 0);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0x00ccff, 0.5, 300);
+            pointLight2.position.set(-60, 80, 40);
+            scene.add(pointLight2);
+        }
+        
+        // 创建地面
+        function createGround() {
+            // 草地
+            const groundGeometry = new THREE.PlaneGeometry(500, 500);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x3a7c3a,
+                side: THREE.DoubleSide
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = Math.PI / 2;
+            ground.position.y = -0.5;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // 地面网格
+            const gridHelper = new THREE.GridHelper(500, 50, 0xffffff, 0x444444);
+            gridHelper.position.y = 0;
+            scene.add(gridHelper);
+        }
+        
+        // 创建黄浦江
+        function createHuangpuRiver() {
+            const riverGeometry = new THREE.PlaneGeometry(80, 500);
+            const riverMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x1a5a7a,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.8
+            });
+            const river = new THREE.Mesh(riverGeometry, riverMaterial);
+            river.rotation.x = Math.PI / 2;
+            river.position.set(0, 0.1, 0);
+            scene.add(river);
+        }
+        
+        // 创建体素建筑
+        function createVoxelBuildings() {
+            // 东方明珠广播电视塔
+            createOrientalPearlTower(-80, 0, -100);
+            
+            // 上海中心大厦
+            createShanghaiTower(30, 0, -60);
+            
+            // 金茂大厦
+            createJinmaoTower(-20, 0, -40);
+            
+            // 上海环球金融中心
+            createWorldFinancialCenter(60, 0, -20);
+            
+            // 外滩建筑群
+            createBundBuildings(-120, 0, 60);
+            
+            // 随机小型建筑
+            createRandomBuildings();
+        }
+        
+        // 创建东方明珠塔
+        function createOrientalPearlTower(x, y, z) {
+            const colors = [0xff3333, 0xff6666, 0xff9999];
+            const group = new THREE.Group();
+            
+            // 塔基
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 4; j++) {
+                    createVoxelAt(group, x + j*2 - 3, y + i*2, z, 2, colors[0]);
+                }
+            }
+            
+            // 塔身
+            for (let i = 0; i < 15; i++) {
+                createVoxelAt(group, x, y + 16 + i*3, z, 3, colors[1]);
+            }
+            
+            // 下部球体
+            for (let i = 0; i < 5; i++) {
+                const radius = 6 - i;
+                for (let j = 0; j < 8; j++) {
+                    const angle = (j / 8) * Math.PI * 2;
+                    const px = Math.cos(angle) * radius;
+                    const pz = Math.sin(angle) * radius;
+                    createVoxelAt(group, x + px, y + 70 + i*3, z + pz, 3, colors[2]);
+                }
+            }
+            
+            // 中部球体
+            for (let i = 0; i < 4; i++) {
+                const radius = 4 - i;
+                for (let j = 0; j < 6; j++) {
+                    const angle = (j / 6) * Math.PI * 2;
+                    const px = Math.cos(angle) * radius;
+                    const pz = Math.sin(angle) * radius;
+                    createVoxelAt(group, x + px, y + 95 + i*3, z + pz, 3, colors[1]);
+                }
+            }
+            
+            // 顶部天线
+            for (let i = 0; i < 10; i++) {
+                createVoxelAt(group, x, y + 110 + i*4, z, 2, colors[0]);
+            }
+            
+            group.position.set(x, y, z);
+            group.userData = { name: "东方明珠广播电视塔", description: "高468米，由11个球体组成，是上海最具代表性的建筑之一。" };
+            scene.add(group);
+            buildings.push(group);
+        }
+        
+        // 创建上海中心大厦
+        function createShanghaiTower(x, y, z) {
+            const colors = [0x66ccff, 0x3399ff, 0x0066cc];
+            const group = new THREE.Group();
+            
+            // 螺旋上升结构
+            for (let i = 0; i < 40; i++) {
+                const height = i * 4;
+                const radius = 8 - (i / 40) * 6;
+                const twist = (i / 40) * Math.PI * 6;
+                
+                for (let j = 0; j < 8; j++) {
+                    const angle = (j / 8) * Math.PI * 2 + twist;
+                    const px = Math.cos(angle) * radius;
+                    const pz = Math.sin(angle) * radius;
+                    
+                    const colorIndex = Math.floor(j / 2) % colors.length;
+                    createVoxelAt(group, x + px, y + height, z + pz, 3, colors[colorIndex]);
+                }
+            }
+            
+            // 顶部尖顶
+            for (let i = 0; i < 15; i++) {
+                createVoxelAt(group, x, y + 160 + i*3, z, 2, colors[2]);
+            }
+            
+            group.position.set(x, y, z);
+            group.userData = { name: "上海中心大厦", description: "中国第一高楼，高632米，拥有独特的螺旋式上升造型。" };
+            scene.add(group);
+            buildings.push(group);
+        }
+        
+        // 创建金茂大厦
+        function createJinmaoTower(x, y, z) {
+            const colors = [0xffcc66, 0xff9933, 0xcc6600];
+            const group = new THREE.Group();
+            
+            // 塔楼主体
+            for (let i = 0; i < 30; i++) {
+                const width = 6 - (i / 30) * 4;
+                for (let j = -Math.floor(width); j <= Math.floor(width); j++) {
+                    for (let k = -Math.floor(width); k <= Math.floor(width); k++) {
+                        if (Math.abs(j) === Math.floor(width) || Math.abs(k) === Math.floor(width)) {
+                            const colorIndex = Math.floor(i / 10) % colors.length;
+                            createVoxelAt(group, x + j*2, y + i*4, z + k*2, 2, colors[colorIndex]);
+                        }
+                    }
+                }
+            }
+            
+            // 顶部金字塔结构
+            for (let i = 0; i < 8; i++) {
+                const width = 5 - i;
+                for (let j = -width; j <= width; j++) {
+                    for (let k = -width; k <= width; k++) {
+                        if (Math.abs(j) === width || Math.abs(k) === width) {
+                            createVoxelAt(group, x + j*2, y + 120 + i*3, z + k*2, 2, colors[2]);
+                        }
+                    }
+                }
+            }
+            
+            group.position.set(x, y, z);
+            group.userData = { name: "金茂大厦", description: "高420.5米，融合中国传统塔型建筑与现代科技。" };
+            scene.add(group);
+            buildings.push(group);
+        }
+        
+        // 创建上海环球金融中心
+        function createWorldFinancialCenter(x, y, z) {
+            const colors = [0xcccccc, 0x999999, 0x666666];
+            const group = new THREE.Group();
+            
+            // 大楼主体
+            for (let i = 0; i < 35; i++) {
+                const width = 5;
+                for (let j = -width; j <= width; j++) {
+                    for (let k = -width; k <= width; k++) {
+                        if (Math.abs(j) === width || Math.abs(k) === width) {
+                            const colorIndex = Math.floor(i / 12) % colors.length;
+                            createVoxelAt(group, x + j*2, y + i*3.5, z + k*2, 2, colors[colorIndex]);
+                        }
+                    }
+                }
+            }
+            
+            // 顶部梯形开口
+            for (let i = 0; i < 10; i++) {
+                const width = 5 - i * 0.3;
+                for (let j = -Math.floor(width); j <= Math.floor(width); j++) {
+                    if (j >= -1 && j <= 1) continue; // 创建开口
+                    createVoxelAt(group, x + j*2, y + 122.5 + i*3, z, 2, colors[2]);
+                }
+            }
+            
+            group.position.set(x, y, z);
+            group.userData = { name: "上海环球金融中心", description: "高492米，顶部梯形开口设计减少风压，形似开瓶器。" };
+            scene.add(group);
+            buildings.push(group);
+        }
+        
+        // 创建外滩建筑群
+        function createBundBuildings(x, y, z) {
+            const group = new THREE.Group();
+            
+            // 创建一系列不同风格的外滩建筑
+            for (let b = 0; b < 8; b++) {
+                const buildingX = x + b * 25;
+                const height = 15 + Math.random() * 20;
+                const width = 6 + Math.random() * 4;
+                const depth = 8 + Math.random() * 4;
+                const color = new THREE.Color(
+                    0.6 + Math.random() * 0.3,
+                    0.5 + Math.random() * 0.3,
+                    0.4 + Math.random() * 0.3
+                );
+                
+                // 建筑主体
+                for (let i = 0; i < height; i++) {
+                    for (let j = -width; j < width; j++) {
+                        for (let k = -depth; k < depth; k++) {
+                            // 只创建外墙
+                            if (Math.abs(j) === Math.floor(width) || Math.abs(k) === Math.floor(depth)) {
+                                // 添加一些窗户细节
+                                if (i % 3 === 0 && j !== -Math.floor(width) && k !== -Math.floor(depth)) {
+                                    createVoxelAt(group, buildingX + j*2, y + i*2, z + k*2, 2, 0xffcc00);
+                                } else {
+                                    createVoxelAt(group, buildingX + j*2, y + i*2, z + k*2, 2, color);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // 屋顶装饰
+                const roofType = Math.floor(Math.random() * 3);
+                if (roofType === 0) {
+                    // 尖顶
+                    for (let i = 0; i < 5; i++) {
+                        const roofWidth = width - i;
+                        for (let j = -roofWidth; j < roofWidth; j++) {
+                            for (let k = -depth; k < depth; k++) {
+                                if (Math.abs(j) === Math.floor(roofWidth) || Math.abs(k) === Math.floor(depth)) {
+                                    createVoxelAt(group, buildingX + j*2, y + height*2 + i*2, z + k*2, 2, 0xcc6633);
+                                }
+                            }
+                        }
+                    }
+                } else if (roofType === 1) {
+                    // 平顶带护栏
+                    for (let j = -width; j < width; j++) {
+                        for (let k = -depth; k < depth; k++) {
+                            if (Math.abs(j) === Math.floor(width) || Math.abs(k) === Math.floor(depth)) {
+                                createVoxelAt(group, buildingX + j*2, y + height*2, z + k*2, 2, 0x996633);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            group.position.set(x, y, z);
+            group.userData = { name: "外滩建筑群", description: "汇集哥特式、罗马式、巴洛克式等52幢风格各异的大楼。" };
+            scene.add(group);
+            buildings.push(group);
+        }
+        
+        // 创建随机小型建筑
+        function createRandomBuildings() {
+            for (let i = 0; i < 15; i++) {
+                const x = -150 + Math.random() * 300;
+                const z = -150 + Math.random() * 300;
+                
+                // 避免与主要建筑重叠
+                let tooClose = false;
+                buildings.forEach(building => {
+                    const distance = Math.sqrt(
+                        Math.pow(x - building.position.x, 2) + 
+                        Math.pow(z - building.position.z, 2)
+                    );
+                    if (distance < 40) tooClose = true;
+                });
+                
+                if (tooClose || Math.abs(x) < 60 && Math.abs(z) < 60) continue;
+                
+                const height = 5 + Math.random() * 15;
+                const width = 3 + Math.floor(Math.random() * 4);
+                const depth = 3 + Math.floor(Math.random() * 4);
+                const color = new THREE.Color(
+                    Math.random() * 0.8 + 0.2,
+                    Math.random() * 0.8 + 0.2,
+                    Math.random() * 0.8 + 0.2
+                );
+                
+                const group = new THREE.Group();
+                
+                for (let h = 0; h < height; h++) {
+                    for (let w = -width; w <= width; w++) {
+                        for (let d = -depth; d <= depth; d++) {
+                            // 创建实心建筑或带窗户的建筑
+                            if (Math.random() > 0.7 || Math.abs(w) === width || Math.abs(d) === depth) {
+                                createVoxelAt(group, x + w*2, h*2, z + d*2, 2, color);
+                            } else if (h % 3 === 0 && w !== 0 && d !== 0) {
+                                // 添加窗户
+                                createVoxelAt(group, x + w*2, h*2, z + d*2, 2, 0xffff99);
+                            }
+                        }
+                    }
+                }
+                
+                scene.add(group);
+                buildings.push(group);
+            }
+        }
+        
+        // 在指定位置创建体素
+        function createVoxelAt(group, x, y, z, size, color) {
+            const geometry = new THREE.BoxGeometry(size, size, size);
+            const material = new THREE.MeshLambertMaterial({ color: color });
+            const voxel = new THREE.Mesh(geometry, material);
+            
+            voxel.position.set(x, y, z);
+            voxel.castShadow = true;
+            voxel.receiveShadow = true;
+            
+            group.add(voxel);
+            voxelCount++;
+        }
+        
+        // 更新体素计数显示
+        function updateVoxelCount() {
+            document.getElementById('voxel-count').textContent = voxelCount.toLocaleString();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 窗口大小调整
+            window.addEventListener('resize', onWindowResize);
+            
+            // 控制面板事件
+            const rotationSlider = document.getElementById('rotation-speed');
+            const rotationValue = document.getElementById('rotation-value');
+            rotationSlider.addEventListener('input', function() {
+                rotationValue.textContent = this.value;
+            });
+            
+            const dayNightSlider = document.getElementById('day-night-speed');
+            const dayNightValue = document.getElementById('day-night-value');
+            dayNightSlider.addEventListener('input', function() {
+                dayNightValue.textContent = this.value;
+            });
+            
+            // 按钮事件
+            document.getElementById('reset-view').addEventListener('click', function() {
+                controls.reset();
+                camera.position.set(120, 80, 120);
+                controls.update();
+            });
+            
+            document.getElementById('toggle-animation').addEventListener('click', function() {
+                isAnimating = !isAnimating;
+                this.textContent = isAnimating ? '暂停动画' : '播放动画';
+            });
+            
+            document.getElementById('randomize-colors').addEventListener('click', function() {
+                buildings.forEach(building => {
+                    building.children.forEach(voxel => {
+                        if (voxel.material && voxel.material.color) {
+                            voxel.material.color.setHSL(Math.random(), 0.7, 0.6);
+                        }
+                    });
+                });
+            });
+            
+            // 建筑列表点击事件
+            document.querySelectorAll('.building-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const buildingId = this.getAttribute('data-building');
+                    focusOnBuilding(buildingId);
+                });
+            });
+        }
+        
+        // 聚焦到特定建筑
+        function focusOnBuilding(buildingId) {
+            let targetBuilding;
+            
+            switch(buildingId) {
+                case 'oriental-pearl':
+                    targetBuilding = buildings[0];
+                    break;
+                case 'shanghai-tower':
+                    targetBuilding = buildings[1];
+                    break;
+                case 'jinmao-tower':
+                    targetBuilding = buildings[2];
+                    break;
+                case 'world-financial-center':
+                    targetBuilding = buildings[3];
+                    break;
+                case 'the-bund':
+                    targetBuilding = buildings[4];
+                    break;
+                default:
+                    return;
+            }
+            
+            const boundingBox = new THREE.Box3().setFromObject(targetBuilding);
+            const center = boundingBox.getCenter(new THREE.Vector3());
+            const size = boundingBox.getSize(new THREE.Vector3());
+            
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraZ = Math.abs(maxDim / Math.sin(fov / 2));
+            
+            cameraZ *= 1.5; // 稍微后退一点
+            
+            camera.position.set(center.x, center.y + cameraZ * 0.3, center.z + cameraZ);
+            controls.target.copy(center);
+            controls.update();
+        }
+        
+        // 窗口大小调整处理
+        function onWindowResize() {
+            const container = document.getElementById('scene-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // 更新日夜循环
+            if (isAnimating) {
+                dayNightCycle += 0.001 * parseFloat(document.getElementById('day-night-speed').value);
+                
+                // 更新环境光强度模拟日夜
+                const ambientIntensity = 0.3 + 0.3 * Math.sin(dayNightCycle);
+                scene.children.forEach(child => {
+                    if (child instanceof THREE.AmbientLight) {
+                        child.intensity = ambientIntensity;
+                    }
+                });
+                
+                // 更新定向光位置模拟太阳运动
+                const sunAngle = dayNightCycle;
+                const sunDistance = 200;
+                scene.children.forEach(child => {
+                    if (child instanceof THREE.DirectionalLight) {
+                        child.position.x = Math.cos(sunAngle) * sunDistance;
+                        child.position.y = Math.sin(sunAngle) * sunDistance;
+                        child.position.z = 50;
+                        
+                        // 根据太阳高度调整光色
+                        const sunHeight = child.position.y;
+                        if (sunHeight > 0) {
+                            child.color.setHSL(0.1, 0.8, 0.7 + sunHeight / 400);
+                        } else {
+                            child.color.setHSL(0.6, 0.8, 0.3);
+                        }
+                    }
+                });
+                
+                // 更新时间显示
+                const timeOfDay = (dayNightCycle % (Math.PI * 2)) / (Math.PI * 2);
+                let hours = Math.floor(timeOfDay * 24);
+                let minutes = Math.floor((timeOfDay * 24 - hours) * 60);
+                let timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                let period = "白天";
+                
+                if (hours < 6 || hours >= 18) period = "夜晚";
+                else if (hours < 12) period = "早晨";
+                else period = "下午";
+                
+                document.getElementById('time-display').textContent = `${period} (${timeString})`;
+                
+                // 缓慢旋转场景
+                const rotationSpeed = parseFloat(document.getElementById('rotation-speed').value);
+                scene.rotation.y += 0.001 * rotationSpeed;
+            }
+            
+            // 更新控件
+            controls.update();
+            
+            // 渲染场景
+            renderer.render(scene, camera);
+        }
+        
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

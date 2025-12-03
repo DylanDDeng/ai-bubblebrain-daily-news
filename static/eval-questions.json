@@ -18,9 +18,9 @@
         "type": "html",
         "content": "<iframe src='/eval-demos/claude-opus-4.1-shanghai-voxel.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
-      "gemini-3": {
+      "deepseek-v3.2": {
         "type": "html",
-        "content": "<div class='solution'><h4>河内塔解法</h4><table><tr><th>步骤</th><th>操作</th><th>A柱</th><th>B柱</th><th>C柱</th></tr><tr><td>初始</td><td>-</td><td>1,2,3</td><td>-</td><td>-</td></tr><tr><td>1</td><td>A→C</td><td>2,3</td><td>-</td><td>1</td></tr><tr><td>2</td><td>A→B</td><td>3</td><td>2</td><td>1</td></tr><tr><td>3</td><td>C→B</td><td>3</td><td>1,2</td><td>-</td></tr><tr><td>4</td><td>A→C</td><td>-</td><td>1,2</td><td>3</td></tr><tr><td>5</td><td>B→A</td><td>1</td><td>2</td><td>3</td></tr><tr><td>6</td><td>B→C</td><td>1</td><td>-</td><td>2,3</td></tr><tr><td>7</td><td>A→C</td><td>-</td><td>-</td><td>1,2,3</td></tr></table></div>"
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-voxel-shanghai.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -44,9 +44,9 @@
         "type":"html",
         "content":"<iframe src='/eval-demos/claude-opus-4.1.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       },
-      "deepseek-v3": {
+      "deepseek-v3.2": {
         "type": "html",
-        "content": "<pre><code class='language-python'># 简洁的Pythonic快排\ndef qsort(a):\n    return a if len(a) <= 1 else qsort([x for x in a[1:] if x < a[0]]) + [a[0]] + qsort([x for x in a[1:] if x >= a[0]])</code></pre>"
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-about.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -64,6 +64,10 @@
       "gpt-5.1-codex-max-high": {
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-washer-svg.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }
@@ -82,19 +86,23 @@
       "gpt-5.1-codex-max-high": {
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.1-codex-hex-rotating-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-hexagon-bouncing-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
   {
     "id": "q005",
-    "title": "综合能力：HTML页面生成",
-    "category": "综合能力",
+    "title": "MacBook Pro SVG 拖拽动画",
+    "category": "代码能力",
     "difficulty": "中等",
-    "question": "生成一个包含代码高亮和表格的HTML演示页面。",
+    "question": "Create a 360 draggable macbook pro in svg animation. Write this in one single html.",
     "answers": {
-      "claude-opus-4": {
+      "deepseek-v3.2": {
         "type": "html",
-        "content": "<iframe src='/eval-demos/example.html' style='width:100%;height:450px;border:1px solid #333;border-radius:8px;background:#fff;'></iframe>"
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-macbook-360.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotating Hexagon with Bouncing Balls</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 800px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .canvas-container {
+            flex: 1;
+            min-width: 600px;
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        #canvas {
+            border-radius: 10px;
+            display: block;
+            width: 100%;
+        }
+
+        .controls {
+            flex: 0 0 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ff7e5f;
+            border-bottom: 2px solid rgba(255, 126, 95, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ff7e5f;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 126, 95, 0.7);
+        }
+
+        .value-display {
+            min-width: 50px;
+            text-align: right;
+            font-weight: bold;
+            color: #ff7e5f;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 126, 95, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 126, 95, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stats h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #feb47b;
+        }
+
+        .stats p {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #aaa;
+        }
+
+        .stats span {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .instructions {
+            margin-top: 30px;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .instructions h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+            color: #ccc;
+        }
+
+        .instructions li:before {
+            content: '➤';
+            position: absolute;
+            left: 0;
+            color: #4ecdc4;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .canvas-container, .controls {
+                min-width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 650px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .canvas-container {
+                min-width: 100%;
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Rotating Hexagon with Bouncing Balls</h1>
+        <p class="subtitle">A physics simulation with gravity, elasticity, friction, and collisions</p>
+    </header>
+
+    <div class="container">
+        <div class="canvas-container">
+            <div id="canvas"></div>
+        </div>
+
+        <div class="controls">
+            <h2>Controls</h2>
+
+            <div class="control-group">
+                <label for="gravitySlider">Gravity: <span id="gravityValue">0.2</span></label>
+                <div class="slider-container">
+                    <input type="range" id="gravitySlider" min="0" max="1" step="0.01" value="0.2">
+                    <div class="value-display" id="gravityDisplay">0.2</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="elasticitySlider">Elasticity: <span id="elasticityValue">0.8</span></label>
+                <div class="slider-container">
+                    <input type="range" id="elasticitySlider" min="0" max="1" step="0.01" value="0.8">
+                    <div class="value-display" id="elasticityDisplay">0.8</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="frictionSlider">Friction: <span id="frictionValue">0.99</span></label>
+                <div class="slider-container">
+                    <input type="range" id="frictionSlider" min="0.9" max="1" step="0.001" value="0.99">
+                    <div class="value-display" id="frictionDisplay">0.99</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label for="rotationSlider">Rotation Speed: <span id="rotationValue">0.5</span></label>
+                <div class="slider-container">
+                    <input type="range" id="rotationSlider" min="0" max="2" step="0.05" value="0.5">
+                    <div class="value-display" id="rotationDisplay">0.5</div>
+                </div>
+            </div>
+
+            <button id="resetBtn">Reset Simulation</button>
+            <button id="addBallBtn">Add Ball</button>
+            <button id="removeBallBtn">Remove Ball</button>
+            <button id="togglePauseBtn">Pause / Resume</button>
+
+            <div class="stats">
+                <h3>Statistics</h3>
+                <p>Balls: <span id="ballCount">10</span></p>
+                <p>Frame Rate: <span id="frameRate">60</span> FPS</p>
+                <p>Collisions (per frame): <span id="collisionCount">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h2>How It Works</h2>
+        <ul>
+            <li><strong>10 colorful balls</strong> bounce inside a rotating hexagon with realistic physics.</li>
+            <li><strong>Gravity</strong> pulls balls downward (relative to screen).</li>
+            <li><strong>Elasticity</strong> determines how much energy is preserved during collisions.</li>
+            <li><strong>Friction</strong> gradually slows down the balls' movement.</li>
+            <li><strong>Collision detection</strong> handles ball-to-ball and ball-to-hexagon interactions.</li>
+            <li>The hexagon rotates continuously, creating dynamic boundary conditions.</li>
+            <li>Adjust parameters using sliders to see different behaviors!</li>
+        </ul>
+    </div>
+
+    <footer>
+        <p>Created with p5.js | Physics simulation with realistic bouncing balls in a rotating hexagon</p>
+    </footer>
+
+    <script>
+        // p5.js sketch
+        let canvas;
+        let balls = [];
+        let hexagon;
+        let collisionCount = 0;
+        let isPaused = false;
+
+        // Physics parameters
+        let gravity = 0.2;
+        let elasticity = 0.8;
+        let friction = 0.99;
+        let rotationSpeed = 0.5; // degrees per frame
+
+        // Color palette for balls
+        const ballColors = [
+            [255, 100, 100], // Red
+            [100, 255, 100], // Green
+            [100, 100, 255], // Blue
+            [255, 255, 100], // Yellow
+            [255, 100, 255], // Magenta
+            [100, 255, 255], // Cyan
+            [255, 150, 50],  // Orange
+            [150, 100, 255], // Purple
+            [100, 255, 150], // Mint
+            [255, 200, 100]  // Peach
+        ];
+
+        // Hexagon class
+        class Hexagon {
+            constructor(x, y, radius) {
+                this.center = createVector(x, y);
+                this.radius = radius;
+                this.rotation = 0;
+                this.vertices = [];
+                this.edges = [];
+                this.updateVertices();
+            }
+
+            update() {
+                this.rotation += rotationSpeed;
+                this.updateVertices();
+            }
+
+            updateVertices() {
+                this.vertices = [];
+                this.edges = [];
+                const angleStep = 360 / 6;
+
+                // Calculate vertices
+                for (let i = 0; i < 6; i++) {
+                    const angle = radians(this.rotation + i * angleStep);
+                    const x = this.center.x + this.radius * cos(angle);
+                    const y = this.center.y + this.radius * sin(angle);
+                    this.vertices.push(createVector(x, y));
+                }
+
+                // Create edges (line segments between vertices)
+                for (let i = 0; i < 6; i++) {
+                    const p1 = this.vertices[i];
+                    const p2 = this.vertices[(i + 1) % 6];
+                    this.edges.push({ p1, p2 });
+                }
+            }
+
+            draw() {
+                // Draw filled hexagon
+                fill(30, 30, 40, 150);
+                stroke(255, 255, 255, 100);
+                strokeWeight(2);
+
+                beginShape();
+                for (let v of this.vertices) {
+                    vertex(v.x, v.y);
+                }
+                endShape(CLOSE);
+
+                // Draw hexagon outline
+                noFill();
+                stroke(255, 255, 255, 200);
+                strokeWeight(3);
+
+                beginShape();
+                for (let v of this.vertices) {
+                    vertex(v.x, v.y);
+                }
+                endShape(CLOSE);
+
+                // Draw center point
+                fill(255, 100, 100);
+                noStroke();
+                ellipse(this.center.x, this.center.y, 10, 10);
+
+                // Draw vertex points
+                fill(100, 200, 255);
+                for (let v of this.vertices) {
+                    ellipse(v.x, v.y, 6, 6);
+                }
+            }
+
+            // Check if a point is inside the hexagon (for initial placement)
+            contains(point) {
+                // Convert point to hexagon's local coordinate system
+                const localX = point.x - this.center.x;
+                const localY = point.y - this.center.y;
+
+                // Rotate point back by hexagon's rotation
+                const angle = -radians(this.rotation);
+                const rotatedX = localX * cos(angle) - localY * sin(angle);
+                const rotatedY = localX * sin(angle) + localY * cos(angle);
+
+                // Check if inside axis-aligned hexagon (simplified)
+                // Using a radius check with tolerance
+                const distSq = rotatedX * rotatedX + rotatedY * rotatedY;
+                return distSq <= this.radius * this.radius * 0.95; // 95% to keep inside
+            }
+
+            // Get the closest point on hexagon boundary to a given point
+            getClosestBoundaryPoint(point) {
+                let minDist = Infinity;
+                let closestPoint = null;
+                let closestNormal = null;
+
+                for (let edge of this.edges) {
+                    const closest = this.getClosestPointOnSegment(point, edge.p1, edge.p2);
+                    const dist = p5.Vector.dist(point, closest);
+
+                    if (dist < minDist) {
+                        minDist = dist;
+                        closestPoint = closest;
+                        // Calculate normal (perpendicular to edge, pointing outward)
+                        const edgeVec = p5.Vector.sub(edge.p2, edge.p1);
+                        const normal = createVector(-edgeVec.y, edgeVec.x).normalize();
+                        // Ensure normal points away from center
+                        const toCenter = p5.Vector.sub(this.center, closestPoint);
+                        if (toCenter.dot(normal) > 0) {
+                            normal.mult(-1);
+                        }
+                        closestNormal = normal;
+                    }
+                }
+
+                return { point: closestPoint, normal: closestNormal, distance: minDist };
+            }
+
+            // Helper: get closest point on line segment AB to point P
+            getClosestPointOnSegment(P, A, B) {
+                const AP = p5.Vector.sub(P, A);
+                const AB = p5.Vector.sub(B, A);
+                const abMag = AB.magSq();
+
+                if (abMag === 0) return A.copy(); // A and B are the same
+
+                const t = constrain(AP.dot(AB) / abMag, 0, 1);
+                return p5.Vector.add(A, AB.mult(t));
+            }
+        }
+
+        // Ball class
+        class Ball {
+            constructor(x, y, radius, color) {
+                this.pos = createVector(x, y);
+                this.vel = createVector(random(-2, 2), random(-2, 2));
+                this.acc = createVector(0, 0);
+                this.radius = radius;
+                this.color = color;
+                this.mass = radius * 0.1;
+                this.highlight = false;
+            }
+
+            applyForce(force) {
+                // F = ma, so a = F/m
+                const f = force.copy().div(this.mass);
+                this.acc.add(f);
+            }
+
+            update() {
+                if (isPaused) return;
+
+                // Apply gravity
+                this.applyForce(createVector(0, gravity));
+
+                // Update velocity with acceleration
+                this.vel.add(this.acc);
+
+                // Apply friction (air resistance)
+                this.vel.mult(friction);
+
+                // Update position
+                this.pos.add(this.vel);
+
+                // Reset acceleration
+                this.acc.mult(0);
+
+                // Reset highlight
+                this.highlight = false;
+            }
+
+            checkBoundary(hexagon) {
+                const boundary = hexagon.getClosestBoundaryPoint(this.pos);
+
+                // Check if ball is penetrating the boundary
+                if (boundary.distance < this.radius) {
+                    collisionCount++;
+
+                    // Calculate penetration depth
+                    const penetration = this.radius - boundary.distance;
+
+                    // Move ball outside boundary
+                    const correction = boundary.normal.copy().mult(penetration);
+                    this.pos.add(correction);
+
+                    // Calculate reflection
+                    const velocityNormal = this.vel.dot(boundary.normal);
+
+                    // Only process if moving toward the boundary
+                    if (velocityNormal < 0) {
+                        // Reflect velocity with elasticity
+                        const reflection = p5.Vector.mult(boundary.normal, 2 * velocityNormal * elasticity);
+                        this.vel.sub(reflection);
+
+                        // Add some randomness to prevent sticking
+                        this.vel.x += random(-0.05, 0.05);
+                        this.vel.y += random(-0.05, 0.05);
+                    }
+
+                    this.highlight = true;
+                }
+            }
+
+            checkBallCollision(otherBall) {
+                const diff = p5.Vector.sub(this.pos, otherBall.pos);
+                const distance = diff.mag();
+                const minDistance = this.radius + otherBall.radius;
+
+                if (distance < minDistance && distance > 0) {
+                    collisionCount++;
+
+                    // Calculate collision normal
+                    const normal = diff.copy().normalize();
+
+                    // Calculate relative velocity
+                    const relVel = p5.Vector.sub(this.vel, otherBall.vel);
+                    const velocityAlongNormal = relVel.dot(normal);
+
+                    // Only process if balls are moving toward each other
+                    if (velocityAlongNormal > 0) return;
+
+                    // Calculate impulse scalar
+                    const impulseScalar = -(1 + elasticity) * velocityAlongNormal;
+                    const impulseScalarTotal = impulseScalar / (1/this.mass + 1/otherBall.mass);
+
+                    // Apply impulse
+                    const impulse = normal.copy().mult(impulseScalarTotal);
+                    this.vel.add(impulse.copy().mult(1/this.mass));
+                    otherBall.vel.sub(impulse.copy().mult(1/otherBall.mass));
+
+                    // Move balls apart to prevent sticking
+                    const overlap = minDistance - distance;
+                    const correction = normal.copy().mult(overlap * 0.5);
+                    this.pos.add(correction);
+                    otherBall.pos.sub(correction);
+
+                    this.highlight = true;
+                    otherBall.highlight = true;
+                }
+            }
+
+            draw() {
+                // Draw ball
+                if (this.highlight) {
+                    fill(255, 255, 255);
+                    ellipse(this.pos.x, this.pos.y, this.radius * 2 + 4, this.radius * 2 + 4);
+                }
+
+                fill(this.color);
+                noStroke();
+                ellipse(this.pos.x, this.pos.y, this.radius * 2, this.radius * 2);
+
+                // Draw highlight
+                fill(255, 255, 255, 150);
+                ellipse(
+                    this.pos.x - this.radius * 0.3,
+                    this.pos.y - this.radius * 0.3,
+                    this.radius * 0.8,
+                    this.radius * 0.8
+                );
+
+                // Draw velocity vector (optional)
+                if (this.highlight) {
+                    stroke(255, 255, 0, 150);
+                    strokeWeight(2);
+                    line(
+                        this.pos.x,
+                        this.pos.y,
+                        this.pos.x + this.vel.x * 5,
+                        this.pos.y + this.vel.y * 5
+                    );
+                }
+            }
+        }
+
+        // p5.js setup function
+        function setup() {
+            const container = document.getElementById('canvas');
+            const width = container.clientWidth;
+            const height = Math.min(window.innerHeight * 0.7, 700);
+
+            canvas = createCanvas(width, height);
+            canvas.parent('canvas');
+
+            // Create hexagon at center
+            hexagon = new Hexagon(width / 2, height / 2, Math.min(width, height) * 0.4);
+
+            // Create 10 balls
+            createBalls(10);
+
+            // Setup event listeners for controls
+            setupControls();
+        }
+
+        function createBalls(num) {
+            balls = [];
+            for (let i = 0; i < num; i++) {
+                let pos;
+                let attempts = 0;
+
+                // Find a position inside hexagon
+                do {
+                    const angle = random(TWO_PI);
+                    const dist = random(hexagon.radius * 0.7);
+                    pos = createVector(
+                        hexagon.center.x + cos(angle) * dist,
+                        hexagon.center.y + sin(angle) * dist
+                    );
+                    attempts++;
+                } while (!hexagon.contains(pos) && attempts < 100);
+
+                const radius = random(15, 25);
+                const color = ballColors[i % ballColors.length];
+                balls.push(new Ball(pos.x, pos.y, radius, color));
+            }
+        }
+
+        function setupControls() {
+            // Gravity slider
+            const gravitySlider = document.getElementById('gravitySlider');
+            const gravityValue = document.getElementById('gravityValue');
+            const gravityDisplay = document.getElementById('gravityDisplay');
+
+            gravitySlider.addEventListener('input', function() {
+                gravity = parseFloat(this.value);
+                gravityValue.textContent = gravity.toFixed(2);
+                gravityDisplay.textContent = gravity.toFixed(2);
+            });
+
+            // Elasticity slider
+            const elasticitySlider = document.getElementById('elasticitySlider');
+            const elasticityValue = document.getElementById('elasticityValue');
+            const elasticityDisplay = document.getElementById('elasticityDisplay');
+
+            elasticitySlider.addEventListener('input', function() {
+                elasticity = parseFloat(this.value);
+                elasticityValue.textContent = elasticity.toFixed(2);
+                elasticityDisplay.textContent = elasticity.toFixed(2);
+            });
+
+            // Friction slider
+            const frictionSlider = document.getElementById('frictionSlider');
+            const frictionValue = document.getElementById('frictionValue');
+            const frictionDisplay = document.getElementById('frictionDisplay');
+
+            frictionSlider.addEventListener('input', function() {
+                friction = parseFloat(this.value);
+                frictionValue.textContent = friction.toFixed(3);
+                frictionDisplay.textContent = friction.toFixed(3);
+            });
+
+            // Rotation speed slider
+            const rotationSlider = document.getElementById('rotationSlider');
+            const rotationValue = document.getElementById('rotationValue');
+            const rotationDisplay = document.getElementById('rotationDisplay');
+
+            rotationSlider.addEventListener('input', function() {
+                rotationSpeed = parseFloat(this.value);
+                rotationValue.textContent = rotationSpeed.toFixed(2);
+                rotationDisplay.textContent = rotationSpeed.toFixed(2);
+            });
+
+            // Reset button
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                createBalls(10);
+                updateBallCount();
+            });
+
+            // Add ball button
+            document.getElementById('addBallBtn').addEventListener('click', function() {
+                const angle = random(TWO_PI);
+                const dist = random(hexagon.radius * 0.7);
+                const pos = createVector(
+                    hexagon.center.x + cos(angle) * dist,
+                    hexagon.center.y + sin(angle) * dist
+                );
+
+                if (hexagon.contains(pos)) {
+                    const radius = random(15, 25);
+                    const color = ballColors[balls.length % ballColors.length];
+                    balls.push(new Ball(pos.x, pos.y, radius, color));
+                    updateBallCount();
+                }
+            });
+
+            // Remove ball button
+            document.getElementById('removeBallBtn').addEventListener('click', function() {
+                if (balls.length > 1) {
+                    balls.pop();
+                    updateBallCount();
+                }
+            });
+
+            // Pause/Resume button
+            document.getElementById('togglePauseBtn').addEventListener('click', function() {
+                isPaused = !isPaused;
+                this.textContent = isPaused ? 'Resume' : 'Pause';
+            });
+        }
+
+        function updateBallCount() {
+            document.getElementById('ballCount').textContent = balls.length;
+        }
+
+        // p5.js draw function
+        function draw() {
+            // Clear background with gradient
+            for (let i = 0; i <= height; i++) {
+                const inter = map(i, 0, height, 0, 1);
+                const c = lerpColor(color(15, 12, 41), color(36, 36, 62), inter);
+                stroke(c);
+                line(0, i, width, i);
+            }
+
+            // Update hexagon
+            hexagon.update();
+
+            // Reset collision count
+            collisionCount = 0;
+
+            // Update and draw balls
+            for (let ball of balls) {
+                ball.update();
+                ball.checkBoundary(hexagon);
+            }
+
+            // Check ball-to-ball collisions
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    balls[i].checkBallCollision(balls[j]);
+                }
+            }
+
+            // Draw hexagon
+            hexagon.draw();
+
+            // Draw balls
+            for (let ball of balls) {
+                ball.draw();
+            }
+
+            // Update UI stats
+            document.getElementById('frameRate').textContent = Math.floor(frameRate());
+            document.getElementById('collisionCount').textContent = collisionCount;
+        }
+
+        // Handle window resize
+        function windowResized() {
+            const container = document.getElementById('canvas');
+            const width = container.clientWidth;
+            const height = Math.min(window.innerHeight * 0.7, 700);
+
+            resizeCanvas(width, height);
+
+            // Recreate hexagon with new dimensions
+            hexagon = new Hexagon(width / 2, height / 2, Math.min(width, height) * 0.4);
+
+            // Recreate balls
+            createBalls(balls.length);
+        }
+
+        // Initialize ball count display
+        updateBallCount();
+    </script>
+</body>
+</html>
