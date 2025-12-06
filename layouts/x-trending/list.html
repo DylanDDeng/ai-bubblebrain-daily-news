@@ -1,0 +1,478 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-narrow xtrending-shell">
+    <header class="page-header xtrending-hero">
+      <p class="page-eyebrow">每日精选</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
+      {{ end }}
+    </header>
+
+    <div class="xtrending-actions">
+      <div class="xtrending-search">
+        <input type="search" id="xtrending-search" placeholder="搜索标题 / 描述 / 作者 / 标签 / 日期" aria-label="搜索X精选">
+      </div>
+      <div class="xtrending-filter-row" aria-label="按标签筛选">
+        <div id="xtrending-tag-filters" class="xtrending-pills"></div>
+      </div>
+    </div>
+
+    <div id="xtrending-grid" class="xtrending-grid" aria-live="polite"></div>
+    <nav id="xtrending-pagination" class="pagination" aria-label="X精选分页导航" hidden></nav>
+    <div id="xtrending-empty" class="xtrending-empty" hidden>
+      <p>还没有上架 X 精选内容。</p>
+      <p>在根目录新增 x-trending.json 即可配置。</p>
+    </div>
+    <div id="xtrending-empty-filter" class="xtrending-empty" hidden>
+      <p>当前筛选条件下没有匹配的内容。</p>
+      <p>切换其他标签或修改搜索试试。</p>
+    </div>
+  </div>
+</section>
+
+<div class="xtrending-modal" id="xtrending-modal" aria-hidden="true">
+  <div class="xtrending-modal__backdrop" data-close></div>
+  <div class="xtrending-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="xtrending-modal-title">
+    <button class="xtrending-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <div class="xtrending-modal__body">
+      <div class="xtrending-modal__embed" id="xtrending-embed-container"></div>
+      <div class="xtrending-modal__meta">
+        <p class="modal-eyebrow" id="xtrending-modal-eyebrow">X 热门AI内容精选</p>
+        <h2 id="xtrending-modal-title"></h2>
+        <p class="xtrending-modal__author" id="xtrending-modal-author"></p>
+        <div class="xtrending-modal__tags" id="xtrending-modal-tags"></div>
+        <p class="xtrending-modal__desc" id="xtrending-modal-desc"></p>
+        <a class="xtrending-link" id="xtrending-modal-original" target="_blank" rel="noopener noreferrer">前往 X 原文 →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const dataUrl = "{{ "/x-trending.json" | relURL }}";
+  const grid = document.getElementById("xtrending-grid");
+  const empty = document.getElementById("xtrending-empty");
+  const filterEmpty = document.getElementById("xtrending-empty-filter");
+  const searchInput = document.getElementById("xtrending-search");
+  const tagFiltersWrap = document.getElementById("xtrending-tag-filters");
+  const pagination = document.getElementById("xtrending-pagination");
+  const modal = document.getElementById("xtrending-modal");
+  const embedContainer = document.getElementById("xtrending-embed-container");
+  const modalTitle = document.getElementById("xtrending-modal-title");
+  const modalAuthor = document.getElementById("xtrending-modal-author");
+  const modalTags = document.getElementById("xtrending-modal-tags");
+  const modalDesc = document.getElementById("xtrending-modal-desc");
+  const modalOriginal = document.getElementById("xtrending-modal-original");
+
+  let allItems = [];
+  let filteredItems = [];
+  let currentTag = "all";
+  let searchTerm = "";
+  const pageSize = 20;
+  let currentPage = 1;
+
+  function setEmpty(show) { if (empty) empty.hidden = !show; }
+  function setFilterEmpty(show) { if (filterEmpty) filterEmpty.hidden = !show; }
+
+  function collectTags(items) {
+    const tags = new Set();
+    items.forEach((item) => {
+      const arr = Array.isArray(item.tags) ? item.tags : [];
+      arr.forEach((t) => { if (t) tags.add(t.toString().trim()); });
+    });
+    return Array.from(tags).filter(Boolean);
+  }
+
+  function collectTagCounts(items) {
+    const counts = Object.create(null);
+    items.forEach((item) => {
+      const arr = Array.isArray(item.tags) ? item.tags : [];
+      const uniq = new Set(arr.map((t) => (t || "").toString().trim()).filter(Boolean));
+      uniq.forEach((t) => { counts[t] = (counts[t] || 0) + 1; });
+    });
+    return counts;
+  }
+
+
+  function renderTagPills(tags) {
+    if (!tagFiltersWrap) return;
+    tagFiltersWrap.innerHTML = "";
+    const frag = document.createDocumentFragment();
+    const allBtn = document.createElement("button");
+    allBtn.className = "xtrending-filter-pill active";
+    allBtn.textContent = "全部";
+    allBtn.dataset.tag = "all";
+    frag.appendChild(allBtn);
+    const counts = collectTagCounts(allItems);
+    tags.forEach((tag) => {
+      const btn = document.createElement("button");
+      btn.className = "xtrending-filter-pill";
+      btn.textContent = `${tag} @${counts[tag] || 0}`;
+      btn.dataset.tag = tag;
+      frag.appendChild(btn);
+    });
+    tagFiltersWrap.appendChild(frag);
+    tagFiltersWrap.querySelectorAll("button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        currentTag = btn.dataset.tag || "all";
+        tagFiltersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        btn.classList.add("active");
+        applyFilter();
+      });
+    });
+  }
+
+  function buildCard(item) {
+    if (!item) return null;
+    const card = document.createElement("article");
+    card.className = "xtrending-card reveal-text";
+
+    const imgWrap = document.createElement("div");
+    imgWrap.className = "xtrending-thumb";
+    const img = document.createElement("img");
+    img.src = item.thumb || (Array.isArray(item.images) ? item.images[0] : "") || "";
+    img.alt = item.title || "X内容";
+    img.loading = "lazy";
+    imgWrap.appendChild(img);
+
+    const meta = document.createElement("div");
+    meta.className = "xtrending-card__meta";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "xtrending-eyebrow";
+    eyebrow.textContent = "X 热榜";
+
+    const title = document.createElement("h3");
+    title.textContent = item.title || "未命名内容";
+
+    const author = document.createElement("p");
+    author.className = "xtrending-author";
+    const name = item.author_name || "";
+    const handle = item.author_handle ? `@${item.author_handle}` : "";
+    author.textContent = [name, handle].filter(Boolean).join(" ");
+
+    const desc = document.createElement("p");
+    desc.className = "xtrending-desc";
+    desc.textContent = item.description || "";
+
+    const dateText = document.createElement("p");
+    dateText.className = "xtrending-date";
+    dateText.textContent = (item.date || "").toString().trim();
+
+    const tagRow = document.createElement("div");
+    tagRow.className = "xtrending-tags";
+    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
+      const span = document.createElement("span");
+      span.textContent = tag;
+      tagRow.appendChild(span);
+    });
+
+    const actions = document.createElement("div");
+    actions.className = "xtrending-card__actions";
+
+    if (item.originalUrl) {
+      const sourceLink = document.createElement("a");
+      sourceLink.className = "xtrending-link";
+      sourceLink.href = item.originalUrl;
+      sourceLink.target = "_blank";
+      sourceLink.rel = "noopener noreferrer";
+      sourceLink.textContent = "前往 X 原文 →";
+      actions.appendChild(sourceLink);
+    }
+
+    meta.appendChild(eyebrow);
+    meta.appendChild(title);
+    if (author.textContent) meta.appendChild(author);
+    if (desc.textContent) meta.appendChild(desc);
+    if (dateText.textContent) meta.appendChild(dateText);
+    if (tagRow.children.length) meta.appendChild(tagRow);
+    meta.appendChild(actions);
+
+    card.appendChild(imgWrap);
+    card.appendChild(meta);
+    return card;
+  }
+
+  function renderGrid() {
+    if (!grid) return;
+    grid.innerHTML = "";
+    const totalItems = filteredItems.length;
+    if (pagination) {
+      pagination.hidden = true;
+      pagination.innerHTML = "";
+    }
+    if (!totalItems) return;
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * pageSize;
+    const pageItems = filteredItems.slice(start, start + pageSize);
+    const frag = document.createDocumentFragment();
+    pageItems.forEach((item) => {
+      const card = buildCard(item);
+      if (card) frag.appendChild(card);
+    });
+    grid.appendChild(frag);
+    requestAnimationFrame(() => {
+      grid.querySelectorAll(".reveal-text").forEach((el, index) => {
+        setTimeout(() => el.classList.add("active"), index * 50);
+      });
+    });
+    const totalPagesAfter = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+    if (pagination && totalPagesAfter > 1) {
+      renderPagination();
+    }
+  }
+
+  function renderPagination() {
+    if (!pagination) return;
+    const totalPages = Math.ceil(filteredItems.length / pageSize);
+    if (totalPages <= 1) {
+      pagination.hidden = true;
+      pagination.innerHTML = "";
+      return;
+    }
+    pagination.hidden = false;
+    pagination.innerHTML = "";
+
+    const prev = document.createElement("a");
+    prev.href = "#";
+    prev.className = "pagination-link" + (currentPage === 1 ? " disabled" : "");
+    prev.textContent = "← 上一页";
+    if (currentPage > 1) {
+      prev.addEventListener("click", (event) => {
+        event.preventDefault();
+        currentPage -= 1;
+        renderGrid();
+        renderPagination();
+      });
+    }
+    pagination.appendChild(prev);
+
+    const pagesWrap = document.createElement("div");
+    pagesWrap.className = "pagination-pages";
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === currentPage) {
+        const span = document.createElement("span");
+        span.className = "pagination-page current";
+        span.textContent = String(p);
+        pagesWrap.appendChild(span);
+      } else {
+        const link = document.createElement("a");
+        link.href = "#";
+        link.className = "pagination-page";
+        link.textContent = String(p);
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          currentPage = p;
+          renderGrid();
+          renderPagination();
+        });
+        pagesWrap.appendChild(link);
+      }
+    }
+    pagination.appendChild(pagesWrap);
+
+    const next = document.createElement("a");
+    next.href = "#";
+    next.className = "pagination-link" + (currentPage === totalPages ? " disabled" : "");
+    next.textContent = "下一页 →";
+    if (currentPage < totalPages) {
+      next.addEventListener("click", (event) => {
+        event.preventDefault();
+        currentPage += 1;
+        renderGrid();
+        renderPagination();
+      });
+    }
+    pagination.appendChild(next);
+  }
+
+  function parseTweetId(url) {
+    if (!url) return null;
+    const patterns = [
+      /(twitter|x)\.com\/.+\/status\/(\d+)/i,
+      /(twitter|x)\.com\/i\/status\/(\d+)/i
+    ];
+    for (const re of patterns) {
+      const m = url.match(re);
+      if (m && m[2]) return m[2];
+    }
+    const anyDigits = url.match(/\d{10,}/);
+    return anyDigits ? anyDigits[0] : null;
+  }
+
+  function openModal(item) {
+    const id = parseTweetId(item.originalUrl || "");
+    embedContainer.innerHTML = "";
+    modalTitle.textContent = item.title || "X 内容";
+    const name = item.author_name || "";
+    const handle = item.author_handle ? `@${item.author_handle}` : "";
+    modalAuthor.textContent = [name, handle].filter(Boolean).join(" ");
+    modalTags.innerHTML = "";
+    (Array.isArray(item.tags) ? item.tags : []).forEach((t) => {
+      const span = document.createElement("span");
+      span.textContent = t;
+      modalTags.appendChild(span);
+    });
+    modalDesc.textContent = item.description || "";
+    if (item.originalUrl) {
+      modalOriginal.href = item.originalUrl;
+      modalOriginal.style.display = "";
+    } else {
+      modalOriginal.style.display = "none";
+    }
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    if (id && window.twttr && window.twttr.widgets && typeof window.twttr.widgets.createTweet === "function") {
+      window.twttr.widgets.createTweet(id, embedContainer, { theme: "dark", dnt: true, lang: "zh-cn" }).catch(() => {
+        const a = document.createElement("a");
+        a.href = item.originalUrl || "#";
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "打开原帖";
+        embedContainer.appendChild(a);
+      });
+    } else {
+      const a = document.createElement("a");
+      a.href = item.originalUrl || "#";
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = "打开原帖";
+      embedContainer.appendChild(a);
+    }
+  }
+
+  function closeModal() {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    embedContainer.innerHTML = "";
+  }
+
+  if (modal) {
+    modal.querySelectorAll("[data-close]").forEach((el) => {
+      el.addEventListener("click", closeModal);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal.classList.contains("open")) closeModal();
+    });
+  }
+
+  function applyFilter() {
+    if (!allItems.length) return;
+    const term = searchTerm.trim().toLowerCase();
+    const matchesSearch = (item) => {
+      if (!term) return true;
+      const hay = [
+        item.title,
+        item.description,
+        item.author_name,
+        item.author_handle,
+        item.date,
+        ...(Array.isArray(item.tags) ? item.tags : [])
+      ].map((v) => (v || "").toString().toLowerCase()).join(" ");
+      return hay.includes(term);
+    };
+    const byTag = (item) => {
+      if (currentTag === "all") return true;
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      return tags.some((t) => (t || "").toString().trim().toLowerCase() === currentTag.toLowerCase());
+    };
+    filteredItems = allItems.filter((item) => matchesSearch(item) && byTag(item));
+    const noMatch = filteredItems.length === 0;
+    setFilterEmpty(noMatch && (currentTag !== "all" || term));
+    currentPage = 1;
+    renderGrid();
+    renderPagination();
+  }
+
+  function render(items) {
+    if (!items || !items.length) {
+      setEmpty(true);
+      return;
+    }
+    setEmpty(false);
+    allItems = items;
+    filteredItems = [...allItems];
+    renderTagPills(collectTags(allItems));
+    setFilterEmpty(false);
+    renderGrid();
+    renderPagination();
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (event) => {
+      searchTerm = event.target.value || "";
+      applyFilter();
+    });
+  }
+
+  fetch(dataUrl)
+    .then((res) => { if (!res.ok) throw new Error("网络异常"); return res.json(); })
+    .then((items) => render(items))
+    .catch(() => setEmpty(true));
+})();
+</script>
+<script async src="https://platform.twitter.com/widgets.js"></script>
+
+<style>
+.xtrending-shell { padding-bottom: 5rem; }
+.xtrending-hero { text-align: center; margin-bottom: 2.5rem; }
+.xtrending-hero h1 { margin: 0.35rem 0; font-size: 2.8rem; font-family: "Cormorant Garamond", serif; font-weight: 300; letter-spacing: -0.01em; }
+.xtrending-actions { display: flex; flex-direction: column; gap: 0.8rem; margin: 1rem 0 2rem; }
+.xtrending-search { width: 100%; max-width: 500px; margin: 0 auto; }
+.xtrending-search input { width: 100%; padding: 0.7rem 1rem; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-highlight); color: var(--text-main); font-size: 0.95rem; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.xtrending-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2); }
+.xtrending-filter-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.2rem 0 0.8rem; justify-content: center; }
+.xtrending-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.xtrending-filter-pill { border: 1px solid var(--border); background: var(--surface); color: var(--text-main); padding: 0.35rem 0.9rem; border-radius: 999px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+.xtrending-filter-pill:hover { border-color: var(--accent); }
+.xtrending-filter-pill.active { background: var(--accent); color: #000; border-color: var(--accent); }
+.xtrending-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+.xtrending-card { background: var(--surface); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; gap: 1rem; transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease; outline: none; }
+.xtrending-card:hover { transform: translateY(-6px); background: var(--surface-highlight); border-color: rgba(255, 255, 255, 0.12); }
+.xtrending-thumb { position: relative; overflow: hidden; background: var(--surface-highlight); aspect-ratio: 16 / 9; }
+.xtrending-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+.xtrending-card:hover .xtrending-thumb img { transform: scale(1.03); }
+.xtrending-card__meta { padding: 0 1.25rem 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.xtrending-eyebrow { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+.xtrending-card h3 { margin: 0; font-family: "Cormorant Garamond", serif; font-weight: 300; font-size: 1.5rem; }
+.xtrending-author { color: var(--text-muted); margin: 0; }
+.xtrending-desc { color: var(--text-muted); margin: 0; line-height: 1.6; }
+.xtrending-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.xtrending-tags span { background: var(--surface-highlight); border: 1px solid var(--border); border-radius: 999px; padding: 0.25rem 0.8rem; font-size: 0.85rem; }
+.xtrending-card__actions { display: flex; flex-wrap: wrap; gap: 0.85rem; margin-top: 0.5rem; align-items: center; }
+.xtrending-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.9rem; border-radius: 999px; border: 1px solid var(--accent); color: var(--text-main); background: transparent; font-size: 0.9rem; text-decoration: none; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+.xtrending-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+.xtrending-link { color: var(--accent); font-weight: 600; letter-spacing: 0.05em; text-decoration: none; margin-left: 0.35rem; }
+.xtrending-link:hover { text-decoration: underline; }
+.xtrending-empty { margin-top: 2rem; text-align: center; padding: 2rem; border: 1px solid var(--border); background: var(--surface-highlight); color: var(--text-muted); }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 3rem; flex-wrap: wrap; }
+.pagination-link { color: var(--text-muted); text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
+.pagination-link.disabled { color: var(--text-muted); cursor: not-allowed; }
+.pagination-pages { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.pagination-page { min-width: 36px; text-align: center; padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-main); text-decoration: none; font-weight: 600; }
+.pagination-page:hover { background: var(--surface-highlight); }
+.pagination-page.current { background: var(--accent); color: #000; }
+.xtrending-modal { position: fixed; inset: 0; display: grid; place-items: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+.xtrending-modal.open { opacity: 1; pointer-events: auto; }
+.xtrending-modal__backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); }
+.xtrending-modal__dialog { position: relative; max-width: 960px; width: min(92vw, 960px); border: 1px solid var(--border); background: var(--surface); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55); }
+.xtrending-modal__body { display: grid; grid-template-columns: 1fr 0.9fr; gap: 1.25rem; padding: 1.25rem; }
+.xtrending-modal__embed { border: 1px solid var(--border); background: var(--surface-highlight); padding: 0.75rem; min-height: 300px; display: flex; align-items: center; justify-content: center; }
+.xtrending-modal__meta h2 { margin: 0.3rem 0 0.8rem; font-family: "Cormorant Garamond", serif; font-weight: 300; letter-spacing: -0.01em; }
+.xtrending-modal__author { color: var(--text-muted); margin: 0; }
+.xtrending-modal__tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.5rem 0 0.75rem; }
+.xtrending-modal__tags span { background: var(--surface-highlight); border: 1px solid var(--border); border-radius: 999px; padding: 0.25rem 0.8rem; font-size: 0.85rem; }
+.xtrending-modal__desc { color: var(--text-muted); margin: 0.25rem 0 0.75rem; line-height: 1.6; }
+.xtrending-modal__close { position: absolute; top: 0.6rem; right: 0.6rem; background: var(--surface-highlight); color: var(--text-main); border: 1px solid var(--border); border-radius: 999px; width: 38px; height: 38px; font-size: 1.2rem; cursor: pointer; }
+.xtrending-modal__close:hover { color: var(--accent); }
+@media (max-width: 900px) { .xtrending-modal__body { grid-template-columns: 1fr; } }
+@media (max-width: 1200px) { .xtrending-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 900px) { .xtrending-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .xtrending-grid { grid-template-columns: 1fr; } .xtrending-modal__dialog { width: 94vw; } }
+</style>
+{{ end }}
