@@ -88,6 +88,22 @@
     return Array.from(tags).filter(Boolean);
   }
 
+  function collectTagCounts(items) {
+    const counts = Object.create(null);
+    items.forEach((item) => {
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      const uniq = new Set(
+        tags
+          .map((t) => (t || "").toString().trim())
+          .filter(Boolean)
+      );
+      uniq.forEach((tag) => {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    });
+    return counts;
+  }
+
   function renderFilters(tags) {
     if (!filtersWrap) return;
     filtersWrap.innerHTML = "";
@@ -99,10 +115,11 @@
     allBtn.dataset.tag = "all";
     frag.appendChild(allBtn);
 
+    const counts = collectTagCounts(allItems);
     tags.forEach((tag) => {
       const btn = document.createElement("button");
       btn.className = "highlight-filter-pill";
-      btn.textContent = `${tag}`;
+      btn.textContent = `${tag} @${counts[tag] || 0}`;
       btn.dataset.tag = tag;
       frag.appendChild(btn);
     });
