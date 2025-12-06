@@ -9,7 +9,12 @@
       {{ end }}
     </header>
 
-    <div class="highlight-filter-row" id="highlight-filters" aria-label="按标签筛选"></div>
+    <div class="highlight-actions">
+      <div class="highlight-search">
+        <input type="search" id="highlight-search" placeholder="搜索标题 / 描述 / 标签" aria-label="搜索精选">
+      </div>
+      <div class="highlight-filter-row" id="highlight-filters" aria-label="按标签筛选"></div>
+    </div>
 
     <div id="highlight-grid" class="highlight-grid" aria-live="polite"></div>
     <div id="highlight-empty" class="highlight-empty" hidden>
@@ -49,6 +54,7 @@
   const empty = document.getElementById("highlight-empty");
   const filtersWrap = document.getElementById("highlight-filters");
   const filterEmpty = document.getElementById("highlight-empty-filter");
+  const searchInput = document.getElementById("highlight-search");
   const modal = document.getElementById("highlight-modal");
   const modalImage = document.getElementById("highlight-modal-image");
   const modalTitle = document.getElementById("highlight-modal-title");
@@ -61,6 +67,7 @@
   let filteredItems = [];
   let currentPage = 1;
   let currentFilter = "all";
+  let searchTerm = "";
 
   function setEmpty(isEmpty) {
     if (empty) empty.hidden = !isEmpty;
@@ -209,18 +216,30 @@
   function applyFilter() {
     if (!allItems.length) return;
 
-    if (currentFilter === "all") {
-      filteredItems = [...allItems];
-    } else {
-      const filterLower = currentFilter.toLowerCase();
-      filteredItems = allItems.filter((item) =>
-        (Array.isArray(item.tags) ? item.tags : []).some(
-          (tag) => (tag || "").toString().trim().toLowerCase() === filterLower
-        )
-      );
-    }
+    const term = searchTerm.trim().toLowerCase();
+    const matchesSearch = (item) => {
+      if (!term) return true;
+      const haystack = [
+        item.title,
+        item.description,
+        ...(Array.isArray(item.tags) ? item.tags : [])
+      ]
+        .map((v) => (v || "").toString().toLowerCase())
+        .join(" ");
+      return haystack.includes(term);
+    };
 
-    setFilterEmpty(filteredItems.length === 0 && currentFilter !== "all");
+    const byTag = (item) => {
+      if (currentFilter === "all") return true;
+      const filterLower = currentFilter.toLowerCase();
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      return tags.some((tag) => (tag || "").toString().trim().toLowerCase() === filterLower);
+    };
+
+    filteredItems = allItems.filter((item) => byTag(item) && matchesSearch(item));
+
+    const noMatch = filteredItems.length === 0;
+    setFilterEmpty(noMatch && (currentFilter !== "all" || term));
     currentPage = 1;
     renderGrid();
   }
@@ -287,6 +306,13 @@
     renderGrid();
   }
 
+  if (searchInput) {
+    searchInput.addEventListener("input", (event) => {
+      searchTerm = event.target.value || "";
+      applyFilter();
+    });
+  }
+
   fetch(dataUrl)
     .then((res) => {
       if (!res.ok) throw new Error("网络异常");
@@ -315,6 +341,36 @@
   font-family: "Cormorant Garamond", serif;
   font-weight: 300;
   letter-spacing: -0.01em;
+}
+
+.highlight-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin: 1rem 0 2rem;
+}
+
+.highlight-search {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.highlight-search input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.highlight-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
 .highlight-filter-row {
