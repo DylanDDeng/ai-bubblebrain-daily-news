@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SVG动画：洗衣机工作原理（进水/洗涤/排水/脱水）</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#111a33;
+    --text:#e9eeff;
+    --muted:#a7b3da;
+    --stroke:#93a4ff;
+    --accent:#6ee7ff;
+    --water:#2aa9ff;
+    --foam:#e9f7ff;
+    --warn:#ffcf66;
+  }
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:radial-gradient(1200px 700px at 30% 20%, #182a63 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Microsoft YaHei", Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:18px;
+    box-sizing:border-box;
+  }
+  .wrap{
+    width:min(1080px, 96vw);
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:12px;
+  }
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border:1px solid rgba(147,164,255,.25);
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35);
+    overflow:hidden;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 14px;
+    background:rgba(0,0,0,.18);
+    border-bottom:1px solid rgba(147,164,255,.18);
+  }
+  .title{
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .title b{font-size:14px; letter-spacing:.2px;}
+  .title span{font-size:12px; color:var(--muted);}
+  .controls{
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:flex-end;
+  }
+  button, select{
+    background:rgba(17,26,51,.65);
+    color:var(--text);
+    border:1px solid rgba(147,164,255,.25);
+    padding:8px 10px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:12px;
+    transition:transform .06s ease, border-color .2s ease, background .2s ease;
+    user-select:none;
+  }
+  button:hover, select:hover{border-color:rgba(110,231,255,.55);}
+  button:active{transform:translateY(1px);}
+  button.primary{
+    background:rgba(110,231,255,.14);
+    border-color:rgba(110,231,255,.55);
+  }
+  button.stage[data-active="true"]{
+    background:rgba(147,164,255,.18);
+    border-color:rgba(147,164,255,.7);
+  }
+  .slider{
+    display:flex; align-items:center; gap:8px;
+    padding:6px 10px;
+    border-radius:10px;
+    border:1px solid rgba(147,164,255,.25);
+    background:rgba(17,26,51,.55);
+  }
+  input[type="range"]{ width:220px; }
+  .hint{
+    padding:10px 14px 14px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.6;
+  }
+  .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    border:1px solid rgba(147,164,255,.25);
+    background:rgba(0,0,0,.25);
+    padding:1px 6px;
+    border-radius:6px;
+    color:var(--text);
+  }
+  /* SVG text clarity */
+  svg text{ paint-order: stroke; stroke: rgba(0,0,0,.35); stroke-width: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="topbar">
+      <div class="title">
+        <b>洗衣机工作原理：SVG 动画演示</b>
+        <span>四阶段：进水 → 洗涤 → 排水 → 脱水（可交互控制进度与速度）</span>
+      </div>
+
+      <div class="controls">
+        <button class="primary" id="btnPlay">▶ 播放</button>
+        <button id="btnPause">⏸ 暂停</button>
+
+        <button class="stage" data-stage="intake">进水</button>
+        <button class="stage" data-stage="wash">洗涤</button>
+        <button class="stage" data-stage="drain">排水</button>
+        <button class="stage" data-stage="spin">脱水</button>
+
+        <div class="slider" title="拖动进度条查看阶段内过程">
+          <span style="font-size:12px;color:var(--muted)">进度</span>
+          <input id="progress" type="range" min="0" max="1000" value="0" />
+        </div>
+
+        <select id="speed" title="速度">
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.5">1.5×</option>
+          <option value="2">2×</option>
+          <option value="3">3×</option>
+        </select>
+
+        <button id="btnLoop" title="自动循环四阶段">🔁 循环：开</button>
+      </div>
+    </div>
+
+    <!-- ===== SVG ===== -->
+    <svg id="svg" viewBox="0 0 980 520" width="100%" height="auto" role="img" aria-label="洗衣机工作原理动画">
+      <defs>
+        <linearGradient id="gPanel" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1b2a66" stop-opacity="0.55"/>
+          <stop offset="1" stop-color="#0c1430" stop-opacity="0.85"/>
+        </linearGradient>
+        <radialGradient id="gGlass" cx="45%" cy="35%" r="70%">
+          <stop offset="0" stop-color="#bfe8ff" stop-opacity="0.35"/>
+          <stop offset="1" stop-color="#9cc6ff" stop-opacity="0.10"/>
+        </radialGradient>
+        <radialGradient id="gWater" cx="40%" cy="20%" r="90%">
+          <stop offset="0" stop-color="#6ee7ff" stop-opacity="0.55"/>
+          <stop offset="1" stop-color="#2aa9ff" stop-opacity="0.75"/>
+        </radialGradient>
+
+        <!-- Drum clip (inside circle) -->
+        <clipPath id="clipDrum">
+          <circle cx="490" cy="285" r="150"/>
+        </clipPath>
+
+        <!-- Soft glow -->
+        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="3" result="b"/>
+          <feMerge>
+            <feMergeNode in="b"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+
+        <!-- Motion blur for spin streaks -->
+        <filter id="blur2" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.3"/>
+        </filter>
+      </defs>
+
+      <!-- Background panel -->
+      <rect x="18" y="18" width="944" height="484" rx="18" fill="url(#gPanel)" stroke="rgba(147,164,255,.25)" />
+
+      <!-- Left: pipes & legend -->
+      <g transform="translate(60 78)">
+        <text x="0" y="-18" fill="var(--text)" font-size="14" font-weight="700">系统部件</text>
+        <g font-size="12" fill="var(--muted)">
+          <text x="0" y="12">① 进水阀 / 进水管</text>
+          <text x="0" y="34">② 内筒（滚筒）</text>
+          <text x="0" y="56">③ 排水泵 / 排水管</text>
+          <text x="0" y="78">④ 电机驱动（洗涤/脱水）</text>
+        </g>
+
+        <!-- Inlet pipe -->
+        <g id="inletPipe" transform="translate(0 120)">
+          <text x="0" y="-10" fill="var(--muted)" font-size="12">进水</text>
+          <path d="M0,0 C80,0 110,0 140,0
+                   C170,0 190,20 210,40
+                   C230,60 250,70 290,70
+                   C330,70 360,70 390,70" 
+                fill="none" stroke="rgba(147,164,255,.55)" stroke-width="10" stroke-linecap="round"/>
+          <path id="inletFlow" d="M0,0 C80,0 110,0 140,0
+                   C170,0 190,20 210,40
+                   C230,60 250,70 290,70
+                   C330,70 360,70 390,70"
+                fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"
+                stroke-dasharray="14 12" opacity="0.0" filter="url(#glow)"/>
+          <polygon id="inletArrow" points="404,70 382,58 382,82" fill="var(--accent)" opacity="0.0"/>
+        </g>
+
+        <!-- Outlet pipe -->
+        <g id="outletPipe" transform="translate(0 250)">
+          <text x="0" y="-10" fill="var(--muted)" font-size="12">排水</text>
+          <path d="M0,60 C90,60 120,60 160,60
+                   C210,60 230,35 250,15
+                   C270,-5 290,-5 330,-5
+                   C370,-5 420,-5 470,-5" 
+                fill="none" stroke="rgba(147,164,255,.55)" stroke-width="10" stroke-linecap="round"/>
+          <path id="outletFlow" d="M0,60 C90,60 120,60 160,60
+                   C210,60 230,35 250,15
+                   C270,-5 290,-5 330,-5
+                   C370,-5 420,-5 470,-5"
+                fill="none" stroke="var(--warn)" stroke-width="6" stroke-linecap="round"
+                stroke-dasharray="14 12" opacity="0.0" filter="url(#glow)"/>
+          <polygon id="outletArrow" points="486,-5 464,-17 464,7" fill="var(--warn)" opacity="0.0"/>
+        </g>
+      </g>
+
+      <!-- Main washer body -->
+      <g id="washer" transform="translate(210 54)">
+        <!-- Body -->
+        <rect x="210" y="30" width="520" height="420" rx="26"
+              fill="rgba(17,26,51,.55)" stroke="rgba(147,164,255,.35)" stroke-width="2"/>
+        <rect x="230" y="48" width="480" height="90" rx="18"
+              fill="rgba(0,0,0,.18)" stroke="rgba(147,164,255,.2)"/>
+
+        <!-- Status text -->
+        <text id="stageLabel" x="250" y="85" font-size="22" font-weight="800" fill="var(--text)">进水</text>
+        <text id="stageDesc"  x="250" y="112" font-size="12" fill="var(--muted)">打开进水阀，水位逐步上升</text>
+
+        <!-- Simple "icons" -->
+        <g transform="translate(585 74)" opacity="0.95">
+          <circle cx="0" cy="0" r="16" fill="rgba(110,231,255,.12)" stroke="rgba(110,231,255,.55)"/>
+          <text x="-5" y="5" font-size="14" fill="var(--accent)">H₂O</text>
+        </g>
+        <g transform="translate(645 74)" opacity="0.95">
+          <circle cx="0" cy="0" r="16" fill="rgba(255,207,102,.12)" stroke="rgba(255,207,102,.55)"/>
+          <text x="-5" y="5" font-size="14" fill="var(--warn)">⟲</text>
+        </g>
+
+        <!-- Door / drum -->
+        <g transform="translate(0 0)">
+          <!-- Outer ring -->
+          <circle cx="490" cy="285" r="170" fill="rgba(0,0,0,.20)" stroke="rgba(147,164,255,.25)" stroke-width="10"/>
+          <!-- Glass -->
+          <circle cx="490" cy="285" r="155" fill="url(#gGlass)" stroke="rgba(110,231,255,.2)" stroke-width="2"/>
+
+          <!-- Drum holes -->
+          <g id="drumHoles" opacity="0.45">
+            <!-- generated-like holes -->
+            <g fill="rgba(147,164,255,.55)">
+              <!-- ring holes -->
+              <circle cx="490" cy="145" r="4"/><circle cx="548" cy="156" r="4"/><circle cx="600" cy="188" r="4"/>
+              <circle cx="631" cy="240" r="4"/><circle cx="642" cy="298" r="4"/><circle cx="631" cy="356" r="4"/>
+              <circle cx="600" cy="408" r="4"/><circle cx="548" cy="440" r="4"/><circle cx="490" cy="451" r="4"/>
+              <circle cx="432" cy="440" r="4"/><circle cx="380" cy="408" r="4"/><circle cx="349" cy="356" r="4"/>
+              <circle cx="338" cy="298" r="4"/><circle cx="349" cy="240" r="4"/><circle cx="380" cy="188" r="4"/>
+              <circle cx="432" cy="156" r="4"/>
+            </g>
+          </g>
+
+          <!-- Inside contents clipped to drum -->
+          <g clip-path="url(#clipDrum)">
+            <!-- Water -->
+            <rect id="waterRect" x="330" y="435" width="320" height="0" fill="url(#gWater)" opacity="0.9"/>
+            <!-- Wave line on top of water -->
+            <path id="wavePath" d="" fill="rgba(110,231,255,.25)" opacity="0.0"/>
+
+            <!-- Clothes -->
+            <g id="clothes" transform="translate(490 300)">
+              <path d="M-50,-10 C-20,-40 20,-40 50,-10
+                       C30,30 20,50 0,55
+                       C-20,50 -30,30 -50,-10Z"
+                    fill="rgba(255,255,255,.12)" stroke="rgba(233,238,255,.35)" stroke-width="2"/>
+              <path d="M-20,20 C-10,0 10,0 20,20
+                       C15,40 10,55 0,60
+                       C-10,55 -15,40 -20,20Z"
+                    fill="rgba(110,231,255,.10)" stroke="rgba(110,231,255,.25)" stroke-width="2"/>
+            </g>
+
+            <!-- Bubbles -->
+            <g id="bubbles" opacity="0.0">
+              <circle cx="430" cy="340" r="6" fill="rgba(233,247,255,.85)"/>
+              <circle cx="520" cy="360" r="4" fill="rgba(233,247,255,.75)"/>
+              <circle cx="575" cy="330" r="7" fill="rgba(233,247,255,.70)"/>
+              <circle cx="470" cy="390" r="5" fill="rgba(233,247,255,.65)"/>
+            </g>
+
+            <!-- Spin streaks -->
+            <g id="streaks" opacity="0.0" filter="url(#blur2)">
+              <path d="M490 285 m-120 0 a120 120 0 1 0 240 0 a120 120 0 1 0 -240 0"
+                    fill="none" stroke="rgba(255,255,255,.22)" stroke-width="3" stroke-dasharray="18 16"/>
+              <path d="M490 285 m-95 0 a95 95 0 1 0 190 0 a95 95 0 1 0 -190 0"
+                    fill="none" stroke="rgba(110,231,255,.22)" stroke-width="3" stroke-dasharray="14 14"/>
+            </g>
+
+            <!-- Droplets (for spin) -->
+            <g id="droplets" opacity="0.0">
+              <circle id="d1" cx="650" cy="290" r="4" fill="rgba(110,231,255,.75)"/>
+              <circle id="d2" cx="330" cy="280" r="3" fill="rgba(110,231,255,.65)"/>
+              <circle id="d3" cx="520" cy="440" r="3.5" fill="rgba(110,231,255,.7)"/>
+            </g>
+          </g>
+
+          <!-- Inner ring -->
+          <circle cx="490" cy="285" r="150" fill="none" stroke="rgba(147,164,255,.25)" stroke-width="6"/>
+        </g>
+
+        <!-- Small callouts -->
+        <g font-size="12" fill="var(--muted)">
+          <text x="250" y="410">观察点：</text>
+          <text id="callout" x="312" y="410">水位 / 水流 / 滚筒运动</text>
+        </g>
+      </g>
+
+      <!-- Footer tips -->
+      <g transform="translate(32 492)">
+        <text x="0" y="0" font-size="12" fill="rgba(233,238,255,.75)">
+          提示：点击阶段按钮或拖动进度条。也可用键盘 <tspan fill="var(--text)">1-4</tspan> 切换阶段，<tspan fill="var(--text)">Space</tspan> 播放/暂停。
+        </text>
+      </g>
+    </svg>
+
+    <div class="hint">
+      这玩意儿的“本质”其实很简单：<span style="color:var(--text)">水是介质</span>，<span style="color:var(--text)">滚筒是能量输入</span>，<span style="color:var(--text)">排水/脱水是把脏东西带走</span>。  
+      你看到的所有动画都在回答一句话：<span style="color:var(--text)">“此刻水在哪、怎么动、衣物怎么被驱动。”</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ===== Stage config =====
+  const STAGES = ["intake","wash","drain","spin"];
+  const stageMeta = {
+    intake: { label:"进水", desc:"打开进水阀，水位逐步上升", duration: 3.2 },
+    wash:   { label:"洗涤", desc:"电机低速正反转，水流翻滚带走污渍", duration: 4.0 },
+    drain:  { label:"排水", desc:"排水泵工作，水位下降，污水排出", duration: 3.0 },
+    spin:   { label:"脱水", desc:"滚筒高速旋转，离心力甩出水分", duration: 3.0 },
+  };
+
+  // ===== DOM =====
+  const $ = (id) => document.getElementById(id);
+  const inletFlow  = $("inletFlow");
+  const outletFlow = $("outletFlow");
+  const inletArrow = $("inletArrow");
+  const outletArrow= $("outletArrow");
+  const waterRect  = $("waterRect");
+  const wavePath   = $("wavePath");
+  const clothes    = $("clothes");
+  const bubbles    = $("bubbles");
+  const streaks    = $("streaks");
+  const droplets   = $("droplets");
+  const d1 = $("d1"), d2 = $("d2"), d3 = $("d3");
+
+  const stageLabel = $("stageLabel");
+  const stageDesc  = $("stageDesc");
+  const callout    = $("callout");
+
+  const btnPlay  = $("btnPlay");
+  const btnPause = $("btnPause");
+  const slider   = $("progress");
+  const speedSel = $("speed");
+  const btnLoop  = $("btnLoop");
+  const stageBtns = [...document.querySelectorAll("button.stage")];
+
+  // ===== State =====
+  let stage = "intake";
+  let t = 0;               // stage progress 0..1
+  let playing = true;
+  let loop = true;
+  let speed = 1;
+
+  // ===== Helpers =====
+  const clamp01 = (x)=> Math.max(0, Math.min(1, x));
+  const lerp = (a,b,x)=> a + (b-a)*x;
+  const easeInOut = (x)=> (x<0.5) ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2;
+  const easeOut = (x)=> 1 - Math.pow(1-x, 3);
+
+  function setStage(s, reset=true){
+    stage = s;
+    if(reset) t = 0;
+    // UI highlight
+    stageBtns.forEach(b => b.dataset.active = (b.dataset.stage === stage));
+    // Text
+    stageLabel.textContent = stageMeta[stage].label;
+    stageDesc.textContent  = stageMeta[stage].desc;
+
+    // callout
+    callout.textContent = ({
+      intake: "进水阀开启 → 水位上升",
+      wash:   "滚筒低速摆动 → 水流翻滚 + 泡沫",
+      drain:  "排水泵启动 → 水位下降",
+      spin:   "高速旋转 → 离心甩水（桶壁排出）",
+    })[stage];
+
+    // slider sync
+    slider.value = Math.round(t * 1000);
+  }
+
+  function setPlaying(p){
+    playing = p;
+    btnPlay.textContent = playing ? "⏵ 播放中" : "▶ 播放";
+    btnPlay.classList.toggle("primary", playing);
+  }
+
+  // ===== Visual model =====
+  // Drum region: center (490,285), radius 150
+  // Water rectangle base: x=330 width=320. We'll animate height from 0..260
+  const WATER_MAX_H = 260;
+  const WATER_BASE_Y = 435; // bottom y in SVG coords
+  const WATER_MIN_LEVEL = 0;    // empty
+  const WATER_WASH_LEVEL= 0.65; // during wash
+  const WATER_DRAIN_END = 0.05; // almost empty after drain
+
+  function setWaterLevel(level01){
+    const h = WATER_MAX_H * clamp01(level01);
+    const y = WATER_BASE_Y - h;
+    waterRect.setAttribute("y", y.toFixed(2));
+    waterRect.setAttribute("height", h.toFixed(2));
+  }
+
+  function setWave(amp, phase, level01, alpha){
+    // draw a sine-ish wave around top of water
+    const h = WATER_MAX_H * clamp01(level01);
+    const y = (WATER_BASE_Y - h);
+    const left = 330, right = 650;
+    const mid = (left + right)/2;
+
+    const A = amp;
+    const p = phase;
+
+    // 5 points to make it smooth-ish
+    const x0=left, x1=left+(right-left)*0.25, x2=mid, x3=left+(right-left)*0.75, x4=right;
+    const y0=y + Math.sin(p + 0.0)*A;
+    const y1=y + Math.sin(p + 1.6)*A;
+    const y2=y + Math.sin(p + 3.2)*A;
+    const y3=y + Math.sin(p + 4.8)*A;
+    const y4=y + Math.sin(p + 6.4)*A;
+
+    const d = [
+      `M ${x0} ${y0}`,
+      `C ${lerp(x0,x1,0.5)} ${y0}, ${lerp(x0,x1,0.5)} ${y1}, ${x1} ${y1}`,
+      `C ${lerp(x1,x2,0.5)} ${y1}, ${lerp(x1,x2,0.5)} ${y2}, ${x2} ${y2}`,
+      `C ${lerp(x2,x3,0.5)} ${y2}, ${lerp(x2,x3,0.5)} ${y3}, ${x3} ${y3}`,
+      `C ${lerp(x3,x4,0.5)} ${y3}, ${lerp(x3,x4,0.5)} ${y4}, ${x4} ${y4}`,
+      `L ${x4} ${WATER_BASE_Y}`,
+      `L ${x0} ${WATER_BASE_Y}`,
+      `Z`
+    ].join(" ");
+    wavePath.setAttribute("d", d);
+    wavePath.style.opacity = alpha.toFixed(3);
+  }
+
+  function setFlow(inletOn, outletOn, dashPhase){
+    inletFlow.style.opacity = inletOn ? "1" : "0";
+    inletArrow.style.opacity = inletOn ? "1" : "0";
+    outletFlow.style.opacity = outletOn ? "1" : "0";
+    outletArrow.style.opacity= outletOn ? "1" : "0";
+
+    inletFlow.style.strokeDashoffset  = (-dashPhase).toFixed(1);
+    outletFlow.style.strokeDashoffset = (-dashPhase).toFixed(1);
+  }
+
+  function setClothesMotion(rotDeg, wobbleX, wobbleY, scale=1){
+    clothes.setAttribute(
+      "transform",
+      `translate(490 300) rotate(${rotDeg.toFixed(2)}) translate(${wobbleX.toFixed(2)} ${wobbleY.toFixed(2)}) scale(${scale.toFixed(3)}) translate(-490 -300)`
+    );
+  }
+
+  function setBubbles(alpha, bob){
+    bubbles.style.opacity = alpha.toFixed(3);
+    bubbles.setAttribute("transform", `translate(0 ${(-bob).toFixed(2)})`);
+  }
+
+  function setSpinFX(alpha, dashPhase, dropK){
+    streaks.style.opacity = alpha.toFixed(3);
+    // animate dash "motion"
+    const p1 = 240 - dashPhase*2.2;
+    const p2 = 200 - dashPhase*1.6;
+    streaks.querySelectorAll("path")[0].style.strokeDashoffset = p1.toFixed(1);
+    streaks.querySelectorAll("path")[1].style.strokeDashoffset = p2.toFixed(1);
+
+    droplets.style.opacity = alpha.toFixed(3);
+    // fling droplets a bit
+    d1.setAttribute("cx", (650 + 18*Math.sin(dropK*6.2)).toFixed(2));
+    d1.setAttribute("cy", (290 + 10*Math.cos(dropK*7.1)).toFixed(2));
+    d2.setAttribute("cx", (330 + 14*Math.cos(dropK*5.8)).toFixed(2));
+    d2.setAttribute("cy", (280 + 12*Math.sin(dropK*6.4)).toFixed(2));
+    d3.setAttribute("cx", (520 + 12*Math.sin(dropK*7.7)).toFixed(2));
+    d3.setAttribute("cy", (440 +  8*Math.cos(dropK*6.9)).toFixed(2));
+  }
+
+  // ===== Per-stage render =====
+  function render(stage, t01, timeSec){
+    const dashPhase = timeSec * 40; // for flow dash offset
+    // default baseline
+    setWave(0, 0, 0, 0);
+    setSpinFX(0, dashPhase, timeSec);
+    setBubbles(0, 0);
+
+    if(stage === "intake"){
+      // water level rises
+      const k = easeOut(t01);
+      setWaterLevel(lerp(WATER_MIN_LEVEL, WATER_WASH_LEVEL, k));
+      setFlow(true, false, dashPhase);
+      setWave(4 + 3*Math.sin(timeSec*2.2), timeSec*3.2, lerp(0.05, WATER_WASH_LEVEL, k), 0.25);
+      // gentle wobble
+      setClothesMotion(2*Math.sin(timeSec*1.4), 2*Math.sin(timeSec*1.1), 1.2*Math.cos(timeSec*1.2), 1);
+
+    } else if(stage === "wash"){
+      // keep stable water, strong slosh + bubbles + low-speed alternating motor
+      setWaterLevel(WATER_WASH_LEVEL);
+      setFlow(false, false, dashPhase);
+
+      const slosh = 10 + 4*Math.sin(timeSec*1.3);
+      setWave(slosh, timeSec*3.8, WATER_WASH_LEVEL, 0.40);
+
+      // alternate rotation direction
+      const dir = Math.sign(Math.sin(timeSec*1.15)) || 1;
+      const rot = dir * (18 + 12*Math.sin(timeSec*2.4));
+      setClothesMotion(rot, 5*Math.sin(timeSec*1.8), 3*Math.cos(timeSec*2.1), 1);
+
+      setBubbles(0.75, 3*Math.sin(timeSec*1.6));
+
+    } else if(stage === "drain"){
+      // water level falls; outlet flow on
+      const k = easeInOut(t01);
+      setWaterLevel(lerp(WATER_WASH_LEVEL, WATER_DRAIN_END, k));
+      setFlow(false, true, dashPhase);
+
+      // wave decreases as level drops
+      const amp = lerp(8, 2, k);
+      const level = lerp(WATER_WASH_LEVEL, WATER_DRAIN_END, k);
+      setWave(amp, timeSec*3.2, level, 0.25);
+
+      // clothes settle down
+      setClothesMotion(lerp(10, 2, k)*Math.sin(timeSec*1.3), 2*Math.sin(timeSec*1.2), 1*Math.cos(timeSec*1.2), 1);
+
+      setBubbles(lerp(0.55, 0.15, k), 2*Math.sin(timeSec*1.3));
+
+    } else if(stage === "spin"){
+      // almost no water; high speed spin
+      const k = easeInOut(t01);
+      setWaterLevel(lerp(WATER_DRAIN_END, 0.02, k));
+      setFlow(false, false, dashPhase);
+
+      // spin ramp
+      const rpm = lerp(0, 1, k); // normalized
+      const rot = (timeSec * 720 * rpm) % 360; // fast rotation
+      setClothesMotion(rot, 0.8*Math.sin(timeSec*8), 0.8*Math.cos(timeSec*9), 1);
+
+      // spin effects appear
+      setSpinFX(lerp(0.0, 0.9, k), dashPhase, timeSec*1.3);
+      setBubbles(lerp(0.08, 0.0, k), 0);
+
+      // tiny wave (almost none)
+      setWave(1.5, timeSec*8.0, 0.05, 0.10);
+    }
+
+    // slider sync if not dragging
+    if(!dragging){
+      slider.value = Math.round(t01 * 1000);
+    }
+  }
+
+  // ===== Animation loop =====
+  let last = performance.now();
+  let dragging = false;
+
+  function tick(now){
+    const dt = Math.min(0.05, (now - last)/1000);
+    last = now;
+
+    if(playing && !dragging){
+      const dur = stageMeta[stage].duration;
+      t += (dt * speed) / dur;
+      if(t >= 1){
+        if(loop){
+          // next stage
+          const idx = STAGES.indexOf(stage);
+          stage = STAGES[(idx + 1) % STAGES.length];
+          t = 0;
+          setStage(stage, false);
+        }else{
+          t = 1;
+          setPlaying(false);
+        }
+      }
+    }
+
+    render(stage, clamp01(t), now/1000);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ===== UI events =====
+  btnPlay.addEventListener("click", () => setPlaying(true));
+  btnPause.addEventListener("click", () => setPlaying(false));
+
+  btnLoop.addEventListener("click", () => {
+    loop = !loop;
+    btnLoop.textContent = loop ? "🔁 循环：开" : "➡️ 循环：关";
+  });
+
+  speedSel.addEventListener("change", () => {
+    speed = parseFloat(speedSel.value || "1");
+  });
+
+  stageBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      setStage(btn.dataset.stage, true);
+      setPlaying(true);
+    });
+  });
+
+  slider.addEventListener("pointerdown", () => { dragging = true; });
+  slider.addEventListener("pointerup", () => { dragging = false; });
+  slider.addEventListener("input", () => {
+    const v = parseInt(slider.value, 10)/1000;
+    t = clamp01(v);
+    render(stage, t, performance.now()/1000);
+  });
+
+  // keyboard shortcuts
+  window.addEventListener("keydown", (e) => {
+    if(e.code === "Space"){
+      e.preventDefault();
+      setPlaying(!playing);
+    }
+    if(e.key === "1"){ setStage("intake", true); setPlaying(true); }
+    if(e.key === "2"){ setStage("wash", true); setPlaying(true); }
+    if(e.key === "3"){ setStage("drain", true); setPlaying(true); }
+    if(e.key === "4"){ setStage("spin", true); setPlaying(true); }
+  });
+
+  // init
+  setStage("intake", true);
+  setPlaying(true);
+})();
+</script>
+</body>
+</html>
