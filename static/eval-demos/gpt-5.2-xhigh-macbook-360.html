@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>360° Draggable MacBook Pro (SVG)</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: radial-gradient(1200px 700px at 60% 10%, #121936 0%, #070a14 50%, #03040a 100%);
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+      #wrap {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none;
+        cursor: grab;
+      }
+      svg.dragging { cursor: grabbing; }
+      .hud {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        padding: 8px 10px;
+        background: rgba(6, 8, 16, 0.65);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px;
+        color: rgba(255,255,255,0.85);
+        font-size: 12px;
+        line-height: 1.5;
+        backdrop-filter: blur(8px);
+        z-index: 10;
+      }
+      .hud kbd {
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-bottom-width: 2px;
+        padding: 0 5px;
+        border-radius: 4px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 11px;
+      }
+      .badge {
+        position: fixed;
+        right: 12px;
+        top: 12px;
+        color: rgba(255,255,255,0.7);
+        font-size: 12px;
+        text-align: right;
+        line-height: 1.5;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+        pointer-events: none;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <svg id="svg" viewBox="-400 -280 800 560" aria-label="Draggable MacBook Pro">
+        <defs>
+          <linearGradient id="screenGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0b132a"/>
+            <stop offset="45%" stop-color="#0a1b3c"/>
+            <stop offset="100%" stop-color="#1e4bb8"/>
+          </linearGradient>
+          <radialGradient id="glowGrad" cx="30%" cy="20%" r="80%">
+            <stop offset="0%" stop-color="#9ad4ff" stop-opacity="0.8"/>
+            <stop offset="60%" stop-color="#5d7bff" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <g id="faces"></g>
+      </svg>
+      <div class="hud">
+        Drag to rotate 360°<br/>
+        Release for inertia<br/>
+        <kbd>Double‑click</kbd> reset view
+      </div>
+      <div class="badge" id="badge"></div>
+    </div>
+
+    <script>
+      const svg = document.getElementById("svg");
+      const facesG = document.getElementById("faces");
+      const badge = document.getElementById("badge");
+
+      const vec = (x, y, z) => ({ x, y, z });
+      const add = (a, b) => vec(a.x + b.x, a.y + b.y, a.z + b.z);
+      const sub = (a, b) => vec(a.x - b.x, a.y - b.y, a.z - b.z);
+      const mul = (a, s) => vec(a.x * s, a.y * s, a.z * s);
+      const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
+      const cross = (a, b) => vec(
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+      );
+      const norm = (a) => {
+        const m = Math.hypot(a.x, a.y, a.z) || 1;
+        return vec(a.x / m, a.y / m, a.z / m);
+      };
+      const rotX = (p, a) => {
+        const c = Math.cos(a), s = Math.sin(a);
+        return vec(p.x, p.y * c - p.z * s, p.y * s + p.z * c);
+      };
+      const rotY = (p, a) => {
+        const c = Math.cos(a), s = Math.sin(a);
+        return vec(p.x * c + p.z * s, p.y, -p.x * s + p.z * c);
+      };
+
+      const clamp255 = (v) => v < 0 ? 0 : v > 255 ? 255 : v;
+      const shadeHex = (hex, f) => {
+        const r = clamp255(((hex >> 16) & 255) * f) | 0;
+        const g = clamp255(((hex >> 8) & 255) * f) | 0;
+        const b = clamp255((hex & 255) * f) | 0;
+        return `rgb(${r},${g},${b})`;
+      };
+
+      let cx = 0, cy = 0;
+      function resize() {
+        const vb = svg.viewBox.baseVal;
+        vb.width = 800;
+        vb.height = 560;
+        vb.x = -vb.width / 2;
+        vb.y = -vb.height / 2;
+        cx = 0;
+        cy = 40;
+      }
+      resize();
+      window.addEventListener("resize", resize);
+
+      const W = 120, D = 80, T = 6;
+      const HS = 78, TS = 3;
+      const spacing = 1;
+
+      const COLORS = {
+        bodyTop: 0xc7c9cf,
+        bodySide: 0xadb1b9,
+        bodyBottom: 0x8b8f98,
+        bezel: 0x0a0b10,
+        lid: 0xc9ccd2,
+        keyboard: 0x13151b,
+        trackpad: 0xb5b8bf,
+        hinge: 0x3a3d45,
+        port: 0x20232a,
+      };
+
+      const baseLocal = [
+        vec(-W/2, 0, 0),    vec(W/2, 0, 0),
+        vec(W/2, 0, -D),   vec(-W/2, 0, -D),
+        vec(-W/2, -T, 0),  vec(W/2, -T, 0),
+        vec(W/2, -T, -D),  vec(-W/2, -T, -D),
+      ];
+
+      const screenLocal = [
+        vec(-W/2, 0, 0),    vec(W/2, 0, 0),
+        vec(W/2, HS, 0),    vec(-W/2, HS, 0),
+        vec(-W/2, 0, -TS),  vec(W/2, 0, -TS),
+        vec(W/2, HS, -TS),  vec(-W/2, HS, -TS),
+      ];
+
+      const baseFaces = [
+        { v:[0,1,2,3], c: COLORS.bodyTop },
+        { v:[4,5,6,7], c: COLORS.bodyBottom },
+        { v:[0,1,5,4], c: COLORS.bodySide },
+        { v:[3,2,6,7], c: COLORS.bodySide },
+        { v:[3,0,4,7], c: COLORS.bodySide },
+        { v:[1,2,6,5], c: COLORS.bodySide },
+      ];
+
+      const screenFaces = [
+        { v:[4,5,6,7], c: COLORS.lid },
+        { v:[0,1,2,3], c: COLORS.bezel, kind:"bezel" },
+        { v:[3,2,6,7], c: COLORS.bodySide },
+        { v:[0,1,5,4], c: COLORS.bodySide },
+        { v:[0,4,7,3], c: COLORS.bodySide },
+        { v:[1,2,6,5], c: COLORS.bodySide },
+      ];
+
+      const lightDir = norm(vec(0.35, 0.85, 0.45));
+
+      let yaw = 0.4;
+      let pitch = 0.3;
+      const openAngle = -0.35;
+
+      const camDist = 260;
+      const camScale = 520;
+      function project(p) {
+        const z = camDist - p.z;
+        const s = camScale / z;
+        return { x: p.x * s + cx, y: -p.y * s + cy, z: p.z };
+      }
+
+      function globalTransform(p) {
+        return rotX(rotY(p, yaw), pitch);
+      }
+      function baseWorld(v) {
+        return globalTransform(v);
+      }
+      function screenWorld(v) {
+        const hinged = rotX(v, openAngle);
+        hinged.z -= D;
+        return globalTransform(hinged);
+      }
+
+      function faceNormal(pts) {
+        const a = sub(pts[1], pts[0]);
+        const b = sub(pts[2], pts[0]);
+        return norm(cross(a, b));
+      }
+
+      function buildOverlayFaces() {
+        const faces = [];
+
+        const kInsetX = W * 0.46;
+        const kZ0 = -D * 0.92;
+        const kZ1 = -D * 0.3;
+        const keyboard = [
+          vec(-kInsetX, 0.02, kZ1),
+          vec(kInsetX, 0.02, kZ1),
+          vec(kInsetX, 0.02, kZ0),
+          vec(-kInsetX, 0.02, kZ0),
+        ].map(baseWorld);
+        faces.push({ pts: keyboard, c: COLORS.keyboard, flat: true, zBias: 0.5 });
+
+        const padW = W * 0.30;
+        const padD = D * 0.25;
+        const padZ0 = -D * 0.05;
+        const padZ1 = padZ0 - padD;
+        const trackpad = [
+          vec(-padW/2, 0.03, padZ0),
+          vec(padW/2, 0.03, padZ0),
+          vec(padW/2, 0.03, padZ1),
+          vec(-padW/2, 0.03, padZ1),
+        ].map(baseWorld);
+        faces.push({ pts: trackpad, c: COLORS.trackpad, flat: true, zBias: 0.6 });
+
+        const hingeBar = [
+          vec(-W/2, 0.1, -D),
+          vec(W/2, 0.1, -D),
+          vec(W/2, -1.2, -D),
+          vec(-W/2, -1.2, -D),
+        ].map(baseWorld);
+        faces.push({ pts: hingeBar, c: COLORS.hinge, flat: true, zBias: -0.2 });
+
+        const bezelInset = 6;
+        const screenInner = [
+          vec(-W/2 + bezelInset, bezelInset, 0.2),
+          vec(W/2 - bezelInset, bezelInset, 0.2),
+          vec(W/2 - bezelInset, HS - bezelInset * 1.6, 0.2),
+          vec(-W/2 + bezelInset, HS - bezelInset * 1.6, 0.2),
+        ].map(screenWorld);
+        faces.push({ pts: screenInner, fill: "url(#screenGrad)", c: 0x111827, flat: true, zBias: 1.0 });
+
+        const glow = [
+          vec(-W/2 + bezelInset, bezelInset, 0.21),
+          vec(W/2 - bezelInset, bezelInset, 0.21),
+          vec(W/2 - bezelInset, HS - bezelInset * 1.6, 0.21),
+          vec(-W/2 + bezelInset, HS - bezelInset * 1.6, 0.21),
+        ].map(screenWorld);
+        faces.push({ pts: glow, fill: "url(#glowGrad)", c: 0xffffff, flat: true, opacity: 0.35, zBias: 1.1 });
+
+        return faces;
+      }
+
+      function buildFaces() {
+        const faces = [];
+
+        const baseW = baseLocal.map(baseWorld);
+        for (const f of baseFaces) {
+          const pts = f.v.map(i => baseW[i]);
+          faces.push({ pts, c: f.c });
+        }
+
+        const screenW = screenLocal.map(screenWorld);
+        for (const f of screenFaces) {
+          const pts = f.v.map(i => screenW[i]);
+          faces.push({ pts, c: f.c, kind: f.kind });
+        }
+
+        faces.push(...buildOverlayFaces());
+        return faces;
+      }
+
+      function render() {
+        const faces = buildFaces();
+        for (const f of faces) {
+          const n = f.flat ? vec(0, 1, 0) : faceNormal(f.pts);
+          const diff = Math.max(0, dot(n, lightDir));
+          const factor = f.kind === "bezel"
+            ? 0.75 + diff * 0.2
+            : 0.6 + diff * 0.85;
+          f.fillColor = f.fill || shadeHex(f.c, factor);
+          f.strokeColor = shadeHex(0x0d0f14, 1.0);
+          f.depth = f.pts.reduce((s, p) => s + p.z, 0) / f.pts.length + (f.zBias || 0);
+        }
+
+        faces.sort((a, b) => a.depth - b.depth);
+
+        let html = "";
+        for (const f of faces) {
+          const pts2 = f.pts.map(project);
+          const points = pts2.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
+          const opacity = f.opacity != null ? f.opacity : 1;
+          html += `<polygon points="${points}" fill="${f.fillColor}" stroke="${f.strokeColor}" stroke-width="0.9" opacity="${opacity}" />`;
+        }
+        facesG.innerHTML = html;
+
+        badge.textContent = `yaw ${(yaw % (Math.PI*2) + Math.PI*2) % (Math.PI*2) * 180/Math.PI | 0}°`;
+      }
+
+      let dragging = false;
+      let lastX = 0;
+      let lastTime = 0;
+      let vel = 0;
+      const friction = 0.95;
+
+      svg.addEventListener("pointerdown", (e) => {
+        dragging = true;
+        svg.classList.add("dragging");
+        lastX = e.clientX;
+        lastTime = performance.now();
+        vel = 0;
+        svg.setPointerCapture(e.pointerId);
+      });
+
+      svg.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        const now = performance.now();
+        const dx = e.clientX - lastX;
+        const dt = Math.max(1, now - lastTime);
+        lastX = e.clientX;
+        lastTime = now;
+        const deltaYaw = dx * 0.008;
+        yaw += deltaYaw;
+        vel = deltaYaw / (dt / 16.67);
+      });
+
+      window.addEventListener("pointerup", () => {
+        dragging = false;
+        svg.classList.remove("dragging");
+      });
+
+      svg.addEventListener("dblclick", () => {
+        yaw = 0.4;
+        pitch = 0.3;
+        vel = 0;
+      });
+
+      function tick() {
+        if (!dragging) {
+          yaw += vel;
+          vel *= friction;
+          if (Math.abs(vel) < 1e-4) vel = 0;
+        }
+        render();
+        requestAnimationFrame(tick);
+      }
+
+      tick();
+    </script>
+  </body>
+</html>

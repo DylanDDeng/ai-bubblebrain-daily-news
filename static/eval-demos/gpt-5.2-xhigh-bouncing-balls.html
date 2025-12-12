@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>旋转六边形内弹跳彩球 - p5.js</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #0b0b12;
+        overflow: hidden;
+      }
+      canvas { display: block; }
+      .hud {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        font: 12px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        color: rgba(255,255,255,0.8);
+        pointer-events: none;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+  </head>
+  <body>
+    <div class="hud">
+      10 个彩色球在旋转六边形内弹跳<br/>
+      重力 / 弹性 / 摩擦 / 碰撞<br/>
+      点击画布可随机改变旋转方向
+    </div>
+    <script>
+      const NUM_BALLS = 10;
+
+      // 物理参数
+      const GRAVITY = 0.28;          // px / frame^2（以 60fps 为基准）
+      const AIR_DRAG = 0.995;        // 空气阻力（每帧速度衰减）
+      const WALL_RESTITUTION = 0.86; // 球-墙弹性
+      const WALL_FRICTION = 0.04;    // 球-墙切向摩擦
+      const BALL_RESTITUTION = 0.9;  // 球-球弹性
+      const BALL_FRICTION = 0.02;    // 球-球切向摩擦
+
+      // 六边形参数
+      let hexRadius;
+      let hexAngle = 0;
+      let hexOmega = 0.012; // rad / frame（60fps 基准）
+
+      let center;
+      let balls = [];
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight);
+        center = createVector(width / 2, height / 2);
+        hexRadius = min(width, height) * 0.36;
+
+        const baseVerts = hexVertices(0);
+        for (let i = 0; i < NUM_BALLS; i++) {
+          const r = random(14, 24);
+          let p;
+          // 拒绝采样：随机生成在六边形内部的点
+          do {
+            const v = p5.Vector.random2D().mult(random(0, hexRadius * 0.85));
+            p = p5.Vector.add(center, v);
+          } while (!pointInPolygon(p, baseVerts));
+
+          balls.push({
+            pos: p,
+            vel: p5.Vector.random2D().mult(random(1, 3)),
+            r,
+            mass: r * r,
+            col: color(random(60, 255), random(60, 255), random(60, 255))
+          });
+        }
+      }
+
+      function draw() {
+        background(8, 8, 14);
+        const dt = deltaTime / 16.6667; // 60fps 为 1
+
+        // 更新旋转
+        hexAngle += hexOmega * dt;
+        const verts = hexVertices(hexAngle);
+
+        // 更新球
+        for (const b of balls) {
+          b.vel.y += GRAVITY * dt;
+          b.vel.mult(pow(AIR_DRAG, dt));
+          b.pos.add(p5.Vector.mult(b.vel, dt));
+          collideWithHex(b, verts);
+        }
+
+        // 球-球碰撞
+        for (let i = 0; i < balls.length; i++) {
+          for (let j = i + 1; j < balls.length; j++) {
+            collideBalls(balls[i], balls[j]);
+          }
+        }
+
+        // 画六边形
+        push();
+        noFill();
+        stroke(220);
+        strokeWeight(3);
+        beginShape();
+        for (const v of verts) vertex(v.x, v.y);
+        endShape(CLOSE);
+        pop();
+
+        // 画球
+        noStroke();
+        for (const b of balls) {
+          fill(b.col);
+          circle(b.pos.x, b.pos.y, b.r * 2);
+          // 高光
+          fill(255, 60);
+          circle(b.pos.x - b.r * 0.35, b.pos.y - b.r * 0.35, b.r * 0.8);
+        }
+      }
+
+      function hexVertices(angle) {
+        const verts = [];
+        for (let i = 0; i < 6; i++) {
+          const a = angle + i * TWO_PI / 6;
+          verts.push(createVector(
+            center.x + cos(a) * hexRadius,
+            center.y + sin(a) * hexRadius
+          ));
+        }
+        return verts;
+      }
+
+      // 六边形墙面碰撞（凸多边形：对每条边检查）
+      function collideWithHex(ball, verts) {
+        for (let i = 0; i < 6; i++) {
+          const a = verts[i];
+          const b = verts[(i + 1) % 6];
+          const e = p5.Vector.sub(b, a);
+          const n = createVector(-e.y, e.x).normalize(); // 向内法线（顶点 CCW）
+
+          const distToLine = p5.Vector.sub(ball.pos, a).dot(n);
+          if (distToLine < ball.r) {
+            // 位置修正：推回六边形内部
+            const penetration = ball.r - distToLine;
+            ball.pos.add(p5.Vector.mult(n, penetration));
+
+            // 墙面在接触点处的切向速度（旋转）
+            const contact = p5.Vector.sub(ball.pos, p5.Vector.mult(n, ball.r));
+            const rVec = p5.Vector.sub(contact, center);
+            const vWall = createVector(-rVec.y, rVec.x).mult(hexOmega);
+
+            // 相对速度
+            let vRel = p5.Vector.sub(ball.vel, vWall);
+            const vn = vRel.dot(n);
+            if (vn < 0) {
+              const vRelN = p5.Vector.mult(n, vn);
+              const vRelT = p5.Vector.sub(vRel, vRelN);
+              vRelN.mult(-WALL_RESTITUTION);
+              vRelT.mult(1 - WALL_FRICTION);
+              vRel = p5.Vector.add(vRelN, vRelT);
+              ball.vel = p5.Vector.add(vRel, vWall);
+            }
+          }
+        }
+      }
+
+      // 球-球碰撞（二维弹性碰撞 + 摩擦）
+      function collideBalls(b1, b2) {
+        const d = p5.Vector.sub(b2.pos, b1.pos);
+        const dist = d.mag();
+        const minDist = b1.r + b2.r;
+        if (dist === 0) {
+          // 避免除零：轻微扰动
+          const n = p5.Vector.random2D();
+          b1.pos.add(p5.Vector.mult(n, -0.5));
+          b2.pos.add(p5.Vector.mult(n, 0.5));
+          return;
+        }
+
+        if (dist < minDist) {
+          const n = d.copy().div(dist);
+          const overlap = minDist - dist;
+          const totalMass = b1.mass + b2.mass;
+
+          // 位置分离
+          b1.pos.add(p5.Vector.mult(n, -overlap * (b2.mass / totalMass)));
+          b2.pos.add(p5.Vector.mult(n, overlap * (b1.mass / totalMass)));
+
+          // 速度冲量
+          const relVel = p5.Vector.sub(b2.vel, b1.vel);
+          const vn = relVel.dot(n);
+          if (vn < 0) {
+            const invMass1 = 1 / b1.mass;
+            const invMass2 = 1 / b2.mass;
+            const j = -(1 + BALL_RESTITUTION) * vn / (invMass1 + invMass2);
+            const impulse = p5.Vector.mult(n, j);
+            b1.vel.sub(p5.Vector.mult(impulse, invMass1));
+            b2.vel.add(p5.Vector.mult(impulse, invMass2));
+
+            // 切向摩擦
+            let tangent = relVel.copy().sub(p5.Vector.mult(n, vn));
+            if (tangent.magSq() > 1e-6) {
+              tangent.normalize();
+              let jt = -relVel.dot(tangent) / (invMass1 + invMass2);
+              const maxFriction = j * BALL_FRICTION;
+              jt = constrain(jt, -maxFriction, maxFriction);
+              const fImpulse = p5.Vector.mult(tangent, jt);
+              b1.vel.sub(p5.Vector.mult(fImpulse, invMass1));
+              b2.vel.add(p5.Vector.mult(fImpulse, invMass2));
+            }
+          }
+        }
+      }
+
+      function pointInPolygon(p, verts) {
+        let inside = false;
+        for (let i = 0, j = verts.length - 1; i < verts.length; j = i++) {
+          const xi = verts[i].x, yi = verts[i].y;
+          const xj = verts[j].x, yj = verts[j].y;
+          const intersect =
+            (yi > p.y) !== (yj > p.y) &&
+            p.x < ((xj - xi) * (p.y - yi)) / (yj - yi) + xi;
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      }
+
+      function mousePressed() {
+        hexOmega *= -1;
+      }
+
+      function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+        center.set(width / 2, height / 2);
+        hexRadius = min(width, height) * 0.36;
+      }
+    </script>
+  </body>
+</html>
