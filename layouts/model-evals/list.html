@@ -54,8 +54,8 @@
 
 <script>
 (() => {
-  const modelsUrl = "{{ "/model-evals.json" | relURL }}";
-  const questionsUrl = "{{ "/eval-questions.json" | relURL }}";
+  const modelsUrl = "{{ "/model-evals.json" | relLangURL }}";
+  const questionsUrl = "{{ "/eval-questions.json" | relLangURL }}";
   const I18N = {
     modalQuestionsTitle: "{{ i18n "eval_modal_questions_title" }}",
     unknownModel: "{{ i18n "eval_unknown_model" }}",

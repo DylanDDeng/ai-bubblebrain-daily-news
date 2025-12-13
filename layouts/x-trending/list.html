@@ -51,8 +51,8 @@
 
 <script>
 (() => {
-  const dataUrl = "{{ "/x-trending.json" | relURL }}";
-  const TWITTER_LANG = "{{ if eq .Site.Language.Lang "zh-CN" }}zh-cn{{ else }}en{{ end }}";
+  const dataUrl = "{{ "/x-trending.json" | relLangURL }}";
+  const TWITTER_LANG = "{{ if eq .Site.LanguageCode "zh-CN" }}zh-cn{{ else }}en{{ end }}";
   const I18N = {
     all: "{{ i18n "xtrending_all" }}",
     untitled: "{{ i18n "xtrending_untitled" }}",

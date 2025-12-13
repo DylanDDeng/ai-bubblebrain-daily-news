@@ -1,0 +1,123 @@
+[
+  {
+    "id": "q001",
+    "title": "Shanghai Voxel Art",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Design and create a highly creative, carefully crafted, and detailed voxel art scene themed around Shanghai's architectural skyline. Make the scene feel stunning and diverse, using richly colored voxels. Implement it with HTML, CSS, and JS, and merge everything into a single HTML file so I can paste it into Chrome and run it directly.",
+    "answers": {
+      "claude-opus-4.5": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4-5-shanghai-voxel.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.1-codex-max-high": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-voxel-shanghai.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "claude-opus-4.1": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.1-shanghai-voxel.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-voxel-shanghai.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-shanghai-voxel.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q002",
+    "title": "Make a Personal Website",
+    "category": "Coding",
+    "difficulty": "Easy",
+    "question": "Make a website presenting yourself",
+    "answers": {
+      "claude-opus-4.5": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.5.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.1-codex-max-high": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-about-codex.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "claude-opus-4.1": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.1.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-about.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q003",
+    "title": "Washing Machine Working Principle Animation",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Use SVG animation to demonstrate how a washing machine works across four phases: water intake, washing, draining, and spin-drying. Include interactive controls.",
+    "answers": {
+      "claude-opus-4.5": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.5-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.1-codex-max-high": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-max-washer-svg.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-washing-machine.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q004",
+    "title": "Bouncing Balls Animation",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Using p5.js, create an effect where 10 colored balls bounce inside a rotating hexagon, accounting for gravity, elasticity, friction, and collisions. Put everything into a single HTML file.",
+    "answers": {
+      "claude-opus-4.5": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.5-bouncing-hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.1-codex-max-high": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.1-codex-hex-rotating-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-hexagon-bouncing-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-bouncing-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q005",
+    "title": "MacBook Pro 360° Draggable SVG",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Create a 360 draggable MacBook Pro in SVG animation. Write this in one single HTML.",
+    "answers": {
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-macbook-360.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-macbook-360.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  }
+]

@@ -2,7 +2,7 @@
 {{ $host := $cusdis.host | default "https://cusdis.com" }}
 {{ $appID := $cusdis.app_id | default $cusdis.appId }}
 {{ if and $cusdis $appID }}
-{{ $cusdisLang := cond (eq .Site.Language.Lang "zh-CN") "zh-cn" "en" }}
+{{ $cusdisLang := cond (eq .Site.LanguageCode "zh-CN") "zh-cn" "en" }}
 <section class="comments-section">
   <h2 class="comments-title">{{ i18n "comments_title" }}</h2>
   <div

@@ -5,6 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
     <meta name="description" content="{{ .Description | default .Site.Params.description }}">
+    {{ if and .IsHome (eq .Site.LanguageCode "zh-CN") }}
+      {{ $enSite := index (where site.Sites "Language.LanguageCode" "en") 0 }}
+      <script>
+        (() => {
+          const storageKey = "ai_daily_lang";
+          const target = "{{ $enSite.Home.RelPermalink }}";
+
+          try {
+            const preferred = (localStorage.getItem(storageKey) || "").trim();
+            if (preferred === "en") {
+              window.location.replace(target);
+              return;
+            }
+            if (preferred === "zh-CN") return;
+          } catch (e) {}
+
+          const lang = (() => {
+            const arr = Array.isArray(navigator.languages) ? navigator.languages : [];
+            if (arr.length && typeof arr[0] === "string") return arr[0];
+            return navigator.language || "";
+          })()
+            .toString()
+            .trim()
+            .toLowerCase();
+
+          if (lang.startsWith("en")) {
+            try { window.location.replace(target); } catch (e) {}
+          }
+        })();
+      </script>
+    {{ end }}
     <!-- Baidu Tongji -->
     <script>
       var _hmt = _hmt || [];
@@ -42,17 +73,17 @@
                 {{ end }}
             </nav>
 
-            {{ $cnSite := index (where site.Sites "Language.Lang" "zh-CN") 0 }}
-            {{ $enSite := index (where site.Sites "Language.Lang" "en") 0 }}
+            {{ $cnSite := index (where site.Sites "Language.LanguageCode" "zh-CN") 0 }}
+            {{ $enSite := index (where site.Sites "Language.LanguageCode" "en") 0 }}
             {{ $cnURL := $cnSite.Home.RelPermalink }}
             {{ $enURL := $enSite.Home.RelPermalink }}
             {{ range .Translations }}
-                {{ if eq .Language.Lang "zh-CN" }}{{ $cnURL = .RelPermalink }}{{ end }}
-                {{ if eq .Language.Lang "en" }}{{ $enURL = .RelPermalink }}{{ end }}
+                {{ if eq .Language.LanguageCode "zh-CN" }}{{ $cnURL = .RelPermalink }}{{ end }}
+                {{ if eq .Language.LanguageCode "en" }}{{ $enURL = .RelPermalink }}{{ end }}
             {{ end }}
             <div class="nav-links nav-lang" aria-label="{{ i18n "language_switcher_aria" }}">
-                <a class="{{ if eq .Site.Language.Lang "zh-CN" }}active{{ end }}" href="{{ $cnURL }}">中文</a>
-                <a class="{{ if eq .Site.Language.Lang "en" }}active{{ end }}" href="{{ $enURL }}">EN</a>
+                <a class="{{ if eq .Site.LanguageCode "zh-CN" }}active{{ end }}" href="{{ $cnURL }}" data-lang="zh-CN">中文</a>
+                <a class="{{ if eq .Site.LanguageCode "en" }}active{{ end }}" href="{{ $enURL }}" data-lang="en">EN</a>
             </div>
         </div>
     </header>
@@ -66,6 +97,19 @@
     </footer>
 
     <script src="{{ "js/noir.js" | relURL }}"></script>
+    <script>
+      (() => {
+        const storageKey = "ai_daily_lang";
+        document.querySelectorAll(".nav-lang a[data-lang]").forEach((link) => {
+          link.addEventListener("click", () => {
+            try {
+              const lang = (link.getAttribute("data-lang") || "").trim();
+              if (lang) localStorage.setItem(storageKey, lang);
+            } catch (e) {}
+          });
+        });
+      })();
+    </script>
     {{ partial "about-tilt.html" . }}
 </body>
 </html>
