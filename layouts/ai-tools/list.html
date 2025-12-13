@@ -2,7 +2,7 @@
 <section class="section">
   <div class="section-narrow tools-shell">
     <header class="page-header tools-hero">
-      <p class="page-eyebrow">AI Tools Collection</p>
+      <p class="page-eyebrow">{{ i18n "tools_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}
         <p class="page-desc">{{ . }}</p>
@@ -11,21 +11,21 @@
 
     <div class="tools-actions">
       <div class="tools-search">
-        <input type="search" id="tools-search" placeholder="搜索名称 / 公司 / 领域" aria-label="搜索AI工具">
+        <input type="search" id="tools-search" placeholder="{{ i18n "tools_search_placeholder" }}" aria-label="{{ i18n "tools_search_aria" }}">
       </div>
-      <div class="tools-filter-row" id="tools-company-filters" aria-label="按公司筛选"></div>
-      <div class="tools-filter-row" id="tools-domain-filters" aria-label="按领域筛选"></div>
+      <div class="tools-filter-row" id="tools-company-filters" aria-label="{{ i18n "tools_company_filter_aria" }}"></div>
+      <div class="tools-filter-row" id="tools-domain-filters" aria-label="{{ i18n "tools_domain_filter_aria" }}"></div>
     </div>
 
     <div id="tools-grid" class="tools-grid" aria-live="polite"></div>
-    <nav id="tools-pagination" class="pagination" aria-label="AI工具分页导航" hidden></nav>
+    <nav id="tools-pagination" class="pagination" aria-label="{{ i18n "tools_pagination_aria" }}" hidden></nav>
     <div id="tools-empty" class="tools-empty" hidden>
-      <p>暂时还没有AI工具。</p>
-      <p>更新 ai-tools.json 后刷新页面即可获取最新内容。</p>
+      <p>{{ i18n "tools_empty_title" }}</p>
+      <p>{{ i18n "tools_empty_hint" }}</p>
     </div>
     <div id="tools-empty-filter" class="tools-empty" hidden>
-      <p>当前筛选条件下没有匹配的工具。</p>
-      <p>切换其他筛选条件试试看。</p>
+      <p>{{ i18n "tools_empty_filter_title" }}</p>
+      <p>{{ i18n "tools_empty_filter_hint" }}</p>
     </div>
   </div>
 </section>
@@ -33,7 +33,7 @@
 <div class="tools-modal" id="tools-modal" aria-hidden="true">
   <div class="tools-modal__backdrop" data-close></div>
   <div class="tools-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="tools-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <button class="tools-modal__close" type="button" data-close aria-label="{{ i18n "tools_modal_close" }}">×</button>
     <div class="tools-modal__body">
       <div class="tools-modal__logo">
         <img id="modal-logo" alt="" loading="lazy">
@@ -46,7 +46,7 @@
         </div>
         <div class="tools-link-block">
           <a id="modal-link" href="#" target="_blank" rel="noopener noreferrer" class="tools-visit-btn">
-            访问工具 →
+            {{ i18n "tools_visit" }}
           </a>
         </div>
       </div>
@@ -56,7 +56,26 @@
 
 <script>
 (() => {
-  const dataUrl = "/ai-tools.json";
+  const dataUrl = "{{ "/ai-tools.json" | relURL }}";
+  const I18N = {
+    allCompaniesWithCount: "{{ i18n "tools_all_companies_with_count" }}",
+    allDomainsWithCount: "{{ i18n "tools_all_domains_with_count" }}",
+    expandCompanies: "{{ i18n "tools_expand_companies" }}",
+    collapseCompanies: "{{ i18n "tools_collapse_companies" }}",
+    expandDomains: "{{ i18n "tools_expand_domains" }}",
+    collapseDomains: "{{ i18n "tools_collapse_domains" }}",
+    defaultAlt: "{{ i18n "tools_default_alt" }}",
+    untitled: "{{ i18n "tools_default_title" }}",
+    unknownCompany: "{{ i18n "tools_unknown_company" }}",
+    viewDetail: "{{ i18n "tools_view_detail" }}",
+    domainPrefix: "{{ i18n "tools_domain_prefix" }}",
+    domainUnknown: "{{ i18n "tools_domain_unknown" }}",
+    companyPrefix: "{{ i18n "tools_company_prefix" }}",
+    companyUnknown: "{{ i18n "tools_company_unknown" }}",
+    cardEyebrowFallback: "{{ i18n "tools_card_eyebrow_fallback" }}",
+    prevPage: "{{ i18n "pagination_prev" }}",
+    nextPage: "{{ i18n "pagination_next" }}"
+  };
   const grid = document.getElementById("tools-grid");
   const empty = document.getElementById("tools-empty");
   const pagination = document.getElementById("tools-pagination");
@@ -150,7 +169,7 @@
     const allBtn = document.createElement("button");
     allBtn.className = currentCompanyFilter === "all" ? "tools-filter-pill active" : "tools-filter-pill";
     const counts = collectCompanyCounts(allItems);
-    allBtn.textContent = `全部公司 @${allItems.length}`;
+    allBtn.textContent = I18N.allCompaniesWithCount.replace("{count}", String(allItems.length));
     allBtn.setAttribute("data-company", "all");
     frag.appendChild(allBtn);
 
@@ -167,8 +186,8 @@
       toggle.className = "tools-filter-toggle";
       toggle.type = "button";
       toggle.textContent = companyFiltersCollapsed
-        ? `展开全部公司 (${companies.length - MAX_TAGS_VISIBLE})`
-        : "收起公司";
+        ? I18N.expandCompanies.replace("{count}", String(companies.length - MAX_TAGS_VISIBLE))
+        : I18N.collapseCompanies;
       toggle.addEventListener("click", () => {
         companyFiltersCollapsed = !companyFiltersCollapsed;
         renderCompanyFilters(companies);
@@ -205,7 +224,7 @@
     const allBtn = document.createElement("button");
     allBtn.className = currentDomainFilter === "all" ? "tools-filter-pill active" : "tools-filter-pill";
     const counts = collectDomainCounts(allItems);
-    allBtn.textContent = `全部领域 @${allItems.length}`;
+    allBtn.textContent = I18N.allDomainsWithCount.replace("{count}", String(allItems.length));
     allBtn.setAttribute("data-domain", "all");
     frag.appendChild(allBtn);
 
@@ -222,8 +241,8 @@
       toggle.className = "tools-filter-toggle";
       toggle.type = "button";
       toggle.textContent = domainFiltersCollapsed
-        ? `展开全部领域 (${domains.length - MAX_TAGS_VISIBLE})`
-        : "收起领域";
+        ? I18N.expandDomains.replace("{count}", String(domains.length - MAX_TAGS_VISIBLE))
+        : I18N.collapseDomains;
       toggle.addEventListener("click", () => {
         domainFiltersCollapsed = !domainFiltersCollapsed;
         renderDomainFilters(domains);
@@ -256,7 +275,7 @@
     logoWrap.className = "tools-logo";
     const logo = document.createElement("img");
     logo.src = item.logo || "";
-    logo.alt = item.name || "AI工具";
+    logo.alt = item.name || I18N.defaultAlt;
     logo.loading = "lazy";
     logoWrap.appendChild(logo);
 
@@ -264,17 +283,17 @@
     meta.className = "tools-card__meta";
     const eyebrow = document.createElement("p");
     eyebrow.className = "tools-eyebrow";
-    eyebrow.textContent = item.domain || "AI工具";
+    eyebrow.textContent = item.domain || I18N.cardEyebrowFallback;
     const title = document.createElement("h3");
-    title.textContent = item.name || "未命名工具";
+    title.textContent = item.name || I18N.untitled;
     const footer = document.createElement("div");
     footer.className = "tools-card__footer";
     const company = document.createElement("span");
     company.className = "tools-company";
-    company.textContent = item.company ? `${item.company}` : "未知公司";
+    company.textContent = item.company ? `${item.company}` : I18N.unknownCompany;
     const hint = document.createElement("span");
     hint.className = "tools-hint";
-    hint.textContent = "查看详情 →";
+    hint.textContent = I18N.viewDetail;
 
     footer.appendChild(company);
     footer.appendChild(hint);
@@ -356,7 +375,7 @@
         ? Object.assign(document.createElement("a"), { href: "#" })
         : document.createElement("span");
     prev.className = "pagination-link" + (currentPage === 1 ? " disabled" : "");
-    prev.textContent = "← 上一页";
+    prev.textContent = I18N.prevPage;
     if (currentPage > 1) {
       prev.addEventListener("click", (event) => {
         event.preventDefault();
@@ -392,7 +411,7 @@
         ? Object.assign(document.createElement("a"), { href: "#" })
         : document.createElement("span");
     next.className = "pagination-link" + (currentPage === totalPages ? " disabled" : "");
-    next.textContent = "下一页 →";
+    next.textContent = I18N.nextPage;
     if (currentPage < totalPages) {
       next.addEventListener("click", (event) => {
         event.preventDefault();
@@ -461,11 +480,11 @@
   function openModal(item) {
     activeFocus = document.activeElement;
 
-    modalTitle.textContent = item.name || "未命名工具";
-    modalDomain.textContent = item.domain ? `领域：${item.domain}` : "领域：未知";
-    modalCompany.textContent = item.company ? `公司：${item.company}` : "公司：未知";
+    modalTitle.textContent = item.name || I18N.untitled;
+    modalDomain.textContent = item.domain ? `${I18N.domainPrefix}${item.domain}` : I18N.domainUnknown;
+    modalCompany.textContent = item.company ? `${I18N.companyPrefix}${item.company}` : I18N.companyUnknown;
     modalLogo.src = item.logo || "";
-    modalLogo.alt = item.name || "AI工具";
+    modalLogo.alt = item.name || I18N.defaultAlt;
     modalLink.href = item.url || "#";
 
     modal.classList.add("open");

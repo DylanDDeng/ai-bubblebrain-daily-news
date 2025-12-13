@@ -5,7 +5,7 @@
       <h1>{{ .Title }}</h1>
       <div class="article-meta">
         <time datetime="{{ .Date.Format "2006-01-02" }}">
-          {{ .Date.Format "2006年01月02日" }}
+          {{ .Date.Format (i18n "date_format") }}
         </time>
         {{ if .Params.categories }}
           <div class="article-tags">
@@ -28,7 +28,7 @@
   <div class="section-narrow article-nav">
     <div class="nav-prev">
       {{ with .PrevInSection }}
-        <span class="nav-label">上一篇</span>
+        <span class="nav-label">{{ i18n "article_prev_label" }}</span>
         <a href="{{ .Permalink }}">
           ← {{ .Title }}
         </a>
@@ -36,7 +36,7 @@
     </div>
     <div class="nav-next">
       {{ with .NextInSection }}
-        <span class="nav-label">下一篇</span>
+        <span class="nav-label">{{ i18n "article_next_label" }}</span>
         <a href="{{ .Permalink }}">
           {{ .Title }} →
         </a>
@@ -45,9 +45,7 @@
   </div>
 
   <div class="section-narrow nav-back">
-    <a href="/daily/" class="read-more">
-      返回资讯日报
-    </a>
+    <a href="{{ "/daily/" | relLangURL }}" class="read-more">{{ i18n "daily_back" }}</a>
   </div>
 </footer>
 

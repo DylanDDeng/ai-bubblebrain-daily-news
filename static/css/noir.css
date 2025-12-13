@@ -85,6 +85,26 @@ a:hover {
   color: var(--text-muted);
 }
 
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.nav-lang {
+  gap: 0.6rem;
+}
+
+.nav-lang a {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+}
+
+.nav-lang a.active {
+  border-color: var(--accent);
+}
+
 .nav-links a.active {
   color: var(--accent);
 }

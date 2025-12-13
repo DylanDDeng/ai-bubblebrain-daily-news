@@ -2,15 +2,15 @@
 <section class="section">
   <article class="section-narrow page-surface daily-article">
     <header class="article-header">
-      <p class="page-eyebrow">Prompt Library</p>
+      <p class="page-eyebrow">{{ i18n "home_prompts_title" }}</p>
       <h1>{{ .Title }}</h1>
       <div class="article-meta">
-        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format (i18n "date_format") }}</time>
         {{ with .Params.model }}
-          <span class="meta-pill">推荐模型：{{ . }}</span>
+          <span class="meta-pill">{{ i18n "prompts_recommended_model" }}{{ . }}</span>
         {{ end }}
         {{ with .Params.tone }}
-          <span class="meta-pill">语气建议：{{ . }}</span>
+          <span class="meta-pill">{{ i18n "prompts_tone_suggestion" }}{{ . }}</span>
         {{ end }}
       </div>
       {{ with .Description }}
@@ -36,7 +36,7 @@
   <div class="section-narrow article-nav">
     <div class="nav-prev">
       {{ with .PrevInSection }}
-        <span class="nav-label">上一篇</span>
+        <span class="nav-label">{{ i18n "article_prev_label" }}</span>
         <a href="{{ .Permalink }}">
           ← {{ .Title }}
         </a>
@@ -44,7 +44,7 @@
     </div>
     <div class="nav-next">
       {{ with .NextInSection }}
-        <span class="nav-label">下一篇</span>
+        <span class="nav-label">{{ i18n "article_next_label" }}</span>
         <a href="{{ .Permalink }}">
           {{ .Title }} →
         </a>
@@ -52,7 +52,7 @@
     </div>
   </div>
   <div class="section-narrow nav-back">
-    <a class="read-more" href="/prompts/">返回提示词收录</a>
+    <a class="read-more" href="{{ "/prompts/" | relLangURL }}">{{ i18n "prompts_back" }}</a>
   </div>
 </footer>
 {{ end }}

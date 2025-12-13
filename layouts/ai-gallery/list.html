@@ -2,7 +2,7 @@
 <section class="section">
   <div class="section-narrow gallery-shell">
     <header class="page-header gallery-hero">
-      <p class="page-eyebrow">AI Imagery Showcase</p>
+      <p class="page-eyebrow">{{ i18n "gallery_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}
         <p class="page-desc">{{ . }}</p>
@@ -11,20 +11,20 @@
 
     <div class="gallery-actions">
       <div class="gallery-search">
-        <input type="search" id="gallery-search" placeholder="搜索标题 / Prompt / 作者 / 模型" aria-label="搜索作品">
+        <input type="search" id="gallery-search" placeholder="{{ i18n "gallery_search_placeholder" }}" aria-label="{{ i18n "gallery_search_aria" }}">
       </div>
-      <div class="gallery-filter-row" id="gallery-filters" aria-label="按标签筛选"></div>
+      <div class="gallery-filter-row" id="gallery-filters" aria-label="{{ i18n "gallery_filters_aria" }}"></div>
     </div>
 
     <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
-    <nav id="gallery-pagination" class="pagination" aria-label="AI生图分页导航" hidden></nav>
+    <nav id="gallery-pagination" class="pagination" aria-label="{{ i18n "gallery_pagination_aria" }}" hidden></nav>
     <div id="gallery-empty" class="gallery-empty" hidden>
-      <p>暂时还没有展品。</p>
-      <p>更新根目录的 gallery.json 后刷新页面即可获取最新内容。</p>
+      <p>{{ i18n "gallery_empty_title" }}</p>
+      <p>{{ i18n "gallery_empty_hint" }}</p>
     </div>
     <div id="gallery-empty-filter" class="gallery-empty" hidden>
-      <p>当前标签下没有匹配的展品。</p>
-      <p>切换其他标签试试看。</p>
+      <p>{{ i18n "gallery_empty_filter_title" }}</p>
+      <p>{{ i18n "gallery_empty_filter_hint" }}</p>
     </div>
   </div>
 </section>
@@ -32,14 +32,14 @@
 <div class="gallery-modal" id="gallery-modal" aria-hidden="true">
   <div class="gallery-modal__backdrop" data-close></div>
   <div class="gallery-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="gallery-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <button class="gallery-modal__close" type="button" data-close aria-label="{{ i18n "gallery_modal_close" }}">×</button>
     <div class="gallery-modal__body">
       <div class="gallery-modal__image">
         <img id="modal-image" alt="" loading="lazy">
         <div class="gallery-modal__controls">
-          <button class="gallery-nav" type="button" data-prev aria-label="上一张">←</button>
+          <button class="gallery-nav" type="button" data-prev aria-label="{{ i18n "gallery_prev" }}">←</button>
           <div class="gallery-counter" id="modal-counter"></div>
-          <button class="gallery-nav" type="button" data-next aria-label="下一张">→</button>
+          <button class="gallery-nav" type="button" data-next aria-label="{{ i18n "gallery_next" }}">→</button>
         </div>
       </div>
       <div class="gallery-modal__meta">
@@ -53,13 +53,13 @@
         <div class="gallery-tags" id="modal-tags"></div>
         <div class="gallery-prompt-block">
           <div class="prompt-header">
-            <p class="prompt-label">Prompt</p>
-            <button class="prompt-copy-btn" id="copy-prompt-btn" type="button" aria-label="复制提示词">
+            <p class="prompt-label">{{ i18n "gallery_prompt_label" }}</p>
+            <button class="prompt-copy-btn" id="copy-prompt-btn" type="button" aria-label="{{ i18n "gallery_copy_prompt" }}">
               <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
-              <span class="copy-text">复制提示词</span>
+              <span class="copy-text">{{ i18n "gallery_copy_prompt" }}</span>
             </button>
           </div>
           <pre id="modal-prompt"></pre>
@@ -71,7 +71,7 @@
 
 <script>
 (() => {
-  const dataUrl = "/gallery.json";
+  const dataUrl = "{{ "/gallery.json" | relLangURL }}";
   const grid = document.getElementById("gallery-grid");
   const empty = document.getElementById("gallery-empty");
   const pagination = document.getElementById("gallery-pagination");
@@ -102,6 +102,26 @@
   let currentFilter = "all";
   let searchTerm = "";
   let filtersCollapsed = true;
+
+  const I18N = {
+    allWithCount: "{{ i18n "gallery_all_with_count" }}",
+    expandTags: "{{ i18n "gallery_expand_tags" }}",
+    collapseTags: "{{ i18n "gallery_collapse_tags" }}",
+    promptHint: "{{ i18n "gallery_prompt_hint" }}",
+    untitled: "{{ i18n "gallery_untitled" }}",
+    byPrefix: "{{ i18n "gallery_by_prefix" }}",
+    authorPrefix: "{{ i18n "gallery_author_prefix" }}",
+    unknownAuthor: "{{ i18n "gallery_unknown_author" }}",
+    sourcePrefix: "{{ i18n "gallery_source_prefix" }}",
+    unknownSource: "{{ i18n "gallery_unknown_source" }}",
+    unknown: "{{ i18n "gallery_unknown" }}",
+    noPrompt: "{{ i18n "gallery_no_prompt" }}",
+    singleImage: "{{ i18n "gallery_single_image" }}",
+    copyPrompt: "{{ i18n "gallery_copy_prompt" }}",
+    copied: "{{ i18n "gallery_copied" }}",
+    copyFailed: "{{ i18n "gallery_copy_failed" }}",
+    networkError: "{{ i18n "gallery_network_error" }}"
+  };
 
   const normalizeImages = (item) => {
     const arr = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
@@ -137,7 +157,7 @@
     if (value == null) return "";
 
     if (typeof value === "string") {
-      const text = value;
+      const text = value.replace(/\\n/g, "\n").replace(/\\t/g, "\t");
       const trimmed = text.trim();
       if (
         (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
@@ -219,7 +239,7 @@
     const allBtn = document.createElement("button");
     allBtn.className = "gallery-filter-pill active";
     const counts = collectTagCounts(allItems);
-    allBtn.textContent = `全部 @${allItems.length}`;
+    allBtn.textContent = I18N.allWithCount.replace("{count}", String(allItems.length));
     allBtn.setAttribute("data-tag", "all");
     frag.appendChild(allBtn);
 
@@ -235,9 +255,10 @@
       const toggle = document.createElement("button");
       toggle.className = "gallery-filter-toggle";
       toggle.type = "button";
+      const more = tags.length - MAX_TAGS_VISIBLE;
       toggle.textContent = filtersCollapsed
-        ? `展开全部标签 (${tags.length - MAX_TAGS_VISIBLE})`
-        : "收起标签";
+        ? I18N.expandTags.replace("{count}", String(more))
+        : I18N.collapseTags;
       toggle.addEventListener("click", () => {
         filtersCollapsed = !filtersCollapsed;
         renderFilters(tags);
@@ -300,10 +321,10 @@
     footer.className = "gallery-card__footer";
     const author = document.createElement("span");
     author.className = "gallery-author";
-    author.textContent = item.author ? `by ${item.author}` : "未知作者";
+    author.textContent = item.author ? `${I18N.byPrefix}${item.author}` : I18N.unknownAuthor;
     const promptHint = document.createElement("span");
     promptHint.className = "gallery-hint";
-    promptHint.textContent = "查看 prompt →";
+    promptHint.textContent = I18N.promptHint;
 
     footer.appendChild(author);
     footer.appendChild(promptHint);
@@ -486,12 +507,12 @@
     activeFocus = document.activeElement;
     currentImages = normalizeImages(item);
     currentIndex = 0;
-    currentItemTitle = item.title || "未命名作品";
-    currentPrompt = formatPrompt(item.prompt) || "暂无 prompt";
+    currentItemTitle = item.title || I18N.untitled;
+    currentPrompt = formatPrompt(item.prompt) || I18N.noPrompt;
 
     modalTitle.textContent = currentItemTitle;
-    modalAuthor.textContent = item.author ? `作者：${item.author}` : "作者：未知";
-    modalModel.textContent = item.source ? `来源 / 模型：${item.source}` : "来源：未知";
+    modalAuthor.textContent = item.author ? `${I18N.authorPrefix}${item.author}` : `${I18N.authorPrefix}${I18N.unknown}`;
+    modalModel.textContent = item.source ? `${I18N.sourcePrefix}${item.source}` : `${I18N.sourcePrefix}${I18N.unknown}`;
     modalSource.textContent = item.source || "";
     modalPrompt.textContent = currentPrompt;
 
@@ -528,7 +549,7 @@
     modalImage.src = active.full || active.thumb;
     modalImage.alt = active.caption ? `${currentItemTitle} - ${active.caption}` : currentItemTitle;
     if (modalCounter) {
-      modalCounter.textContent = len > 1 ? `${currentIndex + 1} / ${len}` : "单张";
+      modalCounter.textContent = len > 1 ? `${currentIndex + 1} / ${len}` : I18N.singleImage;
     }
     if (modalCaption) {
       modalCaption.textContent = active.caption || "";
@@ -592,7 +613,7 @@
   const copyBtn = document.getElementById("copy-prompt-btn");
   if (copyBtn) {
     copyBtn.addEventListener("click", async () => {
-      if (!currentPrompt || currentPrompt === "暂无 prompt") {
+      if (!currentPrompt || currentPrompt === I18N.noPrompt) {
         return;
       }
 
@@ -600,7 +621,7 @@
         await navigator.clipboard.writeText(currentPrompt);
         const copyText = copyBtn.querySelector(".copy-text");
         const originalText = copyText.textContent;
-        copyText.textContent = "已复制";
+        copyText.textContent = I18N.copied;
         copyBtn.classList.add("copied");
         
         setTimeout(() => {
@@ -611,7 +632,7 @@
         console.error("复制失败:", err);
         const copyText = copyBtn.querySelector(".copy-text");
         const originalText = copyText.textContent;
-        copyText.textContent = "复制失败";
+        copyText.textContent = I18N.copyFailed;
         
         setTimeout(() => {
           copyText.textContent = originalText;
@@ -623,7 +644,7 @@
   fetch(dataUrl)
     .then((res) => {
       console.log('fetch response:', res.status, res.statusText);
-      if (!res.ok) throw new Error(`网络异常: ${res.status}`);
+      if (!res.ok) throw new Error(`${I18N.networkError}: ${res.status}`);
       return res.json();
     })
     .then((items) => {

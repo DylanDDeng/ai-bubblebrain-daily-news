@@ -2,7 +2,7 @@
 <section class="section">
   <div class="section-narrow highlight-shell">
     <header class="page-header gallery-hero">
-      <p class="page-eyebrow">精选内容</p>
+      <p class="page-eyebrow">{{ i18n "highlights_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}
         <p class="page-desc">{{ . }}</p>
@@ -11,19 +11,19 @@
 
     <div class="highlight-actions">
       <div class="highlight-search">
-        <input type="search" id="highlight-search" placeholder="搜索标题 / 描述 / 标签" aria-label="搜索精选">
+        <input type="search" id="highlight-search" placeholder="{{ i18n "highlights_search_placeholder" }}" aria-label="{{ i18n "highlights_search_aria" }}">
       </div>
-      <div class="highlight-filter-row" id="highlight-filters" aria-label="按标签筛选"></div>
+      <div class="highlight-filter-row" id="highlight-filters" aria-label="{{ i18n "highlights_filter_aria" }}"></div>
     </div>
 
     <div id="highlight-grid" class="highlight-grid" aria-live="polite"></div>
     <div id="highlight-empty" class="highlight-empty" hidden>
-      <p>还没有上架精选内容。</p>
-      <p>在根目录新增 highlights.json 即可配置。</p>
+      <p>{{ i18n "highlights_empty_title" }}</p>
+      <p>{{ i18n "highlights_empty_hint" }}</p>
     </div>
     <div id="highlight-empty-filter" class="highlight-empty" hidden>
-      <p>当前标签没有匹配的精选内容。</p>
-      <p>切换其他标签试试。</p>
+      <p>{{ i18n "highlights_empty_filter_title" }}</p>
+      <p>{{ i18n "highlights_empty_filter_hint" }}</p>
     </div>
   </div>
 </section>
@@ -31,17 +31,17 @@
 <div class="highlight-modal" id="highlight-modal" aria-hidden="true">
   <div class="highlight-modal__backdrop" data-close></div>
   <div class="highlight-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="highlight-modal-title">
-    <button class="highlight-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <button class="highlight-modal__close" type="button" data-close aria-label="{{ i18n "highlights_modal_close" }}">×</button>
     <div class="highlight-modal__body">
       <div class="highlight-modal__image">
         <img id="highlight-modal-image" alt="">
       </div>
       <div class="highlight-modal__meta">
-        <p class="modal-eyebrow" id="highlight-modal-source">精选内容</p>
+        <p class="modal-eyebrow" id="highlight-modal-source">{{ i18n "highlights_modal_eyebrow" }}</p>
         <h2 id="highlight-modal-title"></h2>
         <div class="highlight-modal__tags" id="highlight-modal-tags"></div>
         <p class="highlight-modal__desc" id="highlight-modal-desc"></p>
-        <a class="highlight-link" id="highlight-modal-original" target="_blank" rel="noopener noreferrer">阅读原文 →</a>
+        <a class="highlight-link" id="highlight-modal-original" target="_blank" rel="noopener noreferrer">{{ i18n "highlights_read_original" }}</a>
       </div>
     </div>
   </div>
@@ -50,6 +50,14 @@
 <script>
 (() => {
   const dataUrl = "{{ "/highlights.json" | relURL }}";
+  const I18N = {
+    allWithCount: "{{ i18n "highlights_all_with_count" }}",
+    untitled: "{{ i18n "highlights_untitled" }}",
+    defaultAlt: "{{ i18n "highlights_default_alt" }}",
+    defaultEyebrow: "{{ i18n "highlights_modal_eyebrow" }}",
+    viewCard: "{{ i18n "highlights_view_card" }}",
+    readOriginal: "{{ i18n "highlights_read_original" }}"
+  };
   const grid = document.getElementById("highlight-grid");
   const empty = document.getElementById("highlight-empty");
   const filtersWrap = document.getElementById("highlight-filters");
@@ -111,7 +119,7 @@
     const frag = document.createDocumentFragment();
     const allBtn = document.createElement("button");
     allBtn.className = "highlight-filter-pill active";
-    allBtn.textContent = `全部 @${allItems.length}`;
+    allBtn.textContent = I18N.allWithCount.replace("{count}", String(allItems.length));
     allBtn.dataset.tag = "all";
     frag.appendChild(allBtn);
 
@@ -146,7 +154,7 @@
     imgWrap.className = "highlight-thumb";
     const img = document.createElement("img");
     img.src = item.thumb || item.full || "";
-    img.alt = item.title || "精选内容";
+    img.alt = item.title || I18N.defaultAlt;
     img.loading = "lazy";
     imgWrap.appendChild(img);
     imgWrap.addEventListener("click", () => openModal(item));
@@ -156,10 +164,10 @@
 
     const eyebrow = document.createElement("p");
     eyebrow.className = "highlight-eyebrow";
-    eyebrow.textContent = item.eyebrow || "内容精选";
+    eyebrow.textContent = item.eyebrow || I18N.defaultEyebrow;
 
     const title = document.createElement("h3");
-    title.textContent = item.title || "未命名精选";
+    title.textContent = item.title || I18N.untitled;
 
     const desc = document.createElement("p");
     desc.className = "highlight-desc";
@@ -179,7 +187,7 @@
     const viewBtn = document.createElement("button");
     viewBtn.type = "button";
     viewBtn.className = "highlight-btn";
-    viewBtn.textContent = "查看卡片";
+    viewBtn.textContent = I18N.viewCard;
     viewBtn.addEventListener("click", () => openModal(item));
     actions.appendChild(viewBtn);
 
@@ -189,7 +197,7 @@
       sourceLink.href = item.originalUrl;
       sourceLink.target = "_blank";
       sourceLink.rel = "noopener noreferrer";
-      sourceLink.textContent = "阅读原文 →";
+      sourceLink.textContent = I18N.readOriginal;
       actions.appendChild(sourceLink);
     }
 
@@ -265,10 +273,10 @@
     if (!modal) return;
     const imgUrl = item.full || item.thumb || "";
     modalImage.src = imgUrl;
-    modalImage.alt = item.title || "精选内容";
-    modalTitle.textContent = item.title || "精选内容";
+    modalImage.alt = item.title || I18N.defaultAlt;
+    modalTitle.textContent = item.title || I18N.untitled;
     if (modalSource) {
-      modalSource.textContent = item.source || "精选内容";
+      modalSource.textContent = item.source || I18N.defaultEyebrow;
     }
     modalTags.innerHTML = "";
     (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {

@@ -11,8 +11,8 @@
 
     <div id="model-grid" class="eval-grid" aria-live="polite"></div>
     <div id="model-empty" class="eval-empty" hidden>
-      <p>暂未收录模型评测。</p>
-      <p>在 static 目录新增 model-evals.json 即可配置。</p>
+      <p>{{ i18n "eval_empty_title" }}</p>
+      <p>{{ i18n "eval_empty_hint" }}</p>
     </div>
   </div>
 </section>
@@ -21,9 +21,9 @@
 <div class="eval-modal" id="questions-modal" aria-hidden="true">
   <div class="eval-modal__backdrop" data-close></div>
   <div class="eval-modal__dialog" role="dialog" aria-modal="true">
-    <button class="eval-modal__close" type="button" data-close aria-label="关闭">&times;</button>
+    <button class="eval-modal__close" type="button" data-close aria-label="{{ i18n "eval_modal_close" }}">&times;</button>
     <div class="eval-modal__header">
-      <h2 id="modal-model-name">模型评测题目</h2>
+      <h2 id="modal-model-name">{{ i18n "eval_modal_questions_title" }}</h2>
       <p id="modal-model-company" class="modal-company"></p>
     </div>
     <div class="eval-modal__body">
@@ -37,14 +37,14 @@
 <div class="eval-modal" id="answer-modal" aria-hidden="true">
   <div class="eval-modal__backdrop" data-close></div>
   <div class="eval-modal__dialog eval-modal__dialog--wide" role="dialog" aria-modal="true">
-    <button class="eval-modal__close" type="button" data-close aria-label="关闭">&times;</button>
+    <button class="eval-modal__close" type="button" data-close aria-label="{{ i18n "eval_modal_close" }}">&times;</button>
     <div class="eval-modal__header">
       <p class="answer-breadcrumb"><span id="answer-model"></span> / <span id="answer-category"></span></p>
-      <h2 id="answer-title">回答详情</h2>
+      <h2 id="answer-title">{{ i18n "eval_modal_answer_title" }}</h2>
     </div>
     <div class="eval-modal__body">
       <div class="answer-question">
-        <h4>题目</h4>
+        <h4>{{ i18n "eval_question_label" }}</h4>
         <p id="answer-question-text"></p>
       </div>
       <div class="answer-content" id="answer-content"></div>
@@ -56,6 +56,15 @@
 (() => {
   const modelsUrl = "{{ "/model-evals.json" | relURL }}";
   const questionsUrl = "{{ "/eval-questions.json" | relURL }}";
+  const I18N = {
+    modalQuestionsTitle: "{{ i18n "eval_modal_questions_title" }}",
+    unknownModel: "{{ i18n "eval_unknown_model" }}",
+    viewQuestions: "{{ i18n "eval_view_questions" }}",
+    allWithCount: "{{ i18n "eval_filter_all_with_count" }}",
+    noQuestions: "{{ i18n "eval_no_questions" }}",
+    viewAnswer: "{{ i18n "eval_view_answer" }}",
+    generatedImageAlt: "{{ i18n "eval_generated_image_alt" }}"
+  };
   const grid = document.getElementById("model-grid");
   const empty = document.getElementById("model-empty");
 
@@ -105,7 +114,7 @@
     company.textContent = model.company || "";
 
     const name = document.createElement("h3");
-    name.textContent = model.name || "未知模型";
+    name.textContent = model.name || I18N.unknownModel;
 
     const desc = document.createElement("p");
     desc.className = "eval-card__desc";
@@ -121,7 +130,7 @@
 
     const btn = document.createElement("button");
     btn.className = "eval-btn";
-    btn.textContent = "查看评测题目";
+    btn.textContent = I18N.viewQuestions;
     btn.addEventListener("click", () => openQuestionsModal(model));
 
     meta.appendChild(company);
@@ -177,7 +186,7 @@
 
     const allBtn = document.createElement("button");
     allBtn.className = "eval-filter-pill active";
-    allBtn.textContent = `全部 (${questions.length})`;
+    allBtn.textContent = I18N.allWithCount.replace("{count}", String(questions.length));
     allBtn.dataset.cat = "all";
     frag.appendChild(allBtn);
 
@@ -211,7 +220,7 @@
 
     questionList.innerHTML = "";
     if (!filtered.length) {
-      questionList.innerHTML = '<p class="no-questions">该分类下暂无评测题目</p>';
+      questionList.innerHTML = `<p class=\"no-questions\">${I18N.noQuestions}</p>`;
       return;
     }
 
@@ -250,7 +259,7 @@
 
       const viewBtn = document.createElement("button");
       viewBtn.className = "eval-btn eval-btn--sm";
-      viewBtn.textContent = "查看回答 \u2192";
+      viewBtn.textContent = I18N.viewAnswer;
       viewBtn.addEventListener("click", () => openAnswerModal(q));
 
       item.appendChild(header);
@@ -267,7 +276,7 @@
     currentModelId = model.id;
     currentCategory = "all";
 
-    modalModelName.textContent = model.name + " 评测题目";
+    modalModelName.textContent = `${model.name || I18N.unknownModel} · ${I18N.modalQuestionsTitle}`;
     modalModelCompany.textContent = model.company;
 
     const questions = getModelQuestions(model.id);
@@ -297,7 +306,7 @@
     } else if (answer.type === "image") {
       const img = document.createElement("img");
       img.src = answer.content;
-      img.alt = answer.alt || "模型生成图片";
+      img.alt = answer.alt || I18N.generatedImageAlt;
       img.className = "answer-image";
       answerContent.appendChild(img);
     } else {

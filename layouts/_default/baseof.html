@@ -28,16 +28,33 @@
     <div class="noise-overlay"></div>
 
     <header class="nav-bar">
-        <a href="{{ .Site.BaseURL }}" class="nav-logo">{{ .Site.Title }}</a>
-        <nav class="nav-links">
-            {{ $currentPage := . }}
-            {{ range .Site.Menus.main }}
-                {{ $isActive := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}
-                <a class="{{ if $isActive }}active{{ end }}" href="{{ .URL | relLangURL }}">
-                    {{ .Name }}
-                </a>
+        <a href="{{ "/" | relLangURL }}" class="nav-logo">{{ .Site.Title }}</a>
+        <div class="nav-right">
+            <nav class="nav-links">
+                {{ $currentPage := . }}
+                {{ range .Site.Menus.main }}
+                    {{ $isActive := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}
+                    {{ if .Page }}
+                        <a class="{{ if $isActive }}active{{ end }}" href="{{ .Page.RelPermalink }}">{{ .Name }}</a>
+                    {{ else }}
+                        <a class="{{ if $isActive }}active{{ end }}" href="{{ .URL | relLangURL }}">{{ .Name }}</a>
+                    {{ end }}
+                {{ end }}
+            </nav>
+
+            {{ $cnSite := index (where site.Sites "Language.Lang" "zh-CN") 0 }}
+            {{ $enSite := index (where site.Sites "Language.Lang" "en") 0 }}
+            {{ $cnURL := $cnSite.Home.RelPermalink }}
+            {{ $enURL := $enSite.Home.RelPermalink }}
+            {{ range .Translations }}
+                {{ if eq .Language.Lang "zh-CN" }}{{ $cnURL = .RelPermalink }}{{ end }}
+                {{ if eq .Language.Lang "en" }}{{ $enURL = .RelPermalink }}{{ end }}
             {{ end }}
-        </nav>
+            <div class="nav-links nav-lang" aria-label="{{ i18n "language_switcher_aria" }}">
+                <a class="{{ if eq .Site.Language.Lang "zh-CN" }}active{{ end }}" href="{{ $cnURL }}">中文</a>
+                <a class="{{ if eq .Site.Language.Lang "en" }}active{{ end }}" href="{{ $enURL }}">EN</a>
+            </div>
+        </div>
     </header>
 
     <main class="page-shell">
@@ -45,7 +62,7 @@
     </main>
 
     <footer>
-        <p>{{ .Site.Params.footer.text | default "© 2024 Bubble's Brain 阅读手册" }}</p>
+        <p>{{ .Site.Params.footer.text | default (i18n "footer_fallback") }}</p>
     </footer>
 
     <script src="{{ "js/noir.js" | relURL }}"></script>

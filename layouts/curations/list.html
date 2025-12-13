@@ -2,7 +2,7 @@
 <section class="section">
   <div class="section-narrow curation-shell">
     <header class="page-header gallery-hero">
-      <p class="page-eyebrow">论文精选</p>
+      <p class="page-eyebrow">{{ i18n "curations_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Params.description }}
         <p class="page-desc">{{ . }}</p>
@@ -14,19 +14,19 @@
 
     <div class="curation-actions">
       <div class="curation-search">
-        <input type="search" id="curation-search" placeholder="搜索标题 / 描述 / 标签" aria-label="搜索论文">
+        <input type="search" id="curation-search" placeholder="{{ i18n "curations_search_placeholder" }}" aria-label="{{ i18n "curations_search_aria" }}">
       </div>
-      <div class="highlight-filter-row" id="curation-filters" aria-label="按标签筛选"></div>
+      <div class="highlight-filter-row" id="curation-filters" aria-label="{{ i18n "curations_filter_aria" }}"></div>
     </div>
 
     <div id="curation-grid" class="highlight-grid" aria-live="polite"></div>
     <div id="curation-empty" class="highlight-empty" hidden>
-      <p>暂未收录精选论文。</p>
-      <p>在根目录新增 curations.json 即可配置。</p>
+      <p>{{ i18n "curations_empty_title" }}</p>
+      <p>{{ i18n "curations_empty_hint" }}</p>
     </div>
     <div id="curation-empty-filter" class="highlight-empty" hidden>
-      <p>当前标签没有匹配的论文。</p>
-      <p>切换其他标签试试。</p>
+      <p>{{ i18n "curations_empty_filter_title" }}</p>
+      <p>{{ i18n "curations_empty_filter_hint" }}</p>
     </div>
   </div>
 </section>
@@ -34,17 +34,17 @@
 <div class="highlight-modal" id="curation-modal" aria-hidden="true">
   <div class="highlight-modal__backdrop" data-close></div>
   <div class="highlight-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="curation-modal-title">
-    <button class="highlight-modal__close" type="button" data-close aria-label="关闭">×</button>
+    <button class="highlight-modal__close" type="button" data-close aria-label="{{ i18n "curations_modal_close" }}">×</button>
     <div class="highlight-modal__body">
       <div class="highlight-modal__image">
         <img id="curation-modal-image" alt="">
       </div>
       <div class="highlight-modal__meta">
-        <p class="modal-eyebrow" id="curation-modal-source">论文精选</p>
+        <p class="modal-eyebrow" id="curation-modal-source">{{ i18n "curations_modal_eyebrow" }}</p>
         <h2 id="curation-modal-title"></h2>
         <div class="highlight-modal__tags" id="curation-modal-tags"></div>
         <p class="highlight-modal__desc" id="curation-modal-desc"></p>
-        <a class="highlight-link" id="curation-modal-original" target="_blank" rel="noopener noreferrer">阅读原文 →</a>
+        <a class="highlight-link" id="curation-modal-original" target="_blank" rel="noopener noreferrer">{{ i18n "curations_read_original" }}</a>
       </div>
     </div>
   </div>
@@ -53,6 +53,14 @@
 <script>
 (() => {
   const dataUrl = "{{ "/curations.json" | relURL }}";
+  const I18N = {
+    allWithCount: "{{ i18n "curations_all_with_count" }}",
+    untitled: "{{ i18n "curations_untitled" }}",
+    defaultAlt: "{{ i18n "curations_default_alt" }}",
+    defaultEyebrow: "{{ i18n "curations_modal_eyebrow" }}",
+    viewCard: "{{ i18n "curations_view_card" }}",
+    readOriginal: "{{ i18n "curations_read_original" }}"
+  };
   const grid = document.getElementById("curation-grid");
   const empty = document.getElementById("curation-empty");
   const filtersWrap = document.getElementById("curation-filters");
@@ -97,7 +105,7 @@
     const frag = document.createDocumentFragment();
     const allBtn = document.createElement("button");
     allBtn.className = "highlight-filter-pill active";
-    allBtn.textContent = `全部 @${allItems.length}`;
+    allBtn.textContent = I18N.allWithCount.replace("{count}", String(allItems.length));
     allBtn.dataset.tag = "all";
     frag.appendChild(allBtn);
 
@@ -131,7 +139,7 @@
     imgWrap.className = "highlight-thumb";
     const img = document.createElement("img");
     img.src = item.thumb || item.full || "";
-    img.alt = item.title || "论文精选";
+    img.alt = item.title || I18N.defaultAlt;
     img.loading = "lazy";
     imgWrap.appendChild(img);
     imgWrap.addEventListener("click", () => openModal(item));
@@ -141,10 +149,10 @@
 
     const eyebrow = document.createElement("p");
     eyebrow.className = "highlight-eyebrow";
-    eyebrow.textContent = item.eyebrow || "论文精选";
+    eyebrow.textContent = item.eyebrow || I18N.defaultEyebrow;
 
     const title = document.createElement("h3");
-    title.textContent = item.title || "未命名论文";
+    title.textContent = item.title || I18N.untitled;
 
     const desc = document.createElement("p");
     desc.className = "highlight-desc";
@@ -164,7 +172,7 @@
     const viewBtn = document.createElement("button");
     viewBtn.type = "button";
     viewBtn.className = "highlight-btn";
-    viewBtn.textContent = "查看卡片";
+    viewBtn.textContent = I18N.viewCard;
     viewBtn.addEventListener("click", () => openModal(item));
     actions.appendChild(viewBtn);
 
@@ -174,7 +182,7 @@
       sourceLink.href = item.originalUrl;
       sourceLink.target = "_blank";
       sourceLink.rel = "noopener noreferrer";
-      sourceLink.textContent = "阅读原文 →";
+      sourceLink.textContent = I18N.readOriginal;
       actions.appendChild(sourceLink);
     }
 
@@ -250,10 +258,10 @@
     if (!modal) return;
     const imgUrl = item.full || item.thumb || "";
     modalImage.src = imgUrl;
-    modalImage.alt = item.title || "论文精选";
-    modalTitle.textContent = item.title || "论文精选";
+    modalImage.alt = item.title || I18N.defaultAlt;
+    modalTitle.textContent = item.title || I18N.untitled;
     if (modalSource) {
-      modalSource.textContent = item.source || "论文精选";
+      modalSource.textContent = item.source || I18N.defaultEyebrow;
     }
     modalTags.innerHTML = "";
     (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {

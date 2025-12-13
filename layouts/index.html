@@ -27,35 +27,35 @@
 
 <section class="section grid-section">
   <div class="section-narrow">
-    <div class="section-title">The Collection</div>
+    <div class="section-title">{{ i18n "home_collection_title" }}</div>
 
     <div class="bento-grid">
       <div class="card card-lg">
         <div>
           <div class="card-number">01</div>
-          <h3>资讯日报</h3>
+          <h3>{{ i18n "home_daily_title" }}</h3>
         </div>
         {{ with index $latestDaily 0 }}
-          <p>{{ .Description | default (.Summary | plainify) | default "每日精选资讯，保持对 AI 世界的敏锐洞察。" | truncate 140 }}</p>
-          <a class="card-link" href="{{ .RelPermalink }}">阅读 {{ .Title }}</a>
+          <p>{{ .Description | default (.Summary | plainify) | default (i18n "home_daily_default_desc") | truncate 140 }}</p>
+          <a class="card-link" href="{{ .RelPermalink }}">{{ i18n "home_read_prefix" }} {{ .Title }}</a>
         {{ else }}
-          <p>每日精选资讯，保持对 AI 世界的敏锐洞察。</p>
-          <span class="card-link">内容准备中</span>
+          <p>{{ i18n "home_daily_default_desc" }}</p>
+          <span class="card-link">{{ i18n "home_pending" }}</span>
         {{ end }}
       </div>
 
       <div class="card card-sm card-tall">
         <div>
           <div class="card-number">02</div>
-          <h3>内容精选</h3>
+          <h3>{{ i18n "home_highlights_title" }}</h3>
         </div>
         <div>
           {{ with index $latestHighlight 0 }}
-            <p>{{ .Description | default (.Summary | plainify) | default "高质量阅读清单，挑选值得深入的文章与项目。" | truncate 120 }}</p>
-            <a class="card-link" href="{{ .RelPermalink }}">查看 {{ .Title }}</a>
+            <p>{{ .Description | default (.Summary | plainify) | default (i18n "home_highlights_default_desc") | truncate 120 }}</p>
+            <a class="card-link" href="{{ .RelPermalink }}">{{ i18n "home_view_prefix" }} {{ .Title }}</a>
           {{ else }}
-            <p>高质量阅读清单，挑选值得深入的文章与项目。</p>
-            <span class="card-link">内容准备中</span>
+            <p>{{ i18n "home_highlights_default_desc" }}</p>
+            <span class="card-link">{{ i18n "home_pending" }}</span>
           {{ end }}
         </div>
       </div>
@@ -63,52 +63,52 @@
       <div class="card card-sm">
         <div>
           <div class="card-number">03</div>
-          <h3>Prompt 收录</h3>
+          <h3>{{ i18n "home_prompts_title" }}</h3>
         </div>
         {{ with index $latestPrompt 0 }}
-          <p>{{ .Description | default (.Summary | plainify) | default "保留可复用的提示词和灵感片段。" | truncate 120 }}</p>
-          <a class="card-link" href="{{ .RelPermalink }}">查看 {{ .Title }}</a>
+          <p>{{ .Description | default (.Summary | plainify) | default (i18n "home_prompts_default_desc") | truncate 120 }}</p>
+          <a class="card-link" href="{{ .RelPermalink }}">{{ i18n "home_view_prefix" }} {{ .Title }}</a>
         {{ else }}
-          <p>保留可复用的提示词和灵感片段。</p>
-          <span class="card-link">内容准备中</span>
+          <p>{{ i18n "home_prompts_default_desc" }}</p>
+          <span class="card-link">{{ i18n "home_pending" }}</span>
         {{ end }}
       </div>
 
       <div class="card card-sm">
         <div>
           <div class="card-number">04</div>
-          <h3>论文精选</h3>
+          <h3>{{ i18n "home_curations_title" }}</h3>
         </div>
         {{ with index $latestCuration 0 }}
-          <p>{{ .Description | default (.Summary | plainify) | default "浓缩值得追踪的论文与思考。" | truncate 120 }}</p>
-          <a class="card-link" href="{{ .RelPermalink }}">查看 {{ .Title }}</a>
+          <p>{{ .Description | default (.Summary | plainify) | default (i18n "home_curations_default_desc") | truncate 120 }}</p>
+          <a class="card-link" href="{{ .RelPermalink }}">{{ i18n "home_view_prefix" }} {{ .Title }}</a>
         {{ else }}
-          <p>浓缩值得追踪的论文与思考。</p>
-          <span class="card-link">内容准备中</span>
+          <p>{{ i18n "home_curations_default_desc" }}</p>
+          <span class="card-link">{{ i18n "home_pending" }}</span>
         {{ end }}
       </div>
 
       <div class="card card-sm">
         <div>
           <div class="card-number">05</div>
-          <h3>模型评测</h3>
+          <h3>{{ i18n "home_model_evals_title" }}</h3>
         </div>
-        <p>主流大模型能力对比，实测推理、代码、创意能力。</p>
-        <a class="card-link" href="/model-evals/">查看评测 →</a>
+        <p>{{ i18n "home_model_evals_desc" }}</p>
+        <a class="card-link" href="{{ "/model-evals/" | relLangURL }}">{{ i18n "home_model_evals_link" }}</a>
       </div>
 
       <div class="card card-lg">
         <div>
           <div class="card-number">06</div>
-          <h3>我的发布内容</h3>
+          <h3>{{ i18n "home_my_posts_title" }}</h3>
         </div>
         <div style="display:flex; align-items:center; justify-content: space-between; gap: 1rem;">
           {{ with index $latestPublish 0 }}
-            <p style="text-align:left;">{{ .Description | default (.Summary | plainify) | default "个人实践与观察，持续更新。" | truncate 160 }}</p>
-            <a class="card-link" href="{{ .RelPermalink }}">前往 {{ .Title }}</a>
+            <p style="text-align:left;">{{ .Description | default (.Summary | plainify) | default (i18n "home_my_posts_default_desc") | truncate 160 }}</p>
+            <a class="card-link" href="{{ .RelPermalink }}">{{ i18n "home_go_prefix" }} {{ .Title }}</a>
           {{ else }}
-            <p style="text-align:left;">个人实践与观察，持续更新。</p>
-            <span class="card-link">内容准备中</span>
+            <p style="text-align:left;">{{ i18n "home_my_posts_default_desc" }}</p>
+            <span class="card-link">{{ i18n "home_pending" }}</span>
           {{ end }}
         </div>
       </div>
@@ -116,10 +116,10 @@
       <div class="card card-sm">
         <div>
           <div class="card-number">07</div>
-          <h3>X 热门AI内容精选</h3>
+          <h3>{{ i18n "home_x_trending_title" }}</h3>
         </div>
-        <p>每日亲选的 X 热门博主 AI 内容。</p>
-        <a class="card-link" href="/x-trending/">查看精选 →</a>
+        <p>{{ i18n "home_x_trending_desc" }}</p>
+        <a class="card-link" href="{{ "/x-trending/" | relLangURL }}">{{ i18n "home_x_trending_link" }}</a>
       </div>
     </div>
   </div>
@@ -129,7 +129,7 @@
   <section class="section">
     <div class="section-narrow page-surface">
       <div class="page-header">
-        <span class="page-eyebrow">{{ or $about.Params.description "关于 Bubble's Brain" }}</span>
+        <span class="page-eyebrow">{{ or $about.Params.description (i18n "about_eyebrow_fallback") }}</span>
         <h1>{{ $about.Title }}</h1>
       </div>
       <div class="page-body">

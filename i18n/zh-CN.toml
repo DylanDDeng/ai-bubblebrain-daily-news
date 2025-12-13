@@ -1,0 +1,509 @@
+[language_switcher_aria]
+other = "语言切换"
+
+[footer_fallback]
+other = "© 2024 Bubble's Brain 阅读手册"
+
+[not_found_title]
+other = "页面未找到"
+
+[not_found_desc]
+other = "抱歉，您访问的页面不存在或已被移动。"
+
+[not_found_back_home]
+other = "返回首页"
+
+[not_found_view_daily]
+other = "查看日报"
+
+[home_collection_title]
+other = "内容索引"
+
+[home_daily_title]
+other = "资讯日报"
+
+[home_daily_default_desc]
+other = "每日精选资讯，保持对 AI 世界的敏锐洞察。"
+
+[home_highlights_title]
+other = "内容精选"
+
+[home_highlights_default_desc]
+other = "高质量阅读清单，挑选值得深入的文章与项目。"
+
+[home_prompts_title]
+other = "Prompt 收录"
+
+[home_prompts_default_desc]
+other = "保留可复用的提示词和灵感片段。"
+
+[home_curations_title]
+other = "论文精选"
+
+[home_curations_default_desc]
+other = "浓缩值得追踪的论文与思考。"
+
+[home_model_evals_title]
+other = "模型评测"
+
+[home_model_evals_desc]
+other = "主流大模型能力对比，实测推理、代码、创意能力。"
+
+[home_model_evals_link]
+other = "查看评测 →"
+
+[home_my_posts_title]
+other = "我的发布内容"
+
+[home_my_posts_default_desc]
+other = "个人实践与观察，持续更新。"
+
+[home_x_trending_title]
+other = "X 热门AI内容精选"
+
+[home_x_trending_desc]
+other = "每日亲选的 X 热门博主 AI 内容。"
+
+[home_x_trending_link]
+other = "查看精选 →"
+
+[home_read_prefix]
+other = "阅读"
+
+[home_view_prefix]
+other = "查看"
+
+[home_go_prefix]
+other = "前往"
+
+[home_pending]
+other = "内容准备中"
+
+[about_eyebrow_fallback]
+other = "关于 Bubble's Brain"
+
+[gallery_eyebrow]
+other = "AI 生图"
+
+[gallery_search_placeholder]
+other = "搜索标题 / Prompt / 作者 / 模型"
+
+[gallery_search_aria]
+other = "搜索作品"
+
+[gallery_filters_aria]
+other = "按标签筛选"
+
+[gallery_pagination_aria]
+other = "AI生图分页导航"
+
+[gallery_empty_title]
+other = "暂时还没有展品。"
+
+[gallery_empty_hint]
+other = "更新根目录的 gallery.json 后刷新页面即可获取最新内容。"
+
+[gallery_empty_filter_title]
+other = "当前标签下没有匹配的展品。"
+
+[gallery_empty_filter_hint]
+other = "切换其他标签试试看。"
+
+[gallery_modal_close]
+other = "关闭"
+
+[gallery_prev]
+other = "上一张"
+
+[gallery_next]
+other = "下一张"
+
+[gallery_prompt_label]
+other = "Prompt"
+
+[gallery_copy_prompt]
+other = "复制提示词"
+
+[gallery_all_with_count]
+other = "全部 @{count}"
+
+[gallery_expand_tags]
+other = "展开全部标签 ({count})"
+
+[gallery_collapse_tags]
+other = "收起标签"
+
+[gallery_prompt_hint]
+other = "查看 prompt →"
+
+[gallery_untitled]
+other = "未命名作品"
+
+[gallery_author_prefix]
+other = "作者："
+
+[gallery_by_prefix]
+other = "作者："
+
+[gallery_unknown_author]
+other = "未知作者"
+
+[gallery_source_prefix]
+other = "来源 / 模型："
+
+[gallery_unknown_source]
+other = "未知"
+
+[gallery_unknown]
+other = "未知"
+
+[gallery_no_prompt]
+other = "暂无 prompt"
+
+[gallery_single_image]
+other = "单张"
+
+[gallery_copied]
+other = "已复制"
+
+[gallery_copy_failed]
+other = "复制失败"
+
+[gallery_network_error]
+other = "网络异常"
+
+[date_format]
+other = "2006年01月02日"
+
+[pagination_prev]
+other = "← 上一页"
+
+[pagination_next]
+other = "下一页 →"
+
+[article_prev_label]
+other = "上一篇"
+
+[article_next_label]
+other = "下一篇"
+
+[daily_eyebrow]
+other = "Bubble's Brain 阅读手册"
+
+[daily_read_more]
+other = "打开卡片 →"
+
+[daily_pagination_aria]
+other = "阅读手册分页导航"
+
+[daily_empty_title]
+other = "暂无阅读内容"
+
+[daily_empty_hint]
+other = "稍后再来探索新的卡片"
+
+[daily_back]
+other = "返回资讯日报"
+
+[prompts_eyebrow]
+other = "Bubble's Brain · Prompt Library"
+
+[prompts_model_fallback]
+other = "任意大模型"
+
+[prompts_recommended_model]
+other = "推荐模型："
+
+[prompts_tone]
+other = "语气："
+
+[prompts_tone_suggestion]
+other = "语气建议："
+
+[prompts_view_prompt]
+other = "查看提示词 →"
+
+[prompts_pagination_aria]
+other = "提示词分页导航"
+
+[prompts_empty_title]
+other = "暂时还没有提示词卡片。"
+
+[prompts_empty_hint]
+other = "稍后回来会有新的灵感。"
+
+[prompts_back]
+other = "返回提示词收录"
+
+[my_publish_eyebrow]
+other = "我的发布"
+
+[my_publish_read_more]
+other = "打开卡片 →"
+
+[my_publish_pagination_aria]
+other = "我的发布内容分页导航"
+
+[my_publish_empty_title]
+other = "暂无内容"
+
+[my_publish_empty_hint]
+other = "稍后再来探索新的卡片"
+
+[highlights_eyebrow]
+other = "精选内容"
+
+[highlights_search_placeholder]
+other = "搜索标题 / 描述 / 标签"
+
+[highlights_search_aria]
+other = "搜索精选"
+
+[highlights_filter_aria]
+other = "按标签筛选"
+
+[highlights_empty_title]
+other = "还没有上架精选内容。"
+
+[highlights_empty_hint]
+other = "在根目录新增 highlights.json 即可配置。"
+
+[highlights_empty_filter_title]
+other = "当前标签没有匹配的精选内容。"
+
+[highlights_empty_filter_hint]
+other = "切换其他标签试试。"
+
+[highlights_modal_close]
+other = "关闭"
+
+[highlights_modal_eyebrow]
+other = "精选内容"
+
+[highlights_all_with_count]
+other = "全部 @{count}"
+
+[highlights_untitled]
+other = "未命名精选"
+
+[highlights_default_alt]
+other = "精选内容"
+
+[highlights_view_card]
+other = "查看卡片"
+
+[highlights_read_original]
+other = "阅读原文 →"
+
+[curations_eyebrow]
+other = "论文精选"
+
+[curations_search_placeholder]
+other = "搜索标题 / 描述 / 标签"
+
+[curations_search_aria]
+other = "搜索论文"
+
+[curations_filter_aria]
+other = "按标签筛选"
+
+[curations_empty_title]
+other = "暂未收录精选论文。"
+
+[curations_empty_hint]
+other = "在根目录新增 curations.json 即可配置。"
+
+[curations_empty_filter_title]
+other = "当前标签没有匹配的论文。"
+
+[curations_empty_filter_hint]
+other = "切换其他标签试试。"
+
+[curations_modal_close]
+other = "关闭"
+
+[curations_modal_eyebrow]
+other = "论文精选"
+
+[curations_all_with_count]
+other = "全部 @{count}"
+
+[curations_untitled]
+other = "未命名论文"
+
+[curations_default_alt]
+other = "论文精选"
+
+[curations_view_card]
+other = "查看卡片"
+
+[curations_read_original]
+other = "阅读原文 →"
+
+[xtrending_eyebrow]
+other = "每日精选"
+
+[xtrending_search_placeholder]
+other = "搜索标题 / 描述 / 作者 / 标签 / 日期"
+
+[xtrending_search_aria]
+other = "搜索X精选"
+
+[xtrending_filter_aria]
+other = "按标签筛选"
+
+[xtrending_empty_title]
+other = "还没有上架 X 精选内容。"
+
+[xtrending_empty_hint]
+other = "在根目录新增 x-trending.json 即可配置。"
+
+[xtrending_empty_filter_title]
+other = "当前筛选条件下没有匹配的内容。"
+
+[xtrending_empty_filter_hint]
+other = "切换其他标签或修改搜索试试。"
+
+[xtrending_modal_close]
+other = "关闭"
+
+[xtrending_modal_eyebrow]
+other = "X 热门AI内容精选"
+
+[xtrending_all]
+other = "全部"
+
+[xtrending_card_eyebrow]
+other = "X 热榜"
+
+[xtrending_untitled]
+other = "未命名内容"
+
+[xtrending_default_alt]
+other = "X内容"
+
+[xtrending_open_original]
+other = "前往 X 原文 →"
+
+[xtrending_pagination_aria]
+other = "X精选分页导航"
+
+[tools_eyebrow]
+other = "AI 工具"
+
+[tools_search_placeholder]
+other = "搜索名称 / 公司 / 领域"
+
+[tools_search_aria]
+other = "搜索AI工具"
+
+[tools_company_filter_aria]
+other = "按公司筛选"
+
+[tools_domain_filter_aria]
+other = "按领域筛选"
+
+[tools_pagination_aria]
+other = "AI工具分页导航"
+
+[tools_empty_title]
+other = "暂时还没有AI工具。"
+
+[tools_empty_hint]
+other = "更新 ai-tools.json 后刷新页面即可获取最新内容。"
+
+[tools_empty_filter_title]
+other = "当前筛选条件下没有匹配的工具。"
+
+[tools_empty_filter_hint]
+other = "切换其他筛选条件试试看。"
+
+[tools_modal_close]
+other = "关闭"
+
+[tools_visit]
+other = "访问工具 →"
+
+[tools_all_companies_with_count]
+other = "全部公司 @{count}"
+
+[tools_all_domains_with_count]
+other = "全部领域 @{count}"
+
+[tools_expand_companies]
+other = "展开全部公司 ({count})"
+
+[tools_collapse_companies]
+other = "收起公司"
+
+[tools_expand_domains]
+other = "展开全部领域 ({count})"
+
+[tools_collapse_domains]
+other = "收起领域"
+
+[tools_default_alt]
+other = "AI工具"
+
+[tools_default_title]
+other = "未命名工具"
+
+[tools_unknown_company]
+other = "未知公司"
+
+[tools_view_detail]
+other = "查看详情 →"
+
+[tools_domain_prefix]
+other = "领域："
+
+[tools_domain_unknown]
+other = "领域：未知"
+
+[tools_company_prefix]
+other = "公司："
+
+[tools_company_unknown]
+other = "公司：未知"
+
+[tools_card_eyebrow_fallback]
+other = "AI工具"
+
+[eval_empty_title]
+other = "暂未收录模型评测。"
+
+[eval_empty_hint]
+other = "在 static 目录新增 model-evals.json 即可配置。"
+
+[eval_modal_close]
+other = "关闭"
+
+[eval_modal_questions_title]
+other = "模型评测题目"
+
+[eval_modal_answer_title]
+other = "回答详情"
+
+[eval_question_label]
+other = "题目"
+
+[eval_unknown_model]
+other = "未知模型"
+
+[eval_view_questions]
+other = "查看评测题目"
+
+[eval_filter_all_with_count]
+other = "全部 ({count})"
+
+[eval_no_questions]
+other = "该分类下暂无评测题目"
+
+[eval_view_answer]
+other = "查看回答 →"
+
+[eval_generated_image_alt]
+other = "模型生成图片"
+
+[comments_title]
+other = "留言讨论"

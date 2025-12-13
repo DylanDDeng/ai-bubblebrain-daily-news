@@ -1,0 +1,509 @@
+[language_switcher_aria]
+other = "Language switcher"
+
+[footer_fallback]
+other = "© 2024 Bubble's Brain"
+
+[not_found_title]
+other = "Page Not Found"
+
+[not_found_desc]
+other = "Sorry, the page you are looking for doesn't exist or has been moved."
+
+[not_found_back_home]
+other = "Back Home"
+
+[not_found_view_daily]
+other = "View Daily Brief"
+
+[home_collection_title]
+other = "The Collection"
+
+[home_daily_title]
+other = "Daily Brief"
+
+[home_daily_default_desc]
+other = "Curated AI news every day to stay sharp."
+
+[home_highlights_title]
+other = "Highlights"
+
+[home_highlights_default_desc]
+other = "A curated reading list of articles and projects worth your time."
+
+[home_prompts_title]
+other = "Prompt Library"
+
+[home_prompts_default_desc]
+other = "Reusable prompts and inspiration snippets."
+
+[home_curations_title]
+other = "Paper Picks"
+
+[home_curations_default_desc]
+other = "A distilled selection of papers and ideas to track."
+
+[home_model_evals_title]
+other = "Model Evals"
+
+[home_model_evals_desc]
+other = "Side-by-side benchmarks across leading models: reasoning, coding, and creativity."
+
+[home_model_evals_link]
+other = "View evals →"
+
+[home_my_posts_title]
+other = "My Posts"
+
+[home_my_posts_default_desc]
+other = "Personal notes and observations, continuously updated."
+
+[home_x_trending_title]
+other = "X Trending AI Picks"
+
+[home_x_trending_desc]
+other = "Handpicked daily AI posts from trending creators on X."
+
+[home_x_trending_link]
+other = "View picks →"
+
+[home_read_prefix]
+other = "Read"
+
+[home_view_prefix]
+other = "View"
+
+[home_go_prefix]
+other = "Go to"
+
+[home_pending]
+other = "Coming soon"
+
+[about_eyebrow_fallback]
+other = "About Bubble's Brain"
+
+[gallery_eyebrow]
+other = "AI Imagery Showcase"
+
+[gallery_search_placeholder]
+other = "Search title / prompt / author / model"
+
+[gallery_search_aria]
+other = "Search gallery"
+
+[gallery_filters_aria]
+other = "Filter by tags"
+
+[gallery_pagination_aria]
+other = "AI gallery pagination"
+
+[gallery_empty_title]
+other = "No works yet."
+
+[gallery_empty_hint]
+other = "Update the root-level gallery.json and refresh to load the latest."
+
+[gallery_empty_filter_title]
+other = "No matches under current filters."
+
+[gallery_empty_filter_hint]
+other = "Try switching tags or adjusting your search."
+
+[gallery_modal_close]
+other = "Close"
+
+[gallery_prev]
+other = "Previous"
+
+[gallery_next]
+other = "Next"
+
+[gallery_prompt_label]
+other = "Prompt"
+
+[gallery_copy_prompt]
+other = "Copy prompt"
+
+[gallery_all_with_count]
+other = "All @{count}"
+
+[gallery_expand_tags]
+other = "Expand all tags ({count})"
+
+[gallery_collapse_tags]
+other = "Collapse tags"
+
+[gallery_prompt_hint]
+other = "View prompt →"
+
+[gallery_untitled]
+other = "Untitled"
+
+[gallery_author_prefix]
+other = "Author: "
+
+[gallery_by_prefix]
+other = "by "
+
+[gallery_unknown_author]
+other = "Unknown author"
+
+[gallery_source_prefix]
+other = "Source / Model: "
+
+[gallery_unknown_source]
+other = "Unknown"
+
+[gallery_unknown]
+other = "Unknown"
+
+[gallery_no_prompt]
+other = "No prompt"
+
+[gallery_single_image]
+other = "Single"
+
+[gallery_copied]
+other = "Copied"
+
+[gallery_copy_failed]
+other = "Copy failed"
+
+[gallery_network_error]
+other = "Network error"
+
+[date_format]
+other = "Jan 2, 2006"
+
+[pagination_prev]
+other = "← Previous"
+
+[pagination_next]
+other = "Next →"
+
+[article_prev_label]
+other = "Previous"
+
+[article_next_label]
+other = "Next"
+
+[daily_eyebrow]
+other = "Bubble's Brain Reading Guide"
+
+[daily_read_more]
+other = "Open card →"
+
+[daily_pagination_aria]
+other = "Daily brief pagination"
+
+[daily_empty_title]
+other = "No reading cards yet."
+
+[daily_empty_hint]
+other = "Come back later to explore new cards."
+
+[daily_back]
+other = "Back to Daily Brief"
+
+[prompts_eyebrow]
+other = "Bubble's Brain · Prompt Library"
+
+[prompts_model_fallback]
+other = "Any model"
+
+[prompts_recommended_model]
+other = "Recommended model:"
+
+[prompts_tone]
+other = "Tone:"
+
+[prompts_tone_suggestion]
+other = "Tone suggestion:"
+
+[prompts_view_prompt]
+other = "View prompt →"
+
+[prompts_pagination_aria]
+other = "Prompt library pagination"
+
+[prompts_empty_title]
+other = "No prompts yet."
+
+[prompts_empty_hint]
+other = "Check back later for new ideas."
+
+[prompts_back]
+other = "Back to Prompt Library"
+
+[my_publish_eyebrow]
+other = "My Posts"
+
+[my_publish_read_more]
+other = "Open card →"
+
+[my_publish_pagination_aria]
+other = "My posts pagination"
+
+[my_publish_empty_title]
+other = "No posts yet."
+
+[my_publish_empty_hint]
+other = "Come back later for new updates."
+
+[highlights_eyebrow]
+other = "Highlights"
+
+[highlights_search_placeholder]
+other = "Search title / description / tags"
+
+[highlights_search_aria]
+other = "Search highlights"
+
+[highlights_filter_aria]
+other = "Filter by tags"
+
+[highlights_empty_title]
+other = "No highlights yet."
+
+[highlights_empty_hint]
+other = "Add highlights.json at the site root to configure."
+
+[highlights_empty_filter_title]
+other = "No highlights match this tag."
+
+[highlights_empty_filter_hint]
+other = "Try switching tags."
+
+[highlights_modal_close]
+other = "Close"
+
+[highlights_modal_eyebrow]
+other = "Highlights"
+
+[highlights_all_with_count]
+other = "All @{count}"
+
+[highlights_untitled]
+other = "Untitled"
+
+[highlights_default_alt]
+other = "Highlight"
+
+[highlights_view_card]
+other = "View card"
+
+[highlights_read_original]
+other = "Read original →"
+
+[curations_eyebrow]
+other = "Paper Picks"
+
+[curations_search_placeholder]
+other = "Search title / description / tags"
+
+[curations_search_aria]
+other = "Search papers"
+
+[curations_filter_aria]
+other = "Filter by tags"
+
+[curations_empty_title]
+other = "No papers yet."
+
+[curations_empty_hint]
+other = "Add curations.json at the site root to configure."
+
+[curations_empty_filter_title]
+other = "No papers match this tag."
+
+[curations_empty_filter_hint]
+other = "Try switching tags."
+
+[curations_modal_close]
+other = "Close"
+
+[curations_modal_eyebrow]
+other = "Paper Picks"
+
+[curations_all_with_count]
+other = "All @{count}"
+
+[curations_untitled]
+other = "Untitled"
+
+[curations_default_alt]
+other = "Paper"
+
+[curations_view_card]
+other = "View card"
+
+[curations_read_original]
+other = "Read original →"
+
+[xtrending_eyebrow]
+other = "Daily Picks"
+
+[xtrending_search_placeholder]
+other = "Search title / description / author / tags / date"
+
+[xtrending_search_aria]
+other = "Search X picks"
+
+[xtrending_filter_aria]
+other = "Filter by tags"
+
+[xtrending_empty_title]
+other = "No X picks yet."
+
+[xtrending_empty_hint]
+other = "Add x-trending.json at the site root to configure."
+
+[xtrending_empty_filter_title]
+other = "No picks match this tag."
+
+[xtrending_empty_filter_hint]
+other = "Try switching tags or adjusting your search."
+
+[xtrending_modal_close]
+other = "Close"
+
+[xtrending_modal_eyebrow]
+other = "X Trending AI Picks"
+
+[xtrending_all]
+other = "All"
+
+[xtrending_card_eyebrow]
+other = "X Trending"
+
+[xtrending_untitled]
+other = "Untitled"
+
+[xtrending_default_alt]
+other = "X content"
+
+[xtrending_open_original]
+other = "Open on X →"
+
+[xtrending_pagination_aria]
+other = "X picks pagination"
+
+[tools_eyebrow]
+other = "AI Tools Collection"
+
+[tools_search_placeholder]
+other = "Search name / company / domain"
+
+[tools_search_aria]
+other = "Search AI tools"
+
+[tools_company_filter_aria]
+other = "Filter by company"
+
+[tools_domain_filter_aria]
+other = "Filter by domain"
+
+[tools_pagination_aria]
+other = "AI tools pagination"
+
+[tools_empty_title]
+other = "No AI tools yet."
+
+[tools_empty_hint]
+other = "Update ai-tools.json and refresh to load the latest."
+
+[tools_empty_filter_title]
+other = "No tools match current filters."
+
+[tools_empty_filter_hint]
+other = "Try switching filters."
+
+[tools_modal_close]
+other = "Close"
+
+[tools_visit]
+other = "Visit tool →"
+
+[tools_all_companies_with_count]
+other = "All companies @{count}"
+
+[tools_all_domains_with_count]
+other = "All domains @{count}"
+
+[tools_expand_companies]
+other = "Expand all companies ({count})"
+
+[tools_collapse_companies]
+other = "Collapse companies"
+
+[tools_expand_domains]
+other = "Expand all domains ({count})"
+
+[tools_collapse_domains]
+other = "Collapse domains"
+
+[tools_default_alt]
+other = "AI tool"
+
+[tools_default_title]
+other = "Untitled tool"
+
+[tools_unknown_company]
+other = "Unknown company"
+
+[tools_view_detail]
+other = "View details →"
+
+[tools_domain_prefix]
+other = "Domain: "
+
+[tools_domain_unknown]
+other = "Domain: Unknown"
+
+[tools_company_prefix]
+other = "Company: "
+
+[tools_company_unknown]
+other = "Company: Unknown"
+
+[tools_card_eyebrow_fallback]
+other = "AI Tool"
+
+[eval_empty_title]
+other = "No model evals yet."
+
+[eval_empty_hint]
+other = "Add model-evals.json under static/ to configure."
+
+[eval_modal_close]
+other = "Close"
+
+[eval_modal_questions_title]
+other = "Evaluation Questions"
+
+[eval_modal_answer_title]
+other = "Answer Details"
+
+[eval_question_label]
+other = "Question"
+
+[eval_unknown_model]
+other = "Unknown model"
+
+[eval_view_questions]
+other = "View questions"
+
+[eval_filter_all_with_count]
+other = "All ({count})"
+
+[eval_no_questions]
+other = "No questions in this category."
+
+[eval_view_answer]
+other = "View answer →"
+
+[eval_generated_image_alt]
+other = "Model-generated image"
+
+[comments_title]
+other = "Comments"

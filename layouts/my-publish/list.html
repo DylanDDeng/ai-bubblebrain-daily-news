@@ -2,7 +2,7 @@
 <section class="section">
   <div class="section-narrow daily-list-container">
     <header class="page-header">
-      <p class="page-eyebrow">我的发布</p>
+      <p class="page-eyebrow">{{ i18n "my_publish_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}
         <p class="page-desc">{{ . }}</p>
@@ -20,7 +20,7 @@
                 <a href="{{ .Permalink }}">{{ .Title }}</a>
               </h2>
               <time datetime="{{ .Date.Format "2006-01-02" }}">
-                {{ .Date.Format "2006年01月02日" }}
+                {{ .Date.Format (i18n "date_format") }}
               </time>
             </div>
             
@@ -34,7 +34,7 @@
             
             <div class="card-footer">
               <a href="{{ .Permalink }}" class="read-more">
-                打开卡片 →
+                {{ i18n "my_publish_read_more" }}
               </a>
             </div>
           </article>
@@ -42,11 +42,11 @@
       </div>
 
       {{ if gt $paginator.TotalPages 1 }}
-        <nav class="pagination" aria-label="我的发布内容分页导航">
+        <nav class="pagination" aria-label="{{ i18n "my_publish_pagination_aria" }}">
           {{ if $paginator.HasPrev }}
-            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
+            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">{{ i18n "pagination_prev" }}</a>
           {{ else }}
-            <span class="pagination-link disabled">← 上一页</span>
+            <span class="pagination-link disabled">{{ i18n "pagination_prev" }}</span>
           {{ end }}
 
           <div class="pagination-pages">
@@ -60,16 +60,16 @@
           </div>
 
           {{ if $paginator.HasNext }}
-            <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
+            <a class="pagination-link" href="{{ $paginator.Next.URL }}">{{ i18n "pagination_next" }}</a>
           {{ else }}
-            <span class="pagination-link disabled">下一页 →</span>
+            <span class="pagination-link disabled">{{ i18n "pagination_next" }}</span>
           {{ end }}
         </nav>
       {{ end }}
     {{ else }}
       <div class="empty-state">
-        <p>暂无内容</p>
-        <p>稍后再来探索新的卡片</p>
+        <p>{{ i18n "my_publish_empty_title" }}</p>
+        <p>{{ i18n "my_publish_empty_hint" }}</p>
       </div>
     {{ end }}
   </div>

@@ -2,7 +2,7 @@
 <section class="section">
   <div class="section-narrow daily-list-container">
     <header class="prompt-hero">
-      <p class="page-eyebrow">Bubble's Brain · Prompt Library</p>
+      <p class="page-eyebrow">{{ i18n "prompts_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}
         <p class="page-desc">{{ . }}</p>
@@ -14,7 +14,7 @@
     {{ if $paginator.Pages }}
       <div class="daily-grid">
         {{ range $paginator.Pages }}
-          {{ $model := .Params.model | default "任意大模型" }}
+          {{ $model := .Params.model | default (i18n "prompts_model_fallback") }}
           {{ $tone := .Params.tone }}
           {{ $tags := .Params.tags }}
           <article class="daily-card prompt-card reveal-text">
@@ -23,7 +23,7 @@
                 <a href="{{ .Permalink }}">{{ .Title }}</a>
               </h2>
               <time datetime="{{ .Date.Format "2006-01-02" }}">
-                {{ .Date.Format "2006年01月02日" }}
+                {{ .Date.Format (i18n "date_format") }}
               </time>
             </div>
 
@@ -43,25 +43,25 @@
             </div>
 
             <div class="prompt-pillset">
-              <span class="prompt-pill">推荐模型：{{ $model }}</span>
+              <span class="prompt-pill">{{ i18n "prompts_recommended_model" }}{{ $model }}</span>
               {{ if $tone }}
-                <span class="prompt-pill">语气：{{ $tone }}</span>
+                <span class="prompt-pill">{{ i18n "prompts_tone" }}{{ $tone }}</span>
               {{ end }}
             </div>
 
             <div class="card-footer">
-              <a class="read-more" href="{{ .Permalink }}">查看提示词 →</a>
+              <a class="read-more" href="{{ .Permalink }}">{{ i18n "prompts_view_prompt" }}</a>
             </div>
           </article>
         {{ end }}
       </div>
 
       {{ if gt $paginator.TotalPages 1 }}
-        <nav class="pagination" aria-label="提示词分页导航">
+        <nav class="pagination" aria-label="{{ i18n "prompts_pagination_aria" }}">
           {{ if $paginator.HasPrev }}
-            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">← 上一页</a>
+            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">{{ i18n "pagination_prev" }}</a>
           {{ else }}
-            <span class="pagination-link disabled">← 上一页</span>
+            <span class="pagination-link disabled">{{ i18n "pagination_prev" }}</span>
           {{ end }}
 
           <div class="pagination-pages">
@@ -75,16 +75,16 @@
           </div>
 
           {{ if $paginator.HasNext }}
-            <a class="pagination-link" href="{{ $paginator.Next.URL }}">下一页 →</a>
+            <a class="pagination-link" href="{{ $paginator.Next.URL }}">{{ i18n "pagination_next" }}</a>
           {{ else }}
-            <span class="pagination-link disabled">下一页 →</span>
+            <span class="pagination-link disabled">{{ i18n "pagination_next" }}</span>
           {{ end }}
         </nav>
       {{ end }}
     {{ else }}
       <div class="empty-state">
-        <p>暂时还没有提示词卡片。</p>
-        <p>稍后回来会有新的灵感。</p>
+        <p>{{ i18n "prompts_empty_title" }}</p>
+        <p>{{ i18n "prompts_empty_hint" }}</p>
       </div>
     {{ end }}
   </div>

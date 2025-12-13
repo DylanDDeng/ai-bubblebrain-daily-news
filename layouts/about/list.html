@@ -2,7 +2,7 @@
 <section class="section">
   <div class="section-narrow page-surface">
     <header class="page-header">
-      <p class="page-eyebrow">{{ .Params.description | default "关于 Bubble's Brain" }}</p>
+      <p class="page-eyebrow">{{ .Params.description | default (i18n "about_eyebrow_fallback") }}</p>
       <h1>{{ .Title }}</h1>
     </header>
     <div class="page-body">

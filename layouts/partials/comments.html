@@ -2,8 +2,9 @@
 {{ $host := $cusdis.host | default "https://cusdis.com" }}
 {{ $appID := $cusdis.app_id | default $cusdis.appId }}
 {{ if and $cusdis $appID }}
+{{ $cusdisLang := cond (eq .Site.Language.Lang "zh-CN") "zh-cn" "en" }}
 <section class="comments-section">
-  <h2 class="comments-title">留言讨论</h2>
+  <h2 class="comments-title">{{ i18n "comments_title" }}</h2>
   <div
     id="cusdis_thread"
     data-host="{{ $host }}"
@@ -12,7 +13,7 @@
     data-page-url="{{ .Permalink }}"
     data-page-title="{{ .Title }}"
     data-theme="dark"
-    data-lang="zh-cn"
+    data-lang="{{ $cusdisLang }}"
   ></div>
   <script async defer src="{{ printf "%s/js/cusdis.es.js" $host }}"></script>
 </section>
