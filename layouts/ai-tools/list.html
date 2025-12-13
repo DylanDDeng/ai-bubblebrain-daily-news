@@ -11,9 +11,9 @@
 
     <div class="tools-actions">
       <div class="tools-search">
-        <input type="search" id="tools-search" placeholder="搜索名称 / 领域 / 公司" aria-label="搜索AI工具">
+        <input type="search" id="tools-search" placeholder="搜索名称 / 公司 / 领域" aria-label="搜索AI工具">
       </div>
-      <div class="tools-filter-row" id="tools-filters" aria-label="按领域筛选"></div>
+      <div class="tools-filter-row" id="tools-filters" aria-label="按公司筛选"></div>
     </div>
 
     <div id="tools-grid" class="tools-grid" aria-live="polite"></div>
@@ -87,35 +87,35 @@
     if (filterEmpty) filterEmpty.hidden = !isEmpty;
   }
 
-  function collectDomains(items) {
-    const domains = new Set();
+  function collectCompanies(items) {
+    const companies = new Set();
     items.forEach((item) => {
-      if (item.domain) {
-        domains.add(item.domain.toString().trim());
+      if (item.company) {
+        companies.add(item.company.toString().trim());
       }
     });
-    return Array.from(domains).filter(Boolean);
+    return Array.from(companies).filter(Boolean);
   }
 
-  function collectDomainCounts(items) {
+  function collectCompanyCounts(items) {
     const counts = Object.create(null);
     items.forEach((item) => {
-      const domain = (item.domain || "").toString().trim();
-      if (domain) {
-        counts[domain] = (counts[domain] || 0) + 1;
+      const company = (item.company || "").toString().trim();
+      if (company) {
+        counts[company] = (counts[company] || 0) + 1;
       }
     });
     return counts;
   }
 
-  function renderFilters(domains) {
+  function renderFilters(companies) {
     if (!filtersWrap) return;
     filtersWrap.innerHTML = "";
 
-    const visibleDomains = (() => {
-      if (!filtersCollapsed) return domains;
-      const base = domains.slice(0, MAX_TAGS_VISIBLE);
-      if (currentFilter !== "all" && domains.includes(currentFilter) && !base.includes(currentFilter)) {
+    const visibleCompanies = (() => {
+      if (!filtersCollapsed) return companies;
+      const base = companies.slice(0, MAX_TAGS_VISIBLE);
+      if (currentFilter !== "all" && companies.includes(currentFilter) && !base.includes(currentFilter)) {
         base.push(currentFilter);
       }
       return base;
@@ -123,40 +123,40 @@
 
     const frag = document.createDocumentFragment();
     const allBtn = document.createElement("button");
-    allBtn.className = "tools-filter-pill active";
-    const counts = collectDomainCounts(allItems);
+    allBtn.className = currentFilter === "all" ? "tools-filter-pill active" : "tools-filter-pill";
+    const counts = collectCompanyCounts(allItems);
     allBtn.textContent = `全部 @${allItems.length}`;
-    allBtn.setAttribute("data-domain", "all");
+    allBtn.setAttribute("data-company", "all");
     frag.appendChild(allBtn);
 
-    visibleDomains.forEach((domain) => {
+    visibleCompanies.forEach((company) => {
       const btn = document.createElement("button");
-      btn.className = "tools-filter-pill";
-      btn.textContent = `${domain} @${counts[domain] || 0}`;
-      btn.setAttribute("data-domain", domain);
+      btn.className = company === currentFilter ? "tools-filter-pill active" : "tools-filter-pill";
+      btn.textContent = `${company} @${counts[company] || 0}`;
+      btn.setAttribute("data-company", company);
       frag.appendChild(btn);
     });
 
-    if (domains.length > MAX_TAGS_VISIBLE) {
+    if (companies.length > MAX_TAGS_VISIBLE) {
       const toggle = document.createElement("button");
       toggle.className = "tools-filter-toggle";
       toggle.type = "button";
       toggle.textContent = filtersCollapsed
-        ? `展开全部领域 (${domains.length - MAX_TAGS_VISIBLE})`
-        : "收起领域";
+        ? `展开全部公司 (${companies.length - MAX_TAGS_VISIBLE})`
+        : "收起公司";
       toggle.addEventListener("click", () => {
         filtersCollapsed = !filtersCollapsed;
-        renderFilters(domains);
+        renderFilters(companies);
       });
       frag.appendChild(toggle);
     }
 
     filtersWrap.appendChild(frag);
 
-    filtersWrap.querySelectorAll("button").forEach((btn) => {
+    filtersWrap.querySelectorAll(".tools-filter-pill").forEach((btn) => {
       btn.addEventListener("click", () => {
-        currentFilter = btn.dataset.domain || "all";
-        filtersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        currentFilter = btn.dataset.company || "all";
+        filtersWrap.querySelectorAll(".tools-filter-pill").forEach((el) => el.classList.remove("active"));
         btn.classList.add("active");
         applyFilter();
       });
@@ -168,8 +168,8 @@
     card.className = "tools-card reveal-text";
     card.setAttribute("tabindex", "0");
     card.dataset.id = item.id || "";
-    if (item.domain) {
-      card.dataset.domain = item.domain.toLowerCase();
+    if (item.company) {
+      card.dataset.company = item.company.toLowerCase();
     }
 
     const logoWrap = document.createElement("div");
@@ -338,14 +338,14 @@
       return haystack.includes(term);
     };
 
-    const byDomain = (item) => {
+    const byCompany = (item) => {
       if (currentFilter === "all") return true;
       const filterLower = currentFilter.toLowerCase();
-      const domain = (item.domain || "").toString().trim().toLowerCase();
-      return domain === filterLower;
+      const company = (item.company || "").toString().trim().toLowerCase();
+      return company === filterLower;
     };
 
-    filteredItems = allItems.filter((item) => byDomain(item) && matchesSearch(item));
+    filteredItems = allItems.filter((item) => byCompany(item) && matchesSearch(item));
 
     const noMatch = filteredItems.length === 0;
     setFilterEmpty(noMatch && (currentFilter !== "all" || term));
@@ -364,7 +364,7 @@
     allItems = items;
     filteredItems = [...allItems];
     currentPage = 1;
-    renderFilters(collectDomains(allItems));
+    renderFilters(collectCompanies(allItems));
     setFilterEmpty(false);
     renderGrid();
     renderPagination();
