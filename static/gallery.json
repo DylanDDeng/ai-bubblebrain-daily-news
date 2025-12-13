@@ -1379,6 +1379,82 @@
     "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251213170330492.png",
     "prompt": "Ultra-photorealistic, cinematic macro photography style, capturing an impossible “world inside a cup.” A white ceramic coffee cup sits on a natural wooden tabletop, filled to the brim with dark coffee. The coffee surface transforms into a turbulent ocean: deep brown waves surge and collide, with realistic coffee crema forming foamy crests, swirling vortices, and complex fluid motion, indistinguishable from a real sea. The rim of the cup is damaged by cannon fire, chipped and broken in several places, implying the intensity of the battle. Two 18th-century classic pirate sailing ships clash violently inside the cup. The ships are miniature in scale yet extremely detailed: visible wooden hull grain, layered decks, rigging, and weathered sails partially torn and billowing in an unseen sea wind. Portions of the ships rise above the cup’s rim, creating a striking sense of scale contrast and surreal tension. The scene is frozen at the most dramatic moment of combat. Cannons fire simultaneously from both ships, erupting with bright orange muzzle flashes and thick white smoke that expands within the confined space. The explosions illuminate the ships, sails, and coffee waves, while splashes of liquid burst into the air like seawater caught mid-motion. Shot from a macro perspective with shallow depth of field, the focus is razor-sharp on the ships and battle action. The background is naturally blurred, revealing only the upper portion of the cup and hints of the surrounding environment. Lighting follows realistic photographic principles, with rich textures and cinematic contrast, creating a highly believable, dramatic, and surreal movie-like moment—tense, epic, and astonishingly lifelike. --ar 1:1",
     "tags": ["3D"]
+     }, 
+
+           {
+    "id": "123",
+    "title": "真实感自拍照",
+    "author": "@IamEmily2050",
+    "source": "Nano Banana Pro",
+    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251213173021334.png",
+    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251213173021334.png",
+    "prompt": {
+  "frame": {
+    "aspect_ratio": "9:16",
+    "shot_size": "Extreme Close-Up (ECU)",
+    "orientation": "Portrait",
+    "composition_guide": "Off-center diagonal; face fills most of frame, pillow dominates camera-right; eyes near upper-middle"
+  },
+  "subject": {
+    "subject_type": "Human",
+    "identity_summary": "Adult East Asian woman, long dark brown/black hair with wispy see-through bangs, natural textured skin with light freckles, glossy pink lips, small beauty mark on the cheek (viewer-left).",
+    "visual_signature": {
+      "facial_signature": {
+        "face_shape": "Soft oval with a tapered chin (slightly compressed by pillow)",
+        "eye_details": "Large brown almond eyes, subtle eyeliner, clear catchlights",
+        "nose_details": "Straight narrow bridge, small soft tip",
+        "lip_details": "Full pouty lips, high-gloss, pink/coral tint",
+        "unique_features": "Small dark beauty mark (mole) on viewer-left cheek"
+      },
+      "body_signature": {
+        "build": "Slender",
+        "skin_tone_and_texture": "Fair-light tone with realistic skin microtexture: visible pores on cheeks and nose, fine peach fuzz, scattered light freckles across nose bridge and upper cheeks, subtle redness/flush and mild natural blotchiness; no heavy smoothing"
+      }
+    },
+    "pose_and_action": {
+      "description": "Side-lying selfie, cheek resting into a cream pillow, head tilted slightly downward toward camera.",
+      "body_position": "Upper torso mostly out of frame; neckline visible",
+      "limb_positions": "Arms out of frame; phone/camera implied",
+      "facial_expression": "Sleepy/soft pout, relaxed mouth, calm intimate mood",
+      "gaze_direction": "Direct eye contact with camera"
+    },
+    "inventory": {
+      "wardrobe": "White crew-neck cotton t-shirt",
+      "accessories": "None",
+      "hair_style": "Long straight dark hair spread over bedding, wispy bangs partially crossing forehead and between eyes"
+    }
+  },
+  "environment": {
+    "setting_type": "Indoor",
+    "location_description": "Bed, close to pillow",
+    "background_elements": "Cream/white pillow with soft texture on camera-right, white bedding, minimal clutter"
+  },
+  "lighting": {
+    "global_illumination": "Soft, diffuse, texture-revealing",
+    "primary_source": "Large soft source from slightly above camera-left (window-like)",
+    "direction": "Mostly frontal with slight side bias to reveal pores and freckles without harsh shadows",
+    "shadow_quality": "Very soft; gentle gradients along nose and under bangs",
+    "color_temperature": "Neutral-warm (approx 4500K–5200K)"
+  },
+  "camera": {
+    "angle": "Phone selfie perspective, slightly above and close",
+    "lens_type": "Phone wide camera equivalent",
+    "focal_length_mm_equiv": 24,
+    "aperture": "f/1.8",
+    "focus": "Sharp on eyes; enough detail to resolve pores/freckles on cheeks and nose; mild falloff toward hair and pillow edges"
+  },
+  "post_processing": {
+    "art_medium": "Photography",
+    "style_modifiers": "natural selfie, minimal retouch, preserve pores and freckles, realistic skin texture, subtle under-eye texture, high detail eyes, no skin blur, no plastic smoothing",
+    "color_grade": "Natural skin tones, gentle contrast, restrained highlights, slightly warm neutrals",
+    "rendering_engine": "Photorealistic"
+  },
+  "negative": {
+    "artifact_suppression": "airbrushed skin, poreless skin, plastic/waxy skin, excessive skin smoothing, beauty filter, over-sharpen halos, uncanny texture tiling, heavy noise, banding, warped facial features, asymmetry, smeared pupils, extra teeth, extra limbs",
+    "subject_excludes": "no mole, wrong mole placement, heavy eyeliner, heavy lipstick, bright red lips, wide smile with teeth, glasses, strong contouring, different hair color, child/teen"
+  }
+},
+    "tags": ["多表情"]
      }
 
 ]

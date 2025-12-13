@@ -62,7 +62,7 @@
               <span class="copy-text">复制提示词</span>
             </button>
           </div>
-          <p id="modal-prompt"></p>
+          <pre id="modal-prompt"></pre>
         </div>
       </div>
     </div>
@@ -132,6 +132,38 @@
 
     return [];
   };
+
+  function formatPrompt(value) {
+    if (value == null) return "";
+
+    if (typeof value === "string") {
+      const text = value;
+      const trimmed = text.trim();
+      if (
+        (trimmed.startsWith("{") && trimmed.endsWith("}")) ||
+        (trimmed.startsWith("[") && trimmed.endsWith("]"))
+      ) {
+        try {
+          return JSON.stringify(JSON.parse(trimmed), null, 2);
+        } catch (err) {
+          return text;
+        }
+      }
+      return text;
+    }
+
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch (err) {
+      return String(value);
+    }
+  }
+
+  function promptForSearch(value) {
+    const text = formatPrompt(value);
+    if (!text) return "";
+    return text.replace(/\s+/g, " ").trim();
+  }
 
   function setEmpty(isEmpty) {
     empty.hidden = !isEmpty;
@@ -407,7 +439,7 @@
       if (!term) return true;
       const haystack = [
         item.title,
-        item.prompt,
+        promptForSearch(item.prompt),
         item.author,
         item.source
       ]
@@ -455,7 +487,7 @@
     currentImages = normalizeImages(item);
     currentIndex = 0;
     currentItemTitle = item.title || "未命名作品";
-    currentPrompt = item.prompt || "暂无 prompt";
+    currentPrompt = formatPrompt(item.prompt) || "暂无 prompt";
 
     modalTitle.textContent = currentItemTitle;
     modalAuthor.textContent = item.author ? `作者：${item.author}` : "作者：未知";
@@ -1025,6 +1057,9 @@
   margin: 0;
   line-height: 1.6;
   padding-right: 0.5rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .gallery-prompt-block #modal-prompt::-webkit-scrollbar {
