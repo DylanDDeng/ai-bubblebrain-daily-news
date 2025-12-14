@@ -24,17 +24,8 @@
     "company": "OpenAI",
     "logo": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251125193407310.png",
     "releaseDate": "2025-11",
-    "description": "OpenAI推出的编码模型，具备长时间独立编写代码的能力",
+    "description": "OpenAI推出的编码模型",
     "tags": ["代码"]
-  },
-  {
-    "id": "gemini-3",
-    "name": "Gemini 3",
-    "company": "Google",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg",
-    "releaseDate": "2025-11",
-    "description": "Google新一代最强大的模型",
-    "tags": ["多模态", "创意写作", "代码"]
   },
   {
     "id": "deepseek-v3.2",
@@ -52,8 +43,18 @@
     "company": "OpenAI",
     "logo": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251125193407310.png",
     "releaseDate": "2025-12",
-    "description": "OpenAI最新推出的旗舰模型",
+    "description": "OpenAI推出的旗舰模型",
     "tags": [ "代码", "推理","数学"]
+  },  
+
+      {
+    "id": "Gemini 3 Pro(high)",
+    "name": "Gemini 3 Pro(high)",
+    "company": "Google",
+    "logo": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251214093019086.png",
+    "releaseDate": "2025-11",
+    "description": "Google推出的新一代旗舰模型",
+    "tags": [ "代码", "推理","写作"]
   }
 
 ]

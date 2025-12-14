@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>体素雪人（微笑）</title>
+    <style>
+      :root {
+        --panel: rgba(8, 12, 20, 0.62);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.86);
+        --muted: rgba(255, 255, 255, 0.66);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #060a14;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif;
+      }
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        user-select: none;
+      }
+      .title {
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        font-size: 13px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.92);
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 90ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.32);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: #64ffda;
+        box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.14);
+      }
+      .dot.off {
+        background: rgba(255, 255, 255, 0.28);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+      }
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        padding: 0 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+      .credit {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(5, 7, 14, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 12px;
+        user-select: none;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <div class="title">体素雪人：堆起来的微笑</div>
+      <div class="hint">
+        拖动：旋转　滚轮：缩放　双击：重置<br />
+        <span class="kbd">Space</span> 切换自动旋转　<span class="kbd">R</span> 重新堆雪
+      </div>
+      <div class="row">
+        <div class="pill" id="spinPill"><span class="dot" id="spinDot"></span><span id="spinText">自动旋转：开</span></div>
+        <button id="resetBtn" type="button">重置视角</button>
+        <button id="rebuildBtn" type="button">重新堆雪</button>
+      </div>
+    </div>
+    <div class="credit">纯 HTML / CSS / JS（无外部依赖）</div>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d", { alpha: false });
+
+        const spinPill = document.getElementById("spinPill");
+        const spinDot = document.getElementById("spinDot");
+        const spinText = document.getElementById("spinText");
+        const resetBtn = document.getElementById("resetBtn");
+        const rebuildBtn = document.getElementById("rebuildBtn");
+
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+        const lerp = (a, b, t) => a + (b - a) * t;
+
+        function mulberry32(seed) {
+          let t = seed >>> 0;
+          return function rand() {
+            t += 0x6d2b79f5;
+            let x = t;
+            x = Math.imul(x ^ (x >>> 15), x | 1);
+            x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        // 3D math (camera space: we drop Z and sort by Z; viewer looks from +Z to -Z)
+        function rotY(p, yaw) {
+          const c = Math.cos(yaw), s = Math.sin(yaw);
+          return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+        }
+        function rotX(p, pitch) {
+          const c = Math.cos(pitch), s = Math.sin(pitch);
+          return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+        }
+        function normalize(v) {
+          const m = Math.hypot(v.x, v.y, v.z) || 1;
+          return { x: v.x / m, y: v.y / m, z: v.z / m };
+        }
+        const LIGHT_DIR = normalize({ x: -0.35, y: 0.78, z: 0.52 });
+        const VIEW_DIR = { x: 0, y: 0, z: 1 };
+
+        function rgbToCss(rgb) {
+          const r = clamp(Math.round(rgb.r), 0, 255);
+          const g = clamp(Math.round(rgb.g), 0, 255);
+          const b = clamp(Math.round(rgb.b), 0, 255);
+          return `rgb(${r} ${g} ${b})`;
+        }
+
+        function shadeRgb(base, brightness, coolShadow = 0.0) {
+          const b = clamp(brightness, 0, 1.6);
+          const r = base.r * b;
+          const g = base.g * b;
+          const bl = base.b * b;
+          // A tiny cool tint in shadow helps snow read as volume.
+          return {
+            r: r * (1 - coolShadow) + 10 * coolShadow,
+            g: g * (1 - coolShadow) + 26 * coolShadow,
+            b: bl * (1 - coolShadow) + 50 * coolShadow
+          };
+        }
+
+        // ===== Voxel model =====
+        const voxels = new Map();
+        let seed = 1337;
+
+        const materials = {
+          snow: { base: { r: 246, g: 252, b: 255 }, coolShadow: 0.08 },
+          snowDeep: { base: { r: 228, g: 244, b: 255 }, coolShadow: 0.12 },
+          coal: { base: { r: 30, g: 32, b: 38 }, coolShadow: 0.0 },
+          carrot: { base: { r: 255, g: 146, b: 56 }, coolShadow: 0.0 },
+          scarfA: { base: { r: 232, g: 65, b: 92 }, coolShadow: 0.0 },
+          scarfB: { base: { r: 246, g: 211, b: 88 }, coolShadow: 0.0 },
+          twig: { base: { r: 146, g: 98, b: 56 }, coolShadow: 0.0 },
+          hat: { base: { r: 18, g: 18, b: 22 }, coolShadow: 0.0 },
+          hatBand: { base: { r: 78, g: 84, b: 92 }, coolShadow: 0.0 },
+          blush: { base: { r: 255, g: 160, b: 178 }, coolShadow: 0.0 }
+        };
+
+        const DIRS = [
+          { name: "+x", dx: 1, dy: 0, dz: 0, n: { x: 1, y: 0, z: 0 } },
+          { name: "-x", dx: -1, dy: 0, dz: 0, n: { x: -1, y: 0, z: 0 } },
+          { name: "+y", dx: 0, dy: 1, dz: 0, n: { x: 0, y: 1, z: 0 } },
+          { name: "-y", dx: 0, dy: -1, dz: 0, n: { x: 0, y: -1, z: 0 } },
+          { name: "+z", dx: 0, dy: 0, dz: 1, n: { x: 0, y: 0, z: 1 } },
+          { name: "-z", dx: 0, dy: 0, dz: -1, n: { x: 0, y: 0, z: -1 } }
+        ];
+
+        const keyOf = (x, y, z) => `${x},${y},${z}`;
+
+        function hash3(x, y, z) {
+          let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(z, 2147483647) ^ Math.imul(seed, 1597334677);
+          n = Math.imul(n ^ (n >>> 13), 1274126177);
+          n = (n ^ (n >>> 16)) >>> 0;
+          return n / 4294967295;
+        }
+
+        function setVoxel(x, y, z, matName, extra = {}) {
+          const mat = materials[matName] || materials.snow;
+          let base = mat.base;
+          if (matName === "snow" || matName === "snowDeep") {
+            const v = hash3(x, y, z);
+            const tint = lerp(0.93, 1.06, v);
+            base = { r: base.r * tint, g: base.g * tint, b: base.b * tint };
+          }
+          const v = {
+            x,
+            y,
+            z,
+            mat: matName,
+            base,
+            coolShadow: mat.coolShadow ?? 0,
+            emissive: extra.emissive ?? 0
+          };
+          voxels.set(keyOf(x, y, z), v);
+        }
+
+        function addSphere(cx, cy, cz, r, matName, opts = {}) {
+          const r2 = r * r;
+          const minX = Math.floor(cx - r - 1), maxX = Math.ceil(cx + r + 1);
+          const minY = Math.floor(cy - r - 1), maxY = Math.ceil(cy + r + 1);
+          const minZ = Math.floor(cz - r - 1), maxZ = Math.ceil(cz + r + 1);
+          const squashY = opts.squashY ?? 1.0;
+
+          for (let x = minX; x <= maxX; x++) {
+            for (let y = minY; y <= maxY; y++) {
+              for (let z = minZ; z <= maxZ; z++) {
+                const px = x + 0.5 - cx;
+                const py = (y + 0.5 - cy) / squashY;
+                const pz = z + 0.5 - cz;
+                if (px * px + py * py + pz * pz <= r2) setVoxel(x, y, z, matName);
+              }
+            }
+          }
+        }
+
+        function addDiskY(y, cx, cz, r, matName, thickness = 1) {
+          const r2 = r * r;
+          const minX = Math.floor(cx - r - 1), maxX = Math.ceil(cx + r + 1);
+          const minZ = Math.floor(cz - r - 1), maxZ = Math.ceil(cz + r + 1);
+          for (let dy = 0; dy < thickness; dy++) {
+            for (let x = minX; x <= maxX; x++) {
+              for (let z = minZ; z <= maxZ; z++) {
+                const px = x + 0.5 - cx;
+                const pz = z + 0.5 - cz;
+                if (px * px + pz * pz <= r2) setVoxel(x, y + dy, z, matName);
+              }
+            }
+          }
+        }
+
+        function addCylinderY(cx, cy, cz, r, h, matName, opts = {}) {
+          const r2 = r * r;
+          const minX = Math.floor(cx - r - 1), maxX = Math.ceil(cx + r + 1);
+          const minZ = Math.floor(cz - r - 1), maxZ = Math.ceil(cz + r + 1);
+          for (let y = cy; y < cy + h; y++) {
+            const shrink = opts.taper ? lerp(1.0, 0.82, (y - cy) / Math.max(1, h - 1)) : 1.0;
+            const rr2 = (r * shrink) * (r * shrink);
+            for (let x = minX; x <= maxX; x++) {
+              for (let z = minZ; z <= maxZ; z++) {
+                const px = x + 0.5 - cx;
+                const pz = z + 0.5 - cz;
+                if (px * px + pz * pz <= rr2) setVoxel(x, y, z, matName);
+              }
+            }
+          }
+        }
+
+        function addLine(points, matName) {
+          for (const p of points) setVoxel(p.x, p.y, p.z, matName);
+        }
+
+        function buildModel() {
+          voxels.clear();
+
+          // Ground: a soft snow pad with tiny bumps.
+          const padR = 22;
+          for (let x = -padR; x <= padR; x++) {
+            for (let z = -padR; z <= padR; z++) {
+              const d = Math.hypot(x + 0.2, z - 0.15);
+              if (d > padR) continue;
+              const bump = Math.floor((hash3(x, 0, z) - 0.45) * 2.6); // -1..+1
+              const h = clamp(1 + bump, 1, 3);
+              for (let y = 0; y < h; y++) setVoxel(x, y, z, y === 0 ? "snowDeep" : "snow");
+            }
+          }
+
+          // Stacked snowballs.
+          const base = { cx: 0, cy: 9, cz: 0, r: 8.2 };
+          const belly = { cx: 0, cy: base.cy + 7.4, cz: 0, r: 6.4 };
+          const head = { cx: 0, cy: belly.cy + 7.0, cz: 0, r: 5.2 };
+
+          addSphere(base.cx, base.cy, base.cz, base.r, "snow", { squashY: 0.96 });
+          addSphere(belly.cx, belly.cy, belly.cz, belly.r, "snow", { squashY: 0.98 });
+          addSphere(head.cx, head.cy, head.cz, head.r, "snow");
+
+          // Face direction: +Z.
+          const faceZ = Math.floor(head.cz + head.r - 1);
+
+          // Coal eyes.
+          setVoxel(-2, Math.floor(head.cy + 1), faceZ, "coal");
+          setVoxel(2, Math.floor(head.cy + 1), faceZ, "coal");
+          setVoxel(-3, Math.floor(head.cy + 1), faceZ - 1, "coal");
+          setVoxel(3, Math.floor(head.cy + 1), faceZ - 1, "coal");
+
+          // Blush cheeks.
+          setVoxel(-3, Math.floor(head.cy - 1), faceZ, "blush");
+          setVoxel(3, Math.floor(head.cy - 1), faceZ, "blush");
+
+          // Smiling mouth (a voxel arc).
+          const mouthY0 = Math.floor(head.cy - 2);
+          const mouth = [
+            { x: -2, y: mouthY0 + 1, z: faceZ },
+            { x: -1, y: mouthY0, z: faceZ },
+            { x: 0, y: mouthY0, z: faceZ },
+            { x: 1, y: mouthY0, z: faceZ },
+            { x: 2, y: mouthY0 + 1, z: faceZ }
+          ];
+          addLine(mouth, "coal");
+          setVoxel(-2, mouthY0 + 1, faceZ - 1, "coal");
+          setVoxel(2, mouthY0 + 1, faceZ - 1, "coal");
+
+          // Carrot nose (tapering wedge).
+          const noseBaseY = Math.floor(head.cy);
+          for (let t = 0; t < 5; t++) {
+            const z = faceZ + 1 + t;
+            const w = Math.max(1, 3 - Math.floor(t / 2));
+            const h = t < 2 ? 2 : 1;
+            for (let dx = -Math.floor(w / 2); dx <= Math.floor(w / 2); dx++) {
+              for (let dy = 0; dy < h; dy++) setVoxel(dx, noseBaseY + dy, z, "carrot");
+            }
+          }
+
+          // Buttons on belly.
+          const bellyZ = Math.floor(belly.cz + belly.r - 1);
+          setVoxel(0, Math.floor(belly.cy + 2), bellyZ, "coal");
+          setVoxel(0, Math.floor(belly.cy), bellyZ, "coal");
+          setVoxel(0, Math.floor(belly.cy - 2), bellyZ, "coal");
+          setVoxel(0, Math.floor(belly.cy - 2), bellyZ - 1, "coal");
+
+          // Twig arms.
+          const armY = Math.floor(belly.cy + 1);
+          addLine(
+            [
+              { x: -6, y: armY, z: 0 },
+              { x: -7, y: armY + 1, z: 0 },
+              { x: -8, y: armY + 2, z: -1 },
+              { x: -9, y: armY + 3, z: -1 },
+              { x: -10, y: armY + 4, z: -2 }
+            ],
+            "twig"
+          );
+          addLine(
+            [
+              { x: -9, y: armY + 3, z: 0 },
+              { x: -10, y: armY + 4, z: 1 }
+            ],
+            "twig"
+          );
+          addLine(
+            [
+              { x: 6, y: armY, z: 0 },
+              { x: 7, y: armY + 1, z: 0 },
+              { x: 8, y: armY + 2, z: -1 },
+              { x: 9, y: armY + 3, z: -1 },
+              { x: 10, y: armY + 4, z: -2 }
+            ],
+            "twig"
+          );
+          addLine(
+            [
+              { x: 9, y: armY + 3, z: 0 },
+              { x: 10, y: armY + 4, z: 1 }
+            ],
+            "twig"
+          );
+
+          // Scarf: wrap a band around the neck + one tail.
+          const scarfY = Math.floor(head.cy - head.r + 2);
+          for (let y = scarfY; y < scarfY + 2; y++) {
+            for (let x = -8; x <= 8; x++) {
+              for (let z = -8; z <= 8; z++) {
+                const d = Math.hypot(x + 0.2, z - 0.2);
+                if (d < 5.2 || d > 7.2) continue;
+                const mat = (x + z + y) % 4 === 0 ? "scarfB" : "scarfA";
+                setVoxel(x, y, z, mat);
+              }
+            }
+          }
+          // Tail (front-right).
+          for (let y = scarfY - 6; y <= scarfY + 1; y++) {
+            for (let x = 6; x <= 8; x++) {
+              for (let z = 3; z <= 4; z++) {
+                const mat = (x + y) % 3 === 0 ? "scarfB" : "scarfA";
+                setVoxel(x, y, z, mat);
+              }
+            }
+          }
+
+          // Top hat.
+          const hatBaseY = Math.floor(head.cy + head.r) + 1;
+          addDiskY(hatBaseY, 0, 0, 6.1, "hat", 1); // brim
+          addCylinderY(0, hatBaseY + 1, 0, 4.2, 6, "hat", { taper: true });
+          // Hat band.
+          addCylinderY(0, hatBaseY + 2, 0, 4.25, 1, "hatBand", { taper: false });
+
+          // A tiny sparkle at the hat tip.
+          setVoxel(0, hatBaseY + 7, 0, "snow", { emissive: 0.25 });
+        }
+
+        // Faces cache
+        let faces = [];
+        let bounds = null;
+        let pivot = { x: 0, y: 0, z: 0 };
+
+        function rebuildFaces() {
+          const vs = Array.from(voxels.values());
+          if (!vs.length) return;
+          let minX = Infinity, minY = Infinity, minZ = Infinity;
+          let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+          for (const v of vs) {
+            minX = Math.min(minX, v.x);
+            minY = Math.min(minY, v.y);
+            minZ = Math.min(minZ, v.z);
+            maxX = Math.max(maxX, v.x);
+            maxY = Math.max(maxY, v.y);
+            maxZ = Math.max(maxZ, v.z);
+          }
+          bounds = { minX, minY, minZ, maxX, maxY, maxZ };
+          pivot = { x: (minX + maxX + 1) / 2, y: minY, z: (minZ + maxZ + 1) / 2 };
+
+          const out = [];
+          for (const v of vs) {
+            const x = v.x, y = v.y, z = v.z;
+            const x0 = x, x1 = x + 1;
+            const y0 = y, y1 = y + 1;
+            const z0 = z, z1 = z + 1;
+
+            for (const d of DIRS) {
+              const nx = x + d.dx;
+              const ny = y + d.dy;
+              const nz = z + d.dz;
+              if (voxels.has(keyOf(nx, ny, nz))) continue;
+
+              let verts;
+              if (d.name === "+y") verts = [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]];
+              else if (d.name === "-y") verts = [[x0, y0, z1], [x1, y0, z1], [x1, y0, z0], [x0, y0, z0]];
+              else if (d.name === "+x") verts = [[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]];
+              else if (d.name === "-x") verts = [[x0, y0, z1], [x0, y0, z0], [x0, y1, z0], [x0, y1, z1]];
+              else if (d.name === "+z") verts = [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]];
+              else verts = [[x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0]];
+
+              out.push({
+                verts,
+                n: d.n,
+                v
+              });
+            }
+          }
+
+          faces = out;
+        }
+
+        // ===== Scene / Interaction =====
+        const state = {
+          dpr: 1,
+          w: 1,
+          h: 1,
+          yaw: 0.55,
+          pitch: 0.62,
+          zoom: 28,
+          originX: 0,
+          originY: 0,
+          panX: 0,
+          panY: 0,
+          autoSpin: true,
+          dragging: false,
+          lastX: 0,
+          lastY: 0,
+          lastTs: 0,
+          t: 0
+        };
+
+        function resize() {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const w = Math.max(1, Math.floor(window.innerWidth));
+          const h = Math.max(1, Math.floor(window.innerHeight));
+          state.dpr = dpr;
+          state.w = w;
+          state.h = h;
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = `${w}px`;
+          canvas.style.height = `${h}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          fitView();
+          initBackdrop();
+        }
+
+        function projectCam(p) {
+          return {
+            x: state.originX + (p.x * state.zoom) + state.panX,
+            y: state.originY + (-p.y * state.zoom) + state.panY
+          };
+        }
+
+        function toCam(p) {
+          const centered = { x: p.x - pivot.x, y: p.y - pivot.y, z: p.z - pivot.z };
+          const a = rotY(centered, state.yaw);
+          return rotX(a, state.pitch);
+        }
+
+        function camNormal(n) {
+          const a = rotY(n, state.yaw);
+          return rotX(a, state.pitch);
+        }
+
+        function fitView() {
+          if (!bounds) return;
+          const corners = [
+            { x: bounds.minX, y: bounds.minY, z: bounds.minZ },
+            { x: bounds.maxX + 1, y: bounds.minY, z: bounds.minZ },
+            { x: bounds.minX, y: bounds.minY, z: bounds.maxZ + 1 },
+            { x: bounds.maxX + 1, y: bounds.minY, z: bounds.maxZ + 1 },
+            { x: bounds.minX, y: bounds.maxY + 1, z: bounds.minZ },
+            { x: bounds.maxX + 1, y: bounds.maxY + 1, z: bounds.minZ },
+            { x: bounds.minX, y: bounds.maxY + 1, z: bounds.maxZ + 1 },
+            { x: bounds.maxX + 1, y: bounds.maxY + 1, z: bounds.maxZ + 1 }
+          ];
+
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          for (const c of corners) {
+            const cam = toCam(c);
+            minX = Math.min(minX, cam.x);
+            maxX = Math.max(maxX, cam.x);
+            minY = Math.min(minY, -cam.y);
+            maxY = Math.max(maxY, -cam.y);
+          }
+
+          const spanX = Math.max(0.001, maxX - minX);
+          const spanY = Math.max(0.001, maxY - minY);
+          const targetW = state.w * 0.92;
+          const targetH = state.h * 0.78;
+          state.zoom = clamp(Math.min(targetW / spanX, targetH / spanY), 10, 62);
+          const cx = (minX + maxX) / 2;
+          state.originX = state.w / 2 - cx * state.zoom;
+          state.originY = state.h * 0.9 - maxY * state.zoom;
+          state.panX = 0;
+          state.panY = 0;
+        }
+
+        function setAutoSpin(v) {
+          state.autoSpin = v;
+          spinDot.classList.toggle("off", !v);
+          spinText.textContent = v ? "自动旋转：开" : "自动旋转：关";
+        }
+
+        canvas.addEventListener("pointerdown", (e) => {
+          state.dragging = true;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointermove", (e) => {
+          if (!state.dragging) return;
+          const dx = e.clientX - state.lastX;
+          const dy = e.clientY - state.lastY;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          state.yaw += dx * 0.006;
+          state.pitch = clamp(state.pitch + dy * 0.004, 0.28, 0.98);
+        });
+        window.addEventListener("pointerup", () => (state.dragging = false));
+        canvas.addEventListener(
+          "wheel",
+          (e) => {
+            const f = Math.exp(-e.deltaY * 0.0012);
+            state.zoom = clamp(state.zoom * f, 10, 90);
+          },
+          { passive: true }
+        );
+        canvas.addEventListener("dblclick", () => {
+          state.yaw = 0.55;
+          state.pitch = 0.62;
+          fitView();
+        });
+
+        spinPill.addEventListener("click", () => setAutoSpin(!state.autoSpin));
+        resetBtn.addEventListener("click", () => {
+          state.yaw = 0.55;
+          state.pitch = 0.62;
+          fitView();
+        });
+        rebuildBtn.addEventListener("click", () => {
+          seed = (Math.random() * 1e9) | 0;
+          buildModel();
+          rebuildFaces();
+          fitView();
+          initBackdrop();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.code === "Space") {
+            e.preventDefault();
+            setAutoSpin(!state.autoSpin);
+          }
+          if (e.key.toLowerCase() === "r") {
+            seed = (Math.random() * 1e9) | 0;
+            buildModel();
+            rebuildFaces();
+            fitView();
+            initBackdrop();
+          }
+        });
+
+        window.addEventListener("resize", resize);
+
+        // Background decoration
+        let stars = [];
+        let flakes = [];
+        let backdropRand = mulberry32((seed ^ 0xa5a5a5a5) >>> 0);
+
+        function initBackdrop() {
+          stars = [];
+          flakes = [];
+          backdropRand = mulberry32((seed ^ 0xa5a5a5a5) >>> 0);
+          const r = backdropRand;
+          const sCount = Math.round(90 + Math.min(state.w, state.h) * 0.06);
+          for (let i = 0; i < sCount; i++) {
+            stars.push({
+              x: r() * state.w,
+              y: r() * state.h * 0.62,
+              r: lerp(0.6, 1.8, Math.pow(r(), 2.4)),
+              a: lerp(0.12, 0.55, r()),
+              tw: lerp(0.6, 1.4, r()),
+              ph: r() * Math.PI * 2
+            });
+          }
+          const fCount = Math.round(160 + Math.min(state.w, state.h) * 0.12);
+          for (let i = 0; i < fCount; i++) {
+            flakes.push({
+              x: r() * state.w,
+              y: r() * state.h,
+              z: r(),
+              vy: lerp(18, 58, r()),
+              vx: lerp(-10, 12, r()),
+              r: lerp(0.7, 2.2, r()),
+              a: lerp(0.10, 0.32, r())
+            });
+          }
+        }
+
+        function drawBackground(dt) {
+          const w = state.w, h = state.h;
+
+          const g = ctx.createLinearGradient(0, 0, 0, h);
+          g.addColorStop(0, "#050812");
+          g.addColorStop(0.55, "#081a30");
+          g.addColorStop(1, "#0b2a40");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+
+          // Moon glow
+          const mx = w * 0.78, my = h * 0.18;
+          ctx.save();
+          ctx.globalAlpha = 0.9;
+          const mg = ctx.createRadialGradient(mx, my, 0, mx, my, Math.min(w, h) * 0.22);
+          mg.addColorStop(0, "rgba(220,240,255,0.32)");
+          mg.addColorStop(0.35, "rgba(200,230,255,0.10)");
+          mg.addColorStop(1, "rgba(200,230,255,0)");
+          ctx.fillStyle = mg;
+          ctx.beginPath();
+          ctx.arc(mx, my, Math.min(w, h) * 0.22, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "rgba(245, 250, 255, 0.86)";
+          ctx.beginPath();
+          ctx.arc(mx, my, Math.min(w, h) * 0.045, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          // Stars
+          ctx.save();
+          for (const s of stars) {
+            const tw = 0.62 + 0.38 * Math.sin(state.t * s.tw + s.ph);
+            ctx.globalAlpha = s.a * tw;
+            ctx.fillStyle = "rgba(240, 248, 255, 1)";
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Ground haze
+          ctx.save();
+          const hg = ctx.createLinearGradient(0, h * 0.62, 0, h);
+          hg.addColorStop(0, "rgba(220,240,255,0)");
+          hg.addColorStop(1, "rgba(210,240,255,0.16)");
+          ctx.fillStyle = hg;
+          ctx.fillRect(0, h * 0.62, w, h * 0.38);
+          ctx.restore();
+
+          // Snowflakes
+          ctx.save();
+          ctx.fillStyle = "rgba(240, 248, 255, 1)";
+          for (const f of flakes) {
+            f.y += f.vy * dt * (0.35 + f.z);
+            f.x += f.vx * dt * (0.25 + f.z);
+            f.x += Math.sin(state.t * 0.8 + f.y * 0.02) * dt * 12 * (0.2 + f.z);
+            if (f.y > h + 10) {
+              f.y = -10;
+              f.x = backdropRand() * w;
+              f.z = backdropRand();
+            }
+            if (f.x < -20) f.x += w + 40;
+            if (f.x > w + 20) f.x -= w + 40;
+
+            ctx.globalAlpha = f.a * (0.35 + f.z);
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r * (0.65 + f.z), 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Vignette
+          ctx.save();
+          const vg = ctx.createRadialGradient(w * 0.5, h * 0.48, Math.min(w, h) * 0.15, w * 0.5, h * 0.55, Math.min(w, h) * 0.72);
+          vg.addColorStop(0, "rgba(0,0,0,0)");
+          vg.addColorStop(1, "rgba(0,0,0,0.38)");
+          ctx.fillStyle = vg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.restore();
+        }
+
+        function drawSoftShadow() {
+          // Shadow on the ground (projected from the model origin).
+          const ground = projectCam(toCam({ x: pivot.x, y: pivot.y, z: pivot.z }));
+          const w = 120 * (state.zoom / 28);
+          const h = 32 * (state.zoom / 28);
+          ctx.save();
+          const sg = ctx.createRadialGradient(ground.x, ground.y, 0, ground.x, ground.y, w);
+          sg.addColorStop(0, "rgba(0,0,0,0.26)");
+          sg.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = sg;
+          ctx.beginPath();
+          ctx.ellipse(ground.x, ground.y + 8, w, h, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        function render(ts) {
+          const dt = clamp((ts - state.lastTs) / 1000, 0, 1 / 20) || 0;
+          state.lastTs = ts;
+          state.t += dt;
+
+          if (state.autoSpin && !state.dragging) state.yaw += dt * 0.22;
+
+          drawBackground(dt);
+          drawSoftShadow();
+
+          const nCam = {
+            "+x": camNormal({ x: 1, y: 0, z: 0 }),
+            "-x": camNormal({ x: -1, y: 0, z: 0 }),
+            "+y": camNormal({ x: 0, y: 1, z: 0 }),
+            "-y": camNormal({ x: 0, y: -1, z: 0 }),
+            "+z": camNormal({ x: 0, y: 0, z: 1 }),
+            "-z": camNormal({ x: 0, y: 0, z: -1 })
+          };
+
+          const drawList = [];
+          const wobble = Math.sin(state.t * 1.4) * 0.12;
+
+          for (const f of faces) {
+            const n = f.n;
+            const nC = n.x === 1 ? nCam["+x"] : n.x === -1 ? nCam["-x"] : n.y === 1 ? nCam["+y"] : n.y === -1 ? nCam["-y"] : n.z === 1 ? nCam["+z"] : nCam["-z"];
+            if (nC.z <= 0.0001) continue;
+
+            const pts = new Array(4);
+            let zSum = 0;
+            for (let i = 0; i < 4; i++) {
+              const v = f.verts[i];
+              const cam = toCam({ x: v[0], y: v[1] + wobble, z: v[2] });
+              zSum += cam.z;
+              pts[i] = projectCam(cam);
+            }
+
+            const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+            const emissive = f.v.emissive || 0;
+            const brightness = 0.58 + Math.max(0, diff) * 0.46 + emissive;
+            const cool = f.v.coolShadow * (1 - Math.max(0, diff));
+            const col = shadeRgb(f.v.base, brightness, cool);
+
+            drawList.push({
+              z: zSum / 4,
+              pts,
+              fill: rgbToCss(col),
+              stroke: "rgba(0,0,0,0.12)"
+            });
+          }
+
+          drawList.sort((a, b) => a.z - b.z);
+
+          ctx.save();
+          ctx.lineJoin = "round";
+          ctx.lineWidth = 1;
+          for (const d of drawList) {
+            ctx.beginPath();
+            ctx.moveTo(d.pts[0].x, d.pts[0].y);
+            ctx.lineTo(d.pts[1].x, d.pts[1].y);
+            ctx.lineTo(d.pts[2].x, d.pts[2].y);
+            ctx.lineTo(d.pts[3].x, d.pts[3].y);
+            ctx.closePath();
+            ctx.fillStyle = d.fill;
+            ctx.fill();
+            ctx.strokeStyle = d.stroke;
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          requestAnimationFrame(render);
+        }
+
+        function boot() {
+          // Initialize
+          setAutoSpin(true);
+          buildModel();
+          rebuildFaces();
+          resize();
+          requestAnimationFrame(render);
+        }
+
+        boot();
+      })();
+    </script>
+  </body>
+</html>

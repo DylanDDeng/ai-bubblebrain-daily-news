@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Snowman</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
+            /* Fallback */
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            /* Premium Dark Winter Night */
+            font-family: 'Inter', sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="info">Voxel Snowman • Drag to Rotate</div>
+    <!-- Import maps polyfill -->
+    <script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        let camera, scene, renderer;
+        let controls;
+        let snowParticles;
+
+        const voxelSize = 5;
+        const gap = 0.5; // Slight gap for "blocky" look, set to 0 for solid
+
+        // Colors
+        const COLORS = {
+            SNOW: 0xffffff,
+            COAL: 0x111111,
+            CARROT: 0xff6b00,
+            SCARF: 0xd32f2f,
+            HAT: 0x222222,
+            WOOD: 0x5d4037,
+            BUTTON: 0x212121
+        };
+
+        init();
+        animate();
+
+        function createVoxel(x, y, z, color) {
+            const geometry = new THREE.BoxGeometry(voxelSize, voxelSize, voxelSize);
+            const material = new THREE.MeshStandardMaterial({
+                color: color,
+                roughness: 0.8,
+                metalness: 0.1
+            });
+            const cube = new THREE.Mesh(geometry, material);
+            // Snap to grid
+            cube.position.set(x * voxelSize, y * voxelSize, z * voxelSize);
+
+            // Add slight bevel effect via edges (optional, but looks nicer for voxel art) or just clean cubes
+            // Let's stick to clean lighting for now, maybe add logic later if needed.
+
+            cube.castShadow = true;
+            cube.receiveShadow = true;
+            return cube;
+        }
+
+        // Helper to create a sphere of voxels
+        function createVoxelSphere(centerX, centerY, centerZ, radius, color, group) {
+            const r2 = radius * radius;
+            for (let x = -radius; x <= radius; x++) {
+                for (let y = -radius; y <= radius; y++) {
+                    for (let z = -radius; z <= radius; z++) {
+                        if (x * x + y * y + z * z <= r2) {
+                            // Simple culling: don't draw if completely surrounded (optimization)
+                            // For this scale, brute force is fine and easier to manage "partial" spheres if needed
+                            const voxel = createVoxel(centerX + x, centerY + y, centerZ + z, color);
+                            group.add(voxel);
+                        }
+                    }
+                }
+            }
+        }
+
+        function buildSnowman() {
+            const snowmanGroup = new THREE.Group();
+
+            // 1. Bottom Section (Body)
+            // Center roughly at 0, 0, 0. Let's say bottom radius is 4 units.
+            createVoxelSphere(0, 0, 0, 4.5, COLORS.SNOW, snowmanGroup);
+
+            // 2. Middle Section (Torso)
+            // Stack on top. Radius ~3.5. Y offset needs to be calculated.
+            // Bottom height ~4.5 * 5 = 22.5. 
+            // Let's shift visually.
+            createVoxelSphere(0, 6, 0, 3.5, COLORS.SNOW, snowmanGroup);
+
+            // 3. Head Section
+            // Radius ~2.5.
+            createVoxelSphere(0, 11, 0, 2.5, COLORS.SNOW, snowmanGroup);
+
+            // 4. Details
+
+            // Eyes (Black Coal)
+            // Head center is (0, 11, 0), radius 2.5. front varies.
+            // Let's place manually relative to head center for precision
+            // Front is +Z. Eye level y=11+1? = 12?
+            snowmanGroup.add(createVoxel(-1, 12, 3, COLORS.COAL));
+            snowmanGroup.add(createVoxel(1, 12, 3, COLORS.COAL));
+
+            // Nose (Carrot)
+            // Center of face, sticking out.
+            snowmanGroup.add(createVoxel(0, 11, 3, COLORS.CARROT)); // Base
+            snowmanGroup.add(createVoxel(0, 11, 4, COLORS.CARROT)); // Tip
+
+            // Smile (Coal)
+            // U shape below nose.
+            snowmanGroup.add(createVoxel(-2, 10, 2, COLORS.COAL));
+            snowmanGroup.add(createVoxel(-1, 9, 3, COLORS.COAL));
+            snowmanGroup.add(createVoxel(0, 9, 3, COLORS.COAL));
+            snowmanGroup.add(createVoxel(1, 9, 3, COLORS.COAL));
+            snowmanGroup.add(createVoxel(2, 10, 2, COLORS.COAL));
+
+            // Buttons (Coal)
+            // On torso (y=6 range) and bottom (?)
+            snowmanGroup.add(createVoxel(0, 7, 4, COLORS.BUTTON));
+            snowmanGroup.add(createVoxel(0, 5, 4, COLORS.BUTTON));
+            snowmanGroup.add(createVoxel(0, 3, 4, COLORS.BUTTON)); // Upper bottom
+
+            // Arms (Wood)
+            // Stick out from torso (y=6). Left and Right.
+            // Left Arm
+            for (let i = 1; i < 5; i++) {
+                snowmanGroup.add(createVoxel(-4 - i, 7 + (i * 0.5), 0, COLORS.WOOD)); // Slight angle up
+            }
+            // Right Arm
+            for (let i = 1; i < 5; i++) {
+                snowmanGroup.add(createVoxel(4 + i, 7 + (i * 0.5), 0, COLORS.WOOD));
+            }
+
+            // Scarf (Red)
+            // Around neck (Between Torso and Head). y~9.
+            // Ring around neck
+            for (let x = -3; x <= 3; x++) {
+                for (let z = -3; z <= 3; z++) {
+                    if (Math.abs(x) > 1 || Math.abs(z) > 1) { // Hollow out middle
+                        if (Math.abs(x) <= 3 && Math.abs(z) <= 3 &&
+                            (Math.abs(x) >= 2 || Math.abs(z) >= 2)) {
+                            snowmanGroup.add(createVoxel(x, 9, z, COLORS.SCARF));
+                        }
+                    }
+                }
+            }
+            // Scarf tail hanging down
+            snowmanGroup.add(createVoxel(2, 8, 3, COLORS.SCARF));
+            snowmanGroup.add(createVoxel(2, 7, 3, COLORS.SCARF));
+            snowmanGroup.add(createVoxel(2, 6, 3, COLORS.SCARF));
+
+            // Hat (Top Hat)
+            // Brim
+            for (let x = -3; x <= 3; x++) {
+                for (let z = -3; z <= 3; z++) {
+                    if (x * x + z * z <= 10) { // Circle-ish brim
+                        snowmanGroup.add(createVoxel(x, 14, z, COLORS.HAT));
+                    }
+                }
+            }
+            // Top part
+            for (let y = 15; y <= 18; y++) {
+                for (let x = -2; x <= 2; x++) {
+                    for (let z = -2; z <= 2; z++) {
+                        if (x * x + z * z <= 5) {
+                            snowmanGroup.add(createVoxel(x, y, z, COLORS.HAT));
+                        }
+                    }
+                }
+            }
+
+            return snowmanGroup;
+        }
+
+        function createSnow() {
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+
+            for (let i = 0; i < 2000; i++) {
+                const x = Math.random() * 400 - 200;
+                const y = Math.random() * 400 - 200;
+                const z = Math.random() * 400 - 200;
+                vertices.push(x, y, z);
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+            const material = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 2,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const particles = new THREE.Points(geometry, material);
+            return particles;
+        }
+
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            // scene.background = new THREE.Color(0xcccccc); // Use CSS background instead for gradient
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(50, 40, 60);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.body.appendChild(renderer.domElement);
+
+            // Controls
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 1.0;
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(50, 100, 50);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.camera.near = 0.5;
+            dirLight.shadow.camera.far = 500;
+            scene.add(dirLight);
+
+            // Snowman
+            const snowman = buildSnowman();
+            // Center the snowman vertically roughly
+            snowman.position.y = -20;
+            scene.add(snowman);
+
+            // Ground/Platform (optional, floating island style)
+            // Let's add a small snowy patch under him?
+            // createVoxelSphere(0, -5, 0, 6, COLORS.SNOW, snowman); // Part of snowman group logic above might be cleaner, but let's add a floor here?
+            // Actually, floating in void with particles is quite nice. Let's just stick to the particles.
+
+            // Snow Particles
+            snowParticles = createSnow();
+            scene.add(snowParticles);
+
+            // Resize handler
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            controls.update();
+
+            // Animate snow
+            if (snowParticles) {
+                const positions = snowParticles.geometry.attributes.position.array;
+                for (let i = 1; i < positions.length; i += 3) {
+                    positions[i] -= 0.5; // Move down
+                    if (positions[i] < -200) {
+                        positions[i] = 200; // Reset to top
+                    }
+                }
+                snowParticles.geometry.attributes.position.needsUpdate = true;
+                snowParticles.rotation.y += 0.001;
+            }
+
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+
+</html>

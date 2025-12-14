@@ -122,5 +122,40 @@
         "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-macbook-360.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
+  },
+    {
+    "id": "q006",
+    "title": "飞龙喷火",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "创建体素艺术中的龙，有翅膀、尾巴、鳞片，添加飞行动画（翅膀扇动）和喷火效果。使用HTML，CSS，JS来展现，最终写进一个HTML文件里",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-dragon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-macbook-360.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  }, 
+
+      {
+    "id": "q007",
+    "title": "雪人",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "使用体素艺术设计创意一个被堆起来的雪人，正在微笑。用HTML，CSS，JS展示，最终写进一个HTML文件里。",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-snowman.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-snowman.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
   }
 ]
