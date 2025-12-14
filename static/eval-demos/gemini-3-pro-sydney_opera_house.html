@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Sydney Opera House</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB;
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: sans-serif;
+            pointer-events: none;
+            text-shadow: 1px 1px 2px black;
+        }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="info">Voxel Sydney Opera House</div>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Configuration ---
+        const VOXEL_SIZE = 0.5;
+        const PALETTE = {
+            CONCRETE: 0xE0D6CC, // Beige/Tan for platform
+            WATER: 0x006994,    // Deep Blue
+            SHELL_WHITE: 0xFDFBF7, // Off-white for shells
+            SHELL_DETAIL: 0xE6E0D5, // Slightly darker for texture
+            GLASS: 0x2C3E50,    // Dark Blue/Grey for windows
+            STEPS: 0xCfb9a5,    // Step color
+        };
+
+        // --- Scene Setup ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB); // Sky blue
+        scene.fog = new THREE.Fog(0x87CEEB, 20, 100);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(40, 30, 40);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, 5, 0);
+
+        // --- Lights ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        dirLight.position.set(20, 50, 20);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 100;
+        dirLight.shadow.camera.left = -50;
+        dirLight.shadow.camera.right = 50;
+        dirLight.shadow.camera.top = 50;
+        dirLight.shadow.camera.bottom = -50;
+        scene.add(dirLight);
+
+        // --- Voxel Engine ---
+        class VoxelBuilder {
+            constructor() {
+                this.voxels = []; // {x, y, z, color}
+            }
+
+            add(x, y, z, color) {
+                // Round to nearest voxel grid position
+                this.voxels.push({ x, y, z, color });
+            }
+
+            build(scene) {
+                const geometry = new THREE.BoxGeometry(VOXEL_SIZE, VOXEL_SIZE, VOXEL_SIZE);
+                const material = new THREE.MeshStandardMaterial({
+                    roughness: 0.8,
+                    metalness: 0.1
+                });
+
+                // Group by color to minimize draw calls, but for simplicity/performance balance
+                // we'll try a single InstancedMesh and color attribute if possible,
+                // or just one mesh per color. One mesh per color is easier for standard material.
+
+                const colorGroups = {};
+                for (let v of this.voxels) {
+                    if (!colorGroups[v.color]) colorGroups[v.color] = [];
+                    colorGroups[v.color].push(v);
+                }
+
+                for (let colorHex in colorGroups) {
+                    const group = colorGroups[colorHex];
+                    const mat = material.clone();
+                    mat.color.setHex(parseInt(colorHex));
+
+                    const mesh = new THREE.InstancedMesh(geometry, mat, group.length);
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+
+                    const dummy = new THREE.Object3D();
+                    for (let i = 0; i < group.length; i++) {
+                        dummy.position.set(
+                            group[i].x * VOXEL_SIZE,
+                            group[i].y * VOXEL_SIZE,
+                            group[i].z * VOXEL_SIZE
+                        );
+                        dummy.updateMatrix();
+                        mesh.setMatrixAt(i, dummy.matrix);
+                    }
+                    scene.add(mesh);
+                }
+            }
+        }
+
+        const builder = new VoxelBuilder();
+
+        // --- Building Logic ---
+
+        // 1. Water
+        function buildWater() {
+            for (let x = -50; x <= 50; x++) {
+                for (let z = -50; z <= 50; z++) {
+                    // Check if it overlaps with the platform, if so skip (simple check)
+                    // Actually just fill everywhere at y=-1, platform will cover
+                    builder.add(x, -1, z, PALETTE.WATER);
+                }
+            }
+        }
+
+        // 2. Base Platform (Bennelong Point)
+        function buildPlatform() {
+            // Main platform shape (approximate rectangular with rounded tip)
+            for (let x = -15; x <= 15; x++) {
+                for (let z = -20; z <= 25; z++) {
+                    // Cut corners for a slightly more organic shape
+                    if (Math.abs(x) > 12 && z > 20) continue;
+
+                    // Height of platform
+                    for (let y = 0; y < 2; y++) {
+                        builder.add(x, y, z, PALETTE.CONCRETE);
+                    }
+                }
+            }
+        }
+
+        // 3. Main Steps
+        function buildSteps() {
+            // Broad stairs leading up
+            // South end (negative Z)
+            const startZ = -20;
+            const width = 24; // -12 to 12
+
+            for (let i = 0; i < 10; i++) {
+                // Steps going down or up? Let's say platform is at y=2.
+                // We want steps leading up to it from the water level if we were doing landscape,
+                // but let's make the "Monumental Steps" leading up to the shells.
+                // The shells sit on a podium.
+
+                // Let's raise the podium for the shells
+                let stepY = 2 + i;
+                let stepZ = -10 + i; // Moving towards center
+
+                for (let x = -15; x <= 15; x++) {
+                    // Main stairway width
+                    if (Math.abs(x) < 14) {
+                        // Fill underneath
+                        for (let y = 2; y <= stepY; y++) {
+                            builder.add(x, y, stepZ, PALETTE.STEPS);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. Shells
+        // Basic function to create a "Shell" wedge
+        function buildShell(centerX, centerZ, radius, sphereStartPhi, sphereEndPhi, sphereStartTheta, sphereEndTheta, rotationY, scaleHeight = 1) {
+
+            // Sphere equation:
+            // x = r * sin(phi) * cos(theta)
+            // y = r * cos(phi)   <-- we usually use y as up in 3js, but let's map standard math to 3js (y is up)
+            // Standard Spherical (Physics): x=r sin t cos p, y=r sin t sin p, z=r cos t. 
+            // Let's just iterate a bounding box and check distance to a virtual center
+
+            // Actually, constructing via iterating angles is easier for "shells"
+
+            const dummy = new THREE.Vector3();
+            const origin = new THREE.Vector3(centerX * VOXEL_SIZE, 0, centerZ * VOXEL_SIZE); // world space origin approx
+
+            // Iterate spherical coordinates
+            // theta (azimuthal): 0 to 2PI
+            // phi (polar): 0 to PI
+
+            const steps = radius * 4; // density
+
+            for (let phi = sphereStartPhi; phi <= sphereEndPhi; phi += 0.05) {
+                for (let theta = sphereStartTheta; theta <= sphereEndTheta; theta += 0.05) {
+
+                    // Basic Sphere
+                    let x = radius * Math.sin(phi) * Math.cos(theta);
+                    let y = radius * Math.cos(phi) * scaleHeight; // Scale Y for pointier look
+                    let z = radius * Math.sin(phi) * Math.sin(theta);
+
+                    // Rotate around Y axis
+                    let rx = x * Math.cos(rotationY) - z * Math.sin(rotationY);
+                    let rz = x * Math.sin(rotationY) + z * Math.cos(rotationY);
+
+                    // Translate
+                    let vx = Math.round(centerX + rx);
+                    let vy = Math.round(1 + y); // 1 is base height offset
+                    let vz = Math.round(centerZ + rz);
+
+                    // Only add if above ground (or platform)
+                    if (vy >= 2) {
+                        // Shell thickness check? Or just surface?
+                        // Let's do surface for now.
+
+                        // To make it look like the ribs, we can texture it based on theta/phi
+                        // Or just random variation
+                        let color = PALETTE.SHELL_WHITE;
+                        if ((Math.round(theta * 10) % 2 === 0)) color = PALETTE.SHELL_DETAIL;
+
+                        builder.add(vx, vy, vz, color);
+
+                        // Glass wall filling?
+                        // If it's the "open" end of the shell.
+                        // This is tricky procedurally. The opera house shells are open 
+                        // towards the "front" (usually North).
+                        // Let's manually fill based on logic: if z is greater than some value relative to center?
+                    }
+                }
+            }
+        }
+
+        // Improved Shell Logic: Rib-based construction
+        // The shells are actually sections of a sphere.
+        // They look like orange wedges standing up.
+        function createRibbedShell(bx, by, bz, size, tilt, direction) {
+            // bx, by, bz: base center position
+            // size: radius of the sphere
+            // tilt: how much it leans
+            // direction: 1 or -1 for Z direction
+
+            // We iterate a "wedge"
+            const thickness = 0.5; // visual thickness check
+
+            // Bounding box for the loop to save perf
+            const range = Math.ceil(size);
+
+            for (let x = -range; x <= range; x++) {
+                for (let y = 0; y <= range * 2; y++) {
+                    for (let z = -range; z <= range; z++) {
+
+                        // 1. Distance check for spherical curve
+                        // Center of the sphere is actually below the platform for these arches usually?
+                        // Or we can model them as parabolas/ellipsoids.
+
+                        // Let's try a simple mathematical model of a pointed arch extruded/rotated.
+                        // Or sphere intersection. Everything in Utzon's design is from a single sphere.
+
+                        // Center of the sphere (virtual)
+                        // If we place the center far below, the top surface is flatter.
+                        // If we place it at y=0, it's a hemisphere.
+
+                        // Let's simplify: A shell is defined by two curved planes meeting at a ridge.
+                        // Ridge is along the Z axis (rotated).
+
+                        // Parabolic ridge: y = H - a*z^2
+                        // Cross section x: y = H_at_z - b*x^2
+
+                        // Let's map 'u' along the length (z) and 'v' along the width (x)
+
+                        // Local coords
+                        let lx = x;
+                        let lz = z;
+                        let ly = y;
+
+                        // Rotate logic would go here, but let's just place them aligned first
+
+                        // Shape:
+                        // The ridge is curved.
+                        // z goes from 0 to Length.
+                        // at z=0, height is 0 (back). at z=Length, height is Max? No.
+                        // The opera house shells are open. 
+
+                        // Let's try standard sphere equation approach again but cleaner.
+                        // Sphere Center (0, -R + H, 0).
+                        // We take a slice of the sphere defined by two planes meeting at (0,0,0).
+
+                    }
+                }
+            }
+        }
+
+        // Procedural "Wedge" Builder
+        // Best approach for pixel/voxel art: Parametric equations for surface
+        function buildParametricShell(offsetX, offsetZ, radius, heightScale, angleWidth, rotation, tilt) {
+            // We build a section of a sphere.
+            // Sphere center relative to the shell base
+            // The shells are "triangular" segments of a sphere.
+
+            // Let's render points on a sphere surface and transform them.
+            // We want a "triangle" on the sphere surface.
+            // Defined by 3 points? 
+
+            // Simpler approach for Voxel Art:
+            // Iterate height (y)
+            // For each y, we have a parabola or arc in X/Z plane?
+
+            // Let's stick to the "All from one sphere" concept.
+            // A shell is the intersection of a Sphere and a Wedge (two planes).
+
+            const sphereRadius = 40; // The virtual sphere is huge
+            // Position of the virtual sphere center relative to the shell placement
+            // For a vertical shell, the sphere center is largely "behind" and "down".
+
+            // Manual voxel placing for "Pointed Arch" look
+            // y = h * (1 - (z/d)^2) * (1 - (x/w)^2) roughly?
+
+            const H = 15 * heightScale; // Peak height
+            const D = 15 * heightScale; // Depth (length)
+            const W = 8 * heightScale;  // Half-Width at base
+
+            // Scan voxels in bounding box
+            const rangeX = Math.ceil(W + 2);
+            const rangeY = Math.ceil(H + 2);
+            const rangeZ = Math.ceil(D + 2);
+
+            for (let y = 0; y <= rangeY; y++) {
+                for (let z = -rangeZ; z <= rangeZ; z++) {
+                    for (let x = -rangeX; x <= rangeX; x++) {
+
+                        // Logic:
+                        // We are looking for the surface of the shell.
+                        // Profile along Z (side view):
+                        // A curve starting at z=0, y=0. Peaks at z=D, y=H?
+                        // No, the shells lean forward.
+                        // Let's model the "Ridge" (spine) first.
+                        // Spine equation in Y-Z plane:
+                        // y_spine = H * (1 - (z/D)^2 )? No, circle segment.
+                        // Let's use an ellipse quarter: (z/D)^2 + (y/H)^2 = 1
+
+                        // Rotate (x,z) by `rotation` first
+                        let rx = x * Math.cos(rotation) - z * Math.sin(rotation);
+                        let rz = x * Math.sin(rotation) + z * Math.cos(rotation);
+
+                        // Shift to local coordinates where shell starts at z=0
+                        let lz = rz + offsetX; // This is messy.
+                        // Let's just create points and rotate them.
+                    }
+                }
+            }
+        }
+
+        // Let's Try "Point Cloud" Generation then Voxelize
+        // This is robust.
+        // 1. Generate points for the surface of the shell.
+        // 2. Round points to voxels.
+        // 3. Add to builder.
+
+        function drawShell(bx, by, bz, scale, rotationY) {
+            // Main Ridge Curve (Parabola-ish)
+            // y = H - c * z^2.
+
+            const numPoints = 8000 * scale;
+            const H = 20 * scale;
+            const W = 10 * scale;
+            const D = 20 * scale; // Length
+
+            for (let i = 0; i < numPoints; i++) {
+                // u, v parameters 0..1
+                let u = Math.random(); // along height/length
+                let v = Math.random(); // along width
+
+                // Let's define the shape.
+                // It's like a cone bent?
+                // Equation for a pointed Gothic arch:
+                // z traverses length.
+
+                // Let's use the spherical section logic again but purely with points
+                // Section of sphere radius R.
+                // Defined by angles.
+
+                // Simplified "Chevron" shape logic:
+                // height at z: h(z) = H * sin(acos(z/D)) -> Circular profile?
+                // OR h(z) = H * (1 - z/D) -> Linear (Cone)
+                // OR h(z) = H * sqrt(1 - (z/D)^2) -> Elliptical
+
+                // Let's use h(z) = H * (1 - (z/D)^2) (Parabola) for the ridge
+                // And for the cross section at z: width w(z) = W * (1 - (z/D)^?)
+
+                // Let's generate the spine first:
+                // We want the shell to stand up.
+                // z goes from 0 (back) to D (front tip? No, typically back is low, front is high opening)
+                // The large shell:
+                // Back point: low. Top point: high. Front: open.
+
+                // Let's map 't' from 0 (back) to 1 (front opening)
+                let t = Math.pow(Math.random(), 0.7); // Bias towards 0 for more density?
+
+                // Spine Profile (Y vs Z)
+                // Let's make it a quarter circle segment
+                // Z = R * cos(angle)
+                // Y = R * sin(angle)
+                const angleStart = 0.1;
+                const angleEnd = 1.4; // not quite PI/2
+                const currentAngle = angleStart + t * (angleEnd - angleStart);
+
+                const R_spine = 20 * scale;
+
+                let localZ = R_spine * Math.cos(currentAngle) - (R_spine * Math.cos(angleStart)); // Start at z=0
+                let localY = R_spine * Math.sin(currentAngle) - (R_spine * Math.sin(angleStart));
+
+                // Now width at this point.
+                // The cross section is an inverted 'V' or Arch.
+                // A sphere section basically means the cross section is also circular arc.
+
+                // Width angle w_angle goes from -max to +max
+                // Max width determines the "opening"
+                const openingAngle = 0.6 * t; // Wider at the top/front
+
+                // Sample across the width
+                let sideT = (Math.random() - 0.5) * 2; // -1 to 1
+                let w_angle = sideT * openingAngle;
+
+                // Sphere 3D coord from spherical angles
+                // Theta = currentAngle (elevation)
+                // Phi = w_angle (azimuth)? No, this is orthogonal.
+
+                // Let's just Rotate the spine point around the "Sphere Center"
+                // The sphere center is somewhere below.
+
+                // Alternative: Just model a Parabolic Arch
+                // y_arch = localY - curvature * x^2
+
+                let archWidth = 12 * scale * t; // gets wider as we go up/forward
+                let currentW = archWidth * sideT;
+                let x = currentW;
+
+                // Arch drop off
+                // y = localY - (x/something)^2
+                let drop = 0.5 * Math.abs(x) * (1 + t); // Simple linear/curve mix
+                // Spherical arch: y = sqrt(R^2 - x^2) offset
+
+                // Let's try: The shell is a set of ribs radiating from the base?
+                // No, they are parallel ribs.
+
+                // THE SIMPLEST SHAPE that looks like it:
+                // Y = H * t * t  (Parabolic rise)
+                // Z = D * t
+                // X = W * t * s  (s is -1..1) 
+                // This makes a flat triangle.
+
+                // We need curve.
+                // Y = H * sin(t * PI/2)
+                // Z = D * cos(t * PI/2) 
+                // X = W * sin(t) * s
+
+                // Let's stick to the "Sphere Slice"
+                // x^2 + y^2 + z^2 = R^2
+                // We want a slice defined by planes passing through (0,0,0) ? No.
+
+                // Let's try the Constructive Solid Geometry approach on the voxel grid.
+                // It's robust.
+                // Shell = (SphereShell) INTERSECT (Wedge)
+
+            }
+        }
+
+        // CSG-like Voxel Builder
+        function buildShellCSG(cx, cy, cz, R, wedgeAngle, tilt, rotationY) {
+            // cx,cy,cz: Sphere Center
+            // R: Radius
+            // wedgeAngle: Opening angle of the "orange slice" (0.5 = narrow, 1.5 = wide)
+            // tilt: Rotate the wedge definition?
+
+            // Iterate bounds
+            const bounds = Math.ceil(R);
+            for (let x = -bounds; x <= bounds; x++) {
+                for (let y = -bounds; y <= bounds; y++) {
+                    for (let z = -bounds; z <= bounds; z++) {
+
+                        // 1. On Sphere Surface?
+                        const dist = Math.sqrt(x * x + y * y + z * z);
+                        if (Math.abs(dist - R) > 0.8) continue; // Not on shell surface
+
+                        // 2. Inside Wedge?
+                        // Wedge is defined by two planes meeting at Y-axis?
+                        // "Standard" wedge is defined by atan2(x, z).
+
+                        // We want angle to be within [-wedgeAngle, wedgeAngle]?
+                        // But we also cut it off at the bottom.
+
+                        // Rotated Wedge.
+                        // Instead of complex math, let's just define normal vectors for the cut planes.
+                        // Plane 1 Normal (-1, 0, 1) usually.
+
+                        // SIMPLER: Use local coordinates relative to the "Apex" of the shell?
+
+                        // Let's go with the Sphere + Clipping Planes approach.
+                        // Sphere Center is (SCx, SCy, SCz).
+                        // Plane 1 Normal (nx1, ny1, nz1), dist d1.
+                        // Plane 2 Normal (nx2, ny2, nz2), dist d2.
+                        // Plane 3 (Base cut), y > 0.
+
+                    }
+                }
+            }
+        }
+
+        // Improved Shell Builder using Circular Arcs
+        function buildManualShell(bx, by, bz, hScale, wScale, rotY) {
+            // The spine is a segment of a detailed circle.
+            // A shell spine can be modeled as a circular arc.
+            // Let's assume the spine has a radius R_spine.
+
+            const R_spine = 60 * hScale;
+            // We want a segment that rises from y=0 to y_peak
+            // Angle theta such that R(1-cos(theta)) = Height?
+            // Let's just parameterize by length along the arc.
+
+            const ribs = 40;
+            const length = 25 * hScale; // Approximate length of shell base
+
+            for (let i = 0; i < ribs; i++) {
+                let t = i / ribs;
+
+                // Spine position (in local Shell coords)
+                // Linear z approximation for the spine base, but the spine curves up.
+                // Let's use the circular equation:
+                // (z - centerZ)^2 + (y - centerY)^2 = R^2
+                // We want the peak at z = ?
+
+                // Simpler: Just generic pointed arch profile for the spine
+                // Y = H * (1 - (z/L)^n) ? 
+                // Let's stick to the previous visual approx but sharper.
+
+                // Spine Position:
+                let z_spine = t * length;
+                // Curve: Sharp rise at start (back), smooth peak, then drop? 
+                // No, the Opera House shells rise from the back and open up at the front.
+                // The "Back" is low. The "Front" is high.
+
+                // Let's model it as a quarter-circle rotating up?
+                // y = R * sin(angle)
+                // z = R * cos(angle)
+
+                // We map t (0..1) to angle (low..high)
+                const angleStart = 0.1; // Low angle
+                const angleEnd = 1.0;   // High angle (not quite vertical)
+                const angle = angleStart + t * (angleEnd - angleStart);
+
+                // Spine coordinates
+                // We need to shift so that the start is at (0,0)
+                let y_spine = R_spine * Math.sin(angle) - (R_spine * Math.sin(angleStart));
+                let z_local = R_spine * Math.cos(angleStart) - R_spine * Math.cos(angle);
+                // z_local should increase as variable t increases.
+                // cos is decreasing in 0..PI/2. So R*cos(start) - R*cos(angle) is positive increasing.
+
+                // Cross Section Width
+                // The shell is a spherical triangle.
+                // Width roughly proportional to height?
+                // Or width is a function of angle on the sphere surface.
+                // Let's use a simple widening function
+                let width = Math.sin(t * Math.PI * 0.5) * 16 * wScale; // Width grows as it goes up
+
+                // Draw Arch at this spine point
+                const archRes = Math.ceil(width * 2) + 4;
+                for (let j = -archRes; j <= archRes; j++) {
+                    let u = j / archRes; // -1 to 1
+
+                    // Cross-section shape: Pointed Arch
+                    // two circular arcs meeting at the spine.
+                    // Y_arch = Y_spine - drop
+                    // drop depends on 'u'.
+                    // Circular drop: sqrt(r^2 - x^2)
+
+                    let x_off = u * width;
+
+                    // Simple Gothic arch drop
+                    // Steepness factor
+                    let steepness = 1.5;
+                    let drop = Math.abs(x_off) * steepness * (1 + t); // Steeper at top
+
+                    // Refined Spherical Drop:
+                    // The cross-section of a sphere is a circle.
+                    // So y = sqrt(R_cross^2 - x^2) roughly.
+                    // But we want the "Orange Wedge" look which creates a ridge.
+                    // So we use two circles? No, the Opera House tiles are from one sphere.
+                    // The ridge is formed because it's a section defined by two planes.
+
+                    // Visual fix: Just standard Gothic arch (pointed).
+                    // y = y_spine - |x| * slope
+                    // With slight curve?
+                    let y_local = y_spine - (Math.pow(Math.abs(u), 1.5) * width * 1.2);
+
+                    // Transforms
+                    let rX = x_off * Math.cos(rotY) - z_local * Math.sin(rotY);
+                    let rZ = x_off * Math.sin(rotY) + z_local * Math.cos(rotY);
+
+                    let vx = Math.round(bx + rX);
+                    let vy = Math.round(by + y_local);
+                    let vz = Math.round(bz + rZ); // Flip Z if needed?
+
+                    if (vy >= by) {
+                        // Texture
+                        let col = PALETTE.SHELL_WHITE;
+                        if ((Math.round(vx + vy + vz) % 3 === 0)) col = PALETTE.SHELL_DETAIL;
+
+                        builder.add(vx, vy, vz, col);
+
+                        // Glass Wall at Front (t near 1)
+                        if (i > ribs - 3 && Math.abs(u) < 0.8) {
+                            for (let gy = by; gy < vy; gy += 1) {
+                                // Add glass "mullions"
+                                let glassCol = (gy % 3 === 0 || Math.round(x_off) % 3 === 0) ? 0x1A2530 : PALETTE.GLASS;
+                                builder.add(vx, gy, vz + 1, glassCol); // Slightly recessed or protruded
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function buildBoat(x, z, rotation) {
+            // Simple Yacht
+            // Hull
+            for (let i = -3; i <= 3; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    let rx = i * Math.cos(rotation) - j * Math.sin(rotation);
+                    let rz = i * Math.sin(rotation) + j * Math.cos(rotation);
+
+                    builder.add(Math.round(x + rx), 0, Math.round(z + rz), 0xFFFFFF); // White hull
+                }
+            }
+            // Mast
+            builder.add(Math.round(x), 1, Math.round(z), 0x8B4513);
+            builder.add(Math.round(x), 2, Math.round(z), 0x8B4513);
+            builder.add(Math.round(x), 3, Math.round(z), 0x8B4513);
+            builder.add(Math.round(x), 4, Math.round(z), 0x8B4513);
+
+            // Sail (Triangle)
+            builder.add(Math.round(x), 2, Math.round(z + 1), 0xFFDDDD);
+            builder.add(Math.round(x), 3, Math.round(z + 1), 0xFFDDDD);
+            builder.add(Math.round(x), 2, Math.round(z + 2), 0xFFDDDD);
+        }
+
+        // Let's refine the specific shell placement for Sydney Opera House
+        // 3 Groups of shells on the main podium (A0, A1, A2...)
+        // Two main halls side by side.
+
+        // Hall 1 (Concert Hall): 3 main shells
+        // Hall 2 (Opera Theatre): 3 main shells (slightly smaller)
+        // Restaurant: 2 small shells
+
+        function buildOperaHouse() {
+            buildWater();
+            buildPlatform();
+            buildSteps();
+
+            // Hall 1 (West) - Concert Hall (Larger)
+            const h1x = -8;
+            const h1z = -5;
+            // Back shell
+            buildManualShell(h1x, 2, h1z - 8, 0.8, 0.9, 0);
+            // Middle shell - Largest
+            buildManualShell(h1x, 2, h1z, 1.2, 1.1, 0);
+            // Front shell
+            buildManualShell(h1x, 2, h1z + 12, 1.0, 1.0, 0);
+
+            // Hall 2 (East) - Opera Theatre (Smaller)
+            const h2x = 8;
+            const h2z = -5;
+            // Back shell
+            buildManualShell(h2x, 2, h2z - 6, 0.7, 0.8, 0);
+            // Middle shell
+            buildManualShell(h2x, 2, h2z + 1, 1.0, 0.9, 0);
+            // Front shell
+            buildManualShell(h2x, 2, h2z + 10, 0.9, 0.8, 0);
+
+            // Small shell group (Restaurant) - separate location usually? 
+            // The restaurant is the third group.
+            buildManualShell(-20, 2, 5, 0.6, 0.6, 0.4);
+
+            // Add some lights/lanterns on the path
+            for (let z = -15; z < 20; z += 5) {
+                builder.add(0, 2, z, 0xFFFFAA); // Path lights
+                builder.add(0, 3, z, 0x000000); // Post
+            }
+
+            // Boats
+            buildBoat(30, 10, 0.5);
+            buildBoat(-35, -10, -0.5);
+            buildBoat(20, -30, 2.0);
+        }
+
+        buildOperaHouse();
+        // ------------------
+
+        builder.build(scene);
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+
+</html>

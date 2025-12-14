@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Eiffel Tower</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB;
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: sans-serif;
+            text-shadow: 1px 1px 2px black;
+            pointer-events: none;
+        }
+    </style>
+    <!-- Import Three.js as ES module -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="info">Voxel Eiffel Tower</div>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Voxel Engine ---
+        class VoxelBuilder {
+            constructor(scene) {
+                this.scene = scene;
+                this.geometry = new THREE.BoxGeometry(0.9, 0.9, 0.9); // Slightly smaller for grid effect
+
+                // Material for the iron structure (Dark Bronze/Grey)
+                this.ironMaterial = new THREE.MeshLambertMaterial({ color: 0x4a4a4a });
+                // Material for the lights/gold details
+                this.goldMaterial = new THREE.MeshLambertMaterial({ color: 0xFFD700, emissive: 0xAA5500, emissiveIntensity: 0.4 });
+
+                this.maxCount = 50000;
+
+                // Mesh for Iron
+                this.ironMesh = new THREE.InstancedMesh(this.geometry, this.ironMaterial, this.maxCount);
+                this.ironMesh.castShadow = true;
+                this.ironMesh.receiveShadow = true;
+                this.scene.add(this.ironMesh);
+
+                // Mesh for Gold/Lights
+                this.goldMesh = new THREE.InstancedMesh(this.geometry, this.goldMaterial, this.maxCount);
+                this.goldMesh.castShadow = true;
+                this.goldMesh.receiveShadow = true;
+                this.scene.add(this.goldMesh);
+
+                this.ironCount = 0;
+                this.goldCount = 0;
+                this.dummy = new THREE.Object3D();
+            }
+
+            addBlock(x, y, z, materialType = 'iron') {
+                this.dummy.position.set(x, y, z);
+                this.dummy.updateMatrix();
+
+                if (materialType === 'iron') {
+                    if (this.ironCount < this.maxCount) {
+                        this.ironMesh.setMatrixAt(this.ironCount++, this.dummy.matrix);
+                    }
+                } else if (materialType === 'gold') {
+                    if (this.goldCount < this.maxCount) {
+                        this.goldMesh.setMatrixAt(this.goldCount++, this.dummy.matrix);
+                    }
+                }
+            }
+
+            update() {
+                this.ironMesh.instanceMatrix.needsUpdate = true;
+                this.goldMesh.instanceMatrix.needsUpdate = true;
+            }
+        }
+
+        // --- Main Scene Setup ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB); // Sky blue
+        scene.fog = new THREE.Fog(0x87CEEB, 20, 100);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(60, 60, 60);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, 40, 0); // Look at the middle of the tower
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(50, 100, 50);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        scene.add(dirLight);
+
+        // --- Ground ---
+        const groundGeo = new THREE.PlaneGeometry(200, 200);
+        const groundMat = new THREE.MeshLambertMaterial({ color: 0x228B22 }); // Forest Green
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // --- Building the Tower ---
+        const builder = new VoxelBuilder(scene);
+
+        // --- Tower Generation Logic ---
+        function buildEiffelTower() {
+            const centerX = 0;
+            const centerZ = 0;
+
+            // Tower Parameters
+            const towerScale = 1;
+
+            // --- BASE SECTION (Level 0 to 18) ---
+            // Four legs curving inwards
+            for (let y = 0; y < 20; y++) {
+                // The width decreases as we go up
+                const width = 18 - (y * 0.5);
+                const offset = width;
+
+                // Create 4 legs
+                const legPoints = [
+                    { x: offset, z: offset },
+                    { x: -offset, z: offset },
+                    { x: offset, z: -offset },
+                    { x: -offset, z: -offset }
+                ];
+
+                legPoints.forEach(p => {
+                    // Draw a 3x3 pillar for each leg, hollow center maybe?
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dz = -1; dz <= 1; dz++) {
+                            // Lattice pattern: skip some blocks
+                            if ((y + dx + dz) % 2 === 0) {
+                                builder.addBlock(p.x + dx, y, p.z + dz, 'iron');
+                            }
+                        }
+                    }
+                });
+
+                // Arches at the bottom (connect legs)
+                if (y < 8) {
+                    const archWidth = offset - 3;
+                    // Draw arches between legs
+                    if (y > 3) {
+                        // Simple approximations for arches
+                        builder.addBlock(offset, y, 0, 'gold'); // Center indicator
+                        builder.addBlock(-offset, y, 0, 'gold');
+                        builder.addBlock(0, y, offset, 'gold');
+                        builder.addBlock(0, y, -offset, 'gold');
+
+                        // Fill in arch curve roughly
+                        for (let i = 0; i < offset; i += 1) {
+                            // Very rough arch math
+                            const h = 8 - (i * i) / 15;
+                            if (Math.abs(y - h) < 0.8) {
+                                builder.addBlock(i, y, offset, 'iron');
+                                builder.addBlock(-i, y, offset, 'iron');
+                                builder.addBlock(i, y, -offset, 'iron');
+                                builder.addBlock(-i, y, -offset, 'iron');
+
+                                builder.addBlock(offset, y, i, 'iron');
+                                builder.addBlock(offset, y, -i, 'iron');
+                                builder.addBlock(-offset, y, i, 'iron');
+                                builder.addBlock(-offset, y, -i, 'iron');
+                            }
+                        }
+                    }
+                }
+            }
+
+            // --- FIRST PLATFORM (Level 20) ---
+            for (let x = -10; x <= 10; x++) {
+                for (let z = -10; z <= 10; z++) {
+                    if (Math.abs(x) > 8 || Math.abs(z) > 8) { // Hollow center mostly
+                        builder.addBlock(x, 20, z, 'iron');
+                        // Railing
+                        if (Math.abs(x) === 10 || Math.abs(z) === 10) {
+                            builder.addBlock(x, 21, z, 'gold');
+                        }
+                    }
+                }
+            }
+
+            // --- SECOND SECTION (Level 21 to 40) ---
+            for (let y = 21; y < 45; y++) {
+                const progress = (y - 21) / 24;
+                const width = 9 - (progress * 5); // Tapers from ~9 to ~4
+
+                const legPoints = [
+                    { x: width, z: width },
+                    { x: -width, z: width },
+                    { x: width, z: -width },
+                    { x: -width, z: -width }
+                ];
+
+                legPoints.forEach(p => {
+                    // 2x2 pillars now
+                    for (let dx = 0; dx <= 1; dx++) {
+                        for (let dz = 0; dz <= 1; dz++) {
+                            // Use sign to keep them oriented towards outside
+                            const sx = p.x > 0 ? dx : -dx;
+                            const sz = p.z > 0 ? dz : -dz;
+
+                            if ((y + dx + dz) % 2 !== 0) {
+                                builder.addBlock(p.x + sx, y, p.z + sz, 'iron');
+                            }
+                        }
+                    }
+                });
+
+                // Cross bracing
+                if (y % 5 === 0) {
+                    // Connect the legs
+                    builder.addBlock(width, y, 0, 'iron');
+                    builder.addBlock(-width, y, 0, 'iron');
+                    builder.addBlock(0, y, width, 'iron');
+                    builder.addBlock(0, y, -width, 'iron');
+                }
+            }
+
+            // --- SECOND PLATFORM (Level 45) ---
+            for (let x = -5; x <= 5; x++) {
+                for (let z = -5; z <= 5; z++) {
+                    builder.addBlock(x, 45, z, 'iron');
+                    // Railing
+                    if (Math.abs(x) === 5 || Math.abs(z) === 5) {
+                        builder.addBlock(x, 46, z, 'gold');
+                    }
+                }
+            }
+
+            // --- TOP SECTION (Level 46 to 70) ---
+            for (let y = 46; y < 75; y++) {
+                const progress = (y - 46) / 29;
+                const width = 4 - (progress * 2.5); // Tapers from 4 to 1.5
+
+                // Single consolidated central tower now, but still 4 corners visual
+                const legPoints = [
+                    { x: width, z: width },
+                    { x: -width, z: width },
+                    { x: width, z: -width },
+                    { x: -width, z: -width }
+                ];
+                legPoints.forEach(p => {
+                    builder.addBlock(p.x, y, p.z, 'iron');
+                    // Add some internal lattice
+                    if (y % 2 === 0) {
+                        if (Math.abs(p.x) > 0.5) builder.addBlock(p.x > 0 ? p.x - 1 : p.x + 1, y, p.z, 'iron');
+                        if (Math.abs(p.z) > 0.5) builder.addBlock(p.x, y, p.z > 0 ? p.z - 1 : p.z + 1, 'iron');
+                    }
+                });
+            }
+
+            // --- THIRD PLATFORM (Level 75) ---
+            for (let x = -2; x <= 2; x++) {
+                for (let z = -2; z <= 2; z++) {
+                    builder.addBlock(x, 75, z, 'iron');
+                }
+            }
+
+            // --- ANTENNA / SPIRE (Level 76 to 90) ---
+            for (let y = 76; y < 90; y++) {
+                builder.addBlock(0, y, 0, 'gold'); // Make the top gold/light
+                if (y < 82) {
+                    builder.addBlock(1, y, 0, 'iron');
+                    builder.addBlock(-1, y, 0, 'iron');
+                    builder.addBlock(0, y, 1, 'iron');
+                    builder.addBlock(0, y, -1, 'iron');
+                }
+
+                // Beacon at top
+                if (y > 88) builder.addBlock(0, y + 1, 0, 'gold');
+            }
+
+            // --- SCATTERED LIGHTS ---
+            // Add some random sparkling lights on the structure
+            for (let i = 0; i < 200; i++) {
+                // Random height between 5 and 70
+                const ly = Math.floor(Math.random() * 65) + 5;
+                // Estimate width at this height to place light on surface
+                let lw = 0;
+                if (ly < 20) lw = 18 - (ly * 0.5);
+                else if (ly < 45) lw = 9 - ((ly - 21) * 0.2); // approx
+                else lw = 4; // approx
+
+                // Place randomly on one of the faces
+                const side = Math.floor(Math.random() * 4);
+                // Push it slightly out
+                lw += 0.5;
+
+                if (side === 0) builder.addBlock(lw, ly, (Math.random() - 0.5) * lw * 2, 'gold');
+                else if (side === 1) builder.addBlock(-lw, ly, (Math.random() - 0.5) * lw * 2, 'gold');
+                else if (side === 2) builder.addBlock((Math.random() - 0.5) * lw * 2, ly, lw, 'gold');
+                else builder.addBlock((Math.random() - 0.5) * lw * 2, ly, -lw, 'gold');
+            }
+
+            builder.update();
+        }
+
+        buildEiffelTower();
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+
+</html>

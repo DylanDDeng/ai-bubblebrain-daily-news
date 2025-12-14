@@ -1,0 +1,1047 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>体素悉尼歌剧院：贝壳屋顶、海滨港口与入口台阶</title>
+    <style>
+      :root {
+        --panel: rgba(8, 12, 20, 0.62);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.88);
+        --muted: rgba(255, 255, 255, 0.66);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #060b16;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif;
+      }
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        user-select: none;
+        max-width: min(560px, calc(100vw - 24px));
+      }
+      .title {
+        font-weight: 760;
+        letter-spacing: 0.2px;
+        font-size: 13px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .title small {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.92);
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 90ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.32);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.26);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+      }
+      .dot.on {
+        background: #62ffcb;
+        box-shadow: 0 0 0 3px rgba(98, 255, 203, 0.14);
+      }
+      .dot.water.on {
+        background: #7fd5ff;
+        box-shadow: 0 0 0 3px rgba(127, 213, 255, 0.16);
+      }
+      .dot.pause.on {
+        background: #ffcc66;
+        box-shadow: 0 0 0 3px rgba(255, 204, 102, 0.16);
+      }
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        padding: 0 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+      .credit {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(6, 8, 16, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 12px;
+        user-select: none;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+      .status {
+        display: grid;
+        gap: 4px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .status b {
+        font-weight: 720;
+        color: rgba(255, 255, 255, 0.92);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <div class="title">
+        体素悉尼歌剧院
+        <small>贝壳状屋顶 / 海滨港口 / 入口台阶 / 水面波光</small>
+      </div>
+      <div class="hint">
+        拖动：旋转　滚轮：缩放　双击：重置视角<br />
+        <span class="kbd">Space</span> 自动旋转　<span class="kbd">W</span> 水面波光　<span class="kbd">P</span> 暂停　<span class="kbd">R</span> 重建
+      </div>
+      <div class="row">
+        <div class="pill" id="spinPill" title="点击切换自动旋转">
+          <span class="dot" id="spinDot"></span><span id="spinText">自动旋转：开</span>
+        </div>
+        <div class="pill" id="waterPill" title="点击切换水面波光">
+          <span class="dot water" id="waterDot"></span><span id="waterText">水面波光：开</span>
+        </div>
+        <div class="pill" id="pausePill" title="点击暂停/继续">
+          <span class="dot pause" id="pauseDot"></span><span id="pauseText">暂停：关</span>
+        </div>
+      </div>
+      <div class="row">
+        <button id="resetBtn" type="button">重置视角</button>
+        <button id="rebuildBtn" type="button">重建场景</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="credit">纯 HTML / CSS / JS（无外部依赖）</div>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d", { alpha: false });
+
+        const spinPill = document.getElementById("spinPill");
+        const waterPill = document.getElementById("waterPill");
+        const pausePill = document.getElementById("pausePill");
+        const spinDot = document.getElementById("spinDot");
+        const waterDot = document.getElementById("waterDot");
+        const pauseDot = document.getElementById("pauseDot");
+        const spinText = document.getElementById("spinText");
+        const waterText = document.getElementById("waterText");
+        const pauseText = document.getElementById("pauseText");
+        const resetBtn = document.getElementById("resetBtn");
+        const rebuildBtn = document.getElementById("rebuildBtn");
+        const statusEl = document.getElementById("status");
+
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const smoothstep = (a, b, t) => {
+          const x = clamp((t - a) / (b - a), 0, 1);
+          return x * x * (3 - 2 * x);
+        };
+        const fract = (x) => x - Math.floor(x);
+
+        function mulberry32(seed) {
+          let t = seed >>> 0;
+          return function rand() {
+            t += 0x6d2b79f5;
+            let x = t;
+            x = Math.imul(x ^ (x >>> 15), x | 1);
+            x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        // ===== 3D math (orthographic) =====
+        function rotY(p, yaw) {
+          const c = Math.cos(yaw), s = Math.sin(yaw);
+          return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+        }
+        function rotX(p, pitch) {
+          const c = Math.cos(pitch), s = Math.sin(pitch);
+          return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+        }
+        function normalize(v) {
+          const m = Math.hypot(v.x, v.y, v.z) || 1;
+          return { x: v.x / m, y: v.y / m, z: v.z / m };
+        }
+
+        // Light is treated as camera-space so it stays readable while rotating.
+        const LIGHT_DIR = normalize({ x: -0.28, y: 0.86, z: 0.42 });
+
+        function rgbToCss(rgb) {
+          const r = clamp(Math.round(rgb.r), 0, 255);
+          const g = clamp(Math.round(rgb.g), 0, 255);
+          const b = clamp(Math.round(rgb.b), 0, 255);
+          return `rgb(${r} ${g} ${b})`;
+        }
+
+        function shadeRgb(base, brightness, coolShadow = 0) {
+          const b = clamp(brightness, 0, 2.2);
+          const r = base.r * b;
+          const g = base.g * b;
+          const bl = base.b * b;
+          return {
+            r: r * (1 - coolShadow) + 18 * coolShadow,
+            g: g * (1 - coolShadow) + 42 * coolShadow,
+            b: bl * (1 - coolShadow) + 88 * coolShadow
+          };
+        }
+
+        // ===== Key pack =====
+        const KEY_BITS = 10;
+        const KEY_MASK = (1 << KEY_BITS) - 1;
+        const KEY_OFF = 512;
+        const keyOf = (x, y, z) =>
+          (((x + KEY_OFF) & KEY_MASK) << (KEY_BITS * 2)) |
+          (((y + KEY_OFF) & KEY_MASK) << KEY_BITS) |
+          ((z + KEY_OFF) & KEY_MASK);
+
+        // ===== Materials =====
+        const mats = {
+          grass: { base: { r: 34, g: 86, b: 56 }, coolShadow: 0.12, vary: 0.14 },
+          path: { base: { r: 128, g: 138, b: 154 }, coolShadow: 0.05, vary: 0.06 },
+          sand: { base: { r: 210, g: 190, b: 140 }, coolShadow: 0.04, vary: 0.05 },
+          wall: { base: { r: 70, g: 78, b: 94 }, coolShadow: 0.08, vary: 0.05 },
+          wood: { base: { r: 144, g: 108, b: 66 }, coolShadow: 0.10, vary: 0.08 },
+
+          podiumA: { base: { r: 214, g: 184, b: 134 }, coolShadow: 0.04, vary: 0.05 },
+          podiumB: { base: { r: 192, g: 164, b: 118 }, coolShadow: 0.05, vary: 0.05 },
+          podiumEdge: { base: { r: 170, g: 146, b: 104 }, coolShadow: 0.06, vary: 0.04 },
+
+          shellA: { base: { r: 238, g: 242, b: 246 }, coolShadow: 0.02, vary: 0.02 },
+          shellB: { base: { r: 224, g: 230, b: 236 }, coolShadow: 0.02, vary: 0.02 },
+          shellEdge: { base: { r: 200, g: 208, b: 218 }, coolShadow: 0.03, vary: 0.02 },
+          shellInner: { base: { r: 212, g: 218, b: 226 }, coolShadow: 0.03, vary: 0.02 },
+          shellRib: { base: { r: 246, g: 248, b: 250 }, coolShadow: 0.01, vary: 0.01 },
+
+          hall: { base: { r: 34, g: 40, b: 54 }, coolShadow: 0.10, vary: 0.04 },
+          glass: { base: { r: 130, g: 196, b: 255 }, coolShadow: 0.02, vary: 0.04, emissive: 0.10, alpha: 0.78 },
+
+          waterDeep: { base: { r: 18, g: 64, b: 112 }, coolShadow: 0.12, vary: 0.06, alpha: 0.92, emissive: 0.05 },
+          waterLite: { base: { r: 34, g: 102, b: 148 }, coolShadow: 0.10, vary: 0.06, alpha: 0.92, emissive: 0.06 },
+          foam: { base: { r: 190, g: 232, b: 255 }, coolShadow: 0.0, vary: 0.04, alpha: 0.72, emissive: 0.10 },
+
+          boatRed: { base: { r: 240, g: 96, b: 92 }, coolShadow: 0.04, vary: 0.04 },
+          boatWhite: { base: { r: 246, g: 248, b: 250 }, coolShadow: 0.02, vary: 0.02 },
+          boatDark: { base: { r: 26, g: 28, b: 34 }, coolShadow: 0.10, vary: 0.02 },
+          buoy: { base: { r: 255, g: 198, b: 84 }, coolShadow: 0.0, vary: 0.03, emissive: 0.06 }
+        };
+
+        let seed = 20251214;
+        let hashSeed = seed;
+        let rand = mulberry32(seed ^ 0x9e3779b9);
+
+        function hash3(x, y, z) {
+          let n =
+            Math.imul(x, 374761393) ^
+            Math.imul(y, 668265263) ^
+            Math.imul(z, 2147483647) ^
+            Math.imul(hashSeed, 1597334677);
+          n = Math.imul(n ^ (n >>> 13), 1274126177);
+          n = (n ^ (n >>> 16)) >>> 0;
+          return n / 4294967295;
+        }
+
+        function makeVoxel(x, y, z, matName, extra = {}) {
+          const mat = mats[matName] || mats.path;
+          const h = hash3(x, y, z);
+          const vary = mat.vary ?? 0;
+          const f = vary ? lerp(1 - vary, 1 + vary, h) : 1;
+          const base = { r: mat.base.r * f, g: mat.base.g * f, b: mat.base.b * f };
+          return {
+            x,
+            y,
+            z,
+            base,
+            coolShadow: mat.coolShadow ?? 0,
+            emissive: extra.emissive ?? mat.emissive ?? 0,
+            alpha: extra.alpha ?? mat.alpha ?? 1
+          };
+        }
+
+        // ===== Static world =====
+        const staticMap = new Map();
+        let staticList = [];
+        let staticFaces = [];
+        let bounds = null;
+        let pivot = { x: 0, y: 0, z: 0 };
+
+        function setStatic(x, y, z, matName, extra = {}) {
+          staticMap.set(keyOf(x, y, z), makeVoxel(x, y, z, matName, extra));
+        }
+        function delStatic(x, y, z) {
+          staticMap.delete(keyOf(x, y, z));
+        }
+        const hasStatic = (x, y, z) => staticMap.has(keyOf(x, y, z));
+
+        function computeBounds(map) {
+          let minX = Infinity, minY = Infinity, minZ = Infinity;
+          let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+          for (const v of map.values()) {
+            minX = Math.min(minX, v.x);
+            minY = Math.min(minY, v.y);
+            minZ = Math.min(minZ, v.z);
+            maxX = Math.max(maxX, v.x + 1);
+            maxY = Math.max(maxY, v.y + 1);
+            maxZ = Math.max(maxZ, v.z + 1);
+          }
+          return { minX, minY, minZ, maxX, maxY, maxZ };
+        }
+
+        // ===== Faces =====
+        const FACES = [
+          { name: "+x", dx: 1, dy: 0, dz: 0, rel: [[1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 0]] },
+          { name: "-x", dx: -1, dy: 0, dz: 0, rel: [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]] },
+          { name: "+y", dx: 0, dy: 1, dz: 0, rel: [[0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]] },
+          { name: "-y", dx: 0, dy: -1, dz: 0, rel: [[0, 0, 1], [1, 0, 1], [1, 0, 0], [0, 0, 0]] },
+          { name: "+z", dx: 0, dy: 0, dz: 1, rel: [[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]] },
+          { name: "-z", dx: 0, dy: 0, dz: -1, rel: [[1, 0, 0], [0, 0, 0], [0, 1, 0], [1, 1, 0]] }
+        ];
+
+        function rebuildFaces() {
+          staticList = Array.from(staticMap.values());
+          bounds = computeBounds(staticMap);
+          pivot = {
+            x: (bounds.minX + bounds.maxX) / 2,
+            y: (bounds.minY + bounds.maxY) / 2,
+            z: (bounds.minZ + bounds.maxZ) / 2
+          };
+
+          const out = [];
+          for (const v of staticList) {
+            const x0 = v.x,
+              y0 = v.y,
+              z0 = v.z;
+            for (const f of FACES) {
+              if (hasStatic(x0 + f.dx, y0 + f.dy, z0 + f.dz)) continue;
+              const verts = new Array(4);
+              for (let i = 0; i < 4; i++) {
+                const rr = f.rel[i];
+                verts[i] = { x: x0 + rr[0], y: y0 + rr[1], z: z0 + rr[2] };
+              }
+              out.push({ verts, face: f.name, v });
+            }
+          }
+          staticFaces = out;
+        }
+
+        // ===== Helpers =====
+        function fillBox(x0, x1, y0, y1, z0, z1, matName) {
+          const ax0 = Math.min(x0, x1),
+            ax1 = Math.max(x0, x1);
+          const ay0 = Math.min(y0, y1),
+            ay1 = Math.max(y0, y1);
+          const az0 = Math.min(z0, z1),
+            az1 = Math.max(z0, z1);
+          for (let x = ax0; x <= ax1; x++) {
+            for (let y = ay0; y <= ay1; y++) {
+              for (let z = az0; z <= az1; z++) setStatic(x, y, z, matName);
+            }
+          }
+        }
+
+        function addDock(x0, x1, z0, z1, y0) {
+          for (let x = x0; x <= x1; x++) {
+            for (let z = z0; z <= z1; z++) setStatic(x, y0, z, "wood");
+          }
+          for (let x = x0; x <= x1; x += 4) {
+            for (let y = y0 + 1; y <= y0 + 3; y++) {
+              setStatic(x, y, z0, "wall");
+              setStatic(x, y, z1, "wall");
+            }
+          }
+          for (let z = z0; z <= z1; z += 3) {
+            for (let y = y0 + 1; y <= y0 + 3; y++) setStatic(x1, y, z, "wall");
+          }
+        }
+
+        function addBoat(x, y, z, dir = 0) {
+          const c = Math.cos(dir),
+            s = Math.sin(dir);
+          const tr = (lx, lz) => {
+            const wx = Math.round(x + lx * c - lz * s);
+            const wz = Math.round(z + lx * s + lz * c);
+            return [wx, wz];
+          };
+
+          // Hull
+          for (let lx = -3; lx <= 3; lx++) {
+            const w = 1 + (Math.abs(lx) <= 1 ? 1 : 0);
+            for (let lz = -w; lz <= w; lz++) {
+              const [wx, wz] = tr(lx, lz);
+              setStatic(wx, y, wz, "boatRed");
+            }
+          }
+          // Cabin
+          for (let lx = -1; lx <= 1; lx++) {
+            for (let lz = -1; lz <= 1; lz++) {
+              const [wx, wz] = tr(lx, lz);
+              setStatic(wx, y + 1, wz, "boatWhite");
+            }
+          }
+          // Windows
+          for (let lx = -1; lx <= 1; lx++) {
+            const [wx, wz] = tr(lx, 1);
+            setStatic(wx, y + 2, wz, "boatDark");
+          }
+          // Wake
+          for (let i = 1; i <= 7; i++) {
+            const [wx, wz] = tr(-3 - i, 0);
+            if (hash3(wx, y, wz) > 0.3) setStatic(wx, y, wz, "foam");
+            if (hash3(wx + 9, y, wz) > 0.72) setStatic(wx, y, wz + 1, "foam");
+          }
+        }
+
+        function addBuoy(x, y, z) {
+          setStatic(x, y, z, "buoy");
+          setStatic(x, y + 1, z, "buoy");
+          setStatic(x, y + 2, z, "wall");
+        }
+
+        function addVaultShell(cfg) {
+          const {
+            cx,
+            cz,
+            baseY,
+            L,
+            W,
+            H,
+            dir,
+            bias = 0,
+            ribEvery = 3,
+            ridgeBoost = 0.9
+          } = cfg;
+          const c = Math.cos(dir),
+            s = Math.sin(dir);
+
+          const u0 = -L / 2;
+          const u1 = L / 2;
+          for (let ui = Math.floor(u0); ui <= Math.ceil(u1); ui++) {
+            const t = (ui - u0) / L;
+            const widen = 0.22 + 0.78 * Math.sin(Math.PI * clamp(t, 0, 1));
+            const w = Math.max(2, W * widen);
+            const hf = 0.34 + 0.66 * Math.sin(Math.PI * clamp(t, 0, 1));
+            const h = H * hf;
+
+            const vMin = Math.ceil(-w);
+            const vMax = Math.floor(w);
+            for (let vi = vMin; vi <= vMax; vi++) {
+              const q = vi / w;
+              const arch = Math.sqrt(Math.max(0, 1 - q * q));
+              if (arch <= 0) continue;
+              const y = baseY + h * arch + bias;
+              const yy = Math.floor(y + 1e-6);
+
+              const xw = cx + ui * c - vi * s;
+              const zw = cz + ui * s + vi * c;
+              const x = Math.round(xw);
+              const z = Math.round(zw);
+
+              const edge = Math.abs(q) > 0.92 || t < 0.06 || t > 0.94;
+              const rib = ribEvery > 0 && Math.abs(vi) <= 1 && Math.round((ui + L * 10) % ribEvery) === 0;
+              const tile = ((Math.floor((ui + 9999) / 2) + Math.floor((yy - baseY) / 2)) & 1) === 0 ? "shellA" : "shellB";
+              const mat = edge ? "shellEdge" : rib ? "shellRib" : tile;
+
+              setStatic(x, yy, z, mat);
+              if (!edge && arch > 0.42) setStatic(x, yy - 1, z, "shellInner");
+
+              // A brighter ridge line
+              if (!edge && Math.abs(vi) <= 0 && arch > 0.62 && hash3(x, yy, z) > 0.25) {
+                setStatic(x, yy + (hash3(x + 7, yy, z) > 0.8 ? 1 : 0), z, "shellRib", { emissive: 0.02 * ridgeBoost });
+              }
+            }
+          }
+        }
+
+        function buildStatic() {
+          staticMap.clear();
+          hashSeed = seed;
+          rand = mulberry32(seed ^ 0x9e3779b9);
+
+          // --- Terrain: peninsula + harbor ---
+          const R = 50;
+          const landMask = (x, z) => {
+            const base = z > 22;
+            const dx = x / 34;
+            const dz = (z - 8) / 28;
+            const ell = dx * dx + dz * dz < 1;
+            const bite = x > 18 && z < 10 && (x - 18) * (x - 18) + (z - 10) * (z - 10) < 70;
+            return (base || ell) && !bite;
+          };
+
+          for (let x = -R; x <= R; x++) {
+            for (let z = -R; z <= R; z++) {
+              const d = Math.hypot(x * 0.92, z * 0.88);
+              if (d > R + 0.7) continue;
+
+              const land = landMask(x, z);
+              if (!land) {
+                const wave =
+                  0.55 +
+                  0.22 * Math.sin((x + seed * 0.003) * 0.28) +
+                  0.18 * Math.sin((z - seed * 0.002) * 0.24) +
+                  0.10 * Math.sin((x + z) * 0.11);
+                const wPick = wave + (hash3(x, 0, z) - 0.5) * 0.12;
+                setStatic(x, 0, z, wPick > 0.62 ? "waterLite" : "waterDeep");
+                if (hash3(x, 1, z) > 0.996) setStatic(x, 1, z, "foam");
+                continue;
+              }
+
+              const near = Math.hypot(x * 0.9, (z - 6) * 1.1);
+              const pave = near < 30 ? "path" : hash3(x, 0, z) > 0.16 ? "grass" : "sand";
+              setStatic(x, 0, z, pave);
+            }
+          }
+
+          // --- Podium (sandstone platform) ---
+          const POD = { x0: -18, x1: 18, z0: -14, z1: 10, h: 4 };
+          for (let x = POD.x0; x <= POD.x1; x++) {
+            for (let z = POD.z0; z <= POD.z1; z++) {
+              // slight rounding at corners
+              const corner =
+                (Math.abs(x) > 15 && z > 6) ||
+                (Math.abs(x) > 16 && z > 3) ||
+                (Math.abs(x) > 17 && z > 0);
+              if (corner && hash3(x, 0, z) > 0.28) continue;
+
+              const edge = x === POD.x0 || x === POD.x1 || z === POD.z0 || z === POD.z1;
+              for (let y = 0; y < POD.h; y++) {
+                const mat = edge && y <= 1 ? "podiumEdge" : (x + z + y) & 1 ? "podiumA" : "podiumB";
+                setStatic(x, y, z, mat);
+              }
+            }
+          }
+
+          // --- Forecourt steps (to entrance) ---
+          const ST = { x0: -11, x1: 11, z0: 11, z1: 18 };
+          for (let z = ST.z0; z <= ST.z1; z++) {
+            const stepRow = z - ST.z0;
+            const layers = Math.max(0, 3 - Math.floor((stepRow + 1) / 2));
+            for (let x = ST.x0; x <= ST.x1; x++) {
+              // slight taper for iconic wide stair feel
+              const taper = Math.abs(x) > 9 && stepRow > 3;
+              if (taper && hash3(x, 0, z) > 0.4) continue;
+              for (let y = 0; y <= layers; y++) setStatic(x, y, z, (x + z + y) & 1 ? "podiumA" : "podiumB");
+            }
+          }
+
+          // --- Hall base + glass facade (under shells) ---
+          const HALL = { x0: -14, x1: 14, z0: -9, z1: 6, y0: 4, y1: 7 };
+          for (let x = HALL.x0; x <= HALL.x1; x++) {
+            for (let z = HALL.z0; z <= HALL.z1; z++) {
+              const onEdge = x === HALL.x0 || x === HALL.x1 || z === HALL.z0 || z === HALL.z1;
+              if (!onEdge) continue;
+              for (let y = HALL.y0; y <= HALL.y1; y++) {
+                const southFace = z === HALL.z1;
+                const frontGlass = southFace && x > -11 && x < 11 && y <= HALL.y0 + 2;
+                const door = southFace && x >= -3 && x <= 3 && y <= HALL.y0 + 1;
+                if (door) continue;
+                setStatic(x, y, z, frontGlass ? "glass" : "hall");
+              }
+            }
+          }
+          // A small overhang strip
+          for (let x = -14; x <= 14; x++) {
+            for (let z = -9; z <= 6; z++) {
+              if (Math.abs(x) === 14 || Math.abs(z) === 9 || z === 6) {
+                if ((x + z) % 3 === 0) setStatic(x, 8, z, "podiumEdge");
+              }
+            }
+          }
+
+          // --- Shell roofs (iconic sails) ---
+          const baseY = 4;
+          // West (Concert Hall) cluster
+          addVaultShell({ cx: -7, cz: -1, baseY, L: 24, W: 11, H: 16, dir: 0.22, bias: 0.3, ribEvery: 3 });
+          addVaultShell({ cx: -10, cz: 2, baseY, L: 20, W: 9, H: 14, dir: 0.22, bias: 0.1, ribEvery: 4 });
+
+          // East (Opera Theatre) cluster
+          addVaultShell({ cx: 7, cz: -1, baseY, L: 24, W: 11, H: 16, dir: -0.22, bias: 0.3, ribEvery: 3 });
+          addVaultShell({ cx: 10, cz: 2, baseY, L: 20, W: 9, H: 14, dir: -0.22, bias: 0.1, ribEvery: 4 });
+
+          // Rear smaller shells
+          addVaultShell({ cx: 0, cz: -7, baseY, L: 18, W: 7, H: 11, dir: 0.06, bias: 0.15, ribEvery: 3 });
+          addVaultShell({ cx: -3, cz: -9, baseY, L: 16, W: 6, H: 10, dir: 0.06, bias: -0.05, ribEvery: 4 });
+          addVaultShell({ cx: 3, cz: -9, baseY, L: 16, W: 6, H: 10, dir: 0.06, bias: -0.05, ribEvery: 4 });
+
+          // --- Harbor details: dock + boats ---
+          addDock(34, 48, -3, 3, 0);
+          addBoat(-24, 0, -16, 0.16);
+          addBoat(-6, 0, -26, -0.35);
+          addBuoy(14, 0, -20);
+
+          // A soft shoreline foam around the peninsula
+          for (let x = -R; x <= R; x++) {
+            for (let z = -R; z <= R; z++) {
+              if (!hasStatic(x, 0, z)) continue;
+              const v = staticMap.get(keyOf(x, 0, z));
+              const isWater =
+                v && Math.abs(v.base.r - mats.waterDeep.base.r) < 30 && (v.alpha ?? 1) < 1;
+              if (!isWater) continue;
+              const adjLand =
+                hasStatic(x + 1, 0, z) && staticMap.get(keyOf(x + 1, 0, z)).alpha === 1
+                  ? true
+                  : hasStatic(x - 1, 0, z) && staticMap.get(keyOf(x - 1, 0, z)).alpha === 1
+                  ? true
+                  : hasStatic(x, 0, z + 1) && staticMap.get(keyOf(x, 0, z + 1)).alpha === 1
+                  ? true
+                  : hasStatic(x, 0, z - 1) && staticMap.get(keyOf(x, 0, z - 1)).alpha === 1;
+              if (!adjLand) continue;
+              if (hash3(x, 0, z) > 0.72) setStatic(x, 1, z, "foam");
+            }
+          }
+
+          rebuildFaces();
+        }
+
+        // ===== Camera / UI =====
+        const state = {
+          dpr: 1,
+          w: 1,
+          h: 1,
+          yaw: 0.95,
+          pitch: 0.60,
+          zoom: 18,
+          originX: 0,
+          originY: 0,
+          autoSpin: true,
+          waterGlint: true,
+          paused: false,
+          dragging: false,
+          lastX: 0,
+          lastY: 0,
+          lastTs: 0,
+          t: 0
+        };
+
+        function camNormal(n) {
+          return rotX(rotY(n, state.yaw), state.pitch);
+        }
+        function toCam(p) {
+          const centered = { x: p.x - pivot.x, y: p.y - pivot.y, z: p.z - pivot.z };
+          return rotX(rotY(centered, state.yaw), state.pitch);
+        }
+        function project(cam) {
+          return { x: state.originX + cam.x * state.zoom, y: state.originY - cam.y * state.zoom };
+        }
+
+        function fitView() {
+          if (!bounds) return;
+          const pad = 6;
+          const b = {
+            minX: bounds.minX - pad,
+            minY: bounds.minY - pad,
+            minZ: bounds.minZ - pad,
+            maxX: bounds.maxX + pad,
+            maxY: bounds.maxY + pad,
+            maxZ: bounds.maxZ + pad
+          };
+          const corners = [
+            { x: b.minX, y: b.minY, z: b.minZ },
+            { x: b.maxX, y: b.minY, z: b.minZ },
+            { x: b.minX, y: b.minY, z: b.maxZ },
+            { x: b.maxX, y: b.minY, z: b.maxZ },
+            { x: b.minX, y: b.maxY, z: b.minZ },
+            { x: b.maxX, y: b.maxY, z: b.minZ },
+            { x: b.minX, y: b.maxY, z: b.maxZ },
+            { x: b.maxX, y: b.maxY, z: b.maxZ }
+          ];
+          let minX = Infinity,
+            minY = Infinity,
+            maxX = -Infinity,
+            maxY = -Infinity;
+          for (const c of corners) {
+            const cam = toCam(c);
+            minX = Math.min(minX, cam.x);
+            maxX = Math.max(maxX, cam.x);
+            minY = Math.min(minY, cam.y);
+            maxY = Math.max(maxY, cam.y);
+          }
+          const spanX = Math.max(0.001, maxX - minX);
+          const spanY = Math.max(0.001, maxY - minY);
+          const targetW = state.w * 0.92;
+          const targetH = state.h * 0.80;
+          const zoom = Math.min(targetW / spanX, targetH / spanY);
+          state.zoom = clamp(zoom, 8, 64);
+          const cx = (minX + maxX) / 2;
+          const cy = (minY + maxY) / 2;
+          state.originX = state.w / 2 - cx * state.zoom;
+          state.originY = state.h * 0.72 + cy * state.zoom;
+        }
+
+        function resize() {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const w = Math.max(1, Math.floor(window.innerWidth));
+          const h = Math.max(1, Math.floor(window.innerHeight));
+          state.dpr = dpr;
+          state.w = w;
+          state.h = h;
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = `${w}px`;
+          canvas.style.height = `${h}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          fitView();
+          initBackdrop();
+        }
+
+        function setAutoSpin(v) {
+          state.autoSpin = v;
+          spinDot.classList.toggle("on", v);
+          spinText.textContent = v ? "自动旋转：开" : "自动旋转：关";
+        }
+        function setWaterGlint(v) {
+          state.waterGlint = v;
+          waterDot.classList.toggle("on", v);
+          waterText.textContent = v ? "水面波光：开" : "水面波光：关";
+        }
+        function setPaused(v) {
+          state.paused = v;
+          pauseDot.classList.toggle("on", v);
+          pauseText.textContent = v ? "暂停：开" : "暂停：关";
+        }
+
+        canvas.addEventListener("pointerdown", (e) => {
+          state.dragging = true;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointermove", (e) => {
+          if (!state.dragging) return;
+          const dx = e.clientX - state.lastX;
+          const dy = e.clientY - state.lastY;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          state.yaw += dx * 0.006;
+          state.pitch = clamp(state.pitch + dy * 0.004, 0.22, 1.08);
+        });
+        window.addEventListener("pointerup", () => (state.dragging = false));
+        canvas.addEventListener(
+          "wheel",
+          (e) => {
+            const f = Math.exp(-e.deltaY * 0.0012);
+            state.zoom = clamp(state.zoom * f, 7.5, 92);
+          },
+          { passive: true }
+        );
+        canvas.addEventListener("dblclick", () => {
+          state.yaw = 0.95;
+          state.pitch = 0.60;
+          fitView();
+        });
+
+        spinPill.addEventListener("click", () => setAutoSpin(!state.autoSpin));
+        waterPill.addEventListener("click", () => setWaterGlint(!state.waterGlint));
+        pausePill.addEventListener("click", () => setPaused(!state.paused));
+        resetBtn.addEventListener("click", () => {
+          state.yaw = 0.95;
+          state.pitch = 0.60;
+          fitView();
+        });
+        rebuildBtn.addEventListener("click", () => {
+          seed = (Math.random() * 1e9) | 0;
+          buildStatic();
+          fitView();
+          initBackdrop();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          const k = e.key.toLowerCase();
+          if (e.code === "Space") {
+            e.preventDefault();
+            setAutoSpin(!state.autoSpin);
+          } else if (k === "w") {
+            setWaterGlint(!state.waterGlint);
+          } else if (k === "p") {
+            setPaused(!state.paused);
+          } else if (k === "r") {
+            seed = (Math.random() * 1e9) | 0;
+            buildStatic();
+            fitView();
+            initBackdrop();
+          }
+        });
+        window.addEventListener("resize", resize);
+
+        // ===== Backdrop (sky + clouds) =====
+        let clouds = [];
+        let haze = [];
+        function initBackdrop() {
+          const r = mulberry32(seed ^ 0x63d1f3aa);
+          clouds = [];
+          haze = [];
+          const cloudN = 10;
+          for (let i = 0; i < cloudN; i++) {
+            clouds.push({
+              x: lerp(-160, state.w + 160, r()),
+              y: lerp(state.h * 0.08, state.h * 0.32, r()),
+              r: lerp(70, 190, r()),
+              a: lerp(0.025, 0.065, r()),
+              vx: lerp(5, 14, r()) * (r() < 0.5 ? -1 : 1)
+            });
+          }
+          for (let i = 0; i < 7; i++) {
+            haze.push({
+              x: lerp(state.w * 0.1, state.w * 0.9, r()),
+              y: lerp(state.h * 0.50, state.h * 0.78, r()),
+              r: lerp(220, 520, r()),
+              a: lerp(0.02, 0.05, r())
+            });
+          }
+        }
+
+        function drawBackground(dt) {
+          const g = ctx.createLinearGradient(0, 0, 0, state.h);
+          g.addColorStop(0, "#8ac7ff");
+          g.addColorStop(0.42, "#cfe9ff");
+          g.addColorStop(0.70, "#ffe5b7");
+          g.addColorStop(1, "#0a1c2e");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, state.w, state.h);
+
+          // Sun
+          const sunX = state.w * 0.76;
+          const sunY = state.h * 0.18;
+          const sg = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, state.h * 0.46);
+          sg.addColorStop(0, "rgba(255, 248, 220, 0.70)");
+          sg.addColorStop(0.08, "rgba(255, 244, 210, 0.22)");
+          sg.addColorStop(0.26, "rgba(255, 214, 168, 0.10)");
+          sg.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = sg;
+          ctx.fillRect(0, 0, state.w, state.h);
+
+          // Soft horizon haze
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          for (const h of haze) {
+            const gg = ctx.createRadialGradient(h.x, h.y, 0, h.x, h.y, h.r);
+            gg.addColorStop(0, `rgba(255, 234, 210, ${h.a})`);
+            gg.addColorStop(1, "rgba(0,0,0,0)");
+            ctx.fillStyle = gg;
+            ctx.fillRect(h.x - h.r, h.y - h.r, h.r * 2, h.r * 2);
+          }
+          ctx.restore();
+
+          // Clouds drift
+          ctx.save();
+          for (const c of clouds) {
+            c.x += c.vx * dt;
+            if (c.x < -260) c.x = state.w + 260;
+            if (c.x > state.w + 260) c.x = -260;
+            const gg = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+            gg.addColorStop(0, `rgba(255, 255, 255, ${c.a})`);
+            gg.addColorStop(1, "rgba(0,0,0,0)");
+            ctx.fillStyle = gg;
+            ctx.fillRect(c.x - c.r, c.y - c.r, c.r * 2, c.r * 2);
+          }
+          ctx.restore();
+        }
+
+        // ===== Rendering =====
+        function pushFace(drawList, pts, z, fill, stroke, alpha, layer) {
+          drawList.push({ pts, z, fill, stroke, alpha, layer });
+        }
+
+        function glowAt(glows, p, col, intensity, rMul = 1.0) {
+          const cam = toCam(p);
+          const s = project(cam);
+          glows.push({ z: cam.z, x: s.x, y: s.y, r: state.zoom * 2.5 * rMul, col, a: intensity });
+        }
+
+        function drawGlows(glows) {
+          if (!glows.length) return;
+          glows.sort((a, b) => a.z - b.z);
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          for (const g of glows) {
+            ctx.globalAlpha = g.a;
+            const gg = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r);
+            gg.addColorStop(0, g.col);
+            gg.addColorStop(0.42, g.col.replace(",1)", ",0.18)"));
+            gg.addColorStop(1, g.col.replace(",1)", ",0)"));
+            ctx.fillStyle = gg;
+            ctx.beginPath();
+            ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        function waterGlints(glows) {
+          const tick = Math.floor(state.t * 2.0);
+          const r = mulberry32((seed ^ (tick * 0x9e3779b9)) >>> 0);
+          let placed = 0;
+          let tries = 0;
+          const target = 26;
+          while (placed < target && tries < target * 24) {
+            tries++;
+            const x = Math.round(lerp(-46, 46, r()));
+            const z = Math.round(lerp(-46, 10, r()));
+            const k = keyOf(x, 0, z);
+            const v = staticMap.get(k);
+            if (!v || (v.alpha ?? 1) >= 1) continue;
+            const p = { x: x + 0.5, y: 0.65, z: z + 0.5 };
+            const pulse = 0.04 + 0.10 * Math.pow(r(), 2.2);
+            const hue = 0.5 + 0.5 * Math.sin(state.t * 0.9 + x * 0.12 + z * 0.15);
+            const col = hue > 0.2 ? "rgba(200,240,255,1)" : "rgba(160,220,255,1)";
+            glowAt(glows, p, col, pulse, lerp(0.7, 1.35, r()));
+            placed++;
+          }
+        }
+
+        function render(ts) {
+          const dtRaw = (ts - state.lastTs) / 1000;
+          const dt = clamp(dtRaw, 0, 1 / 20) || 0;
+          state.lastTs = ts;
+          if (!state.paused) state.t += dt;
+
+          if (state.autoSpin && !state.dragging && !state.paused) state.yaw += dt * 0.10;
+
+          drawBackground(dt);
+
+          const normalCache = {
+            "+x": camNormal({ x: 1, y: 0, z: 0 }),
+            "-x": camNormal({ x: -1, y: 0, z: 0 }),
+            "+y": camNormal({ x: 0, y: 1, z: 0 }),
+            "-y": camNormal({ x: 0, y: -1, z: 0 }),
+            "+z": camNormal({ x: 0, y: 0, z: 1 }),
+            "-z": camNormal({ x: 0, y: 0, z: -1 })
+          };
+
+          const drawList = [];
+          const glows = [];
+
+          if (state.waterGlint && !state.paused) waterGlints(glows);
+
+          // Voxel faces
+          for (const face of staticFaces) {
+            const nC = normalCache[face.face];
+            if (nC.z <= 0.0001) continue;
+            const pts = new Array(4);
+            let zSum = 0;
+            for (let i = 0; i < 4; i++) {
+              const cam = toCam(face.verts[i]);
+              zSum += cam.z;
+              pts[i] = project(cam);
+            }
+            const v = face.v;
+            const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+            const rim = Math.pow(clamp(nC.z, 0, 1), 1.2) * 0.09;
+            const brightness = 0.52 + Math.max(0, diff) * 0.58 + rim + (v.emissive || 0);
+            const cool = (v.coolShadow || 0) * (1 - Math.max(0, diff));
+            const col = shadeRgb(v.base, brightness, cool);
+            pushFace(
+              drawList,
+              pts,
+              zSum / 4,
+              rgbToCss(col),
+              (v.alpha ?? 1) < 1 ? "rgba(0,0,0,0.06)" : "rgba(0,0,0,0.14)",
+              v.alpha ?? 1,
+              0
+            );
+          }
+
+          drawList.sort((a, b) => a.z - b.z || a.layer - b.layer);
+          ctx.save();
+          ctx.lineJoin = "round";
+          for (const it of drawList) {
+            ctx.globalAlpha = it.alpha;
+            ctx.fillStyle = it.fill;
+            ctx.strokeStyle = it.stroke;
+            ctx.beginPath();
+            ctx.moveTo(it.pts[0].x, it.pts[0].y);
+            for (let i = 1; i < it.pts.length; i++) ctx.lineTo(it.pts[i].x, it.pts[i].y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          drawGlows(glows);
+
+          statusEl.innerHTML =
+            `<div><b>体素：</b>${staticList.length.toLocaleString()}　<b>外露面：</b>${staticFaces.length.toLocaleString()}</div>` +
+            `<div><b>种子：</b>${seed}　<b>波光：</b>${state.waterGlint ? "开" : "关"}　<b>自动旋转：</b>${state.autoSpin ? "开" : "关"}</div>`;
+
+          requestAnimationFrame(render);
+        }
+
+        // Boot
+        setAutoSpin(true);
+        setWaterGlint(true);
+        setPaused(false);
+        buildStatic();
+        resize();
+        requestAnimationFrame(render);
+      })();
+    </script>
+  </body>
+</html>

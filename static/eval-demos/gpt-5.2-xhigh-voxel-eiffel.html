@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>体素埃菲尔铁塔：格子铁框架、观景台与拱门底座</title>
+    <style>
+      :root {
+        --panel: rgba(8, 12, 20, 0.62);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.88);
+        --muted: rgba(255, 255, 255, 0.66);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #050812;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif;
+      }
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        user-select: none;
+        max-width: min(560px, calc(100vw - 24px));
+      }
+      .title {
+        font-weight: 760;
+        letter-spacing: 0.2px;
+        font-size: 13px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .title small {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.92);
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 90ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.32);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.26);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+      }
+      .dot.on {
+        background: #62ffcb;
+        box-shadow: 0 0 0 3px rgba(98, 255, 203, 0.14);
+      }
+      .dot.spark.on {
+        background: #ffe08a;
+        box-shadow: 0 0 0 3px rgba(255, 224, 138, 0.16);
+      }
+      .dot.pause.on {
+        background: #ffcc66;
+        box-shadow: 0 0 0 3px rgba(255, 204, 102, 0.16);
+      }
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        padding: 0 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+      .credit {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(6, 8, 16, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 12px;
+        user-select: none;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+      .status {
+        display: grid;
+        gap: 4px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .status b {
+        font-weight: 720;
+        color: rgba(255, 255, 255, 0.92);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <div class="title">
+        体素埃菲尔铁塔
+        <small>格子铁框架 / 多层观景台 / 拱门底座 / 夜间闪烁灯光</small>
+      </div>
+      <div class="hint">
+        拖动：旋转　滚轮：缩放　双击：重置视角<br />
+        <span class="kbd">Space</span> 自动旋转　<span class="kbd">L</span> 闪烁灯光　<span class="kbd">P</span> 暂停　<span class="kbd">R</span> 重建
+      </div>
+      <div class="row">
+        <div class="pill" id="spinPill" title="点击切换自动旋转">
+          <span class="dot" id="spinDot"></span><span id="spinText">自动旋转：开</span>
+        </div>
+        <div class="pill" id="sparkPill" title="点击切换闪烁灯光">
+          <span class="dot spark" id="sparkDot"></span><span id="sparkText">闪烁灯光：开</span>
+        </div>
+        <div class="pill" id="pausePill" title="点击暂停/继续">
+          <span class="dot pause" id="pauseDot"></span><span id="pauseText">暂停：关</span>
+        </div>
+      </div>
+      <div class="row">
+        <button id="resetBtn" type="button">重置视角</button>
+        <button id="rebuildBtn" type="button">重建铁塔</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="credit">纯 HTML / CSS / JS（无外部依赖）</div>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d", { alpha: false });
+
+        const spinPill = document.getElementById("spinPill");
+        const sparkPill = document.getElementById("sparkPill");
+        const pausePill = document.getElementById("pausePill");
+        const spinDot = document.getElementById("spinDot");
+        const sparkDot = document.getElementById("sparkDot");
+        const pauseDot = document.getElementById("pauseDot");
+        const spinText = document.getElementById("spinText");
+        const sparkText = document.getElementById("sparkText");
+        const pauseText = document.getElementById("pauseText");
+        const resetBtn = document.getElementById("resetBtn");
+        const rebuildBtn = document.getElementById("rebuildBtn");
+        const statusEl = document.getElementById("status");
+
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const smoothstep = (a, b, t) => {
+          const x = clamp((t - a) / (b - a), 0, 1);
+          return x * x * (3 - 2 * x);
+        };
+
+        function mulberry32(seed) {
+          let t = seed >>> 0;
+          return function rand() {
+            t += 0x6d2b79f5;
+            let x = t;
+            x = Math.imul(x ^ (x >>> 15), x | 1);
+            x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        // ===== 3D math (orthographic) =====
+        function rotY(p, yaw) {
+          const c = Math.cos(yaw), s = Math.sin(yaw);
+          return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+        }
+        function rotX(p, pitch) {
+          const c = Math.cos(pitch), s = Math.sin(pitch);
+          return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+        }
+        function normalize(v) {
+          const m = Math.hypot(v.x, v.y, v.z) || 1;
+          return { x: v.x / m, y: v.y / m, z: v.z / m };
+        }
+
+        // Light is treated as camera-space so it stays readable while rotating.
+        const LIGHT_DIR = normalize({ x: -0.35, y: 0.82, z: 0.46 });
+
+        function rgbToCss(rgb) {
+          const r = clamp(Math.round(rgb.r), 0, 255);
+          const g = clamp(Math.round(rgb.g), 0, 255);
+          const b = clamp(Math.round(rgb.b), 0, 255);
+          return `rgb(${r} ${g} ${b})`;
+        }
+
+        function shadeRgb(base, brightness, coolShadow = 0) {
+          const b = clamp(brightness, 0, 2.1);
+          const r = base.r * b;
+          const g = base.g * b;
+          const bl = base.b * b;
+          return {
+            r: r * (1 - coolShadow) + 18 * coolShadow,
+            g: g * (1 - coolShadow) + 34 * coolShadow,
+            b: bl * (1 - coolShadow) + 80 * coolShadow
+          };
+        }
+
+        // ===== Key pack =====
+        const KEY_BITS = 10;
+        const KEY_MASK = (1 << KEY_BITS) - 1;
+        const KEY_OFF = 512;
+        const keyOf = (x, y, z) =>
+          (((x + KEY_OFF) & KEY_MASK) << (KEY_BITS * 2)) |
+          (((y + KEY_OFF) & KEY_MASK) << KEY_BITS) |
+          ((z + KEY_OFF) & KEY_MASK);
+
+        // ===== Materials =====
+        const mats = {
+          ground: { base: { r: 14, g: 16, b: 24 }, coolShadow: 0.14, vary: 0.05 },
+          tileA: { base: { r: 74, g: 80, b: 90 }, coolShadow: 0.08, vary: 0.06 },
+          tileB: { base: { r: 60, g: 66, b: 78 }, coolShadow: 0.08, vary: 0.07 },
+          grass: { base: { r: 26, g: 62, b: 38 }, coolShadow: 0.12, vary: 0.12 },
+          iron: { base: { r: 108, g: 82, b: 60 }, coolShadow: 0.12, vary: 0.08 },
+          ironDark: { base: { r: 78, g: 62, b: 48 }, coolShadow: 0.14, vary: 0.07 },
+          deck: { base: { r: 96, g: 76, b: 58 }, coolShadow: 0.12, vary: 0.06 },
+          rail: { base: { r: 118, g: 92, b: 66 }, coolShadow: 0.12, vary: 0.06 },
+          trunk: { base: { r: 130, g: 92, b: 54 }, coolShadow: 0.10, vary: 0.10 },
+          leaf: { base: { r: 44, g: 110, b: 64 }, coolShadow: 0.12, vary: 0.14 },
+          lamp: { base: { r: 44, g: 48, b: 60 }, coolShadow: 0.10, vary: 0.04 },
+          lampLight: { base: { r: 255, g: 230, b: 186 }, coolShadow: 0.0, vary: 0.02, emissive: 0.85, alpha: 0.95 },
+          beacon: { base: { r: 190, g: 240, b: 255 }, coolShadow: 0.0, vary: 0.02, emissive: 1.25, alpha: 0.95 }
+        };
+
+        let seed = 20251214;
+        let hashSeed = seed;
+        let rand = mulberry32(seed ^ 0x9e3779b9);
+        function hash3(x, y, z) {
+          let n =
+            Math.imul(x, 374761393) ^
+            Math.imul(y, 668265263) ^
+            Math.imul(z, 2147483647) ^
+            Math.imul(hashSeed, 1597334677);
+          n = Math.imul(n ^ (n >>> 13), 1274126177);
+          n = (n ^ (n >>> 16)) >>> 0;
+          return n / 4294967295;
+        }
+
+        function makeVoxel(x, y, z, matName, extra = {}) {
+          const mat = mats[matName] || mats.ground;
+          const h = hash3(x, y, z);
+          const vary = mat.vary ?? 0;
+          const f = vary ? lerp(1 - vary, 1 + vary, h) : 1;
+          const base = { r: mat.base.r * f, g: mat.base.g * f, b: mat.base.b * f };
+          return {
+            x,
+            y,
+            z,
+            mat: matName,
+            base,
+            coolShadow: mat.coolShadow ?? 0,
+            emissive: extra.emissive ?? mat.emissive ?? 0,
+            alpha: extra.alpha ?? mat.alpha ?? 1
+          };
+        }
+
+        // ===== Static world =====
+        const staticMap = new Map();
+        let staticList = [];
+        let staticFaces = [];
+        let bounds = null;
+        let pivot = { x: 0, y: 0, z: 0 };
+
+        function setStatic(x, y, z, matName, extra = {}) {
+          staticMap.set(keyOf(x, y, z), makeVoxel(x, y, z, matName, extra));
+        }
+        const hasStatic = (x, y, z) => staticMap.has(keyOf(x, y, z));
+
+        function computeBounds(map) {
+          let minX = Infinity, minY = Infinity, minZ = Infinity;
+          let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+          for (const v of map.values()) {
+            minX = Math.min(minX, v.x);
+            minY = Math.min(minY, v.y);
+            minZ = Math.min(minZ, v.z);
+            maxX = Math.max(maxX, v.x + 1);
+            maxY = Math.max(maxY, v.y + 1);
+            maxZ = Math.max(maxZ, v.z + 1);
+          }
+          return { minX, minY, minZ, maxX, maxY, maxZ };
+        }
+
+        // ===== Face definitions =====
+        const FACES = [
+          { name: "+x", dx: 1, dy: 0, dz: 0, rel: [[1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 0]] },
+          { name: "-x", dx: -1, dy: 0, dz: 0, rel: [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]] },
+          { name: "+y", dx: 0, dy: 1, dz: 0, rel: [[0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]] },
+          { name: "-y", dx: 0, dy: -1, dz: 0, rel: [[0, 0, 1], [1, 0, 1], [1, 0, 0], [0, 0, 0]] },
+          { name: "+z", dx: 0, dy: 0, dz: 1, rel: [[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]] },
+          { name: "-z", dx: 0, dy: 0, dz: -1, rel: [[1, 0, 0], [0, 0, 0], [0, 1, 0], [1, 1, 0]] }
+        ];
+
+        function rebuildFaces() {
+          staticList = Array.from(staticMap.values());
+          bounds = computeBounds(staticMap);
+          pivot = {
+            x: (bounds.minX + bounds.maxX) / 2,
+            y: (bounds.minY + bounds.maxY) / 2,
+            z: (bounds.minZ + bounds.maxZ) / 2
+          };
+
+          const out = [];
+          for (const v of staticList) {
+            const x0 = v.x, y0 = v.y, z0 = v.z;
+            for (const f of FACES) {
+              if (hasStatic(x0 + f.dx, y0 + f.dy, z0 + f.dz)) continue;
+              const verts = new Array(4);
+              for (let i = 0; i < 4; i++) {
+                const rr = f.rel[i];
+                verts[i] = { x: x0 + rr[0], y: y0 + rr[1], z: z0 + rr[2] };
+              }
+              out.push({ verts, face: f.name, v });
+            }
+          }
+          staticFaces = out;
+        }
+
+        // ===== Tower generator =====
+        function setThick(x, y, z, matName, thick = 1) {
+          if (thick <= 1) {
+            setStatic(x, y, z, matName);
+            return;
+          }
+          const r = Math.max(1, Math.floor(thick / 2));
+          for (let dx = -r; dx <= r; dx++) {
+            for (let dz = -r; dz <= r; dz++) {
+              if (Math.abs(dx) + Math.abs(dz) > r + 0.3) continue;
+              setStatic(x + dx, y, z + dz, matName);
+            }
+          }
+        }
+
+        function drawLine3(a, b, matName, thick = 1) {
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dz = b.z - a.z;
+          const steps = Math.max(Math.abs(dx), Math.abs(dy), Math.abs(dz)) || 1;
+          for (let i = 0; i <= steps; i++) {
+            const t = i / steps;
+            const x = Math.round(lerp(a.x, b.x, t));
+            const y = Math.round(lerp(a.y, b.y, t));
+            const z = Math.round(lerp(a.z, b.z, t));
+            setThick(x, y, z, matName, thick);
+          }
+        }
+
+        function fillRectXZ(x0, x1, y, z0, z1, matName, skipHole = null) {
+          const ax0 = Math.min(x0, x1), ax1 = Math.max(x0, x1);
+          const az0 = Math.min(z0, z1), az1 = Math.max(z0, z1);
+          for (let x = ax0; x <= ax1; x++) {
+            for (let z = az0; z <= az1; z++) {
+              if (skipHole && Math.abs(x) <= skipHole && Math.abs(z) <= skipHole) continue;
+              setStatic(x, y, z, matName);
+            }
+          }
+        }
+
+        function addDeck(deckY, wLeg, label) {
+          const outer = wLeg + 4;
+          const inner = Math.max(2, Math.floor(outer * 0.33));
+          // main floor (two layers for thickness)
+          for (let y = deckY - 1; y <= deckY; y++) fillRectXZ(-outer, outer, y, -outer, outer, "deck", inner);
+          // ring beams under deck
+          const yBeam = deckY - 2;
+          drawLine3({ x: -outer, y: yBeam, z: -outer }, { x: outer, y: yBeam, z: -outer }, "ironDark");
+          drawLine3({ x: -outer, y: yBeam, z: outer }, { x: outer, y: yBeam, z: outer }, "ironDark");
+          drawLine3({ x: -outer, y: yBeam, z: -outer }, { x: -outer, y: yBeam, z: outer }, "ironDark");
+          drawLine3({ x: outer, y: yBeam, z: -outer }, { x: outer, y: yBeam, z: outer }, "ironDark");
+
+          // railings
+          const yRail = deckY + 1;
+          for (let x = -outer; x <= outer; x++) {
+            if ((x + deckY) % 2 === 0) {
+              setStatic(x, yRail, -outer, "rail");
+              setStatic(x, yRail, outer, "rail");
+            }
+          }
+          for (let z = -outer; z <= outer; z++) {
+            if ((z + deckY) % 2 === 0) {
+              setStatic(-outer, yRail, z, "rail");
+              setStatic(outer, yRail, z, "rail");
+            }
+          }
+
+          // warm bulbs around the perimeter
+          for (let i = -outer; i <= outer; i += 3) {
+            setStatic(i, yRail + 1, -outer, "lampLight");
+            setStatic(i, yRail + 1, outer, "lampLight");
+            setStatic(-outer, yRail + 1, i, "lampLight");
+            setStatic(outer, yRail + 1, i, "lampLight");
+          }
+
+          // small label plate (voxel billboard)
+          const baseX = -outer + 2;
+          const z = outer + 1;
+          const text = label;
+          for (let i = 0; i < text.length; i++) {
+            const code = text.charCodeAt(i);
+            const col = code % 2 === 0 ? "rail" : "ironDark";
+            setStatic(baseX + i, deckY + 2, z, col);
+            setStatic(baseX + i, deckY + 3, z, col);
+          }
+        }
+
+        function towerWAt(y, H, deck1Y, deck2Y, deck3Y) {
+          const w0 = 13;
+          const w1 = 9;
+          const w2 = 6;
+          const w3 = 3;
+          const w4 = 1;
+          if (y <= deck1Y) {
+            const t = smoothstep(0, 1, y / deck1Y);
+            return lerp(w0, w1, t);
+          }
+          if (y <= deck2Y) {
+            const t = smoothstep(0, 1, (y - deck1Y) / (deck2Y - deck1Y));
+            return lerp(w1, w2, t);
+          }
+          if (y <= deck3Y) {
+            const t = smoothstep(0, 1, (y - deck2Y) / (deck3Y - deck2Y));
+            return lerp(w2, w3, t);
+          }
+          const t = smoothstep(0, 1, (y - deck3Y) / (H - deck3Y));
+          return lerp(w3, w4, t);
+        }
+
+        function addBaseArches(baseW, y0, archH) {
+          const sides = [
+            { axis: "x", fixed: baseW, sign: 1 },  // north (z=+)
+            { axis: "x", fixed: -baseW, sign: -1 }, // south (z=-)
+            { axis: "z", fixed: baseW, sign: 1 },  // east (x=+)
+            { axis: "z", fixed: -baseW, sign: -1 }  // west (x=-)
+          ];
+
+          for (const s of sides) {
+            for (let i = -baseW; i <= baseW; i++) {
+              const t = (i + baseW) / (baseW * 2);
+              const y = Math.round(y0 + Math.sin(Math.PI * t) * archH);
+              if (s.axis === "x") {
+                setStatic(i, y, s.fixed, "iron");
+                if ((i & 1) === 0) setStatic(i, y, s.fixed - s.sign, "ironDark");
+              } else {
+                setStatic(s.fixed, y, i, "iron");
+                if ((i & 1) === 0) setStatic(s.fixed - s.sign, y, i, "ironDark");
+              }
+            }
+            // small vertical supports at the ends
+            for (let y = y0; y <= y0 + Math.floor(archH * 0.55); y++) {
+              if (s.axis === "x") {
+                setStatic(-baseW, y, s.fixed, "ironDark");
+                setStatic(baseW, y, s.fixed, "ironDark");
+              } else {
+                setStatic(s.fixed, y, -baseW, "ironDark");
+                setStatic(s.fixed, y, baseW, "ironDark");
+              }
+            }
+          }
+        }
+
+        function addTrees(r, y0) {
+          const spots = [
+            { x: -24, z: -16 },
+            { x: 24, z: -16 },
+            { x: -24, z: 16 },
+            { x: 24, z: 16 },
+            { x: -16, z: -24 },
+            { x: 16, z: -24 },
+            { x: -16, z: 24 },
+            { x: 16, z: 24 }
+          ];
+          for (const s of spots) {
+            const h = 5 + Math.floor(r() * 4);
+            for (let y = y0 + 1; y <= y0 + h; y++) setStatic(s.x, y, s.z, "trunk");
+            const topY = y0 + h + 1;
+            for (let dx = -2; dx <= 2; dx++) {
+              for (let dz = -2; dz <= 2; dz++) {
+                for (let dy = 0; dy <= 3; dy++) {
+                  const d = Math.hypot(dx, dz) + dy * 0.65;
+                  if (d > 2.45 + r() * 0.3) continue;
+                  setStatic(s.x + dx, topY + dy, s.z + dz, "leaf");
+                }
+              }
+            }
+          }
+        }
+
+        function addLamps() {
+          const lamps = [
+            { x: -20, z: -20, h: 7 },
+            { x: 20, z: -20, h: 7 },
+            { x: -20, z: 20, h: 7 },
+            { x: 20, z: 20, h: 7 }
+          ];
+          for (const p of lamps) {
+            for (let y = 1; y <= p.h; y++) setStatic(p.x, y, p.z, "lamp");
+            setStatic(p.x, p.h + 1, p.z, "lampLight");
+            setStatic(p.x + 1, p.h + 1, p.z, "lampLight");
+            setStatic(p.x, p.h + 1, p.z - 1, "lampLight");
+          }
+        }
+
+        function buildStatic() {
+          staticMap.clear();
+          hashSeed = seed;
+          rand = mulberry32(seed ^ 0x9e3779b9);
+
+          // Plaza
+          const plazaR = 28;
+          for (let x = -plazaR; x <= plazaR; x++) {
+            for (let z = -plazaR; z <= plazaR; z++) {
+              const dist = Math.hypot(x, z);
+              const isPlaza = dist < plazaR - 2;
+              if (isPlaza) {
+                const mat = ((x + z) & 1) === 0 ? "tileA" : "tileB";
+                setStatic(x, 0, z, mat);
+              } else {
+                setStatic(x, 0, z, "grass");
+              }
+            }
+          }
+
+          // Tower params
+          const H = 72;
+          const deck1Y = 18;
+          const deck2Y = 38;
+          const deck3Y = 56;
+
+          // Legs
+          for (let y = 1; y <= H; y++) {
+            const w = Math.round(towerWAt(y, H, deck1Y, deck2Y, deck3Y));
+            const corners = [
+              { x: -w, z: -w },
+              { x: -w, z: w },
+              { x: w, z: -w },
+              { x: w, z: w }
+            ];
+            for (const c of corners) {
+              setStatic(c.x, y, c.z, "iron");
+              if ((y % 5) === 0) {
+                const ix = c.x + (c.x > 0 ? -1 : 1);
+                const iz = c.z + (c.z > 0 ? -1 : 1);
+                setStatic(ix, y, c.z, "ironDark");
+                setStatic(c.x, y, iz, "ironDark");
+              }
+              if ((y % 8) === 0) setStatic(c.x, y + 1, c.z, "ironDark");
+            }
+          }
+
+          // Horizontal rings + braces
+          const ringStep = 3;
+          const braceStep = 4;
+          for (let y = 2; y <= H; y += ringStep) {
+            const w = Math.round(towerWAt(y, H, deck1Y, deck2Y, deck3Y));
+            drawLine3({ x: -w, y, z: -w }, { x: w, y, z: -w }, "ironDark");
+            drawLine3({ x: -w, y, z: w }, { x: w, y, z: w }, "ironDark");
+            drawLine3({ x: -w, y, z: -w }, { x: -w, y, z: w }, "ironDark");
+            drawLine3({ x: w, y, z: -w }, { x: w, y, z: w }, "ironDark");
+          }
+
+          for (let y = 2; y <= H - braceStep; y += braceStep) {
+            const y1 = y + braceStep;
+            const w0 = Math.round(towerWAt(y, H, deck1Y, deck2Y, deck3Y));
+            const w1 = Math.round(towerWAt(y1, H, deck1Y, deck2Y, deck3Y));
+
+            // North
+            drawLine3({ x: -w0, y, z: w0 }, { x: w1, y: y1, z: w1 }, "iron");
+            drawLine3({ x: w0, y, z: w0 }, { x: -w1, y: y1, z: w1 }, "iron");
+            // South
+            drawLine3({ x: -w0, y, z: -w0 }, { x: w1, y: y1, z: -w1 }, "iron");
+            drawLine3({ x: w0, y, z: -w0 }, { x: -w1, y: y1, z: -w1 }, "iron");
+            // East
+            drawLine3({ x: w0, y, z: -w0 }, { x: w1, y: y1, z: w1 }, "iron");
+            drawLine3({ x: w0, y, z: w0 }, { x: w1, y: y1, z: -w1 }, "iron");
+            // West
+            drawLine3({ x: -w0, y, z: -w0 }, { x: -w1, y: y1, z: w1 }, "iron");
+            drawLine3({ x: -w0, y, z: w0 }, { x: -w1, y: y1, z: -w1 }, "iron");
+
+            // Interior diagonals (every other brace)
+            if ((y / braceStep) % 2 === 0) {
+              drawLine3({ x: -w0, y, z: w0 }, { x: w1, y: y1, z: -w1 }, "ironDark");
+              drawLine3({ x: w0, y, z: w0 }, { x: -w1, y: y1, z: -w1 }, "ironDark");
+              drawLine3({ x: -w0, y, z: -w0 }, { x: w1, y: y1, z: w1 }, "ironDark");
+              drawLine3({ x: w0, y, z: -w0 }, { x: -w1, y: y1, z: w1 }, "ironDark");
+            }
+          }
+
+          // Base arches
+          const baseW = Math.round(towerWAt(1, H, deck1Y, deck2Y, deck3Y));
+          addBaseArches(baseW, 2, 9);
+
+          // Observation decks
+          addDeck(deck1Y, Math.round(towerWAt(deck1Y, H, deck1Y, deck2Y, deck3Y)), "1F");
+          addDeck(deck2Y, Math.round(towerWAt(deck2Y, H, deck1Y, deck2Y, deck3Y)), "2F");
+          addDeck(deck3Y, Math.round(towerWAt(deck3Y, H, deck1Y, deck2Y, deck3Y)), "TOP");
+
+          // Spire + beacon
+          for (let y = H - 1; y <= H + 8; y++) {
+            if (y <= H + 4) setStatic(0, y, 0, "ironDark");
+            else if (y <= H + 7) setStatic(0, y, 0, "iron");
+            else setStatic(0, y, 0, "beacon", { emissive: 1.4 });
+          }
+          setStatic(0, H + 6, 0, "beacon");
+
+          // Tiny flag (three voxels)
+          setStatic(1, H + 7, 0, "lampLight", { emissive: 0.55, alpha: 0.9 });
+          setStatic(2, H + 7, 0, "iron");
+          setStatic(3, H + 7, 0, "ironDark");
+
+          // Surroundings
+          addLamps();
+          addTrees(rand, 0);
+
+          rebuildFaces();
+          initSparkleCandidates();
+        }
+
+        // ===== Sparkles =====
+        let sparkleEnabled = true;
+        let sparkleCandidates = [];
+        let sparkles = [];
+        let sparkleCarry = 0;
+
+        function initSparkleCandidates() {
+          sparkleCandidates = [];
+          for (const v of staticList) {
+            if (v.y < 4) continue;
+            if (v.mat !== "iron" && v.mat !== "ironDark" && v.mat !== "rail") continue;
+            // exposed?
+            let exposed = false;
+            for (const f of FACES) {
+              if (!hasStatic(v.x + f.dx, v.y + f.dy, v.z + f.dz)) {
+                exposed = true;
+                break;
+              }
+            }
+            if (!exposed) continue;
+            sparkleCandidates.push({ x: v.x + 0.5, y: v.y + 0.5, z: v.z + 0.5, h: hash3(v.x, v.y, v.z) });
+          }
+          sparkles = [];
+          sparkleCarry = 0;
+        }
+
+        function spawnSparkle() {
+          if (!sparkleCandidates.length) return;
+          const idx = Math.floor(rand() * sparkleCandidates.length);
+          const p = sparkleCandidates[idx];
+          const warm = rand() < 0.75;
+          sparkles.push({
+            x: p.x,
+            y: p.y,
+            z: p.z,
+            life: lerp(0.22, 0.9, rand()),
+            age: 0,
+            r: lerp(0.45, 1.25, rand()),
+            col: warm ? "rgba(255, 238, 210,1)" : "rgba(210, 240, 255,1)",
+            ph: rand() * Math.PI * 2
+          });
+        }
+
+        function updateSparkles(dt, glows) {
+          if (!sparkleEnabled) {
+            sparkles.length = 0;
+            sparkleCarry = 0;
+            return;
+          }
+
+          const rate = 140; // sparks per second
+          sparkleCarry += dt * rate;
+          while (sparkleCarry >= 1) {
+            sparkleCarry -= 1;
+            spawnSparkle();
+          }
+
+          for (let i = sparkles.length - 1; i >= 0; i--) {
+            const s = sparkles[i];
+            s.age += dt;
+            if (s.age >= s.life) {
+              sparkles[i] = sparkles[sparkles.length - 1];
+              sparkles.pop();
+              continue;
+            }
+            const t = s.age / s.life;
+            const fade = Math.pow(1 - t, 1.8);
+            const flicker = 0.65 + 0.35 * Math.sin(s.ph + state.t * 18.0);
+            glowAt(glows, { x: s.x, y: s.y, z: s.z }, s.col, 0.14 * fade * flicker, s.r);
+          }
+        }
+
+        // ===== Camera / UI =====
+        const state = {
+          dpr: 1,
+          w: 1,
+          h: 1,
+          yaw: 0.85,
+          pitch: 0.58,
+          zoom: 18,
+          originX: 0,
+          originY: 0,
+          autoSpin: true,
+          paused: false,
+          dragging: false,
+          lastX: 0,
+          lastY: 0,
+          lastTs: 0,
+          t: 0
+        };
+
+        function camNormal(n) {
+          return rotX(rotY(n, state.yaw), state.pitch);
+        }
+        function toCam(p) {
+          const centered = { x: p.x - pivot.x, y: p.y - pivot.y, z: p.z - pivot.z };
+          return rotX(rotY(centered, state.yaw), state.pitch);
+        }
+        function project(cam) {
+          return { x: state.originX + cam.x * state.zoom, y: state.originY - cam.y * state.zoom };
+        }
+
+        function fitView() {
+          if (!bounds) return;
+          const pad = 5;
+          const b = {
+            minX: bounds.minX - pad,
+            minY: bounds.minY - pad,
+            minZ: bounds.minZ - pad,
+            maxX: bounds.maxX + pad,
+            maxY: bounds.maxY + pad,
+            maxZ: bounds.maxZ + pad
+          };
+          const corners = [
+            { x: b.minX, y: b.minY, z: b.minZ },
+            { x: b.maxX, y: b.minY, z: b.minZ },
+            { x: b.minX, y: b.minY, z: b.maxZ },
+            { x: b.maxX, y: b.minY, z: b.maxZ },
+            { x: b.minX, y: b.maxY, z: b.minZ },
+            { x: b.maxX, y: b.maxY, z: b.minZ },
+            { x: b.minX, y: b.maxY, z: b.maxZ },
+            { x: b.maxX, y: b.maxY, z: b.maxZ }
+          ];
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          for (const c of corners) {
+            const cam = toCam(c);
+            minX = Math.min(minX, cam.x);
+            maxX = Math.max(maxX, cam.x);
+            minY = Math.min(minY, cam.y);
+            maxY = Math.max(maxY, cam.y);
+          }
+          const spanX = Math.max(0.001, maxX - minX);
+          const spanY = Math.max(0.001, maxY - minY);
+          const targetW = state.w * 0.92;
+          const targetH = state.h * 0.78;
+          const zoom = Math.min(targetW / spanX, targetH / spanY);
+          state.zoom = clamp(zoom, 9, 62);
+          const cx = (minX + maxX) / 2;
+          const cy = (minY + maxY) / 2;
+          state.originX = state.w / 2 - cx * state.zoom;
+          state.originY = state.h * 0.72 + cy * state.zoom;
+        }
+
+        function resize() {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const w = Math.max(1, Math.floor(window.innerWidth));
+          const h = Math.max(1, Math.floor(window.innerHeight));
+          state.dpr = dpr;
+          state.w = w;
+          state.h = h;
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = `${w}px`;
+          canvas.style.height = `${h}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          fitView();
+          initBackdrop();
+        }
+
+        function setAutoSpin(v) {
+          state.autoSpin = v;
+          spinDot.classList.toggle("on", v);
+          spinText.textContent = v ? "自动旋转：开" : "自动旋转：关";
+        }
+        function setSparkle(v) {
+          sparkleEnabled = v;
+          sparkDot.classList.toggle("on", v);
+          sparkText.textContent = v ? "闪烁灯光：开" : "闪烁灯光：关";
+        }
+        function setPaused(v) {
+          state.paused = v;
+          pauseDot.classList.toggle("on", v);
+          pauseText.textContent = v ? "暂停：开" : "暂停：关";
+        }
+
+        canvas.addEventListener("pointerdown", (e) => {
+          state.dragging = true;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointermove", (e) => {
+          if (!state.dragging) return;
+          const dx = e.clientX - state.lastX;
+          const dy = e.clientY - state.lastY;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          state.yaw += dx * 0.006;
+          state.pitch = clamp(state.pitch + dy * 0.004, 0.24, 1.05);
+        });
+        window.addEventListener("pointerup", () => (state.dragging = false));
+        canvas.addEventListener(
+          "wheel",
+          (e) => {
+            const f = Math.exp(-e.deltaY * 0.0012);
+            state.zoom = clamp(state.zoom * f, 8, 90);
+          },
+          { passive: true }
+        );
+        canvas.addEventListener("dblclick", () => {
+          state.yaw = 0.85;
+          state.pitch = 0.58;
+          fitView();
+        });
+
+        spinPill.addEventListener("click", () => setAutoSpin(!state.autoSpin));
+        sparkPill.addEventListener("click", () => setSparkle(!sparkleEnabled));
+        pausePill.addEventListener("click", () => setPaused(!state.paused));
+        resetBtn.addEventListener("click", () => {
+          state.yaw = 0.85;
+          state.pitch = 0.58;
+          fitView();
+        });
+        rebuildBtn.addEventListener("click", () => {
+          seed = (Math.random() * 1e9) | 0;
+          buildStatic();
+          fitView();
+          initBackdrop();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          const k = e.key.toLowerCase();
+          if (e.code === "Space") {
+            e.preventDefault();
+            setAutoSpin(!state.autoSpin);
+          } else if (k === "l") {
+            setSparkle(!sparkleEnabled);
+          } else if (k === "p") {
+            setPaused(!state.paused);
+          } else if (k === "r") {
+            seed = (Math.random() * 1e9) | 0;
+            buildStatic();
+            fitView();
+            initBackdrop();
+          }
+        });
+        window.addEventListener("resize", resize);
+
+        // ===== Backdrop (stars + haze) =====
+        let stars = [];
+        let clouds = [];
+        function initBackdrop() {
+          const r = mulberry32(seed ^ 0x5eedd0c7);
+          stars = [];
+          clouds = [];
+          const n = Math.round(lerp(120, 220, r()));
+          for (let i = 0; i < n; i++) {
+            const y = Math.pow(r(), 1.55) * state.h * 0.65;
+            stars.push({
+              x: r() * state.w,
+              y,
+              rad: lerp(0.6, 1.9, Math.pow(r(), 2.2)),
+              a: lerp(0.10, 0.65, Math.pow(r(), 2.0)),
+              ph: r() * Math.PI * 2,
+              sp: lerp(0.7, 1.8, r())
+            });
+          }
+          const cloudN = 8;
+          for (let i = 0; i < cloudN; i++) {
+            clouds.push({
+              x: lerp(-80, state.w + 80, r()),
+              y: lerp(state.h * 0.10, state.h * 0.42, r()),
+              r: lerp(60, 160, r()),
+              a: lerp(0.03, 0.07, r()),
+              vx: lerp(6, 16, r()) * (r() < 0.5 ? -1 : 1)
+            });
+          }
+        }
+
+        function drawBackground(dt) {
+          const g = ctx.createLinearGradient(0, 0, 0, state.h);
+          g.addColorStop(0, "#070a18");
+          g.addColorStop(0.55, "#050716");
+          g.addColorStop(1, "#04040c");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, state.w, state.h);
+
+          // Horizon glow
+          const hg = ctx.createRadialGradient(state.w * 0.5, state.h * 0.78, 0, state.w * 0.5, state.h * 0.78, state.h * 0.62);
+          hg.addColorStop(0, "rgba(255, 220, 170, 0.07)");
+          hg.addColorStop(0.4, "rgba(140, 180, 255, 0.045)");
+          hg.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = hg;
+          ctx.fillRect(0, 0, state.w, state.h);
+
+          // Stars
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          for (const s of stars) {
+            const tw = 0.6 + 0.4 * Math.sin(s.ph + state.t * s.sp);
+            ctx.globalAlpha = s.a * tw;
+            ctx.fillStyle = "rgba(240, 248, 255, 1)";
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.rad, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Clouds
+          ctx.save();
+          for (const c of clouds) {
+            c.x += c.vx * dt;
+            if (c.x < -220) c.x = state.w + 220;
+            if (c.x > state.w + 220) c.x = -220;
+            const gg = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+            gg.addColorStop(0, `rgba(120, 160, 255, ${c.a})`);
+            gg.addColorStop(1, "rgba(0,0,0,0)");
+            ctx.fillStyle = gg;
+            ctx.fillRect(c.x - c.r, c.y - c.r, c.r * 2, c.r * 2);
+          }
+          ctx.restore();
+        }
+
+        // ===== Rendering =====
+        function pushFace(drawList, pts, z, fill, stroke, alpha, layer) {
+          drawList.push({ pts, z, fill, stroke, alpha, layer });
+        }
+
+        function glowAt(glows, p, col, intensity, rMul = 1.0) {
+          const cam = toCam(p);
+          const s = project(cam);
+          glows.push({ z: cam.z, x: s.x, y: s.y, r: state.zoom * 2.4 * rMul, col, a: intensity });
+        }
+
+        function drawGlows(glows) {
+          if (!glows.length) return;
+          glows.sort((a, b) => a.z - b.z);
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          for (const g of glows) {
+            ctx.globalAlpha = g.a;
+            const gg = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r);
+            gg.addColorStop(0, g.col);
+            gg.addColorStop(0.42, g.col.replace(",1)", ",0.22)"));
+            gg.addColorStop(1, g.col.replace(",1)", ",0)"));
+            ctx.fillStyle = gg;
+            ctx.beginPath();
+            ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        }
+
+        function render(ts) {
+          const dtRaw = (ts - state.lastTs) / 1000;
+          const dt = clamp(dtRaw, 0, 1 / 20) || 0;
+          state.lastTs = ts;
+          if (!state.paused) state.t += dt;
+
+          if (state.autoSpin && !state.dragging && !state.paused) state.yaw += dt * 0.10;
+
+          drawBackground(dt);
+
+          const normalCache = {
+            "+x": camNormal({ x: 1, y: 0, z: 0 }),
+            "-x": camNormal({ x: -1, y: 0, z: 0 }),
+            "+y": camNormal({ x: 0, y: 1, z: 0 }),
+            "-y": camNormal({ x: 0, y: -1, z: 0 }),
+            "+z": camNormal({ x: 0, y: 0, z: 1 }),
+            "-z": camNormal({ x: 0, y: 0, z: -1 })
+          };
+
+          const drawList = [];
+          const glows = [];
+
+          // Tower beacon glow near the top
+          const beaconP = { x: 0.5, y: 80.2, z: 0.5 };
+          const beaconPulse = 0.08 + 0.06 * (0.5 + 0.5 * Math.sin(state.t * 2.2));
+          glowAt(glows, beaconP, "rgba(190, 240, 255,1)", beaconPulse, 2.6);
+
+          // Lamps on the plaza corners (static-ish)
+          glowAt(glows, { x: -20, y: 8.6, z: -20 }, "rgba(255, 226, 180,1)", 0.12, 2.1);
+          glowAt(glows, { x: 20, y: 8.6, z: -20 }, "rgba(255, 226, 180,1)", 0.12, 2.1);
+          glowAt(glows, { x: -20, y: 8.6, z: 20 }, "rgba(255, 226, 180,1)", 0.12, 2.1);
+          glowAt(glows, { x: 20, y: 8.6, z: 20 }, "rgba(255, 226, 180,1)", 0.12, 2.1);
+
+          // Sparkles
+          if (!state.paused) updateSparkles(dt, glows);
+          else updateSparkles(0, glows);
+
+          // Voxel faces
+          for (const face of staticFaces) {
+            const nC = normalCache[face.face];
+            if (nC.z <= 0.0001) continue;
+            const pts = new Array(4);
+            let zSum = 0;
+            for (let i = 0; i < 4; i++) {
+              const cam = toCam(face.verts[i]);
+              zSum += cam.z;
+              pts[i] = project(cam);
+            }
+            const v = face.v;
+            const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+            const rim = Math.pow(clamp(nC.z, 0, 1), 1.25) * 0.09;
+            const brightness = 0.48 + Math.max(0, diff) * 0.58 + rim + (v.emissive || 0);
+            const cool = (v.coolShadow || 0) * (1 - Math.max(0, diff));
+            const col = shadeRgb(v.base, brightness, cool);
+            pushFace(
+              drawList,
+              pts,
+              zSum / 4,
+              rgbToCss(col),
+              (v.alpha ?? 1) < 1 ? "rgba(0,0,0,0.06)" : "rgba(0,0,0,0.14)",
+              v.alpha ?? 1,
+              0
+            );
+          }
+
+          drawList.sort((a, b) => a.z - b.z || a.layer - b.layer);
+          ctx.save();
+          ctx.lineJoin = "round";
+          for (const it of drawList) {
+            ctx.globalAlpha = it.alpha;
+            ctx.fillStyle = it.fill;
+            ctx.strokeStyle = it.stroke;
+            ctx.beginPath();
+            ctx.moveTo(it.pts[0].x, it.pts[0].y);
+            for (let i = 1; i < it.pts.length; i++) ctx.lineTo(it.pts[i].x, it.pts[i].y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          drawGlows(glows);
+
+          statusEl.innerHTML =
+            `<div><b>体素：</b>${staticList.length.toLocaleString()}　<b>外露面：</b>${staticFaces.length.toLocaleString()}</div>` +
+            `<div><b>闪烁：</b>${sparkleEnabled ? "开" : "关"}（粒子 ${sparkles.length.toLocaleString()}）　<b>种子：</b>${seed}</div>`;
+
+          requestAnimationFrame(render);
+        }
+
+        // Boot
+        setAutoSpin(true);
+        setSparkle(true);
+        setPaused(false);
+        buildStatic();
+        resize();
+        requestAnimationFrame(render);
+      })();
+    </script>
+  </body>
+</html>

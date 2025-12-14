@@ -197,7 +197,45 @@
         "content": "<iframe src='/eval-demos/deepseek-v3.2-street-basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
+  },
+
+            {
+    "id": "q010",
+    "title": "埃菲尔铁塔",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "创建体素艺术中的埃菲尔铁塔，格子铁框架结构，不同层的观景台，带拱门的底座，使用HTML，JS，CSS展示，最终写成一个HTML文件",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-eiffel_tower.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-eiffel.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+
+              {
+    "id": "q011",
+    "title": "悉尼歌剧院",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "创建体素艺术悉尼歌剧院，标志性贝壳状屋顶，海滨位置，港口，通往入口的台阶，使用HTML， CSS，JS，最终写成一个HTML文件",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-sydney_opera_house.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-sydney-opera.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
   }
+
+
 
 
 ]
