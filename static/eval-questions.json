@@ -157,5 +157,47 @@
         "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-snowman.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
+  },
+
+        {
+    "id": "q008",
+    "title": "城市十字路口",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "创建体素艺术中的城市十字路口，红绿灯、人行横道、汽车停走、行人过马路、街边小贩，使用HTML，CSS，JS来展现，最终写成一个HTML ",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-city_intersection.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-intersection.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+
+          {
+    "id": "q009",
+    "title": "街头篮球场",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "创建体素艺术中的街头篮球场，球员打球、铁丝网围栏、墙上涂鸦、观众、城市背景。使用HTML，CSS JS来展现，最终写成一个HTML文件",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-street_basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-street-basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
   }
+
+
 ]

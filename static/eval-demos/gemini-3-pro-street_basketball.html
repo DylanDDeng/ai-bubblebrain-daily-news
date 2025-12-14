@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Street Basketball</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #1e1e24;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: monospace;
+            font-size: 24px;
+            pointer-events: none;
+        }
+    </style>
+    <!-- Import Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="loading">Loading Court...</div>
+    <div id="canvas-container"></div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Configuration ---
+        const VOXEL_SIZE = 1;
+        const COURT_WIDTH = 40;
+        const COURT_LENGTH = 60;
+        const COLORS = {
+            asphalt: 0x333333,
+            line: 0xEEEEEE,
+            rim: 0xFF4500,
+            pole: 0x555555,
+            backboard: 0xDDDDDD,
+            fence: 0x444444,
+            skin: 0xD2B48C,
+            ball: 0xFF6600,
+            jersey1: 0xFFFF00, // Lakers-ish
+            jersey2: 0x800080,
+            graffiti1: 0x00FF00,
+            graffiti2: 0xFF00FF,
+            brick: 0x8B4513,
+            sky: 0x111122
+        };
+
+        // --- Scene Setup ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(COLORS.sky);
+        scene.fog = new THREE.Fog(COLORS.sky, 30, 90);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(50, 40, 50);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 1.0;
+        controls.maxPolarAngle = Math.PI / 2 - 0.1; // Don't go below ground
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(-30, 60, 40);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 200;
+        dirLight.shadow.camera.left = -60;
+        dirLight.shadow.camera.right = 60;
+        dirLight.shadow.camera.top = 60;
+        dirLight.shadow.camera.bottom = -60;
+        scene.add(dirLight);
+
+        // --- Voxel Helpers ---
+        // Reuse geometry and material for better performance where possible, 
+        // but for voxel art, we often use cloned meshes or InstancedMesh.
+        // For simplicity and ease of coding complex structures here, we'll use a helper to return a mesh.
+
+        const boxGeometry = new THREE.BoxGeometry(VOXEL_SIZE, VOXEL_SIZE, VOXEL_SIZE);
+
+        function createVoxel(color, x, y, z, parent = scene) {
+            const material = new THREE.MeshStandardMaterial({ color: color });
+            const voxel = new THREE.Mesh(boxGeometry, material);
+            voxel.position.set(x, y, z);
+            voxel.castShadow = true;
+            voxel.receiveShadow = true;
+            parent.add(voxel);
+            return voxel;
+        }
+
+        // --- Building the Scene ---
+
+        // 1. Basketball Court
+        const courtGroup = new THREE.Group();
+        scene.add(courtGroup);
+
+        function buildCourt() {
+            // Main surface
+            const geometry = new THREE.BoxGeometry(COURT_WIDTH, 1, COURT_LENGTH);
+            const material = new THREE.MeshStandardMaterial({ color: COLORS.asphalt, roughness: 0.9 });
+            const floor = new THREE.Mesh(geometry, material);
+            floor.position.set(0, -0.5, 0);
+            floor.receiveShadow = true;
+            courtGroup.add(floor);
+
+            // Lines (simplified representation with thin voxels or planes)
+            // Just using thin boxes slightly above floor
+            const lineMat = new THREE.MeshBasicMaterial({ color: COLORS.line });
+            const createLine = (w, l, x, z) => {
+                const line = new THREE.Mesh(new THREE.BoxGeometry(w, 0.05, l), lineMat);
+                line.position.set(x, 0.01, z);
+                courtGroup.add(line);
+            };
+
+            // Border
+            createLine(COURT_WIDTH, 1, 0, -COURT_LENGTH / 2);
+            createLine(COURT_WIDTH, 1, 0, COURT_LENGTH / 2);
+            createLine(1, COURT_LENGTH, -COURT_WIDTH / 2, 0);
+            createLine(1, COURT_LENGTH, COURT_WIDTH / 2, 0);
+
+            // Half-court
+            createLine(COURT_WIDTH, 0.5, 0, 0);
+
+            // Key area (roughly)
+            createLine(12, 1, 0, -COURT_LENGTH / 2 + 9);
+            createLine(1, 19, -6, -COURT_LENGTH / 2 + 9.5);
+            createLine(1, 19, 6, -COURT_LENGTH / 2 + 9.5);
+
+            // Key area (other side)
+            createLine(12, 1, 0, COURT_LENGTH / 2 - 9);
+            createLine(1, 19, -6, COURT_LENGTH / 2 - 9.5);
+            createLine(1, 19, 6, COURT_LENGTH / 2 - 9.5);
+        }
+        buildCourt();
+
+        // 2. Hoop & Backboard
+        function buildHoop(zPos, rotateWait) {
+            const hoopGroup = new THREE.Group();
+
+            // Pole
+            for (let y = 0; y < 12; y++) {
+                createVoxel(COLORS.pole, 0, y, 0, hoopGroup);
+            }
+            // Arm
+            for (let z = 0; z < 4; z++) {
+                createVoxel(COLORS.pole, 0, 11, zPos > 0 ? -z : z, hoopGroup);
+            }
+
+            // Backboard
+            for (let x = -3; x <= 3; x++) {
+                for (let y = 10; y <= 14; y++) {
+                    createVoxel(COLORS.backboard, x, y, zPos > 0 ? -3 : 3, hoopGroup);
+                }
+            }
+
+            // Rim
+            const rimZ = zPos > 0 ? -2 : 2;
+            createVoxel(COLORS.rim, 0, 11, rimZ, hoopGroup);
+
+            hoopGroup.position.set(0, 0, zPos);
+            if (rotateWait) hoopGroup.rotation.y = Math.PI;
+            scene.add(hoopGroup);
+        }
+        buildHoop(-COURT_LENGTH / 2 - 1, false);
+        buildHoop(COURT_LENGTH / 2 + 1, true);
+
+        // 3. Walls with Graffiti
+        function buildWalls() {
+            const wallGroup = new THREE.Group();
+            // Side wall
+            for (let x = -20; x <= 20; x++) {
+                for (let y = 0; y < 10; y++) {
+                    const isGraffiti = Math.random() < 0.2 && x > -5 && x < 5 && y > 2 && y < 7;
+                    const color = isGraffiti ? (Math.random() > 0.5 ? COLORS.graffiti1 : COLORS.graffiti2) : COLORS.brick;
+                    createVoxel(color, x, y, -COURT_LENGTH / 2 - 10, wallGroup);
+                }
+            }
+            // Add a fence on the other side
+            for (let x = -COURT_WIDTH / 2; x <= COURT_WIDTH / 2; x += 2) {
+                for (let y = 0; y < 8; y++) {
+                    // Posts
+                    if (y === 0 || y === 4 || y === 7)
+                        createVoxel(COLORS.fence, x, y, COURT_LENGTH / 2 + 5, wallGroup).scale.set(0.2, 1, 0.2);
+                    // Mesh look (sparse voxels)
+                    if (Math.random() > 0.7)
+                        createVoxel(COLORS.fence, x + (Math.random() - 0.5), y, COURT_LENGTH / 2 + 5, wallGroup).scale.set(0.1, 0.1, 0.1);
+                }
+            }
+
+            scene.add(wallGroup);
+        }
+        buildWalls();
+
+        // 4. City Background
+        function buildCity() {
+            const cityGroup = new THREE.Group();
+            for (let i = 0; i < 30; i++) {
+                const h = 10 + Math.random() * 30;
+                const w = 2 + Math.random() * 5;
+                const d = 2 + Math.random() * 5;
+                const x = (Math.random() - 0.5) * 150;
+                const z = (Math.random() - 0.5) * 150;
+                // keep away from center
+                if (Math.abs(x) < 40 && Math.abs(z) < 50) continue;
+
+                const geometry = new THREE.BoxGeometry(w, h, d);
+                const material = new THREE.MeshStandardMaterial({ color: 0x111111 });
+                const building = new THREE.Mesh(geometry, material);
+                building.position.set(x, h / 2 - 5, z);
+                cityGroup.add(building);
+
+                // Windows
+                for (let wy = 0; wy < h; wy += 2) {
+                    if (Math.random() > 0.3) {
+                        const winGeo = new THREE.BoxGeometry(w * 0.8, 0.5, d * 1.01);
+                        const winMat = new THREE.MeshBasicMaterial({ color: 0xFFFF00 });
+                        const win = new THREE.Mesh(winGeo, winMat);
+                        win.position.set(x, wy - 5, z);
+                        cityGroup.add(win);
+                    }
+                }
+            }
+            scene.add(cityGroup);
+        }
+        buildCity();
+
+        // --- Characters ---
+        const humans = [];
+
+        function createHuman(x, z, color) {
+            const group = new THREE.Group();
+
+            // Legs
+            const lLeg = createVoxel(0x222222, -0.3, 1, 0, group);
+            lLeg.scale.set(0.5, 2, 0.5);
+            const rLeg = createVoxel(0x222222, 0.3, 1, 0, group);
+            rLeg.scale.set(0.5, 2, 0.5);
+
+            // Torso
+            const torso = createVoxel(color, 0, 3, 0, group);
+            torso.scale.set(1.5, 2, 0.8);
+
+            // Head
+            const head = createVoxel(COLORS.skin, 0, 4.5, 0, group);
+            head.scale.set(0.8, 0.8, 0.8);
+
+            // Arms
+            const lArm = createVoxel(COLORS.skin, -0.9, 3, 0, group);
+            lArm.scale.set(0.4, 1.8, 0.4);
+            const rArm = createVoxel(COLORS.skin, 0.9, 3, 0, group);
+            rArm.scale.set(0.4, 1.8, 0.4);
+
+            group.position.set(x, 0, z);
+            scene.add(group);
+
+            humans.push({ group, lLeg, rLeg, lArm, rArm, speed: Math.random() * 0.05 + 0.02, offset: Math.random() * 100 });
+            return group;
+        }
+
+        // Players
+        createHuman(-5, -10, COLORS.jersey1);
+        createHuman(5, -12, COLORS.jersey1);
+        createHuman(0, 5, COLORS.jersey2);
+        createHuman(-8, 5, COLORS.jersey2);
+
+        // Audience
+        for (let i = 0; i < 5; i++) {
+            createHuman(15 + i * 2, 0, 0x888888 + Math.random() * 0x555555);
+        }
+
+
+        // --- Ball ---
+        const ball = createVoxel(COLORS.ball, 0, 2, 0);
+        // actually make ball rounder but still voxelish? No, simple box is fine for pure voxel, 
+        // but maybe a 2x2x2 cluster or just a slightly larger single voxel.
+        ball.scale.set(0.8, 0.8, 0.8);
+
+        // --- Animation ---
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.05;
+
+            // Player Animation (Idle/Bounce)
+            humans.forEach(h => {
+                h.group.position.y = Math.abs(Math.sin(time + h.offset)) * 0.5;
+                h.lArm.rotation.x = Math.sin(time + h.offset) * 0.5;
+                h.rArm.rotation.x = -Math.sin(time + h.offset) * 0.5;
+            });
+
+            // Ball Logic (Simple bounce between players)
+            const p1 = humans[0].group.position;
+            const p2 = humans[2].group.position; // pass to opponent
+
+            const bounceSpeed = 1.5;
+            const dist = 0.5 + 0.5 * Math.sin(time * 0.5); // 0 to 1
+
+            // Interpolate ball pos
+            // A simple predictable path: Dribbling near player 1
+            ball.position.x = p1.x + 1.5;
+            ball.position.z = p1.z;
+            ball.position.y = Math.abs(Math.sin(time * 5)) * 2 + 0.5;
+            ball.rotation.x += 0.1;
+            ball.rotation.z += 0.1;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        document.getElementById('loading').style.display = 'none';
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>

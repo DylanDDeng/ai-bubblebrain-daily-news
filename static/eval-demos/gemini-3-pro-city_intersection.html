@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel City Intersection</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+    </style>
+    <!-- Import Three.js from CDN -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="ui-layer">
+        <h2>Voxel City Intersection</h2>
+        <p>Traffic Control System Active</p>
+    </div>
+    <div id="canvas-container"></div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Configuration ---
+        const VOXEL_SIZE = 1;
+        const GRID_SIZE = 60;
+
+        // --- Scene Setup ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB); // Sky blue
+        scene.fog = new THREE.Fog(0x87CEEB, 20, 100);
+
+        // Orthographic Camera for Iso look
+        const aspect = container.clientWidth / container.clientHeight;
+        const d = 40;
+        const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
+        camera.position.set(40, 40, 40); // Iso view
+        camera.lookAt(scene.position);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        // --- Lights ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(50, 80, 50);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.1;
+        dirLight.shadow.camera.far = 200;
+        dirLight.shadow.camera.left = -50;
+        dirLight.shadow.camera.right = 50;
+        dirLight.shadow.camera.top = 50;
+        dirLight.shadow.camera.bottom = -50;
+        scene.add(dirLight);
+
+        // --- Voxel Builder Utilities ---
+        class VoxelBuilder {
+            constructor() {
+                this.geometry = new THREE.BoxGeometry(VOXEL_SIZE, VOXEL_SIZE, VOXEL_SIZE);
+                this.materials = {};
+            }
+
+            getMaterial(color) {
+                if (!this.materials[color]) {
+                    this.materials[color] = new THREE.MeshLambertMaterial({ color: color });
+                }
+                return this.materials[color];
+            }
+
+            createVoxel(x, y, z, color, parent = scene) {
+                const material = this.getMaterial(color);
+                const voxel = new THREE.Mesh(this.geometry, material);
+                voxel.position.set(x * VOXEL_SIZE, y * VOXEL_SIZE + VOXEL_SIZE / 2, z * VOXEL_SIZE);
+                voxel.castShadow = true;
+                voxel.receiveShadow = true;
+                parent.add(voxel);
+                return voxel;
+            }
+
+            createBox(x, y, z, w, h, d, color, parent = scene) {
+                const material = this.getMaterial(color);
+                const geometry = new THREE.BoxGeometry(w * VOXEL_SIZE, h * VOXEL_SIZE, d * VOXEL_SIZE);
+                const voxel = new THREE.Mesh(geometry, material);
+                // Position is center of the box relative to the anchor x,y,z (bottom-left-back)
+                voxel.position.set(
+                    x * VOXEL_SIZE + (w * VOXEL_SIZE) / 2 - (0.5 * VOXEL_SIZE), // Adjusting center logic if x,y,z is true corner, but VoxelBuilder usually assumes grid centers. Let's simplify.
+                    // Actually my previous logic: x * VOXEL_SIZE is center of 1x1 block. 
+                    // If creating a box of width W starting at X, the center is X + W/2 - 0.5 (since X is center of first block).
+                    // Let's stick to world coordinates for this method to be easier.
+                    // Actually, let's redefine: x,y,z is the CENTER of the box in grid units? No, that's hard to align.
+                    // Let's say x,y,z is the Min corner in grid units.
+                    (x + w / 2) * VOXEL_SIZE - VOXEL_SIZE / 2,
+                    (y + h / 2) * VOXEL_SIZE - VOXEL_SIZE / 2,
+                    (z + d / 2) * VOXEL_SIZE - VOXEL_SIZE / 2
+                );
+
+                // Correction:
+                // Grid 0,0,0 is center of world? No, usually 0 is center.
+                // Let's follow standard Three.js positioning.
+                // If I want a box from x=0 to x=10 (width 10). Center is 5.
+                // My helper should take Center X, Y, Z or Corner?
+                // Voxel logic usually implies integer coordinates.
+                // Let's use simple logic: input x,y,z is the STARTING grid index.
+
+                voxel.position.set(
+                    (x + w / 2 - 0.5) * VOXEL_SIZE,
+                    (y + h / 2 - 0.5) * VOXEL_SIZE,
+                    (z + d / 2 - 0.5) * VOXEL_SIZE
+                );
+
+                voxel.castShadow = true;
+                voxel.receiveShadow = true;
+                parent.add(voxel);
+                return voxel;
+            }
+
+            // Create a group of voxels from a definition matrix or loop
+            createGroup(def, pos = { x: 0, y: 0, z: 0 }) {
+                const group = new THREE.Group();
+                group.position.set(pos.x, pos.y, pos.z);
+                scene.add(group);
+                return group;
+            }
+        }
+
+        const builder = new VoxelBuilder();
+
+        // --- Infrastructure Generation ---
+        const ROAD_WIDTH = 14;
+        const GRID_HALF = GRID_SIZE / 2;
+
+        function buildInfrastructure() {
+            // Colors
+            const COLOR_ASPHALT = 0x333333;
+            const COLOR_SIDEWALK = 0x999999;
+            const COLOR_CROSSWALK = 0xEEEEEE;
+            const COLOR_GRASS = 0x4caf50;
+            const COLOR_LINE = 0xFFD700; // Yellow double line
+
+            // 1. Ground (Grass)
+            builder.createBox(-GRID_HALF, -2, -GRID_HALF, GRID_SIZE, 2, GRID_SIZE, COLOR_GRASS);
+
+            // 2. Roads (Cross shape)
+            const rw = ROAD_WIDTH;
+            // North-South Road
+            builder.createBox(-rw / 2, 0, -GRID_HALF, rw, 0.1, GRID_SIZE, COLOR_ASPHALT);
+            // East-West Road
+            builder.createBox(-GRID_HALF, 0, -rw / 2, GRID_SIZE, 0.1, rw, COLOR_ASPHALT);
+
+            // 3. Sidewalks (Corners)
+            // We want sidewalks to fill the corners between roads
+            // Roads go from -rw/2 to rw/2.
+            // Sidewalks start at rw/2.
+            const swH = 0.4; // height
+
+            const buildCorner = (startX, startZ, width, depth) => {
+                builder.createBox(startX, 0, startZ, width, swH, depth, COLOR_SIDEWALK);
+            };
+
+            const cornerSize = (GRID_SIZE - rw) / 2;
+            const posStart = rw / 2;
+            const negStart = -GRID_HALF;
+
+            // Top Right (+X, +Z)
+            buildCorner(posStart, posStart, cornerSize, cornerSize);
+            // Top Left (-X, +Z) -> x starts at -GRID_HALF
+            buildCorner(negStart, posStart, cornerSize, cornerSize);
+            // Bottom Left (-X, -Z)
+            buildCorner(negStart, negStart, cornerSize, cornerSize);
+            // Bottom Right (+X, -Z)
+            buildCorner(posStart, negStart, cornerSize, cornerSize);
+
+            // 4. Crosswalks
+            // Z-Stripes on NS road
+            // Located at z = +/- (rw/2 + 2)
+            const stripeW = 0.8;
+            const stripeGap = 0.6;
+            const cwZ = rw / 2 + 1;
+
+            // NS Road Crosswalks (Stripes go across X)
+            for (let x = -rw / 2 + 1; x < rw / 2; x += (stripeW + stripeGap)) {
+                // Top side (+Z)
+                builder.createBox(x, 0.05, cwZ, stripeW, 0.05, 3, COLOR_CROSSWALK);
+                // Bottom side (-Z)
+                builder.createBox(x, 0.05, -cwZ - 3, stripeW, 0.05, 3, COLOR_CROSSWALK);
+            }
+
+            // EW Road Crosswalks (Stripes go across Z)
+            const cwX = rw / 2 + 1;
+            for (let z = -rw / 2 + 1; z < rw / 2; z += (stripeW + stripeGap)) {
+                // Right side (+X)
+                builder.createBox(cwX, 0.05, z, 3, 0.05, stripeW, COLOR_CROSSWALK);
+                // Left side (-X)
+                builder.createBox(-cwX - 3, 0.05, z, 3, 0.05, stripeW, COLOR_CROSSWALK);
+            }
+        }
+
+
+        buildInfrastructure();
+
+        // --- Props & Actors ---
+        const trafficLights = [];
+
+        class TrafficLight {
+            constructor(x, z, rotationY) {
+                this.group = new THREE.Group();
+                this.group.position.set(x, 0, z);
+                this.group.rotation.y = rotationY;
+                scene.add(this.group);
+
+                // Pole
+                const pole = builder.createBox(0, 0, 0, 0.5, 6, 0.5, 0x222222, this.group);
+                pole.position.set(0, 3, 0); // local pos center
+
+                // Housing
+                const housing = builder.createBox(0, 4.5, 0.5, 1.5, 4, 1.5, 0x111111, this.group);
+                housing.position.set(0, 4.5, 0.5);
+
+                // Lights (Red, Yellow, Green)
+                this.redLight = this.createLight(0, 5.5, 1.3, 0xff0000);
+                this.yellowLight = this.createLight(0, 4.5, 1.3, 0xffff00);
+                this.greenLight = this.createLight(0, 3.5, 1.3, 0x00ff00);
+
+                this.state = 'RED';
+                this.updateVisuals();
+            }
+
+            createLight(x, y, z, color) {
+                const geo = new THREE.BoxGeometry(0.8, 0.8, 0.2);
+                const mat = new THREE.MeshLambertMaterial({ color: 0x333333, emissive: 0x000000 }); // Off by default
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set(x, y, z);
+                this.group.add(mesh);
+                return { mesh, color };
+            }
+
+            setState(state) {
+                this.state = state;
+                this.updateVisuals();
+            }
+
+            updateVisuals() {
+                // Dim all
+                this.redLight.mesh.material.emissive.setHex(0x000000);
+                this.yellowLight.mesh.material.emissive.setHex(0x000000);
+                this.greenLight.mesh.material.emissive.setHex(0x000000);
+                this.redLight.mesh.material.color.setHex(0x333333);
+                this.yellowLight.mesh.material.color.setHex(0x333333);
+                this.greenLight.mesh.material.color.setHex(0x333333);
+
+                if (this.state === 'RED') {
+                    this.redLight.mesh.material.emissive.setHex(0xff0000);
+                    this.redLight.mesh.material.color.setHex(0xff0000);
+                } else if (this.state === 'YELLOW') {
+                    this.yellowLight.mesh.material.emissive.setHex(0xffff00);
+                    this.yellowLight.mesh.material.color.setHex(0xffff00);
+                } else if (this.state === 'GREEN') {
+                    this.greenLight.mesh.material.emissive.setHex(0x00ff00);
+                    this.greenLight.mesh.material.color.setHex(0x00ff00);
+                }
+            }
+        }
+
+        function buildVendor(x, z, rot) {
+            const group = new THREE.Group();
+            group.position.set(x, 0, z);
+            group.rotation.y = rot;
+            scene.add(group);
+
+            // Table
+            builder.createBox(0, 0, 0, 4, 1.2, 2, 0x8B4513, group).position.set(0, 0.6, 0);
+
+            // Umbrella Pole
+            builder.createBox(0, 0, 0, 0.2, 5, 0.2, 0xEEEEEE, group).position.set(0, 2.5, 0);
+
+            // Umbrella Top (Red and White stripes)
+            const topY = 5;
+            for (let i = -2; i <= 2; i++) {
+                for (let j = -2; j <= 2; j++) {
+                    if (Math.abs(i) + Math.abs(j) <= 3) { // Diamond shape ish
+                        const col = (i + j) % 2 === 0 ? 0xFF0000 : 0xFFFFFF;
+                        builder.createBox(i * 0.5, 0, j * 0.5, 0.5, 0.2, 0.5, col, group).position.y = topY;
+                        // Correction: createBox adds to parent, but createBox placement logic is world-ish or center-ish? 
+                        // My createBox logic: `(x + w/2 - 0.5) * VOXEL_SIZE`. 
+                        // Inside group, local coordinates. 
+                        // Let's just manually place simple boxes for umbrella.
+                    }
+                }
+            }
+            // Simplified umbrella
+            const umbrellaGroup = new THREE.Group();
+            umbrellaGroup.position.set(0, 5, 0);
+            group.add(umbrellaGroup);
+
+            builder.createBox(-1.5, 0, -1.5, 3, 0.5, 3, 0xFF0000, umbrellaGroup).position.set(0, 0, 0);
+            // White stripes
+            builder.createBox(-1.5, 0.05, -0.5, 3, 0.5, 1, 0xFFFFFF, umbrellaGroup).position.set(0, 0, 0);
+            builder.createBox(-0.5, 0.05, -1.5, 1, 0.5, 3, 0xFFFFFF, umbrellaGroup).position.set(0, 0, 0);
+
+            // Food Items
+            builder.createBox(-1, 1.2, 0, 0.5, 0.5, 0.5, 0xFFA500, group); // Orange
+            builder.createBox(1, 1.2, 0, 0.5, 0.5, 0.5, 0x00FF00, group); // Apple
+            builder.createBox(0, 1.2, 0.5, 0.8, 0.8, 0.8, 0xFFFF00, group); // Cheese?
+        }
+
+        function setupProps() {
+            const offset = ROAD_WIDTH / 2 + 2;
+            // 4 Traffic Lights
+            // 1. NE Corner (Facing South for Northbound traffic? No, facing West for Eastbound?)
+            // Traffic light positioning: The light should face the ONCOMING traffic.
+            // Northbound traffic (coming from -Z to +Z) needs a light at the SE corner or NE corner facing them.
+            // Standard: Light is on the far right corner or near right.
+            // Let's put lights at appropriate corners facing the STOP LINE.
+
+            // Light 1: For Northbound cars (at z = +something, facing North). Light should be at z = CW_Z.
+            // Placed at X negative side?
+            // Let's simplify: 4 poles at the corners.
+            // Corner Top-Right (+X, +Z): Light faces West (for Eastbound).
+            // Corner Top-Left (-X, +Z): Light faces South (for Northbound?? No, Southbound comes from top).
+
+            // Let's assume Right-Hand Traffic.
+            // Cars drive on Right side.
+            // Northbound cars are on X > 0 side? Or X < 0?
+            // Usually: 
+            // - NS Road: cars +Z go North (if North is -Z?), cars -Z go South.
+            // Let's say:
+            // - Cars on +X side go South (+Z).
+            // - Cars on -X side go North (-Z).
+            // - Cars on +Z side go West (-X).
+            // - Cars on -Z side go East (+X).
+
+            // Wait, let's stick to standard map:
+            // X axis: East (+), West (-)
+            // Z axis: South (+), North (-)
+
+            // Eastbound traffic (heading +X): Drives on South side (Z > 0). Light should be at NE corner or SE corner? Stop line is at X = -something.
+            // Light for Eastbound (stopped at X < -6) should be on the corner they are approaching.
+            // They approach the intersection from Left (-X).
+            // Light should be at (-6, -6) (SW corner) or (-6, 6) (NW corner)?
+            // Usually far side: (6, 6) or (6, -6).
+
+            // Let's place 4 lights at the 4 inner corners of the sidewalk.
+            // 1. (+X, +Z) SE Corner. Faces North and West.
+            // 2. (-X, +Z) SW Corner. Faces North and East.
+            // 3. (-X, -Z) NW Corner. Faces South and East.
+            // 4. (+X, -Z) NE Corner. Faces South and West.
+
+            // Let's just place them and Orient them to face the incoming road.
+
+            // Light for Northbound Traffic (Coming from +Z, moving to -Z, on -X side).
+            // Stop line is at Z = 8.
+            // Light should be at (-8, -8) (Far side) or (-8, 8) (Near side)?
+            // Visuals: Place at corners (8, 8), (8, -8), etc.
+
+            const d = ROAD_WIDTH / 2 + 2;
+
+            // NE Corner (X+, Z-) -> Faces South (for Southbound traffic? Southbound is on -X side? No)
+            // Let's just make 4 lights facing IN.
+            const l1 = new TrafficLight(d, -d, 0); // NE
+            l1.group.rotation.y = Math.PI; // Face South (looks at incoming Northbound)
+
+            const l2 = new TrafficLight(-d, -d, -Math.PI / 2); // NW
+            const l3 = new TrafficLight(-d, d, 0); // SW
+            const l4 = new TrafficLight(d, d, Math.PI / 2); // SE
+
+            trafficLights.push(l1, l2, l3, l4); // Just references for logic later
+
+            // Logical mapping to directions:
+            // NS Traffic uses lights facing North/South.
+            // EW Traffic uses lights facing East/West.
+
+            // Vendor on SW corner
+            buildVendor(-15, 15, Math.PI / 4);
+        }
+
+        setupProps();
+
+
+        // --- Dynamic Actors & Logic ---
+
+        const cars = [];
+        const pedestrians = [];
+        const gridLimit = GRID_SIZE / 2 + 10;
+
+        class Car {
+            constructor(axis, direction, laneOffset, speed) {
+                // axis: 'x' or 'z'
+                // direction: 1 or -1
+                // laneOffset: distance from center
+                this.axis = axis;
+                this.direction = direction;
+                this.speed = speed;
+                this.maxSpeed = speed;
+                this.mesh = new THREE.Group();
+
+                // Build Car Model
+                const color = Math.random() * 0xffffff;
+                // Chassis
+                builder.createBox(0, 0, 0, 4, 1, 2, color, this.mesh).position.set(0, 0.5, 0);
+                // Windows/Top
+                builder.createBox(0, 1, 0, 2, 0.8, 1.8, 0x333333, this.mesh).position.set(0, 0, 0); // local to parent
+                // Wheels
+                const wheelCol = 0x111111;
+                builder.createBox(-1.2, 0, 1, 0.8, 0.8, 0.2, wheelCol, this.mesh);
+                builder.createBox(1.2, 0, 1, 0.8, 0.8, 0.2, wheelCol, this.mesh);
+                builder.createBox(-1.2, 0, -1, 0.8, 0.8, 0.2, wheelCol, this.mesh);
+                builder.createBox(1.2, 0, -1, 0.8, 0.8, 0.2, wheelCol, this.mesh);
+
+                // Orient and Position
+                if (axis === 'z') {
+                    this.mesh.rotation.y = direction > 0 ? 0 : Math.PI;
+                    this.mesh.position.x = laneOffset;
+                    this.mesh.position.z = -direction * gridLimit; // Start at edge
+                } else {
+                    this.mesh.rotation.y = direction > 0 ? Math.PI / 2 : -Math.PI / 2;
+                    this.mesh.position.z = laneOffset;
+                    this.mesh.position.x = -direction * gridLimit;
+                }
+
+                scene.add(this.mesh);
+                this.stopped = false;
+            }
+
+            update(delta, trafficState) {
+                // Simple Traffic Logic
+                // Stop line is at +/- (ROAD_WIDTH/2 + 2) approx 8 or 9
+                const stopLine = ROAD_WIDTH / 2 + 4;
+                const distToCenter = this.axis === 'z' ? this.mesh.position.z : this.mesh.position.x;
+                const approaching = (this.direction > 0 && distToCenter < stopLine && distToCenter > -stopLine) ||
+                    (this.direction < 0 && distToCenter > -stopLine && distToCenter < stopLine);
+
+                // Check Traffic Light
+                // NS Road (axis='z') uses NS Light State
+                // EW Road (axis='x') uses EW Light State
+
+                let lightRed = false;
+
+                // Very simplified stop logic: if approaching intersection and light is not Green
+                // We need to know WHICH light.
+                // NS Traffic: controlled by NS light.
+                if (this.axis === 'z') {
+                    if (trafficState.ns !== 'GREEN') {
+                        // Check if we are BEFORE the stop line
+                        if (this.direction > 0 && distToCenter < -stopLine && distToCenter > -stopLine - 4) lightRed = true;
+                        if (this.direction < 0 && distToCenter > stopLine && distToCenter < stopLine + 4) lightRed = true;
+                    }
+                } else {
+                    if (trafficState.ew !== 'GREEN') {
+                        if (this.direction > 0 && distToCenter < -stopLine && distToCenter > -stopLine - 4) lightRed = true;
+                        if (this.direction < 0 && distToCenter > stopLine && distToCenter < stopLine + 4) lightRed = true;
+                    }
+                }
+
+                // Check Car Ahead
+                let blocked = false;
+                // (Simplified: O(N^2) but N is small)
+                for (let other of cars) {
+                    if (other !== this && other.axis === this.axis && other.direction === this.direction) {
+                        const myPos = this.axis === 'z' ? this.mesh.position.z : this.mesh.position.x;
+                        const otherPos = this.axis === 'z' ? other.mesh.position.z : other.mesh.position.x;
+
+                        const dist = (otherPos - myPos) * this.direction;
+                        if (dist > 0 && dist < 6) { // 6 units unsafe distance
+                            blocked = true;
+                        }
+                    }
+                }
+
+                if (lightRed || blocked) {
+                    this.speed = Math.max(0, this.speed - delta * 10);
+                } else {
+                    this.speed = Math.min(this.maxSpeed, this.speed + delta * 5);
+                }
+
+                const move = this.speed * delta * this.direction;
+                if (this.axis === 'z') this.mesh.position.z += move;
+                else this.mesh.position.x += move;
+
+                // Despawn
+                if (Math.abs(this.axis === 'z' ? this.mesh.position.z : this.mesh.position.x) > gridLimit + 5) {
+                    return false; // Request remove
+                }
+                return true;
+            }
+        }
+
+        class Pedestrian {
+            constructor() {
+                this.mesh = new THREE.Group();
+                // Random start corner
+                // Corners: 0:NE, 1:NW, 2:SW, 3:SE
+                this.corner = Math.floor(Math.random() * 4);
+                // Random target: Clockwise or Counter-Clockwise neighbors
+                // 0->1 (Cross NS), 0->3 (Cross EW)
+                // Let's simplify: Pick a start side and cross to other side.
+
+                // Setup position based on corner
+                const d = ROAD_WIDTH / 2 + 3;
+
+                // Let's define safe spots
+                const spots = [
+                    { x: d, z: -d }, // NE
+                    { x: -d, z: -d }, // NW
+                    { x: -d, z: d }, // SW
+                    { x: d, z: d }  // SE
+                ];
+
+                const start = spots[this.corner];
+                this.mesh.position.set(start.x, 0, start.z);
+
+                // Determine target
+                const targetIdx = (this.corner + (Math.random() > 0.5 ? 1 : 3)) % 4; // adjacent
+                this.target = spots[targetIdx];
+                this.waiting = true;
+
+                // Visualize
+                const shirtColor = Math.random() * 0xffffff;
+                builder.createBox(0, 0, 0, 0.6, 1.5, 0.4, shirtColor, this.mesh).position.y = 0.75; // Body
+                builder.createBox(0, 1.8, 0, 0.4, 0.4, 0.4, 0xffccaa, this.mesh); // Head
+
+                scene.add(this.mesh);
+                this.speed = 2 + Math.random();
+            }
+
+            update(delta, trafficState) {
+                if (this.waiting) {
+                    // Check if safe to cross
+                    // Need to know which road we are crossing
+                    // Crossing NS road (moving x) -> Check NS traffic light (Pedestrians go when NS is RED usually? Or parallel to Green?)
+                    // US/Standard: Pedestrians walk WITH parallel cars.
+                    // So if we cross EW road (moving z), we need EW cars to be Green? No, if we cross EW road, we are walking NS.
+                    // Yes, we walk parallel to cars.
+
+                    const dx = this.target.x - this.mesh.position.x;
+                    const dz = this.target.z - this.mesh.position.z;
+                    const axis = Math.abs(dx) > Math.abs(dz) ? 'x' : 'z'; // Direction of movement
+
+                    // IF we are moving along X (Crossing NS road, walking EW), we need EW light Green.
+                    // IF we are moving along Z (Crossing EW road, walking NS), we need NS light Green.
+
+                    let safe = false;
+                    if (axis === 'x' && trafficState.ew === 'GREEN') safe = true;
+                    if (axis === 'z' && trafficState.ns === 'GREEN') safe = true; // Wait for walk signal
+
+                    if (Math.abs(dx) < 0.1 && Math.abs(dz) < 0.1) return false; // Done
+
+                    if (safe) {
+                        this.waiting = false;
+                    }
+                } else {
+                    // Move
+                    const dx = this.target.x - this.mesh.position.x;
+                    const dz = this.target.z - this.mesh.position.z;
+                    const dist = Math.sqrt(dx * dx + dz * dz);
+
+                    if (dist < 0.2) return false; // Arrived
+
+                    const move = this.speed * delta;
+                    this.mesh.position.x += (dx / dist) * move;
+                    this.mesh.position.z += (dz / dist) * move;
+                    this.mesh.lookAt(this.target.x, 0, this.target.z);
+
+                    // Simple bobbing
+                    this.mesh.position.y = Math.sin(Date.now() * 0.01) * 0.1;
+                }
+                return true;
+            }
+        }
+
+        // --- Traffic Controller ---
+        const trafficSystem = {
+            timer: 0,
+            phase: 0,
+            ns: 'RED',
+            ew: 'GREEN',
+
+            update(delta) {
+                this.timer += delta;
+
+                // Cycle: 
+                // 0: NS Green, EW Red (5s)
+                // 1: NS Yellow, EW Red (2s)
+                // 2: NS Red, EW Red (1s)
+                // 3: NS Red, EW Green (5s)
+                // 4: NS Red, EW Yellow (2s)
+                // 5: NS Red, EW Red (1s)
+
+                const cycleTimes = [5, 2, 1, 5, 2, 1];
+                if (this.timer > cycleTimes[this.phase]) {
+                    this.timer = 0;
+                    this.phase = (this.phase + 1) % 6;
+                    this.updateLights();
+                }
+            },
+
+            updateLights() {
+                switch (this.phase) {
+                    case 0: this.ns = 'GREEN'; this.ew = 'RED'; break;
+                    case 1: this.ns = 'YELLOW'; this.ew = 'RED'; break;
+                    case 2: this.ns = 'RED'; this.ew = 'RED'; break;
+                    case 3: this.ns = 'RED'; this.ew = 'GREEN'; break;
+                    case 4: this.ns = 'RED'; this.ew = 'YELLOW'; break;
+                    case 5: this.ns = 'RED'; this.ew = 'RED'; break;
+                }
+
+                // Update Props
+                // Assuming first 2 lights in array are NS, next 2 are EW?
+                // Logic: lights 0(NE, facing S), 1(NW, facing S/E?), ...
+                // My setup: 
+                // l1(NE, facing S - for NB?), l2(NW, facing E - for WB?), l3(SW, facing N - for SB?), l4(SE, facing W - for EB?)
+                // Let's just group them conceptually for simplicity
+                // Actually, let's just make all lights change to show state to all sides
+                // Or: 0 and 2 are NS. 1 and 3 are EW.
+                // 0 (NE) -> Controls NS Road? No, NE corner faces South. It controls Northbound traffic on NS road. YES.
+                // 2 (SW) -> Faces North. Controls Southbound traffic. YES.
+                // 1 (NW) -> Faces East. Controls Westbound. YES.
+                // 3 (SE) -> Faces West. Controls Eastbound. YES.
+
+                // So l1 (0), l3 (2) are NS Group.
+                // l2 (1), l4 (3) are EW Group.
+
+                if (trafficLights[0]) trafficLights[0].setState(this.ns);
+                if (trafficLights[2]) trafficLights[2].setState(this.ns);
+                if (trafficLights[1]) trafficLights[1].setState(this.ew);
+                if (trafficLights[3]) trafficLights[3].setState(this.ew);
+            }
+        };
+
+        // --- Spawner ---
+        let spawnTimer = 0;
+        let pedSpawnTimer = 0;
+
+        function updateSpawners(delta) {
+            spawnTimer += delta;
+            if (spawnTimer > 1.5) {
+                spawnTimer = 0;
+                // Spawn a car?
+                if (cars.length < 10) {
+                    // Random direction
+                    const r = Math.random();
+                    let axis, dir, offset;
+                    if (r < 0.25) { axis = 'z'; dir = 1; offset = 3.5; } // NB
+                    else if (r < 0.5) { axis = 'z'; dir = -1; offset = -3.5; } // SB
+                    else if (r < 0.75) { axis = 'x'; dir = 1; offset = -3.5; } // EB
+                    else { axis = 'x'; dir = -1; offset = 3.5; } // WB (Right hand traffic: drive on right)
+
+                    // Verification of Right Hand Traffic:
+                    // NB (+Z movement?): Drive on Right side of road (-X side? No, if Z is forward(North?), Right is +X?)
+                    // Let's standardise: 
+                    // NS Road: +Z is SOUTH. -Z is NORTH.
+                    // Cars going South (+Z) should be on West side (-X). 
+                    // Cars going North (-Z) should be on East side (+X).
+                    // My prev code: axis='z', dir=1 (South). LaneOffset=3.5. 3.5 is +X. WRONG for RHT if +Z is South.
+                    // If moving +Z, Right side is -X.
+                    // Let's fix lane offsets for Standard RHT:
+
+                    if (r < 0.25) { axis = 'z'; dir = 1; offset = -3.5; } // Southbound (Towards +Z), Lane Left (-X)
+                    else if (r < 0.5) { axis = 'z'; dir = -1; offset = 3.5; } // Northbound (Towards -Z), Lane Right (+X)
+                    else if (r < 0.75) { axis = 'x'; dir = 1; offset = 3.5; } // Eastbound (Towards +X), Lane Right (+Z)
+                    else { axis = 'x'; dir = -1; offset = -3.5; } // Westbound (Towards -X), Lane Left (-Z)
+
+                    cars.push(new Car(axis, dir, offset, 10 + Math.random() * 5));
+                }
+            }
+
+            pedSpawnTimer += delta;
+            if (pedSpawnTimer > 2 && pedestrians.length < 8) {
+                pedSpawnTimer = 0;
+                pedestrians.push(new Pedestrian());
+            }
+        }
+
+        const clock = new THREE.Clock();
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+
+            trafficSystem.update(delta);
+            updateSpawners(delta);
+
+            // Cars
+            for (let i = cars.length - 1; i >= 0; i--) {
+                const keep = cars[i].update(delta, trafficSystem);
+                if (!keep) {
+                    scene.remove(cars[i].mesh);
+                    cars.splice(i, 1);
+                }
+            }
+
+            // Pedestrians
+            for (let i = pedestrians.length - 1; i >= 0; i--) {
+                const keep = pedestrians[i].update(delta, trafficSystem);
+                if (!keep) {
+                    scene.remove(pedestrians[i].mesh);
+                    pedestrians.splice(i, 1);
+                }
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+
+        animate();
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            const aspect = container.clientWidth / container.clientHeight;
+            camera.left = -d * aspect;
+            camera.right = d * aspect;
+            camera.top = d;
+            camera.bottom = -d;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+
+    </script>
+</body>
+
+</html>

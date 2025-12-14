@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素艺术街头篮球场</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        
+        body {
+            background-color: #2c3e50;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        header {
+            margin-bottom: 20px;
+            color: #ecf0f1;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            color: #f39c12;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            margin-bottom: 20px;
+        }
+        
+        .scene-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            margin: 0 auto 30px;
+            border: 6px solid #34495e;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to bottom, #87CEEB 60%, #1a2530 100%);
+        }
+        
+        /* 城市背景 */
+        .city-background {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40%;
+            display: flex;
+            align-items: flex-end;
+            z-index: 1;
+        }
+        
+        .building {
+            background-color: #34495e;
+            margin: 0 2px;
+            position: relative;
+        }
+        
+        .building.window {
+            background-color: #f1c40f;
+        }
+        
+        /* 篮球场 */
+        .court {
+            position: absolute;
+            bottom: 0;
+            width: 80%;
+            height: 65%;
+            left: 10%;
+            background-color: #27ae60;
+            border: 8px solid #2ecc71;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .court-line {
+            position: absolute;
+            background-color: #ecf0f1;
+        }
+        
+        .center-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #ecf0f1;
+        }
+        
+        .free-throw-line {
+            width: 40%;
+            height: 8px;
+            background-color: #ecf0f1;
+            position: absolute;
+            top: 30%;
+        }
+        
+        .three-point-line {
+            width: 70%;
+            height: 70%;
+            border-radius: 50%;
+            border: 8px solid #ecf0f1;
+            position: absolute;
+            top: 15%;
+            clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 50%, 0% 50%);
+        }
+        
+        /* 篮球架 */
+        .backboard {
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background-color: #7f8c8d;
+            top: 30%;
+            border: 4px solid #95a5a6;
+        }
+        
+        .backboard.left {
+            left: 10%;
+        }
+        
+        .backboard.right {
+            right: 10%;
+        }
+        
+        .rim {
+            position: absolute;
+            width: 40px;
+            height: 8px;
+            background-color: #e74c3c;
+            top: 35%;
+            border-radius: 4px;
+        }
+        
+        .rim.left {
+            left: 9%;
+        }
+        
+        .rim.right {
+            right: 9%;
+        }
+        
+        /* 铁丝网围栏 */
+        .fence {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            background-color: #7f8c8d;
+            display: flex;
+            justify-content: space-around;
+            z-index: 3;
+        }
+        
+        .fence-top {
+            top: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                #95a5a6,
+                #95a5a6 10px,
+                #7f8c8d 10px,
+                #7f8c8d 20px
+            );
+        }
+        
+        .fence-bottom {
+            bottom: 65%;
+            background: repeating-linear-gradient(
+                90deg,
+                #7f8c8d,
+                #7f8c8d 10px,
+                #95a5a6 10px,
+                #95a5a6 20px
+            );
+        }
+        
+        .fence-post {
+            width: 8px;
+            height: 100%;
+            background-color: #34495e;
+        }
+        
+        /* 涂鸦墙 */
+        .graffiti-wall {
+            position: absolute;
+            width: 15%;
+            height: 50%;
+            background-color: #2c3e50;
+            z-index: 2;
+            display: flex;
+            flex-wrap: wrap;
+            padding: 5px;
+        }
+        
+        .graffiti-wall.left {
+            left: 0;
+            bottom: 0;
+        }
+        
+        .graffiti-wall.right {
+            right: 0;
+            bottom: 0;
+        }
+        
+        .graffiti {
+            width: 30px;
+            height: 30px;
+            margin: 2px;
+        }
+        
+        /* 球员 */
+        .player {
+            position: absolute;
+            z-index: 4;
+            transition: all 0.3s;
+        }
+        
+        .player-body {
+            width: 30px;
+            height: 50px;
+            background-color: #3498db;
+            position: relative;
+        }
+        
+        .player-head {
+            width: 24px;
+            height: 24px;
+            background-color: #d35400;
+            position: absolute;
+            top: -20px;
+            left: 3px;
+            border-radius: 50%;
+        }
+        
+        .player-arm {
+            width: 10px;
+            height: 30px;
+            background-color: #3498db;
+            position: absolute;
+            top: 5px;
+        }
+        
+        .player-leg {
+            width: 12px;
+            height: 40px;
+            background-color: #2980b9;
+            position: absolute;
+            bottom: -40px;
+        }
+        
+        /* 篮球 */
+        .basketball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #e74c3c;
+            border-radius: 50%;
+            z-index: 5;
+            transition: all 0.5s;
+        }
+        
+        /* 观众 */
+        .audience {
+            position: absolute;
+            width: 100%;
+            height: 20%;
+            bottom: 0;
+            display: flex;
+            justify-content: space-around;
+            z-index: 3;
+        }
+        
+        .spectator {
+            width: 20px;
+            height: 40px;
+            background-color: #9b59b6;
+            position: relative;
+        }
+        
+        .spectator-head {
+            width: 16px;
+            height: 16px;
+            background-color: #d35400;
+            position: absolute;
+            top: -12px;
+            left: 2px;
+            border-radius: 50%;
+        }
+        
+        /* 控制面板 */
+        .controls {
+            background-color: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            color: #ecf0f1;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #f39c12;
+            border: none;
+            border-radius: 5px;
+            color: #2c3e50;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #e67e22;
+            transform: translateY(-3px);
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            line-height: 1.5;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #4a6572;
+        }
+        
+        .stat {
+            font-size: 1.1rem;
+        }
+        
+        .stat-value {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .scene-container {
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>体素艺术街头篮球场</h1>
+            <p class="subtitle">像素化街头篮球场景 - 点击交互按钮让场景动起来</p>
+        </header>
+        
+        <div class="scene-container" id="scene">
+            <!-- 城市背景 -->
+            <div class="city-background" id="city"></div>
+            
+            <!-- 铁丝网围栏 -->
+            <div class="fence fence-top" id="fence-top"></div>
+            <div class="fence fence-bottom" id="fence-bottom"></div>
+            
+            <!-- 涂鸦墙 -->
+            <div class="graffiti-wall left" id="graffiti-left"></div>
+            <div class="graffiti-wall right" id="graffiti-right"></div>
+            
+            <!-- 篮球场 -->
+            <div class="court">
+                <div class="center-circle"></div>
+                <div class="free-throw-line"></div>
+                <div class="three-point-line"></div>
+                
+                <!-- 篮球架 -->
+                <div class="backboard left"></div>
+                <div class="backboard right"></div>
+                <div class="rim left"></div>
+                <div class="rim right"></div>
+            </div>
+            
+            <!-- 球员 -->
+            <div class="player" id="player1">
+                <div class="player-head"></div>
+                <div class="player-body"></div>
+                <div class="player-arm left-arm" style="left: -8px;"></div>
+                <div class="player-arm right-arm" style="right: -8px;"></div>
+                <div class="player-leg left-leg" style="left: 4px;"></div>
+                <div class="player-leg right-leg" style="right: 4px;"></div>
+            </div>
+            
+            <div class="player" id="player2">
+                <div class="player-head"></div>
+                <div class="player-body"></div>
+                <div class="player-arm left-arm" style="left: -8px;"></div>
+                <div class="player-arm right-arm" style="right: -8px;"></div>
+                <div class="player-leg left-leg" style="left: 4px;"></div>
+                <div class="player-leg right-leg" style="right: 4px;"></div>
+            </div>
+            
+            <!-- 篮球 -->
+            <div class="basketball" id="basketball"></div>
+            
+            <!-- 观众 -->
+            <div class="audience" id="audience"></div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <button id="shoot-btn">投篮</button>
+                <button id="dribble-btn">运球</button>
+                <button id="pass-btn">传球</button>
+                <button id="crowd-btn">观众欢呼</button>
+                <button id="night-btn">切换白天/夜晚</button>
+            </div>
+            
+            <div class="stats">
+                <div class="stat">得分: <span class="stat-value" id="score">0</span></div>
+                <div class="stat">投篮次数: <span class="stat-value" id="shots">0</span></div>
+                <div class="stat">时间: <span class="stat-value" id="time">12:00 PM</span></div>
+            </div>
+            
+            <div class="instructions">
+                <p><strong>操作说明:</strong> 点击按钮与场景互动。球员会进行投篮、运球和传球动作。观众可以欢呼，并且可以切换白天和夜晚模式。</p>
+                <p>体素艺术是一种数字艺术形式，使用三维像素（体素）来创建模型和场景，类似于2D像素艺术的三维版本。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const scene = document.getElementById('scene');
+            const city = document.getElementById('city');
+            const fenceTop = document.getElementById('fence-top');
+            const fenceBottom = document.getElementById('fence-bottom');
+            const graffitiLeft = document.getElementById('graffiti-left');
+            const graffitiRight = document.getElementById('graffiti-right');
+            const player1 = document.getElementById('player1');
+            const player2 = document.getElementById('player2');
+            const basketball = document.getElementById('basketball');
+            const audience = document.getElementById('audience');
+            
+            // 控制按钮
+            const shootBtn = document.getElementById('shoot-btn');
+            const dribbleBtn = document.getElementById('dribble-btn');
+            const passBtn = document.getElementById('pass-btn');
+            const crowdBtn = document.getElementById('crowd-btn');
+            const nightBtn = document.getElementById('night-btn');
+            
+            // 统计元素
+            const scoreEl = document.getElementById('score');
+            const shotsEl = document.getElementById('shots');
+            const timeEl = document.getElementById('time');
+            
+            // 游戏状态
+            let score = 0;
+            let shots = 0;
+            let isNight = false;
+            let ballHolder = 'player1';
+            let player1Pos = { x: 35, y: 65 };
+            let player2Pos = { x: 65, y: 65 };
+            let ballPos = { x: 35, y: 65 };
+            
+            // 初始化位置
+            updatePositions();
+            
+            // 生成城市背景建筑
+            function generateCity() {
+                city.innerHTML = '';
+                const buildingCount = 15;
+                const colors = ['#2c3e50', '#34495e', '#2c3e50', '#7f8c8d'];
+                
+                for (let i = 0; i < buildingCount; i++) {
+                    const building = document.createElement('div');
+                    const height = Math.floor(Math.random() * 80) + 40;
+                    const width = Math.floor(Math.random() * 40) + 20;
+                    const colorIndex = Math.floor(Math.random() * colors.length);
+                    
+                    building.className = 'building';
+                    building.style.width = `${width}px`;
+                    building.style.height = `${height}%`;
+                    building.style.backgroundColor = colors[colorIndex];
+                    
+                    // 添加窗户
+                    if (Math.random() > 0.3) {
+                        const windowCount = Math.floor(height / 15);
+                        for (let w = 0; w < windowCount; w++) {
+                            const window = document.createElement('div');
+                            window.className = 'building window';
+                            window.style.position = 'absolute';
+                            window.style.width = '6px';
+                            window.style.height = '8px';
+                            window.style.left = `${Math.random() * (width - 10)}px`;
+                            window.style.top = `${10 + w * 15}%`;
+                            building.appendChild(window);
+                        }
+                    }
+                    
+                    city.appendChild(building);
+                }
+            }
+            
+            // 生成铁丝网
+            function generateFence() {
+                fenceTop.innerHTML = '';
+                fenceBottom.innerHTML = '';
+                
+                // 顶部围栏
+                for (let i = 0; i < 20; i++) {
+                    const post = document.createElement('div');
+                    post.className = 'fence-post';
+                    fenceTop.appendChild(post);
+                }
+                
+                // 底部围栏
+                for (let i = 0; i < 20; i++) {
+                    const post = document.createElement('div');
+                    post.className = 'fence-post';
+                    fenceBottom.appendChild(post);
+                }
+            }
+            
+            // 生成涂鸦
+            function generateGraffiti() {
+                graffitiLeft.innerHTML = '';
+                graffitiRight.innerHTML = '';
+                
+                const graffitiColors = ['#e74c3c', '#f39c12', '#9b59b6', '#3498db', '#2ecc71'];
+                
+                // 左墙涂鸦
+                for (let i = 0; i < 20; i++) {
+                    const graffiti = document.createElement('div');
+                    graffiti.className = 'graffiti';
+                    const colorIndex = Math.floor(Math.random() * graffitiColors.length);
+                    graffiti.style.backgroundColor = graffitiColors[colorIndex];
+                    
+                    // 随机形状
+                    if (Math.random() > 0.5) {
+                        graffiti.style.borderRadius = '50%';
+                    } else if (Math.random() > 0.7) {
+                        graffiti.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
+                    }
+                    
+                    graffitiLeft.appendChild(graffiti);
+                }
+                
+                // 右墙涂鸦
+                for (let i = 0; i < 20; i++) {
+                    const graffiti = document.createElement('div');
+                    graffiti.className = 'graffiti';
+                    const colorIndex = Math.floor(Math.random() * graffitiColors.length);
+                    graffiti.style.backgroundColor = graffitiColors[colorIndex];
+                    
+                    // 随机形状
+                    if (Math.random() > 0.5) {
+                        graffiti.style.borderRadius = '50%';
+                    } else if (Math.random() > 0.7) {
+                        graffiti.style.clipPath = 'polygon(0% 0%, 100% 0%, 50% 100%)';
+                    }
+                    
+                    graffitiRight.appendChild(graffiti);
+                }
+            }
+            
+            // 生成观众
+            function generateAudience() {
+                audience.innerHTML = '';
+                const spectatorCount = 20;
+                const colors = ['#9b59b6', '#3498db', '#e74c3c', '#2ecc71', '#f39c12'];
+                
+                for (let i = 0; i < spectatorCount; i++) {
+                    const spectator = document.createElement('div');
+                    spectator.className = 'spectator';
+                    const colorIndex = Math.floor(Math.random() * colors.length);
+                    spectator.style.backgroundColor = colors[colorIndex];
+                    spectator.style.marginLeft = `${Math.random() * 10}px`;
+                    spectator.style.marginRight = `${Math.random() * 10}px`;
+                    
+                    const head = document.createElement('div');
+                    head.className = 'spectator-head';
+                    spectator.appendChild(head);
+                    
+                    audience.appendChild(spectator);
+                }
+            }
+            
+            // 更新球员和篮球位置
+            function updatePositions() {
+                player1.style.left = `${player1Pos.x}%`;
+                player1.style.bottom = `${player1Pos.y}%`;
+                
+                player2.style.left = `${player2Pos.x}%`;
+                player2.style.bottom = `${player2Pos.y}%`;
+                
+                basketball.style.left = `${ballPos.x}%`;
+                basketball.style.bottom = `${ballPos.y}%`;
+                
+                // 根据持球者更新篮球位置
+                if (ballHolder === 'player1') {
+                    ballPos.x = player1Pos.x;
+                    ballPos.y = player1Pos.y + 10;
+                } else if (ballHolder === 'player2') {
+                    ballPos.x = player2Pos.x;
+                    ballPos.y = player2Pos.y + 10;
+                }
+                
+                basketball.style.left = `${ballPos.x}%`;
+                basketball.style.bottom = `${ballPos.y}%`;
+            }
+            
+            // 投篮动作
+            function shoot() {
+                if (ballHolder === 'none') return;
+                
+                shots++;
+                shotsEl.textContent = shots;
+                
+                const shooter = ballHolder === 'player1' ? player1Pos : player2Pos;
+                const basketX = shooter.x < 50 ? 10 : 90; // 左篮或右篮
+                
+                // 动画：篮球抛物线运动
+                let startX = shooter.x;
+                let startY = shooter.y + 10;
+                let endX = basketX;
+                let endY = 35;
+                let controlX = (startX + endX) / 2;
+                let controlY = 80;
+                
+                let t = 0;
+                const interval = setInterval(() => {
+                    t += 0.05;
+                    
+                    // 贝塞尔曲线计算
+                    let x = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * controlX + t * t * endX;
+                    let y = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * controlY + t * t * endY;
+                    
+                    basketball.style.left = `${x}%`;
+                    basketball.style.bottom = `${y}%`;
+                    
+                    // 篮球旋转效果
+                    basketball.style.transform = `rotate(${t * 720}deg)`;
+                    
+                    if (t >= 1) {
+                        clearInterval(interval);
+                        
+                        // 随机决定是否投中
+                        const madeShot = Math.random() > 0.4;
+                        
+                        if (madeShot) {
+                            // 投中篮筐
+                            score += 2;
+                            scoreEl.textContent = score;
+                            
+                            // 篮球通过篮筐落下
+                            setTimeout(() => {
+                                let fallY = 35;
+                                const fallInterval = setInterval(() => {
+                                    fallY -= 2;
+                                    basketball.style.bottom = `${fallY}%`;
+                                    
+                                    if (fallY <= 30) {
+                                        clearInterval(fallInterval);
+                                        ballHolder = 'none';
+                                        basketball.style.bottom = '30%';
+                                        basketball.style.left = `${basketX}%`;
+                                    }
+                                }, 50);
+                            }, 300);
+                        } else {
+                            // 未投中，篮球弹跳
+                            let bounceY = 35;
+                            let bounceCount = 0;
+                            const bounceInterval = setInterval(() => {
+                                bounceY -= 5;
+                                basketball.style.bottom = `${bounceY}%`;
+                                
+                                if (bounceY <= 30) {
+                                    bounceCount++;
+                                    if (bounceCount >= 3) {
+                                        clearInterval(bounceInterval);
+                                        ballHolder = 'none';
+                                        basketball.style.bottom = '30%';
+                                        basketball.style.left = `${endX + (Math.random() * 20 - 10)}%`;
+                                    }
+                                    bounceY = 35;
+                                }
+                            }, 100);
+                        }
+                    }
+                }, 50);
+                
+                ballHolder = 'none';
+            }
+            
+            // 运球动作
+            function dribble() {
+                if (ballHolder === 'none') return;
+                
+                const player = ballHolder === 'player1' ? player1 : player2;
+                
+                // 运球动画
+                let bounceCount = 0;
+                const dribbleInterval = setInterval(() => {
+                    // 篮球上下运动
+                    basketball.style.bottom = `${ballPos.y + (bounceCount % 2 === 0 ? 5 : -5)}%`;
+                    
+                    bounceCount++;
+                    if (bounceCount >= 6) {
+                        clearInterval(dribbleInterval);
+                        updatePositions();
+                    }
+                }, 150);
+                
+                // 球员轻微上下移动模拟运球动作
+                let playerBounce = 0;
+                const playerInterval = setInterval(() => {
+                    player.style.bottom = `${parseFloat(player.style.bottom) + (playerBounce % 2 === 0 ? 1 : -1)}%`;
+                    
+                    playerBounce++;
+                    if (playerBounce >= 6) {
+                        clearInterval(playerInterval);
+                    }
+                }, 150);
+            }
+            
+            // 传球动作
+            function pass() {
+                if (ballHolder === 'none') return;
+                
+                const passer = ballHolder;
+                const receiver = ballHolder === 'player1' ? 'player2' : 'player1';
+                
+                // 传球动画
+                let startX = passer === 'player1' ? player1Pos.x : player2Pos.x;
+                let startY = (passer === 'player1' ? player1Pos.y : player2Pos.y) + 10;
+                let endX = receiver === 'player1' ? player1Pos.x : player2Pos.x;
+                let endY = (receiver === 'player1' ? player1Pos.y : player2Pos.y) + 10;
+                
+                let t = 0;
+                const interval = setInterval(() => {
+                    t += 0.1;
+                    
+                    // 线性插值
+                    let x = startX + (endX - startX) * t;
+                    let y = startY + (endY - startY) * t;
+                    
+                    basketball.style.left = `${x}%`;
+                    basketball.style.bottom = `${y}%`;
+                    
+                    // 篮球旋转
+                    basketball.style.transform = `rotate(${t * 360}deg)`;
+                    
+                    if (t >= 1) {
+                        clearInterval(interval);
+                        ballHolder = receiver;
+                        updatePositions();
+                    }
+                }, 50);
+            }
+            
+            // 观众欢呼
+            function crowdCheer() {
+                const spectators = document.querySelectorAll('.spectator');
+                
+                spectators.forEach((spectator, index) => {
+                    // 随机延迟
+                    setTimeout(() => {
+                        // 观众上下跳动
+                        let originalBottom = 0;
+                        let jumpCount = 0;
+                        
+                        const jumpInterval = setInterval(() => {
+                            if (jumpCount === 0) {
+                                originalBottom = parseInt(spectator.style.bottom) || 0;
+                            }
+                            
+                            spectator.style.bottom = `${originalBottom + (jumpCount % 2 === 0 ? 10 : 0)}%`;
+                            
+                            jumpCount++;
+                            if (jumpCount >= 6) {
+                                clearInterval(jumpInterval);
+                                spectator.style.bottom = `${originalBottom}%`;
+                            }
+                        }, 150);
+                    }, index * 100);
+                });
+            }
+            
+            // 切换白天/夜晚
+            function toggleDayNight() {
+                isNight = !isNight;
+                
+                if (isNight) {
+                    scene.style.background = 'linear-gradient(to bottom, #0f1c2e 60%, #050a10 100%)';
+                    document.querySelector('.court').style.backgroundColor = '#1a5332';
+                    document.querySelector('.court').style.borderColor = '#1e7e46';
+                    timeEl.textContent = '8:30 PM';
+                    nightBtn.textContent = '切换到白天';
+                    
+                    // 让建筑窗户亮起来
+                    const windows = document.querySelectorAll('.building.window');
+                    windows.forEach(window => {
+                        window.style.backgroundColor = '#f1c40f';
+                        window.style.boxShadow = '0 0 8px #f1c40f';
+                    });
+                } else {
+                    scene.style.background = 'linear-gradient(to bottom, #87CEEB 60%, #1a2530 100%)';
+                    document.querySelector('.court').style.backgroundColor = '#27ae60';
+                    document.querySelector('.court').style.borderColor = '#2ecc71';
+                    timeEl.textContent = '12:00 PM';
+                    nightBtn.textContent = '切换到夜晚';
+                    
+                    // 恢复窗户颜色
+                    const windows = document.querySelectorAll('.building.window');
+                    windows.forEach(window => {
+                        window.style.backgroundColor = '#f1c40f';
+                        window.style.boxShadow = 'none';
+                    });
+                }
+            }
+            
+            // 球员随机移动
+            function movePlayersRandomly() {
+                // 球员1移动
+                if (Math.random() > 0.7 && ballHolder !== 'player1') {
+                    player1Pos.x = Math.max(15, Math.min(85, player1Pos.x + (Math.random() * 20 - 10)));
+                    player1Pos.y = Math.max(50, Math.min(80, player1Pos.y + (Math.random() * 10 - 5)));
+                }
+                
+                // 球员2移动
+                if (Math.random() > 0.7 && ballHolder !== 'player2') {
+                    player2Pos.x = Math.max(15, Math.min(85, player2Pos.x + (Math.random() * 20 - 10)));
+                    player2Pos.y = Math.max(50, Math.min(80, player2Pos.y + (Math.random() * 10 - 5)));
+                }
+                
+                updatePositions();
+            }
+            
+            // 事件监听
+            shootBtn.addEventListener('click', shoot);
+            dribbleBtn.addEventListener('click', dribble);
+            passBtn.addEventListener('click', pass);
+            crowdBtn.addEventListener('click', crowdCheer);
+            nightBtn.addEventListener('click', toggleDayNight);
+            
+            // 初始化场景
+            generateCity();
+            generateFence();
+            generateGraffiti();
+            generateAudience();
+            
+            // 初始位置设置
+            player1Pos = { x: 30, y: 65 };
+            player2Pos = { x: 70, y: 65 };
+            ballHolder = 'player1';
+            updatePositions();
+            
+            // 让球员随机移动
+            setInterval(movePlayersRandomly, 2000);
+            
+            // 随机观众动作
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    crowdCheer();
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

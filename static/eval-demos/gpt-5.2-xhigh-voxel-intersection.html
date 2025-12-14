@@ -1,0 +1,1492 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>体素城市十字路口：红绿灯 / 人行横道 / 车与人</title>
+    <style>
+      :root {
+        --panel: rgba(8, 12, 20, 0.62);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.88);
+        --muted: rgba(255, 255, 255, 0.66);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #040814;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif;
+      }
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        user-select: none;
+        max-width: min(520px, calc(100vw - 24px));
+      }
+      .title {
+        font-weight: 760;
+        letter-spacing: 0.2px;
+        font-size: 13px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .title small {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.92);
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 90ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.32);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.26);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+      }
+      .dot.on {
+        background: #62ffcb;
+        box-shadow: 0 0 0 3px rgba(98, 255, 203, 0.14);
+      }
+      .dot.pause.on {
+        background: #ffcc66;
+        box-shadow: 0 0 0 3px rgba(255, 204, 102, 0.16);
+      }
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        padding: 0 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+      .credit {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(6, 8, 16, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 12px;
+        user-select: none;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+      .status {
+        display: grid;
+        gap: 4px;
+        font-size: 12px;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.82);
+      }
+      .status b {
+        font-weight: 720;
+        color: rgba(255, 255, 255, 0.92);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <div class="title">
+        体素城市十字路口
+        <small>红绿灯 / 斑马线 / 车停走 / 行人过街 / 街边小贩</small>
+      </div>
+      <div class="hint">
+        拖动：旋转　滚轮：缩放　双击：重置视角<br />
+        <span class="kbd">Space</span> 自动旋转　<span class="kbd">P</span> 暂停　<span class="kbd">R</span> 重建场景
+      </div>
+      <div class="row">
+        <div class="pill" id="spinPill" title="点击切换自动旋转">
+          <span class="dot" id="spinDot"></span><span id="spinText">自动旋转：开</span>
+        </div>
+        <div class="pill" id="pausePill" title="点击暂停/继续">
+          <span class="dot pause" id="pauseDot"></span><span id="pauseText">暂停：关</span>
+        </div>
+      </div>
+      <div class="row">
+        <button id="resetBtn" type="button">重置视角</button>
+        <button id="rebuildBtn" type="button">重建场景</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="credit">纯 HTML / CSS / JS（无外部依赖）</div>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d", { alpha: false });
+
+        const spinPill = document.getElementById("spinPill");
+        const pausePill = document.getElementById("pausePill");
+        const spinDot = document.getElementById("spinDot");
+        const pauseDot = document.getElementById("pauseDot");
+        const spinText = document.getElementById("spinText");
+        const pauseText = document.getElementById("pauseText");
+        const resetBtn = document.getElementById("resetBtn");
+        const rebuildBtn = document.getElementById("rebuildBtn");
+        const statusEl = document.getElementById("status");
+
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const smoothstep = (a, b, t) => {
+          const x = clamp((t - a) / (b - a), 0, 1);
+          return x * x * (3 - 2 * x);
+        };
+
+        function mulberry32(seed) {
+          let t = seed >>> 0;
+          return function rand() {
+            t += 0x6d2b79f5;
+            let x = t;
+            x = Math.imul(x ^ (x >>> 15), x | 1);
+            x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        // ===== 3D math (orthographic) =====
+        function rotY(p, yaw) {
+          const c = Math.cos(yaw), s = Math.sin(yaw);
+          return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+        }
+        function rotX(p, pitch) {
+          const c = Math.cos(pitch), s = Math.sin(pitch);
+          return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+        }
+        function normalize(v) {
+          const m = Math.hypot(v.x, v.y, v.z) || 1;
+          return { x: v.x / m, y: v.y / m, z: v.z / m };
+        }
+
+        const LIGHT_DIR = normalize({ x: -0.35, y: 0.82, z: 0.46 }); // treated as camera-space (view-stable lighting)
+
+        function rgbToCss(rgb) {
+          const r = clamp(Math.round(rgb.r), 0, 255);
+          const g = clamp(Math.round(rgb.g), 0, 255);
+          const b = clamp(Math.round(rgb.b), 0, 255);
+          return `rgb(${r} ${g} ${b})`;
+        }
+
+        function shadeRgb(base, brightness, coolShadow = 0) {
+          const b = clamp(brightness, 0, 2.0);
+          const r = base.r * b;
+          const g = base.g * b;
+          const bl = base.b * b;
+          return {
+            r: r * (1 - coolShadow) + 18 * coolShadow,
+            g: g * (1 - coolShadow) + 34 * coolShadow,
+            b: bl * (1 - coolShadow) + 76 * coolShadow
+          };
+        }
+
+        // ===== Key pack =====
+        const KEY_BITS = 10;
+        const KEY_MASK = (1 << KEY_BITS) - 1;
+        const KEY_OFF = 512;
+        const keyOf = (x, y, z) =>
+          (((x + KEY_OFF) & KEY_MASK) << (KEY_BITS * 2)) |
+          (((y + KEY_OFF) & KEY_MASK) << KEY_BITS) |
+          ((z + KEY_OFF) & KEY_MASK);
+
+        // ===== Materials =====
+        const mats = {
+          base: { base: { r: 20, g: 26, b: 36 }, coolShadow: 0.08, vary: 0.06 },
+          asphalt: { base: { r: 16, g: 18, b: 24 }, coolShadow: 0.10, vary: 0.05 },
+          asphalt2: { base: { r: 22, g: 24, b: 32 }, coolShadow: 0.10, vary: 0.05 },
+          sidewalk: { base: { r: 98, g: 106, b: 120 }, coolShadow: 0.05, vary: 0.06 },
+          curb: { base: { r: 150, g: 156, b: 166 }, coolShadow: 0.03, vary: 0.05 },
+          paintWhite: { base: { r: 230, g: 238, b: 244 }, coolShadow: 0.02, vary: 0.03 },
+          paintYellow: { base: { r: 248, g: 215, b: 92 }, coolShadow: 0.01, vary: 0.03 },
+          pole: { base: { r: 42, g: 46, b: 56 }, coolShadow: 0.08, vary: 0.03 },
+          sign: { base: { r: 34, g: 36, b: 44 }, coolShadow: 0.08, vary: 0.03 },
+          lightOff: { base: { r: 26, g: 28, b: 34 }, coolShadow: 0.10, vary: 0.02, emissive: 0.02 },
+          lightRed: { base: { r: 255, g: 86, b: 76 }, coolShadow: 0.0, vary: 0.02, emissive: 0.95 },
+          lightYel: { base: { r: 255, g: 210, b: 92 }, coolShadow: 0.0, vary: 0.02, emissive: 0.85 },
+          lightGrn: { base: { r: 92, g: 255, b: 186 }, coolShadow: 0.0, vary: 0.02, emissive: 0.85 },
+          bldgA: { base: { r: 44, g: 58, b: 86 }, coolShadow: 0.08, vary: 0.06 },
+          bldgB: { base: { r: 56, g: 48, b: 74 }, coolShadow: 0.09, vary: 0.06 },
+          window: { base: { r: 255, g: 214, b: 132 }, coolShadow: 0.0, vary: 0.05, emissive: 0.55, alpha: 0.96 },
+          vendorWood: { base: { r: 156, g: 112, b: 62 }, coolShadow: 0.05, vary: 0.08 },
+          vendorClothA: { base: { r: 250, g: 84, b: 112 }, coolShadow: 0.02, vary: 0.04 },
+          vendorClothB: { base: { r: 246, g: 224, b: 114 }, coolShadow: 0.02, vary: 0.04 },
+          lantern: { base: { r: 255, g: 168, b: 72 }, coolShadow: 0.0, vary: 0.02, emissive: 0.7 },
+          personSkin: { base: { r: 240, g: 205, b: 170 }, coolShadow: 0.01, vary: 0.05 },
+          personDark: { base: { r: 30, g: 32, b: 40 }, coolShadow: 0.08, vary: 0.04 },
+          personBlue: { base: { r: 86, g: 150, b: 255 }, coolShadow: 0.06, vary: 0.04 },
+          personGreen: { base: { r: 92, g: 230, b: 168 }, coolShadow: 0.06, vary: 0.04 },
+          steam: { base: { r: 220, g: 236, b: 255 }, coolShadow: 0.0, vary: 0.04, alpha: 0.22, emissive: 0.08 }
+        };
+
+        let seed = 20251214;
+        let hashSeed = seed;
+        let rand = mulberry32(seed ^ 0x9e3779b9);
+
+        function hash3(x, y, z) {
+          let n =
+            Math.imul(x, 374761393) ^
+            Math.imul(y, 668265263) ^
+            Math.imul(z, 2147483647) ^
+            Math.imul(hashSeed, 1597334677);
+          n = Math.imul(n ^ (n >>> 13), 1274126177);
+          n = (n ^ (n >>> 16)) >>> 0;
+          return n / 4294967295;
+        }
+
+        function makeVoxel(x, y, z, matName, extra = {}) {
+          const mat = mats[matName] || mats.base;
+          const h = hash3(x, y, z);
+          const vary = mat.vary ?? 0;
+          const f = vary ? lerp(1 - vary, 1 + vary, h) : 1;
+          const base = { r: mat.base.r * f, g: mat.base.g * f, b: mat.base.b * f };
+          return {
+            x,
+            y,
+            z,
+            base,
+            coolShadow: mat.coolShadow ?? 0,
+            emissive: extra.emissive ?? mat.emissive ?? 0,
+            alpha: extra.alpha ?? mat.alpha ?? 1
+          };
+        }
+
+        // ===== Static world =====
+        const staticMap = new Map();
+        let staticList = [];
+        let bounds = null;
+        let pivot = { x: 0, y: 0, z: 0 };
+
+        function setStatic(x, y, z, matName, extra = {}) {
+          staticMap.set(keyOf(x, y, z), makeVoxel(x, y, z, matName, extra));
+        }
+        function getStaticKey(x, y, z) {
+          return staticMap.get(keyOf(x, y, z));
+        }
+
+        function computeBounds(map) {
+          let minX = Infinity, minY = Infinity, minZ = Infinity;
+          let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+          for (const v of map.values()) {
+            minX = Math.min(minX, v.x);
+            minY = Math.min(minY, v.y);
+            minZ = Math.min(minZ, v.z);
+            maxX = Math.max(maxX, v.x + 1);
+            maxY = Math.max(maxY, v.y + 1);
+            maxZ = Math.max(maxZ, v.z + 1);
+          }
+          return { minX, minY, minZ, maxX, maxY, maxZ };
+        }
+
+        const WORLD = {
+          half: 26,
+          roadHalf: 7,
+          blockHalf: 18,
+          lane: 2,
+          stopLine: 11
+        };
+
+        const CORNERS = [
+          { x: -(WORLD.roadHalf + 4), z: -(WORLD.roadHalf + 4) },
+          { x: WORLD.roadHalf + 4, z: -(WORLD.roadHalf + 4) },
+          { x: -(WORLD.roadHalf + 4), z: WORLD.roadHalf + 4 },
+          { x: WORLD.roadHalf + 4, z: WORLD.roadHalf + 4 }
+        ];
+
+        const vendor = {
+          x: WORLD.roadHalf + 5,
+          z: WORLD.roadHalf + 6,
+          potX: WORLD.roadHalf + 6,
+          potZ: WORLD.roadHalf + 5,
+          potY: 2
+        };
+
+        function buildStatic() {
+          staticMap.clear();
+          hashSeed = seed;
+          rand = mulberry32(seed ^ 0x9e3779b9);
+
+          const W = WORLD.half;
+          const rH = WORLD.roadHalf;
+          const bH = WORLD.blockHalf;
+
+          // Ground + roads on y=0.
+          for (let x = -W; x <= W; x++) {
+            for (let z = -W; z <= W; z++) {
+              const inRoad = Math.abs(x) <= rH || Math.abs(z) <= rH;
+              const mat = inRoad ? (hash3(x, 0, z) > 0.82 ? "asphalt2" : "asphalt") : "base";
+              setStatic(x, 0, z, mat);
+            }
+          }
+
+          // Raised sidewalk in the four corners around the intersection.
+          for (let x = -bH; x <= bH; x++) {
+            for (let z = -bH; z <= bH; z++) {
+              if (Math.abs(x) <= rH || Math.abs(z) <= rH) continue;
+              setStatic(x, 1, z, "sidewalk");
+              const onCurb =
+                (Math.abs(x) === rH + 1 && Math.abs(z) > rH) ||
+                (Math.abs(z) === rH + 1 && Math.abs(x) > rH);
+              if (onCurb) setStatic(x, 1, z, "curb");
+            }
+          }
+
+          // Crosswalks (zebra).
+          const cwW = 3;
+          const zNorth0 = -rH - cwW;
+          const zNorth1 = -rH - 1;
+          const zSouth0 = rH + 1;
+          const zSouth1 = rH + cwW;
+
+          for (let x = -rH; x <= rH; x++) {
+            for (let z = zNorth0; z <= zNorth1; z++) {
+              if ((x & 1) === 0) setStatic(x, 0, z, "paintWhite");
+            }
+            for (let z = zSouth0; z <= zSouth1; z++) {
+              if ((x & 1) === 0) setStatic(x, 0, z, "paintWhite");
+            }
+          }
+
+          const xWest0 = -rH - cwW;
+          const xWest1 = -rH - 1;
+          const xEast0 = rH + 1;
+          const xEast1 = rH + cwW;
+
+          for (let z = -rH; z <= rH; z++) {
+            for (let x = xWest0; x <= xWest1; x++) {
+              if ((z & 1) === 0) setStatic(x, 0, z, "paintWhite");
+            }
+            for (let x = xEast0; x <= xEast1; x++) {
+              if ((z & 1) === 0) setStatic(x, 0, z, "paintWhite");
+            }
+          }
+
+          // Lane markings (dashed yellow center).
+          for (let x = -W; x <= W; x++) {
+            if ((x + W) % 6 < 3) setStatic(x, 0, 0, "paintYellow");
+          }
+          for (let z = -W; z <= W; z++) {
+            if ((z + W) % 6 < 3) setStatic(0, 0, z, "paintYellow");
+          }
+
+          // Stop lines.
+          for (let z = -rH; z <= rH; z++) {
+            setStatic(-WORLD.stopLine, 0, z, "paintWhite");
+            setStatic(WORLD.stopLine, 0, z, "paintWhite");
+          }
+          for (let x = -rH; x <= rH; x++) {
+            setStatic(x, 0, -WORLD.stopLine, "paintWhite");
+            setStatic(x, 0, WORLD.stopLine, "paintWhite");
+          }
+
+          // Traffic light poles at corners.
+          for (const c of CORNERS) {
+            const x = c.x;
+            const z = c.z;
+            for (let y = 2; y <= 8; y++) setStatic(x, y, z, "pole");
+            // A small mount near the top.
+            const inx = x > 0 ? -1 : 1;
+            const inz = z > 0 ? -1 : 1;
+            setStatic(x + inx, 8, z, "pole");
+            setStatic(x, 8, z + inz, "pole");
+            // Dark housing above the pole (lights are added dynamically adjacent).
+            for (let dy = 0; dy < 3; dy++) setStatic(x, 9 + dy, z, "sign");
+          }
+
+          // Street vendor stall (SE).
+          const sx = vendor.x;
+          const sz = vendor.z;
+          const baseY = 2; // sits on sidewalk top (y=1 -> top at y=2)
+          for (let x = sx - 3; x <= sx + 2; x++) {
+            for (let z = sz - 2; z <= sz + 2; z++) {
+              if (hash3(x, baseY, z) > 0.86) continue;
+              setStatic(x, baseY, z, "vendorWood");
+            }
+          }
+          // Counter.
+          for (let x = sx - 3; x <= sx + 2; x++) {
+            for (let z = sz - 2; z <= sz + 2; z++) setStatic(x, baseY + 1, z, "vendorWood");
+          }
+          // Awning.
+          for (let x = sx - 4; x <= sx + 3; x++) {
+            for (let z = sz - 3; z <= sz + 3; z++) {
+              const edge = x === sx - 4 || x === sx + 3 || z === sz - 3 || z === sz + 3;
+              if (!edge) continue;
+              const mat = ((x + z) & 3) === 0 ? "vendorClothB" : "vendorClothA";
+              setStatic(x, baseY + 4, z, mat);
+            }
+          }
+          // Poles.
+          for (let y = baseY + 2; y <= baseY + 4; y++) {
+            setStatic(sx - 4, y, sz - 3, "pole");
+            setStatic(sx + 3, y, sz - 3, "pole");
+            setStatic(sx - 4, y, sz + 3, "pole");
+            setStatic(sx + 3, y, sz + 3, "pole");
+          }
+          // Lantern.
+          setStatic(sx + 3, baseY + 5, sz - 3, "lantern");
+          setStatic(sx + 3, baseY + 6, sz - 3, "lantern");
+
+          // A vendor person (static).
+          setStatic(sx, baseY + 1, sz - 1, "personDark");
+          setStatic(sx, baseY + 2, sz - 1, "personDark");
+          setStatic(sx, baseY + 3, sz - 1, "personSkin");
+
+          // Buildings in each quadrant.
+          function addBuilding(x0, z0, w, d, h, matName) {
+            for (let x = x0; x < x0 + w; x++) {
+              for (let z = z0; z < z0 + d; z++) {
+                for (let y = 2; y < 2 + h; y++) {
+                  setStatic(x, y, z, matName);
+                }
+              }
+            }
+            // Windows (only on faces towards roads).
+            for (let y = 3; y < 2 + h - 1; y++) {
+              for (let i = 0; i < 48; i++) {
+                const rx = x0 + Math.floor(rand() * w);
+                const rz = z0 + Math.floor(rand() * d);
+                const pickFace = rand() < 0.5;
+                const x = pickFace ? (rand() < 0.5 ? x0 : x0 + w - 1) : rx;
+                const z = pickFace ? rz : (rand() < 0.5 ? z0 : z0 + d - 1);
+                const towardsRoad = Math.abs(x) <= WORLD.roadHalf + 2 || Math.abs(z) <= WORLD.roadHalf + 2;
+                if (!towardsRoad) continue;
+                if (rand() < 0.55) continue;
+                setStatic(x, y, z, "window", { emissive: lerp(0.35, 0.7, rand()) });
+              }
+            }
+          }
+
+          // Keep buildings fully inside the sidewalk quadrants (avoid road overlap).
+          addBuilding(-bH, -bH, 9, 9, 10, "bldgA");
+          addBuilding(bH - 9, -bH, 9, 9, 9, "bldgB");
+          addBuilding(-bH, bH - 9, 9, 9, 9, "bldgB");
+          // Small building at far SE corner (leave space for the vendor near the intersection).
+          addBuilding(bH - 2, bH - 2, 3, 3, 8, "bldgA");
+
+          staticList = Array.from(staticMap.values());
+          bounds = computeBounds(staticMap);
+          pivot = {
+            x: (bounds.minX + bounds.maxX) / 2,
+            y: (bounds.minY + bounds.maxY) / 2,
+            z: (bounds.minZ + bounds.maxZ) / 2
+          };
+        }
+
+        // ===== Face definitions =====
+        const FACES = [
+          { name: "+x", dx: 1, dy: 0, dz: 0, n: { x: 1, y: 0, z: 0 }, rel: [[1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 0]] },
+          { name: "-x", dx: -1, dy: 0, dz: 0, n: { x: -1, y: 0, z: 0 }, rel: [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]] },
+          { name: "+y", dx: 0, dy: 1, dz: 0, n: { x: 0, y: 1, z: 0 }, rel: [[0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]] },
+          { name: "-y", dx: 0, dy: -1, dz: 0, n: { x: 0, y: -1, z: 0 }, rel: [[0, 0, 1], [1, 0, 1], [1, 0, 0], [0, 0, 0]] },
+          { name: "+z", dx: 0, dy: 0, dz: 1, n: { x: 0, y: 0, z: 1 }, rel: [[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]] },
+          { name: "-z", dx: 0, dy: 0, dz: -1, n: { x: 0, y: 0, z: -1 }, rel: [[1, 0, 0], [0, 0, 0], [0, 1, 0], [1, 1, 0]] }
+        ];
+
+        // ===== Camera / UI =====
+        const state = {
+          dpr: 1,
+          w: 1,
+          h: 1,
+          yaw: 0.72,
+          pitch: 0.58,
+          zoom: 18,
+          originX: 0,
+          originY: 0,
+          autoSpin: true,
+          paused: false,
+          dragging: false,
+          lastX: 0,
+          lastY: 0,
+          lastTs: 0,
+          t: 0
+        };
+
+        function camNormal(n) {
+          return rotX(rotY(n, state.yaw), state.pitch);
+        }
+        function toCam(p) {
+          const centered = { x: p.x - pivot.x, y: p.y - pivot.y, z: p.z - pivot.z };
+          return rotX(rotY(centered, state.yaw), state.pitch);
+        }
+        function project(cam) {
+          return { x: state.originX + cam.x * state.zoom, y: state.originY - cam.y * state.zoom };
+        }
+
+        function fitView() {
+          if (!bounds) return;
+          const pad = 6;
+          const b = {
+            minX: bounds.minX - pad,
+            minY: bounds.minY - pad,
+            minZ: bounds.minZ - pad,
+            maxX: bounds.maxX + pad,
+            maxY: bounds.maxY + pad,
+            maxZ: bounds.maxZ + pad
+          };
+          const corners = [
+            { x: b.minX, y: b.minY, z: b.minZ },
+            { x: b.maxX, y: b.minY, z: b.minZ },
+            { x: b.minX, y: b.minY, z: b.maxZ },
+            { x: b.maxX, y: b.minY, z: b.maxZ },
+            { x: b.minX, y: b.maxY, z: b.minZ },
+            { x: b.maxX, y: b.maxY, z: b.minZ },
+            { x: b.minX, y: b.maxY, z: b.maxZ },
+            { x: b.maxX, y: b.maxY, z: b.maxZ }
+          ];
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          for (const c of corners) {
+            const cam = toCam(c);
+            minX = Math.min(minX, cam.x);
+            maxX = Math.max(maxX, cam.x);
+            minY = Math.min(minY, cam.y);
+            maxY = Math.max(maxY, cam.y);
+          }
+          const spanX = Math.max(0.001, maxX - minX);
+          const spanY = Math.max(0.001, maxY - minY);
+          const targetW = state.w * 0.92;
+          const targetH = state.h * 0.78;
+          const zoom = Math.min(targetW / spanX, targetH / spanY);
+          state.zoom = clamp(zoom, 9, 50);
+          const cx = (minX + maxX) / 2;
+          const cy = (minY + maxY) / 2;
+          state.originX = state.w / 2 - cx * state.zoom;
+          state.originY = state.h * 0.70 + cy * state.zoom;
+        }
+
+        function resize() {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const w = Math.max(1, Math.floor(window.innerWidth));
+          const h = Math.max(1, Math.floor(window.innerHeight));
+          state.dpr = dpr;
+          state.w = w;
+          state.h = h;
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = `${w}px`;
+          canvas.style.height = `${h}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          fitView();
+          initBackdrop();
+        }
+
+        function setAutoSpin(v) {
+          state.autoSpin = v;
+          spinDot.classList.toggle("on", v);
+          spinText.textContent = v ? "自动旋转：开" : "自动旋转：关";
+        }
+        function setPaused(v) {
+          state.paused = v;
+          pauseDot.classList.toggle("on", v);
+          pauseText.textContent = v ? "暂停：开" : "暂停：关";
+        }
+
+        canvas.addEventListener("pointerdown", (e) => {
+          state.dragging = true;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointermove", (e) => {
+          if (!state.dragging) return;
+          const dx = e.clientX - state.lastX;
+          const dy = e.clientY - state.lastY;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          state.yaw += dx * 0.006;
+          state.pitch = clamp(state.pitch + dy * 0.004, 0.24, 1.05);
+        });
+        window.addEventListener("pointerup", () => (state.dragging = false));
+        canvas.addEventListener(
+          "wheel",
+          (e) => {
+            const f = Math.exp(-e.deltaY * 0.0012);
+            state.zoom = clamp(state.zoom * f, 8, 90);
+          },
+          { passive: true }
+        );
+        canvas.addEventListener("dblclick", () => {
+          state.yaw = 0.72;
+          state.pitch = 0.58;
+          fitView();
+        });
+
+        spinPill.addEventListener("click", () => setAutoSpin(!state.autoSpin));
+        pausePill.addEventListener("click", () => setPaused(!state.paused));
+        resetBtn.addEventListener("click", () => {
+          state.yaw = 0.72;
+          state.pitch = 0.58;
+          fitView();
+        });
+        rebuildBtn.addEventListener("click", () => {
+          seed = (Math.random() * 1e9) | 0;
+          initSimulation();
+          buildStatic();
+          fitView();
+          initBackdrop();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          const k = e.key.toLowerCase();
+          if (e.code === "Space") {
+            e.preventDefault();
+            setAutoSpin(!state.autoSpin);
+          } else if (k === "p") {
+            setPaused(!state.paused);
+          } else if (k === "r") {
+            seed = (Math.random() * 1e9) | 0;
+            initSimulation();
+            buildStatic();
+            fitView();
+            initBackdrop();
+          }
+        });
+
+        window.addEventListener("resize", resize);
+
+        // ===== Backdrop (2D skyline) =====
+        let skyline = [];
+        function initBackdrop() {
+          const r = mulberry32(seed ^ 0xa5a5a5a5);
+          skyline = [];
+          const baseY = state.h * 0.40;
+          const w = state.w;
+          let x = -40;
+          while (x < w + 40) {
+            const bw = lerp(26, 90, Math.pow(r(), 1.2));
+            const bh = lerp(40, 220, Math.pow(r(), 1.0));
+            skyline.push({
+              x,
+              w: bw,
+              h: bh,
+              a: lerp(0.10, 0.22, r()),
+              windows: Math.round(lerp(14, 46, r())),
+              seed: (r() * 1e9) | 0
+            });
+            x += bw + lerp(8, 22, r());
+          }
+          initBackdrop.baseY = baseY;
+        }
+
+        function drawBackground() {
+          const w = state.w, h = state.h;
+          const g = ctx.createLinearGradient(0, 0, 0, h);
+          g.addColorStop(0, "#040814");
+          g.addColorStop(0.45, "#071a2e");
+          g.addColorStop(1, "#072f46");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+
+          // Haze
+          ctx.save();
+          const hg = ctx.createRadialGradient(w * 0.55, h * 0.75, 0, w * 0.55, h * 0.75, Math.min(w, h) * 0.9);
+          hg.addColorStop(0, "rgba(140, 220, 255, 0.08)");
+          hg.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = hg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.restore();
+
+          // Skyline
+          const y0 = initBackdrop.baseY ?? h * 0.40;
+          ctx.save();
+          ctx.globalCompositeOperation = "source-over";
+          for (const b of skyline) {
+            ctx.globalAlpha = b.a;
+            ctx.fillStyle = "rgba(210, 235, 255, 1)";
+            ctx.fillRect(b.x, y0 - b.h, b.w, b.h);
+
+            // Windows (tiny dots)
+            ctx.globalAlpha = b.a * 0.9;
+            const r = mulberry32(b.seed);
+            for (let i = 0; i < b.windows; i++) {
+              if (r() < 0.58) continue;
+              const wx = b.x + Math.floor(r() * (b.w - 6)) + 3;
+              const wy = y0 - Math.floor(r() * (b.h - 10)) - 6;
+              const wa = lerp(0.04, 0.18, r());
+              ctx.globalAlpha = wa;
+              ctx.fillStyle = "rgba(255, 220, 150, 1)";
+              ctx.fillRect(wx, wy, 2, 2);
+            }
+          }
+          ctx.restore();
+
+          // Vignette
+          ctx.save();
+          const vg = ctx.createRadialGradient(w * 0.5, h * 0.55, Math.min(w, h) * 0.20, w * 0.5, h * 0.60, Math.min(w, h) * 0.82);
+          vg.addColorStop(0, "rgba(0,0,0,0)");
+          vg.addColorStop(1, "rgba(0,0,0,0.42)");
+          ctx.fillStyle = vg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.restore();
+        }
+
+        // ===== Simulation: signals / cars / pedestrians / vendor steam =====
+        const sim = {
+          signalIdx: 0,
+          signalT: 0,
+          ew: "green",
+          ns: "red",
+          walk: "crossNS",
+          justSwitched: true,
+          cars: [],
+          peds: [],
+          steam: [],
+          steamCarry: 0,
+          rng: mulberry32(seed ^ 0x1337babe)
+        };
+
+        const SIGNAL = [
+          { name: "EW绿", dur: 7.8, ew: "green", ns: "red", walk: "crossNS" },
+          { name: "EW黄", dur: 2.0, ew: "yellow", ns: "red", walk: null },
+          { name: "全红", dur: 1.0, ew: "red", ns: "red", walk: null },
+          { name: "NS绿", dur: 7.8, ew: "red", ns: "green", walk: "crossEW" },
+          { name: "NS黄", dur: 2.0, ew: "red", ns: "yellow", walk: null },
+          { name: "全红", dur: 1.0, ew: "red", ns: "red", walk: null }
+        ];
+
+        const CAR_COLORS = [
+          { r: 255, g: 92, b: 110 },
+          { r: 86, g: 150, b: 255 },
+          { r: 92, g: 230, b: 168 },
+          { r: 240, g: 210, b: 110 },
+          { r: 240, g: 240, b: 246 },
+          { r: 180, g: 110, b: 255 }
+        ];
+
+        const CAR_TEMPLATE = (() => {
+          const t = [];
+          // Canonical: forward is +z, centered at origin (x:-1..1, z:-2..2).
+          for (let x = -1; x <= 1; x++) {
+            for (let z = -2; z <= 2; z++) {
+              t.push({ x, y: 0, z, kind: "body" });
+              if (Math.abs(x) === 1 && (z === -1 || z === 1)) t.push({ x, y: 0, z, kind: "tire" });
+            }
+          }
+          for (let x = -1; x <= 1; x++) for (let z = -1; z <= 1; z++) t.push({ x, y: 1, z, kind: Math.abs(x) === 1 ? "glass" : "roof" });
+          // Head & tail lights
+          t.push({ x: -1, y: 0, z: 2, kind: "head" });
+          t.push({ x: 1, y: 0, z: 2, kind: "head" });
+          t.push({ x: -1, y: 0, z: -2, kind: "tail" });
+          t.push({ x: 1, y: 0, z: -2, kind: "tail" });
+          const occ = new Set(t.map((v) => keyOf(v.x, v.y, v.z)));
+          return { t, occ };
+        })();
+
+        const PED_TEMPLATE = (() => {
+          const t = [
+            { x: 0, y: 0, z: 0, kind: "leg" },
+            { x: 0, y: 1, z: 0, kind: "torso" },
+            { x: 0, y: 2, z: 0, kind: "head" }
+          ];
+          const occ = new Set(t.map((v) => keyOf(v.x, v.y, v.z)));
+          return { t, occ };
+        })();
+
+        function initSimulation() {
+          sim.signalIdx = 0;
+          sim.signalT = 0;
+          sim.ew = "green";
+          sim.ns = "red";
+          sim.walk = "crossNS";
+          sim.justSwitched = true;
+          sim.cars.length = 0;
+          sim.peds.length = 0;
+          sim.steam.length = 0;
+          sim.steamCarry = 0;
+          sim.rng = mulberry32(seed ^ 0x1337babe);
+        }
+
+        function signalStep(dt) {
+          sim.justSwitched = false;
+          sim.signalT += dt;
+          const phase = SIGNAL[sim.signalIdx];
+          if (sim.signalT >= phase.dur) {
+            sim.signalT -= phase.dur;
+            sim.signalIdx = (sim.signalIdx + 1) % SIGNAL.length;
+            sim.justSwitched = true;
+          }
+          const p = SIGNAL[sim.signalIdx];
+          sim.ew = p.ew;
+          sim.ns = p.ns;
+          sim.walk = p.walk;
+          return { phase: p, tLeft: p.dur - sim.signalT };
+        }
+
+        function spawnPedGroup(walk) {
+          const r = sim.rng;
+          const count = 2 + Math.floor(r() * 4);
+          const rH = WORLD.roadHalf;
+          const curb = rH + 1;
+
+          if (walk === "crossNS") {
+            // At north and south crosswalks: move along x (west<->east).
+            const zs = [-rH - 2, rH + 2];
+            for (const z of zs) {
+              for (let i = 0; i < count; i++) {
+                const dir = r() < 0.5 ? 1 : -1;
+                const x0 = dir > 0 ? -curb : curb;
+                const x1 = -x0;
+                sim.peds.push({
+                  x: x0,
+                  z: z + lerp(-0.25, 0.25, r()),
+                  dirX: dir,
+                  dirZ: 0,
+                  toX: x1,
+                  toZ: z,
+                  speed: lerp(1.3, 1.8, r()),
+                  style: r() < 0.33 ? "personBlue" : r() < 0.66 ? "personGreen" : "personDark",
+                  phase: r() * Math.PI * 2
+                });
+              }
+            }
+          }
+
+          if (walk === "crossEW") {
+            // At west and east crosswalks: move along z (north<->south).
+            const xs = [-rH - 2, rH + 2];
+            for (const x of xs) {
+              for (let i = 0; i < count; i++) {
+                const dir = r() < 0.5 ? 1 : -1;
+                const z0 = dir > 0 ? -curb : curb;
+                const z1 = -z0;
+                sim.peds.push({
+                  x: x + lerp(-0.25, 0.25, r()),
+                  z: z0,
+                  dirX: 0,
+                  dirZ: dir,
+                  toX: x,
+                  toZ: z1,
+                  speed: lerp(1.3, 1.8, r()),
+                  style: r() < 0.33 ? "personBlue" : r() < 0.66 ? "personGreen" : "personDark",
+                  phase: r() * Math.PI * 2
+                });
+              }
+            }
+          }
+        }
+
+        function updatePeds(dt) {
+          const rH = WORLD.roadHalf;
+          for (let i = sim.peds.length - 1; i >= 0; i--) {
+            const p = sim.peds[i];
+            p.x += p.dirX * p.speed * dt;
+            p.z += p.dirZ * p.speed * dt;
+            p.phase += dt * 7;
+            const doneX = p.dirX !== 0 && (p.toX - p.x) * p.dirX <= 0.05;
+            const doneZ = p.dirZ !== 0 && (p.toZ - p.z) * p.dirZ <= 0.05;
+            if (doneX || doneZ) {
+              sim.peds[i] = sim.peds[sim.peds.length - 1];
+              sim.peds.pop();
+              continue;
+            }
+            // Keep inside world bounds (avoid runaway if dt spikes).
+            p.x = clamp(p.x, -rH - 3.5, rH + 3.5);
+            p.z = clamp(p.z, -rH - 3.5, rH + 3.5);
+          }
+        }
+
+        function spawnCar(lane) {
+          const r = sim.rng;
+          const color = CAR_COLORS[Math.floor(r() * CAR_COLORS.length) % CAR_COLORS.length];
+          const spd = lerp(4.6, 6.8, Math.pow(r(), 0.7));
+
+          if (lane.axis === "x") {
+            const x = lane.dir > 0 ? -WORLD.half - 16 : WORLD.half + 16;
+            sim.cars.push({
+              axis: "x",
+              dir: lane.dir,
+              s: x,
+              lane: lane.lane,
+              v: spd * (0.35 + 0.15 * r()),
+              vMax: spd,
+              color,
+              id: (r() * 1e9) | 0
+            });
+          } else {
+            const z = lane.dir > 0 ? -WORLD.half - 16 : WORLD.half + 16;
+            sim.cars.push({
+              axis: "z",
+              dir: lane.dir,
+              s: z,
+              lane: lane.lane,
+              v: spd * (0.35 + 0.15 * r()),
+              vMax: spd,
+              color,
+              id: (r() * 1e9) | 0
+            });
+          }
+        }
+
+        const LANES = [
+          { name: "EW+", axis: "x", dir: 1, lane: WORLD.lane, spawnRate: 0.32 },
+          { name: "EW-", axis: "x", dir: -1, lane: -WORLD.lane, spawnRate: 0.30 },
+          { name: "NS+", axis: "z", dir: 1, lane: -WORLD.lane, spawnRate: 0.32 },
+          { name: "NS-", axis: "z", dir: -1, lane: WORLD.lane, spawnRate: 0.30 }
+        ];
+
+        function updateCars(dt) {
+          const accel = 7.5;
+          const decel = 10.5;
+          const minGap = 2.4;
+
+          for (const lane of LANES) {
+            // Spawn
+            const r = sim.rng;
+            const p = lane.spawnRate * dt;
+            if (r() < p) {
+              // Check spawn gap.
+              const spawnS = lane.dir > 0 ? -WORLD.half - 16 : WORLD.half + 16;
+              let ok = true;
+              for (const c of sim.cars) {
+                if (c.axis !== lane.axis || c.dir !== lane.dir || c.lane !== lane.lane) continue;
+                const ahead = (c.s - spawnS) * lane.dir;
+                if (ahead < 10) {
+                  ok = false;
+                  break;
+                }
+              }
+              if (ok) spawnCar(lane);
+            }
+          }
+
+          // Update dynamics (simple car-following + signal stop line).
+          for (const lane of LANES) {
+            const cars = sim.cars.filter((c) => c.axis === lane.axis && c.dir === lane.dir && c.lane === lane.lane);
+            // Front-to-back order (so cars[i-1] is the car ahead).
+            cars.sort((a, b) => (b.s - a.s) * lane.dir);
+
+            const signal = lane.axis === "x" ? sim.ew : sim.ns;
+            const stop = lane.dir > 0 ? -WORLD.stopLine : WORLD.stopLine;
+
+            for (let i = 0; i < cars.length; i++) {
+              const c = cars[i];
+              const ahead = i > 0 ? cars[i - 1] : null;
+              let desired = c.vMax;
+
+              // Headway to car ahead.
+              if (ahead) {
+                const gap = (ahead.s - c.s) * lane.dir - 6.0; // approximate bumper-to-bumper (template length ~5)
+                desired = Math.min(desired, clamp((gap - minGap) * 1.25, 0, c.vMax));
+              }
+
+              // Signal stop.
+              const distToStop = (stop - c.s) * lane.dir;
+              const approaching = distToStop >= 0.0;
+              const treatRed = signal === "red" || (signal === "yellow" && distToStop > 3.2);
+              if (treatRed && approaching) {
+                const vAllowed = Math.sqrt(Math.max(0, 2 * 8.0 * Math.max(0, distToStop - 0.2)));
+                desired = Math.min(desired, vAllowed);
+              }
+
+              // Integrate.
+              if (desired > c.v) c.v = Math.min(desired, c.v + accel * dt);
+              else c.v = Math.max(desired, c.v - decel * dt);
+              c.s += c.v * dt * lane.dir;
+
+              // Clamp right at stop line.
+              const newDistToStop = (stop - c.s) * lane.dir;
+              if (treatRed && newDistToStop >= -0.2 && newDistToStop < 0.35 && c.v < 0.9) {
+                c.s = stop - lane.dir * 0.15;
+                c.v = 0;
+              }
+            }
+          }
+
+          // Cull cars out of bounds.
+          const limit = WORLD.half + 22;
+          for (let i = sim.cars.length - 1; i >= 0; i--) {
+            const c = sim.cars[i];
+            if (Math.abs(c.s) > limit) {
+              sim.cars[i] = sim.cars[sim.cars.length - 1];
+              sim.cars.pop();
+            }
+          }
+        }
+
+        function updateSteam(dt) {
+          const r = sim.rng;
+          const rate = 10; // particles per second
+          sim.steamCarry += dt * rate;
+          while (sim.steamCarry >= 1) {
+            sim.steamCarry -= 1;
+            sim.steam.push({
+              x: vendor.potX + lerp(-0.25, 0.25, r()),
+              y: vendor.potY + 2.2 + lerp(0, 0.25, r()),
+              z: vendor.potZ + lerp(-0.25, 0.25, r()),
+              vx: lerp(-0.25, 0.25, r()),
+              vy: lerp(0.55, 0.95, r()),
+              vz: lerp(-0.25, 0.25, r()),
+              s: lerp(0.45, 0.75, r()),
+              age: 0,
+              life: lerp(1.2, 2.4, r()),
+              ph: r() * Math.PI * 2
+            });
+          }
+
+          for (let i = sim.steam.length - 1; i >= 0; i--) {
+            const p = sim.steam[i];
+            p.age += dt;
+            if (p.age > p.life) {
+              sim.steam[i] = sim.steam[sim.steam.length - 1];
+              sim.steam.pop();
+              continue;
+            }
+            const a = p.age / p.life;
+            const lift = (1 - a) * 0.6 + 0.3;
+            p.x += (p.vx + Math.sin(state.t * 2 + p.ph) * 0.2) * dt * lift;
+            p.y += p.vy * dt * lift;
+            p.z += (p.vz + Math.cos(state.t * 1.7 + p.ph) * 0.2) * dt * lift;
+          }
+        }
+
+        // ===== Object rotation helpers (90°) =====
+        function rotXZ(x, z, rot) {
+          switch (rot & 3) {
+            case 0: return [x, z];
+            case 1: return [z, -x];
+            case 2: return [-x, -z];
+            default: return [-z, x];
+          }
+        }
+
+        const FACE_ROT_MAP = {
+          0: { "+x": "+x", "-x": "-x", "+y": "+y", "-y": "-y", "+z": "+z", "-z": "-z" },
+          1: { "+x": "-z", "-x": "+z", "+y": "+y", "-y": "-y", "+z": "+x", "-z": "-x" },
+          2: { "+x": "-x", "-x": "+x", "+y": "+y", "-y": "-y", "+z": "-z", "-z": "+z" },
+          3: { "+x": "+z", "-x": "-z", "+y": "+y", "-y": "-y", "+z": "-x", "-z": "+x" }
+        };
+
+        function getCarRot(axis, dir) {
+          if (axis === "z") return dir > 0 ? 0 : 2;
+          return dir > 0 ? 1 : 3;
+        }
+
+        // ===== Rendering helpers =====
+        function pushFace(drawList, pts, z, fill, stroke, alpha, layer) {
+          drawList.push({ pts, z, fill, stroke, alpha, layer });
+        }
+
+        function pushWorldVoxels(drawList, normalCache) {
+          for (const v of staticList) {
+            const x0 = v.x, y0 = v.y, z0 = v.z;
+            for (const f of FACES) {
+              if (getStaticKey(x0 + f.dx, y0 + f.dy, z0 + f.dz)) continue;
+              const nC = normalCache[f.name];
+              if (nC.z <= 0.0001) continue;
+
+              const pts = new Array(4);
+              let zSum = 0;
+              for (let i = 0; i < 4; i++) {
+                const rr = f.rel[i];
+                const cam = toCam({ x: x0 + rr[0], y: y0 + rr[1], z: z0 + rr[2] });
+                zSum += cam.z;
+                pts[i] = project(cam);
+              }
+
+              const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+              const rim = Math.pow(clamp(nC.z, 0, 1), 1.25) * 0.08;
+              const brightness = 0.52 + Math.max(0, diff) * 0.52 + rim + (v.emissive || 0);
+              const cool = (v.coolShadow || 0) * (1 - Math.max(0, diff));
+              const col = shadeRgb(v.base, brightness, cool);
+
+              pushFace(
+                drawList,
+                pts,
+                zSum / 4,
+                rgbToCss(col),
+                v.alpha < 1 ? "rgba(0,0,0,0.06)" : "rgba(0,0,0,0.14)",
+                v.alpha ?? 1,
+                0
+              );
+            }
+          }
+        }
+
+        function pushTemplateObject(drawList, template, occ, transform, rot, kindToVoxel, normalCache, layer) {
+          const rotMap = FACE_ROT_MAP[rot & 3];
+
+          for (const tv of template) {
+            const baseVoxel = kindToVoxel(tv);
+            if (!baseVoxel) continue;
+            const lx = tv.x, ly = tv.y, lz = tv.z;
+
+            for (const f of FACES) {
+              if (occ.has(keyOf(lx + f.dx, ly + f.dy, lz + f.dz))) continue;
+              const worldFace = rotMap[f.name];
+              const nC = normalCache[worldFace];
+              if (nC.z <= 0.0001) continue;
+
+              const pts = new Array(4);
+              let zSum = 0;
+              for (let i = 0; i < 4; i++) {
+                const rr = f.rel[i];
+                const vx = lx + rr[0];
+                const vy = ly + rr[1];
+                const vz = lz + rr[2];
+                const world = transform(vx, vy, vz);
+                const cam = toCam(world);
+                zSum += cam.z;
+                pts[i] = project(cam);
+              }
+
+              const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+              const rim = Math.pow(clamp(nC.z, 0, 1), 1.25) * 0.10;
+              const brightness = 0.52 + Math.max(0, diff) * 0.55 + rim + (baseVoxel.emissive || 0);
+              const cool = (baseVoxel.coolShadow || 0) * (1 - Math.max(0, diff));
+              const col = shadeRgb(baseVoxel.base, brightness, cool);
+
+              pushFace(
+                drawList,
+                pts,
+                zSum / 4,
+                rgbToCss(col),
+                baseVoxel.alpha < 1 ? "rgba(0,0,0,0.06)" : "rgba(0,0,0,0.14)",
+                baseVoxel.alpha ?? 1,
+                layer
+              );
+            }
+          }
+        }
+
+        function pushParticleCube(drawList, p, size, base, alpha, emissive, normalCache, layer) {
+          const h = size * 0.5;
+          const x0 = p.x - h, x1 = p.x + h;
+          const y0 = p.y - h, y1 = p.y + h;
+          const z0 = p.z - h, z1 = p.z + h;
+          const cubeFaces = [
+            { name: "+x", verts: [[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]] },
+            { name: "-x", verts: [[x0, y0, z1], [x0, y0, z0], [x0, y1, z0], [x0, y1, z1]] },
+            { name: "+y", verts: [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]] },
+            { name: "-y", verts: [[x0, y0, z1], [x1, y0, z1], [x1, y0, z0], [x0, y0, z0]] },
+            { name: "+z", verts: [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]] },
+            { name: "-z", verts: [[x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0]] }
+          ];
+
+          for (const f of cubeFaces) {
+            const nC = normalCache[f.name];
+            if (nC.z <= 0.0001) continue;
+            const pts = new Array(4);
+            let zSum = 0;
+            for (let i = 0; i < 4; i++) {
+              const vv = f.verts[i];
+              const cam = toCam({ x: vv[0], y: vv[1], z: vv[2] });
+              zSum += cam.z;
+              pts[i] = project(cam);
+            }
+            const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+            const brightness = 0.60 + Math.max(0, diff) * 0.40 + emissive;
+            const col = shadeRgb(base, brightness, 0);
+            pushFace(drawList, pts, zSum / 4, rgbToCss(col), "rgba(0,0,0,0)", alpha, layer);
+          }
+        }
+
+        const SINGLE_CUBE_TEMPLATE = [{ x: 0, y: 0, z: 0, kind: "v" }];
+        const SINGLE_CUBE_OCC = new Set([keyOf(0, 0, 0)]);
+
+        // ===== Dynamic traffic light blocks =====
+        function buildLightVoxels(out, glows) {
+          const glowPush = (x, y, z, rgb, intensity) => {
+            const cam = toCam({ x: x + 0.5, y: y + 0.5, z: z + 0.5 });
+            const p = project(cam);
+            glows.push({
+              z: cam.z,
+              x: p.x,
+              y: p.y,
+              r: state.zoom * 1.4,
+              col: rgb,
+              a: intensity
+            });
+          };
+
+          for (const c of CORNERS) {
+            const x = c.x;
+            const z = c.z;
+            const inx = x > 0 ? -1 : 1;
+            const inz = z > 0 ? -1 : 1;
+            const baseY = 9;
+
+            // Stack A (EW)
+            const ax = x + inx;
+            const az = z;
+            out.push(makeVoxel(ax, baseY + 2, az, sim.ew === "red" ? "lightRed" : "lightOff"));
+            out.push(makeVoxel(ax, baseY + 1, az, sim.ew === "yellow" ? "lightYel" : "lightOff"));
+            out.push(makeVoxel(ax, baseY + 0, az, sim.ew === "green" ? "lightGrn" : "lightOff"));
+
+            // Stack B (NS)
+            const bx = x;
+            const bz = z + inz;
+            out.push(makeVoxel(bx, baseY + 2, bz, sim.ns === "red" ? "lightRed" : "lightOff"));
+            out.push(makeVoxel(bx, baseY + 1, bz, sim.ns === "yellow" ? "lightYel" : "lightOff"));
+            out.push(makeVoxel(bx, baseY + 0, bz, sim.ns === "green" ? "lightGrn" : "lightOff"));
+
+            // Glow for current active light.
+            if (sim.ew === "green") glowPush(ax, baseY, az, "rgba(92,255,186,1)", 0.22);
+            if (sim.ew === "yellow") glowPush(ax, baseY + 1, az, "rgba(255,210,92,1)", 0.18);
+            if (sim.ew === "red") glowPush(ax, baseY + 2, az, "rgba(255,86,76,1)", 0.18);
+            if (sim.ns === "green") glowPush(bx, baseY, bz, "rgba(92,255,186,1)", 0.22);
+            if (sim.ns === "yellow") glowPush(bx, baseY + 1, bz, "rgba(255,210,92,1)", 0.18);
+            if (sim.ns === "red") glowPush(bx, baseY + 2, bz, "rgba(255,86,76,1)", 0.18);
+          }
+
+          // Vendor lantern glow.
+          glowPush(vendor.x + 3, 7, vendor.z - 3, "rgba(255,168,72,1)", 0.14);
+
+          // A tiny curb reflector glow near stop lines (subtle).
+          if (sim.ew === "red") glowPush(-WORLD.stopLine - 1, 1, 0, "rgba(255,86,76,1)", 0.05);
+          if (sim.ns === "red") glowPush(0, 1, -WORLD.stopLine - 1, "rgba(255,86,76,1)", 0.05);
+        }
+
+        // ===== Render loop =====
+        function render(ts) {
+          const dtRaw = (ts - state.lastTs) / 1000;
+          const dt = clamp(dtRaw, 0, 1 / 20) || 0;
+          state.lastTs = ts;
+          if (!state.paused) state.t += dt;
+
+          if (state.autoSpin && !state.dragging && !state.paused) state.yaw += dt * 0.12;
+
+          if (!state.paused) {
+            const { phase, tLeft } = signalStep(dt);
+            if (sim.justSwitched && phase.walk) spawnPedGroup(phase.walk);
+            updateCars(dt);
+            updatePeds(dt);
+            updateSteam(dt);
+
+            statusEl.innerHTML =
+              `<div><b>信号灯：</b>EW ${sim.ew === "green" ? "绿" : sim.ew === "yellow" ? "黄" : "红"}　` +
+              `NS ${sim.ns === "green" ? "绿" : sim.ns === "yellow" ? "黄" : "红"}</div>` +
+              `<div><b>行人：</b>${phase.walk ? (phase.walk === "crossNS" ? "横穿南北向道路" : "横穿东西向道路") : "等待"}　` +
+              `<b>倒计时：</b>${tLeft.toFixed(1)}s</div>` +
+              `<div><b>车辆：</b>${sim.cars.length}　<b>过街行人：</b>${sim.peds.length}</div>`;
+          }
+
+          drawBackground();
+
+          const normalCache = {
+            "+x": camNormal({ x: 1, y: 0, z: 0 }),
+            "-x": camNormal({ x: -1, y: 0, z: 0 }),
+            "+y": camNormal({ x: 0, y: 1, z: 0 }),
+            "-y": camNormal({ x: 0, y: -1, z: 0 }),
+            "+z": camNormal({ x: 0, y: 0, z: 1 }),
+            "-z": camNormal({ x: 0, y: 0, z: -1 })
+          };
+
+          const drawList = [];
+          const glows = [];
+
+          pushWorldVoxels(drawList, normalCache);
+
+          // Traffic lights (dynamic voxels + glow).
+          // (Rendered as objects; small layer bias so they sit above their mounts.)
+          const lightVoxels = [];
+          buildLightVoxels(lightVoxels, glows);
+          for (const v of lightVoxels) {
+            pushTemplateObject(
+              drawList,
+              SINGLE_CUBE_TEMPLATE,
+              SINGLE_CUBE_OCC,
+              (lx, ly, lz) => ({ x: v.x + lx, y: v.y + ly, z: v.z + lz }),
+              0,
+              () => v,
+              normalCache,
+              0.01
+            );
+          }
+
+          // Cars
+          for (const c of sim.cars) {
+            const rot = getCarRot(c.axis, c.dir);
+            const [laneX, laneZ] = c.axis === "x" ? [c.s, c.lane] : [c.lane, c.s];
+            const pos = { x: laneX, y: 1.03, z: laneZ }; // slightly above road
+
+            const transform = (vx, vy, vz) => {
+              const [rx, rz] = rotXZ(vx, vz, rot);
+              return { x: pos.x + rx, y: pos.y + vy, z: pos.z + rz };
+            };
+
+            const glass = { r: 120, g: 190, b: 255 };
+            const tire = { r: 24, g: 26, b: 32 };
+            const head = { r: 255, g: 250, b: 210 };
+            const tail = { r: 255, g: 90, b: 86 };
+
+            pushTemplateObject(
+              drawList,
+              CAR_TEMPLATE.t,
+              CAR_TEMPLATE.occ,
+              transform,
+              rot,
+              (tv) => {
+                if (tv.kind === "tire") return { base: tire, coolShadow: 0.12, emissive: 0, alpha: 1 };
+                if (tv.kind === "glass") return { base: glass, coolShadow: 0.02, emissive: 0.10, alpha: 0.92 };
+                if (tv.kind === "roof") return { base: { r: c.color.r * 0.85, g: c.color.g * 0.85, b: c.color.b * 0.85 }, coolShadow: 0.05, emissive: 0, alpha: 1 };
+                if (tv.kind === "head") return { base: head, coolShadow: 0.0, emissive: 0.55, alpha: 0.95 };
+                if (tv.kind === "tail") return { base: tail, coolShadow: 0.0, emissive: 0.35, alpha: 0.95 };
+                return { base: c.color, coolShadow: 0.06, emissive: 0, alpha: 1 };
+              },
+              normalCache,
+              0.02
+            );
+
+            // Headlight glow (only when moving fast enough).
+            if (c.v > 1.2) {
+              const fwd = rot === 0 ? { x: 0, z: 1 } : rot === 1 ? { x: 1, z: 0 } : rot === 2 ? { x: 0, z: -1 } : { x: -1, z: 0 };
+              const gx = pos.x + fwd.x * 3.1;
+              const gz = pos.z + fwd.z * 3.1;
+              const cam = toCam({ x: gx, y: pos.y + 0.6, z: gz });
+              const p = project(cam);
+              glows.push({ z: cam.z, x: p.x, y: p.y, r: state.zoom * 2.0, col: "rgba(255,240,200,1)", a: 0.08 });
+            }
+          }
+
+          // Pedestrians
+          for (const p of sim.peds) {
+            const onRoad = Math.abs(p.x) <= WORLD.roadHalf || Math.abs(p.z) <= WORLD.roadHalf;
+            const baseY = onRoad ? 1.03 : 2.03;
+            const bob = Math.sin(p.phase) * 0.06;
+            const pos = { x: p.x, y: baseY + bob, z: p.z };
+            const style = p.style;
+
+            pushTemplateObject(
+              drawList,
+              PED_TEMPLATE.t,
+              PED_TEMPLATE.occ,
+              (vx, vy, vz) => ({ x: pos.x + vx, y: pos.y + vy, z: pos.z + vz }),
+              0,
+              (tv) => {
+                if (tv.kind === "head") return makeVoxel(0, 0, 0, "personSkin");
+                if (tv.kind === "torso") return makeVoxel(0, 0, 0, style);
+                return makeVoxel(0, 0, 0, "personDark");
+              },
+              normalCache,
+              0.03
+            );
+          }
+
+          // Vendor steam particles.
+          for (const p of sim.steam) {
+            const a = p.age / p.life;
+            const alpha = lerp(0.22, 0.0, smoothstep(0.35, 1.0, a));
+            const size = p.s * (0.9 + 0.8 * a);
+            pushParticleCube(drawList, p, size, mats.steam.base, alpha, 0.10, normalCache, 0.04);
+          }
+
+          drawList.sort((a, b) => (a.z + a.layer * 1e-2) - (b.z + b.layer * 1e-2));
+
+          ctx.save();
+          ctx.lineJoin = "round";
+          ctx.lineWidth = 1;
+          for (const d of drawList) {
+            ctx.globalAlpha = d.alpha;
+            ctx.beginPath();
+            ctx.moveTo(d.pts[0].x, d.pts[0].y);
+            ctx.lineTo(d.pts[1].x, d.pts[1].y);
+            ctx.lineTo(d.pts[2].x, d.pts[2].y);
+            ctx.lineTo(d.pts[3].x, d.pts[3].y);
+            ctx.closePath();
+            ctx.fillStyle = d.fill;
+            ctx.fill();
+            if (d.stroke && d.stroke !== "rgba(0,0,0,0)") {
+              ctx.strokeStyle = d.stroke;
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+
+          // Glows (additive)
+          if (glows.length) {
+            glows.sort((a, b) => a.z - b.z);
+            ctx.save();
+            ctx.globalCompositeOperation = "lighter";
+            for (const g of glows) {
+              ctx.globalAlpha = g.a;
+              const gg = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r);
+              gg.addColorStop(0, g.col);
+              gg.addColorStop(0.42, g.col.replace(",1)", ",0.22)"));
+              gg.addColorStop(1, g.col.replace(",1)", ",0)"));
+              ctx.fillStyle = gg;
+              ctx.beginPath();
+              ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.restore();
+          }
+
+          requestAnimationFrame(render);
+        }
+
+        function boot() {
+          setAutoSpin(true);
+          setPaused(false);
+          initSimulation();
+          buildStatic();
+          resize();
+          initBackdrop();
+          requestAnimationFrame(render);
+        }
+
+        boot();
+      })();
+    </script>
+  </body>
+</html>
