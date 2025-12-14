@@ -50,6 +50,7 @@
 <script>
 (() => {
   const dataUrl = "{{ "/highlights.json" | relLangURL }}";
+  const SHOW_VIEW_CARD = {{ if eq .Site.LanguageCode "zh-CN" }}false{{ else }}true{{ end }};
   const I18N = {
     allWithCount: "{{ i18n "highlights_all_with_count" }}",
     untitled: "{{ i18n "highlights_untitled" }}",
@@ -184,12 +185,14 @@
     const actions = document.createElement("div");
     actions.className = "highlight-card__actions";
 
-    const viewBtn = document.createElement("button");
-    viewBtn.type = "button";
-    viewBtn.className = "highlight-btn";
-    viewBtn.textContent = I18N.viewCard;
-    viewBtn.addEventListener("click", () => openModal(item));
-    actions.appendChild(viewBtn);
+    if (SHOW_VIEW_CARD) {
+      const viewBtn = document.createElement("button");
+      viewBtn.type = "button";
+      viewBtn.className = "highlight-btn";
+      viewBtn.textContent = I18N.viewCard;
+      viewBtn.addEventListener("click", () => openModal(item));
+      actions.appendChild(viewBtn);
+    }
 
     if (item.originalUrl) {
       const sourceLink = document.createElement("a");
@@ -543,6 +546,10 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-decoration: none;
+  margin-left: 0;
+}
+
+.highlight-btn + .highlight-link {
   margin-left: 0.35rem;
 }
 
