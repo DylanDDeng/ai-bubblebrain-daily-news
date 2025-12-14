@@ -37,19 +37,6 @@
     ]
   },
   {
-    "id": "gemini-3",
-    "name": "Gemini 3",
-    "company": "Google",
-    "logo": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg",
-    "releaseDate": "2025-11",
-    "description": "Google's most powerful next-generation model.",
-    "tags": [
-      "Multimodal",
-      "Creative Writing",
-      "Coding"
-    ]
-  },
-  {
     "id": "deepseek-v3.2",
     "name": "DeepSeek V3.2",
     "company": "DeepSeek",
@@ -74,6 +61,31 @@
       "Coding",
       "Reasoning",
       "Math"
+    ]
+  },
+  {
+    "id": "Gemini 3 Pro(high)",
+    "name": "Gemini 3 Pro(high)",
+    "company": "Google",
+    "logo": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251214093019086.png",
+    "releaseDate": "2025-11",
+    "description": "Google's next-generation flagship model.",
+    "tags": [
+      "Coding",
+      "Reasoning",
+      "Writing"
+    ]
+  },
+  {
+    "id": "GLM-4.6",
+    "name": "GLM-4.6",
+    "company": "Z.ai",
+    "logo": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251209090936095.png",
+    "releaseDate": "2025-09",
+    "description": "An open-source model released by Z.ai (Zhipu).",
+    "tags": [
+      "Coding",
+      "Open Source"
     ]
   }
 ]

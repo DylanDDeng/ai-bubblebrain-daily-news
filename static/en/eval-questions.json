@@ -119,5 +119,111 @@
         "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-macbook-360.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
+  },
+  {
+    "id": "q006",
+    "title": "Fire-breathing Dragon",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Create a voxel-art dragon with wings, tail, and scales. Add a flying animation (wing flapping) and a fire-breathing effect. Use HTML, CSS, and JS, and put everything into a single HTML file.",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-dragon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-dragon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q007",
+    "title": "Snowman",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Design a creative voxel-art snowman stacked up and smiling. Use HTML, CSS, and JS, and put everything into a single HTML file.",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-snowman.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-snowman.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q008",
+    "title": "City Intersection",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Create a voxel-art city intersection with traffic lights, crosswalks, cars stopping and going, pedestrians crossing, and street vendors. Use HTML, CSS, and JS, and put everything into a single HTML file.",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-city_intersection.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-intersection.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q009",
+    "title": "Street Basketball Court",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Create a voxel-art street basketball court with players playing, a chain-link fence, graffiti on the wall, spectators, and a city background. Use HTML, CSS, and JS, and put everything into a single HTML file.",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-street_basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "deepseek-v3.2": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/deepseek-v3.2-street-basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q010",
+    "title": "Eiffel Tower",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Create a voxel-art Eiffel Tower with a lattice iron framework, observation decks at different levels, and an arched base. Use HTML, CSS, and JS, and put everything into a single HTML file.",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-eiffel_tower.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-eiffel.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+  {
+    "id": "q011",
+    "title": "Sydney Opera House",
+    "category": "Coding",
+    "difficulty": "Medium",
+    "question": "Create a voxel-art Sydney Opera House with its iconic shell-like roof, a waterfront location, a harbor, and steps leading to the entrance. Use HTML, CSS, and JS, and put everything into a single HTML file.",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-sydney_opera_house.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-sydney-opera.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
   }
 ]
