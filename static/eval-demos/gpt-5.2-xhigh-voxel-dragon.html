@@ -1,0 +1,1144 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>体素飞龙：翅膀扇动与喷火</title>
+    <style>
+      :root {
+        --panel: rgba(8, 12, 20, 0.62);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.88);
+        --muted: rgba(255, 255, 255, 0.66);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #040814;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif;
+      }
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        user-select: none;
+      }
+      .title {
+        font-weight: 750;
+        letter-spacing: 0.2px;
+        font-size: 13px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.92);
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 90ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.32);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.84);
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.26);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+      }
+      .dot.on.spin {
+        background: #62ffcb;
+        box-shadow: 0 0 0 3px rgba(98, 255, 203, 0.14);
+      }
+      .dot.on.fire {
+        background: #ffb347;
+        box-shadow: 0 0 0 3px rgba(255, 179, 71, 0.16);
+      }
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        padding: 0 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+      .credit {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(6, 8, 16, 0.52);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 12px;
+        user-select: none;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <div class="title">体素飞龙：翅膀扇动与喷火</div>
+      <div class="hint">
+        拖动：旋转　滚轮：缩放　双击：重置视角<br />
+        <span class="kbd">Space</span> 自动旋转　<span class="kbd">F</span> 喷火　<span class="kbd">R</span> 重建
+      </div>
+      <div class="row">
+        <div class="pill" id="spinPill" title="点击切换自动旋转">
+          <span class="dot spin" id="spinDot"></span><span id="spinText">自动旋转：开</span>
+        </div>
+        <div class="pill" id="firePill" title="点击切换喷火">
+          <span class="dot fire" id="fireDot"></span><span id="fireText">喷火：关</span>
+        </div>
+      </div>
+      <div class="row">
+        <button id="resetBtn" type="button">重置视角</button>
+        <button id="rebuildBtn" type="button">重建飞龙</button>
+      </div>
+    </div>
+    <div class="credit">纯 HTML / CSS / JS（无外部依赖）</div>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d", { alpha: false });
+
+        const spinPill = document.getElementById("spinPill");
+        const firePill = document.getElementById("firePill");
+        const spinDot = document.getElementById("spinDot");
+        const fireDot = document.getElementById("fireDot");
+        const spinText = document.getElementById("spinText");
+        const fireText = document.getElementById("fireText");
+        const resetBtn = document.getElementById("resetBtn");
+        const rebuildBtn = document.getElementById("rebuildBtn");
+
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+        const lerp = (a, b, t) => a + (b - a) * t;
+        const smoothstep = (a, b, t) => {
+          const x = clamp((t - a) / (b - a), 0, 1);
+          return x * x * (3 - 2 * x);
+        };
+
+        function mulberry32(seed) {
+          let t = seed >>> 0;
+          return function rand() {
+            t += 0x6d2b79f5;
+            let x = t;
+            x = Math.imul(x ^ (x >>> 15), x | 1);
+            x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        // ===== Camera / 3D Math =====
+        function rotY(p, yaw) {
+          const c = Math.cos(yaw), s = Math.sin(yaw);
+          return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+        }
+        function rotX(p, pitch) {
+          const c = Math.cos(pitch), s = Math.sin(pitch);
+          return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+        }
+        function normalize(v) {
+          const m = Math.hypot(v.x, v.y, v.z) || 1;
+          return { x: v.x / m, y: v.y / m, z: v.z / m };
+        }
+
+        const VIEW_DIR = { x: 0, y: 0, z: 1 };
+        const LIGHT_DIR = normalize({ x: -0.35, y: 0.82, z: 0.48 });
+
+        function rgbToCss(rgb) {
+          const r = clamp(Math.round(rgb.r), 0, 255);
+          const g = clamp(Math.round(rgb.g), 0, 255);
+          const b = clamp(Math.round(rgb.b), 0, 255);
+          return `rgb(${r} ${g} ${b})`;
+        }
+
+        function shadeRgb(base, brightness, coolShadow = 0) {
+          const b = clamp(brightness, 0, 1.85);
+          const r = base.r * b;
+          const g = base.g * b;
+          const bl = base.b * b;
+          return {
+            r: r * (1 - coolShadow) + 18 * coolShadow,
+            g: g * (1 - coolShadow) + 34 * coolShadow,
+            b: bl * (1 - coolShadow) + 70 * coolShadow
+          };
+        }
+
+        // ===== Fast voxel key (30-bit pack) =====
+        const KEY_BITS = 10;
+        const KEY_MASK = (1 << KEY_BITS) - 1;
+        const KEY_OFF = 512;
+        const keyOf = (x, y, z) =>
+          (((x + KEY_OFF) & KEY_MASK) << (KEY_BITS * 2)) |
+          (((y + KEY_OFF) & KEY_MASK) << KEY_BITS) |
+          ((z + KEY_OFF) & KEY_MASK);
+
+        // ===== Materials =====
+        const materials = {
+          scaleA: { base: { r: 42, g: 196, b: 126 }, coolShadow: 0.06, vary: 0.09 },
+          scaleB: { base: { r: 22, g: 150, b: 98 }, coolShadow: 0.08, vary: 0.10 },
+          scaleC: { base: { r: 72, g: 230, b: 162 }, coolShadow: 0.05, vary: 0.08 },
+          belly: { base: { r: 242, g: 209, b: 142 }, coolShadow: 0.02, vary: 0.06 },
+          membrane: { base: { r: 132, g: 88, b: 220 }, coolShadow: 0.04, vary: 0.07, alpha: 0.92 },
+          bone: { base: { r: 26, g: 120, b: 92 }, coolShadow: 0.06, vary: 0.06 },
+          horn: { base: { r: 236, g: 232, b: 216 }, coolShadow: 0.01, vary: 0.05 },
+          claw: { base: { r: 210, g: 204, b: 186 }, coolShadow: 0.01, vary: 0.04 },
+          eye: { base: { r: 255, g: 222, b: 88 }, coolShadow: 0.0, vary: 0.03, emissive: 0.7 },
+          tongue: { base: { r: 236, g: 88, b: 112 }, coolShadow: 0.0, vary: 0.05 }
+        };
+
+        let seed = 20251214;
+        let hashSeed = seed;
+        let rand = mulberry32(seed ^ 0x9e3779b9);
+
+        function hash3(x, y, z) {
+          let n =
+            Math.imul(x, 374761393) ^
+            Math.imul(y, 668265263) ^
+            Math.imul(z, 2147483647) ^
+            Math.imul(hashSeed, 1597334677);
+          n = Math.imul(n ^ (n >>> 13), 1274126177);
+          n = (n ^ (n >>> 16)) >>> 0;
+          return n / 4294967295;
+        }
+
+        function varyColor(base, t, amt) {
+          const f = lerp(1 - amt, 1 + amt, t);
+          return { r: base.r * f, g: base.g * f, b: base.b * f };
+        }
+
+        function makeVoxel(x, y, z, matName, extra = {}) {
+          const mat = materials[matName] || materials.scaleA;
+          const h = hash3(x, y, z);
+          const base = mat.vary ? varyColor(mat.base, h, mat.vary) : mat.base;
+          return {
+            x,
+            y,
+            z,
+            mat: matName,
+            base,
+            coolShadow: mat.coolShadow ?? 0,
+            emissive: extra.emissive ?? mat.emissive ?? 0,
+            alpha: extra.alpha ?? mat.alpha ?? 1
+          };
+        }
+
+        // ===== Model =====
+        const staticMap = new Map();
+        const staticList = [];
+        const dynMap = new Map();
+        const dynList = [];
+
+        let boundsStatic = null;
+        let boundsFit = null;
+        let pivot = { x: 0, y: 0, z: 0 };
+        let mouthBase = { x: 0, y: 16, z: 22 };
+
+        function setStatic(x, y, z, matName, extra = {}) {
+          const key = keyOf(x, y, z);
+          staticMap.set(key, makeVoxel(x, y, z, matName, extra));
+        }
+        function delStatic(x, y, z) {
+          staticMap.delete(keyOf(x, y, z));
+        }
+
+        function setDyn(x, y, z, matName, extra = {}) {
+          const key = keyOf(x, y, z);
+          if (staticMap.has(key)) return;
+          dynMap.set(key, makeVoxel(x, y, z, matName, extra));
+        }
+
+        function addSphere(setFn, cx, cy, cz, r, matFor, opts = {}) {
+          const r2 = r * r;
+          const minX = Math.floor(cx - r - 1), maxX = Math.ceil(cx + r + 1);
+          const minY = Math.floor(cy - r - 1), maxY = Math.ceil(cy + r + 1);
+          const minZ = Math.floor(cz - r - 1), maxZ = Math.ceil(cz + r + 1);
+          const squashY = opts.squashY ?? 1.0;
+
+          for (let x = minX; x <= maxX; x++) {
+            for (let y = minY; y <= maxY; y++) {
+              for (let z = minZ; z <= maxZ; z++) {
+                const px = x + 0.5 - cx;
+                const py = (y + 0.5 - cy) / squashY;
+                const pz = z + 0.5 - cz;
+                if (px * px + py * py + pz * pz > r2) continue;
+                const m = typeof matFor === "function" ? matFor(x, y, z) : matFor;
+                if (typeof m === "string") setFn(x, y, z, m);
+                else setFn(x, y, z, m.mat, m.extra || {});
+              }
+            }
+          }
+        }
+
+        function addLine(setFn, points, matName, extra = {}) {
+          for (const p of points) setFn(p.x, p.y, p.z, matName, extra);
+        }
+
+        function computeBoundsFromMap(map) {
+          let minX = Infinity, minY = Infinity, minZ = Infinity;
+          let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+          for (const v of map.values()) {
+            minX = Math.min(minX, v.x);
+            minY = Math.min(minY, v.y);
+            minZ = Math.min(minZ, v.z);
+            maxX = Math.max(maxX, v.x + 1);
+            maxY = Math.max(maxY, v.y + 1);
+            maxZ = Math.max(maxZ, v.z + 1);
+          }
+          return { minX, minY, minZ, maxX, maxY, maxZ };
+        }
+
+        function pickScaleMat(x, y, z, bellyCutY) {
+          const h = hash3(x, y, z);
+          if (y <= bellyCutY && Math.abs(x) <= 4 && z > -12 && z < 18) return "belly";
+          if (h > 0.86) return "scaleB";
+          if (h > 0.72) return "scaleC";
+          if (((x * 3 + y * 5 + z * 7) & 7) === 0) return "scaleB";
+          return "scaleA";
+        }
+
+        function buildStaticDragon() {
+          staticMap.clear();
+          staticList.length = 0;
+
+          hashSeed = seed;
+          rand = mulberry32(seed ^ 0x9e3779b9);
+
+          const CY = 14;
+          const bellyCutY = 12;
+
+          // Core body (overlapping blobs).
+          const matBody = (x, y, z) => pickScaleMat(x, y, z, bellyCutY);
+          addSphere(setStatic, 0, CY, -8, 5.8, matBody, { squashY: 0.86 });
+          addSphere(setStatic, 0, CY + 0.5, -2, 6.4, matBody, { squashY: 0.86 });
+          addSphere(setStatic, 0, CY + 0.9, 5, 6.6, matBody, { squashY: 0.86 });
+          addSphere(setStatic, 0, CY + 1.2, 10, 4.8, matBody, { squashY: 0.88 }); // neck
+
+          // Head & snout
+          addSphere(setStatic, 0, CY + 2.2, 15, 4.6, (x, y, z) => pickScaleMat(x, y, z, bellyCutY + 2), { squashY: 0.92 });
+          addSphere(setStatic, 0, CY + 1.6, 19, 3.2, (x, y, z) => pickScaleMat(x, y, z, bellyCutY + 2), { squashY: 0.84 });
+          addSphere(setStatic, 0, CY + 0.8, 18, 3.4, (x, y, z) => pickScaleMat(x, y, z, bellyCutY + 1), { squashY: 0.74 }); // lower jaw volume
+
+          // Wing shoulders
+          addSphere(setStatic, -5.6, CY + 2.2, 6.2, 3.3, matBody, { squashY: 0.9 });
+          addSphere(setStatic, 5.6, CY + 2.2, 6.2, 3.3, matBody, { squashY: 0.9 });
+
+          // Tail root
+          addSphere(setStatic, 0, CY, -14, 3.9, matBody, { squashY: 0.9 });
+          addSphere(setStatic, 0, CY, -17, 3.2, matBody, { squashY: 0.9 });
+
+          // A few tucked legs/claws (small, stylized).
+          addSphere(setStatic, -3.2, CY - 4.2, -1.5, 2.2, "scaleB", { squashY: 0.82 });
+          addSphere(setStatic, 3.2, CY - 4.2, -1.5, 2.2, "scaleB", { squashY: 0.82 });
+          addLine(
+            setStatic,
+            [
+              { x: -4, y: CY - 6, z: -1 },
+              { x: -5, y: CY - 6, z: -1 }
+            ],
+            "claw"
+          );
+          addLine(
+            setStatic,
+            [
+              { x: 4, y: CY - 6, z: -1 },
+              { x: 5, y: CY - 6, z: -1 }
+            ],
+            "claw"
+          );
+
+          // Carve a mouth cavity.
+          for (let x = -2; x <= 2; x++) {
+            for (let y = CY - 1; y <= CY + 2; y++) {
+              for (let z = 19; z <= 22; z++) delStatic(x, y, z);
+            }
+          }
+
+          // Teeth.
+          for (let x = -2; x <= 2; x++) {
+            setStatic(x, CY - 1, 20, "horn");
+            if (Math.abs(x) === 2) setStatic(x, CY, 20, "horn");
+          }
+          setStatic(-2, CY - 1, 21, "horn");
+          setStatic(2, CY - 1, 21, "horn");
+
+          // Tongue.
+          addSphere(setStatic, 0, CY - 1.4, 20, 1.8, "tongue", { squashY: 0.6 });
+
+          // Eyes (glow).
+          setStatic(-2, CY + 4, 17, "eye", { emissive: 0.9 });
+          setStatic(2, CY + 4, 17, "eye", { emissive: 0.9 });
+          setStatic(-3, CY + 4, 16, "eye", { emissive: 0.5 });
+          setStatic(3, CY + 4, 16, "eye", { emissive: 0.5 });
+
+          // Horns.
+          addLine(
+            setStatic,
+            [
+              { x: -2, y: CY + 6, z: 14 },
+              { x: -3, y: CY + 7, z: 13 },
+              { x: -4, y: CY + 8, z: 12 }
+            ],
+            "horn"
+          );
+          addLine(
+            setStatic,
+            [
+              { x: 2, y: CY + 6, z: 14 },
+              { x: 3, y: CY + 7, z: 13 },
+              { x: 4, y: CY + 8, z: 12 }
+            ],
+            "horn"
+          );
+
+          // Dorsal spines (scales).
+          for (let z = -12; z <= 12; z += 2) {
+            const h = hash3(0, CY, z);
+            const y = Math.round(CY + 6.2 + lerp(-0.3, 0.8, h));
+            setStatic(0, y, z, "scaleC");
+            if ((z & 3) === 0) setStatic(1, y - 1, z, "scaleB");
+            if ((z & 3) === 2) setStatic(-1, y - 1, z, "scaleB");
+          }
+
+          // Mark mouth origin for fire breath.
+          mouthBase = { x: 0, y: CY, z: 22 };
+
+          // Material tweak pass: push a bit more contrast to head/neck scales.
+          for (const [k, v] of staticMap.entries()) {
+            if (v.mat !== "scaleA" && v.mat !== "scaleB" && v.mat !== "scaleC") continue;
+            if (v.z >= 10 && v.y >= CY + 1 && hash3(v.x, v.y, v.z) > 0.72) {
+              staticMap.set(k, makeVoxel(v.x, v.y, v.z, "scaleC"));
+            }
+          }
+
+          for (const v of staticMap.values()) staticList.push(v);
+
+          boundsStatic = computeBoundsFromMap(staticMap);
+          pivot = {
+            x: (boundsStatic.minX + boundsStatic.maxX) / 2,
+            y: (boundsStatic.minY + boundsStatic.maxY) / 2,
+            z: (boundsStatic.minZ + boundsStatic.maxZ) / 2
+          };
+
+          // Fit bounds include wings, tail and a bit of fire reach.
+          boundsFit = { ...boundsStatic };
+          boundsFit.minX -= 18;
+          boundsFit.maxX += 18;
+          boundsFit.minY -= 8;
+          boundsFit.maxY += 12;
+          boundsFit.minZ -= 24;
+          boundsFit.maxZ += 30;
+        }
+
+        function buildDynamic(t) {
+          dynMap.clear();
+          dynList.length = 0;
+
+          const CY = 14;
+          const wingRootY = CY + 3;
+          const wingRootZ = 7;
+          const wingSpan = 14;
+          const wingLen = 10;
+
+          const flapSpeed = 3.35;
+          const flap = Math.sin(t * flapSpeed);
+          const flap2 = Math.sin(t * flapSpeed * 2 + 0.6);
+
+          function wingLift(dx, dz) {
+            const spanF = Math.pow(dx / wingSpan, 1.15);
+            const backF = 0.65 + 0.35 * Math.cos((dz / wingLen) * Math.PI);
+            const wave = Math.sin(t * flapSpeed - dx * 0.18) * 0.9 + flap2 * 0.12;
+            const lift = (flap * 0.65 + wave * 0.35) * spanF * backF;
+            return Math.round(lift * 6);
+          }
+
+          function addWing(side) {
+            const rootX = side * 7;
+
+            // Leading edge bone.
+            for (let dx = 0; dx <= wingSpan; dx++) {
+              const sweep = Math.floor(dx * 0.18);
+              const z = wingRootZ - sweep;
+              const y = wingRootY + wingLift(dx, 0);
+              setDyn(rootX + side * dx, y, z, "bone");
+              if ((dx % 3) === 0) setDyn(rootX + side * dx, y - 1, z, "bone");
+            }
+
+            // Fingers.
+            const fingers = [
+              { at: 6, len: 7 },
+              { at: 10, len: 6 },
+              { at: 13, len: 4 }
+            ];
+            for (const f of fingers) {
+              for (let dz = 0; dz <= f.len; dz++) {
+                const dx = f.at;
+                const sweep = Math.floor(dx * 0.18);
+                const z = wingRootZ - sweep - dz;
+                const y = wingRootY + wingLift(dx, dz);
+                setDyn(rootX + side * dx, y, z, "bone");
+              }
+            }
+
+            // Membrane fill (tri fan).
+            for (let dx = 1; dx <= wingSpan; dx++) {
+              const sweep = Math.floor(dx * 0.18);
+              const maxDz = Math.max(1, Math.floor(wingLen - dx * 0.58));
+              for (let dz = 0; dz <= maxDz; dz++) {
+                const z = wingRootZ - sweep - dz;
+                const y = wingRootY + wingLift(dx, dz);
+                const x = rootX + side * dx;
+                // Slight ragged edge so it feels organic.
+                const edge = dz === maxDz;
+                if (edge && hash3(x, y, z) > 0.68) continue;
+                setDyn(x, y, z, "membrane");
+                if ((dx + dz) % 5 === 0) setDyn(x, y - 1, z, "membrane", { alpha: 0.86 });
+              }
+            }
+          }
+
+          addWing(-1);
+          addWing(1);
+
+          // Tail (sway + taper).
+          const tailLen = 18;
+          for (let i = 0; i < tailLen; i++) {
+            const p = i / (tailLen - 1);
+            const z = -18 - i;
+            const sway = Math.sin(t * 1.35 + i * 0.38) * (0.4 + 2.6 * p);
+            const curl = Math.sin(t * 1.8 + i * 0.22) * (0.2 + 0.6 * p);
+            const xC = sway;
+            const yC = CY + curl;
+            const r = lerp(3.0, 1.0, p);
+            addSphere(setDyn, xC, yC, z, r, (x, y, zz) => pickScaleMat(x, y, zz, CY - 4), { squashY: 0.9 });
+            const sx = Math.round(xC);
+            const sy = Math.round(yC + r + 1);
+            if ((i & 1) === 0) setDyn(sx, sy, z, "scaleC");
+          }
+          // Tail tip fin.
+          const tipZ = -18 - (tailLen - 1);
+          setDyn(0, CY + 2, tipZ - 1, "scaleC");
+          setDyn(1, CY + 1, tipZ - 1, "scaleB");
+          setDyn(-1, CY + 1, tipZ - 1, "scaleB");
+
+          for (const v of dynMap.values()) dynList.push(v);
+        }
+
+        function hasVoxel(x, y, z) {
+          const k = keyOf(x, y, z);
+          return dynMap.has(k) || staticMap.has(k);
+        }
+
+        // ===== Fire particles =====
+        const fire = {
+          on: false,
+          carry: 0,
+          particles: [],
+          rand: mulberry32(seed ^ 0xfeedc0de)
+        };
+
+        function setFire(v) {
+          fire.on = v;
+          fireDot.classList.toggle("on", v);
+          fireText.textContent = v ? "喷火：开" : "喷火：关";
+        }
+
+        function spawnFire(mouthWorld) {
+          const r = fire.rand;
+          const dir = normalize({ x: 0.0, y: 0.08, z: 1.0 });
+          const speed = lerp(14, 22, Math.pow(r(), 0.35));
+          const spread = lerp(0.12, 0.55, r());
+          const vx = (r() * 2 - 1) * spread * 6;
+          const vy = (r() * 2 - 1) * spread * 3 + 1.2;
+          const vz = speed + (r() * 2 - 1) * 2;
+          const size = lerp(0.45, 0.95, Math.pow(r(), 0.25));
+          const life = lerp(0.45, 1.05, Math.pow(r(), 0.5));
+          fire.particles.push({
+            x: mouthWorld.x + (r() * 2 - 1) * 0.25,
+            y: mouthWorld.y + (r() * 2 - 1) * 0.18,
+            z: mouthWorld.z + 0.6,
+            vx: dir.x * vz + vx,
+            vy: dir.y * vz + vy,
+            vz: dir.z * vz + (r() * 2 - 1) * 2,
+            s: size,
+            age: 0,
+            life,
+            phase: r() * Math.PI * 2
+          });
+        }
+
+        function updateFire(dt, mouthWorld, t) {
+          if (fire.on) {
+            const rate = 42; // particles per second
+            fire.carry += dt * rate;
+            while (fire.carry >= 1) {
+              spawnFire(mouthWorld);
+              fire.carry -= 1;
+            }
+          }
+
+          const ps = fire.particles;
+          for (let i = ps.length - 1; i >= 0; i--) {
+            const p = ps[i];
+            p.age += dt;
+            if (p.age > p.life) {
+              ps[i] = ps[ps.length - 1];
+              ps.pop();
+              continue;
+            }
+            const a = p.age / p.life;
+            const buoy = 9.5 * dt * (0.25 + 0.75 * (1 - a));
+            p.vy += buoy;
+            p.vx += Math.sin(t * 10 + p.phase) * dt * 1.8 * (1 - a);
+            p.vz += Math.cos(t * 8 + p.phase) * dt * 1.2 * (1 - a);
+
+            const drag = Math.pow(0.18, dt);
+            p.vx *= 1 - 0.05 * dt;
+            p.vy *= 1 - 0.03 * dt;
+            p.vz *= 1 - 0.05 * dt;
+            p.vx *= drag;
+            p.vy *= drag;
+            p.vz *= drag;
+
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.z += p.vz * dt;
+          }
+        }
+
+        function fireColorAt(a) {
+          // a: 0..1
+          const hot = { r: 255, g: 250, b: 210 };
+          const mid = { r: 255, g: 168, b: 72 };
+          const cool = { r: 255, g: 86, b: 38 };
+          const smoke = { r: 78, g: 86, b: 102 };
+          if (a < 0.22) return { ...hot };
+          if (a < 0.58) {
+            const t = (a - 0.22) / 0.36;
+            return { r: lerp(hot.r, mid.r, t), g: lerp(hot.g, mid.g, t), b: lerp(hot.b, mid.b, t) };
+          }
+          if (a < 0.88) {
+            const t = (a - 0.58) / 0.3;
+            return { r: lerp(mid.r, cool.r, t), g: lerp(mid.g, cool.g, t), b: lerp(mid.b, cool.b, t) };
+          }
+          const t = (a - 0.88) / 0.12;
+          return { r: lerp(cool.r, smoke.r, t), g: lerp(cool.g, smoke.g, t), b: lerp(cool.b, smoke.b, t) };
+        }
+
+        // ===== Backdrop =====
+        let stars = [];
+        let clouds = [];
+        function initBackdrop() {
+          const r = mulberry32(seed ^ 0xa5a5a5a5);
+          stars = [];
+          clouds = [];
+
+          const sCount = Math.round(120 + Math.min(state.w, state.h) * 0.08);
+          for (let i = 0; i < sCount; i++) {
+            stars.push({
+              x: r() * state.w,
+              y: r() * state.h * 0.58,
+              rr: lerp(0.6, 1.9, Math.pow(r(), 2.1)),
+              a: lerp(0.10, 0.55, r()),
+              tw: lerp(0.7, 1.5, r()),
+              ph: r() * Math.PI * 2
+            });
+          }
+
+          const cCount = 11;
+          for (let i = 0; i < cCount; i++) {
+            clouds.push({
+              x: r() * state.w,
+              y: lerp(state.h * 0.18, state.h * 0.58, Math.pow(r(), 1.2)),
+              s: lerp(0.55, 1.35, Math.pow(r(), 1.2)),
+              a: lerp(0.05, 0.16, r()),
+              vx: lerp(6, 22, r()) * (r() < 0.5 ? -1 : 1),
+              seed: r() * 1e9
+            });
+          }
+        }
+
+        function drawBackground(dt) {
+          const w = state.w, h = state.h;
+
+          const g = ctx.createLinearGradient(0, 0, 0, h);
+          g.addColorStop(0, "#040714");
+          g.addColorStop(0.45, "#07162a");
+          g.addColorStop(1, "#063047");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+
+          // Soft moon.
+          const mx = w * 0.78, my = h * 0.17;
+          ctx.save();
+          const mg = ctx.createRadialGradient(mx, my, 0, mx, my, Math.min(w, h) * 0.24);
+          mg.addColorStop(0, "rgba(220,245,255,0.26)");
+          mg.addColorStop(0.28, "rgba(200,235,255,0.10)");
+          mg.addColorStop(1, "rgba(200,235,255,0)");
+          ctx.fillStyle = mg;
+          ctx.beginPath();
+          ctx.arc(mx, my, Math.min(w, h) * 0.24, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "rgba(246, 252, 255, 0.80)";
+          ctx.beginPath();
+          ctx.arc(mx, my, Math.min(w, h) * 0.042, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          // Stars.
+          ctx.save();
+          for (const s of stars) {
+            const tw = 0.62 + 0.38 * Math.sin(state.t * s.tw + s.ph);
+            ctx.globalAlpha = s.a * tw;
+            ctx.fillStyle = "rgba(240, 248, 255, 1)";
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.rr, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Clouds.
+          ctx.save();
+          ctx.globalCompositeOperation = "screen";
+          for (const c of clouds) {
+            c.x += c.vx * dt;
+            if (c.x < -240) c.x += w + 480;
+            if (c.x > w + 240) c.x -= w + 480;
+
+            const cx = c.x, cy = c.y;
+            const s = c.s;
+            const cr = mulberry32(c.seed | 0);
+            ctx.globalAlpha = c.a;
+            for (let i = 0; i < 8; i++) {
+              const ox = lerp(-90, 90, cr()) * s;
+              const oy = lerp(-24, 24, cr()) * s;
+              const rr = lerp(28, 72, Math.pow(cr(), 0.7)) * s;
+              const gg = ctx.createRadialGradient(cx + ox, cy + oy, 0, cx + ox, cy + oy, rr);
+              gg.addColorStop(0, "rgba(220,245,255,0.38)");
+              gg.addColorStop(1, "rgba(220,245,255,0)");
+              ctx.fillStyle = gg;
+              ctx.beginPath();
+              ctx.arc(cx + ox, cy + oy, rr, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          ctx.restore();
+
+          // Vignette.
+          ctx.save();
+          const vg = ctx.createRadialGradient(w * 0.5, h * 0.5, Math.min(w, h) * 0.18, w * 0.5, h * 0.55, Math.min(w, h) * 0.78);
+          vg.addColorStop(0, "rgba(0,0,0,0)");
+          vg.addColorStop(1, "rgba(0,0,0,0.42)");
+          ctx.fillStyle = vg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.restore();
+        }
+
+        // ===== Rendering =====
+        const FACES = [
+          { name: "+x", dx: 1, dy: 0, dz: 0, n: { x: 1, y: 0, z: 0 }, rel: [[1, 0, 0], [1, 0, 1], [1, 1, 1], [1, 1, 0]] },
+          { name: "-x", dx: -1, dy: 0, dz: 0, n: { x: -1, y: 0, z: 0 }, rel: [[0, 0, 1], [0, 0, 0], [0, 1, 0], [0, 1, 1]] },
+          { name: "+y", dx: 0, dy: 1, dz: 0, n: { x: 0, y: 1, z: 0 }, rel: [[0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]] },
+          { name: "-y", dx: 0, dy: -1, dz: 0, n: { x: 0, y: -1, z: 0 }, rel: [[0, 0, 1], [1, 0, 1], [1, 0, 0], [0, 0, 0]] },
+          { name: "+z", dx: 0, dy: 0, dz: 1, n: { x: 0, y: 0, z: 1 }, rel: [[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]] },
+          { name: "-z", dx: 0, dy: 0, dz: -1, n: { x: 0, y: 0, z: -1 }, rel: [[1, 0, 0], [0, 0, 0], [0, 1, 0], [1, 1, 0]] }
+        ];
+
+        const state = {
+          dpr: 1,
+          w: 1,
+          h: 1,
+          yaw: 0.65,
+          pitch: 0.58,
+          zoom: 24,
+          originX: 0,
+          originY: 0,
+          autoSpin: true,
+          dragging: false,
+          lastX: 0,
+          lastY: 0,
+          lastTs: 0,
+          t: 0,
+          bobY: 0
+        };
+
+        function camNormal(n) {
+          const a = rotY(n, state.yaw);
+          return rotX(a, state.pitch);
+        }
+
+        function toCamBase(p) {
+          const centered = { x: p.x - pivot.x, y: p.y - pivot.y, z: p.z - pivot.z };
+          return rotX(rotY(centered, state.yaw), state.pitch);
+        }
+
+        function toCamModel(p) {
+          const centered = { x: p.x - pivot.x, y: (p.y + state.bobY) - pivot.y, z: p.z - pivot.z };
+          return rotX(rotY(centered, state.yaw), state.pitch);
+        }
+
+        function project(cam) {
+          return {
+            x: state.originX + cam.x * state.zoom,
+            y: state.originY - cam.y * state.zoom
+          };
+        }
+
+        function fitView() {
+          if (!boundsFit) return;
+          const corners = [
+            { x: boundsFit.minX, y: boundsFit.minY, z: boundsFit.minZ },
+            { x: boundsFit.maxX, y: boundsFit.minY, z: boundsFit.minZ },
+            { x: boundsFit.minX, y: boundsFit.minY, z: boundsFit.maxZ },
+            { x: boundsFit.maxX, y: boundsFit.minY, z: boundsFit.maxZ },
+            { x: boundsFit.minX, y: boundsFit.maxY, z: boundsFit.minZ },
+            { x: boundsFit.maxX, y: boundsFit.maxY, z: boundsFit.minZ },
+            { x: boundsFit.minX, y: boundsFit.maxY, z: boundsFit.maxZ },
+            { x: boundsFit.maxX, y: boundsFit.maxY, z: boundsFit.maxZ }
+          ];
+
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          for (const c of corners) {
+            const cam = toCamBase(c);
+            minX = Math.min(minX, cam.x);
+            maxX = Math.max(maxX, cam.x);
+            minY = Math.min(minY, cam.y);
+            maxY = Math.max(maxY, cam.y);
+          }
+
+          const spanX = Math.max(0.001, maxX - minX);
+          const spanY = Math.max(0.001, maxY - minY);
+          const targetW = state.w * 0.92;
+          const targetH = state.h * 0.78;
+          const zoom = Math.min(targetW / spanX, targetH / spanY);
+          state.zoom = clamp(zoom, 10, 70);
+
+          const cx = (minX + maxX) / 2;
+          const cy = (minY + maxY) / 2;
+          state.originX = state.w / 2 - cx * state.zoom;
+          const desiredY = state.h * 0.72;
+          state.originY = desiredY + cy * state.zoom;
+        }
+
+        function resize() {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const w = Math.max(1, Math.floor(window.innerWidth));
+          const h = Math.max(1, Math.floor(window.innerHeight));
+          state.dpr = dpr;
+          state.w = w;
+          state.h = h;
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = `${w}px`;
+          canvas.style.height = `${h}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          fitView();
+          initBackdrop();
+        }
+
+        function setAutoSpin(v) {
+          state.autoSpin = v;
+          spinDot.classList.toggle("on", v);
+          spinText.textContent = v ? "自动旋转：开" : "自动旋转：关";
+        }
+
+        canvas.addEventListener("pointerdown", (e) => {
+          state.dragging = true;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointermove", (e) => {
+          if (!state.dragging) return;
+          const dx = e.clientX - state.lastX;
+          const dy = e.clientY - state.lastY;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          state.yaw += dx * 0.006;
+          state.pitch = clamp(state.pitch + dy * 0.004, 0.24, 1.02);
+        });
+        window.addEventListener("pointerup", () => (state.dragging = false));
+        canvas.addEventListener(
+          "wheel",
+          (e) => {
+            const f = Math.exp(-e.deltaY * 0.0012);
+            state.zoom = clamp(state.zoom * f, 10, 90);
+          },
+          { passive: true }
+        );
+        canvas.addEventListener("dblclick", () => {
+          state.yaw = 0.65;
+          state.pitch = 0.58;
+          fitView();
+        });
+
+        spinPill.addEventListener("click", () => setAutoSpin(!state.autoSpin));
+        firePill.addEventListener("click", () => setFire(!fire.on));
+        resetBtn.addEventListener("click", () => {
+          state.yaw = 0.65;
+          state.pitch = 0.58;
+          fitView();
+        });
+        rebuildBtn.addEventListener("click", () => {
+          seed = (Math.random() * 1e9) | 0;
+          fire.rand = mulberry32(seed ^ 0xfeedc0de);
+          fire.particles.length = 0;
+          fire.carry = 0;
+          buildStaticDragon();
+          fitView();
+          initBackdrop();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          const k = e.key.toLowerCase();
+          if (e.code === "Space") {
+            e.preventDefault();
+            setAutoSpin(!state.autoSpin);
+          } else if (k === "f") {
+            setFire(!fire.on);
+          } else if (k === "r") {
+            seed = (Math.random() * 1e9) | 0;
+            fire.rand = mulberry32(seed ^ 0xfeedc0de);
+            fire.particles.length = 0;
+            fire.carry = 0;
+            buildStaticDragon();
+            fitView();
+            initBackdrop();
+          }
+        });
+        window.addEventListener("resize", resize);
+
+        function pushVoxelFaces(drawList, v, toCamFn, normalCache) {
+          const x0 = v.x, y0 = v.y, z0 = v.z;
+
+          for (const f of FACES) {
+            if (hasVoxel(v.x + f.dx, v.y + f.dy, v.z + f.dz)) continue;
+            const nC = normalCache[f.name];
+            if (nC.z <= 0.0001) continue;
+
+            const pts = new Array(4);
+            let zSum = 0;
+            for (let i = 0; i < 4; i++) {
+              const rr = f.rel[i];
+              const cam = toCamFn({ x: x0 + rr[0], y: y0 + rr[1], z: z0 + rr[2] });
+              zSum += cam.z;
+              pts[i] = project(cam);
+            }
+
+            const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+            const rim = Math.pow(clamp(nC.z, 0, 1), 1.3) * 0.08;
+            const brightness = 0.54 + Math.max(0, diff) * 0.52 + rim + (v.emissive || 0);
+            const cool = (v.coolShadow || 0) * (1 - Math.max(0, diff));
+            const col = shadeRgb(v.base, brightness, cool);
+            const alpha = v.alpha ?? 1;
+
+            drawList.push({
+              z: zSum / 4,
+              pts,
+              fill: rgbToCss(col),
+              stroke: alpha < 1 ? "rgba(0,0,0,0.08)" : "rgba(0,0,0,0.14)",
+              alpha
+            });
+          }
+        }
+
+        function pushParticleCube(drawList, p, normalCache) {
+          const s = p.s;
+          const h = s * 0.5;
+          const x0 = p.x - h, x1 = p.x + h;
+          const y0 = p.y - h, y1 = p.y + h;
+          const z0 = p.z - h, z1 = p.z + h;
+
+          // Reuse FACES orientation but with non-unit vertices.
+          const cubeFaces = [
+            { name: "+x", verts: [[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]] },
+            { name: "-x", verts: [[x0, y0, z1], [x0, y0, z0], [x0, y1, z0], [x0, y1, z1]] },
+            { name: "+y", verts: [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]] },
+            { name: "-y", verts: [[x0, y0, z1], [x1, y0, z1], [x1, y0, z0], [x0, y0, z0]] },
+            { name: "+z", verts: [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]] },
+            { name: "-z", verts: [[x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0]] }
+          ];
+
+          const a = p.age / p.life;
+          const base = fireColorAt(a);
+          const emissive = lerp(0.85, 0.15, a);
+          const alpha = lerp(0.86, 0.0, smoothstep(0.65, 1.0, a));
+
+          for (const f of cubeFaces) {
+            const nC = normalCache[f.name];
+            if (nC.z <= 0.0001) continue;
+
+            const pts = new Array(4);
+            let zSum = 0;
+            for (let i = 0; i < 4; i++) {
+              const vv = f.verts[i];
+              const cam = toCamBase({ x: vv[0], y: vv[1], z: vv[2] });
+              zSum += cam.z;
+              pts[i] = project(cam);
+            }
+
+            const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+            const brightness = 0.7 + Math.max(0, diff) * 0.45 + emissive;
+            const col = shadeRgb(base, brightness, 0);
+
+            drawList.push({
+              z: zSum / 4,
+              pts,
+              fill: rgbToCss(col),
+              stroke: "rgba(0,0,0,0)",
+              alpha
+            });
+          }
+        }
+
+        function drawHalo(p) {
+          const a = p.age / p.life;
+          const k = smoothstep(0.0, 1.0, 1 - a);
+          const cam = toCamBase(p);
+          const s = project(cam);
+          const r = (state.zoom * p.s) * (1.2 + 1.8 * (1 - a));
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.12 * k;
+          const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, r);
+          g.addColorStop(0, "rgba(255, 220, 120, 0.75)");
+          g.addColorStop(0.45, "rgba(255, 120, 70, 0.22)");
+          g.addColorStop(1, "rgba(255, 120, 70, 0)");
+          ctx.fillStyle = g;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        function render(ts) {
+          const dt = clamp((ts - state.lastTs) / 1000, 0, 1 / 18) || 0;
+          state.lastTs = ts;
+          state.t += dt;
+
+          if (state.autoSpin && !state.dragging) {
+            state.yaw += dt * 0.25;
+          }
+
+          // Fly bob (applied to model only).
+          state.bobY = Math.sin(state.t * 2.1) * 0.65;
+
+          buildDynamic(state.t);
+
+          // Mouth in world (includes bob).
+          const mouthWorld = { x: mouthBase.x, y: mouthBase.y + state.bobY, z: mouthBase.z };
+          updateFire(dt, mouthWorld, state.t);
+
+          drawBackground(dt);
+
+          const normalCache = {
+            "+x": camNormal({ x: 1, y: 0, z: 0 }),
+            "-x": camNormal({ x: -1, y: 0, z: 0 }),
+            "+y": camNormal({ x: 0, y: 1, z: 0 }),
+            "-y": camNormal({ x: 0, y: -1, z: 0 }),
+            "+z": camNormal({ x: 0, y: 0, z: 1 }),
+            "-z": camNormal({ x: 0, y: 0, z: -1 })
+          };
+
+          const drawList = [];
+
+          for (const v of staticList) pushVoxelFaces(drawList, v, toCamModel, normalCache);
+          for (const v of dynList) pushVoxelFaces(drawList, v, toCamModel, normalCache);
+
+          // Fire cubes.
+          for (const p of fire.particles) pushParticleCube(drawList, p, normalCache);
+
+          drawList.sort((a, b) => a.z - b.z);
+
+          ctx.save();
+          ctx.lineJoin = "round";
+          ctx.lineWidth = 1;
+          for (const d of drawList) {
+            ctx.globalAlpha = d.alpha;
+            ctx.beginPath();
+            ctx.moveTo(d.pts[0].x, d.pts[0].y);
+            ctx.lineTo(d.pts[1].x, d.pts[1].y);
+            ctx.lineTo(d.pts[2].x, d.pts[2].y);
+            ctx.lineTo(d.pts[3].x, d.pts[3].y);
+            ctx.closePath();
+            ctx.fillStyle = d.fill;
+            ctx.fill();
+            if (d.stroke && d.stroke !== "rgba(0,0,0,0)") {
+              ctx.strokeStyle = d.stroke;
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+
+          // Fire glow (nice even if it slightly bleeds through).
+          for (const p of fire.particles) drawHalo(p);
+
+          requestAnimationFrame(render);
+        }
+
+        function boot() {
+          setAutoSpin(true);
+          setFire(false);
+          buildStaticDragon();
+          resize();
+          requestAnimationFrame(render);
+        }
+
+        boot();
+      })();
+    </script>
+  </body>
+</html>
