@@ -17,6 +17,7 @@
     </div>
 
     <div id="highlight-grid" class="highlight-grid" aria-live="polite"></div>
+    <nav id="highlight-pagination" class="pagination" aria-label="{{ i18n "highlights_pagination_aria" }}" hidden></nav>
     <div id="highlight-empty" class="highlight-empty" hidden>
       <p>{{ i18n "highlights_empty_title" }}</p>
       <p>{{ i18n "highlights_empty_hint" }}</p>
@@ -57,10 +58,13 @@
     defaultAlt: "{{ i18n "highlights_default_alt" }}",
     defaultEyebrow: "{{ i18n "highlights_modal_eyebrow" }}",
     viewCard: "{{ i18n "highlights_view_card" }}",
-    readOriginal: "{{ i18n "highlights_read_original" }}"
+    readOriginal: "{{ i18n "highlights_read_original" }}",
+    prevPage: "{{ i18n "pagination_prev" }}",
+    nextPage: "{{ i18n "pagination_next" }}"
   };
   const grid = document.getElementById("highlight-grid");
   const empty = document.getElementById("highlight-empty");
+  const pagination = document.getElementById("highlight-pagination");
   const filtersWrap = document.getElementById("highlight-filters");
   const filterEmpty = document.getElementById("highlight-empty-filter");
   const searchInput = document.getElementById("highlight-search");
@@ -71,7 +75,7 @@
   const modalTags = document.getElementById("highlight-modal-tags");
   const modalDesc = document.getElementById("highlight-modal-desc");
   const modalOriginal = document.getElementById("highlight-modal-original");
-  const pageSize = 24;
+  const pageSize = 20;
   let allItems = [];
   let filteredItems = [];
   let currentPage = 1;
@@ -221,7 +225,16 @@
     grid.innerHTML = "";
 
     const totalItems = filteredItems.length;
-    if (!totalItems) return;
+    if (!totalItems) {
+      if (pagination) {
+        pagination.hidden = true;
+        pagination.innerHTML = "";
+      }
+      return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
 
     const start = (currentPage - 1) * pageSize;
     const pageItems = filteredItems.slice(start, start + pageSize);
@@ -239,6 +252,77 @@
         setTimeout(() => el.classList.add("active"), index * 50);
       });
     });
+  }
+
+  function goToPage(pageNumber) {
+    const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
+    currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
+    renderGrid();
+    renderPagination();
+  }
+
+  function renderPagination() {
+    if (!pagination) return;
+    const totalPages = Math.ceil(filteredItems.length / pageSize);
+
+    if (totalPages <= 1) {
+      pagination.hidden = true;
+      pagination.innerHTML = "";
+      return;
+    }
+
+    pagination.hidden = false;
+    pagination.innerHTML = "";
+
+    const prev =
+      currentPage > 1
+        ? Object.assign(document.createElement("a"), { href: "#" })
+        : document.createElement("span");
+    prev.className = "pagination-link" + (currentPage === 1 ? " disabled" : "");
+    prev.textContent = I18N.prevPage;
+    if (currentPage > 1) {
+      prev.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToPage(currentPage - 1);
+      });
+    }
+    pagination.appendChild(prev);
+
+    const pagesWrap = document.createElement("div");
+    pagesWrap.className = "pagination-pages";
+    for (let i = 1; i <= totalPages; i += 1) {
+      if (i === currentPage) {
+        const span = document.createElement("span");
+        span.className = "pagination-page current";
+        span.textContent = i;
+        pagesWrap.appendChild(span);
+      } else {
+        const link = document.createElement("a");
+        link.className = "pagination-page";
+        link.href = "#";
+        link.textContent = i;
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+          goToPage(i);
+        });
+        pagesWrap.appendChild(link);
+      }
+    }
+    pagination.appendChild(pagesWrap);
+
+    const next =
+      currentPage < totalPages
+        ? Object.assign(document.createElement("a"), { href: "#" })
+        : document.createElement("span");
+    next.className = "pagination-link" + (currentPage === totalPages ? " disabled" : "");
+    next.textContent = I18N.nextPage;
+    if (currentPage < totalPages) {
+      next.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToPage(currentPage + 1);
+      });
+    }
+    pagination.appendChild(next);
   }
 
   function applyFilter() {
@@ -270,6 +354,7 @@
     setFilterEmpty(noMatch && (currentFilter !== "all" || term));
     currentPage = 1;
     renderGrid();
+    renderPagination();
   }
 
   function openModal(item) {
@@ -332,6 +417,7 @@
     renderFilters(collectTags(allItems));
     setFilterEmpty(false);
     renderGrid();
+    renderPagination();
   }
 
   if (searchInput) {
@@ -564,6 +650,54 @@
   border: 1px solid var(--border);
   background: var(--surface-highlight);
   color: var(--text-muted);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.pagination-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.pagination-link.disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.pagination-pages {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pagination-page {
+  min-width: 36px;
+  text-align: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.pagination-page:hover {
+  background: var(--surface-highlight);
+}
+
+.pagination-page.current {
+  background: var(--accent);
+  color: #000;
 }
 
 .highlight-modal {
