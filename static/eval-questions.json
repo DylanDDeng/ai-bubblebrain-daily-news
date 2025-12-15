@@ -111,6 +111,10 @@
       "GLM-4.6": {
         "type": "html",
         "content": "<iframe src='/eval-demos/glm-4.6-bouncingball-hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+      "Qwen3-Coder": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/Qwen3-coder-hexagon-ball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -149,6 +153,10 @@
       "GLM-4.6": {
         "type": "html",
         "content": "<iframe src='/eval-demos/glm-4.6-voxel-dragon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "Qwen3-Coder": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/Qwen3-coder-voxel-dragon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }, 
@@ -273,7 +281,7 @@
       },
       "gpt-5.2 xhigh": {
         "type": "html",
-        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-siheyuan.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-siheyuan.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }, 
 
       "GLM-4.6": {

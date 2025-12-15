@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素艺术龙 - 飞行与喷火</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #1a2980, #26d0ce);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            height: 80vh;
+            perspective: 1000px;
+        }
+        
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .dragon-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            transform-style: preserve-3d;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .dragon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transform: translateZ(0);
+        }
+        
+        .voxel {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            box-sizing: border-box;
+        }
+        
+        .body-part {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+        
+        .head {
+            position: absolute;
+            top: 70px;
+            left: 220px;
+            width: 60px;
+            height: 40px;
+            transform-style: preserve-3d;
+        }
+        
+        .eye {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff3300;
+            border-radius: 50%;
+            top: 15px;
+        }
+        
+        .wing {
+            position: absolute;
+            transform-style: preserve-3d;
+            transform-origin: left center;
+        }
+        
+        .wing-left {
+            top: 60px;
+            left: 120px;
+        }
+        
+        .wing-right {
+            top: 60px;
+            left: 120px;
+        }
+        
+        .tail {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+        
+        .fire {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ff8c00, #ff4500, #ff0000);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 10;
+            box-shadow: 0 0 15px #ff4500, 0 0 30px #ff8c00;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        button {
+            background: #ff8c00;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #ff6a00;
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        
+        @keyframes flap {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-20deg); }
+        }
+        
+        @keyframes fire {
+            0% { 
+                opacity: 1; 
+                transform: translateX(0) scale(0.5);
+            }
+            100% { 
+                opacity: 0; 
+                transform: translateX(-100px) scale(1.5);
+            }
+        }
+        
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 100px;
+            background: linear-gradient(to top, #5d4037, #8d6e63);
+            transform: translateZ(-500px) rotateX(70deg);
+            transform-origin: bottom;
+        }
+        
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="scene">
+            <div class="dragon-container">
+                <div class="dragon" id="dragon">
+                    <!-- Dragon will be generated by JavaScript -->
+                </div>
+            </div>
+            <div class="ground"></div>
+        </div>
+        
+        <div class="instructions">
+            <h3>体素龙说明</h3>
+            <p>这是一只拥有翅膀、尾巴和鳞片的体素艺术龙</p>
+            <p>点击按钮查看不同动画效果</p>
+        </div>
+        
+        <div class="controls">
+            <button id="flapBtn">扇动翅膀</button>
+            <button id="fireBtn">喷火</button>
+            <button id="danceBtn">龙舞动</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dragon = document.getElementById('dragon');
+            const flapBtn = document.getElementById('flapBtn');
+            const fireBtn = document.getElementById('fireBtn');
+            const danceBtn = document.getElementById('danceBtn');
+            
+            // 定义龙的身体部分颜色
+            const colors = {
+                body: '#4a6fa5',
+                belly: '#7bb1db',
+                wing: '#6b5b95',
+                wingInner: '#8c6db5',
+                head: '#4a6fa5',
+                spikes: '#2d3c5a',
+                eyes: '#ff3300'
+            };
+            
+            // 创建体素方块函数
+            function createVoxel(x, y, z, color, size = 20) {
+                const voxel = document.createElement('div');
+                voxel.className = 'voxel';
+                voxel.style.backgroundColor = color;
+                voxel.style.width = `${size}px`;
+                voxel.style.height = `${size}px`;
+                voxel.style.transform = `translate3d(${x * size}px, ${y * size}px, ${z * size}px)`;
+                return voxel;
+            }
+            
+            // 创建龙的身体
+            function createDragon() {
+                // 清空现有元素
+                dragon.innerHTML = '';
+                
+                // 创建身体 (矩形体)
+                for (let x = 0; x < 8; x++) {
+                    for (let y = 0; y < 3; y++) {
+                        for (let z = 0; z < 2; z++) {
+                            const isBelly = (y === 2);
+                            const voxel = createVoxel(
+                                x, 
+                                y, 
+                                z, 
+                                isBelly ? colors.belly : colors.body
+                            );
+                            dragon.appendChild(voxel);
+                        }
+                    }
+                }
+                
+                // 创建头部
+                const head = document.createElement('div');
+                head.className = 'head';
+                for (let x = 0; x < 3; x++) {
+                    for (let y = 0; y < 2; y++) {
+                        for (let z = 0; z < 2; z++) {
+                            const voxel = createVoxel(
+                                x, 
+                                y, 
+                                z, 
+                                colors.head
+                            );
+                            head.appendChild(voxel);
+                        }
+                    }
+                }
+                
+                // 添加眼睛
+                const leftEye = document.createElement('div');
+                leftEye.className = 'eye';
+                leftEye.style.left = '10px';
+                leftEye.style.top = '15px';
+                
+                const rightEye = document.createElement('div');
+                rightEye.className = 'eye';
+                rightEye.style.left = '40px';
+                rightEye.style.top = '15px';
+                
+                head.appendChild(leftEye);
+                head.appendChild(rightEye);
+                dragon.appendChild(head);
+                
+                // 创建翅膀
+                createWing(120, 60, -1, 'left');
+                createWing(120, 60, 3, 'right');
+                
+                // 创建尾巴
+                createTail();
+                
+                // 添加背刺
+                for (let i = 1; i < 7; i++) {
+                    const spike = createVoxel(i, -1, 0, colors.spikes, 10);
+                    spike.style.height = '10px';
+                    dragon.appendChild(spike);
+                    
+                    const spike2 = createVoxel(i, -1, 1, colors.spikes, 10);
+                    spike2.style.height = '10px';
+                    dragon.appendChild(spike2);
+                }
+            }
+            
+            // 创建翅膀
+            function createWing(posX, posY, posZ, side) {
+                const wing = document.createElement('div');
+                wing.className = `wing wing-${side}`;
+                wing.id = `wing-${side}`;
+                
+                // 翅膀主要部分
+                for (let x = 0; x < 6; x++) {
+                    for (let y = 0; y < 4; y++) {
+                        if (x > 1 || y > 0) { // 不填满前部以形成自然形状
+                            const zOffset = (x > 2) ? 0 : (y % 2 === 0 ? 0 : 0.5);
+                            const color = (x < 2 && y < 2) ? colors.wingInner : colors.wing;
+                            
+                            const voxel = createVoxel(
+                                x, 
+                                y, 
+                                zOffset, 
+                                color,
+                                15
+                            );
+                            wing.appendChild(voxel);
+                        }
+                    }
+                }
+                
+                // 设置翅膀位置
+                wing.style.left = `${posX}px`;
+                wing.style.top = `${posY}px`;
+                if (side === 'right') {
+                    wing.style.transform = 'scaleX(-1)';
+                }
+                
+                dragon.appendChild(wing);
+            }
+            
+            // 创建尾巴
+            function createTail() {
+                for (let i = 0; i < 6; i++) {
+                    // 尾巴逐渐变细
+                    const tailSegmentHeight = Math.max(1, 3 - Math.floor(i / 2));
+                    const tailSegmentWidth = Math.max(1, 2 - Math.floor(i / 3));
+                    
+                    for (let y = 0; y < tailSegmentHeight; y++) {
+                        for (let z = 0; z < tailSegmentWidth; z++) {
+                            const voxel = createVoxel(
+                                8 + i, 
+                                1 + y, 
+                                z, 
+                                colors.body
+                            );
+                            dragon.appendChild(voxel);
+                        }
+                    }
+                    
+                    // 添加尾刺
+                    if (i > 0 && i < 5) {
+                        const spike = createVoxel(
+                            8 + i, 
+                            0, 
+                            0.5, 
+                            colors.spikes,
+                            10
+                        );
+                        spike.style.height = '10px';
+                        dragon.appendChild(spike);
+                    }
+                }
+            }
+            
+            // 喷火效果
+            function breatheFire() {
+                const fireContainer = document.createElement('div');
+                fireContainer.className = 'fire';
+                
+                // 从龙嘴位置开始
+                fireContainer.style.left = '270px';
+                fireContainer.style.top = '110px';
+                
+                document.querySelector('.scene').appendChild(fireContainer);
+                
+                // 应用动画
+                fireContainer.style.animation = 'fire 0.8s forwards';
+                
+                // 移除元素
+                setTimeout(() => {
+                    fireContainer.remove();
+                }, 800);
+            }
+            
+            // 初始化龙
+            createDragon();
+            
+            // 翅膀扇动动画
+            flapBtn.addEventListener('click', () => {
+                const leftWing = document.getElementById('wing-left');
+                const rightWing = document.getElementById('wing-right');
+                
+                // 重置动画类
+                leftWing.classList.remove('flapping');
+                rightWing.classList.remove('flapping');
+                
+                // 强制重排
+                void leftWing.offsetWidth;
+                void rightWing.offsetWidth;
+                
+                // 添加动画类
+                leftWing.classList.add('flapping');
+                rightWing.classList.add('flapping');
+                
+                // 设置动画
+                leftWing.style.animation = 'flap 0.4s ease-in-out';
+                rightWing.style.animation = 'flap 0.4s ease-in-out 0.1s'; // 右翼稍晚一点
+                
+                // 动画结束后移除类
+                setTimeout(() => {
+                    leftWing.style.animation = '';
+                    rightWing.style.animation = '';
+                }, 500);
+            });
+            
+            // 喷火动画
+            fireBtn.addEventListener('click', () => {
+                // 创建多个火焰粒子以增强效果
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(breatheFire, i * 100);
+                }
+            });
+            
+            // 龙舞动动画
+            danceBtn.addEventListener('click', () => {
+                const dragonContainer = document.querySelector('.dragon-container');
+                
+                // 重置动画类
+                dragonContainer.classList.remove('dancing');
+                void dragonContainer.offsetWidth; // 强制重排
+                
+                // 添加舞蹈动画
+                dragonContainer.style.animation = 'none';
+                setTimeout(() => {
+                    dragonContainer.style.animation = `
+                        float 2s ease-in-out,
+                        flap 0.5s ease-in-out 0s 4
+                    `;
+                }, 10);
+                
+                // 恢复正常浮动
+                setTimeout(() => {
+                    dragonContainer.style.animation = 'float 4s ease-in-out infinite';
+                }, 3000);
+            });
+            
+            // 添加一些云朵装饰
+            function createClouds() {
+                const scene = document.querySelector('.scene');
+                for (let i = 0; i < 5; i++) {
+                    const cloud = document.createElement('div');
+                    cloud.className = 'cloud';
+                    
+                    // 随机大小和位置
+                    const size = 40 + Math.random() * 60;
+                    cloud.style.width = `${size}px`;
+                    cloud.style.height = `${size/2}px`;
+                    cloud.style.left = `${Math.random() * 100}%`;
+                    cloud.style.top = `${Math.random() * 40}%`;
+                    
+                    scene.appendChild(cloud);
+                }
+            }
+            
+            // 创建云朵
+            createClouds();
+        });
+    </script>
+</body>
+</html>

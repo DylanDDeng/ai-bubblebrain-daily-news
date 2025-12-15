@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bouncing Balls in Rotating Hexagon</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+<script>
+let balls = [];
+const numBalls = 10;
+let hexagonRadius;
+let hexagonAngle = 0;
+let hexagonRotationSpeed = 0.005;
+
+// Physics constants
+const gravity = 0.2;
+const elasticity = 0.8;
+const friction = 0.99;
+
+function setup() {
+    createCanvas(windowWidth, windowHeight);
+    hexagonRadius = min(width, height) * 0.4;
+    
+    // Create balls with random properties
+    for (let i = 0; i < numBalls; i++) {
+        balls.push({
+            pos: createVector(
+                random(width * 0.4, width * 0.6),
+                random(height * 0.4, height * 0.6)
+            ),
+            vel: createVector(
+                random(-3, 3),
+                random(-3, 3)
+            ),
+            radius: random(10, 25),
+            color: color(random(100, 255), random(100, 255), random(100, 255))
+        });
+    }
+}
+
+function draw() {
+    background(25);
+    
+    // Update hexagon rotation
+    hexagonAngle += hexagonRotationSpeed;
+    
+    // Draw rotating hexagon
+    push();
+    translate(width / 2, height / 2);
+    rotate(hexagonAngle);
+    stroke(255);
+    strokeWeight(3);
+    noFill();
+    beginShape();
+    for (let i = 0; i < 6; i++) {
+        const angle = TWO_PI / 6 * i;
+        const x = hexagonRadius * cos(angle);
+        const y = hexagonRadius * sin(angle);
+        vertex(x, y);
+    }
+    endShape(CLOSE);
+    pop();
+    
+    // Update and display balls
+    for (let i = 0; i < balls.length; i++) {
+        let ball = balls[i];
+        
+        // Apply gravity (towards center of screen)
+        let gravityDir = createVector(width / 2, height / 2);
+        gravityDir.sub(ball.pos);
+        gravityDir.normalize();
+        gravityDir.mult(gravity);
+        ball.vel.add(gravityDir);
+        
+        // Apply friction
+        ball.vel.mult(friction);
+        
+        // Update position
+        ball.pos.add(ball.vel);
+        
+        // Check collision with hexagon
+        checkHexagonCollision(ball);
+        
+        // Check collision with other balls
+        for (let j = i + 1; j < balls.length; j++) {
+            checkBallCollision(ball, balls[j]);
+        }
+        
+        // Display ball
+        fill(ball.color);
+        noStroke();
+        ellipse(ball.pos.x, ball.pos.y, ball.radius * 2);
+    }
+}
+
+function checkHexagonCollision(ball) {
+    // Transform ball position relative to rotating hexagon
+    let relPos = createVector(
+        ball.pos.x - width / 2,
+        ball.pos.y - height / 2
+    );
+    let rotatedPos = createVector(
+        relPos.x * cos(-hexagonAngle) - relPos.y * sin(-hexagonAngle),
+        relPos.x * sin(-hexagonAngle) + relPos.y * cos(-hexagonAngle)
+    );
+    
+    // Find closest hexagon edge
+    let minDist = Infinity;
+    let closestPoint;
+    
+    for (let i = 0; i < 6; i++) {
+        const angle1 = TWO_PI / 6 * i;
+        const angle2 = TWO_PI / 6 * ((i + 1) % 6);
+        
+        const p1 = createVector(
+            hexagonRadius * cos(angle1),
+            hexagonRadius * sin(angle1)
+        );
+        const p2 = createVector(
+            hexagonRadius * cos(angle2),
+            hexagonRadius * sin(angle2)
+        );
+        
+        // Calculate distance from point to line segment
+        const dist = distToSegment(rotatedPos, p1, p2);
+        
+        if (dist < minDist) {
+            minDist = dist;
+            closestPoint = getClosestPointOnSegment(rotatedPos, p1, p2);
+        }
+    }
+    
+    // If ball is colliding with hexagon edge
+    if (minDist < ball.radius) {
+        // Calculate normal vector
+        let normal = p5.Vector.sub(rotatedPos, closestPoint);
+        normal.normalize();
+        
+        // Move ball outside the hexagon
+        const overlap = ball.radius - minDist;
+        rotatedPos.add(p5.Vector.mult(normal, overlap));
+        
+        // Calculate velocity in rotated frame
+        let rotatedVel = createVector(
+            ball.vel.x * cos(-hexagonAngle) - ball.vel.y * sin(-hexagonAngle),
+            ball.vel.x * sin(-hexagonAngle) + ball.vel.y * cos(-hexagonAngle)
+        );
+        
+        // Reflect velocity with elasticity
+        const dot = rotatedVel.dot(normal);
+        rotatedVel.sub(p5.Vector.mult(normal, 2 * dot));
+        rotatedVel.mult(elasticity);
+        
+        // Convert back to world coordinates
+        ball.pos.set(
+            rotatedPos.x * cos(hexagonAngle) - rotatedPos.y * sin(hexagonAngle) + width / 2,
+            rotatedPos.x * sin(hexagonAngle) + rotatedPos.y * cos(hexagonAngle) + height / 2
+        );
+        
+        ball.vel.set(
+            rotatedVel.x * cos(hexagonAngle) - rotatedVel.y * sin(hexagonAngle),
+            rotatedVel.x * sin(hexagonAngle) + rotatedVel.y * cos(hexagonAngle)
+        );
+    }
+}
+
+function checkBallCollision(ball1, ball2) {
+    const distVec = p5.Vector.sub(ball2.pos, ball1.pos);
+    const distance = distVec.mag();
+    
+    if (distance < ball1.radius + ball2.radius) {
+        // Normalize distance vector
+        distVec.normalize();
+        
+        // Move balls apart
+        const overlap = ball1.radius + ball2.radius - distance;
+        const correction = p5.Vector.mult(distVec, overlap * 0.5);
+        ball1.pos.sub(correction);
+        ball2.pos.add(correction);
+        
+        // Calculate relative velocity
+        const relVel = p5.Vector.sub(ball2.vel, ball1.vel);
+        const speedAlongNormal = relVel.dot(distVec);
+        
+        // Don't resolve if velocities are separating
+        if (speedAlongNormal > 0) return;
+        
+        // Calculate impulse scalar
+        const e = elasticity;
+        const j = -(1 + e) * speedAlongNormal;
+        const impulse = p5.Vector.mult(distVec, j);
+        
+        // Apply impulse
+        ball1.vel.sub(impulse);
+        ball2.vel.add(impulse);
+    }
+}
+
+// Helper function to calculate distance from point to line segment
+function distToSegment(p, v, w) {
+    const l2 = dist(v.x, v.y, w.x, w.y) ** 2;
+    if (l2 === 0) return dist(p.x, p.y, v.x, v.y);
+    
+    let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+    t = Math.max(0, Math.min(1, t));
+    
+    const projection = createVector(
+        v.x + t * (w.x - v.x),
+        v.y + t * (w.y - v.y)
+    );
+    
+    return dist(p.x, p.y, projection.x, projection.y);
+}
+
+// Helper function to get closest point on line segment
+function getClosestPointOnSegment(p, v, w) {
+    const l2 = dist(v.x, v.y, w.x, w.y) ** 2;
+    if (l2 === 0) return v.copy();
+    
+    let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+    t = Math.max(0, Math.min(1, t));
+    
+    return createVector(
+        v.x + t * (w.x - v.x),
+        v.y + t * (w.y - v.y)
+    );
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+    hexagonRadius = min(width, height) * 0.4;
+}
+</script>
+</body>
+</html>
