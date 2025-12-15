@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素雪人 - 微笑的冬天朋友</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #ffa0c9 75%, #fed6e3 100%);
+            overflow: hidden;
+            height: 100vh;
+            perspective: 1200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            transform-style: preserve-3d;
+        }
+
+        .container {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transform-style: preserve-3d;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg); }
+            25% { transform: translate(-50%, -50%) translateY(-10px) rotateY(90deg); }
+            50% { transform: translate(-50%, -50%) translateY(0px) rotateY(180deg); }
+            75% { transform: translate(-50%, -50%) translateY(-10px) rotateY(270deg); }
+        }
+
+        /* 体素方块基础样式 */
+        .voxel {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .voxel-face {
+            position: absolute;
+            opacity: 0.95;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .face-front { transform: translateZ(10px); }
+        .face-back { transform: translateZ(-10px) rotateY(180deg); }
+        .face-left { transform: rotateY(-90deg) translateZ(10px); }
+        .face-right { transform: rotateY(90deg) translateZ(10px); }
+        .face-top { transform: rotateX(90deg) translateZ(10px); }
+        .face-bottom { transform: rotateX(-90deg) translateZ(10px); }
+
+        /* 雪的材料 */
+        .snow-material {
+            background: linear-gradient(135deg, #ffffff, #f0f8ff, #e6f3ff);
+            box-shadow: inset 0 0 10px rgba(200, 230, 255, 0.5);
+        }
+
+        .snow-shadow {
+            background: linear-gradient(135deg, #e8f4f8, #ddeef5, #d0e8f2);
+        }
+
+        /* 雪人底部 */
+        .snowman-base {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+        }
+
+        .bottom-ball {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #f0f8ff);
+            border-radius: 50%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: wobble 4s infinite ease-in-out;
+        }
+
+        @keyframes wobble {
+            0%, 100% { transform: rotateZ(-2deg); }
+            50% { transform: rotateZ(2deg); }
+        }
+
+        /* 雪人中间部分 */
+        .snowman-middle {
+            position: absolute;
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 150px;
+        }
+
+        .middle-ball {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #f0f8ff);
+            border-radius: 50%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: breathe 3s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* 雪人头部 */
+        .snowman-head {
+            position: absolute;
+            bottom: 320px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+        }
+
+        .head-ball {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #f0f8ff);
+            border-radius: 50%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: nod 5s infinite ease-in-out;
+        }
+
+        @keyframes nod {
+            0%, 100% { transform: rotateX(0deg); }
+            25% { transform: rotateX(-10deg); }
+            75% { transform: rotateX(10deg); }
+        }
+
+        /* 脸部特征 */
+        .eyes {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 20px;
+        }
+
+        .eye {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            animation: blink 4s infinite;
+        }
+
+        .eye.left {
+            left: 20px;
+        }
+
+        .eye.right {
+            right: 20px;
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+
+        /* 微笑的嘴巴 */
+        .smile {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 20px;
+            border-bottom: 4px solid #000;
+            border-radius: 0 0 20px 20px;
+            animation: smile-animation 3s infinite ease-in-out;
+        }
+
+        @keyframes smile-animation {
+            0%, 100% {
+                border-bottom-width: 4px;
+                width: 40px;
+            }
+            50% {
+                border-bottom-width: 6px;
+                width: 50px;
+            }
+        }
+
+        /* 胡萝卜鼻子 */
+        .nose {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid #ff6b35;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            transform-origin: left center;
+            animation: nose-wiggle 6s infinite ease-in-out;
+        }
+
+        @keyframes nose-wiggle {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(5deg); }
+            75% { transform: translateX(-50%) rotate(-5deg); }
+        }
+
+        /* 纽扣 */
+        .buttons {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 80px;
+        }
+
+        .button {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, #ff4444, #cc0000);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: button-shine 2s infinite ease-in-out;
+        }
+
+        .button:nth-child(1) { top: 10px; animation-delay: 0s; }
+        .button:nth-child(2) { top: 35px; animation-delay: 0.5s; }
+        .button:nth-child(3) { top: 60px; animation-delay: 1s; }
+
+        @keyframes button-shine {
+            0%, 100% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 2px 8px rgba(255, 68, 68, 0.6); }
+        }
+
+        /* 帽子 */
+        .hat {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .hat-brim {
+            width: 80px;
+            height: 8px;
+            background: linear-gradient(90deg, #2c2c2c, #1a1a1a, #2c2c2c);
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .hat-top {
+            width: 50px;
+            height: 30px;
+            background: linear-gradient(90deg, #2c2c2c, #1a1a1a, #2c2c2c);
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 4px 4px 0 0;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 围巾 */
+        .scarf {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 20px;
+            background: linear-gradient(90deg, #ff1744, #d50000, #ff1744);
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: scarf-flutter 4s infinite ease-in-out;
+        }
+
+        @keyframes scarf-flutter {
+            0%, 100% { transform: translateX(-50%) rotate(0deg); }
+            25% { transform: translateX(-50%) rotate(2deg); }
+            75% { transform: translateX(-50%) rotate(-2deg); }
+        }
+
+        .scarf-end {
+            position: absolute;
+            right: -20px;
+            top: 10px;
+            width: 30px;
+            height: 40px;
+            background: linear-gradient(90deg, #ff1744, #d50000);
+            border-radius: 0 0 15px 15px;
+            transform-origin: top center;
+            animation: scarf-wave 3s infinite ease-in-out;
+        }
+
+        @keyframes scarf-wave {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        /* 手臂（树枝） */
+        .arms {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .arm {
+            position: absolute;
+            background: linear-gradient(90deg, #8b4513, #654321, #8b4513);
+            border-radius: 4px;
+            transform-origin: left center;
+        }
+
+        .arm.left {
+            width: 60px;
+            height: 8px;
+            top: 40%;
+            left: -40px;
+            transform: rotate(-20deg);
+            animation: arm-wave-left 5s infinite ease-in-out;
+        }
+
+        .arm.right {
+            width: 60px;
+            height: 8px;
+            top: 40%;
+            right: -40px;
+            transform: rotate(20deg);
+            animation: arm-wave-right 5s infinite ease-in-out;
+        }
+
+        @keyframes arm-wave-left {
+            0%, 100% { transform: rotate(-20deg); }
+            50% { transform: rotate(-10deg); }
+        }
+
+        @keyframes arm-wave-right {
+            0%, 100% { transform: rotate(20deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        /* 手指 */
+        .fingers {
+            position: absolute;
+            width: 20px;
+            height: 4px;
+            background: #654321;
+            border-radius: 2px;
+        }
+
+        .arm.left .fingers {
+            right: -15px;
+            top: 2px;
+            transform: rotate(-30deg);
+        }
+
+        .arm.right .fingers {
+            left: -15px;
+            top: 2px;
+            transform: rotate(30deg);
+        }
+
+        /* 雪花效果 */
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1em;
+            animation: fall linear infinite;
+            opacity: 0.8;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes fall {
+            from {
+                transform: translateY(-100vh) rotate(0deg);
+            }
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* 地面 */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.95));
+            border-top: 3px solid rgba(200, 230, 255, 0.6);
+        }
+
+        /* 雪堆 */
+        .snow-pile {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 60px;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9), rgba(240, 248, 255, 0.8));
+            border-radius: 50% 50% 0 0;
+        }
+
+        /* 控制面板 */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls h3 {
+            color: #ff1744;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            max-width: 250px;
+        }
+
+        .info-panel h2 {
+            color: #1a237e;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .info-panel p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .emoji {
+            font-size: 20px;
+            margin: 0 2px;
+        }
+
+        /* 太阳 */
+        .sun {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #ffeb3b, #ffc107);
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 235, 59, 0.6);
+            animation: sun-glow 3s infinite ease-in-out;
+        }
+
+        @keyframes sun-glow {
+            0%, 100% { box-shadow: 0 0 50px rgba(255, 235, 59, 0.6); }
+            50% { box-shadow: 0 0 80px rgba(255, 235, 59, 0.8); }
+        }
+
+        /* 云朵 */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            opacity: 0.9;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+        }
+
+        .cloud1 {
+            width: 80px;
+            height: 30px;
+            top: 80px;
+            left: 100px;
+            animation: cloud-float 20s infinite ease-in-out;
+        }
+
+        .cloud1::before {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 10px;
+        }
+
+        .cloud1::after {
+            width: 50px;
+            height: 30px;
+            top: -10px;
+            right: 10px;
+        }
+
+        @keyframes cloud-float {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(30px); }
+        }
+
+        /* 标题 */
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 36px;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            z-index: 100;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .controls, .info-panel {
+                position: fixed;
+                bottom: 10px;
+                top: auto;
+                max-width: 90%;
+            }
+
+            .controls {
+                right: 5%;
+            }
+
+            .info-panel {
+                left: 5%;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .sun {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">☃️ 体素雪人 ⛄</h1>
+
+    <div class="scene">
+        <!-- 太阳 -->
+        <div class="sun"></div>
+
+        <!-- 云朵 -->
+        <div class="cloud cloud1"></div>
+
+        <!-- 雪花容器 -->
+        <div id="snowflakes"></div>
+
+        <!-- 地面 -->
+        <div class="ground"></div>
+
+        <!-- 雪堆 -->
+        <div class="snow-pile"></div>
+
+        <!-- 雪人容器 -->
+        <div class="container">
+            <!-- 底部 -->
+            <div class="snowman-base">
+                <div class="bottom-ball">
+                    <!-- 体素方块 -->
+                    <div class="voxel" style="width: 200px; height: 200px; transform: translateZ(-10px);">
+                        <div class="voxel-face face-front snow-material" style="width: 200px; height: 200px; border-radius: 50%;"></div>
+                        <div class="voxel-face face-back snow-material" style="width: 200px; height: 200px; border-radius: 50%;"></div>
+                        <div class="voxel-face face-left snow-shadow" style="width: 20px; height: 200px; border-radius: 50% 0 0 50%;"></div>
+                        <div class="voxel-face face-right snow-shadow" style="width: 20px; height: 200px; border-radius: 0 50% 50% 0;"></div>
+                        <div class="voxel-face face-top snow-material" style="width: 200px; height: 200px; border-radius: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间部分 -->
+            <div class="snowman-middle">
+                <div class="middle-ball">
+                    <!-- 纽扣 -->
+                    <div class="buttons">
+                        <div class="button"></div>
+                        <div class="button"></div>
+                        <div class="button"></div>
+                    </div>
+
+                    <!-- 手臂 -->
+                    <div class="arms">
+                        <div class="arm left">
+                            <div class="fingers"></div>
+                        </div>
+                        <div class="arm right">
+                            <div class="fingers"></div>
+                        </div>
+                    </div>
+
+                    <!-- 体素方块 -->
+                    <div class="voxel" style="width: 150px; height: 150px; transform: translateZ(-10px);">
+                        <div class="voxel-face face-front snow-material" style="width: 150px; height: 150px; border-radius: 50%;"></div>
+                        <div class="voxel-face face-back snow-material" style="width: 150px; height: 150px; border-radius: 50%;"></div>
+                        <div class="voxel-face face-left snow-shadow" style="width: 20px; height: 150px; border-radius: 50% 0 0 50%;"></div>
+                        <div class="voxel-face face-right snow-shadow" style="width: 20px; height: 150px; border-radius: 0 50% 50% 0;"></div>
+                        <div class="voxel-face face-top snow-material" style="width: 150px; height: 150px; border-radius: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 头部 -->
+            <div class="snowman-head">
+                <div class="head-ball">
+                    <!-- 帽子 -->
+                    <div class="hat">
+                        <div class="hat-top"></div>
+                        <div class="hat-brim"></div>
+                    </div>
+
+                    <!-- 脸部特征 -->
+                    <div class="eyes">
+                        <div class="eye left"></div>
+                        <div class="eye right"></div>
+                    </div>
+                    <div class="nose"></div>
+                    <div class="smile"></div>
+
+                    <!-- 围巾 -->
+                    <div class="scarf">
+                        <div class="scarf-end"></div>
+                    </div>
+
+                    <!-- 体素方块 -->
+                    <div class="voxel" style="width: 100px; height: 100px; transform: translateZ(-10px);">
+                        <div class="voxel-face face-front snow-material" style="width: 100px; height: 100px; border-radius: 50%;"></div>
+                        <div class="voxel-face face-back snow-material" style="width: 100px; height: 100px; border-radius: 50%;"></div>
+                        <div class="voxel-face face-left snow-shadow" style="width: 20px; height: 100px; border-radius: 50% 0 0 50%;"></div>
+                        <div class="voxel-face face-right snow-shadow" style="width: 20px; height: 100px; border-radius: 0 50% 50% 0;"></div>
+                        <div class="voxel-face face-top snow-material" style="width: 100px; height: 100px; border-radius: 50%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="controls">
+            <h3>☃️ 雪人控制台</h3>
+            <button class="control-btn" onclick="toggleAnimation()">暂停/继续动画</button>
+            <button class="control-btn" onclick="changeSnowIntensity()">改变降雪量</button>
+            <button class="control-btn" onclick="makeSnowmanDance()">雪人跳舞</button>
+            <button class="control-btn" onclick="toggleMusic()">🎵 背景音乐</button>
+            <button class="control-btn" onclick="changeExpression()">变换表情</button>
+        </div>
+
+        <!-- 信息面板 -->
+        <div class="info-panel">
+            <h2>❄️ 冬日快乐</h2>
+            <p>
+                <span class="emoji">⛄</span> 我是一个正在微笑的雪人！<br>
+                <span class="emoji">🧣</span> 戴着温暖的围巾和帽子<br>
+                <span class="emoji">🥕</span> 胡萝卜鼻子真好吃<br>
+                <span class="emoji">🤗</span> 欢迎来到我的冬天世界！
+            </p>
+            <p style="margin-top: 10px; font-size: 12px;">
+                🎮 互动控制:<br>
+                • 点击按钮与雪人互动<br>
+                • 雪人会自动旋转展示<br>
+                • 享受降雪和动画效果
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let animationPaused = false;
+        let snowIntensity = 1;
+        let isSnowing = true;
+        const snowflakesContainer = document.getElementById('snowflakes');
+        const container = document.querySelector('.container');
+
+        // 创建雪花
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 3 + 7 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+
+            snowflakesContainer.appendChild(snowflake);
+
+            setTimeout(() => {
+                snowflake.remove();
+            }, 10000);
+        }
+
+        // 开始降雪
+        function startSnowing() {
+            if (isSnowing) {
+                createSnowflake();
+                setTimeout(startSnowing, 200 / snowIntensity);
+            }
+        }
+
+        // 改变降雪强度
+        function changeSnowIntensity() {
+            const intensities = [0.5, 1, 2, 3];
+            const currentIndex = intensities.indexOf(snowIntensity);
+            snowIntensity = intensities[(currentIndex + 1) % intensities.length];
+
+            // 显示提示
+            showNotification(`降雪强度: ${snowIntensity}x`);
+        }
+
+        // 暂停/继续动画
+        function toggleAnimation() {
+            animationPaused = !animationPaused;
+            const animatedElements = document.querySelectorAll('.container, .bottom-ball, .middle-ball, .head-ball, .eye, .smile, .nose, .button, .scarf, .arm');
+
+            animatedElements.forEach(element => {
+                element.style.animationPlayState = animationPaused ? 'paused' : 'running';
+            });
+
+            showNotification(animationPaused ? '动画已暂停 ⏸️' : '动画继续播放 ▶️');
+        }
+
+        // 雪人跳舞
+        function makeSnowmanDance() {
+            showNotification('雪人开始跳舞! 💃🕺');
+
+            // 添加跳舞动画
+            container.style.animation = 'none';
+            setTimeout(() => {
+                container.style.animation = 'float 2s infinite ease-in-out, dance 1s infinite ease-in-out';
+            }, 10);
+
+            // 恢复正常动画
+            setTimeout(() => {
+                container.style.animation = 'float 6s infinite ease-in-out';
+            }, 5000);
+        }
+
+        // 添加跳舞关键帧
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes dance {
+                0%, 100% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1); }
+                25% { transform: translate(-50%, -50%) translateY(-30px) rotateY(90deg) scale(1.1); }
+                50% { transform: translate(-50%, -50%) translateY(0px) rotateY(180deg) scale(1); }
+                75% { transform: translate(-50%, -50%) translateY(-30px) rotateY(270deg) scale(1.1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 切换音乐（模拟）
+        function toggleMusic() {
+            showNotification('🎵 背景音乐功能开发中...');
+        }
+
+        // 改变表情
+        function changeExpression() {
+            const smile = document.querySelector('.smile');
+            const eyes = document.querySelectorAll('.eye');
+
+            // 随机表情
+            const expressions = [
+                { width: '40px', height: '20px' }, // 正常微笑
+                { width: '50px', height: '25px' }, // 大笑
+                { width: '30px', height: '15px' },  // 微笑
+                { width: '45px', height: '30px' }  // 开心
+            ];
+
+            const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
+
+            smile.style.width = randomExpression.width;
+            smile.style.height = randomExpression.height;
+
+            // 眨眼效果
+            eyes.forEach(eye => {
+                eye.style.transform = 'scaleY(0.1)';
+                setTimeout(() => {
+                    eye.style.transform = 'scaleY(1)';
+                }, 200);
+            });
+
+            showNotification('雪人变换表情了! 😊');
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(255, 255, 255, 0.95);
+                padding: 20px 30px;
+                border-radius: 15px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                font-size: 18px;
+                font-weight: bold;
+                color: #1a237e;
+                backdrop-filter: blur(10px);
+                animation: notification-pop 2s ease-in-out;
+            `;
+            notification.textContent = message;
+
+            // 添加动画
+            const animStyle = document.createElement('style');
+            animStyle.textContent = `
+                @keyframes notification-pop {
+                    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+                    20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                    80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                    100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(animStyle);
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+                animStyle.remove();
+            }, 2000);
+        }
+
+        // 鼠标交互
+        container.addEventListener('click', () => {
+            makeSnowmanDance();
+        });
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleAnimation();
+                    break;
+                case 's':
+                case 'S':
+                    changeSnowIntensity();
+                    break;
+                case 'd':
+                case 'D':
+                    makeSnowmanDance();
+                    break;
+                case 'e':
+                case 'E':
+                    changeExpression();
+                    break;
+                case 'r':
+                case 'R':
+                    // 重置所有动画
+                    location.reload();
+                    break;
+            }
+        });
+
+        // 触摸控制（移动设备）
+        let touchStartY = 0;
+
+        container.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        container.addEventListener('touchend', (e) => {
+            const touchEndY = e.changedTouches[0].clientY;
+            const diff = touchStartY - touchEndY;
+
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    makeSnowmanDance();
+                } else {
+                    changeExpression();
+                }
+            }
+        });
+
+        // 初始化
+        window.addEventListener('load', () => {
+            startSnowing();
+            showNotification('欢迎来到雪人的世界! ❄️☃️');
+        });
+
+        // 添加鼠标悬停效果
+        container.addEventListener('mouseenter', () => {
+            container.style.transform = 'translate(-50%, -50%) scale(1.1)';
+        });
+
+        container.addEventListener('mouseleave', () => {
+            container.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+
+        // 控制台信息
+        console.log('❄️ 体素雪人已加载成功！');
+        console.log('🎮 键盘快捷键:');
+        console.log('  - 空格键: 暂停/继续动画');
+        console.log('  - S键: 改变降雪量');
+        console.log('  - D键: 雪人跳舞');
+        console.log('  - E键: 变换表情');
+        console.log('  - R键: 重置页面');
+        console.log('  - 点击雪人: 让它跳舞！');
+    </script>
+</body>
+</html>

@@ -155,6 +155,10 @@
       "gpt-5.2 xhigh": {
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-snowman.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "GLM-4.6": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/glm-4.6-snowman-voxel.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -195,6 +199,11 @@
       "deepseek-v3.2": {
         "type": "html",
         "content": "<iframe src='/eval-demos/deepseek-v3.2-street-basketball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+
+      "GLM-4.6": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/glm-4.6-street-basketball-voxel.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -213,6 +222,10 @@
       "gpt-5.2 xhigh": {
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-eiffel.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "GLM-4.6": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/glm-4.6-eiffel-tower.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },

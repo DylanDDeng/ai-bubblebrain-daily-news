@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素埃菲尔铁塔</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #87CEEB 100%);
+            overflow: hidden;
+            height: 100vh;
+            perspective: 1200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            transform-style: preserve-3d;
+        }
+
+        .tower {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -60%);
+            transform-style: preserve-3d;
+            animation: rotate 20s infinite linear;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -60%) rotateY(0deg); }
+            to { transform: translate(-50%, -60%) rotateY(360deg); }
+        }
+
+        /* 基础体素方块 */
+        .voxel {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .voxel-face {
+            position: absolute;
+            opacity: 0.95;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .face-front { transform: translateZ(5px); }
+        .face-back { transform: translateZ(-5px) rotateY(180deg); }
+        .face-left { transform: rotateY(-90deg) translateZ(5px); }
+        .face-right { transform: rotateY(90deg) translateZ(5px); }
+        .face-top { transform: rotateX(90deg) translateZ(5px); }
+        .face-bottom { transform: rotateX(-90deg) translateZ(5px); }
+
+        /* 塔身材料颜色 */
+        .iron-material {
+            background: linear-gradient(135deg, #8B7355, #A0826D, #BC9A6A);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .dark-iron {
+            background: linear-gradient(135deg, #6B5D54, #8B7355, #9B8470);
+        }
+
+        .platform-material {
+            background: linear-gradient(135deg, #4A4A4A, #5A5A5A, #6A6A6A);
+        }
+
+        /* 拱门底座 */
+        .arch-base {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 60px;
+        }
+
+        .arch-leg {
+            position: absolute;
+            bottom: 0;
+            width: 30px;
+            height: 60px;
+        }
+
+        .arch-leg.left {
+            left: 20px;
+            transform: rotateY(15deg);
+        }
+
+        .arch-leg.right {
+            right: 20px;
+            transform: rotateY(-15deg);
+        }
+
+        .arch-connector {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 10px;
+        }
+
+        /* 格子铁框架 */
+        .lattice-beam {
+            position: absolute;
+            background: #8B7355;
+            transform-origin: center;
+        }
+
+        .horizontal-beam {
+            width: 100%;
+            height: 4px;
+        }
+
+        .vertical-beam {
+            width: 4px;
+            height: 100%;
+        }
+
+        .diagonal-beam {
+            width: 2px;
+            height: 60px;
+            background: #A0826D;
+        }
+
+        /* 第一层结构 */
+        .level1 {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 80px;
+        }
+
+        .platform1 {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 8px;
+        }
+
+        /* 第二层结构 */
+        .level2 {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 80px;
+        }
+
+        .platform2 {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 8px;
+        }
+
+        /* 第三层结构 */
+        .level3 {
+            position: absolute;
+            bottom: 220px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 60px;
+        }
+
+        .platform3 {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 8px;
+        }
+
+        /* 塔尖 */
+        .spire {
+            position: absolute;
+            bottom: 280px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 100px;
+        }
+
+        .spire-peak {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        /* 观景台装饰 */
+        .observation-deck {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+
+        /* 装饰灯 */
+        .light {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #FFD700;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* 控制面板 */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            z-index: 1000;
+        }
+
+        .controls h3 {
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+
+        .control-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .slider-container {
+            margin: 10px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            z-index: 1000;
+            max-width: 250px;
+        }
+
+        .info-panel h2 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* 夜晚模式 */
+        .night-mode {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+
+        /* 地面 */
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) rotateX(90deg);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #3a5f3a, #2d4a2d);
+            opacity: 0.8;
+        }
+
+        /* 云朵 */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+            opacity: 0.8;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50px;
+        }
+
+        .cloud1 {
+            width: 100px;
+            height: 40px;
+            top: 20%;
+            left: 20%;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .cloud1::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+
+        .cloud1::after {
+            width: 60px;
+            height: 40px;
+            top: -15px;
+            right: 10px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(30px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 云朵装饰 -->
+        <div class="cloud cloud1"></div>
+
+        <!-- 地面 -->
+        <div class="ground"></div>
+
+        <!-- 埃菲尔铁塔主体 -->
+        <div class="tower" id="tower">
+            <!-- 塔尖 -->
+            <div class="spire">
+                <div class="spire-peak"></div>
+                <div class="voxel" style="width: 40px; height: 20px; transform: translateZ(0px);">
+                    <div class="voxel-face face-front iron-material" style="width: 40px; height: 20px;"></div>
+                    <div class="voxel-face face-back iron-material" style="width: 40px; height: 20px;"></div>
+                    <div class="voxel-face face-left iron-material" style="width: 10px; height: 20px;"></div>
+                    <div class="voxel-face face-right iron-material" style="width: 10px; height: 20px;"></div>
+                </div>
+                <div class="voxel" style="width: 30px; height: 20px; transform: translateZ(20px) translateX(5px);">
+                    <div class="voxel-face face-front iron-material" style="width: 30px; height: 20px;"></div>
+                    <div class="voxel-face face-back iron-material" style="width: 30px; height: 20px;"></div>
+                    <div class="voxel-face face-left iron-material" style="width: 10px; height: 20px;"></div>
+                    <div class="voxel-face face-right iron-material" style="width: 10px; height: 20px;"></div>
+                </div>
+                <div class="voxel" style="width: 20px; height: 20px; transform: translateZ(40px) translateX(10px);">
+                    <div class="voxel-face face-front iron-material" style="width: 20px; height: 20px;"></div>
+                    <div class="voxel-face face-back iron-material" style="width: 20px; height: 20px;"></div>
+                    <div class="voxel-face face-left iron-material" style="width: 10px; height: 20px;"></div>
+                    <div class="voxel-face face-right iron-material" style="width: 10px; height: 20px;"></div>
+                </div>
+                <div class="voxel" style="width: 10px; height: 20px; transform: translateZ(60px) translateX(15px);">
+                    <div class="voxel-face face-front iron-material" style="width: 10px; height: 20px;"></div>
+                    <div class="voxel-face face-back iron-material" style="width: 10px; height: 20px;"></div>
+                    <div class="voxel-face face-left iron-material" style="width: 10px; height: 20px;"></div>
+                    <div class="voxel-face face-right iron-material" style="width: 10px; height: 20px;"></div>
+                </div>
+                <!-- 灯装饰 -->
+                <div class="light" style="transform: translateZ(60px) translateX(15px) translateY(5px);"></div>
+                <div class="light" style="transform: translateZ(40px) translateX(10px) translateY(5px);"></div>
+                <div class="light" style="transform: translateZ(20px) translateX(5px) translateY(5px);"></div>
+            </div>
+
+            <!-- 第三层 -->
+            <div class="level3">
+                <div class="voxel" style="width: 80px; height: 60px; transform: translateZ(-40px);">
+                    <div class="voxel-face face-front dark-iron" style="width: 80px; height: 60px;"></div>
+                    <div class="voxel-face face-back dark-iron" style="width: 80px; height: 60px;"></div>
+                    <div class="voxel-face face-left dark-iron" style="width: 10px; height: 60px;"></div>
+                    <div class="voxel-face face-right dark-iron" style="width: 10px; height: 60px;"></div>
+                </div>
+                <div class="voxel" style="width: 80px; height: 60px; transform: translateZ(40px);">
+                    <div class="voxel-face face-front dark-iron" style="width: 80px; height: 60px;"></div>
+                    <div class="voxel-face face-back dark-iron" style="width: 80px; height: 60px;"></div>
+                    <div class="voxel-face face-left dark-iron" style="width: 10px; height: 60px;"></div>
+                    <div class="voxel-face face-right dark-iron" style="width: 10px; height: 60px;"></div>
+                </div>
+                <!-- 格子框架 -->
+                <div class="lattice-beam horizontal-beam" style="bottom: 20px;"></div>
+                <div class="lattice-beam horizontal-beam" style="bottom: 40px;"></div>
+                <!-- 第三层观景台 -->
+                <div class="platform3">
+                    <div class="voxel" style="width: 100px; height: 8px; transform: translateZ(-50px);">
+                        <div class="voxel-face face-top platform-material" style="width: 100px; height: 100px;"></div>
+                    </div>
+                    <div class="observation-deck" style="width: 90px; height: 4px; top: 2px; left: 5px;"></div>
+                </div>
+                <div class="light" style="top: 15px; left: 45px;"></div>
+                <div class="light" style="top: 15px; right: 45px;"></div>
+            </div>
+
+            <!-- 第二层 -->
+            <div class="level2">
+                <div class="voxel" style="width: 120px; height: 80px; transform: translateZ(-60px);">
+                    <div class="voxel-face face-front dark-iron" style="width: 120px; height: 80px;"></div>
+                    <div class="voxel-face face-back dark-iron" style="width: 120px; height: 80px;"></div>
+                    <div class="voxel-face face-left dark-iron" style="width: 10px; height: 80px;"></div>
+                    <div class="voxel-face face-right dark-iron" style="width: 10px; height: 80px;"></div>
+                </div>
+                <div class="voxel" style="width: 120px; height: 80px; transform: translateZ(60px);">
+                    <div class="voxel-face face-front dark-iron" style="width: 120px; height: 80px;"></div>
+                    <div class="voxel-face face-back dark-iron" style="width: 120px; height: 80px;"></div>
+                    <div class="voxel-face face-left dark-iron" style="width: 10px; height: 80px;"></div>
+                    <div class="voxel-face face-right dark-iron" style="width: 10px; height: 80px;"></div>
+                </div>
+                <!-- 格子框架 -->
+                <div class="lattice-beam horizontal-beam" style="bottom: 20px;"></div>
+                <div class="lattice-beam horizontal-beam" style="bottom: 40px;"></div>
+                <div class="lattice-beam horizontal-beam" style="bottom: 60px;"></div>
+                <div class="diagonal-beam" style="transform: rotate(45deg) translateX(-30px);"></div>
+                <div class="diagonal-beam" style="transform: rotate(-45deg) translateX(30px);"></div>
+                <!-- 第二层观景台 -->
+                <div class="platform2">
+                    <div class="voxel" style="width: 140px; height: 8px; transform: translateZ(-70px);">
+                        <div class="voxel-face face-top platform-material" style="width: 140px; height: 140px;"></div>
+                    </div>
+                    <div class="observation-deck" style="width: 130px; height: 4px; top: 2px; left: 5px;"></div>
+                </div>
+                <div class="light" style="top: 15px; left: 65px;"></div>
+                <div class="light" style="top: 15px; right: 65px;"></div>
+            </div>
+
+            <!-- 第一层 -->
+            <div class="level1">
+                <div class="voxel" style="width: 160px; height: 80px; transform: translateZ(-80px);">
+                    <div class="voxel-face face-front iron-material" style="width: 160px; height: 80px;"></div>
+                    <div class="voxel-face face-back iron-material" style="width: 160px; height: 80px;"></div>
+                    <div class="voxel-face face-left iron-material" style="width: 10px; height: 80px;"></div>
+                    <div class="voxel-face face-right iron-material" style="width: 10px; height: 80px;"></div>
+                </div>
+                <div class="voxel" style="width: 160px; height: 80px; transform: translateZ(80px);">
+                    <div class="voxel-face face-front iron-material" style="width: 160px; height: 80px;"></div>
+                    <div class="voxel-face face-back iron-material" style="width: 160px; height: 80px;"></div>
+                    <div class="voxel-face face-left iron-material" style="width: 10px; height: 80px;"></div>
+                    <div class="voxel-face face-right iron-material" style="width: 10px; height: 80px;"></div>
+                </div>
+                <!-- 格子框架 -->
+                <div class="lattice-beam horizontal-beam" style="bottom: 20px;"></div>
+                <div class="lattice-beam horizontal-beam" style="bottom: 40px;"></div>
+                <div class="lattice-beam horizontal-beam" style="bottom: 60px;"></div>
+                <div class="diagonal-beam" style="transform: rotate(45deg) translateX(-40px);"></div>
+                <div class="diagonal-beam" style="transform: rotate(-45deg) translateX(40px);"></div>
+                <!-- 第一层观景台 -->
+                <div class="platform1">
+                    <div class="voxel" style="width: 180px; height: 8px; transform: translateZ(-90px);">
+                        <div class="voxel-face face-top platform-material" style="width: 180px; height: 180px;"></div>
+                    </div>
+                    <div class="observation-deck" style="width: 170px; height: 4px; top: 2px; left: 5px;"></div>
+                </div>
+                <div class="light" style="top: 15px; left: 85px;"></div>
+                <div class="light" style="top: 15px; right: 85px;"></div>
+            </div>
+
+            <!-- 拱门底座 -->
+            <div class="arch-base">
+                <div class="arch-leg left">
+                    <div class="voxel" style="width: 30px; height: 60px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front iron-material" style="width: 30px; height: 60px;"></div>
+                        <div class="voxel-face face-back iron-material" style="width: 30px; height: 60px;"></div>
+                        <div class="voxel-face face-left iron-material" style="width: 10px; height: 60px;"></div>
+                        <div class="voxel-face face-right iron-material" style="width: 10px; height: 60px;"></div>
+                    </div>
+                </div>
+                <div class="arch-leg right">
+                    <div class="voxel" style="width: 30px; height: 60px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front iron-material" style="width: 30px; height: 60px;"></div>
+                        <div class="voxel-face face-back iron-material" style="width: 30px; height: 60px;"></div>
+                        <div class="voxel-face face-left iron-material" style="width: 10px; height: 60px;"></div>
+                        <div class="voxel-face face-right iron-material" style="width: 10px; height: 60px;"></div>
+                    </div>
+                </div>
+                <div class="arch-connector">
+                    <div class="voxel" style="width: 160px; height: 10px; transform: translateZ(-5px);">
+                        <div class="voxel-face face-top platform-material" style="width: 160px; height: 160px;"></div>
+                    </div>
+                </div>
+                <!-- 拱门装饰 -->
+                <div class="light" style="bottom: 10px; left: 20px;"></div>
+                <div class="light" style="bottom: 10px; right: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="controls">
+            <h3>控制面板</h3>
+            <button class="control-btn" onclick="toggleRotation()">暂停/继续旋转</button>
+            <button class="control-btn" onclick="changeSpeed()">改变速度</button>
+            <button class="control-btn" onclick="toggleNightMode()">夜间模式</button>
+            <button class="control-btn" onclick="toggleLights()">灯光开关</button>
+
+            <div class="slider-container">
+                <label>旋转速度:</label>
+                <input type="range" min="5" max="60" value="20" class="slider" id="speedSlider" oninput="updateSpeed(this.value)">
+            </div>
+
+            <div class="slider-container">
+                <label>缩放:</label>
+                <input type="range" min="50" max="150" value="100" class="slider" id="scaleSlider" oninput="updateScale(this.value)">
+            </div>
+        </div>
+
+        <!-- 信息面板 -->
+        <div class="info-panel">
+            <h2>埃菲尔铁塔</h2>
+            <p>
+                <strong>高度:</strong> 324米<br>
+                <strong>建造年份:</strong> 1889年<br>
+                <strong>建筑师:</strong> 古斯塔夫·埃菲尔<br>
+                <strong>层数:</strong> 3层观景台<br>
+                <strong>特色:</strong> 格子铁框架结构
+            </p>
+            <p style="margin-top: 10px; font-size: 12px;">
+                🖱️ 拖拽旋转视角<br>
+                ⌨️ 方向键控制<br>
+                🌟 点击灯光看效果
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let isRotating = true;
+        let currentSpeed = 20;
+        let isNightMode = false;
+        let lightsOn = true;
+        const tower = document.getElementById('tower');
+        const container = document.querySelector('.container');
+
+        // 旋转控制
+        function toggleRotation() {
+            isRotating = !isRotating;
+            if (isRotating) {
+                tower.style.animationPlayState = 'running';
+            } else {
+                tower.style.animationPlayState = 'paused';
+            }
+        }
+
+        // 速度控制
+        function changeSpeed() {
+            const speeds = [5, 10, 20, 30, 60];
+            const currentIndex = speeds.indexOf(currentSpeed);
+            const nextIndex = (currentIndex + 1) % speeds.length;
+            currentSpeed = speeds[nextIndex];
+            tower.style.animationDuration = currentSpeed + 's';
+            document.getElementById('speedSlider').value = currentSpeed;
+        }
+
+        function updateSpeed(value) {
+            currentSpeed = parseInt(value);
+            tower.style.animationDuration = currentSpeed + 's';
+        }
+
+        // 缩放控制
+        function updateScale(value) {
+            const scale = value / 100;
+            tower.style.transform = `translate(-50%, -60%) scale(${scale})`;
+        }
+
+        // 夜间模式
+        function toggleNightMode() {
+            isNightMode = !isNightMode;
+            if (isNightMode) {
+                document.body.classList.add('night-mode');
+                // 增强灯光效果
+                document.querySelectorAll('.light').forEach(light => {
+                    light.style.boxShadow = '0 0 20px #FFD700, 0 0 40px #FFD700';
+                });
+            } else {
+                document.body.classList.remove('night-mode');
+                document.querySelectorAll('.light').forEach(light => {
+                    light.style.boxShadow = '0 0 10px #FFD700';
+                });
+            }
+        }
+
+        // 灯光控制
+        function toggleLights() {
+            lightsOn = !lightsOn;
+            document.querySelectorAll('.light').forEach(light => {
+                light.style.display = lightsOn ? 'block' : 'none';
+            });
+        }
+
+        // 鼠标拖拽控制
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        document.addEventListener('mousedown', dragStart);
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('mousemove', drag);
+
+        function dragStart(e) {
+            if (e.target.closest('.controls') || e.target.closest('.info-panel')) return;
+
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (e.target.closest('.tower') || e.target.closest('.container')) {
+                isDragging = true;
+                tower.style.animationPlayState = 'paused';
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+
+            if (isRotating) {
+                tower.style.animationPlayState = 'running';
+            }
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+
+                const rotateY = (currentX / window.innerWidth) * 360;
+                const rotateX = -20 + (currentY / window.innerHeight) * 30;
+                tower.style.transform = `translate(-50%, -60%) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            }
+        }
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            const currentTransform = tower.style.transform || 'translate(-50%, -60%)';
+
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleRotation();
+                    break;
+                case 'ArrowUp':
+                    tower.style.transform = currentTransform.replace(/scale\([^)]*\)/, '') + ' scale(1.1)';
+                    break;
+                case 'ArrowDown':
+                    tower.style.transform = currentTransform.replace(/scale\([^)]*\)/, '') + ' scale(0.9)';
+                    break;
+                case 'ArrowLeft':
+                    tower.style.transform = currentTransform.replace(/rotateY\([^)]*\)/, '') + ' rotateY(-45deg)';
+                    break;
+                case 'ArrowRight':
+                    tower.style.transform = currentTransform.replace(/rotateY\([^)]*\)/, '') + ' rotateY(45deg)';
+                    break;
+                case 'n':
+                case 'N':
+                    toggleNightMode();
+                    break;
+                case 'l':
+                case 'L':
+                    toggleLights();
+                    break;
+                case 'r':
+                case 'R':
+                    tower.style.transform = 'translate(-50%, -60%)';
+                    xOffset = 0;
+                    yOffset = 0;
+                    document.getElementById('scaleSlider').value = 100;
+                    break;
+            }
+        });
+
+        // 触摸控制（移动设备）
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.controls') || e.target.closest('.info-panel')) return;
+
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            tower.style.animationPlayState = 'paused';
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('.controls') || e.target.closest('.info-panel')) return;
+
+            e.preventDefault();
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+
+            const rotateY = (deltaX / window.innerWidth) * 360;
+            const rotateX = -20 + (deltaY / window.innerHeight) * 30;
+
+            tower.style.transform = `translate(-50%, -60%) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (isRotating) {
+                tower.style.animationPlayState = 'running';
+            }
+        });
+
+        // 随机灯光闪烁
+        setInterval(() => {
+            if (lightsOn) {
+                const lights = document.querySelectorAll('.light');
+                const randomLight = lights[Math.floor(Math.random() * lights.length)];
+                randomLight.style.animation = 'none';
+                setTimeout(() => {
+                    randomLight.style.animation = 'twinkle 2s infinite ease-in-out';
+                }, 100);
+            }
+        }, 3000);
+
+        // 初始化提示
+        console.log('🗼 埃菲尔铁塔体素艺术已加载！');
+        console.log('🎮 控制说明:');
+        console.log('  - 拖拽鼠标旋转视角');
+        console.log('  - 方向键控制旋转和缩放');
+        console.log('  - 空格键暂停/继续');
+        console.log('  - N键切换夜间模式');
+        console.log('  - L键开关灯光');
+        console.log('  - R键重置视角');
+    </script>
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素街头篮球场</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(to bottom, #87CEEB 0%, #FFA07A 100%);
+            overflow: hidden;
+            height: 100vh;
+            perspective: 1000px;
+        }
+
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            transform-style: preserve-3d;
+            animation: rotate 30s infinite linear;
+        }
+
+        @keyframes rotate {
+            from { transform: rotateY(0deg) rotateX(-20deg); }
+            to { transform: rotateY(360deg) rotateX(-20deg); }
+        }
+
+        /* 地面 - 篮球场 */
+        .ground {
+            position: absolute;
+            width: 800px;
+            height: 400px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotateX(90deg) translateZ(-100px);
+            background: linear-gradient(45deg, #D2691E 25%, #CD853F 25%, #CD853F 50%, #D2691E 50%, #D2691E 75%, #CD853F 75%, #CD853F);
+            background-size: 40px 40px;
+            border: 5px solid #fff;
+            transform-origin: center;
+        }
+
+        /* 篮球架 */
+        .hoop {
+            position: absolute;
+            width: 60px;
+            height: 100px;
+            right: 100px;
+            top: 50%;
+            transform: translate(0, -50%) translateZ(0);
+        }
+
+        .backboard {
+            width: 60px;
+            height: 40px;
+            background: #8B4513;
+            border: 3px solid #D2691E;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .rim {
+            width: 30px;
+            height: 15px;
+            background: #FF4500;
+            border: 2px solid #8B0000;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+        }
+
+        /* 球员 */
+        .player {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .player-head {
+            width: 20px;
+            height: 20px;
+            background: #8B4513;
+            position: absolute;
+            transform: translateZ(40px);
+        }
+
+        .player-body {
+            width: 30px;
+            height: 40px;
+            background: #FF6B35;
+            position: absolute;
+            top: 20px;
+            left: -5px;
+            transform: translateZ(40px);
+        }
+
+        .player-legs {
+            position: absolute;
+            top: 60px;
+            width: 25px;
+            height: 30px;
+        }
+
+        .leg {
+            width: 10px;
+            height: 30px;
+            background: #4169E1;
+            position: absolute;
+            transform: translateZ(40px);
+        }
+
+        .leg.left { left: 0; }
+        .leg.right { right: 0; }
+
+        /* 玩家1 - 运球 */
+        .player1 {
+            left: 200px;
+            bottom: 150px;
+            animation: dribble 2s infinite ease-in-out;
+        }
+
+        @keyframes dribble {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* 玩家2 - 跳投 */
+        .player2 {
+            right: 250px;
+            bottom: 150px;
+            animation: jump 3s infinite ease-in-out;
+        }
+
+        @keyframes jump {
+            0%, 100% { transform: translateY(0) translateZ(0); }
+            50% { transform: translateY(-60px) translateZ(20px); }
+        }
+
+        /* 篮球 */
+        .basketball {
+            width: 15px;
+            height: 15px;
+            background: radial-gradient(circle, #FF6B35, #8B0000);
+            border-radius: 50%;
+            position: absolute;
+            animation: ball-bounce 1s infinite ease-in-out;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .basketball1 {
+            left: 230px;
+            bottom: 180px;
+            animation: ball-move 2s infinite ease-in-out;
+        }
+
+        @keyframes ball-move {
+            0%, 100% { transform: translateY(0) translateZ(0); }
+            50% { transform: translateY(-10px) translateZ(5px); }
+        }
+
+        .basketball2 {
+            right: 280px;
+            bottom: 200px;
+            animation: ball-shoot 3s infinite ease-in-out;
+        }
+
+        @keyframes ball-shoot {
+            0% { transform: translateY(0) translateZ(0); }
+            50% { transform: translateY(-80px) translateZ(50px) translateX(-100px); }
+            100% { transform: translateY(0) translateZ(0); }
+        }
+
+        /* 铁丝网围栏 */
+        .fence {
+            position: absolute;
+            width: 100%;
+            height: 200px;
+            bottom: 0;
+            background-image:
+                linear-gradient(45deg, #333 25%, transparent 25%),
+                linear-gradient(-45deg, #333 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #333 75%),
+                linear-gradient(-45deg, transparent 75%, #333 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            opacity: 0.7;
+            transform: translateZ(-50px);
+        }
+
+        /* 涂鸦墙 */
+        .graffiti-wall {
+            position: absolute;
+            width: 200px;
+            height: 150px;
+            left: 50px;
+            bottom: 100px;
+            background: #2F4F4F;
+            transform: translateZ(0);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .graffiti {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #FF1493;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            transform: translateZ(10px);
+            writing-mode: vertical-rl;
+        }
+
+        /* 观众 */
+        .spectator {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .spectator-head {
+            width: 15px;
+            height: 15px;
+            background: #FFD700;
+            position: absolute;
+            transform: translateZ(30px);
+        }
+
+        .spectator-body {
+            width: 20px;
+            height: 25px;
+            background: #32CD32;
+            position: absolute;
+            top: 15px;
+            left: -2px;
+            transform: translateZ(30px);
+        }
+
+        .spectator1 {
+            left: 100px;
+            bottom: 250px;
+            animation: cheer 1.5s infinite ease-in-out;
+        }
+
+        .spectator2 {
+            left: 130px;
+            bottom: 250px;
+            animation: cheer 2s infinite ease-in-out;
+        }
+
+        .spectator3 {
+            right: 120px;
+            bottom: 250px;
+            animation: cheer 1.8s infinite ease-in-out;
+        }
+
+        @keyframes cheer {
+            0%, 100% { transform: translateY(0) rotateZ(0deg); }
+            25% { transform: translateY(-5px) rotateZ(-5deg); }
+            75% { transform: translateY(-5px) rotateZ(5deg); }
+        }
+
+        /* 城市背景 */
+        .city-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            transform: translateZ(-300px);
+            opacity: 0.6;
+        }
+
+        .building {
+            position: absolute;
+            bottom: 100px;
+            background: linear-gradient(to top, #4B0082, #8A2BE2);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .building1 {
+            width: 80px;
+            height: 250px;
+            left: 100px;
+        }
+
+        .building2 {
+            width: 100px;
+            height: 300px;
+            left: 200px;
+        }
+
+        .building3 {
+            width: 60px;
+            height: 200px;
+            right: 150px;
+        }
+
+        .building4 {
+            width: 90px;
+            height: 280px;
+            right: 250px;
+        }
+
+        /* 窗户 */
+        .window {
+            position: absolute;
+            background: #FFD700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.7);
+        }
+
+        .window1 { width: 15px; height: 20px; top: 20px; left: 10px; }
+        .window2 { width: 15px; height: 20px; top: 20px; right: 10px; }
+        .window3 { width: 15px; height: 20px; top: 60px; left: 10px; }
+        .window4 { width: 15px; height: 20px; top: 60px; right: 10px; }
+
+        /* 标题 */
+        .title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFF;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+
+        /* 控制面板 */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        button {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #FF4500;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">体素街头篮球场</h1>
+
+    <div class="scene" id="scene">
+        <!-- 城市背景 -->
+        <div class="city-background">
+            <div class="building building1">
+                <div class="window window1"></div>
+                <div class="window window2"></div>
+                <div class="window window3"></div>
+                <div class="window window4"></div>
+            </div>
+            <div class="building building2">
+                <div class="window window1"></div>
+                <div class="window window2"></div>
+                <div class="window window3"></div>
+                <div class="window window4"></div>
+            </div>
+            <div class="building building3">
+                <div class="window window1"></div>
+                <div class="window window2"></div>
+                <div class="window window3"></div>
+                <div class="window window4"></div>
+            </div>
+            <div class="building building4">
+                <div class="window window1"></div>
+                <div class="window window2"></div>
+                <div class="window window3"></div>
+                <div class="window window4"></div>
+            </div>
+        </div>
+
+        <!-- 地面 - 篮球场 -->
+        <div class="ground"></div>
+
+        <!-- 铁丝网围栏 -->
+        <div class="fence"></div>
+
+        <!-- 涂鸦墙 -->
+        <div class="graffiti-wall">
+            <div class="graffiti">街头篮球</div>
+        </div>
+
+        <!-- 篮球架 -->
+        <div class="hoop">
+            <div class="backboard"></div>
+            <div class="rim"></div>
+        </div>
+
+        <!-- 玩家1 - 运球 -->
+        <div class="player player1">
+            <div class="player-head"></div>
+            <div class="player-body"></div>
+            <div class="player-legs">
+                <div class="leg left"></div>
+                <div class="leg right"></div>
+            </div>
+        </div>
+
+        <!-- 玩家2 - 跳投 -->
+        <div class="player player2">
+            <div class="player-head"></div>
+            <div class="player-body"></div>
+            <div class="player-legs">
+                <div class="leg left"></div>
+                <div class="leg right"></div>
+            </div>
+        </div>
+
+        <!-- 篮球 -->
+        <div class="basketball basketball1"></div>
+        <div class="basketball basketball2"></div>
+
+        <!-- 观众 -->
+        <div class="spectator spectator1">
+            <div class="spectator-head"></div>
+            <div class="spectator-body"></div>
+        </div>
+
+        <div class="spectator spectator2">
+            <div class="spectator-head"></div>
+            <div class="spectator-body"></div>
+        </div>
+
+        <div class="spectator spectator3">
+            <div class="spectator-head"></div>
+            <div class="spectator-body"></div>
+        </div>
+    </div>
+
+    <!-- 控制面板 -->
+    <div class="controls">
+        <button onclick="toggleRotation()">暂停/继续旋转</button>
+        <button onclick="changeSpeed()">改变速度</button>
+        <button onclick="resetView()">重置视角</button>
+    </div>
+
+    <script>
+        let isRotating = true;
+        let currentSpeed = 30;
+        const scene = document.getElementById('scene');
+
+        function toggleRotation() {
+            isRotating = !isRotating;
+            if (isRotating) {
+                scene.style.animationPlayState = 'running';
+            } else {
+                scene.style.animationPlayState = 'paused';
+            }
+        }
+
+        function changeSpeed() {
+            currentSpeed = currentSpeed === 30 ? 15 : currentSpeed === 15 ? 5 : 30;
+            scene.style.animationDuration = currentSpeed + 's';
+        }
+
+        function resetView() {
+            scene.style.animation = 'none';
+            setTimeout(() => {
+                scene.style.animation = `rotate ${currentSpeed}s infinite linear`;
+            }, 100);
+        }
+
+        // 添加交互式鼠标控制
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        document.addEventListener('mousedown', dragStart);
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('mousemove', drag);
+
+        function dragStart(e) {
+            if (e.target.closest('.controls')) return;
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+            if (e.target.closest('.scene')) {
+                isDragging = true;
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+
+                const rotateY = (currentX / window.innerWidth) * 360;
+                const rotateX = -20 + (currentY / window.innerHeight) * 20;
+                scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            }
+        }
+
+        // 添加键盘控制
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    toggleRotation();
+                    break;
+                case 'ArrowUp':
+                    scene.style.transform += ' translateZ(50px)';
+                    break;
+                case 'ArrowDown':
+                    scene.style.transform += ' translateZ(-50px)';
+                    break;
+                case 'r':
+                case 'R':
+                    resetView();
+                    break;
+            }
+        });
+
+        // 添加随机音效提示（模拟）
+        console.log('🏀 体素街头篮球场已加载！');
+        console.log('使用鼠标拖拽来旋转视角');
+        console.log('按空格键暂停/继续旋转');
+        console.log('按方向键上下缩放');
+        console.log('按R键重置视角');
+    </script>
+</body>
+</html>
