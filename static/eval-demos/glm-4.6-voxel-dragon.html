@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素龙 - 神话生物</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fantasy', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #c73e1d 100%);
+            overflow: hidden;
+            height: 100vh;
+            perspective: 1500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            transform-style: preserve-3d;
+        }
+
+        .dragon-container {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transform-style: preserve-3d;
+            animation: dragon-fly 8s infinite ease-in-out;
+        }
+
+        @keyframes dragon-fly {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1);
+            }
+            25% {
+                transform: translate(-50%, -60%) translateY(-50px) rotateY(90deg) scale(1.1);
+            }
+            50% {
+                transform: translate(-50%, -50%) translateY(-100px) rotateY(180deg) scale(1.2);
+            }
+            75% {
+                transform: translate(-50%, -40%) translateY(-50px) rotateY(270deg) scale(1.1);
+            }
+        }
+
+        /* 体素方块基础样式 */
+        .voxel {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .voxel-face {
+            position: absolute;
+            opacity: 0.9;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .face-front { transform: translateZ(15px); }
+        .face-back { transform: translateZ(-15px) rotateY(180deg); }
+        .face-left { transform: rotateY(-90deg) translateZ(15px); }
+        .face-right { transform: rotateY(90deg) translateZ(15px); }
+        .face-top { transform: rotateX(90deg) translateZ(15px); }
+        .face-bottom { transform: rotateX(-90deg) translateZ(15px); }
+
+        /* 龙身材料 */
+        .dragon-skin {
+            background: linear-gradient(135deg, #8B0000, #DC143C, #FF6347);
+            box-shadow: inset 0 0 15px rgba(255, 69, 0, 0.6);
+        }
+
+        .dragon-dark {
+            background: linear-gradient(135deg, #4B0000, #8B0000, #A52A2A);
+        }
+
+        .dragon-belly {
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FF8C00);
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .scale-pattern {
+            background-image:
+                repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px),
+                repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(255,255,255,0.1) 3px, rgba(255,255,255,0.1) 6px);
+        }
+
+        /* 龙头 */
+        .dragon-head {
+            position: absolute;
+            width: 120px;
+            height: 100px;
+            left: 200px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .head-main {
+            width: 120px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: head-nod 3s infinite ease-in-out;
+        }
+
+        @keyframes head-nod {
+            0%, 100% { transform: rotateX(0deg); }
+            50% { transform: rotateX(-10deg); }
+        }
+
+        /* 龙眼 */
+        .dragon-eyes {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 30px;
+        }
+
+        .eye {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, #FFD700, #FF6347);
+            border-radius: 50%;
+            border: 3px solid #000;
+            box-shadow: 0 0 15px #FFD700, inset 0 0 8px #FF0000;
+            animation: eye-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes eye-glow {
+            0%, 100% { box-shadow: 0 0 15px #FFD700, inset 0 0 8px #FF0000; }
+            50% { box-shadow: 0 0 25px #FFD700, inset 0 0 12px #FF0000; }
+        }
+
+        .eye.left {
+            left: 15px;
+        }
+
+        .eye.right {
+            right: 15px;
+        }
+
+        .pupil {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #000;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pupil-move 4s infinite ease-in-out;
+        }
+
+        @keyframes pupil-move {
+            0%, 100% { transform: translate(-50%, -50%); }
+            25% { transform: translate(-30%, -50%); }
+            50% { transform: translate(-50%, -30%); }
+            75% { transform: translate(-70%, -50%); }
+        }
+
+        /* 龙嘴 */
+        .dragon-mouth {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 20px;
+            background: #000;
+            border-radius: 0 0 30px 30px;
+            overflow: hidden;
+        }
+
+        .teeth {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: top;
+        }
+
+        .tooth {
+            width: 6px;
+            height: 10px;
+            background: #FFF;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            animation: tooth-shine 3s infinite ease-in-out;
+        }
+
+        @keyframes tooth-shine {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; box-shadow: 0 0 5px #FFF; }
+        }
+
+        /* 龙角 */
+        .dragon-horns {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 40px;
+        }
+
+        .horn {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 30px solid #8B4513;
+            transform-origin: bottom center;
+        }
+
+        .horn.left {
+            left: 15px;
+            transform: rotate(-15deg);
+        }
+
+        .horn.right {
+            right: 15px;
+            transform: rotate(15deg);
+        }
+
+        /* 龙身 */
+        .dragon-body {
+            position: absolute;
+            width: 200px;
+            height: 80px;
+            left: 0px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .body-segment {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            transform-style: preserve-3d;
+            animation: body-breathe 4s infinite ease-in-out;
+        }
+
+        @keyframes body-breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .segment1 { left: 0px; }
+        .segment2 { left: 60px; }
+        .segment3 { left: 120px; }
+
+        /* 龙尾 */
+        .dragon-tail {
+            position: absolute;
+            width: 150px;
+            height: 60px;
+            right: 100px;
+            top: 50%;
+            transform: translateY(-50%);
+            transform-origin: left center;
+            animation: tail-swish 3s infinite ease-in-out;
+        }
+
+        @keyframes tail-swish {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(10deg); }
+            75% { transform: translateY(-50%) rotate(-10deg); }
+        }
+
+        .tail-segment {
+            position: absolute;
+            width: 50px;
+            height: 40px;
+            transform-style: preserve-3d;
+        }
+
+        .tail-segment1 { left: 0px; width: 50px; height: 60px; }
+        .tail-segment2 { left: 50px; width: 40px; height: 50px; }
+        .tail-segment3 { left: 90px; width: 30px; height: 40px; }
+        .tail-segment4 { left: 120px; width: 20px; height: 30px; }
+
+        /* 翅膀 */
+        .dragon-wings {
+            position: absolute;
+            width: 400px;
+            height: 300px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transform-style: preserve-3d;
+        }
+
+        .wing {
+            position: absolute;
+            transform-style: preserve-3d;
+            transform-origin: top center;
+        }
+
+        .wing-left {
+            left: 50px;
+            top: 50px;
+            animation: wing-flap-left 1s infinite ease-in-out;
+        }
+
+        .wing-right {
+            right: 50px;
+            top: 50px;
+            animation: wing-flap-right 1s infinite ease-in-out;
+        }
+
+        @keyframes wing-flap-left {
+            0%, 100% { transform: rotateY(-20deg) rotateX(0deg); }
+            25% { transform: rotateY(-20deg) rotateX(-45deg); }
+            75% { transform: rotateY(-20deg) rotateX(45deg); }
+        }
+
+        @keyframes wing-flap-right {
+            0%, 100% { transform: rotateY(20deg) rotateX(0deg); }
+            25% { transform: rotateY(20deg) rotateX(-45deg); }
+            75% { transform: rotateY(20deg) rotateX(45deg); }
+        }
+
+        .wing-membrane {
+            width: 150px;
+            height: 200px;
+            background: linear-gradient(135deg,
+                rgba(139, 0, 0, 0.8),
+                rgba(255, 99, 71, 0.6),
+                rgba(255, 140, 0, 0.4));
+            border: 2px solid #8B0000;
+            position: relative;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.4);
+        }
+
+        .wing-bones {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .wing-bone {
+            position: absolute;
+            background: linear-gradient(90deg, #8B4513, #654321);
+            transform-origin: top center;
+        }
+
+        .bone-main {
+            width: 4px;
+            height: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bone-cross1 {
+            width: 2px;
+            height: 60%;
+            top: 20%;
+            left: 30%;
+            transform: rotate(15deg);
+        }
+
+        .bone-cross2 {
+            width: 2px;
+            height: 60%;
+            top: 20%;
+            right: 30%;
+            transform: rotate(-15deg);
+        }
+
+        /* 龙爪 */
+        .dragon-claws {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .claw {
+            position: absolute;
+            bottom: -20px;
+            width: 15px;
+            height: 25px;
+            background: linear-gradient(135deg, #4B0000, #8B0000);
+            clip-path: polygon(50% 0%, 30% 100%, 70% 100%);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .claw.front-left { left: 30px; }
+        .claw.front-right { right: 30px; }
+        .claw.back-left { left: 80px; }
+        .claw.back-right { right: 80px; }
+
+        /* 喷火效果 */
+        .fire-breath {
+            position: absolute;
+            left: 320px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 100px;
+            display: none;
+            z-index: 100;
+        }
+
+        .fire-breath.active {
+            display: block;
+            animation: fire-shoot 2s ease-in-out;
+        }
+
+        @keyframes fire-shoot {
+            0% {
+                transform: translateY(-50%) scaleX(0);
+                opacity: 0;
+            }
+            20% {
+                transform: translateY(-50%) scaleX(1);
+                opacity: 1;
+            }
+            80% {
+                transform: translateY(-50%) scaleX(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50%) scaleX(0);
+                opacity: 0;
+            }
+        }
+
+        .flame {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(5px);
+            animation: flicker 0.1s infinite ease-in-out;
+        }
+
+        @keyframes flicker {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .flame1 {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #FFD700, #FF6347, #FF0000);
+            left: 0;
+            top: 10px;
+            box-shadow: 0 0 50px #FF6347, 0 0 100px #FF0000;
+        }
+
+        .flame2 {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #FFA500, #FF4500, #DC143C);
+            left: 60px;
+            top: 20px;
+            box-shadow: 0 0 40px #FF4500, 0 0 80px #DC143C;
+        }
+
+        .flame3 {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #FFD700, #FFA500, #FF8C00);
+            left: 120px;
+            top: 30px;
+            box-shadow: 0 0 30px #FFD700, 0 0 60px #FFA500;
+        }
+
+        /* 火花粒子 */
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #FFD700;
+            animation: spark-fly 1s infinite ease-in-out;
+        }
+
+        @keyframes spark-fly {
+            0% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--spark-x), var(--spark-y));
+                opacity: 0;
+            }
+        }
+
+        /* 背景山峦 */
+        .mountains {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
+            clip-path: polygon(
+                0 100%, 0 60%, 20% 40%, 35% 50%, 50% 30%, 65% 45%, 80% 35%, 100% 55%, 100% 100%
+            );
+        }
+
+        /* 月亮 */
+        .moon {
+            position: absolute;
+            top: 50px;
+            right: 100px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #F0E68C, #FFD700);
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
+            animation: moon-glow 4s infinite ease-in-out;
+        }
+
+        @keyframes moon-glow {
+            0%, 100% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.4); }
+            50% { box-shadow: 0 0 80px rgba(255, 215, 0, 0.6); }
+        }
+
+        /* 控制面板 */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 69, 0, 0.3);
+        }
+
+        .controls h3 {
+            color: #FF6347;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-shadow: 0 0 10px #FF6347;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #FF6347, #DC143C);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 8px 0;
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 99, 71, 0.4);
+            display: block;
+            width: 100%;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 99, 71, 0.6);
+            background: linear-gradient(135deg, #FF7F50, #FF6347);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .fire-btn {
+            background: linear-gradient(135deg, #FF4500, #DC143C);
+            animation: fire-btn-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes fire-btn-pulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(255, 69, 0, 0.4); }
+            50% { box-shadow: 0 4px 25px rgba(255, 69, 0, 0.8); }
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            max-width: 300px;
+        }
+
+        .info-panel h2 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-size: 28px;
+            text-shadow: 0 0 15px #FFD700;
+        }
+
+        .info-panel p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-label {
+            color: #FFA500;
+        }
+
+        .stat-value {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        /* 龙吼提示 */
+        .roar-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.8);
+            padding: 15px 30px;
+            border-radius: 30px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+            animation: roar-pulse 1s infinite ease-in-out;
+        }
+
+        @keyframes roar-pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+
+        .roar-indicator.active {
+            display: block;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .controls, .info-panel {
+                position: fixed;
+                bottom: 10px;
+                top: auto;
+                max-width: 90%;
+            }
+
+            .controls {
+                right: 5%;
+            }
+
+            .info-panel {
+                left: 5%;
+            }
+
+            .dragon-container {
+                transform: translate(-50%, -50%) scale(0.7);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <!-- 背景元素 -->
+        <div class="moon"></div>
+        <div class="mountains"></div>
+
+        <!-- 龙容器 -->
+        <div class="dragon-container" id="dragonContainer">
+            <!-- 龙身 -->
+            <div class="dragon-body">
+                <div class="body-segment segment1">
+                    <div class="voxel" style="width: 60px; height: 80px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-skin scale-pattern" style="width: 60px; height: 80px;"></div>
+                        <div class="voxel-face face-back dragon-dark scale-pattern" style="width: 60px; height: 80px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 80px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 80px;"></div>
+                        <div class="voxel-face face-top dragon-skin scale-pattern" style="width: 60px; height: 30px;"></div>
+                        <div class="voxel-face face-bottom dragon-belly" style="width: 60px; height: 30px;"></div>
+                    </div>
+                </div>
+
+                <div class="body-segment segment2">
+                    <div class="voxel" style="width: 60px; height: 80px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-skin scale-pattern" style="width: 60px; height: 80px;"></div>
+                        <div class="voxel-face face-back dragon-dark scale-pattern" style="width: 60px; height: 80px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 80px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 80px;"></div>
+                        <div class="voxel-face face-top dragon-skin scale-pattern" style="width: 60px; height: 30px;"></div>
+                        <div class="voxel-face face-bottom dragon-belly" style="width: 60px; height: 30px;"></div>
+                    </div>
+                </div>
+
+                <div class="body-segment segment3">
+                    <div class="voxel" style="width: 60px; height: 80px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-skin scale-pattern" style="width: 60px; height: 80px;"></div>
+                        <div class="voxel-face face-back dragon-dark scale-pattern" style="width: 60px; height: 80px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 80px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 80px;"></div>
+                        <div class="voxel-face face-top dragon-skin scale-pattern" style="width: 60px; height: 30px;"></div>
+                        <div class="voxel-face face-bottom dragon-belly" style="width: 60px; height: 30px;"></div>
+                    </div>
+                </div>
+
+                <!-- 龙爪 -->
+                <div class="dragon-claws">
+                    <div class="claw front-left"></div>
+                    <div class="claw front-right"></div>
+                    <div class="claw back-left"></div>
+                    <div class="claw back-right"></div>
+                </div>
+            </div>
+
+            <!-- 龙头 -->
+            <div class="dragon-head">
+                <div class="head-main">
+                    <div class="voxel" style="width: 120px; height: 100px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-skin scale-pattern" style="width: 120px; height: 100px;"></div>
+                        <div class="voxel-face face-back dragon-dark scale-pattern" style="width: 120px; height: 100px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 100px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 100px;"></div>
+                        <div class="voxel-face face-top dragon-skin scale-pattern" style="width: 120px; height: 30px;"></div>
+                        <div class="voxel-face face-bottom dragon-belly" style="width: 120px; height: 30px;"></div>
+                    </div>
+
+                    <!-- 龙眼 -->
+                    <div class="dragon-eyes">
+                        <div class="eye left">
+                            <div class="pupil"></div>
+                        </div>
+                        <div class="eye right">
+                            <div class="pupil"></div>
+                        </div>
+                    </div>
+
+                    <!-- 龙嘴 -->
+                    <div class="dragon-mouth">
+                        <div class="teeth">
+                            <div class="tooth"></div>
+                            <div class="tooth"></div>
+                            <div class="tooth"></div>
+                            <div class="tooth"></div>
+                            <div class="tooth"></div>
+                        </div>
+                    </div>
+
+                    <!-- 龙角 -->
+                    <div class="dragon-horns">
+                        <div class="horn left"></div>
+                        <div class="horn right"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 龙尾 -->
+            <div class="dragon-tail">
+                <div class="tail-segment tail-segment1">
+                    <div class="voxel" style="width: 50px; height: 60px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-skin scale-pattern" style="width: 50px; height: 60px;"></div>
+                        <div class="voxel-face face-back dragon-dark scale-pattern" style="width: 50px; height: 60px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 60px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 60px;"></div>
+                        <div class="voxel-face face-top dragon-skin scale-pattern" style="width: 50px; height: 30px;"></div>
+                    </div>
+                </div>
+
+                <div class="tail-segment tail-segment2">
+                    <div class="voxel" style="width: 40px; height: 50px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-skin scale-pattern" style="width: 40px; height: 50px;"></div>
+                        <div class="voxel-face face-back dragon-dark scale-pattern" style="width: 40px; height: 50px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 50px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 50px;"></div>
+                        <div class="voxel-face face-top dragon-skin scale-pattern" style="width: 40px; height: 30px;"></div>
+                    </div>
+                </div>
+
+                <div class="tail-segment tail-segment3">
+                    <div class="voxel" style="width: 30px; height: 40px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-skin scale-pattern" style="width: 30px; height: 40px;"></div>
+                        <div class="voxel-face face-back dragon-dark scale-pattern" style="width: 30px; height: 40px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 40px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 40px;"></div>
+                        <div class="voxel-face face-top dragon-skin scale-pattern" style="width: 30px; height: 30px;"></div>
+                    </div>
+                </div>
+
+                <div class="tail-segment tail-segment4">
+                    <div class="voxel" style="width: 20px; height: 30px; transform: translateZ(-15px);">
+                        <div class="voxel-face face-front dragon-dark scale-pattern" style="width: 20px; height: 30px;"></div>
+                        <div class="voxel-face face-back dragon-dark" style="width: 20px; height: 30px;"></div>
+                        <div class="voxel-face face-left dragon-dark" style="width: 30px; height: 30px;"></div>
+                        <div class="voxel-face face-right dragon-dark" style="width: 30px; height: 30px;"></div>
+                        <div class="voxel-face face-top dragon-dark" style="width: 20px; height: 30px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 翅膀 -->
+            <div class="dragon-wings">
+                <div class="wing wing-left">
+                    <div class="wing-membrane">
+                        <div class="wing-bones">
+                            <div class="wing-bone bone-main"></div>
+                            <div class="wing-bone bone-cross1"></div>
+                            <div class="wing-bone bone-cross2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wing wing-right">
+                    <div class="wing-membrane">
+                        <div class="wing-bones">
+                            <div class="wing-bone bone-main"></div>
+                            <div class="wing-bone bone-cross1"></div>
+                            <div class="wing-bone bone-cross2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 喷火效果 -->
+            <div class="fire-breath" id="fireBreath">
+                <div class="flame flame1"></div>
+                <div class="flame flame2"></div>
+                <div class="flame flame3"></div>
+                <div id="sparks"></div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="controls">
+            <h3>🐉 龙之控制</h3>
+            <button class="control-btn fire-btn" onclick="breatheFire()">🔥 喷火</button>
+            <button class="control-btn" onclick="makeDragonRoar()">🗣️ 龙吼</button>
+            <button class="control-btn" onclick="toggleFlight()">✈️ 飞行模式</button>
+            <button class="control-btn" onclick="changeDragonColor()">🎨 变换颜色</button>
+            <button class="control-btn" onclick="specialAttack()">⚡ 特殊攻击</button>
+        </div>
+
+        <!-- 信息面板 -->
+        <div class="info-panel">
+            <h2>⚔️ 远古巨龙</h2>
+            <p>
+                一条来自远古的体素神龙，掌握着火焰与风暴的力量。
+            </p>
+            <div class="stat">
+                <span class="stat-label">🔥 火焰力量:</span>
+                <span class="stat-value">100%</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">✈️ 飞行速度:</span>
+                <span class="stat-value">200km/h</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">🛡️ 防御力:</span>
+                <span class="stat-value">极高</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">⚡ 攻击力:</span>
+                <span class="stat-value">毁灭级</span>
+            </div>
+            <p style="margin-top: 15px; font-size: 12px;">
+                🎮 键盘控制: <br>
+                • F键 - 喷火<br>
+                • R键 - 龙吼<br>
+                • 空格 - 飞行<br>
+                • C键 - 变色
+            </p>
+        </div>
+
+        <!-- 龙吼提示 -->
+        <div class="roar-indicator" id="roarIndicator">
+            🐉 ROAR! 🐉
+        </div>
+    </div>
+
+    <script>
+        let isFlying = true;
+        let currentColorIndex = 0;
+        let isBreathingFire = false;
+        const dragonContainer = document.getElementById('dragonContainer');
+        const fireBreath = document.getElementById('fireBreath');
+        const roarIndicator = document.getElementById('roarIndicator');
+        const sparks = document.getElementById('sparks');
+
+        // 龙的颜色主题
+        const dragonColors = [
+            {
+                skin: 'linear-gradient(135deg, #8B0000, #DC143C, #FF6347)',
+                dark: 'linear-gradient(135deg, #4B0000, #8B0000, #A52A2A)',
+                membrane: 'linear-gradient(135deg, rgba(139, 0, 0, 0.8), rgba(255, 99, 71, 0.6), rgba(255, 140, 0, 0.4))'
+            },
+            {
+                skin: 'linear-gradient(135deg, #191970, #4169E1, #6495ED)',
+                dark: 'linear-gradient(135deg, #0F0F3A, #191970, #2952A3)',
+                membrane: 'linear-gradient(135deg, rgba(25, 25, 112, 0.8), rgba(65, 105, 225, 0.6), rgba(100, 149, 237, 0.4))'
+            },
+            {
+                skin: 'linear-gradient(135deg, #2F4F2F, #3CB371, #90EE90)',
+                dark: 'linear-gradient(135deg, #1A2F1A, #2F4F2F, #2E8B57)',
+                membrane: 'linear-gradient(135deg, rgba(47, 79, 47, 0.8), rgba(60, 179, 113, 0.6), rgba(144, 238, 144, 0.4))'
+            },
+            {
+                skin: 'linear-gradient(135deg, #4B0082, #8A2BE2, #9370DB)',
+                dark: 'linear-gradient(135deg, #2E0052, #4B0082, #663399)',
+                membrane: 'linear-gradient(135deg, rgba(75, 0, 130, 0.8), rgba(138, 43, 226, 0.6), rgba(147, 112, 219, 0.4))'
+            }
+        ];
+
+        // 喷火功能
+        function breatheFire() {
+            if (isBreathingFire) return;
+
+            isBreathingFire = true;
+            fireBreath.classList.add('active');
+
+            // 创建火花
+            createSparks();
+
+            // 播放火焰音效（模拟）
+            showNotification('🔥 龙息喷发！');
+
+            // 震动效果
+            dragonContainer.style.animation = 'dragon-fly 8s infinite ease-in-out, shake 0.5s';
+
+            setTimeout(() => {
+                fireBreath.classList.remove('active');
+                dragonContainer.style.animation = 'dragon-fly 8s infinite ease-in-out';
+                isBreathingFire = false;
+            }, 2000);
+        }
+
+        // 创建火花粒子
+        function createSparks() {
+            sparks.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                spark.style.left = Math.random() * 200 + 'px';
+                spark.style.top = Math.random() * 100 + 'px';
+                spark.style.setProperty('--spark-x', (Math.random() - 0.5) * 200 + 'px');
+                spark.style.setProperty('--spark-y', (Math.random() - 0.5) * 200 + 'px');
+                spark.style.animationDelay = Math.random() * 1 + 's';
+                sparks.appendChild(spark);
+            }
+        }
+
+        // 龙吼
+        function makeDragonRoar() {
+            roarIndicator.classList.add('active');
+
+            // 添加震动动画
+            dragonContainer.style.animation = 'dragon-fly 8s infinite ease-in-out, roar-shake 1s';
+
+            // 眼睛发光效果
+            document.querySelectorAll('.eye').forEach(eye => {
+                eye.style.boxShadow = '0 0 50px #FFD700, 0 0 100px #FF0000, inset 0 0 20px #FF0000';
+            });
+
+            showNotification('🐉 远古龙吼震动山河！');
+
+            setTimeout(() => {
+                roarIndicator.classList.remove('active');
+                dragonContainer.style.animation = 'dragon-fly 8s infinite ease-in-out';
+                document.querySelectorAll('.eye').forEach(eye => {
+                    eye.style.boxShadow = '0 0 15px #FFD700, inset 0 0 8px #FF0000';
+                });
+            }, 1000);
+        }
+
+        // 切换飞行模式
+        function toggleFlight() {
+            isFlying = !isFlying;
+
+            if (isFlying) {
+                dragonContainer.style.animation = 'dragon-fly 8s infinite ease-in-out';
+                showNotification('✈️ 龙已升空！');
+            } else {
+                dragonContainer.style.animation = 'dragon-land 3s ease-in-out forwards';
+                showNotification('🏔️ 龙已降落！');
+            }
+        }
+
+        // 变换龙的颜色
+        function changeDragonColor() {
+            currentColorIndex = (currentColorIndex + 1) % dragonColors.length;
+            const colors = dragonColors[currentColorIndex];
+
+            // 更新皮肤颜色
+            document.querySelectorAll('.dragon-skin').forEach(element => {
+                element.style.background = colors.skin;
+            });
+
+            document.querySelectorAll('.dragon-dark').forEach(element => {
+                element.style.background = colors.dark;
+            });
+
+            document.querySelectorAll('.wing-membrane').forEach(element => {
+                element.style.background = colors.membrane;
+            });
+
+            const colorNames = ['火焰龙', '冰霜龙', '森林龙', '暗影龙'];
+            showNotification(`🎨 变身为${colorNames[currentColorIndex]}！`);
+        }
+
+        // 特殊攻击
+        function specialAttack() {
+            // 组合攻击：喷火 + 龙吼 + 特效
+            dragonContainer.style.animation = 'special-attack 3s ease-in-out';
+
+            // 强化喷火效果
+            breatheFire();
+
+            setTimeout(() => {
+                makeDragonRoar();
+            }, 500);
+
+            // 闪光效果
+            const flash = document.createElement('div');
+            flash.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                opacity: 0;
+                z-index: 10000;
+                pointer-events: none;
+            `;
+
+            document.body.appendChild(flash);
+
+            setTimeout(() => {
+                flash.style.transition = 'opacity 0.3s';
+                flash.style.opacity = '0.8';
+            }, 100);
+
+            setTimeout(() => {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 300);
+            }, 200);
+
+            showNotification('⚡ 毁灭龙息 · 满天流星！');
+
+            setTimeout(() => {
+                dragonContainer.style.animation = 'dragon-fly 8s infinite ease-in-out';
+            }, 3000);
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, rgba(255, 69, 0, 0.9), rgba(139, 0, 0, 0.9));
+                padding: 20px 40px;
+                border-radius: 15px;
+                color: white;
+                font-size: 20px;
+                font-weight: bold;
+                z-index: 10000;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                animation: notification-appear 2s ease-in-out;
+                border: 2px solid rgba(255, 215, 0, 0.5);
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+
+        // 添加震动动画
+        const shakeStyle = document.createElement('style');
+        shakeStyle.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1) translateX(0); }
+                25% { transform: translate(-50%, -50%) translateY(0px) rotateY(90deg) scale(1.1) translateX(-5px); }
+                50% { transform: translate(-50%, -50%) translateY(0px) rotateY(180deg) scale(1.2) translateX(5px); }
+                75% { transform: translate(-50%, -50%) translateY(0px) rotateY(270deg) scale(1.1) translateX(-3px); }
+            }
+
+            @keyframes roar-shake {
+                0%, 100% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1); }
+                10%, 30%, 50%, 70%, 90% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1) translateX(-2px); }
+                20%, 40%, 60%, 80% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1) translateX(2px); }
+            }
+
+            @keyframes dragon-land {
+                0% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1); }
+                100% { transform: translate(-50%, -20%) translateY(100px) rotateY(0deg) scale(1); }
+            }
+
+            @keyframes special-attack {
+                0% { transform: translate(-50%, -50%) translateY(0px) rotateY(0deg) scale(1); }
+                20% { transform: translate(-50%, -50%) translateY(-100px) rotateY(180deg) scale(1.5); }
+                40% { transform: translate(-50%, -50%) translateY(-150px) rotateY(360deg) scale(2); }
+                60% { transform: translate(-50%, -50%) translateY(-100px) rotateY(540deg) scale(1.5); }
+                100% { transform: translate(-50%, -50%) translateY(0px) rotateY(720deg) scale(1); }
+            }
+
+            @keyframes notification-appear {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+                20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(shakeStyle);
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            switch(e.key.toLowerCase()) {
+                case 'f':
+                    breatheFire();
+                    break;
+                case 'r':
+                    makeDragonRoar();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    toggleFlight();
+                    break;
+                case 'c':
+                    changeDragonColor();
+                    break;
+                case 's':
+                    specialAttack();
+                    break;
+            }
+        });
+
+        // 鼠标点击龙进行交互
+        dragonContainer.addEventListener('click', (e) => {
+            if (!e.target.closest('.controls')) {
+                breatheFire();
+            }
+        });
+
+        // 自动喷火（可选）
+        setInterval(() => {
+            if (Math.random() < 0.1) { // 10% 概率
+                breatheFire();
+            }
+        }, 10000);
+
+        // 初始化
+        window.addEventListener('load', () => {
+            showNotification('🐉 远古巨龙已苏醒！');
+        });
+
+        // 控制台信息
+        console.log('🐉 体素龙已加载成功！');
+        console.log('🎮 键盘快捷键:');
+        console.log('  - F键: 喷火');
+        console.log('  - R键: 龙吼');
+        console.log('  - 空格键: 飞行/降落');
+        console.log('  - C键: 变换颜色');
+        console.log('  - S键: 特殊攻击');
+        console.log('  - 点击龙: 喷火');
+    </script>
+</body>
+</html>

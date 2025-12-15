@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洗衣机工作原理 - SVG动画演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .svg-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .controls-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 300px;
+        }
+
+        .controls-panel h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .stage-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stage-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stage-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .stage-btn.active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .auto-btn {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .auto-btn:hover {
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .status-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .status-panel h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .status-value {
+            color: #333;
+            font-weight: bold;
+            padding: 5px 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+
+        .status-value.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .info-panel {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .info-panel h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .info-panel p {
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .controls-panel {
+                min-width: 100%;
+            }
+
+            .stage-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .auto-btn {
+                grid-column: span 1;
+            }
+        }
+
+        /* 动画状态指示器 */
+        .animation-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            margin-left: 5px;
+            animation: blink 1s infinite;
+        }
+
+        .animation-indicator.running {
+            background: #4CAF50;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌀 洗衣机工作原理</h1>
+        <p>通过SVG动画了解洗衣机的四个工作阶段</p>
+    </div>
+
+    <div class="main-container">
+        <div class="svg-container">
+            <svg width="600" height="700" viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+                <!-- 定义渐变和滤镜 -->
+                <defs>
+                    <!-- 水的渐变 -->
+                    <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4FC3F7;stop-opacity:0.8" />
+                        <stop offset="100%" style="stop-color:#1976D2;stop-opacity:0.9" />
+                    </linearGradient>
+
+                    <!-- 泡沫渐变 -->
+                    <radialGradient id="foamGradient">
+                        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+                        <stop offset="100%" style="stop-color:#e3f2fd;stop-opacity:0.6" />
+                    </radialGradient>
+
+                    <!-- 洗衣机外壳渐变 -->
+                    <linearGradient id="machineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#f5f5f5" />
+                        <stop offset="100%" style="stop-color:#e0e0e0" />
+                    </linearGradient>
+
+                    <!-- 阴影滤镜 -->
+                    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                        <feOffset dx="2" dy="2" result="offsetblur"/>
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.3"/>
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+
+                    <!-- 水滴滤镜 -->
+                    <filter id="waterDrop">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="1"/>
+                        <feOffset dx="0" dy="1" result="offsetblur"/>
+                        <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.5"/>
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode in="offsetblur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- 背景 -->
+                <rect width="600" height="700" fill="#f8f9fa" />
+
+                <!-- 洗衣机外壳 -->
+                <rect x="50" y="50" width="500" height="600" rx="20" ry="20"
+                      fill="url(#machineGradient)" stroke="#bdbdbd" stroke-width="2" filter="url(#shadow)"/>
+
+                <!-- 洗衣机顶部 -->
+                <rect x="50" y="50" width="500" height="80" rx="20" ry="20"
+                      fill="#e0e0e0" stroke="#bdbdbd" stroke-width="2"/>
+
+                <!-- 控制面板 -->
+                <rect x="100" y="70" width="400" height="40" rx="5" ry="5" fill="#424242"/>
+
+                <!-- 控制按钮 -->
+                <circle cx="130" cy="90" r="8" fill="#4CAF50" class="power-btn"/>
+                <circle cx="160" cy="90" r="8" fill="#2196F3" class="start-btn"/>
+                <circle cx="190" cy="90" r="8" fill="#FF9800" class="pause-btn"/>
+
+                <!-- 显示屏 -->
+                <rect x="220" y="80" width="120" height="20" rx="3" ry="3" fill="#263238"/>
+                <text x="280" y="94" text-anchor="middle" fill="#4CAF50" font-size="12" font-family="monospace" id="display">准备就绪</text>
+
+                <!-- 进度条 -->
+                <rect x="360" y="88" width="100" height="4" rx="2" ry="2" fill="#37474f"/>
+                <rect x="360" y="88" width="0" height="4" rx="2" ry="2" fill="#4CAF50" id="progressBar">
+                    <animate attributeName="width" from="0" to="100" dur="10s" repeatCount="1" id="progressAnimation"/>
+                </rect>
+
+                <!-- 机门（圆形） -->
+                <circle cx="300" cy="350" r="180" fill="none" stroke="#9e9e9e" stroke-width="8"/>
+                <circle cx="300" cy="350" r="172" fill="rgba(255,255,255,0.1)" stroke="#bdbdbd" stroke-width="2"/>
+
+                <!-- 机门玻璃 -->
+                <circle cx="300" cy="350" r="160" fill="rgba(200,230,255,0.3)" stroke="#90a4ae" stroke-width="1"/>
+
+                <!-- 机门把手 -->
+                <rect x="460" y="340" width="20" height="20" rx="3" ry="3" fill="#757575" stroke="#616161" stroke-width="1"/>
+
+                <!-- 内桶 -->
+                <g id="innerDrum" transform="translate(300, 350)">
+                    <!-- 桶壁 -->
+                    <circle r="120" fill="none" stroke="#9e9e9e" stroke-width="4"/>
+                    <circle r="116" fill="rgba(255,255,255,0.05)"/>
+
+                    <!-- 桶底 -->
+                    <ellipse rx="116" ry="20" fill="#bdbdbd" opacity="0.5"/>
+
+                    <!-- 搅拌叶片 -->
+                    <g id="agitator">
+                        <rect x="-15" y="-60" width="30" height="120" rx="5" ry="5" fill="#757575" stroke="#616161" stroke-width="1"/>
+                        <rect x="-60" y="-15" width="120" height="30" rx="5" ry="5" fill="#757575" stroke="#616161" stroke-width="1"/>
+                        <circle r="10" fill="#616161"/>
+
+                        <!-- 搅拌动画 -->
+                        <animateTransform attributeName="transform" type="rotate"
+                                        from="0 0 0" to="360 0 0" dur="4s" repeatCount="indefinite" id="agitatorSpin"/>
+                    </g>
+
+                    <!-- 衣物 -->
+                    <g id="clothes">
+                        <!-- T恤 -->
+                        <path d="M -30,-20 Q -30,-30 -20,-35 L 20,-35 Q 30,-30 30,-20 L 25,0 L 25,30 L -25,30 L -25,0 Z"
+                              fill="#ff6b6b" stroke="#c92a2a" stroke-width="1" opacity="0.8"/>
+                        <!-- 裤子 -->
+                        <rect x="-15" y="20" width="30" height="40" rx="3" ry="3" fill="#4dabf7" stroke="#1864ab" stroke-width="1" opacity="0.8"/>
+                        <!-- 袜子 -->
+                        <ellipse cx="-40" cy="-10" rx="8" ry="15" fill="#ffd43b" stroke="#fab005" stroke-width="1" opacity="0.8"/>
+
+                        <!-- 衣物旋转动画 -->
+                        <animateTransform attributeName="transform" type="rotate"
+                                        from="0 0 0" to="-360 0 0" dur="6s" repeatCount="indefinite" id="clothesSpin"/>
+                    </g>
+                </g>
+
+                <!-- 水 -->
+                <g id="water" opacity="0">
+                    <clipPath id="drumClip">
+                        <circle cx="300" cy="350" r="116"/>
+                    </clipPath>
+
+                    <g clip-path="url(#drumClip)">
+                        <!-- 水位 -->
+                        <rect x="184" y="234" width="232" height="232" fill="url(#waterGradient)" opacity="0.7" id="waterLevel">
+                            <animate attributeName="height" from="0" to="232" dur="3s" fill="freeze" id="waterFill"/>
+                            <animate attributeName="y" from="466" to="234" dur="3s" fill="freeze"/>
+                        </rect>
+
+                        <!-- 水波纹 -->
+                        <ellipse cx="300" cy="250" rx="80" ry="20" fill="none" stroke="#4FC3F7" stroke-width="2" opacity="0.5">
+                            <animate attributeName="rx" from="0" to="100" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="ry" from="0" to="25" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.8" to="0" dur="2s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="300" cy="250" rx="60" ry="15" fill="none" stroke="#81D4FA" stroke-width="1.5" opacity="0.6">
+                            <animate attributeName="rx" from="0" to="80" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                            <animate attributeName="ry" from="0" to="20" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" from="0.8" to="0" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                        </ellipse>
+                    </g>
+                </g>
+
+                <!-- 泡沫 -->
+                <g id="foam" opacity="0">
+                    <circle cx="250" cy="240" r="15" fill="url(#foamGradient)" filter="url(#waterDrop)">
+                        <animate attributeName="cy" from="240" to="220" dur="3s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="320" cy="250" r="20" fill="url(#foamGradient)" filter="url(#waterDrop)">
+                        <animate attributeName="cy" from="250" to="230" dur="3.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="280" cy="260" r="12" fill="url(#foamGradient)" filter="url(#waterDrop)">
+                        <animate attributeName="cy" from="260" to="240" dur="4s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="340" cy="245" r="18" fill="url(#foamGradient)" filter="url(#waterDrop)">
+                        <animate attributeName="cy" from="245" to="225" dur="3.2s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="260" cy="255" r="14" fill="url(#foamGradient)" filter="url(#waterDrop)">
+                        <animate attributeName="cy" from="255" to="235" dur="3.8s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <!-- 进水管 -->
+                <g id="inletPipe">
+                    <rect x="470" y="200" width="50" height="15" rx="7" ry="7" fill="#90a4ae" stroke="#607d8b" stroke-width="2"/>
+                    <rect x="485" y="180" width="20" height="20" rx="10" ry="10" fill="#4CAF50" stroke="#388E3C" stroke-width="2"/>
+
+                    <!-- 水流 -->
+                    <g id="waterFlow" opacity="0">
+                        <rect x="488" y="215" width="14" height="135" fill="#4FC3F7" opacity="0.7">
+                            <animate attributeName="opacity" from="0" to="0.8" dur="0.5s" repeatCount="indefinite"/>
+                        </rect>
+
+                        <!-- 水滴 -->
+                        <circle r="4" fill="#2196F3" filter="url(#waterDrop)">
+                            <animateMotion dur="1s" repeatCount="indefinite">
+                                <mpath href="#waterPath"/>
+                            </animateMotion>
+                            <animate attributeName="opacity" from="1" to="0" dur="1s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle r="3" fill="#03A9F4" filter="url(#waterDrop)">
+                            <animateMotion dur="1.2s" begin="0.3s" repeatCount="indefinite">
+                                <mpath href="#waterPath"/>
+                            </animateMotion>
+                            <animate attributeName="opacity" from="1" to="0" dur="1.2s" begin="0.3s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+
+                    <!-- 水流路径 -->
+                    <path id="waterPath" d="M 495 215 L 495 350" fill="none"/>
+                </g>
+
+                <!-- 排水管 -->
+                <g id="drainPipe">
+                    <rect x="80" y="600" width="50" height="15" rx="7" ry="7" fill="#90a4ae" stroke="#607d8b" stroke-width="2"/>
+                    <rect x="70" y="590" width="70" height="20" rx="10" ry="10" fill="#f44336" stroke="#d32f2f" stroke-width="2"/>
+
+                    <!-- 排水流 -->
+                    <g id="drainFlow" opacity="0">
+                        <rect x="93" y="615" width="24" height="50" fill="#2196F3" opacity="0.6">
+                            <animate attributeName="opacity" from="0" to="0.8" dur="0.5s" repeatCount="indefinite"/>
+                        </rect>
+                    </g>
+                </g>
+
+                <!-- 底座 -->
+                <rect x="50" y="620" width="500" height="30" rx="5" ry="5" fill="#757575" stroke="#616161" stroke-width="2"/>
+
+                <!-- 调节脚 -->
+                <rect x="70" y="645" width="15" height="5" fill="#424242"/>
+                <rect x="515" y="645" width="15" height="5" fill="#424242"/>
+
+                <!-- 状态指示灯 -->
+                <g id="statusLights">
+                    <circle cx="400" cy="95" r="5" fill="#4CAF50" opacity="0.3" id="inletLight">
+                        <animate attributeName="opacity" from="0.3" to="1" dur="1s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="430" cy="95" r="5" fill="#2196F3" opacity="0.3" id="washLight">
+                        <animate attributeName="opacity" from="0.3" to="1" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="460" cy="95" r="5" fill="#FF9800" opacity="0.3" id="drainLight">
+                        <animate attributeName="opacity" from="0.3" to="1" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <!-- 标签 -->
+                <text x="300" y="40" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">洗衣机工作原理</text>
+
+                <!-- 阶段标签 -->
+                <text x="300" y="30" text-anchor="middle" font-size="16" fill="#666" id="stageLabel">准备就绪</text>
+            </svg>
+        </div>
+
+        <div class="controls-panel">
+            <h3>🎮 控制面板</h3>
+
+            <div class="stage-buttons">
+                <button class="stage-btn" onclick="startStage('inlet')">💧 进水</button>
+                <button class="stage-btn" onclick="startStage('wash')">🧼 洗涤</button>
+                <button class="stage-btn" onclick="startStage('drain')">🌊 排水</button>
+                <button class="stage-btn" onclick="startStage('spin')">🌀 脱水</button>
+                <button class="stage-btn auto-btn" onclick="startAutoMode()">🔄 全自动模式</button>
+            </div>
+
+            <div class="status-panel">
+                <h4>📊 运行状态</h4>
+                <div class="status-item">
+                    <span class="status-label">当前阶段:</span>
+                    <span class="status-value" id="currentStage">待机</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">水位:</span>
+                    <span class="status-value" id="waterLevel">空</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">运行状态:</span>
+                    <span class="status-value" id="runStatus">停止</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">进度:</span>
+                    <span class="status-value" id="progress">0%</span>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h4>ℹ️ 当前阶段说明</h4>
+                <p id="stageInfo">点击控制按钮开始洗衣流程，或选择全自动模式观看完整流程。</p>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4FC3F7;"></div>
+                        <span>水流</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffffff;"></div>
+                        <span>泡沫</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff6b6b;"></div>
+                        <span>衣物</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4CAF50;"></div>
+                        <span>进水</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStage = null;
+        let autoMode = false;
+        let stageTimeout = null;
+
+        // 阶段信息
+        const stageInfo = {
+            inlet: {
+                label: '进水阶段',
+                waterLevel: '注水中',
+                status: '进水中',
+                info: '洗衣机开始注水，水位逐渐上升到设定的水位。阀门打开，水通过进水管进入内桶。',
+                progress: '25%'
+            },
+            wash: {
+                label: '洗涤阶段',
+                waterLevel: '高水位',
+                status: '洗涤中',
+                info: '内桶和搅拌器开始旋转，产生水流和泡沫，对衣物进行清洁。洗涤剂充分发挥作用。',
+                progress: '50%'
+            },
+            drain: {
+                label: '排水阶段',
+                waterLevel: '排水中',
+                status: '排水中',
+                info: '排水泵启动，将洗涤后的污水通过排水管排出。水位逐渐下降。',
+                progress: '75%'
+            },
+            spin: {
+                label: '脱水阶段',
+                waterLevel: '空',
+                status: '脱水中',
+                info: '内桶高速旋转，利用离心力将衣物中的水分甩干。转速达到最高时产生强劲脱水效果。',
+                progress: '100%'
+            }
+        };
+
+        // 获取SVG元素
+        const svg = document.querySelector('svg');
+        const water = document.getElementById('water');
+        const foam = document.getElementById('foam');
+        const waterFlow = document.getElementById('waterFlow');
+        const drainFlow = document.getElementById('drainFlow');
+        const agitatorSpin = document.getElementById('agitatorSpin');
+        const clothesSpin = document.getElementById('clothesSpin');
+        const waterFill = document.getElementById('waterFill');
+        const display = document.getElementById('display');
+        const stageLabel = document.getElementById('stageLabel');
+        const progressBar = document.getElementById('progressBar');
+
+        // 开始单个阶段
+        function startStage(stage) {
+            clearStage();
+            currentStage = stage;
+
+            // 更新按钮状态
+            updateButtons(stage);
+
+            // 更新状态显示
+            updateStatus(stage);
+
+            // 开始对应动画
+            switch(stage) {
+                case 'inlet':
+                    startInletAnimation();
+                    break;
+                case 'wash':
+                    startWashAnimation();
+                    break;
+                case 'drain':
+                    startDrainAnimation();
+                    break;
+                case 'spin':
+                    startSpinAnimation();
+                    break;
+            }
+        }
+
+        // 清除当前阶段
+        function clearStage() {
+            if (stageTimeout) {
+                clearTimeout(stageTimeout);
+            }
+
+            // 重置所有元素
+            water.setAttribute('opacity', '0');
+            foam.setAttribute('opacity', '0');
+            waterFlow.setAttribute('opacity', '0');
+            drainFlow.setAttribute('opacity', '0');
+            agitatorSpin.setAttribute('dur', '4s');
+            clothesSpin.setAttribute('dur', '6s');
+
+            // 重置水位
+            const waterLevel = document.getElementById('waterLevel');
+            if (waterLevel) {
+                waterLevel.setAttribute('height', '0');
+                waterLevel.setAttribute('y', '466');
+            }
+        }
+
+        // 更新按钮状态
+        function updateButtons(activeStage) {
+            const buttons = document.querySelectorAll('.stage-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            const stageMap = {
+                'inlet': 0,
+                'wash': 1,
+                'drain': 2,
+                'spin': 3
+            };
+
+            if (stageMap[activeStage] !== undefined) {
+                buttons[stageMap[activeStage]].classList.add('active');
+            }
+        }
+
+        // 更新状态显示
+        function updateStatus(stage) {
+            const info = stageInfo[stage];
+            document.getElementById('currentStage').textContent = info.label;
+            document.getElementById('waterLevel').textContent = info.waterLevel;
+            document.getElementById('runStatus').textContent = info.status;
+            document.getElementById('runStatus').classList.add('active');
+            document.getElementById('progress').textContent = info.progress;
+            document.getElementById('stageInfo').textContent = info.info;
+
+            display.textContent = info.label;
+            stageLabel.textContent = info.label + '运行中...';
+        }
+
+        // 进水动画
+        function startInletAnimation() {
+            // 显示水和水流
+            water.setAttribute('opacity', '1');
+            waterFlow.setAttribute('opacity', '1');
+
+            // 启动水位上升动画
+            waterFill.beginElement();
+
+            // 点亮进水灯
+            document.getElementById('inletLight').style.opacity = '1';
+
+            // 进水时间（3秒）
+            stageTimeout = setTimeout(() => {
+                if (!autoMode) {
+                    showMessage('进水完成');
+                    document.getElementById('runStatus').classList.remove('active');
+                }
+            }, 3000);
+        }
+
+        // 洗涤动画
+        function startWashAnimation() {
+            // 显示水和泡沫
+            water.setAttribute('opacity', '1');
+            foam.setAttribute('opacity', '1');
+
+            // 设置快速旋转
+            agitatorSpin.setAttribute('dur', '2s');
+            clothesSpin.setAttribute('dur', '3s');
+
+            // 点亮洗涤灯
+            document.getElementById('washLight').style.opacity = '1';
+
+            // 洗涤时间（5秒）
+            stageTimeout = setTimeout(() => {
+                if (!autoMode) {
+                    showMessage('洗涤完成');
+                    document.getElementById('runStatus').classList.remove('active');
+                }
+            }, 5000);
+        }
+
+        // 排水动画
+        function startDrainAnimation() {
+            // 显示排水流
+            drainFlow.setAttribute('opacity', '1');
+
+            // 水位下降动画
+            const waterLevel = document.getElementById('waterLevel');
+            if (waterLevel) {
+                waterLevel.style.transition = 'all 3s ease-out';
+                waterLevel.setAttribute('height', '0');
+                waterLevel.setAttribute('y', '466');
+            }
+
+            // 点亮排水灯
+            document.getElementById('drainLight').style.opacity = '1';
+
+            // 排水时间（3秒）
+            stageTimeout = setTimeout(() => {
+                water.setAttribute('opacity', '0');
+                foam.setAttribute('opacity', '0');
+                drainFlow.setAttribute('opacity', '0');
+
+                if (!autoMode) {
+                    showMessage('排水完成');
+                    document.getElementById('runStatus').classList.remove('active');
+                }
+            }, 3000);
+        }
+
+        // 脱水动画
+        function startSpinAnimation() {
+            // 超高速旋转
+            agitatorSpin.setAttribute('dur', '0.5s');
+            clothesSpin.setAttribute('dur', '0.8s');
+
+            // 脱水效果
+            const clothes = document.getElementById('clothes');
+            clothes.style.transformOrigin = 'center';
+
+            // 脱水时间（4秒）
+            stageTimeout = setTimeout(() => {
+                // 恢复正常速度
+                agitatorSpin.setAttribute('dur', '4s');
+                clothesSpin.setAttribute('dur', '6s');
+
+                if (!autoMode) {
+                    showMessage('脱水完成 - 洗衣结束！');
+                    document.getElementById('runStatus').classList.remove('active');
+                    display.textContent = '洗衣完成';
+                    stageLabel.textContent = '洗衣完成';
+                }
+            }, 4000);
+        }
+
+        // 全自动模式
+        function startAutoMode() {
+            autoMode = true;
+            clearStage();
+
+            showMessage('开始全自动洗衣模式');
+
+            // 进水阶段
+            setTimeout(() => startStage('inlet'), 1000);
+
+            // 洗涤阶段
+            setTimeout(() => startStage('wash'), 4000);
+
+            // 排水阶段
+            setTimeout(() => startStage('drain'), 9000);
+
+            // 脱水阶段
+            setTimeout(() => startStage('spin'), 12000);
+
+            // 完成
+            setTimeout(() => {
+                autoMode = false;
+                showMessage('全自动洗衣完成！');
+                display.textContent = '完成';
+                stageLabel.textContent = '洗衣完成';
+                document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
+            }, 16000);
+        }
+
+        // 显示消息
+        function showMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #4CAF50;
+                color: white;
+                padding: 15px 30px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                animation: slideDown 0.5s ease-out;
+            `;
+            messageDiv.textContent = message;
+
+            document.body.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideUp 0.5s ease-in';
+                setTimeout(() => messageDiv.remove(), 500);
+            }, 2000);
+        }
+
+        // 添加动画样式
+        const animStyle = document.createElement('style');
+        animStyle.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                to { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(animStyle);
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case '1':
+                    startStage('inlet');
+                    break;
+                case '2':
+                    startStage('wash');
+                    break;
+                case '3':
+                    startStage('drain');
+                    break;
+                case '4':
+                    startStage('spin');
+                    break;
+                case 'a':
+                case 'A':
+                    startAutoMode();
+                    break;
+                case 'Escape':
+                    clearStage();
+                    document.getElementById('runStatus').classList.remove('active');
+                    document.querySelectorAll('.stage-btn').forEach(btn => btn.classList.remove('active'));
+                    break;
+            }
+        });
+
+        // 初始化
+        window.addEventListener('load', () => {
+            showMessage('欢迎使用洗衣机工作原理演示');
+
+            // 添加进度条重置
+            progressBar.addEventListener('animationend', () => {
+                progressBar.style.width = '0';
+                progressBar.style.animation = 'none';
+                setTimeout(() => {
+                    progressBar.style.animation = 'progressAnimation 10s';
+                }, 100);
+            });
+        });
+
+        // 控制台信息
+        console.log('🌀 洗衣机工作原理演示已加载');
+        console.log('🎮 键盘快捷键:');
+        console.log('  - 1: 进水阶段');
+        console.log('  - 2: 洗涤阶段');
+        console.log('  - 3: 排水阶段');
+        console.log('  - 4: 脱水阶段');
+        console.log('  - A: 全自动模式');
+        console.log('  - ESC: 停止');
+    </script>
+</body>
+</html>
