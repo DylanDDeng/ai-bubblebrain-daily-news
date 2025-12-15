@@ -107,6 +107,10 @@
       "gpt-5.2 xhigh": {
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-bouncing-balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+      "GLM-4.6": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/glm-4.6-bouncingball-hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -252,6 +256,53 @@
       "gpt-5.2 xhigh": {
         "type": "html",
         "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-voxel-sydney-opera.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  }, 
+
+  {
+    "id":"q012",
+    "title": "四合院",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": " 用HTML、CSS和JavaScript创建传统中国四合院的体素艺术作品。包含四面建筑围合的中央院落、瓦片屋顶、红色大门和传统建筑细节",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-siheyuan.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-siheyuan.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+
+      "GLM-4.6": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/glm-4.6-siheyuan.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }
+    }
+  },
+
+  {
+
+    "id":"q013",
+    "title": "唐人街",
+    "category": "代码能力",
+    "difficulty": "中等",
+    "question": "Create a detailed voxel art model of a Chinatown Paifang (ceremonial gate) using Three.js:Required elements: - Structure: 4 red pillars supporting the gate - Roofs: 3 tiers with golden/yellow upturned eaves (飞檐) - Central signboard with Chinese characters (e.g., 唐人街 - Chinatown) - Decorative elements: dragon carvings, cloud patterns - Red lanterns hanging on both sides (at least 4 lanterns) - Stone lion statues at base (optional but recommended) - Color scheme: Red pillars, golden roofs, white/gold decorations - Background: Simple street view with buildings behind the gate Style: Traditional Chinese architecture, Minecraft-like voxel aesthetic View: Front-facing perspective showing symmetry and details Lighting: Warm ambient light, glowing lanterns",
+    "answers": {
+      "Gemini 3 Pro(high)": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-pro-chinatown.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "gpt-5.2 xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.2-xhigh-chinatown-voxel-paifang.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+
+      "GLM-4.6": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/glm-4.6-chinatown-voxel.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }

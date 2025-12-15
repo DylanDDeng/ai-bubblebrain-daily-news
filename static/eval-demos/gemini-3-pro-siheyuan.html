@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Siheyuan (Traditional Chinese Courtyard)</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #87CEEB;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            font-family: 'Courier New', Courier, monospace;
+            pointer-events: none;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="info">Voxel Siheyuan</div>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Configuration ---
+        const PALETTE = {
+            WALL_WHITE: 0xf2f2f2,
+            COLUMN_RED: 0x8e0000,
+            ROOF_GREY: 0x333333,
+            BASE_GREY: 0x7a7a7a,
+            WOOD_BROWN: 0x4a3c31,
+            GROUND: 0x9e9e9e,
+            GRASS: 0x4caf50,
+            GOLD_ACCENT: 0xffd700,
+            WINDOW_PAPER: 0xeeeeee,
+            DOOR_RED: 0xaa0000
+        };
+
+        // --- Voxel Engine ---
+        class VoxelBuilder {
+            constructor() {
+                this.voxels = [];
+                this.tempMap = new Map(); // prevent duplicate voxels at same position
+                this.minY = Infinity; // Track lowest point for ground adjustment
+            }
+
+            key(x, y, z) { return `${x},${y},${z}`; }
+
+            add(x, y, z, color) {
+                const k = this.key(x, y, z);
+                if (!this.tempMap.has(k)) {
+                    this.voxels.push({ x, y, z, color });
+                    this.tempMap.set(k, true);
+                    if (y < this.minY) this.minY = y;
+                }
+            }
+
+            addBox(x, y, z, w, h, d, color) {
+                for (let i = 0; i < w; i++) {
+                    for (let j = 0; j < h; j++) {
+                        for (let k = 0; k < d; k++) {
+                            this.add(x + i, y + j, z + k, color);
+                        }
+                    }
+                }
+            }
+
+            build() {
+                if (this.voxels.length === 0) return null;
+                const geometry = new THREE.BoxGeometry(1, 1, 1);
+                // Adjust UVs or use a simple material. Standard is fine.
+                const material = new THREE.MeshStandardMaterial({ roughness: 0.8, metalness: 0.1 });
+                const mesh = new THREE.InstancedMesh(geometry, material, this.voxels.length);
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+
+                const dummy = new THREE.Object3D();
+                const color = new THREE.Color();
+
+                this.voxels.forEach((voxel, index) => {
+                    dummy.position.set(voxel.x, voxel.y, voxel.z);
+                    dummy.updateMatrix();
+                    mesh.setMatrixAt(index, dummy.matrix);
+
+                    color.setHex(voxel.color);
+                    mesh.setColorAt(index, color);
+                });
+
+                mesh.instanceMatrix.needsUpdate = true;
+                mesh.instanceColor.needsUpdate = true;
+                return mesh;
+            }
+        }
+
+        const builder = new VoxelBuilder();
+
+        // --- Utils ---
+        // Helper to build a generic Chinese style house
+        function buildHouse(bx, by, bz, w, h, d, facing = 'South') {
+            // Foundation
+            builder.addBox(bx, by, bz, w, 1, d, PALETTE.BASE_GREY);
+
+            // Columns (Corner pillars)
+            const py = by + 1;
+            const ph = h - 2; // Height of pillars
+            // Corners
+            builder.addBox(bx, py, bz, 1, ph, 1, PALETTE.COLUMN_RED);
+            builder.addBox(bx + w - 1, py, bz, 1, ph, 1, PALETTE.COLUMN_RED);
+            builder.addBox(bx, py, bz + d - 1, 1, ph, 1, PALETTE.COLUMN_RED);
+            builder.addBox(bx + w - 1, py, bz + d - 1, 1, ph, 1, PALETTE.COLUMN_RED);
+
+            // Walls (Back and Sides usually solid, Front open/windows)
+            // Rear Wall
+            builder.addBox(bx + 1, py, bz, w - 2, ph, 1, PALETTE.WALL_WHITE);
+            // Side Walls
+            builder.addBox(bx, py, bz + 1, 1, ph, d - 2, PALETTE.WALL_WHITE);
+            builder.addBox(bx + w - 1, py, bz + 1, 1, ph, d - 2, PALETTE.WALL_WHITE);
+            // Front Wall (with Door/Windows)
+            // Determine front based on facing (Simplified: Assuming 'South' means front is at +Z, 'North' means front at -Z)
+            // Actually in Siheyuan:
+            // North House faces South (Front at +Z relative to house local)
+            // South House faces North (Front at -Z relative to house local)
+            // East House faces West
+            // West House faces East
+
+            // Generic "Front" logic for the box: Let's fill the 'front' face with columns and windows 
+            // For simplicity, we manually specify wall logic based on orientation relative to center roughly or just fill 3 sides solid, 1 side detailed.
+
+            // Front Logic (Z+ face for North House loc)
+            const frontZ = bz + d - 1;
+            // Fill with lattice - simplified
+            for (let i = 1; i < w - 1; i++) {
+                if (i === Math.floor(w / 2) || i === Math.floor(w / 2) - 1) {
+                    // Door Center
+                    builder.addBox(bx + i, py, frontZ, 1, ph - 1, 1, PALETTE.DOOR_RED);
+                } else {
+                    // Windows/Wall
+                    builder.addBox(bx + i, py, frontZ, 1, 1, 1, PALETTE.WALL_WHITE); // lower wall
+                    builder.addBox(bx + i, py + 1, frontZ, 1, ph - 2, 1, PALETTE.WINDOW_PAPER); // window
+                    builder.addBox(bx + i, py + ph - 1, frontZ, 1, 1, 1, PALETTE.WOOD_BROWN); // top lintel
+                }
+            }
+
+            // Roof
+            // Chinese hipped roof (Wudian or Xieshan). Simplified to a flared pyramid.
+            const roofY = by + h - 1;
+            const roofOverhang = 1;
+
+            // Layered roof
+            let currentW = w + 2;
+            let currentD = d + 2;
+            let currentX = bx - 1;
+            let currentZ = bz - 1;
+
+            for (let r = 0; r <= h / 2 + 1; r++) { // Roof height roughly half of width
+                if (currentW <= 0 || currentD <= 0) break;
+
+                // Color tweaks for ridge
+                const color = r === 0 ? PALETTE.ROOF_GREY : (r > h / 2 - 1 ? PALETTE.ROOF_GREY : PALETTE.ROOF_GREY);
+
+                // Hollow rectangle for this layer
+                for (let i = 0; i < currentW; i++) {
+                    builder.add(currentX + i, roofY + r, currentZ, color);
+                    builder.add(currentX + i, roofY + r, currentZ + currentD - 1, color);
+                }
+                for (let j = 0; j < currentD; j++) {
+                    builder.add(currentX, roofY + r, currentZ + j, color);
+                    builder.add(currentX + currentW - 1, roofY + r, currentZ + j, color);
+                }
+
+                // Eaves detail (upturn at corners on lowest level)
+                if (r === 0) {
+                    builder.add(currentX - 1, roofY + r + 1, currentZ - 1, PALETTE.ROOF_GREY);
+                    builder.add(currentX + currentW, roofY + r + 1, currentZ - 1, PALETTE.ROOF_GREY);
+                    builder.add(currentX - 1, roofY + r + 1, currentZ + currentD, PALETTE.ROOF_GREY);
+                    builder.add(currentX + currentW, roofY + r + 1, currentZ + currentD, PALETTE.ROOF_GREY);
+                }
+
+                currentW -= 2;
+                currentD -= 2;
+                currentX += 1;
+                currentZ += 1;
+            }
+
+            // Beams inside
+            builder.addBox(bx, roofY - 1, bz, w, 1, d, PALETTE.WOOD_BROWN);
+        }
+
+        // --- Construct Siheyuan ---
+        const groundLevel = 0;
+
+        // 1. Foundation (Raised Platform for whole complex)
+        // 40x40 area
+        builder.addBox(-20, -1, -20, 40, 1, 40, PALETTE.BASE_GREY);
+        // Courtyard Floor
+        builder.addBox(-19, 0, -19, 38, 1, 38, PALETTE.GROUND);
+
+        // 2. North House (Zhengfang) - Main Building
+        // Position: Back (negative Z), Centered X
+        // Dimensions: Large
+        buildHouse(-8, 1, -15, 16, 7, 6);
+
+        // 3. West Wing (Xiangfang)
+        // Position: Left (Negative X)
+        // Rotate logic? No, just manually build or swap W/D in helper? 
+        // Let's manually build standard vertical oriented houses.
+        // Actually, easiest is to replicate buildHouse logic but rotated.
+        // Or just implement a `buildHouseRotated` or modify `buildHouse`.
+        // Let's make a simplified vertical house builder for wings.
+
+        function buildWing(bx, by, bz, w, h, d, facingEast) { // w is N-S length here (visual depth), d is E-W width
+            // Foundation
+            builder.addBox(bx, by, bz, d, 1, w, PALETTE.BASE_GREY);
+
+            // Pillars
+            const py = by + 1;
+            const ph = h - 2;
+            builder.addBox(bx, py, bz, 1, ph, 1, PALETTE.COLUMN_RED); // NW
+            builder.addBox(bx + d - 1, py, bz, 1, ph, 1, PALETTE.COLUMN_RED); // NE
+            builder.addBox(bx, py, bz + w - 1, 1, ph, 1, PALETTE.COLUMN_RED); // SW
+            builder.addBox(bx + d - 1, py, bz + w - 1, 1, ph, 1, PALETTE.COLUMN_RED); // SE
+
+            // Roof (Vertical ridge)
+            const roofY = by + h - 1;
+            let currentW = d + 2; // E-W
+            let currentD = w + 2; // N-S
+            let currentX = bx - 1;
+            let currentZ = bz - 1;
+
+            for (let r = 0; r <= h / 2; r++) {
+                if (currentW <= 0 || currentD <= 0) break;
+                const color = PALETTE.ROOF_GREY;
+                // Hollow rect
+                for (let i = 0; i < currentW; i++) {
+                    builder.add(currentX + i, roofY + r, currentZ, color);
+                    builder.add(currentX + i, roofY + r, currentZ + currentD - 1, color);
+                }
+                for (let j = 0; j < currentD; j++) {
+                    builder.add(currentX, roofY + r, currentZ + j, color);
+                    builder.add(currentX + currentW - 1, roofY + r, currentZ + j, color);
+                }
+                // Eaves
+                if (r === 0) {
+                    builder.add(currentX - 1, roofY + 1, currentZ - 1, color);
+                    builder.add(currentX + currentW, roofY + 1, currentZ - 1, color);
+                    builder.add(currentX - 1, roofY + 1, currentZ + currentD, color);
+                    builder.add(currentX + currentW, roofY + 1, currentZ + currentD, color);
+                }
+
+                currentW -= 2; currentD -= 2; currentX += 1; currentZ += 1;
+            }
+
+            // Wall Facing
+            // If East Wing (Right side), faces West (-X). Back is East (+X).
+            // If West Wing (Left side), faces East (+X). Back is West (-X).
+            const backX = facingEast ? bx : bx + d - 1;
+            const frontX = facingEast ? bx + d - 1 : bx;
+
+            // Back Wall (Solid)
+            // builder.addBox(backX, py, bz, 1, ph, w, PALETTE.WALL_WHITE); 
+            // Instead of solid block which might overwrite pillars, be careful. 
+            // Fill area between pillars
+            for (let k = 1; k < w - 1; k++) {
+                // Back
+                builder.add(backX, py, bz + k, PALETTE.WALL_WHITE);
+                builder.add(backX, py + 1, bz + k, PALETTE.WALL_WHITE);
+                builder.add(backX, py + 2, bz + k, PALETTE.WALL_WHITE);
+                builder.add(backX, py + 3, bz + k, PALETTE.WALL_WHITE); // approx height
+
+                // Front (Windows)
+                builder.add(frontX, py, bz + k, PALETTE.WALL_WHITE); // low wall
+                builder.add(frontX, py + 1, bz + k, PALETTE.WINDOW_PAPER);
+                builder.add(frontX, py + 2, bz + k, PALETTE.WINDOW_PAPER);
+            }
+        }
+
+        // West Wing (Left, faces East)
+        buildWing(-15, 1, -8, 16, 5, 5, true);
+
+        // East Wing (Right, faces West)
+        buildWing(10, 1, -8, 16, 5, 5, false);
+
+        // 4. South House (Daozuofang) + Gate
+        // Position: Front (positive Z)
+        // Usually split or has a gate. Let's make it a continuous building but with a gate tunnel.
+
+        function buildSouthHouseWithGate(bx, by, bz, w, h, d) {
+            // Basic structure similar to North, but verify front/back.
+            // South house faces North (Front at -Z local).
+
+            // Divide into Left Room, Gate, Right Room
+            // Gate usually at Southeast (Right side in view). 
+            // Let's put Gate at x=5 to x=9.
+
+            const gateXStart = 5;
+            const gateXEnd = 9;
+
+            // Structure
+            buildHouse(bx, by, bz, w, h, d);
+            // Override Gate area
+            // Clear voxels? VoxelBuilder add is additive. 
+            // Overwrite with "Air" or specialized Gate structure.
+            // Since we don't have "remove", we should build in segments.
+        }
+
+        // Manual segments for South side to allow Gate
+        // Left Segment
+        buildHouse(-15, 1, 10, 12, 5, 5);
+        // Right Segment
+        buildHouse(3, 1, 10, 12, 5, 5);
+
+        // Gate (Center)
+        // Tall red gate with detailed roof
+        const gateX = -3;
+        const gateZ = 10;
+        const gateW = 6;
+        const gateD = 5; // same depth as rooms
+        const gateH = 6; // slightly taller
+
+        // Foundation
+        builder.addBox(gateX, 1, gateZ, gateW, 1, gateD, PALETTE.BASE_GREY);
+        // Pillars (Huge Red)
+        builder.addBox(gateX, 2, gateZ, 1, 4, 1, PALETTE.COLUMN_RED);
+        builder.addBox(gateX + gateW - 1, 2, gateZ, 1, 4, 1, PALETTE.COLUMN_RED);
+        builder.addBox(gateX, 2, gateZ + gateD - 1, 1, 4, 1, PALETTE.COLUMN_RED);
+        builder.addBox(gateX + gateW - 1, 2, gateZ + gateD - 1, 1, 4, 1, PALETTE.COLUMN_RED);
+
+        // Actual Doors (Closed) - Recessed
+        builder.addBox(gateX + 2, 2, gateZ + gateD - 2, 2, 3, 1, PALETTE.BASE_GREY); // Door frame/studs
+        builder.addBox(gateX + 2, 2, gateZ + gateD - 1, 1, 3, 1, PALETTE.DOOR_RED); // Left leaf
+        builder.addBox(gateX + 3, 2, gateZ + gateD - 1, 1, 3, 1, PALETTE.DOOR_RED); // Right leaf
+        // Gold Studios/Knockers
+        builder.add(gateX + 2, 3, gateZ + gateD - 0.5, PALETTE.GOLD_ACCENT);
+        builder.add(gateX + 3, 3, gateZ + gateD - 0.5, PALETTE.GOLD_ACCENT);
+
+        // Gate Roof (Fancy)
+        const grY = 2 + 4;
+        builder.addBox(gateX - 1, grY, gateZ - 1, gateW + 2, 1, gateD + 2, PALETTE.ROOF_GREY);
+        builder.addBox(gateX, grY + 1, gateZ, gateW, 1, gateD, PALETTE.ROOF_GREY);
+
+        // 5. Connecting Corridors (Youlang)
+        // Connect North House to Wings
+        // Left Corridor
+        // From North House Left (-8, -15) to West Wing (-15, -8) -- corners need joining
+
+        // 6. Courtyard Details
+        // Tree in center
+        const tx = 0, tz = 0;
+        builder.addBox(tx, 1, tz, 1, 2, 1, PALETTE.WOOD_BROWN); // Trunk
+        builder.addBox(tx - 1, 3, tz - 1, 3, 1, 3, PALETTE.GRASS); // Leaves
+        builder.addBox(tx, 4, tz, 1, 1, 1, PALETTE.GRASS);
+        builder.add(tx - 1, 3, tz, PALETTE.GRASS);
+
+        // Stone path
+        builder.addBox(-2, 1, -10, 4, 0, 20, PALETTE.BASE_GREY); // Central path
+
+        // 7. Details
+        // Lanterns
+        function buildLantern(x, y, z) {
+            builder.add(x, y, z, PALETTE.WOOD_BROWN); // Hanger
+            builder.add(x, y - 1, z, PALETTE.DOOR_RED); // Lantern
+            builder.add(x, y - 2, z, PALETTE.GOLD_ACCENT); // Tassel
+        }
+
+        // Hang from North House Eaves
+        buildLantern(-6, 6, -10);
+        buildLantern(5, 6, -10);
+
+        // Gate Lanterns
+        buildLantern(-4, 6, 8);
+        buildLantern(1, 6, 8);
+
+        // Corridors (simplified) - Connecting corners
+        // NW Corner
+        builder.addBox(-12, 1, -12, 4, 1, 4, PALETTE.BASE_GREY); // Floor
+        builder.addBox(-12, 4, -12, 4, 1, 4, PALETTE.ROOF_GREY); // Roof
+        builder.addBox(-12, 2, -12, 1, 2, 1, PALETTE.COLUMN_RED); // Pillar
+
+        // NE Corner
+        builder.addBox(8, 1, -12, 4, 1, 4, PALETTE.BASE_GREY);
+        builder.addBox(8, 4, -12, 4, 1, 4, PALETTE.ROOF_GREY);
+        builder.addBox(11, 2, -12, 1, 2, 1, PALETTE.COLUMN_RED);
+
+        // --- Scene Setup ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
+        scene.fog = new THREE.Fog(0x87CEEB, 20, 80);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 30, 40);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.target.set(0, 5, 0);
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(20, 50, 20);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.1;
+        dirLight.shadow.camera.far = 200;
+        dirLight.shadow.camera.left = -50;
+        dirLight.shadow.camera.right = 50;
+        dirLight.shadow.camera.top = 50;
+        dirLight.shadow.camera.bottom = -50;
+        scene.add(dirLight);
+
+        // --- Render Loop ---
+        const voxelMesh = builder.build();
+        if (voxelMesh) scene.add(voxelMesh);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // --- Resize Handler ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>

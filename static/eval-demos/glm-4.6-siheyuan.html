@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传统中国四合院 - 体素艺术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'SimSun', sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #FFE4B5 50%, #FFA07A 100%);
+            overflow: hidden;
+            height: 100vh;
+            perspective: 1500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            transform-style: preserve-3d;
+            animation: scene-rotate 30s infinite linear;
+        }
+
+        @keyframes scene-rotate {
+            from { transform: rotateY(0deg) rotateX(-15deg); }
+            to { transform: rotateY(360deg) rotateX(-15deg); }
+        }
+
+        /* 体素方块基础样式 */
+        .voxel {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .voxel-face {
+            position: absolute;
+            opacity: 0.95;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .face-front { transform: translateZ(10px); }
+        .face-back { transform: translateZ(-10px) rotateY(180deg); }
+        .face-left { transform: rotateY(-90deg) translateZ(10px); }
+        .face-right { transform: rotateY(90deg) translateZ(10px); }
+        .face-top { transform: rotateX(90deg) translateZ(10px); }
+        .face-bottom { transform: rotateX(-90deg) translateZ(10px); }
+
+        /* 建筑材料 */
+        .wall-brick {
+            background: linear-gradient(135deg, #D2691E, #CD853F, #DEB887);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .wall-dark {
+            background: linear-gradient(135deg, #8B4513, #A0522D, #D2691E);
+        }
+
+        .roof-tile {
+            background: linear-gradient(135deg, #2F4F2F, #3CB371, #228B22);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+        }
+
+        .wood-beam {
+            background: linear-gradient(135deg, #8B4513, #654321, #A0522D);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.4);
+        }
+
+        .red-gate {
+            background: linear-gradient(135deg, #DC143C, #B22222, #8B0000);
+            box-shadow: inset 0 0 8px rgba(139,0,0,0.5);
+        }
+
+        .gold-trim {
+            background: linear-gradient(135deg, #FFD700, #FFA500, #FF8C00);
+            box-shadow: inset 0 0 5px rgba(255,215,0,0.6);
+        }
+
+        .stone-floor {
+            background: linear-gradient(135deg, #696969, #808080, #A9A9A9);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+        }
+
+        /* 中央院落 */
+        .courtyard {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            transform-style: preserve-3d;
+        }
+
+        .courtyard-floor {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            transform: translateZ(-20px);
+            background: linear-gradient(45deg, #D2B48C 25%, #DEB887 25%, #DEB887 50%, #D2B48C 50%, #D2B48C 75%, #DEB887 75%, #DEB887);
+            background-size: 30px 30px;
+            border: 5px solid #8B4513;
+        }
+
+        /* 中央花园 */
+        .garden {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+        }
+
+        .garden-pond {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) translateZ(-15px);
+            background: radial-gradient(circle, #4169E1, #1E90FF, #000080);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(30, 144, 255, 0.5);
+        }
+
+        .garden-rock {
+            position: absolute;
+            background: linear-gradient(135deg, #696969, #808080, #A9A9A9);
+            border-radius: 30%;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+        }
+
+        .rock1 {
+            width: 30px;
+            height: 25px;
+            left: 20px;
+            top: 30px;
+            transform: translateZ(-10px);
+        }
+
+        .rock2 {
+            width: 25px;
+            height: 20px;
+            right: 25px;
+            top: 40px;
+            transform: translateZ(-10px);
+        }
+
+        .rock3 {
+            width: 35px;
+            height: 30px;
+            left: 40px;
+            bottom: 35px;
+            transform: translateZ(-10px);
+        }
+
+        .garden-tree {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .tree-trunk {
+            position: absolute;
+            width: 15px;
+            height: 40px;
+            background: linear-gradient(135deg, #8B4513, #654321, #A0522D);
+            transform: translateZ(-5px);
+        }
+
+        .tree-leaves {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #228B22, #006400, #008000);
+            border-radius: 50%;
+            transform: translateY(-20px) translateZ(-5px);
+            box-shadow: 0 0 15px rgba(34, 139, 34, 0.4);
+        }
+
+        .tree1 {
+            left: 20px;
+            bottom: 20px;
+        }
+
+        .tree2 {
+            right: 20px;
+            top: 20px;
+        }
+
+        /* 北厢房（正房） */
+        .north-building {
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 120px;
+            transform-style: preserve-3d;
+        }
+
+        /* 南厢房（倒座房） */
+        .south-building {
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 120px;
+            transform-style: preserve-3d;
+        }
+
+        /* 东西厢房 */
+        .east-building {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 200px;
+            transform-style: preserve-3d;
+        }
+
+        .west-building {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 200px;
+            transform-style: preserve-3d;
+        }
+
+        /* 建筑墙体 */
+        .building-wall {
+            position: absolute;
+            background: linear-gradient(135deg, #D2691E, #CD853F, #DEB887);
+            border: 2px solid #8B4513;
+        }
+
+        .wall-front {
+            width: 100%;
+            height: 80px;
+            transform: translateZ(10px);
+        }
+
+        .wall-back {
+            width: 100%;
+            height: 80px;
+            transform: translateZ(-10px) rotateY(180deg);
+        }
+
+        .wall-left {
+            width: 20px;
+            height: 80px;
+            transform: rotateY(-90deg) translateZ(10px);
+        }
+
+        .wall-right {
+            width: 20px;
+            height: 80px;
+            transform: rotateY(90deg) translateZ(10px);
+        }
+
+        /* 传统屋顶 */
+        .roof {
+            position: absolute;
+            top: -40px;
+            transform-style: preserve-3d;
+        }
+
+        .roof-main {
+            position: absolute;
+            width: 120%;
+            height: 40px;
+            left: -10%;
+            transform: rotateX(60deg) translateZ(20px);
+            background: linear-gradient(90deg, #2F4F2F, #3CB371, #228B22, #3CB371, #2F4F2F);
+            border: 2px solid #1C5A1C;
+            clip-path: polygon(10% 100%, 90% 100%, 80% 0%, 20% 0%);
+        }
+
+        .roof-tiles {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            top: 0;
+            transform-style: preserve-3d;
+        }
+
+        .roof-tile {
+            position: absolute;
+            width: 15px;
+            height: 8px;
+            background: linear-gradient(135deg, #2F4F2F, #228B22);
+            border-radius: 50%;
+            transform: translateZ(5px);
+        }
+
+        /* 红色大门 */
+        .main-gate {
+            position: absolute;
+            left: 50%;
+            bottom: 90px;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 100px;
+            transform-style: preserve-3d;
+        }
+
+        .gate-door {
+            position: absolute;
+            width: 40px;
+            height: 100px;
+            transform: translateZ(5px);
+        }
+
+        .gate-door.left {
+            left: 0;
+            transform-origin: left center;
+            animation: gate-swing 8s infinite ease-in-out;
+        }
+
+        .gate-door.right {
+            right: 0;
+            transform-origin: right center;
+            animation: gate-swing-right 8s infinite ease-in-out;
+        }
+
+        @keyframes gate-swing {
+            0%, 100% { transform: translateZ(5px) rotateY(0deg); }
+            25% { transform: translateZ(5px) rotateY(-30deg); }
+            75% { transform: translateZ(5px) rotateY(-30deg); }
+        }
+
+        @keyframes gate-swing-right {
+            0%, 100% { transform: translateZ(5px) rotateY(0deg); }
+            25% { transform: translateZ(5px) rotateY(30deg); }
+            75% { transform: translateZ(5px) rotateY(30deg); }
+        }
+
+        .gate-frame {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            border: 5px solid #8B0000;
+            transform: translateZ(0);
+        }
+
+        /* 门窗装饰 */
+        .window {
+            position: absolute;
+            background: linear-gradient(135deg, #87CEEB, #4682B4);
+            border: 3px solid #8B4513;
+            transform: translateZ(6px);
+        }
+
+        .door {
+            position: absolute;
+            background: linear-gradient(135deg, #8B4513, #654321);
+            border: 3px solid #654321;
+            transform: translateZ(6px);
+        }
+
+        /* 传统装饰元素 */
+        .lantern {
+            position: absolute;
+            width: 20px;
+            height: 25px;
+            background: linear-gradient(135deg, #FF6347, #DC143C);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 15px rgba(255, 99, 71, 0.6);
+        }
+
+        .lantern::before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 8px;
+            background: #FFD700;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+        }
+
+        .lantern::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: #8B4513;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .lantern1 {
+            left: 30px;
+            top: -60px;
+            animation: lantern-swing 4s infinite ease-in-out;
+        }
+
+        .lantern2 {
+            right: 30px;
+            top: -60px;
+            animation: lantern-swing-right 4s infinite ease-in-out;
+        }
+
+        @keyframes lantern-swing {
+            0%, 100% { transform: rotateZ(-5deg); }
+            50% { transform: rotateZ(5deg); }
+        }
+
+        @keyframes lantern-swing-right {
+            0%, 100% { transform: rotateZ(5deg); }
+            50% { transform: rotateZ(-5deg); }
+        }
+
+        /* 瓦片细节 */
+        .curved-tile {
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            background: linear-gradient(135deg, #3CB371, #228B22);
+            border-radius: 50%;
+            transform: translateZ(8px);
+        }
+
+        /* 控制面板 */
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls h3 {
+            color: #8B0000;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #DC143C;
+            padding-bottom: 8px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #DC143C, #B22222);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+            display: block;
+            width: 100%;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+        }
+
+        .info-panel h2 {
+            color: #8B0000;
+            margin-bottom: 15px;
+            font-size: 24px;
+            border-bottom: 2px solid #DC143C;
+            padding-bottom: 10px;
+        }
+
+        .info-panel p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(139, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        .feature-text {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .controls, .info-panel {
+                position: fixed;
+                bottom: 10px;
+                top: auto;
+                max-width: 90%;
+            }
+
+            .controls {
+                right: 5%;
+            }
+
+            .info-panel {
+                left: 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene" id="scene">
+        <!-- 中央院落地面 -->
+        <div class="courtyard">
+            <div class="courtyard-floor"></div>
+        </div>
+
+        <!-- 中央花园 -->
+        <div class="garden">
+            <div class="garden-pond"></div>
+            <div class="garden-rock rock1"></div>
+            <div class="garden-rock rock2"></div>
+            <div class="garden-rock rock3"></div>
+
+            <!-- 树木 -->
+            <div class="garden-tree tree1">
+                <div class="tree-trunk"></div>
+                <div class="tree-leaves"></div>
+            </div>
+            <div class="garden-tree tree2">
+                <div class="tree-trunk"></div>
+                <div class="tree-leaves"></div>
+            </div>
+        </div>
+
+        <!-- 北厢房（正房） -->
+        <div class="north-building">
+            <div class="building-wall wall-front wall-brick">
+                <!-- 窗户 -->
+                <div class="window" style="width: 30px; height: 30px; top: 20px; left: 30px;"></div>
+                <div class="window" style="width: 30px; height: 30px; top: 20px; right: 30px;"></div>
+                <!-- 大门 -->
+                <div class="door" style="width: 50px; height: 60px; top: 10px; left: 50%; transform: translateX(-50%) translateZ(6px);"></div>
+            </div>
+            <div class="building-wall wall-back wall-dark"></div>
+            <div class="building-wall wall-left wall-dark"></div>
+            <div class="building-wall wall-right wall-dark"></div>
+
+            <!-- 屋顶 -->
+            <div class="roof">
+                <div class="roof-main"></div>
+                <div class="roof-tiles">
+                    <div class="curved-tile" style="left: 10px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 35px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 60px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 85px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 110px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 135px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 160px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 185px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 210px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 235px; top: 15px;"></div>
+                </div>
+                <!-- 灯笼 -->
+                <div class="lantern lantern1"></div>
+                <div class="lantern lantern2"></div>
+            </div>
+        </div>
+
+        <!-- 南厢房（倒座房） -->
+        <div class="south-building">
+            <div class="building-wall wall-front wall-brick">
+                <!-- 窗户 -->
+                <div class="window" style="width: 30px; height: 30px; top: 20px; left: 40px;"></div>
+                <div class="window" style="width: 30px; height: 30px; top: 20px; left: 90px;"></div>
+                <div class="window" style="width: 30px; height: 30px; top: 20px; left: 140px;"></div>
+                <div class="window" style="width: 30px; height: 30px; top: 20px; left: 190px;"></div>
+            </div>
+            <div class="building-wall wall-back wall-dark"></div>
+            <div class="building-wall wall-left wall-dark"></div>
+            <div class="building-wall wall-right wall-dark"></div>
+
+            <!-- 屋顶 -->
+            <div class="roof">
+                <div class="roof-main"></div>
+                <div class="roof-tiles">
+                    <div class="curved-tile" style="left: 10px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 35px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 60px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 85px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 110px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 135px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 160px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 185px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 210px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 235px; top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 东厢房 -->
+        <div class="east-building">
+            <div class="building-wall wall-front wall-brick">
+                <!-- 窗户 -->
+                <div class="window" style="width: 25px; height: 25px; top: 30px; left: 50%; transform: translateX(-50%) translateZ(6px);"></div>
+                <div class="window" style="width: 25px; height: 25px; top: 80px; left: 50%; transform: translateX(-50%) translateZ(6px);"></div>
+                <!-- 门 -->
+                <div class="door" style="width: 30px; height: 40px; top: 120px; left: 50%; transform: translateX(-50%) translateZ(6px);"></div>
+            </div>
+            <div class="building-wall wall-back wall-dark"></div>
+            <div class="building-wall wall-left wall-dark"></div>
+            <div class="building-wall wall-right wall-dark"></div>
+
+            <!-- 屋顶 -->
+            <div class="roof">
+                <div class="roof-main"></div>
+                <div class="roof-tiles">
+                    <div class="curved-tile" style="left: 15px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 40px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 65px; top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 西厢房 -->
+        <div class="west-building">
+            <div class="building-wall wall-front wall-brick">
+                <!-- 窗户 -->
+                <div class="window" style="width: 25px; height: 25px; top: 30px; left: 50%; transform: translateX(-50%) translateZ(6px);"></div>
+                <div class="window" style="width: 25px; height: 25px; top: 80px; left: 50%; transform: translateX(-50%) translateZ(6px);"></div>
+                <!-- 门 -->
+                <div class="door" style="width: 30px; height: 40px; top: 120px; left: 50%; transform: translateX(-50%) translateZ(6px);"></div>
+            </div>
+            <div class="building-wall wall-back wall-dark"></div>
+            <div class="building-wall wall-left wall-dark"></div>
+            <div class="building-wall wall-right wall-dark"></div>
+
+            <!-- 屋顶 -->
+            <div class="roof">
+                <div class="roof-main"></div>
+                <div class="roof-tiles">
+                    <div class="curved-tile" style="left: 15px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 40px; top: 15px;"></div>
+                    <div class="curved-tile" style="left: 65px; top: 15px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 红色大门 -->
+        <div class="main-gate">
+            <div class="gate-frame"></div>
+            <div class="gate-door left red-gate">
+                <!-- 门钉 -->
+                <div style="position: absolute; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; top: 20px; left: 20px;"></div>
+                <div style="position: absolute; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; top: 40px; left: 20px;"></div>
+                <div style="position: absolute; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; top: 60px; left: 20px;"></div>
+            </div>
+            <div class="gate-door right red-gate">
+                <!-- 门钉 -->
+                <div style="position: absolute; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; top: 20px; right: 20px;"></div>
+                <div style="position: absolute; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; top: 40px; right: 20px;"></div>
+                <div style="position: absolute; width: 6px; height: 6px; background: #FFD700; border-radius: 50%; top: 60px; right: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="controls">
+            <h3>🏮 四合院控制</h3>
+            <button class="control-btn" onclick="toggleRotation()">暂停/继续旋转</button>
+            <button class="control-btn" onclick="changeSpeed()">改变旋转速度</button>
+            <button class="control-btn" onclick="toggleDayNight()">日夜切换</button>
+            <button class="control-btn" onclick="toggleLanterns()">灯笼开关</button>
+            <button class="control-btn" onclick="openGates()">开关大门</button>
+        </div>
+
+        <!-- 信息面板 -->
+        <div class="info-panel">
+            <h2>🏛️ 传统四合院</h2>
+            <p>
+                四合院是中国传统建筑的典型代表，由四面房屋围合而成的院落式住宅。
+            </p>
+
+            <div class="feature">
+                <span class="feature-icon">🏠</span>
+                <span class="feature-text">北厢房（正房）- 主人居住</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🏚️</span>
+                <span class="feature-text">南厢房（倒座房）- 客房或佣人居所</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🏘️</span>
+                <span class="feature-text">东西厢房 - 子女或书房使用</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🌸</span>
+                <span class="feature-text">中央庭院 - 花园、池塘、假山</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🚪</span>
+                <span class="feature-text">红色大门 - 传统入口，象征吉祥</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🏮</span>
+                <span class="feature-text">灯笼 - 照明和装饰</span>
+            </div>
+
+            <p style="margin-top: 15px; font-size: 12px; color: #666;">
+                🎮 使用控制面板来旋转和查看四合院的不同角度
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let isRotating = true;
+        let currentSpeed = 30;
+        let isDay = true;
+        let lanternsOn = true;
+        let gatesOpen = false;
+        const scene = document.getElementById('scene');
+
+        // 暂停/继续旋转
+        function toggleRotation() {
+            isRotating = !isRotating;
+            if (isRotating) {
+                scene.style.animationPlayState = 'running';
+                showNotification('旋转已继续 ▶️');
+            } else {
+                scene.style.animationPlayState = 'paused';
+                showNotification('旋转已暂停 ⏸️');
+            }
+        }
+
+        // 改变旋转速度
+        function changeSpeed() {
+            const speeds = [60, 30, 15, 5];
+            const currentIndex = speeds.indexOf(currentSpeed);
+            currentSpeed = speeds[(currentIndex + 1) % speeds.length];
+            scene.style.animationDuration = currentSpeed + 's';
+
+            const speedNames = {60: '慢速', 30: '正常', 15: '快速', 5: '超快'};
+            showNotification(`旋转速度: ${speedNames[currentSpeed]} ⚡`);
+        }
+
+        // 日夜切换
+        function toggleDayNight() {
+            isDay = !isDay;
+
+            if (isDay) {
+                document.body.style.background = 'linear-gradient(135deg, #87CEEB 0%, #FFE4B5 50%, #FFA07A 100%)';
+                showNotification('白天模式 ☀️');
+            } else {
+                document.body.style.background = 'linear-gradient(135deg, #191970 0%, #483D8B 50%, #2F4F4F 100%)';
+                showNotification('夜晚模式 🌙');
+
+                // 自动打开灯笼
+                if (!lanternsOn) {
+                    toggleLanterns();
+                }
+            }
+        }
+
+        // 灯笼开关
+        function toggleLanterns() {
+            lanternsOn = !lanternsOn;
+            const lanterns = document.querySelectorAll('.lantern');
+
+            lanterns.forEach(lantern => {
+                if (lanternsOn) {
+                    lantern.style.display = 'block';
+                    lantern.style.boxShadow = '0 0 25px rgba(255, 99, 71, 0.8)';
+                } else {
+                    lantern.style.boxShadow = '0 0 5px rgba(255, 99, 71, 0.2)';
+                }
+            });
+
+            showNotification(lanternsOn ? '灯笼已点亮 🏮' : '灯笼已熄灭 💡');
+        }
+
+        // 开关大门
+        function openGates() {
+            gatesOpen = !gatesOpen;
+            const leftGate = document.querySelector('.gate-door.left');
+            const rightGate = document.querySelector('.gate-door.right');
+
+            if (gatesOpen) {
+                leftGate.style.animation = 'gate-open 2s forwards';
+                rightGate.style.animation = 'gate-open-right 2s forwards';
+                showNotification('大门已开启 🚪');
+            } else {
+                leftGate.style.animation = 'gate-close 2s forwards';
+                rightGate.style.animation = 'gate-close-right 2s forwards';
+                showNotification('大门已关闭 🔒');
+            }
+        }
+
+        // 添加大门开关动画
+        const gateStyle = document.createElement('style');
+        gateStyle.textContent = `
+            @keyframes gate-open {
+                from { transform: translateZ(5px) rotateY(0deg); }
+                to { transform: translateZ(5px) rotateY(-80deg); }
+            }
+            @keyframes gate-open-right {
+                from { transform: translateZ(5px) rotateY(0deg); }
+                to { transform: translateZ(5px) rotateY(80deg); }
+            }
+            @keyframes gate-close {
+                from { transform: translateZ(5px) rotateY(-80deg); }
+                to { transform: translateZ(5px) rotateY(0deg); }
+            }
+            @keyframes gate-close-right {
+                from { transform: translateZ(5px) rotateY(80deg); }
+                to { transform: translateZ(5px) rotateY(0deg); }
+            }
+        `;
+        document.head.appendChild(gateStyle);
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, rgba(139, 0, 0, 0.9), rgba(220, 20, 60, 0.9));
+                color: white;
+                padding: 20px 40px;
+                border-radius: 15px;
+                font-size: 18px;
+                font-weight: bold;
+                z-index: 10000;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                border: 2px solid rgba(255, 215, 0, 0.5);
+                animation: notification-pop 2s ease-in-out;
+            `;
+            notification.textContent = message;
+
+            // 添加动画
+            const animStyle = document.createElement('style');
+            animStyle.textContent = `
+                @keyframes notification-pop {
+                    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+                    20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                    80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                    100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(animStyle);
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+                animStyle.remove();
+            }, 2000);
+        }
+
+        // 鼠标拖拽控制
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        document.addEventListener('mousedown', dragStart);
+        document.addEventListener('mouseup', dragEnd);
+        document.addEventListener('mousemove', drag);
+
+        function dragStart(e) {
+            if (e.target.closest('.controls') || e.target.closest('.info-panel')) return;
+
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (e.target.closest('.scene')) {
+                isDragging = true;
+                scene.style.animationPlayState = 'paused';
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+            isDragging = false;
+
+            if (isRotating) {
+                scene.style.animationPlayState = 'running';
+            }
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+
+                const rotateY = (currentX / window.innerWidth) * 360;
+                const rotateX = -15 + (currentY / window.innerHeight) * 30;
+                scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+            }
+        }
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleRotation();
+                    break;
+                case 's':
+                case 'S':
+                    changeSpeed();
+                    break;
+                case 'd':
+                case 'D':
+                    toggleDayNight();
+                    break;
+                case 'l':
+                case 'L':
+                    toggleLanterns();
+                    break;
+                case 'g':
+                case 'G':
+                    openGates();
+                    break;
+                case 'r':
+                case 'R':
+                    scene.style.animation = 'none';
+                    setTimeout(() => {
+                        scene.style.animation = `scene-rotate ${currentSpeed}s infinite linear`;
+                    }, 100);
+                    showNotification('视角已重置 🔄');
+                    break;
+            }
+        });
+
+        // 触摸控制（移动设备）
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.controls') || e.target.closest('.info-panel')) return;
+
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            scene.style.animationPlayState = 'paused';
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('.controls') || e.target.closest('.info-panel')) return;
+
+            e.preventDefault();
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+
+            const rotateY = (deltaX / window.innerWidth) * 360;
+            const rotateX = -15 + (deltaY / window.innerHeight) * 30;
+
+            scene.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (isRotating) {
+                scene.style.animationPlayState = 'running';
+            }
+        });
+
+        // 初始化
+        window.addEventListener('load', () => {
+            showNotification('欢迎来到传统四合院 🏛️');
+        });
+
+        // 控制台信息
+        console.log('🏛️ 传统中国四合院已加载成功！');
+        console.log('🎮 控制说明:');
+        console.log('  - 拖拽鼠标: 旋转视角');
+        console.log('  - 空格键: 暂停/继续旋转');
+        console.log('  - S键: 改变旋转速度');
+        console.log('  - D键: 日夜切换');
+        console.log('  - L键: 灯笼开关');
+        console.log('  - G键: 开关大门');
+        console.log('  - R键: 重置视角');
+    </script>
+</body>
+</html>

@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>唐人街牌坊（体素 / Three.js）</title>
+    <style>
+      :root {
+        --panel: rgba(8, 12, 20, 0.62);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.88);
+        --muted: rgba(255, 255, 255, 0.64);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #070a12;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif;
+      }
+      #c {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        user-select: none;
+        z-index: 10;
+      }
+      .title {
+        font-weight: 740;
+        letter-spacing: 0.2px;
+        font-size: 13px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.92);
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 90ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.32);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: #64ffda;
+        box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.14);
+      }
+      .dot.off {
+        background: rgba(255, 255, 255, 0.28);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+      }
+      .hud {
+        position: fixed;
+        right: 12px;
+        top: 12px;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 12px;
+        line-height: 1.55;
+        text-align: right;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+        pointer-events: none;
+        z-index: 10;
+      }
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        padding: 0 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <div class="title">Chinatown Paifang / 唐人街牌坊（体素）</div>
+      <div class="hint">
+        拖动：旋转　滚轮：缩放　双击：重置<br />
+        <span class="kbd">R</span> 重建　<span class="kbd">O</span> 自动环绕
+      </div>
+      <div class="row">
+        <button id="regenBtn" type="button">重建场景</button>
+        <div class="pill" id="orbitPill"><span class="dot" id="orbitDot"></span><span id="orbitText">自动环绕：开</span></div>
+        <button id="frontBtn" type="button">前视对称</button>
+      </div>
+    </div>
+    <div class="hud" id="hud"></div>
+
+    <script type="module">
+      import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+      const canvas = document.getElementById("c");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x070a12, 1);
+
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(0x070a12, 90, 340);
+
+      const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 1200);
+
+      // ====== Controls (simple orbit) ======
+      const state = {
+        theta: Math.PI / 2,
+        phi: 1.18,
+        radius: 210,
+        target: new THREE.Vector3(0, 30, 0),
+        autoOrbit: true,
+        dragging: false,
+        lastX: 0,
+        lastY: 0
+      };
+
+      function updateCamera() {
+        const sinPhi = Math.sin(state.phi);
+        camera.position.set(
+          state.target.x + state.radius * sinPhi * Math.cos(state.theta),
+          state.target.y + state.radius * Math.cos(state.phi),
+          state.target.z + state.radius * sinPhi * Math.sin(state.theta)
+        );
+        camera.lookAt(state.target);
+      }
+      updateCamera();
+
+      canvas.addEventListener("pointerdown", (e) => {
+        state.dragging = true;
+        state.lastX = e.clientX;
+        state.lastY = e.clientY;
+        canvas.setPointerCapture(e.pointerId);
+      });
+      canvas.addEventListener("pointermove", (e) => {
+        if (!state.dragging) return;
+        const dx = e.clientX - state.lastX;
+        const dy = e.clientY - state.lastY;
+        state.lastX = e.clientX;
+        state.lastY = e.clientY;
+        state.theta -= dx * 0.0052;
+        state.phi = THREE.MathUtils.clamp(state.phi + dy * 0.0044, 0.30, 1.32);
+        updateCamera();
+      });
+      window.addEventListener("pointerup", () => (state.dragging = false));
+      canvas.addEventListener(
+        "wheel",
+        (e) => {
+          state.radius = THREE.MathUtils.clamp(state.radius + e.deltaY * 0.14, 120, 420);
+          updateCamera();
+        },
+        { passive: true }
+      );
+      canvas.addEventListener("dblclick", () => {
+        setFrontView();
+      });
+
+      // ====== UI ======
+      const regenBtn = document.getElementById("regenBtn");
+      const orbitPill = document.getElementById("orbitPill");
+      const orbitDot = document.getElementById("orbitDot");
+      const orbitText = document.getElementById("orbitText");
+      const frontBtn = document.getElementById("frontBtn");
+      const hud = document.getElementById("hud");
+
+      function setAutoOrbit(v) {
+        state.autoOrbit = v;
+        orbitDot.classList.toggle("off", !v);
+        orbitText.textContent = v ? "自动环绕：开" : "自动环绕：关";
+      }
+      function setFrontView() {
+        state.theta = Math.PI / 2;
+        state.phi = 1.18;
+        state.radius = 210;
+        updateCamera();
+      }
+      orbitPill.addEventListener("click", () => setAutoOrbit(!state.autoOrbit));
+      frontBtn.addEventListener("click", () => setFrontView());
+
+      // ====== Lighting ======
+      const ambient = new THREE.AmbientLight(0xffe1bf, 0.85);
+      scene.add(ambient);
+
+      const key = new THREE.DirectionalLight(0xffd2a2, 1.1);
+      key.position.set(160, 220, 220);
+      scene.add(key);
+
+      const fill = new THREE.DirectionalLight(0xcfe2ff, 0.28);
+      fill.position.set(-220, 140, -160);
+      scene.add(fill);
+
+      // ====== Voxel system ======
+      const group = new THREE.Group();
+      scene.add(group);
+
+      const VOXEL = 1.0;
+      const boxGeo = new THREE.BoxGeometry(VOXEL, VOXEL, VOXEL);
+      const solidMat = new THREE.MeshStandardMaterial({
+        vertexColors: true,
+        roughness: 0.92,
+        metalness: 0.06
+      });
+      const glowMat = new THREE.MeshStandardMaterial({
+        vertexColors: true,
+        roughness: 0.45,
+        metalness: 0.0,
+        emissive: new THREE.Color(0xffb36a),
+        emissiveIntensity: 1.45
+      });
+      const hotMat = new THREE.MeshBasicMaterial({ vertexColors: true });
+
+      const TYPE_PRI = { solid: 1, emissive: 2, glow: 3 };
+      const occ = new Map();
+
+      let seed = 1337;
+      function hash3(x, y, z) {
+        let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(z, 2147483647) ^ Math.imul(seed, 1597334677);
+        n = Math.imul(n ^ (n >>> 13), 1274126177);
+        n = (n ^ (n >>> 16)) >>> 0;
+        return n / 4294967295;
+      }
+
+      const clamp255 = (v) => (v < 0 ? 0 : v > 255 ? 255 : v);
+      function tint(hex, f) {
+        const r = clamp255(((hex >> 16) & 255) * f);
+        const g = clamp255(((hex >> 8) & 255) * f);
+        const b = clamp255((hex & 255) * f);
+        return (r << 16) | (g << 8) | b;
+      }
+      function jitter(hex, x, y, z, amt = 0.06) {
+        const v = hash3(x, y, z);
+        const f = 1 - amt + v * (amt * 2);
+        return tint(hex, f);
+      }
+
+      function setVoxel(x, y, z, color, type = "solid") {
+        const key = `${x},${y},${z}`;
+        const cur = occ.get(key);
+        if (!cur || TYPE_PRI[type] >= TYPE_PRI[cur.type]) occ.set(key, { x, y, z, color, type });
+      }
+      function addBox(x0, y0, z0, x1, y1, z1, color, type = "solid", jitterAmt = 0.0) {
+        for (let x = x0; x < x1; x++) {
+          for (let y = y0; y < y1; y++) {
+            for (let z = z0; z < z1; z++) {
+              const c = jitterAmt ? jitter(color, x, y, z, jitterAmt) : color;
+              setVoxel(x, y, z, c, type);
+            }
+          }
+        }
+      }
+      function addFrame2D(x0, y0, x1, y1, z, color, thickness = 1) {
+        for (let t = 0; t < thickness; t++) {
+          const zz = z + t;
+          for (let x = x0; x < x1; x++) {
+            setVoxel(x, y0, zz, color);
+            setVoxel(x, y1 - 1, zz, color);
+          }
+          for (let y = y0; y < y1; y++) {
+            setVoxel(x0, y, zz, color);
+            setVoxel(x1 - 1, y, zz, color);
+          }
+        }
+      }
+      function addPillar(cx, cz, y0, h, r = 2) {
+        const redA = 0xc83a2f;
+        const redB = 0x9c1d18;
+        const gold = 0xf2c24c;
+        const stone = 0x8f959c;
+
+        // Footing
+        addBox(cx - r - 1, y0, cz - r - 1, cx + r + 2, y0 + 2, cz + r + 2, stone, "solid", 0.06);
+        addBox(cx - r, y0 + 2, cz - r, cx + r + 1, y0 + 3, cz + r + 1, stone, "solid", 0.06);
+
+        for (let y = y0 + 3; y < y0 + 3 + h; y++) {
+          for (let x = cx - r; x <= cx + r; x++) {
+            for (let z = cz - r; z <= cz + r; z++) {
+              const edge = x === cx - r || x === cx + r || z === cz - r || z === cz + r;
+              const base = edge ? redA : redB;
+              setVoxel(x, y, z, jitter(base, x, y, z, 0.03));
+            }
+          }
+          if ((y - (y0 + 3)) % 6 === 0) {
+            for (let x = cx - r; x <= cx + r; x++) for (let z = cz - r; z <= cz + r; z++) setVoxel(x, y, z, jitter(redA, x, y, z, 0.02));
+          }
+        }
+
+        // Capital
+        addBox(cx - r - 1, y0 + 3 + h, cz - r - 1, cx + r + 2, y0 + 3 + h + 2, cz + r + 2, gold, "solid", 0.05);
+        addBox(cx - r - 2, y0 + 3 + h + 1, cz - r - 2, cx + r + 3, y0 + 3 + h + 2, cz + r + 3, gold, "solid", 0.05);
+      }
+
+      function addBeamX(x0, x1, y0, z0, thickY = 3, thickZ = 4, color = 0x6a2a22) {
+        addBox(x0, y0, z0 - Math.floor(thickZ / 2), x1, y0 + thickY, z0 + Math.ceil(thickZ / 2), color, "solid", 0.05);
+        // Gold trim
+        const gold = 0xf2c24c;
+        addBox(x0, y0 + thickY, z0 - Math.floor(thickZ / 2), x1, y0 + thickY + 1, z0 + Math.ceil(thickZ / 2), gold, "solid", 0.05);
+      }
+
+      function addBeamZ(z0, z1, y0, x0, thickY = 3, thickX = 4, color = 0x6a2a22) {
+        addBox(x0 - Math.floor(thickX / 2), y0, z0, x0 + Math.ceil(thickX / 2), y0 + thickY, z1, color, "solid", 0.05);
+        const gold = 0xf2c24c;
+        addBox(x0 - Math.floor(thickX / 2), y0 + thickY, z0, x0 + Math.ceil(thickX / 2), y0 + thickY + 1, z1, gold, "solid", 0.05);
+      }
+
+      function addRoofTier({ x0, x1, z0, z1, y0, levels, overhang, curve, ridgeAxis }) {
+        const gold = 0xf6c84d;
+        const goldDeep = 0xdba12c;
+        const white = 0xf4efe2;
+
+        const bx0 = x0 - overhang;
+        const bx1 = x1 + overhang;
+        const bz0 = z0 - overhang;
+        const bz1 = z1 + overhang;
+
+        for (let l = 0; l < levels; l++) {
+          const lx0 = bx0 + l;
+          const lx1 = bx1 - l;
+          const lz0 = bz0 + l;
+          const lz1 = bz1 - l;
+          if (lx0 >= lx1 || lz0 >= lz1) break;
+
+          for (let x = lx0; x < lx1; x++) {
+            for (let z = lz0; z < lz1; z++) {
+              const edge = x === lx0 || x === lx1 - 1 || z === lz0 || z === lz1 - 1;
+              const base = edge ? gold : (hash3(x, y0 + l, z) < 0.55 ? gold : goldDeep);
+              const col = jitter(base, x, y0 + l, z, edge ? 0.05 : 0.06);
+              setVoxel(x, y0 + l, z, col);
+            }
+          }
+        }
+
+        // White/Gold cloud trim along the front eave
+        const trimY = y0 + 1;
+        const frontZ = bz1 - 1;
+        for (let x = bx0 + 2; x <= bx1 - 3; x++) {
+          const wave = Math.round(Math.sin((x + seed * 0.01) * 0.55) * 0.8 + Math.sin((x + 5) * 0.22) * 0.6);
+          if ((x + 999) % 3 === 0) setVoxel(x, trimY + wave, frontZ, jitter(white, x, trimY, frontZ, 0.03));
+          if ((x + 999) % 7 === 0) setVoxel(x, trimY + wave + 1, frontZ, jitter(0xf2c24c, x, trimY + 1, frontZ, 0.03));
+        }
+
+        // Upturned eaves (corner horns)
+        const topY = y0 + levels - 1;
+        const horns = [
+          { x: bx0, z: bz0, sx: -1, sz: -1 },
+          { x: bx1 - 1, z: bz0, sx: 1, sz: -1 },
+          { x: bx0, z: bz1 - 1, sx: -1, sz: 1 },
+          { x: bx1 - 1, z: bz1 - 1, sx: 1, sz: 1 }
+        ];
+        for (const h of horns) {
+          for (let i = 0; i < curve; i++) {
+            const xx = h.x + h.sx * i;
+            const zz = h.z + h.sz * i;
+            setVoxel(xx, topY + 1 + i, zz, jitter(0xf2c24c, xx, topY + 1 + i, zz, 0.04));
+            setVoxel(xx, topY + i, zz, jitter(0xf6c84d, xx, topY + i, zz, 0.05));
+            setVoxel(xx, topY + 1 + i, h.z, jitter(white, xx, topY + 1 + i, h.z, 0.03));
+            setVoxel(h.x, topY + 1 + i, zz, jitter(white, h.x, topY + 1 + i, zz, 0.03));
+          }
+        }
+
+        // Ridge
+        const ridgeY = y0 + levels + 1;
+        const ridgeCol = 0xf2c24c;
+        if (ridgeAxis === "x") {
+          const rz = Math.round((z0 + z1 - 1) / 2);
+          for (let x = bx0 + 3; x <= bx1 - 4; x++) setVoxel(x, ridgeY, rz, jitter(ridgeCol, x, ridgeY, rz, 0.04));
+          setVoxel(bx0 + 3, ridgeY + 1, rz, jitter(ridgeCol, bx0 + 3, ridgeY + 1, rz, 0.04));
+          setVoxel(bx1 - 4, ridgeY + 1, rz, jitter(ridgeCol, bx1 - 4, ridgeY + 1, rz, 0.04));
+        } else {
+          const rx = Math.round((x0 + x1 - 1) / 2);
+          for (let z = bz0 + 3; z <= bz1 - 4; z++) setVoxel(rx, ridgeY, z, jitter(ridgeCol, rx, ridgeY, z, 0.04));
+          setVoxel(rx, ridgeY + 1, bz0 + 3, jitter(ridgeCol, rx, ridgeY + 1, bz0 + 3, 0.04));
+          setVoxel(rx, ridgeY + 1, bz1 - 4, jitter(ridgeCol, rx, ridgeY + 1, bz1 - 4, 0.04));
+        }
+      }
+
+      function addLantern(cx, cy, cz, lanternLights) {
+        const red = 0xd43a30;
+        const redDeep = 0x971815;
+        const gold = 0xf2c24c;
+        const glow = 0xffb15e;
+        const dark = 0x2a2025;
+
+        // String
+        for (let y = cy + 7; y <= cy + 10; y++) setVoxel(cx, y, cz, jitter(dark, cx, y, cz, 0.02));
+
+        // Body (a small round-ish capsule)
+        for (let y = 0; y <= 6; y++) {
+          const ry = y === 0 || y === 6 ? 1 : y === 1 || y === 5 ? 2 : 2;
+          for (let dx = -2; dx <= 2; dx++) {
+            for (let dz = -2; dz <= 2; dz++) {
+              if (dx * dx + dz * dz > ry * ry) continue;
+              const isEdge = dx * dx + dz * dz >= (ry - 0.5) * (ry - 0.5);
+              const base = isEdge ? red : (hash3(cx + dx, cy + y, cz + dz) < 0.55 ? red : redDeep);
+              setVoxel(cx + dx, cy + y, cz + dz, jitter(base, cx + dx, cy + y, cz + dz, 0.03));
+              if (Math.abs(dx) <= 1 && Math.abs(dz) <= 1 && y >= 2 && y <= 4) setVoxel(cx + dx, cy + y, cz + dz, jitter(glow, cx + dx, cy + y, cz + dz, 0.02), "glow");
+            }
+          }
+        }
+        // Caps
+        addBox(cx - 2, cy + 6, cz - 2, cx + 3, cy + 7, cz + 3, gold, "solid", 0.05);
+        addBox(cx - 2, cy - 1, cz - 2, cx + 3, cy + 0, cz + 3, gold, "solid", 0.05);
+
+        // Tassel
+        for (let y = cy - 4; y <= cy - 1; y++) setVoxel(cx, y, cz, jitter(redDeep, cx, y, cz, 0.03));
+        setVoxel(cx, cy - 5, cz, jitter(glow, cx, cy - 5, cz, 0.02), "glow");
+
+        lanternLights.push(new THREE.Vector3(cx, cy + 3, cz));
+      }
+
+      function addStoneLion(cx, cy, cz, facing = 1) {
+        const stone = 0x9aa0a8;
+        const stoneDeep = 0x6f747a;
+        const white = 0xf4efe2;
+
+        // Plinth
+        addBox(cx - 4, cy, cz - 3, cx + 5, cy + 2, cz + 4, stoneDeep, "solid", 0.06);
+        addBox(cx - 3, cy + 2, cz - 2, cx + 4, cy + 3, cz + 3, stone, "solid", 0.06);
+
+        // Body
+        addBox(cx - 2, cy + 3, cz - 1, cx + 3, cy + 6, cz + 2, stone, "solid", 0.06);
+        addBox(cx - 3, cy + 4, cz - 1, cx - 1, cy + 6, cz + 2, stone, "solid", 0.06);
+        addBox(cx + 1, cy + 4, cz - 1, cx + 3, cy + 6, cz + 2, stone, "solid", 0.06);
+
+        // Head
+        const hz = cz + facing * 2;
+        addBox(cx - 2, cy + 6, hz - 2, cx + 3, cy + 10, hz + 2, stone, "solid", 0.06);
+        addBox(cx - 3, cy + 7, hz - 1, cx - 1, cy + 10, hz + 1, stone, "solid", 0.06);
+        addBox(cx + 1, cy + 7, hz - 1, cx + 3, cy + 10, hz + 1, stone, "solid", 0.06);
+
+        // Snout + eyes
+        addBox(cx - 1, cy + 7, hz + facing * 1, cx + 2, cy + 9, hz + facing * 2, stoneDeep, "solid", 0.06);
+        setVoxel(cx - 1, cy + 8, hz, jitter(white, cx - 1, cy + 8, hz, 0.02));
+        setVoxel(cx + 1, cy + 8, hz, jitter(white, cx + 1, cy + 8, hz, 0.02));
+
+        // Tail curl
+        const tz = cz - facing * 2;
+        setVoxel(cx + 3, cy + 6, tz, jitter(stoneDeep, cx + 3, cy + 6, tz, 0.06));
+        setVoxel(cx + 4, cy + 7, tz, jitter(stoneDeep, cx + 4, cy + 7, tz, 0.06));
+        setVoxel(cx + 3, cy + 8, tz, jitter(stoneDeep, cx + 3, cy + 8, tz, 0.06));
+      }
+
+      function addDragonRelief({ x0, y0, z, flip }) {
+        const gold = 0xf2c24c;
+        const white = 0xf4efe2;
+        const pattern = [
+          "....xx....xx....",
+          "...xxxx..xxxx...",
+          "..xx..xxxx..xx..",
+          ".xx...xx....xxx.",
+          "xxx..xxxx..xx..x",
+          ".xx....xx...xx..",
+          "..xxx..xxxxxx...",
+          "...xx....xx....."
+        ];
+
+        for (let r = 0; r < pattern.length; r++) {
+          const row = pattern[r];
+          for (let c = 0; c < row.length; c++) {
+            if (row[c] !== "x") continue;
+            const xx = flip ? x0 + (row.length - 1 - c) : x0 + c;
+            const yy = y0 + (pattern.length - 1 - r);
+            setVoxel(xx, yy, z, jitter(gold, xx, yy, z, 0.03));
+            if ((c + r) % 3 === 0) setVoxel(xx, yy + 1, z, jitter(white, xx, yy + 1, z, 0.02));
+          }
+        }
+      }
+
+      function addStreetAndBuildings(lanternLights) {
+        // Ground (not voxel): a simple street plane
+        const groundGeo = new THREE.PlaneGeometry(520, 520, 1, 1);
+        const groundMat = new THREE.MeshStandardMaterial({ color: 0x151a24, roughness: 0.98, metalness: 0.02 });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.55;
+        ground.position.z = -40;
+        group.add(ground);
+
+        const curbCol = 0x2a2f3b;
+        addBox(-70, 0, -140, 70, 1, 60, curbCol, "solid", 0.03);
+        addBox(-40, 0, 10, 40, 1, 60, 0x1b2231, "solid", 0.03);
+        // Street center line
+        for (let z = -170; z <= 40; z += 4) {
+          addBox(-1, 1, z, 1, 2, z + 2, 0xf2c24c, "solid", 0.03);
+        }
+
+        // Buildings behind the gate (voxel shells)
+        function addBuildingShell(x0, z0, w, d, h, baseCol, winCol) {
+          const x1 = x0 + w;
+          const z1 = z0 + d;
+          // Walls
+          for (let y = 1; y <= h; y++) {
+            for (let x = x0; x < x1; x++) {
+              setVoxel(x, y, z0, jitter(baseCol, x, y, z0, 0.05));
+              setVoxel(x, y, z1 - 1, jitter(baseCol, x, y, z1 - 1, 0.05));
+              if (y > 2 && y < h - 2 && x % 4 === 0 && hash3(x, y, z0) > 0.72) setVoxel(x, y, z0, jitter(winCol, x, y, z0, 0.02), "emissive");
+              if (y > 2 && y < h - 2 && x % 4 === 0 && hash3(x, y, z1 - 1) > 0.72) setVoxel(x, y, z1 - 1, jitter(winCol, x, y, z1 - 1, 0.02), "emissive");
+            }
+            for (let z = z0; z < z1; z++) {
+              setVoxel(x0, y, z, jitter(baseCol, x0, y, z, 0.05));
+              setVoxel(x1 - 1, y, z, jitter(baseCol, x1 - 1, y, z, 0.05));
+              if (y > 2 && y < h - 2 && z % 4 === 0 && hash3(x0, y, z) > 0.72) setVoxel(x0, y, z, jitter(winCol, x0, y, z, 0.02), "emissive");
+              if (y > 2 && y < h - 2 && z % 4 === 0 && hash3(x1 - 1, y, z) > 0.72) setVoxel(x1 - 1, y, z, jitter(winCol, x1 - 1, y, z, 0.02), "emissive");
+            }
+          }
+          // Roof
+          addBox(x0, h + 1, z0, x1, h + 3, z1, jitter(baseCol, x0, h + 2, z0, 0.05), "solid", 0.03);
+        }
+
+        const bA = 0x1b2231;
+        const bB = 0x141a26;
+        const win = 0x2c6cff;
+        // Mid-ground shops (closer to the gate)
+        addBuildingShell(-88, -112, 44, 34, 28, bA, 0x46f0ff);
+        addBuildingShell(44, -112, 44, 34, 30, bB, 0xff58c7);
+        addBuildingShell(-90, -150, 42, 38, 38, bA, win);
+        addBuildingShell(-40, -165, 44, 44, 44, bB, 0xff58c7);
+        addBuildingShell(10, -150, 46, 36, 36, bA, 0x46f0ff);
+        addBuildingShell(60, -168, 46, 48, 46, bB, win);
+
+        // A simple neon sign behind the gate
+        const signZ = -78;
+        const signY = 22;
+        const signX0 = -76;
+        const neon = 0x44e9ff;
+        for (let x = signX0; x < signX0 + 18; x++) {
+          for (let y = signY; y < signY + 8; y++) setVoxel(x, y, signZ, jitter(neon, x, y, signZ, 0.02), "glow");
+        }
+        for (let y = signY + 1; y < signY + 7; y++) setVoxel(signX0 + 18, y, signZ, jitter(0xff58c7, signX0 + 18, y, signZ, 0.02), "glow");
+        lanternLights.push(new THREE.Vector3(signX0 + 9, signY + 4, signZ));
+      }
+
+      function buildModel() {
+        occ.clear();
+        const lanternLights = [];
+
+        // Background first (so gate stands out)
+        addStreetAndBuildings(lanternLights);
+
+        // Paifang base platform
+        const stone = 0x9aa0a8;
+        const stoneDeep = 0x6f747a;
+        addBox(-56, 0, -18, 56, 3, 22, stone, "solid", 0.06);
+        addBox(-50, 3, -14, 50, 4, 18, stoneDeep, "solid", 0.05);
+        addBox(-46, 4, -10, 46, 5, 14, stone, "solid", 0.05);
+
+        // Steps (front)
+        addBox(-34, 0, 22, 34, 1, 28, stoneDeep, "solid", 0.06);
+        addBox(-28, 1, 20, 28, 2, 26, stone, "solid", 0.06);
+        addBox(-22, 2, 18, 22, 3, 24, stoneDeep, "solid", 0.06);
+
+        // Pillars: 4 red pillars supporting the gate
+        const yBase = 0;
+        const pillarH = 20;
+        const px = 22;
+        const pzF = 6;
+        const pzB = -6;
+        addPillar(-px, pzF, yBase, pillarH, 2);
+        addPillar(px, pzF, yBase, pillarH, 2);
+        addPillar(-px, pzB, yBase, pillarH, 2);
+        addPillar(px, pzB, yBase, pillarH, 2);
+
+        // Cross beams
+        const beamY = yBase + 3 + pillarH + 1;
+        addBeamX(-px - 3, px + 4, beamY, pzF, 3, 6);
+        addBeamX(-px - 3, px + 4, beamY, pzB, 3, 6);
+        addBeamZ(pzB - 3, pzF + 4, beamY, -px, 3, 6);
+        addBeamZ(pzB - 3, pzF + 4, beamY, px, 3, 6);
+
+        // Second layer beam (under roof)
+        addBeamX(-px - 10, px + 11, beamY + 6, 0, 3, 8, 0x5a2019);
+
+        // Decorative dragons + cloud patterns on the front beam
+        addDragonRelief({ x0: -34, y0: beamY + 2, z: pzF + 4, flip: false });
+        addDragonRelief({ x0: 18, y0: beamY + 2, z: pzF + 4, flip: true });
+
+        // Central signboard frame (voxel)
+        const boardW = 30;
+        const boardH = 10;
+        const boardX0 = -Math.floor(boardW / 2);
+        const boardY0 = beamY + 1;
+        const boardZ = pzF + 6;
+        const wood = 0x5c2c1d;
+        const gold = 0xf2c24c;
+        addBox(boardX0 - 1, boardY0 - 1, boardZ - 1, boardX0 + boardW + 1, boardY0 + boardH + 1, boardZ + 1, wood, "solid", 0.05);
+        addFrame2D(boardX0 - 1, boardY0 - 1, boardX0 + boardW + 1, boardY0 + boardH + 1, boardZ + 1, gold, 1);
+        // Remove inner to make room for the texture plane "window"
+        for (let x = boardX0 + 1; x < boardX0 + boardW - 1; x++) {
+          for (let y = boardY0 + 1; y < boardY0 + boardH - 1; y++) {
+            occ.delete(`${x},${y},${boardZ + 1}`);
+          }
+        }
+
+        // Roofs: 3 tiers with upturned eaves
+        const roof1Y = beamY + 7;
+        addRoofTier({ x0: -34, x1: 35, z0: -14, z1: 15, y0: roof1Y, levels: 8, overhang: 6, curve: 4, ridgeAxis: "x" });
+        const roof2Y = roof1Y + 10;
+        addRoofTier({ x0: -22, x1: 23, z0: -10, z1: 11, y0: roof2Y, levels: 7, overhang: 5, curve: 3, ridgeAxis: "x" });
+        const roof3Y = roof2Y + 9;
+        addRoofTier({ x0: -14, x1: 15, z0: -6, z1: 7, y0: roof3Y, levels: 6, overhang: 4, curve: 3, ridgeAxis: "x" });
+
+        // Central finial
+        addBox(-1, roof3Y + 9, -1, 2, roof3Y + 13, 2, 0xf2c24c, "solid", 0.05);
+        addBox(-2, roof3Y + 13, -2, 3, roof3Y + 15, 3, 0xf4efe2, "solid", 0.03);
+
+        // Lanterns: at least 4, hanging on both sides
+        addLantern(-34, 20, 14, lanternLights);
+        addLantern(-24, 19, 14, lanternLights);
+        addLantern(24, 19, 14, lanternLights);
+        addLantern(34, 20, 14, lanternLights);
+
+        // Optional stone lions
+        addStoneLion(-30, 3, 20, 1);
+        addStoneLion(24, 3, 20, 1);
+
+        return { lanternLights, board: { x: 0, y: boardY0 + boardH / 2, z: boardZ + 1 } };
+      }
+
+      function buildInstancedMeshes() {
+        const solids = [];
+        const emissives = [];
+        const glows = [];
+        for (const v of occ.values()) {
+          if (v.type === "glow") glows.push(v);
+          else if (v.type === "emissive") emissives.push(v);
+          else solids.push(v);
+        }
+
+        const make = (list, mat, yBias = 0) => {
+          const mesh = new THREE.InstancedMesh(boxGeo, mat, list.length);
+          const dummy = new THREE.Object3D();
+          const color = new THREE.Color();
+          for (let i = 0; i < list.length; i++) {
+            const v = list[i];
+            dummy.position.set(v.x, v.y + yBias, v.z);
+            dummy.updateMatrix();
+            mesh.setMatrixAt(i, dummy.matrix);
+            color.setHex(v.color);
+            mesh.setColorAt(i, color);
+          }
+          mesh.instanceMatrix.needsUpdate = true;
+          if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+          mesh.frustumCulled = false;
+          return mesh;
+        };
+
+        const solidMesh = make(solids, solidMat);
+        const emissiveMesh = make(emissives, glowMat);
+        const glowMesh = make(glows, hotMat);
+
+        return { solidMesh, emissiveMesh, glowMesh, counts: { solids: solids.length, emissives: emissives.length, glows: glows.length } };
+      }
+
+      function createSignboardTexture() {
+        const c = document.createElement("canvas");
+        c.width = 1024;
+        c.height = 320;
+        const g = c.getContext("2d");
+
+        g.fillStyle = "#1b0d0b";
+        g.fillRect(0, 0, c.width, c.height);
+
+        // Gold border
+        g.lineWidth = 18;
+        g.strokeStyle = "#f2c24c";
+        g.strokeRect(22, 22, c.width - 44, c.height - 44);
+
+        // Inner border (white/gold)
+        g.lineWidth = 6;
+        g.strokeStyle = "rgba(245, 240, 225, 0.85)";
+        g.strokeRect(46, 46, c.width - 92, c.height - 92);
+
+        // Cloud motifs
+        g.save();
+        g.translate(120, c.height - 86);
+        g.strokeStyle = "rgba(245, 240, 225, 0.8)";
+        g.lineWidth = 5;
+        for (let i = 0; i < 6; i++) {
+          g.beginPath();
+          g.arc(i * 120, 0, 24, Math.PI * 0.1, Math.PI * 1.8);
+          g.stroke();
+          g.beginPath();
+          g.arc(i * 120 + 32, -8, 16, Math.PI * 0.1, Math.PI * 1.8);
+          g.stroke();
+        }
+        g.restore();
+
+        // Text
+        g.save();
+        g.shadowColor = "rgba(0,0,0,0.55)";
+        g.shadowBlur = 12;
+        g.fillStyle = "#f7d26a";
+        g.textAlign = "center";
+        g.textBaseline = "middle";
+        g.font = "900 164px 'Noto Serif SC', 'Songti SC', 'STSong', serif";
+        g.fillText("唐人街", c.width / 2, c.height / 2 + 6);
+        g.restore();
+
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = 4;
+        return tex;
+      }
+
+      let instanced = null;
+      let signMesh = null;
+      let lanternLightObjs = [];
+      let modelInfo = null;
+
+      function clearGroup() {
+        while (group.children.length) group.remove(group.children[group.children.length - 1]);
+        if (instanced) {
+          instanced.solidMesh.dispose?.();
+          instanced.emissiveMesh.dispose?.();
+          instanced.glowMesh.dispose?.();
+        }
+        if (signMesh) {
+          signMesh.material.map?.dispose?.();
+          signMesh.material.dispose?.();
+          signMesh.geometry.dispose?.();
+        }
+        for (const l of lanternLightObjs) {
+          scene.remove(l);
+        }
+        lanternLightObjs = [];
+        instanced = null;
+        signMesh = null;
+        modelInfo = null;
+      }
+
+      function rebuild() {
+        clearGroup();
+        seed = (Math.random() * 1e9) | 0;
+        modelInfo = buildModel();
+        instanced = buildInstancedMeshes();
+        group.add(instanced.solidMesh, instanced.emissiveMesh, instanced.glowMesh);
+
+        // Signboard (mesh plane) placed in front of the voxel frame
+        const tex = createSignboardTexture();
+        const mat = new THREE.MeshStandardMaterial({
+          map: tex,
+          roughness: 0.65,
+          metalness: 0.08,
+          emissive: new THREE.Color(0x201006),
+          emissiveIntensity: 0.45
+        });
+        const geo = new THREE.PlaneGeometry(30, 10);
+        signMesh = new THREE.Mesh(geo, mat);
+        signMesh.position.set(0, modelInfo.board.y, modelInfo.board.z + 0.55);
+        group.add(signMesh);
+
+        // Lantern point lights
+        for (const p of modelInfo.lanternLights) {
+          const light = new THREE.PointLight(0xffb36a, 1.35, 72, 2.2);
+          light.position.copy(p);
+          scene.add(light);
+          lanternLightObjs.push(light);
+
+          const glowBall = new THREE.Mesh(new THREE.SphereGeometry(0.9, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffc37b }));
+          glowBall.position.copy(p);
+          scene.add(glowBall);
+          lanternLightObjs.push(glowBall);
+        }
+
+        hud.textContent = `voxels: ${instanced.counts.solids + instanced.counts.emissives + instanced.counts.glows}  (solid ${instanced.counts.solids}, glow ${instanced.counts.glows})`;
+      }
+
+      regenBtn.addEventListener("click", rebuild);
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key.toLowerCase() === "r") rebuild();
+        if (e.key.toLowerCase() === "o") setAutoOrbit(!state.autoOrbit);
+        if (e.key.toLowerCase() === "f") setFrontView();
+      });
+
+      function onResize() {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      window.addEventListener("resize", onResize);
+
+      // ====== Render loop ======
+      let lastTs = performance.now();
+      function animate(ts) {
+        const dt = Math.min(0.05, (ts - lastTs) / 1000);
+        lastTs = ts;
+
+        if (state.autoOrbit && !state.dragging) {
+          state.theta += dt * 0.25;
+          updateCamera();
+        }
+
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      // Boot
+      setAutoOrbit(false);
+      rebuild();
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>

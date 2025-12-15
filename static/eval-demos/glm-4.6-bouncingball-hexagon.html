@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>彩色球弹跳 - 旋转六边形物理模拟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        canvas {
+            display: block;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-radius: 20px;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .controls h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-value {
+            display: inline-block;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            max-width: 200px;
+        }
+
+        .info h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .stats {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        .stats div {
+            margin-bottom: 5px;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            z-index: 1000;
+        }
+
+        .legend h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .controls, .info {
+                position: static;
+                margin: 10px;
+                max-width: none;
+            }
+
+            body {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .stats, .legend {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div class="controls">
+            <h3>🎮 物理控制</h3>
+
+            <div class="control-group">
+                <label>重力强度: <span class="control-value" id="gravityValue">0.3</span></label>
+                <input type="range" id="gravitySlider" min="0" max="1" step="0.1" value="0.3">
+            </div>
+
+            <div class="control-group">
+                <label>弹性系数: <span class="control-value" id="elasticityValue">0.8</span></label>
+                <input type="range" id="elasticitySlider" min="0" max="1" step="0.1" value="0.8">
+            </div>
+
+            <div class="control-group">
+                <label>摩擦系数: <span class="control-value" id="frictionValue">0.99</span></label>
+                <input type="range" id="frictionSlider" min="0.9" max="1" step="0.01" value="0.99">
+            </div>
+
+            <div class="control-group">
+                <label>旋转速度: <span class="control-value" id="rotationValue">0.01</span></label>
+                <input type="range" id="rotationSlider" min="0" max="0.05" step="0.01" value="0.01">
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="toggleRotation()">暂停/旋转</button>
+                <button class="btn btn-secondary" onclick="resetBalls()">重置球</button>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-success" onclick="addBall()">添加球</button>
+                <button class="btn btn-primary" onclick="removeBall()">移除球</button>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>🎯 操作说明</h3>
+            <p>🖱️ <strong>点击画布:</strong> 在点击位置创建新球</p>
+            <p>⚡ <strong>空格键:</strong> 暂停/继续动画</p>
+            <p>🔄 <strong>R键:</strong> 重置所有球</p>
+            <p>➕ <strong>+键:</strong> 添加新球</p>
+            <p>➖ <strong>-键:</strong> 移除球</p>
+        </div>
+
+        <div class="stats">
+            <div>球数量: <span id="ballCount">10</span></div>
+            <div>FPS: <span id="fps">60</span></div>
+            <div>旋转角度: <span id="rotationAngle">0</span>°</div>
+            <div>总动能: <span id="totalEnergy">0</span></div>
+        </div>
+
+        <div class="legend">
+            <h4>🎨 球属性</h4>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF6B6B;"></div>
+                <span>高速球</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4ECDC4;"></div>
+                <span>中速球</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #45B7D1;"></div>
+                <span>低速球</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入 p5.js 库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+
+    <script>
+        // 全局变量
+        let balls = [];
+        let hexagonRadius = 250;
+        let rotation = 0;
+        let rotationSpeed = 0.01;
+        let gravity = 0.3;
+        let elasticity = 0.8;
+        let friction = 0.99;
+        let isRotating = true;
+        let frameCount = 0;
+        let lastFrameTime = Date.now();
+        let fps = 60;
+
+        // 颜色调色板
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+            '#DDA0DD', '#98D8C8', '#FFD93D', '#6BCB77', '#FF6B9D',
+            '#C44569', '#F8B500', '#786FA6', '#F5A623', '#4834DF'
+        ];
+
+        // 球类
+        class Ball {
+            constructor(x, y) {
+                this.pos = createVector(x, y);
+                this.vel = createVector(random(-5, 5), random(-5, 5));
+                this.acc = createVector(0, 0);
+                this.radius = random(15, 30);
+                this.mass = this.radius * 0.1;
+                this.color = color(random(colors));
+                this.trail = [];
+                this.maxTrailLength = 10;
+            }
+
+            applyForce(force) {
+                let f = p5.Vector.div(force, this.mass);
+                this.acc.add(f);
+            }
+
+            update() {
+                // 应用重力
+                let gravityForce = createVector(0, gravity);
+                this.applyForce(gravityForce);
+
+                // 更新物理
+                this.vel.add(this.acc);
+                this.vel.mult(friction);
+                this.pos.add(this.vel);
+                this.acc.mult(0);
+
+                // 更新轨迹
+                if (frameCount % 2 === 0) {
+                    this.trail.push(this.pos.copy());
+                    if (this.trail.length > this.maxTrailLength) {
+                        this.trail.shift();
+                    }
+                }
+            }
+
+            checkHexagonCollision() {
+                // 获取六边形顶点
+                let vertices = this.getHexagonVertices();
+
+                for (let i = 0; i < vertices.length; i++) {
+                    let v1 = vertices[i];
+                    let v2 = vertices[(i + 1) % vertices.length];
+
+                    // 检查球与边的碰撞
+                    let collision = this.checkLineCollision(v1, v2);
+                    if (collision) {
+                        this.resolveLineCollision(collision.normal, collision.point);
+                    }
+                }
+            }
+
+            getHexagonVertices() {
+                let vertices = [];
+                for (let i = 0; i < 6; i++) {
+                    let angle = rotation + (TWO_PI / 6) * i;
+                    let x = cos(angle) * hexagonRadius;
+                    let y = sin(angle) * hexagonRadius;
+                    vertices.push(createVector(x, y));
+                }
+                return vertices;
+            }
+
+            checkLineCollision(v1, v2) {
+                // 计算线段到球心的距离
+                let line = p5.Vector.sub(v2, v1);
+                let lineLength = line.mag();
+                line.normalize();
+
+                let toBall = p5.Vector.sub(this.pos, v1);
+                let projection = toBall.dot(line);
+
+                if (projection < 0 || projection > lineLength) {
+                    return null;
+                }
+
+                let closestPoint = p5.Vector.add(v1, p5.Vector.mult(line, projection));
+                let distance = p5.Vector.dist(this.pos, closestPoint);
+
+                if (distance < this.radius) {
+                    let normal = p5.Vector.sub(this.pos, closestPoint);
+                    normal.normalize();
+                    return { normal: normal, point: closestPoint };
+                }
+
+                return null;
+            }
+
+            resolveLineCollision(normal, point) {
+                // 反弹
+                let relativeVelocity = p5.Vector.dot(this.vel, normal);
+                if (relativeVelocity > 0) return;
+
+                let impulse = p5.Vector.mult(normal, -2 * relativeVelocity * elasticity);
+                this.vel.add(impulse);
+
+                // 将球推出边界
+                let distance = p5.Vector.dist(this.pos, point);
+                let overlap = this.radius - distance;
+                if (overlap > 0) {
+                    let pushOut = p5.Vector.mult(normal, overlap);
+                    this.pos.add(pushOut);
+                }
+            }
+
+            checkBallCollision(other) {
+                let distance = p5.Vector.dist(this.pos, other.pos);
+                let minDistance = this.radius + other.radius;
+
+                if (distance < minDistance) {
+                    // 计算碰撞法向量
+                    let normal = p5.Vector.sub(other.pos, this.pos);
+                    normal.normalize();
+
+                    // 相对速度
+                    let relativeVelocity = p5.Vector.sub(other.vel, this.vel);
+                    let velocityAlongNormal = p5.Vector.dot(relativeVelocity, normal);
+
+                    // 如果球正在分离，不处理
+                    if (velocityAlongNormal > 0) return;
+
+                    // 计算冲量
+                    let impulse = p5.Vector.mult(normal, 2 * velocityAlongNormal / (this.mass + other.mass));
+                    impulse.mult(elasticity);
+
+                    // 应用冲量
+                    this.vel.add(p5.Vector.mult(impulse, other.mass));
+                    other.vel.sub(p5.Vector.mult(impulse, this.mass));
+
+                    // 分离重叠的球
+                    let overlap = minDistance - distance;
+                    let separation = p5.Vector.mult(normal, overlap / 2);
+                    this.pos.sub(separation);
+                    other.pos.add(separation);
+                }
+            }
+
+            display() {
+                push();
+
+                // 绘制轨迹
+                noFill();
+                strokeWeight(2);
+                for (let i = 0; i < this.trail.length; i++) {
+                    let alpha = map(i, 0, this.trail.length, 0, 100);
+                    stroke(red(this.color), green(this.color), blue(this.color), alpha);
+                    if (i > 0) {
+                        line(this.trail[i-1].x, this.trail[i-1].y, this.trail[i].x, this.trail[i].y);
+                    }
+                }
+
+                // 绘制球体
+                noStroke();
+                fill(this.color);
+
+                // 添加光泽效果
+                push();
+                drawingContext.shadowBlur = 20;
+                drawingContext.shadowColor = this.color;
+                circle(this.pos.x, this.pos.y, this.radius * 2);
+                pop();
+
+                // 添加高光
+                fill(255, 100);
+                circle(
+                    this.pos.x - this.radius * 0.3,
+                    this.pos.y - this.radius * 0.3,
+                    this.radius * 0.6
+                );
+
+                pop();
+            }
+
+            getSpeed() {
+                return this.vel.mag();
+            }
+        }
+
+        function setup() {
+            let canvas = createCanvas(800, 600);
+            canvas.parent('canvas-container');
+
+            // 创建初始球
+            for (let i = 0; i < 10; i++) {
+                let angle = random(TWO_PI);
+                let r = random(0, hexagonRadius - 50);
+                let x = cos(angle) * r;
+                let y = sin(angle) * r;
+                balls.push(new Ball(x, y));
+            }
+
+            // 设置控制器事件监听
+            setupControls();
+        }
+
+        function draw() {
+            // 深色背景与渐变
+            drawBackground();
+
+            push();
+            translate(width / 2, height / 2);
+
+            // 绘制旋转六边形
+            drawHexagon();
+
+            // 更新和绘制球
+            if (isRotating) {
+                rotation += rotationSpeed;
+            }
+
+            for (let i = 0; i < balls.length; i++) {
+                balls[i].update();
+                balls[i].checkHexagonCollision();
+
+                // 球与球碰撞检测
+                for (let j = i + 1; j < balls.length; j++) {
+                    balls[i].checkBallCollision(balls[j]);
+                }
+
+                balls[i].display();
+            }
+
+            pop();
+
+            // 更新统计信息
+            updateStats();
+        }
+
+        function drawBackground() {
+            // 创建渐变背景
+            for (let i = 0; i <= height; i++) {
+                let inter = map(i, 0, height, 0, 1);
+                let c = lerpColor(color(26, 26, 46), color(15, 52, 96), inter);
+                stroke(c);
+                line(0, i, width, i);
+            }
+        }
+
+        function drawHexagon() {
+            push();
+            rotate(rotation);
+
+            // 绘制六边形边框
+            strokeWeight(4);
+            stroke(255, 100, 100, 200);
+            fill(0, 0, 0, 30);
+
+            beginShape();
+            for (let i = 0; i < 6; i++) {
+                let angle = (TWO_PI / 6) * i;
+                let x = cos(angle) * hexagonRadius;
+                let y = sin(angle) * hexagonRadius;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+
+            // 绘制顶点
+            fill(255, 100, 100);
+            noStroke();
+            for (let i = 0; i < 6; i++) {
+                let angle = (TWO_PI / 6) * i;
+                let x = cos(angle) * hexagonRadius;
+                let y = sin(angle) * hexagonRadius;
+                circle(x, y, 8);
+            }
+
+            // 绘制中心标记
+            stroke(255, 100);
+            strokeWeight(2);
+            line(-10, 0, 10, 0);
+            line(0, -10, 0, 10);
+
+            pop();
+        }
+
+        function setupControls() {
+            // 重力控制
+            let gravitySlider = document.getElementById('gravitySlider');
+            gravitySlider.addEventListener('input', (e) => {
+                gravity = parseFloat(e.target.value);
+                document.getElementById('gravityValue').textContent = gravity;
+            });
+
+            // 弹性控制
+            let elasticitySlider = document.getElementById('elasticitySlider');
+            elasticitySlider.addEventListener('input', (e) => {
+                elasticity = parseFloat(e.target.value);
+                document.getElementById('elasticityValue').textContent = elasticity;
+            });
+
+            // 摩擦控制
+            let frictionSlider = document.getElementById('frictionSlider');
+            frictionSlider.addEventListener('input', (e) => {
+                friction = parseFloat(e.target.value);
+                document.getElementById('frictionValue').textContent = friction;
+            });
+
+            // 旋转速度控制
+            let rotationSlider = document.getElementById('rotationSlider');
+            rotationSlider.addEventListener('input', (e) => {
+                rotationSpeed = parseFloat(e.target.value);
+                document.getElementById('rotationValue').textContent = rotationSpeed;
+            });
+        }
+
+        function updateStats() {
+            // 更新FPS
+            frameCount++;
+            let currentTime = Date.now();
+            if (currentTime - lastFrameTime >= 1000) {
+                fps = frameCount;
+                frameCount = 0;
+                lastFrameTime = currentTime;
+            }
+
+            // 计算总动能
+            let totalEnergy = 0;
+            for (let ball of balls) {
+                totalEnergy += 0.5 * ball.mass * ball.vel.mag() * ball.vel.mag();
+            }
+
+            // 更新显示
+            document.getElementById('ballCount').textContent = balls.length;
+            document.getElementById('fps').textContent = fps;
+            document.getElementById('rotationAngle').textContent = Math.floor(degrees(rotation) % 360);
+            document.getElementById('totalEnergy').textContent = Math.floor(totalEnergy);
+        }
+
+        function mousePressed() {
+            let mx = mouseX - width / 2;
+            let my = mouseY - height / 2;
+
+            // 检查点击是否在六边形内
+            let distance = dist(mx, my, 0, 0);
+            if (distance < hexagonRadius - 30) {
+                balls.push(new Ball(mx, my));
+            }
+        }
+
+        function keyPressed() {
+            switch(key) {
+                case ' ':
+                    toggleRotation();
+                    break;
+                case 'r':
+                case 'R':
+                    resetBalls();
+                    break;
+                case '+':
+                case '=':
+                    addBall();
+                    break;
+                case '-':
+                case '_':
+                    removeBall();
+                    break;
+            }
+        }
+
+        function toggleRotation() {
+            isRotating = !isRotating;
+        }
+
+        function resetBalls() {
+            balls = [];
+            for (let i = 0; i < 10; i++) {
+                let angle = random(TWO_PI);
+                let r = random(0, hexagonRadius - 50);
+                let x = cos(angle) * r;
+                let y = sin(angle) * r;
+                balls.push(new Ball(x, y));
+            }
+        }
+
+        function addBall() {
+            let angle = random(TWO_PI);
+            let r = random(0, hexagonRadius - 50);
+            let x = cos(angle) * r;
+            let y = sin(angle) * r;
+            balls.push(new Ball(x, y));
+        }
+
+        function removeBall() {
+            if (balls.length > 0) {
+                balls.pop();
+            }
+        }
+    </script>
+</body>
+</html>

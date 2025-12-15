@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>唐人街牌坊 - Voxel Art</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            max-width: 300px;
+            border: 2px solid #8B0000;
+            z-index: 1000;
+        }
+
+        .info-panel h2 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .info-panel p {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            color: #FFE4E1;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            border: 2px solid #FFD700;
+            z-index: 1000;
+        }
+
+        .controls h3 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .control-item {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-item label {
+            color: #FFE4E1;
+            margin-right: 10px;
+        }
+
+        .control-item input[type="range"] {
+            width: 100px;
+        }
+
+        .control-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            z-index: 2000;
+        }
+
+        .loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 215, 0, 0.3);
+            border-top: 5px solid #FFD700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        button {
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(220, 20, 60, 0.3);
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #DC143C, #FF6347);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 20, 60, 0.5);
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            color: #FFE4E1;
+        }
+
+        .feature-list li:before {
+            content: "🏮";
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>正在加载唐人街牌坊...</div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <h2>🏮 唐人街牌坊</h2>
+        <p>
+            传统中式牌坊是唐人街的标志性建筑，象征着中华文化的传承与繁荣。
+        </p>
+        <p>
+            这座牌坊采用传统的三檐结构，红柱金瓦，配以龙纹装饰和红灯笼，
+            展现了典型的明清建筑风格。
+        </p>
+        <ul class="feature-list">
+            <li>四根红柱支撑主体结构</li>
+            <li>三层金色飞檐设计</li>
+            <li>中央"唐人街"牌匾</li>
+            <li>传统龙纹装饰</li>
+            <li>红灯笼点缀</li>
+            <li>石狮子镇守</li>
+        </ul>
+    </div>
+
+    <div class="controls">
+        <h3>🎮 控制面板</h3>
+        <div class="control-item">
+            <label>
+                <input type="checkbox" id="autoRotate" checked> 自动旋转
+            </label>
+        </div>
+        <div class="control-item">
+            <label>
+                <input type="checkbox" id="showLanternGlow" checked> 灯笼发光
+            </label>
+        </div>
+        <div class="control-item">
+            <label>
+                <input type="checkbox" id="showDragons" checked> 显示龙纹
+            </label>
+        </div>
+        <div class="control-item">
+            <label>旋转速度:</label>
+            <input type="range" id="rotationSpeed" min="0" max="0.05" step="0.005" value="0.01">
+        </div>
+        <div class="control-item">
+            <label>光照强度:</label>
+            <input type="range" id="lightIntensity" min="0.5" max="2" step="0.1" value="1">
+        </div>
+        <button onclick="resetCamera()">重置视角</button>
+        <button onclick="toggleDayNight()">日夜切换</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Global variables
+        let scene, camera, renderer, controls;
+        let autoRotate = true;
+        let rotationSpeed = 0.01;
+        let ambientLight, directionalLight;
+        let lanterns = [];
+        let lanternLights = [];
+        let paifangGroup;
+        let isDay = true;
+
+        // Voxel block size
+        const VOXEL_SIZE = 1;
+
+        // Colors
+        const COLORS = {
+            RED: 0x8B0000,
+            GOLD: 0xFFD700,
+            WHITE: 0xFFFFFF,
+            STONE: 0x808080,
+            LANTERN_RED: 0xDC143C,
+            DARK_WOOD: 0x654321
+        };
+
+        // Voxel helper class
+        class VoxelBlock {
+            constructor(x, y, z, color = COLORS.RED) {
+                this.geometry = new THREE.BoxGeometry(VOXEL_SIZE, VOXEL_SIZE, VOXEL_SIZE);
+                this.material = new THREE.MeshPhongMaterial({
+                    color: color,
+                    flatShading: true
+                });
+                this.mesh = new THREE.Mesh(this.geometry, this.material);
+                this.mesh.position.set(x, y, z);
+                this.mesh.castShadow = true;
+                this.mesh.receiveShadow = true;
+            }
+
+            addToScene(scene) {
+                scene.add(this.mesh);
+            }
+        }
+
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x404040, 50, 200);
+
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(30, 25, 40);
+            camera.lookAt(0, 15, 0);
+
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setClearColor(0x87CEEB);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Add lights
+            setupLighting();
+
+            // Create paifang
+            createPaifang();
+
+            // Create background
+            createBackground();
+
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+            }, 1000);
+
+            // Setup event listeners
+            setupEventListeners();
+
+            // Start animation loop
+            animate();
+        }
+
+        function setupLighting() {
+            // Ambient light
+            ambientLight = new THREE.AmbientLight(0x404040, 1);
+            scene.add(ambientLight);
+
+            // Directional light (sun)
+            directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1);
+            directionalLight.position.set(50, 50, 25);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.camera.left = -50;
+            directionalLight.shadow.camera.right = 50;
+            directionalLight.shadow.camera.top = 50;
+            directionalLight.shadow.camera.bottom = -50;
+            directionalLight.shadow.camera.near = 0.1;
+            directionalLight.shadow.camera.far = 200;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+        }
+
+        function createPaifang() {
+            paifangGroup = new THREE.Group();
+
+            // Create main structure
+            createPillars();
+            createRoofs();
+            createSignboard();
+            createDecorations();
+            createLanterns();
+            createStoneLions();
+
+            scene.add(paifangGroup);
+        }
+
+        function createPillars() {
+            // Four main pillars
+            const pillarPositions = [
+                { x: -12, z: -8 },  // Front left
+                { x: 12, z: -8 },   // Front right
+                { x: -12, z: 8 },   // Back left
+                { x: 12, z: 8 }     // Back right
+            ];
+
+            pillarPositions.forEach(pos => {
+                // Main pillar column
+                for (let y = 0; y <= 20; y++) {
+                    const voxel = new VoxelBlock(pos.x, y, pos.z, COLORS.RED);
+                    voxel.addToScene(paifangGroup);
+                }
+
+                // Pillar base
+                for (let x = -2; x <= 2; x++) {
+                    for (let z = -2; z <= 2; z++) {
+                        const baseVoxel = new VoxelBlock(pos.x + x * VOXEL_SIZE, -1, pos.z + z * VOXEL_SIZE, COLORS.STONE);
+                        baseVoxel.addToScene(paifangGroup);
+                    }
+                }
+
+                // Pillar top cap
+                for (let x = -2; x <= 2; x++) {
+                    for (let z = -2; z <= 2; z++) {
+                        const capVoxel = new VoxelBlock(pos.x + x * VOXEL_SIZE, 21, pos.z + z * VOXEL_SIZE, COLORS.GOLD);
+                        capVoxel.addToScene(paifangGroup);
+                    }
+                }
+            });
+        }
+
+        function createRoofs() {
+            // Three-tier roof structure
+            const roofLevels = [
+                { y: 25, width: 30, depth: 20, eaves: 8 },  // Bottom tier
+                { y: 32, width: 24, depth: 16, eaves: 6 },  // Middle tier
+                { y: 38, width: 18, depth: 12, eaves: 4 }   // Top tier
+            ];
+
+            roofLevels.forEach((level, index) => {
+                // Main roof structure
+                for (let x = -level.width/2; x <= level.width/2; x++) {
+                    for (let z = -level.depth/2; z <= level.depth/2; z++) {
+                        if (Math.abs(x) === Math.floor(level.width/2) || Math.abs(z) === Math.floor(level.depth/2)) {
+                            const roofVoxel = new VoxelBlock(x, level.y, z, COLORS.GOLD);
+                            roofVoxel.addToScene(paifangGroup);
+                        }
+                    }
+                }
+
+                // Upturned eaves (飞檐)
+                createUpturnedEaves(level, index);
+            });
+        }
+
+        function createUpturnedEaves(level, tierIndex) {
+            const eavePoints = 12;
+            const eaveHeight = 3;
+
+            for (let i = 0; i < eavePoints; i++) {
+                const angle = (i / eavePoints) * Math.PI * 2;
+                const radius = level.eaves + tierIndex * 2;
+
+                for (let h = 0; h < eaveHeight; h++) {
+                    const x = Math.cos(angle) * radius;
+                    const z = Math.sin(angle) * radius;
+                    const y = level.y - h;
+
+                    const eaveVoxel = new VoxelBlock(x, y, z, COLORS.GOLD);
+                    eaveVoxel.addToScene(paifangGroup);
+                }
+            }
+        }
+
+        function createSignboard() {
+            // Central signboard structure
+            const signWidth = 16;
+            const signHeight = 6;
+            const signDepth = 2;
+
+            // Sign frame
+            for (let x = -signWidth/2; x <= signWidth/2; x++) {
+                for (let y = 22; y <= 22 + signHeight; y++) {
+                    // Top and bottom borders
+                    const topVoxel = new VoxelBlock(x, y, -signDepth/2, COLORS.GOLD);
+                    const bottomVoxel = new VoxelBlock(x, y, signDepth/2, COLORS.GOLD);
+                    topVoxel.addToScene(paifangGroup);
+                    bottomVoxel.addToScene(paifangGroup);
+                }
+            }
+
+            for (let y = 22; y <= 22 + signHeight; y++) {
+                for (let z = -signDepth/2; z <= signDepth/2; z++) {
+                    // Left and right borders
+                    const leftVoxel = new VoxelBlock(-signWidth/2, y, z, COLORS.GOLD);
+                    const rightVoxel = new VoxelBlock(signWidth/2, y, z, COLORS.GOLD);
+                    leftVoxel.addToScene(paifangGroup);
+                    rightVoxel.addToScene(paifangGroup);
+                }
+            }
+
+            // Sign background (white)
+            for (let x = -signWidth/2 + 1; x < signWidth/2; x++) {
+                for (let y = 23; y < 22 + signHeight; y++) {
+                    const backVoxel = new VoxelBlock(x, y, 0, COLORS.WHITE);
+                    backVoxel.addToScene(paifangGroup);
+                }
+            }
+        }
+
+        function createDecorations() {
+            // Dragon carvings on pillars
+            const pillarPositions = [
+                { x: -12, z: -8 },
+                { x: 12, z: -8 },
+                { x: -12, z: 8 },
+                { x: 12, z: 8 }
+            ];
+
+            pillarPositions.forEach((pos, index) => {
+                // Dragon patterns (simplified voxel representation)
+                const dragonPattern = [
+                    { dx: 0, dy: 10, dz: 0 },
+                    { dx: 1, dy: 10, dz: 0 },
+                    { dx: -1, dy: 10, dz: 0 },
+                    { dx: 0, dy: 11, dz: 0 },
+                    { dx: 2, dy: 9, dz: 0 },
+                    { dx: -2, dy: 9, dz: 0 },
+                    { dx: 1, dy: 11, dz: 0 },
+                    { dx: -1, dy: 11, dz: 0 },
+                    { dx: 0, dy: 12, dz: 0 }
+                ];
+
+                dragonPattern.forEach(pattern => {
+                    const dragonVoxel = new VoxelBlock(
+                        pos.x + pattern.dx,
+                        pos.y + pattern.dy,
+                        pos.z + pattern.dz,
+                        COLORS.GOLD
+                    );
+                    dragonVoxel.mesh.userData.isDragon = true;
+                    dragonVoxel.addToScene(paifangGroup);
+                });
+            });
+
+            // Cloud patterns on upper structures
+            for (let i = 0; i < 8; i++) {
+                const cloudX = (Math.random() - 0.5) * 30;
+                const cloudY = 35 + Math.random() * 8;
+                const cloudZ = (Math.random() - 0.5) * 20;
+
+                // Simple cloud pattern
+                for (let dx = -2; dx <= 2; dx++) {
+                    for (let dz = -1; dz <= 1; dz++) {
+                        if (Math.abs(dx) + Math.abs(dz) <= 2) {
+                            const cloudVoxel = new VoxelBlock(
+                                cloudX + dx,
+                                cloudY,
+                                cloudZ + dz,
+                                COLORS.WHITE
+                            );
+                            cloudVoxel.mesh.userData.isCloud = true;
+                            cloudVoxel.addToScene(paifangGroup);
+                        }
+                    }
+                }
+            }
+        }
+
+        function createLanterns() {
+            const lanternPositions = [
+                { x: -18, y: 18, z: -12 },
+                { x: 18, y: 18, z: -12 },
+                { x: -18, y: 18, z: 12 },
+                { x: 18, y: 18, z: 12 }
+            ];
+
+            lanternPositions.forEach((pos, index) => {
+                // Lantern chain
+                for (let i = 0; i < 5; i++) {
+                    const chainVoxel = new VoxelBlock(pos.x, pos.y + i, pos.z, COLORS.DARK_WOOD);
+                    chainVoxel.addToScene(paifangGroup);
+                }
+
+                // Lantern body
+                for (let x = -2; x <= 2; x++) {
+                    for (let y = -3; y <= 3; y++) {
+                        if (Math.abs(x) + Math.abs(y/2) <= 2) {
+                            const lanternVoxel = new VoxelBlock(
+                                pos.x + x,
+                                pos.y - 4,
+                                pos.z,
+                                COLORS.LANTERN_RED
+                            );
+                            lanternVoxel.mesh.userData.isLantern = true;
+                            lanternVoxel.addToScene(paifangGroup);
+                        }
+                    }
+                }
+
+                // Lantern glow light
+                const lanternLight = new THREE.PointLight(0xFF4500, 1, 10);
+                lanternLight.position.set(pos.x, pos.y - 4, pos.z);
+                lanternLight.castShadow = true;
+                lanternLights.push(lanternLight);
+                scene.add(lanternLight);
+            });
+        }
+
+        function createStoneLions() {
+            // Left lion
+            createLion(-20, 0, -15, 1);
+            // Right lion
+            createLion(20, 0, -15, -1);
+        }
+
+        function createLion(x, y, z, facing) {
+            // Lion body (simplified voxel representation)
+            const bodyPattern = [
+                // Body
+                { dx: 0, dy: 2, dz: 0, w: 3, h: 4, d: 2 },
+                // Head
+                { dx: facing * 2, dy: 4, dz: 0, w: 2, h: 2, d: 2 },
+                // Legs
+                { dx: -1, dy: 0, dz: -1, w: 1, h: 2, d: 1 },
+                { dx: -1, dy: 0, dz: 1, w: 1, h: 2, d: 1 },
+                { dx: 1, dy: 0, dz: -1, w: 1, h: 2, d: 1 },
+                { dx: 1, dy: 0, dz: 1, w: 1, h: 2, d: 1 }
+            ];
+
+            bodyPattern.forEach(part => {
+                for (let dx = 0; dx < part.w; dx++) {
+                    for (let dy = 0; dy < part.h; dy++) {
+                        for (let dz = 0; dz < part.d; dz++) {
+                            const lionVoxel = new VoxelBlock(
+                                x + part.dx + dx - part.w/2,
+                                y + part.dy + dy,
+                                z + part.dz + dz - part.d/2,
+                                COLORS.STONE
+                            );
+                            lionVoxel.mesh.userData.isLion = true;
+                            lionVoxel.addToScene(paifangGroup);
+                        }
+                    }
+                }
+            });
+        }
+
+        function createBackground() {
+            // Ground
+            const groundGeometry = new THREE.PlaneGeometry(200, 200);
+            const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x3a3a3a });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // Background buildings
+            for (let i = 0; i < 10; i++) {
+                const buildingHeight = 15 + Math.random() * 25;
+                const buildingWidth = 8 + Math.random() * 12;
+                const buildingDepth = 8 + Math.random() * 12;
+
+                const buildingGeometry = new THREE.BoxGeometry(buildingWidth, buildingHeight, buildingDepth);
+                const buildingMaterial = new THREE.MeshPhongMaterial({
+                    color: new THREE.Color().setHSL(0.6, 0.1, 0.3 + Math.random() * 0.2)
+                });
+                const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+
+                building.position.set(
+                    (Math.random() - 0.5) * 100,
+                    buildingHeight / 2,
+                    -30 - Math.random() * 50
+                );
+                building.castShadow = true;
+                building.receiveShadow = true;
+                scene.add(building);
+            }
+
+            // Street
+            const streetGeometry = new THREE.PlaneGeometry(40, 200);
+            const streetMaterial = new THREE.MeshPhongMaterial({ color: 0x2a2a2a });
+            const street = new THREE.Mesh(streetGeometry, streetMaterial);
+            street.rotation.x = -Math.PI / 2;
+            street.position.set(0, -1.9, -20);
+            street.receiveShadow = true;
+            scene.add(street);
+        }
+
+        function setupEventListeners() {
+            // Window resize
+            window.addEventListener('resize', onWindowResize);
+
+            // Control panel
+            document.getElementById('autoRotate').addEventListener('change', (e) => {
+                autoRotate = e.target.checked;
+            });
+
+            document.getElementById('showLanternGlow').addEventListener('change', (e) => {
+                lanternLights.forEach(light => {
+                    light.visible = e.target.checked;
+                });
+            });
+
+            document.getElementById('showDragons').addEventListener('change', (e) => {
+                paifangGroup.children.forEach(child => {
+                    if (child.userData.isDragon || child.userData.isCloud) {
+                        child.visible = e.target.checked;
+                    }
+                });
+            });
+
+            document.getElementById('rotationSpeed').addEventListener('input', (e) => {
+                rotationSpeed = parseFloat(e.target.value);
+            });
+
+            document.getElementById('lightIntensity').addEventListener('input', (e) => {
+                const intensity = parseFloat(e.target.value);
+                directionalLight.intensity = intensity;
+                ambientLight.intensity = intensity * 0.3;
+            });
+
+            // Mouse controls
+            let mouseX = 0, mouseY = 0;
+            let targetRotationX = 0, targetRotationY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                if (!autoRotate) {
+                    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                    mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+                    targetRotationY = mouseX * Math.PI;
+                    targetRotationX = mouseY * Math.PI / 4;
+                }
+            });
+
+            document.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const zoomSpeed = 0.1;
+                if (e.deltaY < 0) {
+                    camera.position.z = Math.max(20, camera.position.z - zoomSpeed * 10);
+                } else {
+                    camera.position.z = Math.min(100, camera.position.z + zoomSpeed * 10);
+                }
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Auto rotation
+            if (autoRotate) {
+                paifangGroup.rotation.y += rotationSpeed;
+            }
+
+            // Lantern animation
+            lanterns.forEach((lantern, index) => {
+                if (lantern) {
+                    lantern.rotation.y = Math.sin(Date.now() * 0.001 + index) * 0.1;
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Control functions
+        function resetCamera() {
+            camera.position.set(30, 25, 40);
+            camera.lookAt(0, 15, 0);
+        }
+
+        function toggleDayNight() {
+            isDay = !isDay;
+            if (isDay) {
+                renderer.setClearColor(0x87CEEB);
+                ambientLight.intensity = 0.3;
+                directionalLight.intensity = 1;
+            } else {
+                renderer.setClearColor(0x0a0a1a);
+                ambientLight.intensity = 0.1;
+                directionalLight.intensity = 0.3;
+                lanternLights.forEach(light => {
+                    light.intensity = 2;
+                });
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

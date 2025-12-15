@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>体素四合院</title>
+    <style>
+      :root {
+        --panel: rgba(8, 12, 20, 0.62);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text: rgba(255, 255, 255, 0.86);
+        --muted: rgba(255, 255, 255, 0.66);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #070a12;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans SC", sans-serif;
+      }
+      canvas {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      .ui {
+        position: fixed;
+        left: 12px;
+        top: 12px;
+        display: grid;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        border-radius: 14px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+        color: var(--text);
+        user-select: none;
+      }
+      .title {
+        font-weight: 720;
+        letter-spacing: 0.2px;
+        font-size: 13px;
+      }
+      .hint {
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      button {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.92);
+        padding: 7px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 90ms ease, background 140ms ease, border-color 140ms ease;
+      }
+      button:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.32);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: #64ffda;
+        box-shadow: 0 0 0 3px rgba(100, 255, 218, 0.14);
+      }
+      .dot.off {
+        background: rgba(255, 255, 255, 0.28);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+      }
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        padding: 0 6px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 11px;
+      }
+      .credit {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: rgba(5, 7, 14, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 12px;
+        user-select: none;
+        pointer-events: none;
+        backdrop-filter: blur(8px);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div class="ui">
+      <div class="title">体素四合院：瓦顶、院落与红门</div>
+      <div class="hint">
+        拖动：旋转　滚轮：缩放　双击：重置<br />
+        <span class="kbd">Space</span> 自动旋转　<span class="kbd">R</span> 重新生成
+      </div>
+      <div class="row">
+        <div class="pill" id="spinPill"><span class="dot" id="spinDot"></span><span id="spinText">自动旋转：开</span></div>
+        <button id="resetBtn" type="button">重置视角</button>
+        <button id="rebuildBtn" type="button">重新生成</button>
+      </div>
+    </div>
+    <div class="credit">纯 HTML / CSS / JS（无外部依赖）</div>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById("c");
+        const ctx = canvas.getContext("2d", { alpha: false });
+
+        const spinPill = document.getElementById("spinPill");
+        const spinDot = document.getElementById("spinDot");
+        const spinText = document.getElementById("spinText");
+        const resetBtn = document.getElementById("resetBtn");
+        const rebuildBtn = document.getElementById("rebuildBtn");
+
+        const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+        const lerp = (a, b, t) => a + (b - a) * t;
+
+        function mulberry32(seed) {
+          let t = seed >>> 0;
+          return function rand() {
+            t += 0x6d2b79f5;
+            let x = t;
+            x = Math.imul(x ^ (x >>> 15), x | 1);
+            x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+            return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+          };
+        }
+
+        function rotY(p, yaw) {
+          const c = Math.cos(yaw), s = Math.sin(yaw);
+          return { x: p.x * c + p.z * s, y: p.y, z: -p.x * s + p.z * c };
+        }
+        function rotX(p, pitch) {
+          const c = Math.cos(pitch), s = Math.sin(pitch);
+          return { x: p.x, y: p.y * c - p.z * s, z: p.y * s + p.z * c };
+        }
+        function normalize(v) {
+          const m = Math.hypot(v.x, v.y, v.z) || 1;
+          return { x: v.x / m, y: v.y / m, z: v.z / m };
+        }
+
+        const LIGHT_DIR = normalize({ x: -0.35, y: 0.78, z: 0.52 });
+
+        function rgbToCss(rgb) {
+          const r = clamp(Math.round(rgb.r), 0, 255);
+          const g = clamp(Math.round(rgb.g), 0, 255);
+          const b = clamp(Math.round(rgb.b), 0, 255);
+          return `rgb(${r} ${g} ${b})`;
+        }
+
+        function shadeRgb(base, brightness, coolShadow = 0.0) {
+          const b = clamp(brightness, 0, 1.65);
+          const r = base.r * b;
+          const g = base.g * b;
+          const bl = base.b * b;
+          return {
+            r: r * (1 - coolShadow) + 14 * coolShadow,
+            g: g * (1 - coolShadow) + 28 * coolShadow,
+            b: bl * (1 - coolShadow) + 52 * coolShadow
+          };
+        }
+
+        // ===== Voxel model =====
+        const voxels = new Map();
+        let seed = 20251215;
+
+        const materials = {
+          earth: { base: { r: 70, g: 56, b: 40 }, coolShadow: 0.0, jitter: 0.10 },
+          grass: { base: { r: 54, g: 94, b: 62 }, coolShadow: 0.05, jitter: 0.10 },
+          courtyardStone: { base: { r: 166, g: 171, b: 176 }, coolShadow: 0.08, jitter: 0.06 },
+          stoneDark: { base: { r: 122, g: 128, b: 134 }, coolShadow: 0.08, jitter: 0.06 },
+          plaster: { base: { r: 220, g: 222, b: 216 }, coolShadow: 0.10, jitter: 0.05 },
+          brick: { base: { r: 170, g: 154, b: 138 }, coolShadow: 0.08, jitter: 0.05 },
+          wood: { base: { r: 128, g: 88, b: 52 }, coolShadow: 0.0, jitter: 0.05 },
+          woodDark: { base: { r: 92, g: 64, b: 40 }, coolShadow: 0.0, jitter: 0.04 },
+          windowDark: { base: { r: 22, g: 26, b: 34 }, coolShadow: 0.0, jitter: 0.0 },
+          roofTile: { base: { r: 78, g: 94, b: 108 }, coolShadow: 0.14, jitter: 0.08 },
+          roofTileDeep: { base: { r: 64, g: 78, b: 92 }, coolShadow: 0.16, jitter: 0.08 },
+          roofRidge: { base: { r: 54, g: 68, b: 82 }, coolShadow: 0.16, jitter: 0.06 },
+          roofEdge: { base: { r: 90, g: 106, b: 118 }, coolShadow: 0.14, jitter: 0.06 },
+          doorRed: { base: { r: 190, g: 54, b: 46 }, coolShadow: 0.0, jitter: 0.03 },
+          doorDeepRed: { base: { r: 146, g: 28, b: 24 }, coolShadow: 0.0, jitter: 0.03 },
+          gold: { base: { r: 226, g: 188, b: 92 }, coolShadow: 0.0, jitter: 0.03 },
+          greenGlaze: { base: { r: 42, g: 140, b: 118 }, coolShadow: 0.0, jitter: 0.05 },
+          lantern: { base: { r: 208, g: 62, b: 48 }, coolShadow: 0.0, jitter: 0.03 },
+          lanternLight: { base: { r: 255, g: 200, b: 122 }, coolShadow: 0.0, jitter: 0.0 }
+        };
+
+        const DIRS = [
+          { name: "+x", dx: 1, dy: 0, dz: 0, n: { x: 1, y: 0, z: 0 } },
+          { name: "-x", dx: -1, dy: 0, dz: 0, n: { x: -1, y: 0, z: 0 } },
+          { name: "+y", dx: 0, dy: 1, dz: 0, n: { x: 0, y: 1, z: 0 } },
+          { name: "-y", dx: 0, dy: -1, dz: 0, n: { x: 0, y: -1, z: 0 } },
+          { name: "+z", dx: 0, dy: 0, dz: 1, n: { x: 0, y: 0, z: 1 } },
+          { name: "-z", dx: 0, dy: 0, dz: -1, n: { x: 0, y: 0, z: -1 } }
+        ];
+
+        const keyOf = (x, y, z) => `${x},${y},${z}`;
+
+        function hash3(x, y, z) {
+          let n =
+            Math.imul(x, 374761393) ^
+            Math.imul(y, 668265263) ^
+            Math.imul(z, 2147483647) ^
+            Math.imul(seed, 1597334677);
+          n = Math.imul(n ^ (n >>> 13), 1274126177);
+          n = (n ^ (n >>> 16)) >>> 0;
+          return n / 4294967295;
+        }
+
+        function setVoxel(x, y, z, matName, extra = {}) {
+          const mat = materials[matName] || materials.earth;
+          let base = mat.base;
+          const jitter = mat.jitter ?? 0;
+          if (jitter) {
+            const v = hash3(x, y, z);
+            const t = lerp(1 - jitter, 1 + jitter, v);
+            base = { r: base.r * t, g: base.g * t, b: base.b * t };
+          }
+          voxels.set(keyOf(x, y, z), {
+            x,
+            y,
+            z,
+            mat: matName,
+            base,
+            coolShadow: mat.coolShadow ?? 0,
+            emissive: extra.emissive ?? 0
+          });
+        }
+
+        function fillRect(x0, z0, x1, z1, y, matName, extra = null) {
+          for (let x = x0; x < x1; x++) {
+            for (let z = z0; z < z1; z++) {
+              setVoxel(x, y, z, matName, extra || {});
+            }
+          }
+        }
+
+        function fillBox(x0, y0, z0, x1, y1, z1, matName, extra = null) {
+          for (let x = x0; x < x1; x++) {
+            for (let y = y0; y < y1; y++) {
+              for (let z = z0; z < z1; z++) {
+                setVoxel(x, y, z, matName, extra || {});
+              }
+            }
+          }
+        }
+
+        function hollowBox(x0, y0, z0, x1, y1, z1, matName) {
+          for (let x = x0; x < x1; x++) {
+            for (let y = y0; y < y1; y++) {
+              setVoxel(x, y, z0, matName);
+              setVoxel(x, y, z1 - 1, matName);
+            }
+          }
+          for (let z = z0; z < z1; z++) {
+            for (let y = y0; y < y1; y++) {
+              setVoxel(x0, y, z, matName);
+              setVoxel(x1 - 1, y, z, matName);
+            }
+          }
+        }
+
+        function addStepsOnZWall({ z, x0, x1, y0, steps, toward }) {
+          const dz = toward === "+z" ? 1 : -1;
+          for (let s = 0; s < steps; s++) {
+            const zz = z + dz * s;
+            for (let x = x0; x < x1; x++) {
+              setVoxel(x, y0 - s, zz, "stoneDark");
+            }
+          }
+        }
+
+        function addLantern(cx, cy, cz) {
+          setVoxel(cx, cy + 2, cz, "woodDark");
+          setVoxel(cx, cy + 1, cz, "lantern");
+          setVoxel(cx, cy, cz, "lantern");
+          setVoxel(cx, cy - 1, cz, "lantern");
+          setVoxel(cx, cy - 2, cz, "lanternLight", { emissive: 0.40 });
+        }
+
+        function addGableRoof({ x0, x1, z0, z1, yBase, h, ridgeAxis, overhang = 2 }) {
+          const tileMat = (x, y, z) => (hash3(x, y, z) < 0.55 ? "roofTile" : "roofTileDeep");
+
+          const rx0 = x0 - overhang;
+          const rx1 = x1 + overhang;
+          const rz0 = z0 - overhang;
+          const rz1 = z1 + overhang;
+
+          if (ridgeAxis === "x") {
+            for (let t = 0; t < h; t++) {
+              const zz0 = rz0 + t;
+              const zz1 = rz1 - t;
+              if (zz0 >= zz1) break;
+              for (let x = rx0; x < rx1; x++) {
+                for (let z = zz0; z < zz1; z++) setVoxel(x, yBase + t, z, tileMat(x, yBase + t, z));
+              }
+              for (let x = rx0; x < rx1; x++) {
+                setVoxel(x, yBase + t, zz0, "roofEdge");
+                setVoxel(x, yBase + t, zz1 - 1, "roofEdge");
+              }
+            }
+            const ridgeZ = Math.floor((z0 + z1) / 2);
+            const ridgeY = yBase + h;
+            for (let x = rx0 + 1; x < rx1 - 1; x++) setVoxel(x, ridgeY, ridgeZ, "roofRidge");
+            setVoxel(rx0 + 1, ridgeY + 1, ridgeZ, "roofRidge");
+            setVoxel(rx1 - 2, ridgeY + 1, ridgeZ, "roofRidge");
+          } else {
+            for (let t = 0; t < h; t++) {
+              const xx0 = rx0 + t;
+              const xx1 = rx1 - t;
+              if (xx0 >= xx1) break;
+              for (let x = xx0; x < xx1; x++) {
+                for (let z = rz0; z < rz1; z++) setVoxel(x, yBase + t, z, tileMat(x, yBase + t, z));
+              }
+              for (let z = rz0; z < rz1; z++) {
+                setVoxel(xx0, yBase + t, z, "roofEdge");
+                setVoxel(xx1 - 1, yBase + t, z, "roofEdge");
+              }
+            }
+            const ridgeX = Math.floor((x0 + x1) / 2);
+            const ridgeY = yBase + h;
+            for (let z = rz0 + 1; z < rz1 - 1; z++) setVoxel(ridgeX, ridgeY, z, "roofRidge");
+            setVoxel(ridgeX, ridgeY + 1, rz0 + 1, "roofRidge");
+            setVoxel(ridgeX, ridgeY + 1, rz1 - 2, "roofRidge");
+          }
+
+          const corners = [
+            { x: rx0, z: rz0 },
+            { x: rx1 - 1, z: rz0 },
+            { x: rx0, z: rz1 - 1 },
+            { x: rx1 - 1, z: rz1 - 1 }
+          ];
+          for (const c of corners) {
+            setVoxel(c.x, yBase + 1, c.z, "roofEdge");
+            setVoxel(c.x, yBase + 2, c.z, "roofEdge");
+          }
+        }
+
+        function addFacadeDetails({ front, x0, x1, z0, z1, yWall0, yWall1, isGate = false }) {
+          const midX = Math.floor((x0 + x1) / 2);
+          const midZ = Math.floor((z0 + z1) / 2);
+          const doorW = isGate ? 10 : 8;
+          const doorH = isGate ? 7 : 6;
+          const doorY0 = yWall0;
+          const doorY1 = Math.min(yWall1 - 1, doorY0 + doorH);
+
+          const setDoorVoxel = (x, y, z) => {
+            const edge = x === midX - Math.floor(doorW / 2) || x === midX + Math.floor((doorW - 1) / 2) || y === doorY0 || y === doorY1 - 1;
+            const mat = edge ? "woodDark" : isGate ? "doorRed" : "wood";
+            setVoxel(x, y, z, mat);
+            if (isGate && !edge && (x + y) % 2 === 0 && hash3(x, y, z) > 0.65) setVoxel(x, y, z, "doorDeepRed");
+          };
+
+          if (front === "+z") {
+            const z = z1 - 1;
+            for (let x = midX - Math.floor(doorW / 2); x <= midX + Math.floor((doorW - 1) / 2); x++) {
+              for (let y = doorY0; y < doorY1; y++) setDoorVoxel(x, y, z);
+            }
+
+            if (isGate) {
+              for (let x = midX - 1; x <= midX + 1; x++) setVoxel(x, doorY1, z, "gold");
+              for (let y = doorY0 + 1; y < doorY1 - 1; y++) {
+                if (y % 2 === 0) {
+                  setVoxel(midX - 2, y, z, "gold");
+                  setVoxel(midX + 2, y, z, "gold");
+                }
+              }
+            }
+
+            if (!isGate) {
+              const winY0 = yWall0 + 2;
+              const winY1 = Math.min(yWall1 - 2, winY0 + 4);
+              const leftWin = { x0: x0 + 3, x1: x0 + 11, z };
+              const rightWin = { x0: x1 - 11, x1: x1 - 3, z };
+
+              for (const w of [leftWin, rightWin]) {
+                for (let x = w.x0; x < w.x1; x++) {
+                  for (let y = winY0; y < winY1; y++) setVoxel(x, y, z, "windowDark");
+                }
+                for (let x = w.x0; x < w.x1; x++) {
+                  setVoxel(x, winY0, z, "wood");
+                  setVoxel(x, winY1 - 1, z, "wood");
+                }
+                for (let y = winY0; y < winY1; y++) {
+                  setVoxel(w.x0, y, z, "wood");
+                  setVoxel(w.x1 - 1, y, z, "wood");
+                }
+                for (let x = w.x0; x < w.x1; x++) {
+                  if ((x - w.x0) % 3 === 0) for (let y = winY0; y < winY1; y++) setVoxel(x, y, z, "wood");
+                }
+                for (let y = winY0; y < winY1; y++) {
+                  if ((y - winY0) % 2 === 0) for (let x = w.x0; x < w.x1; x++) setVoxel(x, y, z, "wood");
+                }
+              }
+            }
+          } else if (front === "-z") {
+            const z = z0;
+            for (let x = midX - Math.floor(doorW / 2); x <= midX + Math.floor((doorW - 1) / 2); x++) {
+              for (let y = doorY0; y < doorY1; y++) setDoorVoxel(x, y, z);
+            }
+
+            if (isGate) {
+              for (let x = midX - 1; x <= midX + 1; x++) setVoxel(x, doorY1, z, "gold");
+              for (let y = doorY0 + 1; y < doorY1 - 1; y++) {
+                if (y % 2 === 0) {
+                  setVoxel(midX - 2, y, z, "gold");
+                  setVoxel(midX + 2, y, z, "gold");
+                }
+              }
+            }
+          } else if (front === "-x") {
+            const x = x0;
+            const doorZ0 = midZ - Math.floor(doorW / 2);
+            const doorZ1 = midZ + Math.floor((doorW - 1) / 2);
+            for (let z = doorZ0; z <= doorZ1; z++) {
+              for (let y = doorY0; y < doorY1; y++) {
+                const edge = z === doorZ0 || z === doorZ1 || y === doorY0 || y === doorY1 - 1;
+                const mat = edge ? "woodDark" : "wood";
+                setVoxel(x, y, z, mat);
+              }
+            }
+          } else if (front === "+x") {
+            const x = x1 - 1;
+            const doorZ0 = midZ - Math.floor(doorW / 2);
+            const doorZ1 = midZ + Math.floor((doorW - 1) / 2);
+            for (let z = doorZ0; z <= doorZ1; z++) {
+              for (let y = doorY0; y < doorY1; y++) {
+                const edge = z === doorZ0 || z === doorZ1 || y === doorY0 || y === doorY1 - 1;
+                const mat = edge ? "woodDark" : "wood";
+                setVoxel(x, y, z, mat);
+              }
+            }
+          }
+        }
+
+        function oppositeSide(side) {
+          if (side === "+z") return "-z";
+          if (side === "-z") return "+z";
+          if (side === "+x") return "-x";
+          return "+x";
+        }
+
+        function addHall({ x0, x1, z0, z1, wallH, roofH, ridgeAxis, front, veranda = 2, isGate = false }) {
+          const y0 = 1;
+          const yWall0 = y0 + 1;
+          const yWall1 = yWall0 + wallH;
+
+          let fx0 = x0, fx1 = x1, fz0 = z0, fz1 = z1;
+          if (front === "+z") fz1 += veranda;
+          if (front === "-z") fz0 -= veranda;
+          if (front === "+x") fx1 += veranda;
+          if (front === "-x") fx0 -= veranda;
+          fillRect(fx0, fz0, fx1, fz1, y0, "stoneDark");
+
+          hollowBox(x0, yWall0, z0, x1, yWall0 + 2, z1, "brick");
+          hollowBox(x0, yWall0 + 2, z0, x1, yWall1, z1, "plaster");
+
+          // Roof beams (a hint of dougong under the eaves)
+          const beamY = yWall1;
+          for (let x = x0; x < x1; x++) {
+            setVoxel(x, beamY, z0 - 1, "woodDark");
+            setVoxel(x, beamY, z1, "woodDark");
+          }
+          for (let z = z0; z < z1; z++) {
+            setVoxel(x0 - 1, beamY, z, "woodDark");
+            setVoxel(x1, beamY, z, "woodDark");
+          }
+
+          // Front columns and eaves brackets
+          if (front === "+z") {
+            const colZ = z1 + veranda - 1;
+            for (let x = x0 + 2; x <= x1 - 3; x += 4) {
+              for (let y = y0 + 1; y < yWall1; y++) setVoxel(x, y, colZ, "woodDark");
+              setVoxel(x, yWall1, colZ, "greenGlaze");
+              setVoxel(x, yWall1 + 1, colZ, "greenGlaze");
+            }
+            addStepsOnZWall({ z: z1 + veranda - 1, x0: Math.floor((x0 + x1) / 2) - 4, x1: Math.floor((x0 + x1) / 2) + 4, y0, steps: 2, toward: "+z" });
+          } else if (front === "-z") {
+            const colZ = z0 - veranda;
+            for (let x = x0 + 2; x <= x1 - 3; x += 4) {
+              for (let y = y0 + 1; y < yWall1; y++) setVoxel(x, y, colZ, "woodDark");
+              setVoxel(x, yWall1, colZ, "greenGlaze");
+              setVoxel(x, yWall1 + 1, colZ, "greenGlaze");
+            }
+            addStepsOnZWall({ z: z0 - veranda, x0: Math.floor((x0 + x1) / 2) - 4, x1: Math.floor((x0 + x1) / 2) + 4, y0, steps: 2, toward: "-z" });
+          } else if (front === "-x") {
+            const colX = x0 - veranda;
+            for (let z = z0 + 2; z <= z1 - 3; z += 4) {
+              for (let y = y0 + 1; y < yWall1; y++) setVoxel(colX, y, z, "woodDark");
+              setVoxel(colX, yWall1, z, "greenGlaze");
+              setVoxel(colX, yWall1 + 1, z, "greenGlaze");
+            }
+          } else if (front === "+x") {
+            const colX = x1 + veranda - 1;
+            for (let z = z0 + 2; z <= z1 - 3; z += 4) {
+              for (let y = y0 + 1; y < yWall1; y++) setVoxel(colX, y, z, "woodDark");
+              setVoxel(colX, yWall1, z, "greenGlaze");
+              setVoxel(colX, yWall1 + 1, z, "greenGlaze");
+            }
+          }
+
+          addFacadeDetails({ front, x0, x1, z0, z1, yWall0, yWall1, isGate: false });
+          if (isGate) addFacadeDetails({ front: oppositeSide(front), x0, x1, z0, z1, yWall0, yWall1, isGate: true });
+
+          addGableRoof({
+            x0,
+            x1,
+            z0,
+            z1,
+            yBase: yWall1,
+            h: roofH,
+            ridgeAxis,
+            overhang: 3
+          });
+        }
+
+        function buildModel() {
+          voxels.clear();
+
+          const SITE = 42;
+          const COURT = 14;
+
+          // Ground with a subtle grass ring and stone courtyard.
+          for (let x = -SITE; x <= SITE; x++) {
+            for (let z = -SITE; z <= SITE; z++) {
+              const d = Math.max(Math.abs(x), Math.abs(z));
+              const isCourt = x >= -COURT && x < COURT && z >= -COURT && z < COURT;
+              const isGrass = d > COURT + 6 && d < SITE - 6;
+              setVoxel(x, 0, z, isCourt ? "courtyardStone" : isGrass ? "grass" : "earth");
+            }
+          }
+
+          // Courtyard border stones
+          for (let x = -COURT - 1; x <= COURT; x++) {
+            setVoxel(x, 0, -COURT - 1, "stoneDark");
+            setVoxel(x, 0, COURT, "stoneDark");
+          }
+          for (let z = -COURT - 1; z <= COURT; z++) {
+            setVoxel(-COURT - 1, 0, z, "stoneDark");
+            setVoxel(COURT, 0, z, "stoneDark");
+          }
+
+          // Four halls enclosing the courtyard.
+          addHall({ x0: -20, x1: 20, z0: -28, z1: -14, wallH: 8, roofH: 7, ridgeAxis: "x", front: "+z" });
+          addHall({ x0: -20, x1: 20, z0: 14, z1: 28, wallH: 9, roofH: 7, ridgeAxis: "x", front: "-z", isGate: true });
+          addHall({ x0: 14, x1: 28, z0: -14, z1: 14, wallH: 6, roofH: 5, ridgeAxis: "z", front: "-x", veranda: 2 });
+          addHall({ x0: -28, x1: -14, z0: -14, z1: 14, wallH: 6, roofH: 5, ridgeAxis: "z", front: "+x", veranda: 2 });
+
+          // A spirit screen wall (影壁) inside the gate.
+          const screenZ0 = 10;
+          const screenX0 = -7;
+          const screenX1 = 7;
+          for (let y = 1; y < 8; y++) {
+            for (let x = screenX0; x <= screenX1; x++) {
+              const edge = x === screenX0 || x === screenX1 || y === 1 || y === 7;
+              setVoxel(x, y, screenZ0, edge ? "brick" : "plaster");
+              if (!edge && (x + y) % 4 === 0) setVoxel(x, y, screenZ0, "greenGlaze");
+            }
+          }
+          for (let x = screenX0 - 1; x <= screenX1 + 1; x++) setVoxel(x, 1, screenZ0 - 1, "stoneDark");
+
+          // Courtyard tree
+          const trunkH = 6;
+          for (let y = 1; y <= trunkH; y++) setVoxel(0, y, -2, "woodDark");
+          for (let x = -4; x <= 4; x++) {
+            for (let z = -6; z <= 2; z++) {
+              for (let y = trunkH - 1; y <= trunkH + 5; y++) {
+                const dx = x;
+                const dy = y - (trunkH + 2);
+                const dz = z + 2;
+                const r2 = dx * dx + dy * dy * 1.1 + dz * dz;
+                if (r2 < 22 && hash3(x, y, z) > 0.16) setVoxel(x, y, z, "grass");
+              }
+            }
+          }
+
+          // Lanterns at the gate and under eaves.
+          addLantern(-6, 9, 29);
+          addLantern(6, 9, 29);
+          addLantern(-16, 9, -12);
+          addLantern(16, 9, -12);
+        }
+
+        // Faces cache
+        let faces = [];
+        let bounds = null;
+        let pivot = { x: 0, y: 0, z: 0 };
+
+        function rebuildFaces() {
+          const vs = Array.from(voxels.values());
+          if (!vs.length) return;
+          let minX = Infinity, minY = Infinity, minZ = Infinity;
+          let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+          for (const v of vs) {
+            minX = Math.min(minX, v.x);
+            minY = Math.min(minY, v.y);
+            minZ = Math.min(minZ, v.z);
+            maxX = Math.max(maxX, v.x);
+            maxY = Math.max(maxY, v.y);
+            maxZ = Math.max(maxZ, v.z);
+          }
+          bounds = { minX, minY, minZ, maxX, maxY, maxZ };
+          pivot = { x: (minX + maxX + 1) / 2, y: minY, z: (minZ + maxZ + 1) / 2 };
+
+          const out = [];
+          for (const v of vs) {
+            const x = v.x, y = v.y, z = v.z;
+            const x0 = x, x1 = x + 1;
+            const y0 = y, y1 = y + 1;
+            const z0 = z, z1 = z + 1;
+
+            for (const d of DIRS) {
+              const nx = x + d.dx;
+              const ny = y + d.dy;
+              const nz = z + d.dz;
+              if (voxels.has(keyOf(nx, ny, nz))) continue;
+
+              let verts;
+              if (d.name === "+y") verts = [[x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]];
+              else if (d.name === "-y") verts = [[x0, y0, z1], [x1, y0, z1], [x1, y0, z0], [x0, y0, z0]];
+              else if (d.name === "+x") verts = [[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]];
+              else if (d.name === "-x") verts = [[x0, y0, z1], [x0, y0, z0], [x0, y1, z0], [x0, y1, z1]];
+              else if (d.name === "+z") verts = [[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]];
+              else verts = [[x1, y0, z0], [x0, y0, z0], [x0, y1, z0], [x1, y1, z0]];
+
+              out.push({ verts, n: d.n, v });
+            }
+          }
+          faces = out;
+        }
+
+        // ===== Scene / Interaction =====
+        const state = {
+          dpr: 1,
+          w: 1,
+          h: 1,
+          yaw: 0.72,
+          pitch: 0.62,
+          zoom: 20,
+          originX: 0,
+          originY: 0,
+          panX: 0,
+          panY: 0,
+          autoSpin: true,
+          dragging: false,
+          lastX: 0,
+          lastY: 0,
+          lastTs: 0,
+          t: 0
+        };
+
+        function resize() {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const w = Math.max(1, Math.floor(window.innerWidth));
+          const h = Math.max(1, Math.floor(window.innerHeight));
+          state.dpr = dpr;
+          state.w = w;
+          state.h = h;
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          canvas.style.width = `${w}px`;
+          canvas.style.height = `${h}px`;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.imageSmoothingEnabled = true;
+          fitView();
+          initBackdrop();
+        }
+
+        function projectCam(p) {
+          return { x: state.originX + p.x * state.zoom + state.panX, y: state.originY + -p.y * state.zoom + state.panY };
+        }
+
+        function toCam(p) {
+          const centered = { x: p.x - pivot.x, y: p.y - pivot.y, z: p.z - pivot.z };
+          const a = rotY(centered, state.yaw);
+          return rotX(a, state.pitch);
+        }
+
+        function camNormal(n) {
+          const a = rotY(n, state.yaw);
+          return rotX(a, state.pitch);
+        }
+
+        function fitView() {
+          if (!bounds) return;
+          const corners = [
+            { x: bounds.minX, y: bounds.minY, z: bounds.minZ },
+            { x: bounds.maxX + 1, y: bounds.minY, z: bounds.minZ },
+            { x: bounds.minX, y: bounds.minY, z: bounds.maxZ + 1 },
+            { x: bounds.maxX + 1, y: bounds.minY, z: bounds.maxZ + 1 },
+            { x: bounds.minX, y: bounds.maxY + 1, z: bounds.minZ },
+            { x: bounds.maxX + 1, y: bounds.maxY + 1, z: bounds.minZ },
+            { x: bounds.minX, y: bounds.maxY + 1, z: bounds.maxZ + 1 },
+            { x: bounds.maxX + 1, y: bounds.maxY + 1, z: bounds.maxZ + 1 }
+          ];
+
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+          for (const c of corners) {
+            const cam = toCam(c);
+            minX = Math.min(minX, cam.x);
+            maxX = Math.max(maxX, cam.x);
+            minY = Math.min(minY, -cam.y);
+            maxY = Math.max(maxY, -cam.y);
+          }
+
+          const spanX = Math.max(0.001, maxX - minX);
+          const spanY = Math.max(0.001, maxY - minY);
+          const targetW = state.w * 0.92;
+          const targetH = state.h * 0.78;
+          state.zoom = clamp(Math.min(targetW / spanX, targetH / spanY), 10, 62);
+          const cx = (minX + maxX) / 2;
+          state.originX = state.w / 2 - cx * state.zoom;
+          state.originY = state.h * 0.9 - maxY * state.zoom;
+          state.panX = 0;
+          state.panY = 0;
+        }
+
+        function setAutoSpin(v) {
+          state.autoSpin = v;
+          spinDot.classList.toggle("off", !v);
+          spinText.textContent = v ? "自动旋转：开" : "自动旋转：关";
+        }
+
+        canvas.addEventListener("pointerdown", (e) => {
+          state.dragging = true;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          canvas.setPointerCapture(e.pointerId);
+        });
+        canvas.addEventListener("pointermove", (e) => {
+          if (!state.dragging) return;
+          const dx = e.clientX - state.lastX;
+          const dy = e.clientY - state.lastY;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          state.yaw += dx * 0.006;
+          state.pitch = clamp(state.pitch + dy * 0.004, 0.28, 0.98);
+        });
+        window.addEventListener("pointerup", () => (state.dragging = false));
+        canvas.addEventListener(
+          "wheel",
+          (e) => {
+            const f = Math.exp(-e.deltaY * 0.0012);
+            state.zoom = clamp(state.zoom * f, 10, 90);
+          },
+          { passive: true }
+        );
+        canvas.addEventListener("dblclick", () => {
+          state.yaw = 0.72;
+          state.pitch = 0.62;
+          fitView();
+        });
+
+        spinPill.addEventListener("click", () => setAutoSpin(!state.autoSpin));
+        resetBtn.addEventListener("click", () => {
+          state.yaw = 0.72;
+          state.pitch = 0.62;
+          fitView();
+        });
+        rebuildBtn.addEventListener("click", () => {
+          seed = (Math.random() * 1e9) | 0;
+          buildModel();
+          rebuildFaces();
+          fitView();
+          initBackdrop();
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.code === "Space") {
+            e.preventDefault();
+            setAutoSpin(!state.autoSpin);
+          }
+          if (e.key.toLowerCase() === "r") {
+            seed = (Math.random() * 1e9) | 0;
+            buildModel();
+            rebuildFaces();
+            fitView();
+            initBackdrop();
+          }
+        });
+
+        window.addEventListener("resize", resize);
+
+        // Background decoration
+        let clouds = [];
+        let backdropRand = mulberry32((seed ^ 0xa5a5a5a5) >>> 0);
+
+        function initBackdrop() {
+          clouds = [];
+          backdropRand = mulberry32((seed ^ 0xa5a5a5a5) >>> 0);
+          const r = backdropRand;
+          const cCount = Math.round(14 + Math.min(state.w, state.h) * 0.01);
+          for (let i = 0; i < cCount; i++) {
+            clouds.push({
+              x: r() * state.w,
+              y: r() * state.h * 0.42,
+              r: lerp(60, 170, Math.pow(r(), 1.6)),
+              a: lerp(0.06, 0.16, r()),
+              vx: lerp(6, 18, r()) * (r() < 0.5 ? -1 : 1),
+              ph: r() * Math.PI * 2
+            });
+          }
+        }
+
+        function drawBackground(dt) {
+          const w = state.w, h = state.h;
+          const g = ctx.createLinearGradient(0, 0, 0, h);
+          g.addColorStop(0, "#0a1020");
+          g.addColorStop(0.55, "#0d2442");
+          g.addColorStop(1, "#101628");
+          ctx.fillStyle = g;
+          ctx.fillRect(0, 0, w, h);
+
+          // Sun haze
+          const sx = w * 0.76, sy = h * 0.2;
+          ctx.save();
+          const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, Math.min(w, h) * 0.34);
+          sg.addColorStop(0, "rgba(255,220,170,0.22)");
+          sg.addColorStop(0.4, "rgba(255,210,160,0.08)");
+          sg.addColorStop(1, "rgba(255,210,160,0)");
+          ctx.fillStyle = sg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.restore();
+
+          // Clouds
+          ctx.save();
+          for (const c of clouds) {
+            c.x += c.vx * dt;
+            c.x += Math.sin(state.t * 0.18 + c.ph) * dt * 4;
+            if (c.x < -c.r * 2) c.x = w + c.r * 2;
+            if (c.x > w + c.r * 2) c.x = -c.r * 2;
+            const cx = c.x;
+            const cy = c.y + Math.sin(state.t * 0.16 + c.ph) * 6;
+            const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, c.r);
+            rg.addColorStop(0, `rgba(230,238,255,${c.a})`);
+            rg.addColorStop(1, "rgba(230,238,255,0)");
+            ctx.fillStyle = rg;
+            ctx.beginPath();
+            ctx.arc(cx, cy, c.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+
+          // Vignette
+          ctx.save();
+          const vg = ctx.createRadialGradient(w * 0.5, h * 0.52, Math.min(w, h) * 0.14, w * 0.5, h * 0.55, Math.min(w, h) * 0.78);
+          vg.addColorStop(0, "rgba(0,0,0,0)");
+          vg.addColorStop(1, "rgba(0,0,0,0.40)");
+          ctx.fillStyle = vg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.restore();
+        }
+
+        function drawSoftShadow() {
+          const ground = projectCam(toCam({ x: pivot.x, y: pivot.y, z: pivot.z }));
+          const w = 170 * (state.zoom / 22);
+          const h = 46 * (state.zoom / 22);
+          ctx.save();
+          const sg = ctx.createRadialGradient(ground.x, ground.y, 0, ground.x, ground.y, w);
+          sg.addColorStop(0, "rgba(0,0,0,0.26)");
+          sg.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = sg;
+          ctx.beginPath();
+          ctx.ellipse(ground.x, ground.y + 8, w, h, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        function render(ts) {
+          const dt = clamp((ts - state.lastTs) / 1000, 0, 1 / 20) || 0;
+          state.lastTs = ts;
+          state.t += dt;
+
+          if (state.autoSpin && !state.dragging) state.yaw += dt * 0.18;
+
+          drawBackground(dt);
+          drawSoftShadow();
+
+          const nCam = {
+            "+x": camNormal({ x: 1, y: 0, z: 0 }),
+            "-x": camNormal({ x: -1, y: 0, z: 0 }),
+            "+y": camNormal({ x: 0, y: 1, z: 0 }),
+            "-y": camNormal({ x: 0, y: -1, z: 0 }),
+            "+z": camNormal({ x: 0, y: 0, z: 1 }),
+            "-z": camNormal({ x: 0, y: 0, z: -1 })
+          };
+
+          const drawList = [];
+          for (const f of faces) {
+            const n = f.n;
+            const nC = n.x === 1 ? nCam["+x"] : n.x === -1 ? nCam["-x"] : n.y === 1 ? nCam["+y"] : n.y === -1 ? nCam["-y"] : n.z === 1 ? nCam["+z"] : nCam["-z"];
+            if (nC.z <= 0.0001) continue;
+
+            const pts = new Array(4);
+            let zSum = 0;
+            for (let i = 0; i < 4; i++) {
+              const v = f.verts[i];
+              const cam = toCam({ x: v[0], y: v[1], z: v[2] });
+              zSum += cam.z;
+              pts[i] = projectCam(cam);
+            }
+
+            const diff = clamp(nC.x * LIGHT_DIR.x + nC.y * LIGHT_DIR.y + nC.z * LIGHT_DIR.z, -1, 1);
+            const emissive = f.v.emissive || 0;
+            const brightness = 0.54 + Math.max(0, diff) * 0.52 + emissive;
+            const cool = (f.v.coolShadow || 0) * (1 - Math.max(0, diff));
+            const col = shadeRgb(f.v.base, brightness, cool);
+
+            drawList.push({
+              z: zSum / 4,
+              pts,
+              fill: rgbToCss(col),
+              stroke: "rgba(0,0,0,0.12)"
+            });
+          }
+
+          drawList.sort((a, b) => a.z - b.z);
+
+          ctx.save();
+          ctx.lineJoin = "round";
+          ctx.lineWidth = 1;
+          for (const d of drawList) {
+            ctx.beginPath();
+            ctx.moveTo(d.pts[0].x, d.pts[0].y);
+            ctx.lineTo(d.pts[1].x, d.pts[1].y);
+            ctx.lineTo(d.pts[2].x, d.pts[2].y);
+            ctx.lineTo(d.pts[3].x, d.pts[3].y);
+            ctx.closePath();
+            ctx.fillStyle = d.fill;
+            ctx.fill();
+            ctx.strokeStyle = d.stroke;
+            ctx.stroke();
+          }
+          ctx.restore();
+
+          requestAnimationFrame(render);
+        }
+
+        function boot() {
+          setAutoSpin(true);
+          buildModel();
+          rebuildFaces();
+          resize();
+          requestAnimationFrame(render);
+        }
+
+        boot();
+      })();
+    </script>
+  </body>
+</html>
