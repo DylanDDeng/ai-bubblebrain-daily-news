@@ -641,15 +641,89 @@
     });
   }
 
+  function escapeControlCharsInJsonStrings(input) {
+    let output = "";
+    let inString = false;
+    let escaped = false;
+
+    for (let i = 0; i < input.length; i += 1) {
+      const ch = input[i];
+
+      if (inString) {
+        if (escaped) {
+          output += ch;
+          escaped = false;
+          continue;
+        }
+
+        if (ch === "\\") {
+          output += ch;
+          escaped = true;
+          continue;
+        }
+
+        if (ch === "\"") {
+          output += ch;
+          inString = false;
+          continue;
+        }
+
+        if (ch === "\r") {
+          if (input[i + 1] === "\n") i += 1;
+          output += "\\n";
+          continue;
+        }
+
+        if (ch === "\n") {
+          output += "\\n";
+          continue;
+        }
+
+        if (ch === "\t") {
+          output += "\\t";
+          continue;
+        }
+
+        const code = ch.charCodeAt(0);
+        if (code <= 0x1f) {
+          output += `\\u${code.toString(16).padStart(4, "0")}`;
+          continue;
+        }
+
+        output += ch;
+        continue;
+      }
+
+      if (ch === "\"") {
+        inString = true;
+        output += ch;
+        continue;
+      }
+
+      output += ch;
+    }
+
+    return output;
+  }
+
+  function parseGalleryJson(text) {
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      return JSON.parse(escapeControlCharsInJsonStrings(text));
+    }
+  }
+
   fetch(dataUrl)
     .then((res) => {
       console.log('fetch response:', res.status, res.statusText);
       if (!res.ok) throw new Error(`${I18N.networkError}: ${res.status}`);
-      return res.json();
+      return res.text();
     })
-    .then((items) => {
-      console.log('gallery items loaded:', items.length);
-      render(items);
+    .then((text) => {
+      const items = parseGalleryJson(text);
+      console.log('gallery items loaded:', Array.isArray(items) ? items.length : 0);
+      render(Array.isArray(items) ? items : []);
     })
     .catch((err) => {
       console.error('加载gallery.json失败:', err);
