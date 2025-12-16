@@ -17,7 +17,6 @@
     </div>
 
     <div id="gallery-grid" class="gallery-grid" aria-live="polite"></div>
-    <nav id="gallery-pagination" class="pagination" aria-label="{{ i18n "gallery_pagination_aria" }}" hidden></nav>
     <div id="gallery-empty" class="gallery-empty" hidden>
       <p>{{ i18n "gallery_empty_title" }}</p>
       <p>{{ i18n "gallery_empty_hint" }}</p>
@@ -74,7 +73,6 @@
   const dataUrl = "{{ "/gallery.json" | relLangURL }}";
   const grid = document.getElementById("gallery-grid");
   const empty = document.getElementById("gallery-empty");
-  const pagination = document.getElementById("gallery-pagination");
   const modal = document.getElementById("gallery-modal");
   const modalImage = document.getElementById("modal-image");
   const modalTitle = document.getElementById("modal-title");
@@ -91,12 +89,10 @@
   const prevBtn = modal.querySelector("[data-prev]");
   const nextBtn = modal.querySelector("[data-next]");
   const MAX_TAGS_VISIBLE = 8;
-  const pageSize = 20;
   let activeFocus = null;
   let currentImages = [];
   let allItems = [];
   let filteredItems = [];
-  let currentPage = 1;
   let currentIndex = 0;
   let currentItemTitle = "";
   let currentFilter = "all";
@@ -236,8 +232,9 @@
     })();
 
     const frag = document.createDocumentFragment();
+    const currentFilterLower = (currentFilter || "all").toString().trim().toLowerCase();
     const allBtn = document.createElement("button");
-    allBtn.className = "gallery-filter-pill active";
+    allBtn.className = "gallery-filter-pill" + (currentFilterLower === "all" ? " active" : "");
     const counts = collectTagCounts(allItems);
     allBtn.textContent = I18N.allWithCount.replace("{count}", String(allItems.length));
     allBtn.setAttribute("data-tag", "all");
@@ -245,7 +242,10 @@
 
     visibleTags.forEach((tag) => {
       const btn = document.createElement("button");
-      btn.className = "gallery-filter-pill";
+      const isActive =
+        currentFilterLower !== "all" &&
+        currentFilterLower === (tag || "").toString().trim().toLowerCase();
+      btn.className = "gallery-filter-pill" + (isActive ? " active" : "");
       btn.textContent = `${tag} @${counts[tag] || 0}`;
       btn.setAttribute("data-tag", tag);
       frag.appendChild(btn);
@@ -268,10 +268,11 @@
 
     filtersWrap.appendChild(frag);
 
-    filtersWrap.querySelectorAll("button").forEach((btn) => {
+    const filterButtons = filtersWrap.querySelectorAll("button[data-tag]");
+    filterButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
-        currentFilter = btn.dataset.tag || "all";
-        filtersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        currentFilter = (btn.dataset.tag || "all").toString();
+        filterButtons.forEach((el) => el.classList.remove("active"));
         btn.classList.add("active");
         applyFilter();
       });
@@ -386,22 +387,10 @@
     grid.innerHTML = "";
 
     const totalItems = filteredItems.length;
-    if (!totalItems) {
-      if (pagination) {
-        pagination.hidden = true;
-        pagination.innerHTML = "";
-      }
-      return;
-    }
-
-    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-    if (currentPage > totalPages) currentPage = totalPages;
-
-    const start = (currentPage - 1) * pageSize;
-    const pageItems = filteredItems.slice(start, start + pageSize);
+    if (!totalItems) return;
 
     const frag = document.createDocumentFragment();
-    pageItems.forEach((item) => {
+    filteredItems.forEach((item) => {
       const card = buildCard(item);
       if (card) frag.appendChild(card);
     });
@@ -409,81 +398,15 @@
     grid.appendChild(frag);
 
     requestAnimationFrame(() => {
+      const MAX_REVEAL_ITEMS = 60;
       grid.querySelectorAll(".reveal-text").forEach((el, index) => {
+        if (index >= MAX_REVEAL_ITEMS) {
+          el.classList.add("active");
+          return;
+        }
         setTimeout(() => el.classList.add("active"), index * 60);
       });
     });
-  }
-
-  function goToPage(pageNumber) {
-    const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
-    currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
-    renderGrid();
-    renderPagination();
-  }
-
-  function renderPagination() {
-    if (!pagination) return;
-    const totalPages = Math.ceil(filteredItems.length / pageSize);
-
-    if (totalPages <= 1) {
-      pagination.hidden = true;
-      pagination.innerHTML = "";
-      return;
-    }
-
-    pagination.hidden = false;
-    pagination.innerHTML = "";
-
-    const prev =
-      currentPage > 1
-        ? Object.assign(document.createElement("a"), { href: "#" })
-        : document.createElement("span");
-    prev.className = "pagination-link" + (currentPage === 1 ? " disabled" : "");
-    prev.textContent = "← 上一页";
-    if (currentPage > 1) {
-      prev.addEventListener("click", (event) => {
-        event.preventDefault();
-        goToPage(currentPage - 1);
-      });
-    }
-    pagination.appendChild(prev);
-
-    const pagesWrap = document.createElement("div");
-    pagesWrap.className = "pagination-pages";
-    for (let i = 1; i <= totalPages; i += 1) {
-      if (i === currentPage) {
-        const span = document.createElement("span");
-        span.className = "pagination-page current";
-        span.textContent = i;
-        pagesWrap.appendChild(span);
-      } else {
-        const link = document.createElement("a");
-        link.className = "pagination-page";
-        link.href = "#";
-        link.textContent = i;
-        link.addEventListener("click", (event) => {
-          event.preventDefault();
-          goToPage(i);
-        });
-        pagesWrap.appendChild(link);
-      }
-    }
-    pagination.appendChild(pagesWrap);
-
-    const next =
-      currentPage < totalPages
-        ? Object.assign(document.createElement("a"), { href: "#" })
-        : document.createElement("span");
-    next.className = "pagination-link" + (currentPage === totalPages ? " disabled" : "");
-    next.textContent = "下一页 →";
-    if (currentPage < totalPages) {
-      next.addEventListener("click", (event) => {
-        event.preventDefault();
-        goToPage(currentPage + 1);
-      });
-    }
-    pagination.appendChild(next);
   }
 
   function applyFilter() {
@@ -514,9 +437,7 @@
 
     const noMatch = filteredItems.length === 0;
     setFilterEmpty(noMatch && (currentFilter !== "all" || term));
-    currentPage = 1;
     renderGrid();
-    renderPagination();
   }
 
   function render(items) {
@@ -528,11 +449,9 @@
     setEmpty(false);
     allItems = items;
     filteredItems = [...allItems];
-    currentPage = 1;
     renderFilters(collectTags(allItems));
     setFilterEmpty(false);
     renderGrid();
-    renderPagination();
   }
 
   let currentPrompt = "";
