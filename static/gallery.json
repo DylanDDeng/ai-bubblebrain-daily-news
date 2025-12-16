@@ -1515,7 +1515,7 @@
      { 
     "id": "129",
     "title": "产品商业摄影",
-    "author": "BubbleBrain",
+    "author": "@ZaraIrahh",
     "source": "Nano Banana Pro",
     "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216091705501.png",
     "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216091705501.png",
@@ -1525,13 +1525,111 @@
           { 
     "id": "130",
     "title": "树叶剪贴画",
-    "author": "BubbleBrain",
+    "author": "@dotey",
     "source": "Nano Banana Pro",
     "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216100746678.png",
     "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216100746678.png",
     "prompt": "Inspired by leaf-cutout art, delicately depict a child running joyfully with a kite through intricate hollow cutouts on a single, complete maple leaf.All elements are organically connected by thin natural veins, ensuring no isolated or floating segments.The leaf surface has a glossy, wet appearance with tiny sparkling water droplets. Soft sunlight gently illuminates the leaf, creating subtle highlights and shadows.Background features a softly blurred spring meadow, providing a vibrant and cheerful atmosphere, captured in ultra-detailed 8K resolution for macro-level realism.Dynamic effect: drifting dandelion fluff gently floating in the air.",
     "tags": ["剪贴画"]
+     },  
+
+
+               { 
+    "id": "131",
+    "title": "女生人像",
+    "author": "@YaseenK7212",
+    "source": "Nano Banana Pro",
+    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216101708862.png",
+    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216101708862.png",
+    "prompt": {
+  "image_generation_request": {
+    "meta": {
+      "constraints": {
+        "reference_directive": "Strictly preserve the face from the provided photo reference with 100% accuracy; do not alter facial features."
+      },
+      "output_specifications": {
+        "aspect_ratio": "9:16",
+        "quality_tier": "8K, highly detailed, photorealistic"
+      }
+    },
+    "subject": {
+      "demographics": {
+        "description": "Slender young woman",
+        "vibe": "Confident tropical holiday aesthetic"
+      },
+      "physical_attributes": {
+        "bust_size": "Significantly enlarged, very voluptuous"
+      },
+      "hair": {
+        "color": "Silver grey",
+        "style": "Long and straight",
+        "texture": "Loose and slightly tousled"
+      },
+      "facial_details": {
+        "expression": "Smiling, confident",
+        "gaze": "Looking off-camera to the side",
+        "base_features": "Full lips, well-defined eyebrows, clear smooth skin, balanced facial proportions",
+        "makeup": {
+          "base": "Natural makeup base",
+          "eyes": "Minimal eye makeup with light mascara, defined brows",
+          "lips": "Glossy nude-pink lipstick"
+        }
+      }
+    },
+    "attire": {
+      "garment": {
+        "type": "Strapless bodycon dress",
+        "color": "Black",
+        "fit": "Form-fitting",
+        "length": "Midi-length pencil skirt"
+      },
+      "design_elements": {
+        "fabric_treatment": "Heavy ruching throughout",
+        "bust_feature": "Large center cutout exposing cleavage",
+        "hardware_accent": "Large irregular gold-toned abstract metal ring connecting fabric at center bust",
+        "accessories": {
+          "jewelry": "None visible"
+        }
+      }
+    },
+    "pose": {
+      "overall_posture": "Posing confidently",
+      "limb_placement": {
+        "arms": "Hands lifted to the sides of her head"
+      }
+    },
+    "environment": {
+      "background": {
+        "texture": "Plain light off-white or stucco wall"
+      },
+      "props": {
+        "wall_decor": "Large circular woven rattan or straw decorative wall hanging, centered behind the subject's head"
+      }
+    },
+    "photography_and_aesthetics": {
+      "composition": {
+        "framing": "Full body shot",
+        "camera_angle": "Dutch angle (tilted)"
+      },
+      "lighting": {
+        "type": "Mixed hybrid lighting",
+        "description": "Bright, even natural/outdoor light blended with studio lighting"
+      },
+      "film_emulation": {
+        "profile": {
+          "target_stock": "Kodak Gold 200",
+          "era_aesthetic": "1990s",
+          "color_grading": "Vibrant warm colors, high saturation",
+          "texture_overlay": "Subtle film grain"
+        }
+      }
+    }
+  }
+}
      }
+
+
+
 
 
 
