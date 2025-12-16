@@ -299,7 +299,7 @@
     imgWrap.className = "gallery-thumb";
     const img = document.createElement("img");
     img.src = primary.thumb || primary.full;
-    img.alt = item.title || "AI 生成图片";
+    img.alt = item.title || I18N.untitled;
     img.loading = "lazy";
     imgWrap.appendChild(img);
 
@@ -310,31 +310,65 @@
       imgWrap.appendChild(count);
     }
 
-    const meta = document.createElement("div");
-    meta.className = "gallery-card__meta";
-    const eyebrow = document.createElement("p");
-    eyebrow.className = "gallery-eyebrow";
-    eyebrow.textContent = item.source || "AI Model";
+    const overlay = document.createElement("div");
+    overlay.className = "gallery-overlay";
+
+    const overlayContent = document.createElement("div");
+    overlayContent.className = "gallery-overlay__content";
+
+    const source = document.createElement("p");
+    source.className = "gallery-overlay__source";
+    source.textContent = item.source || I18N.unknownSource;
+
     const title = document.createElement("h3");
-    title.textContent = item.title || "未命名作品";
+    title.className = "gallery-overlay__title";
+    title.textContent = item.title || I18N.untitled;
+
     const footer = document.createElement("div");
-    footer.className = "gallery-card__footer";
+    footer.className = "gallery-overlay__footer";
+
     const author = document.createElement("span");
-    author.className = "gallery-author";
+    author.className = "gallery-overlay__author";
     author.textContent = item.author ? `${I18N.byPrefix}${item.author}` : I18N.unknownAuthor;
-    const promptHint = document.createElement("span");
-    promptHint.className = "gallery-hint";
-    promptHint.textContent = I18N.promptHint;
+
+    const hint = document.createElement("span");
+    hint.className = "gallery-overlay__hint";
+    hint.textContent = I18N.promptHint;
 
     footer.appendChild(author);
-    footer.appendChild(promptHint);
+    footer.appendChild(hint);
 
-    meta.appendChild(eyebrow);
-    meta.appendChild(title);
-    meta.appendChild(footer);
+    overlayContent.appendChild(source);
+    overlayContent.appendChild(title);
+
+    const tags = Array.isArray(item.tags) ? item.tags.map((t) => (t || "").toString().trim()).filter(Boolean) : [];
+    if (tags.length) {
+      const tagRow = document.createElement("div");
+      tagRow.className = "gallery-overlay__tags";
+
+      const max = 3;
+      tags.slice(0, max).forEach((tag) => {
+        const pill = document.createElement("span");
+        pill.className = "gallery-overlay__tag";
+        pill.textContent = tag;
+        tagRow.appendChild(pill);
+      });
+
+      if (tags.length > max) {
+        const more = document.createElement("span");
+        more.className = "gallery-overlay__tag gallery-overlay__tag--muted";
+        more.textContent = `+${tags.length - max}`;
+        tagRow.appendChild(more);
+      }
+
+      overlayContent.appendChild(tagRow);
+    }
+
+    overlayContent.appendChild(footer);
+    overlay.appendChild(overlayContent);
+    imgWrap.appendChild(overlay);
 
     card.appendChild(imgWrap);
-    card.appendChild(meta);
 
     card.addEventListener("click", () => openModal(item));
     card.addEventListener("keypress", (event) => {
@@ -841,38 +875,43 @@
 }
 
 .gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1.25rem;
+  column-gap: 1.25rem;
+  column-width: 260px;
 }
 
 .gallery-card {
-  background: var(--surface);
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 1.25rem;
+  background: var(--surface-highlight);
   border: 1px solid var(--border);
+  border-radius: 18px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease;
+  cursor: zoom-in;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   outline: none;
 }
 
 .gallery-card:focus-visible {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25), 0 14px 30px rgba(0, 0, 0, 0.35);
 }
 
 .gallery-card:hover {
-  transform: translateY(-6px);
-  background: var(--surface-highlight);
-  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
 }
 
 .gallery-thumb {
   position: relative;
   overflow: hidden;
   background: var(--surface-highlight);
-  aspect-ratio: 4 / 5;
+  line-height: 0;
 }
 
 .gallery-count {
@@ -885,12 +924,13 @@
   border-radius: 999px;
   font-size: 0.8rem;
   letter-spacing: 0.05em;
+  z-index: 3;
 }
 
 .gallery-thumb img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
   transition: transform 0.8s ease;
 }
 
@@ -898,47 +938,96 @@
   transform: scale(1.03);
 }
 
-.gallery-card__meta {
-  padding: 0 1.25rem 1.25rem;
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: flex-end;
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.78) 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 2;
 }
 
-.gallery-eyebrow {
+.gallery-overlay__content {
+  width: 100%;
+  transform: translateY(8px);
+  transition: transform 0.25s ease;
+}
+
+.gallery-card:hover .gallery-overlay,
+.gallery-card:focus-visible .gallery-overlay {
+  opacity: 1;
+}
+
+.gallery-card:hover .gallery-overlay__content,
+.gallery-card:focus-visible .gallery-overlay__content {
+  transform: translateY(0);
+}
+
+.gallery-overlay__source {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin: 0;
 }
 
-.gallery-card h3 {
-  margin: 0;
+.gallery-overlay__title {
+  margin: 0.35rem 0 0.6rem;
   font-family: "Cormorant Garamond", serif;
   font-weight: 300;
-  font-size: 1.5rem;
+  font-size: 1.45rem;
+  color: #fff;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.gallery-card__footer {
+.gallery-overlay__footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  color: var(--text-muted);
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.78);
   font-size: 0.9rem;
 }
 
-.gallery-author {
-  color: var(--text-main);
+.gallery-overlay__author {
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.gallery-hint {
+.gallery-overlay__hint {
   color: var(--accent);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.gallery-overlay__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.65rem;
+}
+
+.gallery-overlay__tag {
+  background: rgba(0, 0, 0, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+}
+
+.gallery-overlay__tag--muted {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .gallery-empty {
@@ -1270,7 +1359,8 @@
 
 @media (max-width: 640px) {
   .gallery-grid {
-    grid-template-columns: 1fr;
+    column-width: auto;
+    column-count: 1;
   }
 
   .gallery-modal__dialog {
