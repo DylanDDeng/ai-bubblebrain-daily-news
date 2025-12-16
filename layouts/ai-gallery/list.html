@@ -52,13 +52,13 @@
         <div class="gallery-tags" id="modal-tags"></div>
         <div class="gallery-prompt-block">
           <div class="prompt-header">
-            <p class="prompt-label">{{ i18n "gallery_prompt_label" }}</p>
-            <button class="prompt-copy-btn" id="copy-prompt-btn" type="button" aria-label="{{ i18n "gallery_copy_prompt" }}">
+            <p class="prompt-label">{{ i18n "gallery_prompt_label" | default "Prompt" }}</p>
+            <button class="prompt-copy-btn" id="copy-prompt-btn" type="button" aria-label="{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}">
               <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
-              <span class="copy-text">{{ i18n "gallery_copy_prompt" }}</span>
+              <span class="copy-text">{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}</span>
             </button>
           </div>
           <pre id="modal-prompt"></pre>
@@ -805,7 +805,7 @@
   margin: 0 0 1.25rem;
   background: var(--surface-highlight);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 0;
   overflow: hidden;
   cursor: zoom-in;
   break-inside: avoid;
@@ -850,6 +850,7 @@
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 0 !important;
   transition: transform 0.8s ease;
 }
 
@@ -1058,7 +1059,7 @@
 .gallery-modal__image img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 0 !important;
 }
 
 .gallery-modal__controls {
