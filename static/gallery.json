@@ -1623,24 +1623,169 @@
           "texture_overlay": "Subtle film grain"
         }
       }
-    }
+    } 
+
   }
-}
+},   
+
+  "tags":["人像"] 
+
+},
+
+       { 
+    "id": "132",
+    "title": "女生对镜自拍照",
+    "author": "@YaseenK7212",
+    "source": "Nano Banana Pro",
+    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216140843653.png",
+    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216140843653.png",
+    "prompt": {
+  "project_meta": {
+    "title": "Bathroom Mirror Selfie - Towel Wrap",
+    "version": "2.0",
+    "main_objective": "Realistic social media snapshot"
+  },
+  "subject_attributes": {
+    "identity": {
+      "reference_match": {
+        "enabled": true,
+        "instruction": "The girl must look exactly like the uploaded reference photo.",
+        "face_preservation": true
+      },
+      "age_group": "young adult",
+      "body_type": {
+        "frame": "slim",
+        "waist": "slim",
+        "skin_tone": "light to medium tan",
+        "skin_texture": "smooth, warm soft highlights"
+      }
+    },
+    "hair": {
+      "color": "blonde",
+      "length": "long",
+      "style": "beautiful, loose",
+      "texture": "soft natural"
+    },
+    "expression": {
+      "eyes": "partially obscured, looking at phone/mirror",
+      "mouth": "obscured",
+      "vibe": "neutral, relaxed, candid"
+    },
+    "styling": {
+      "makeup": "natural/minimal",
+      "clothing": {
+        "item": "white bath towel wrap",
+        "material": "soft terry cloth",
+        "fit": "draped across front, held by hand at chest"
+      },
+      "jewelry": [
+        "delicate necklace",
+        "bracelet",
+        "multiple rings"
+      ]
+    }
+  },
+  "scene_composition": {
+    "pose_logic": {
+      "type": "standing mirror selfie",
+      "arms": {
+        "right": "holding phone up to face",
+        "left": "gripping towel at chest"
+      },
+      "legs": "upper thighs partially visible"
+    },
+    "props": {
+      "primary_device": {
+        "model": "iPhone 16 Pro Max",
+        "color": "Silver",
+        "case": "none (no phone case)",
+        "interaction": "covering most of the face"
+      }
+    },
+    "environment": {
+      "location": "minimal bathroom",
+      "background_elements": [
+        "beige/cream stone wall",
+        "plaster texture",
+        "bathtub edge visible"
+      ],
+      "lighting": {
+        "type": "warm indoor ambient",
+        "quality": "soft, diffused, spa-like"
+      }
+    }
+  },
+  "technical_config": {
+    "camera_settings": {
+      "angle": "eye-level mirror reflection",
+      "framing": "medium shot (upper body to upper thighs)",
+      "aspect_ratio": "9:16",
+      "depth_of_field": "mild background blur"
+    },
+    "render_style": {
+      "aesthetic": "minimalist, clean, warm-toned realism",
+      "texture_quality": "8k, slightly soft focus, natural skin detail"
+    },
+    "mirror_logic": {
+      "physics": "ignore complex refractions",
+      "text_readability": "force text/logos to be readable (not mirrored)"
+    }
+  },
+  "generation_rules": {
+    "constraints": {
+      "must_include": [
+        "phone covering most of face",
+        "white towel wrap",
+        "warm beige wall",
+        "long blonde hair"
+      ],
+      "strict_avoid": [
+        "warped phone shape",
+        "phone case",
+        "mirrored text artifacts"
+      ]
+    },
+    "negative_prompt_tokens": [
+      "explicit nudity",
+      "pornographic",
+      "nipples visible",
+      "see-through towel",
+      "camel toe",
+      "extra fingers",
+      "extra arms",
+      "deformed hands",
+      "bad anatomy",
+      "phone case",
+      "text artifacts",
+      "watermark",
+      "low-res",
+      "harsh flash"
+    ]
+  }
+},
+
+    "tags": ["人像","杂志"]
+     },  
+          { 
+    "id": "133",
+    "title": "女生街拍",
+    "author": "@SimplyAnnisa",
+    "source": "Nano Banana Pro",
+    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216143603953.png",
+    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216143603953.png",
+    "prompt": "A low-angle, full-body street fashion shot of a person with long straight brown to gray ombre hair and sunglasses, standing confidently in a narrow, graffiti-covered urban alleyway. They are wearing an olive green sleeveless crop top and highly distressed, extremely baggy, dark wash denim cargo pants with prominent raw hems, tears, and frayed detailing. They carry a black duffel bag over one shoulder and wear chunky white sneakers.The lighting is even and diffused, typical of an overcast day or deep shadow, eliminating any strong lens flare or harsh sunlight, highlighting the edgy, rebellious, and Y2K-inspired streetwear aesthetic.Don't change the face even a little from the photo reference. Cool edgy pose",
+    "tags": ["人像"]
+     }, 
+          { 
+    "id": "134",
+    "title": "科幻人像风格",
+    "author": "@ChillaiKalan__",
+    "source": "Nano Banana Pro",
+    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216150220775.png",
+    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251216150220775.png",
+    "prompt": "Create an ultra realistic portrait of a young woman who appears to be floating or leaping above a bustling city street. She wears dark sunglasses that cover her eyes, giving her a mysterious, shaded appearance; her lips are subtle and natural‑toned, blending with the overall aesthetic. short, black hair styled neatly, a black sleeveless tank top, paired with shiny black leather pants, a black belt, and black gloves.",
+    "tags": ["人像"]
      }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
