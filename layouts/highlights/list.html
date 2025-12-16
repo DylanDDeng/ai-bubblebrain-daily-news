@@ -14,14 +14,13 @@
         <input type="search" id="highlight-search" placeholder="{{ i18n "highlights_search_placeholder" }}" aria-label="{{ i18n "highlights_search_aria" }}">
       </div>
       <div class="highlight-filter-row" id="highlight-filters" aria-label="{{ i18n "highlights_filter_aria" }}"></div>
-    </div>
+	    </div>
 
-    <div id="highlight-grid" class="highlight-grid" aria-live="polite"></div>
-    <nav id="highlight-pagination" class="pagination" aria-label="{{ i18n "highlights_pagination_aria" }}" hidden></nav>
-    <div id="highlight-empty" class="highlight-empty" hidden>
-      <p>{{ i18n "highlights_empty_title" }}</p>
-      <p>{{ i18n "highlights_empty_hint" }}</p>
-    </div>
+	    <div id="highlight-grid" class="highlight-grid" aria-live="polite"></div>
+	    <div id="highlight-empty" class="highlight-empty" hidden>
+	      <p>{{ i18n "highlights_empty_title" }}</p>
+	      <p>{{ i18n "highlights_empty_hint" }}</p>
+	    </div>
     <div id="highlight-empty-filter" class="highlight-empty" hidden>
       <p>{{ i18n "highlights_empty_filter_title" }}</p>
       <p>{{ i18n "highlights_empty_filter_hint" }}</p>
@@ -37,50 +36,44 @@
       <div class="highlight-modal__image">
         <img id="highlight-modal-image" alt="">
       </div>
-      <div class="highlight-modal__meta">
-        <p class="modal-eyebrow" id="highlight-modal-source">{{ i18n "highlights_modal_eyebrow" }}</p>
-        <h2 id="highlight-modal-title"></h2>
-        <div class="highlight-modal__tags" id="highlight-modal-tags"></div>
-        <p class="highlight-modal__desc" id="highlight-modal-desc"></p>
-        <a class="highlight-link" id="highlight-modal-original" target="_blank" rel="noopener noreferrer">{{ i18n "highlights_read_original" }}</a>
-      </div>
-    </div>
-  </div>
-</div>
+	      <div class="highlight-modal__meta">
+	        <p class="modal-eyebrow" id="highlight-modal-source">{{ i18n "highlights_modal_eyebrow" }}</p>
+	        <h2 id="highlight-modal-title"></h2>
+	        <div class="highlight-modal__tags" id="highlight-modal-tags"></div>
+	        <p class="highlight-modal__desc" id="highlight-modal-desc"></p>
+	        <a class="highlight-link highlight-link--cta" id="highlight-modal-original" target="_blank" rel="noopener noreferrer">{{ i18n "highlights_read_original" | default (cond (eq .Site.LanguageCode "zh-CN") "阅读原文 →" "Read original →") }}</a>
+	      </div>
+		    </div>
+		  </div>
+		</div>
 
 <script>
 (() => {
   const dataUrl = "{{ "/highlights.json" | relLangURL }}";
-  const SHOW_VIEW_CARD = {{ if eq .Site.LanguageCode "zh-CN" }}false{{ else }}true{{ end }};
-  const I18N = {
-    allWithCount: "{{ i18n "highlights_all_with_count" }}",
-    untitled: "{{ i18n "highlights_untitled" }}",
-    defaultAlt: "{{ i18n "highlights_default_alt" }}",
-    defaultEyebrow: "{{ i18n "highlights_modal_eyebrow" }}",
-    viewCard: "{{ i18n "highlights_view_card" }}",
-    readOriginal: "{{ i18n "highlights_read_original" }}",
-    prevPage: "{{ i18n "pagination_prev" }}",
-    nextPage: "{{ i18n "pagination_next" }}"
-  };
+	  const I18N = {
+	    allWithCount: "{{ i18n "highlights_all_with_count" }}",
+	    untitled: "{{ i18n "highlights_untitled" }}",
+	    defaultAlt: "{{ i18n "highlights_default_alt" }}",
+	    defaultEyebrow: "{{ i18n "highlights_modal_eyebrow" }}",
+	    readOriginal: "{{ i18n "highlights_read_original" | default (cond (eq .Site.LanguageCode "zh-CN") "阅读原文 →" "Read original →") }}"
+	  };
   const grid = document.getElementById("highlight-grid");
   const empty = document.getElementById("highlight-empty");
-  const pagination = document.getElementById("highlight-pagination");
   const filtersWrap = document.getElementById("highlight-filters");
   const filterEmpty = document.getElementById("highlight-empty-filter");
   const searchInput = document.getElementById("highlight-search");
   const modal = document.getElementById("highlight-modal");
   const modalImage = document.getElementById("highlight-modal-image");
-  const modalTitle = document.getElementById("highlight-modal-title");
-  const modalSource = document.getElementById("highlight-modal-source");
-  const modalTags = document.getElementById("highlight-modal-tags");
-  const modalDesc = document.getElementById("highlight-modal-desc");
-  const modalOriginal = document.getElementById("highlight-modal-original");
-  const pageSize = 20;
-  let allItems = [];
-  let filteredItems = [];
-  let currentPage = 1;
-  let currentFilter = "all";
-  let searchTerm = "";
+	  const modalTitle = document.getElementById("highlight-modal-title");
+	  const modalSource = document.getElementById("highlight-modal-source");
+	  const modalTags = document.getElementById("highlight-modal-tags");
+	  const modalDesc = document.getElementById("highlight-modal-desc");
+	  const modalOriginal = document.getElementById("highlight-modal-original");
+	  let activeFocus = null;
+	  let allItems = [];
+	  let filteredItems = [];
+	  let currentFilter = "all";
+	  let searchTerm = "";
 
   function setEmpty(isEmpty) {
     if (empty) empty.hidden = !isEmpty;
@@ -149,73 +142,43 @@
     });
   }
 
-  function buildCard(item) {
-    if (!item) return null;
+	  function buildCard(item) {
+	    if (!item) return null;
+	    const imgUrl = item.thumb || item.full || "";
+	    if (!imgUrl) return null;
+
     const card = document.createElement("article");
     card.className = "highlight-card reveal-text";
     card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
 
-    const imgWrap = document.createElement("div");
-    imgWrap.className = "highlight-thumb";
+    const thumb = document.createElement("div");
+    thumb.className = "highlight-thumb";
+
     const img = document.createElement("img");
-    img.src = item.thumb || item.full || "";
+    img.src = imgUrl;
     img.alt = item.title || I18N.defaultAlt;
     img.loading = "lazy";
-    imgWrap.appendChild(img);
-    imgWrap.addEventListener("click", () => openModal(item));
 
-    const meta = document.createElement("div");
-    meta.className = "highlight-card__meta";
-
-    const eyebrow = document.createElement("p");
-    eyebrow.className = "highlight-eyebrow";
-    eyebrow.textContent = item.eyebrow || I18N.defaultEyebrow;
+    const overlay = document.createElement("div");
+    overlay.className = "highlight-overlay";
 
     const title = document.createElement("h3");
+    title.className = "highlight-overlay__title";
     title.textContent = item.title || I18N.untitled;
 
-    const desc = document.createElement("p");
-    desc.className = "highlight-desc";
-    desc.textContent = item.description || "";
+    overlay.appendChild(title);
+    thumb.appendChild(img);
+    thumb.appendChild(overlay);
+    card.appendChild(thumb);
 
-    const tagRow = document.createElement("div");
-    tagRow.className = "highlight-tags";
-    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
-      const span = document.createElement("span");
-      span.textContent = tag;
-      tagRow.appendChild(span);
+    card.addEventListener("click", () => openModal(item));
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openModal(item);
+      }
     });
-
-    const actions = document.createElement("div");
-    actions.className = "highlight-card__actions";
-
-    if (SHOW_VIEW_CARD) {
-      const viewBtn = document.createElement("button");
-      viewBtn.type = "button";
-      viewBtn.className = "highlight-btn";
-      viewBtn.textContent = I18N.viewCard;
-      viewBtn.addEventListener("click", () => openModal(item));
-      actions.appendChild(viewBtn);
-    }
-
-    if (item.originalUrl) {
-      const sourceLink = document.createElement("a");
-      sourceLink.className = "highlight-link";
-      sourceLink.href = item.originalUrl;
-      sourceLink.target = "_blank";
-      sourceLink.rel = "noopener noreferrer";
-      sourceLink.textContent = I18N.readOriginal;
-      actions.appendChild(sourceLink);
-    }
-
-    meta.appendChild(eyebrow);
-    meta.appendChild(title);
-    if (desc.textContent) meta.appendChild(desc);
-    if (tagRow.children.length) meta.appendChild(tagRow);
-    meta.appendChild(actions);
-
-    card.appendChild(imgWrap);
-    card.appendChild(meta);
 
     return card;
   }
@@ -225,22 +188,10 @@
     grid.innerHTML = "";
 
     const totalItems = filteredItems.length;
-    if (!totalItems) {
-      if (pagination) {
-        pagination.hidden = true;
-        pagination.innerHTML = "";
-      }
-      return;
-    }
-
-    const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-    if (currentPage > totalPages) currentPage = totalPages;
-
-    const start = (currentPage - 1) * pageSize;
-    const pageItems = filteredItems.slice(start, start + pageSize);
+    if (!totalItems) return;
 
     const frag = document.createDocumentFragment();
-    pageItems.forEach((item) => {
+    filteredItems.forEach((item) => {
       const card = buildCard(item);
       if (card) frag.appendChild(card);
     });
@@ -248,81 +199,15 @@
     grid.appendChild(frag);
 
     requestAnimationFrame(() => {
-      grid.querySelectorAll(".reveal-text").forEach((el, index) => {
+      const elements = Array.from(grid.querySelectorAll(".reveal-text"));
+      elements.forEach((el, index) => {
+        if (index >= 60) {
+          el.classList.add("active");
+          return;
+        }
         setTimeout(() => el.classList.add("active"), index * 50);
       });
     });
-  }
-
-  function goToPage(pageNumber) {
-    const totalPages = Math.max(1, Math.ceil(filteredItems.length / pageSize));
-    currentPage = Math.min(Math.max(pageNumber, 1), totalPages);
-    renderGrid();
-    renderPagination();
-  }
-
-  function renderPagination() {
-    if (!pagination) return;
-    const totalPages = Math.ceil(filteredItems.length / pageSize);
-
-    if (totalPages <= 1) {
-      pagination.hidden = true;
-      pagination.innerHTML = "";
-      return;
-    }
-
-    pagination.hidden = false;
-    pagination.innerHTML = "";
-
-    const prev =
-      currentPage > 1
-        ? Object.assign(document.createElement("a"), { href: "#" })
-        : document.createElement("span");
-    prev.className = "pagination-link" + (currentPage === 1 ? " disabled" : "");
-    prev.textContent = I18N.prevPage;
-    if (currentPage > 1) {
-      prev.addEventListener("click", (event) => {
-        event.preventDefault();
-        goToPage(currentPage - 1);
-      });
-    }
-    pagination.appendChild(prev);
-
-    const pagesWrap = document.createElement("div");
-    pagesWrap.className = "pagination-pages";
-    for (let i = 1; i <= totalPages; i += 1) {
-      if (i === currentPage) {
-        const span = document.createElement("span");
-        span.className = "pagination-page current";
-        span.textContent = i;
-        pagesWrap.appendChild(span);
-      } else {
-        const link = document.createElement("a");
-        link.className = "pagination-page";
-        link.href = "#";
-        link.textContent = i;
-        link.addEventListener("click", (event) => {
-          event.preventDefault();
-          goToPage(i);
-        });
-        pagesWrap.appendChild(link);
-      }
-    }
-    pagination.appendChild(pagesWrap);
-
-    const next =
-      currentPage < totalPages
-        ? Object.assign(document.createElement("a"), { href: "#" })
-        : document.createElement("span");
-    next.className = "pagination-link" + (currentPage === totalPages ? " disabled" : "");
-    next.textContent = I18N.nextPage;
-    if (currentPage < totalPages) {
-      next.addEventListener("click", (event) => {
-        event.preventDefault();
-        goToPage(currentPage + 1);
-      });
-    }
-    pagination.appendChild(next);
   }
 
   function applyFilter() {
@@ -352,33 +237,33 @@
 
     const noMatch = filteredItems.length === 0;
     setFilterEmpty(noMatch && (currentFilter !== "all" || term));
-    currentPage = 1;
     renderGrid();
-    renderPagination();
   }
 
   function openModal(item) {
     if (!modal) return;
+    activeFocus = document.activeElement;
     const imgUrl = item.full || item.thumb || "";
     modalImage.src = imgUrl;
-    modalImage.alt = item.title || I18N.defaultAlt;
-    modalTitle.textContent = item.title || I18N.untitled;
-    if (modalSource) {
-      modalSource.textContent = item.source || I18N.defaultEyebrow;
-    }
-    modalTags.innerHTML = "";
-    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
-      const span = document.createElement("span");
-      span.textContent = tag;
-      modalTags.appendChild(span);
-    });
-    modalDesc.textContent = item.description || "";
-    if (item.originalUrl) {
-      modalOriginal.href = item.originalUrl;
-      modalOriginal.style.display = "";
-    } else {
-      modalOriginal.style.display = "none";
-    }
+	    modalImage.alt = item.title || I18N.defaultAlt;
+	    modalTitle.textContent = item.title || I18N.untitled;
+	    if (modalSource) {
+	      modalSource.textContent = I18N.defaultEyebrow;
+	    }
+	    modalTags.innerHTML = "";
+	    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
+	      const span = document.createElement("span");
+	      span.textContent = tag;
+	      modalTags.appendChild(span);
+	    });
+	    modalDesc.textContent = item.description || "";
+	    if (item.originalUrl) {
+	      modalOriginal.href = item.originalUrl;
+	      modalOriginal.textContent = I18N.readOriginal;
+	      modalOriginal.style.display = "";
+	    } else {
+	      modalOriginal.style.display = "none";
+	    }
 
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
@@ -390,6 +275,10 @@
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
+    if (activeFocus && typeof activeFocus.focus === "function") {
+      activeFocus.focus();
+    }
+    activeFocus = null;
   }
 
   if (modal) {
@@ -413,11 +302,9 @@
     setEmpty(false);
     allItems = items;
     filteredItems = [...allItems];
-    currentPage = 1;
     renderFilters(collectTags(allItems));
     setFilterEmpty(false);
     renderGrid();
-    renderPagination();
   }
 
   if (searchInput) {
@@ -516,40 +403,50 @@
 }
 
 .highlight-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
+  column-gap: 1.25rem;
+  column-width: 300px;
 }
 
 .highlight-card {
-  background: var(--surface);
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 1.25rem;
+  background: var(--surface-highlight);
   border: 1px solid var(--border);
+  border-radius: 0;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease;
+  cursor: zoom-in;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   outline: none;
 }
 
 .highlight-card:hover {
-  transform: translateY(-6px);
-  background: var(--surface-highlight);
-  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.highlight-card:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25), 0 14px 30px rgba(0, 0, 0, 0.35);
 }
 
 .highlight-thumb {
   position: relative;
   overflow: hidden;
   background: var(--surface-highlight);
-  aspect-ratio: 16 / 9;
-  cursor: zoom-in;
+  line-height: 0;
 }
 
 .highlight-thumb img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
+  border-radius: 0 !important;
   transition: transform 0.8s ease;
 }
 
@@ -557,74 +454,27 @@
   transform: scale(1.03);
 }
 
-.highlight-card__meta {
-  padding: 0 1.25rem 1.25rem;
+.highlight-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: flex-end;
+  padding: 1rem;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.78) 100%);
+  pointer-events: none;
 }
 
-.highlight-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.highlight-card h3 {
+.highlight-overlay__title {
   margin: 0;
   font-family: "Cormorant Garamond", serif;
   font-weight: 300;
-  font-size: 1.5rem;
-}
-
-.highlight-desc {
-  color: var(--text-muted);
-  margin: 0;
-  line-height: 1.6;
-}
-
-.highlight-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.highlight-tags span {
-  background: var(--surface-highlight);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.25rem 0.8rem;
-  font-size: 0.85rem;
-}
-
-.highlight-card__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: 0.5rem;
-  align-items: center;
-}
-
-.highlight-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
-  color: var(--text-main);
-  background: transparent;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.highlight-btn:hover {
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
+  font-size: 1.55rem;
+  color: #fff;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .highlight-link {
@@ -635,12 +485,27 @@
   margin-left: 0;
 }
 
-.highlight-btn + .highlight-link {
-  margin-left: 0.35rem;
-}
-
 .highlight-link:hover {
   text-decoration: underline;
+}
+
+.highlight-link--cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.highlight-link--cta:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  text-decoration: none;
 }
 
 .highlight-empty {
@@ -650,54 +515,6 @@
   border: 1px solid var(--border);
   background: var(--surface-highlight);
   color: var(--text-muted);
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 3rem;
-  flex-wrap: wrap;
-}
-
-.pagination-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s ease;
-}
-
-.pagination-link.disabled {
-  color: var(--text-muted);
-  cursor: not-allowed;
-}
-
-.pagination-pages {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.pagination-page {
-  min-width: 36px;
-  text-align: center;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-main);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.pagination-page:hover {
-  background: var(--surface-highlight);
-}
-
-.pagination-page.current {
-  background: var(--accent);
-  color: #000;
 }
 
 .highlight-modal {
@@ -751,7 +568,7 @@
 .highlight-modal__image img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 0 !important;
 }
 
 .highlight-modal__meta h2 {
@@ -808,7 +625,8 @@
 
 @media (max-width: 640px) {
   .highlight-grid {
-    grid-template-columns: 1fr;
+    column-width: auto;
+    column-count: 1;
   }
 
   .highlight-modal__dialog {
