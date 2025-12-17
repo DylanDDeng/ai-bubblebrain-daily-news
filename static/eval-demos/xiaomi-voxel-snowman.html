@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>堆叠式微笑雪人 - 体素艺术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1e3c72 0%, #2a5298 40%, #a8d8f0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            perspective: 1200px;
+        }
+
+        .container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-20px) rotateY(5deg); }
+        }
+
+        .snowman {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            transform-style: preserve-3d;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .voxel {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(200, 200, 255, 0.3);
+            box-shadow:
+                inset 0 0 5px rgba(255, 255, 255, 0.8),
+                2px 2px 8px rgba(0, 0, 0, 0.3);
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .voxel::before,
+        .voxel::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            border: inherit;
+        }
+
+        /* 3D 面 */
+        .voxel::before {
+            transform: translateZ(-15px) rotateY(180deg);
+            filter: brightness(0.7);
+        }
+
+        .voxel::after {
+            transform: rotateX(90deg) translateZ(-15px);
+            background: rgba(240, 240, 255, 0.8);
+            filter: brightness(0.8);
+        }
+
+        /* 三个球体 - 体素近似 */
+
+        /* 底部 - 最大的球（近似立方体堆叠） */
+        .body-bottom {
+            /* 底层 5x5 */
+            transform: translateZ(-50px);
+        }
+
+        /* 生成底部球的体素 */
+        .bottom-layer-1 { transform: translate3d(-60px, 60px, -50px); }
+        .bottom-layer-2 { transform: translate3d(-30px, 60px, -50px); }
+        .bottom-layer-3 { transform: translate3d(0px, 60px, -50px); }
+        .bottom-layer-4 { transform: translate3d(30px, 60px, -50px); }
+        .bottom-layer-5 { transform: translate3d(60px, 60px, -50px); }
+
+        .bottom-layer-6 { transform: translate3d(-60px, 30px, -50px); }
+        .bottom-layer-7 { transform: translate3d(-30px, 30px, -50px); }
+        .bottom-layer-8 { transform: translate3d(0px, 30px, -50px); }
+        .bottom-layer-9 { transform: translate3d(30px, 30px, -50px); }
+        .bottom-layer-10 { transform: translate3d(60px, 30px, -50px); }
+
+        .bottom-layer-11 { transform: translate3d(-60px, 0px, -50px); }
+        .bottom-layer-12 { transform: translate3d(-30px, 0px, -50px); }
+        .bottom-layer-13 { transform: translate3d(0px, 0px, -50px); }
+        .bottom-layer-14 { transform: translate3d(30px, 0px, -50px); }
+        .bottom-layer-15 { transform: translate3d(60px, 0px, -50px); }
+
+        .bottom-layer-16 { transform: translate3d(-60px, -30px, -50px); }
+        .bottom-layer-17 { transform: translate3d(-30px, -30px, -50px); }
+        .bottom-layer-18 { transform: translate3d(0px, -30px, -50px); }
+        .bottom-layer-19 { transform: translate3d(30px, -30px, -50px); }
+        .bottom-layer-20 { transform: translate3d(60px, -30px, -50px); }
+
+        .bottom-layer-21 { transform: translate3d(-60px, -60px, -50px); }
+        .bottom-layer-22 { transform: translate3d(-30px, -60px, -50px); }
+        .bottom-layer-23 { transform: translate3d(0px, -60px, -50px); }
+        .bottom-layer-24 { transform: translate3d(30px, -60px, -50px); }
+        .bottom-layer-25 { transform: translate3d(60px, -60px, -50px); }
+
+        /* 中部 - 中等球 */
+        .middle-layer-1 { transform: translate3d(-30px, 20px, -50px); }
+        .middle-layer-2 { transform: translate3d(0px, 20px, -50px); }
+        .middle-layer-3 { transform: translate3d(30px, 20px, -50px); }
+
+        .middle-layer-4 { transform: translate3d(-30px, -10px, -50px); }
+        .middle-layer-5 { transform: translate3d(0px, -10px, -50px); background: rgba(250, 250, 255, 0.95); }
+        .middle-layer-6 { transform: translate3d(30px, -10px, -50px); }
+
+        .middle-layer-7 { transform: translate3d(-30px, -40px, -50px); }
+        .middle-layer-8 { transform: translate3d(0px, -40px, -50px); }
+        .middle-layer-9 { transform: translate3d(30px, -40px, -50px); }
+
+        /* 头部 - 最小球 */
+        .head-layer-1 { transform: translate3d(0px, -90px, -50px); }
+        .head-layer-2 { transform: translate3d(-30px, -90px, -50px); }
+        .head-layer-3 { transform: translate3d(30px, -90px, -50px); }
+
+        .head-layer-4 { transform: translate3d(-30px, -120px, -50px); }
+        .head-layer-5 { transform: translate3d(0px, -120px, -50px); background: rgba(252, 252, 255, 1); }
+        .head-layer-6 { transform: translate3d(30px, -120px, -50px); }
+
+        .head-layer-7 { transform: translate3d(0px, -150px, -50px); }
+
+        /* 帽子 */
+        .hat-base-1 { transform: translate3d(-30px, -180px, -50px); background: #2c3e50; }
+        .hat-base-2 { transform: translate3d(0px, -180px, -50px); background: #2c3e50; }
+        .hat-base-3 { transform: translate3d(30px, -180px, -50px); background: #2c3e50; }
+        .hat-top-1 { transform: translate3d(0px, -210px, -50px); background: #34495e; filter: brightness(1.2); }
+
+        /* 眼睛 */
+        .eye-left {
+            transform: translate3d(-15px, -120px, -25px);
+            background: #2c3e50;
+            width: 8px;
+            height: 8px;
+            z-index: 10;
+        }
+        .eye-right {
+            transform: translate3d(15px, -120px, -25px);
+            background: #2c3e50;
+            width: 8px;
+            height: 8px;
+            z-index: 10;
+        }
+
+        /* 嘴巴 - 微笑 */
+        .mouth-1 { transform: translate3d(-12px, -100px, -25px); background: #e74c3c; width: 6px; height: 6px; border-radius: 50%; }
+        .mouth-2 { transform: translate3d(-6px, -98px, -25px); background: #e74c3c; width: 6px; height: 6px; border-radius: 50%; }
+        .mouth-3 { transform: translate3d(0px, -97px, -25px); background: #e74c3c; width: 6px; height: 6px; border-radius: 50%; }
+        .mouth-4 { transform: translate3d(6px, -98px, -25px); background: #e74c3c; width: 6px; height: 6px; border-radius: 50%; }
+        .mouth-5 { transform: translate3d(12px, -100px, -25px); background: #e74c3c; width: 6px; height: 6px; border-radius: 50%; }
+
+        /* 鼻子 - 胡萝卜 */
+        .nose-1 { transform: translate3d(0px, -110px, -25px); background: #ff8c42; width: 8px; height: 8px; }
+        .nose-2 { transform: translate3d(10px, -110px, -25px); background: #ff8c42; width: 8px; height: 8px; }
+
+        /* 纽扣 */
+        .button-1 { transform: translate3d(0px, -10px, -30px); background: #34495e; width: 8px; height: 8px; }
+        .button-2 { transform: translate3d(0px, 20px, -30px); background: #34495e; width: 8px; height: 8px; }
+        .button-3 { transform: translate3d(0px, 50px, -30px); background: #34495e; width: 8px; height: 8px; }
+
+        /* 手臂 */
+        .arm-left-1 { transform: translate3d(-70px, -5px, -50px); background: #8b4513; width: 15px; height: 4px; }
+        .arm-left-2 { transform: translate3d(-85px, -8px, -50px); background: #8b4513; width: 4px; height: 10px; }
+        .arm-right-1 { transform: translate3d(55px, -5px, -50px); background: #8b4513; width: 15px; height: 4px; }
+        .arm-right-2 { transform: translate3d(70px, -8px, -50px); background: #8b4513; width: 4px; height: 10px; }
+
+        /* 阴影 */
+        .shadow {
+            position: absolute;
+            width: 180px;
+            height: 50px;
+            background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4), transparent);
+            transform: translate3d(-10px, 140px, 50px) rotateX(90deg);
+            filter: blur(8px);
+            animation: pulse-shadow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-shadow {
+            0%, 100% { opacity: 0.4; transform: translate3d(-10px, 140px, 50px) rotateX(90deg) scale(1); }
+            50% { opacity: 0.6; transform: translate3d(-10px, 140px, 50px) rotateX(90deg) scale(1.1); }
+        }
+
+        /* 雪花装饰 */
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 20px;
+            opacity: 0.8;
+            animation: snowfall 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes snowfall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+        }
+
+        /* 标题和提示 */
+        .title {
+            position: absolute;
+            top: 30px;
+            color: white;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 交互效果 */
+        .voxel:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.2);
+            filter: brightness(1.3);
+            cursor: pointer;
+        }
+
+        /* 鼠标悬停时的全息效果 */
+        .snowman:hover {
+            animation-play-state: paused;
+        }
+
+        .snowman:hover .voxel {
+            box-shadow:
+                inset 0 0 8px rgba(255, 255, 255, 1),
+                0 0 20px rgba(100, 200, 255, 0.5),
+                2px 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 按钮 */
+        .toggle-btn {
+            position: absolute;
+            top: 80px;
+            right: 50px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 高亮动画 */
+        @keyframes sparkle {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.5); }
+        }
+
+        .sparkle {
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">堆叠式微笑雪人</div>
+
+        <button class="toggle-btn" onclick="toggleAnimation()">⏸️ 暂停/播放</button>
+
+        <div class="snowman" id="snowman">
+            <!-- 阴影 -->
+            <div class="shadow"></div>
+
+            <!-- 底部球体 - 25个方块 -->
+            <div class="voxel bottom-layer-1"></div>
+            <div class="voxel bottom-layer-2"></div>
+            <div class="voxel bottom-layer-3"></div>
+            <div class="voxel bottom-layer-4"></div>
+            <div class="voxel bottom-layer-5"></div>
+            <div class="voxel bottom-layer-6"></div>
+            <div class="voxel bottom-layer-7"></div>
+            <div class="voxel bottom-layer-8"></div>
+            <div class="voxel bottom-layer-9"></div>
+            <div class="voxel bottom-layer-10"></div>
+            <div class="voxel bottom-layer-11"></div>
+            <div class="voxel bottom-layer-12"></div>
+            <div class="voxel bottom-layer-13"></div>
+            <div class="voxel bottom-layer-14"></div>
+            <div class="voxel bottom-layer-15"></div>
+            <div class="voxel bottom-layer-16"></div>
+            <div class="voxel bottom-layer-17"></div>
+            <div class="voxel bottom-layer-18"></div>
+            <div class="voxel bottom-layer-19"></div>
+            <div class="voxel bottom-layer-20"></div>
+            <div class="voxel bottom-layer-21"></div>
+            <div class="voxel bottom-layer-22"></div>
+            <div class="voxel bottom-layer-23"></div>
+            <div class="voxel bottom-layer-24"></div>
+            <div class="voxel bottom-layer-25"></div>
+
+            <!-- 中部球体 - 9个方块 -->
+            <div class="voxel middle-layer-1"></div>
+            <div class="voxel middle-layer-2"></div>
+            <div class="voxel middle-layer-3"></div>
+            <div class="voxel middle-layer-4"></div>
+            <div class="voxel middle-layer-5 sparkle"></div>
+            <div class="voxel middle-layer-6"></div>
+            <div class="voxel middle-layer-7"></div>
+            <div class="voxel middle-layer-8"></div>
+            <div class="voxel middle-layer-9"></div>
+
+            <!-- 头部 - 7个方块 -->
+            <div class="voxel head-layer-1"></div>
+            <div class="voxel head-layer-2"></div>
+            <div class="voxel head-layer-3"></div>
+            <div class="voxel head-layer-4"></div>
+            <div class="voxel head-layer-5 sparkle"></div>
+            <div class="voxel head-layer-6"></div>
+            <div class="voxel head-layer-7"></div>
+
+            <!-- 帽子 -->
+            <div class="voxel hat-base-1"></div>
+            <div class="voxel hat-base-2"></div>
+            <div class="voxel hat-base-3"></div>
+            <div class="voxel hat-top-1 sparkle"></div>
+
+            <!-- 面部特征 -->
+            <div class="voxel eye-left sparkle"></div>
+            <div class="voxel eye-right sparkle"></div>
+
+            <div class="voxel mouth-1"></div>
+            <div class="voxel mouth-2"></div>
+            <div class="voxel mouth-3"></div>
+            <div class="voxel mouth-4"></div>
+            <div class="voxel mouth-5"></div>
+
+            <div class="voxel nose-1"></div>
+            <div class="voxel nose-2"></div>
+
+            <!-- 纽扣 -->
+            <div class="voxel button-1 sparkle"></div>
+            <div class="voxel button-2"></div>
+            <div class="voxel button-3 sparkle"></div>
+
+            <!-- 手臂 -->
+            <div class="voxel arm-left-1"></div>
+            <div class="voxel arm-left-2"></div>
+            <div class="voxel arm-right-1"></div>
+            <div class="voxel arm-right-2"></div>
+        </div>
+
+        <div class="instructions">
+            🖱️ 滑过雪人暂停旋转 | ✨ 点击闪烁方块 | ⏸️ 按钮控制动画
+        </div>
+    </div>
+
+    <script>
+        // 创建动态雪花
+        function createSnowflakes() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 30; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                snowflake.style.animationDelay = Math.random() * 4 + 's';
+                snowflake.style.fontSize = (Math.random() * 10 + 15) + 'px';
+                container.appendChild(snowflake);
+            }
+        }
+
+        // 切换动画
+        function toggleAnimation() {
+            const snowman = document.getElementById('snowman');
+            if (snowman.style.animationPlayState === 'paused') {
+                snowman.style.animationPlayState = 'running';
+                document.querySelectorAll('.snowflake, .sparkle').forEach(el => {
+                    el.style.animationPlayState = 'running';
+                });
+            } else {
+                snowman.style.animationPlayState = 'paused';
+                document.querySelectorAll('.snowflake, .sparkle').forEach(el => {
+                    el.style.animationPlayState = 'paused';
+                });
+            }
+        }
+
+        // 为每个体素添加点击效果
+        document.querySelectorAll('.voxel').forEach((voxel, index) => {
+            voxel.addEventListener('click', function() {
+                // 随机改变颜色
+                const r = Math.floor(Math.random() * 155 + 100);
+                const g = Math.floor(Math.random() * 155 + 100);
+                const b = Math.floor(Math.random() * 155 + 100);
+                this.style.background = `rgba(${r}, ${g}, ${b}, 0.9)`;
+
+                // 添加点击动画
+                this.style.transform = this.style.transform + ' scale(1.5)';
+                setTimeout(() => {
+                    this.style.transform = this.style.transform.replace(' scale(1.5)', '');
+                }, 300);
+
+                // 显示提示
+                showCoordinates(this, index);
+            });
+        });
+
+        // 显示坐标信息
+        function showCoordinates(element, index) {
+            const rect = element.getBoundingClientRect();
+            const info = document.createElement('div');
+            info.textContent = `Voxel #${index + 1}`;
+            info.style.position = 'absolute';
+            info.style.left = rect.left + 'px';
+            info.style.top = (rect.top - 20) + 'px';
+            info.style.color = 'white';
+            info.style.fontSize = '12px';
+            info.style.background = 'rgba(0,0,0,0.7)';
+            info.style.padding = '4px 8px';
+            info.style.borderRadius = '4px';
+            info.style.zIndex = '1000';
+            info.style.pointerEvents = 'none';
+            document.body.appendChild(info);
+
+            setTimeout(() => {
+                info.remove();
+            }, 1000);
+        }
+
+        // 随机添加一些特殊闪烁效果
+        function addRandomSparkles() {
+            const voxels = document.querySelectorAll('.voxel');
+            const randomCount = 3;
+
+            for (let i = 0; i < randomCount; i++) {
+                const randomIndex = Math.floor(Math.random() * voxels.length);
+                voxels[randomIndex].classList.add('sparkle');
+            }
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            createSnowflakes();
+            setTimeout(addRandomSparkles, 1000);
+
+            // 键盘控制
+            document.addEventListener('keydown', (e) => {
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    toggleAnimation();
+                }
+            });
+        });
+
+        // 鼠标移动3D视差效果
+        document.addEventListener('mousemove', (e) => {
+            const container = document.querySelector('.container');
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+
+            container.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
+        });
+    </script>
+</body>
+</html>

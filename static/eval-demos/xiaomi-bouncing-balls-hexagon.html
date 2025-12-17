@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旋转六边形中的彩色弹跳球</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a2e;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid #16213e;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .info {
+            position: absolute;
+            top: 20px;
+            color: #e0e0e0;
+            font-size: 14px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        旋转六边形中的10个彩色弹跳球<br>
+        包含重力、弹性、摩擦和碰撞物理效果
+    </div>
+
+    <script>
+        // 球类定义
+        class Ball {
+            constructor(x, y, radius, color) {
+                this.pos = createVector(x, y);
+                this.vel = createVector(random(-2, 2), random(-2, 2));
+                this.acc = createVector(0, 0);
+                this.radius = radius;
+                this.color = color;
+                this.mass = radius * 0.1;
+                this.restitution = 0.85; // 弹性系数
+                this.friction = 0.995; // 摩擦系数
+            }
+
+            applyForce(force) {
+                let f = p5.Vector.div(force, this.mass);
+                this.acc.add(f);
+            }
+
+            update() {
+                // 应用重力
+                this.applyForce(createVector(0, 0.3));
+
+                // 更新速度和位置
+                this.vel.add(this.acc);
+                this.vel.mult(this.friction); // 应用摩擦
+                this.pos.add(this.vel);
+
+                // 重置加速度
+                this.acc.mult(0);
+            }
+
+            display() {
+                noStroke();
+                fill(this.color);
+                circle(this.pos.x, this.pos.y, this.radius * 2);
+
+                // 添加高光效果
+                fill(255, 255, 255, 80);
+                circle(this.pos.x - this.radius * 0.3, this.pos.y - this.radius * 0.3, this.radius * 0.6);
+            }
+
+            // 检查并处理与六边形边的碰撞
+            checkHexagonCollision(hexVertices) {
+                for (let i = 0; i < hexVertices.length; i++) {
+                    let p1 = hexVertices[i];
+                    let p2 = hexVertices[(i + 1) % hexVertices.length];
+
+                    let collision = this.lineCircleCollision(p1, p2);
+                    if (collision) {
+                        // 计算反弹
+                        let normal = collision.normal;
+                        let dot = this.vel.dot(normal);
+                        this.vel.sub(p5.Vector.mult(normal, 2 * dot));
+                        this.vel.mult(this.restitution);
+
+                        // 移出碰撞区域
+                        let overlap = this.radius - collision.distance;
+                        this.pos.add(p5.Vector.mult(normal, overlap + 0.1));
+
+                        break;
+                    }
+                }
+            }
+
+            lineCircleCollision(p1, p2) {
+                // 计算点到直线的最短距离
+                let line = p5.Vector.sub(p2, p1);
+                let len = line.mag();
+                line.normalize();
+
+                let toCenter = p5.Vector.sub(this.pos, p1);
+                let projection = toCenter.dot(line);
+
+                let closest;
+                if (projection < 0) {
+                    closest = p1.copy();
+                } else if (projection > len) {
+                    closest = p2.copy();
+                } else {
+                    closest = p5.Vector.add(p1, p5.Vector.mult(line, projection));
+                }
+
+                let distance = p5.Vector.dist(this.pos, closest);
+
+                if (distance < this.radius) {
+                    let normal = p5.Vector.sub(this.pos, closest);
+                    normal.normalize();
+                    return {
+                        distance: distance,
+                        normal: normal
+                    };
+                }
+                return null;
+            }
+
+            // 球与球之间的碰撞
+            checkBallCollision(other) {
+                let dist = p5.Vector.dist(this.pos, other.pos);
+                let minDist = this.radius + other.radius;
+
+                if (dist < minDist) {
+                    // 计算碰撞法线
+                    let normal = p5.Vector.sub(this.pos, other.pos);
+                    normal.normalize();
+
+                    // 分离两个球
+                    let overlap = minDist - dist;
+                    let move = p5.Vector.mult(normal, overlap / 2);
+                    this.pos.add(move);
+                    other.pos.sub(move);
+
+                    // 交换速度分量（简化碰撞）
+                    let relativeVel = p5.Vector.sub(this.vel, other.vel);
+                    let velocityAlongNormal = relativeVel.dot(normal);
+
+                    if (velocityAlongNormal < 0) {
+                        let impulse = p5.Vector.mult(normal, velocityAlongNormal);
+                        this.vel.sub(impulse);
+                        other.vel.add(impulse);
+
+                        // 应用弹性
+                        this.vel.mult(this.restitution);
+                        other.vel.mult(this.restitution);
+                    }
+                }
+            }
+        }
+
+        let balls = [];
+        let hexagonRotation = 0;
+        let hexagonSize = 280;
+        let hexagonCenter;
+
+        function setup() {
+            createCanvas(700, 600);
+            hexagonCenter = createVector(width / 2, height / 2 - 20);
+
+            // 创建10个彩色球
+            let colors = [
+                color(255, 107, 107),  // 红色
+                color(78, 205, 196),   // 青色
+                color(255, 195, 113),  // 橙色
+                color(106, 176, 76),   // 绿色
+                color(199, 125, 255),  // 紫色
+                color(255, 121, 121),  // 粉红
+                color(85, 230, 193),   // 薄荷
+                color(255, 220, 115),  // 黄色
+                color(121, 134, 203),  // 蓝色
+                color(240, 98, 146)    // 玫瑰
+            ];
+
+            for (let i = 0; i < 10; i++) {
+                let radius = random(15, 25);
+                let angle = (TWO_PI / 10) * i;
+                let r = hexagonSize * 0.3;
+                let x = hexagonCenter.x + cos(angle) * r;
+                let y = hexagonCenter.y + sin(angle) * r;
+                balls.push(new Ball(x, y, radius, colors[i]));
+            }
+        }
+
+        function draw() {
+            background(20, 20, 40);
+
+            // 更新六边形旋转
+            hexagonRotation += 0.002;
+
+            // 获取旋转后的六边形顶点
+            let hexVertices = getRotatedHexagonVertices();
+
+            // 绘制旋转的六边形边框
+            drawHexagon(hexVertices);
+
+            // 更新和绘制球
+            for (let ball of balls) {
+                ball.update();
+                ball.checkHexagonCollision(hexVertices);
+                ball.display();
+            }
+
+            // 球与球之间的碰撞检测
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    balls[i].checkBallCollision(balls[j]);
+                }
+            }
+        }
+
+        function getRotatedHexagonVertices() {
+            let vertices = [];
+            for (let i = 0; i < 6; i++) {
+                let angle = (TWO_PI / 6) * i + hexagonRotation;
+                let x = hexagonCenter.x + cos(angle) * hexagonSize;
+                let y = hexagonCenter.y + sin(angle) * hexagonSize;
+                vertices.push(createVector(x, y));
+            }
+            return vertices;
+        }
+
+        function drawHexagon(vertices) {
+            // 绘制外边框
+            noFill();
+            stroke(100, 150, 255, 100);
+            strokeWeight(4);
+            beginShape();
+            for (let v of vertices) {
+                vertex(v.x, v.y);
+            }
+            endShape(CLOSE);
+
+            // 绘制内部多层效果
+            stroke(100, 150, 255, 40);
+            strokeWeight(2);
+            beginShape();
+            for (let v of vertices) {
+                vertex(v.x, v.y);
+            }
+            endShape(CLOSE);
+
+            // 绘制顶点标记
+            noStroke();
+            fill(100, 150, 255);
+            for (let v of vertices) {
+                circle(v.x, v.y, 6);
+            }
+        }
+
+        // 鼠标交互：点击添加新球
+        function mousePressed() {
+            if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+                let radius = random(12, 20);
+                let newColor = color(random(100, 255), random(100, 255), random(100, 255));
+                let newBall = new Ball(mouseX, mouseY, radius, newColor);
+
+                // 给新球一个初速度
+                newBall.vel = createVector(random(-5, 5), random(-8, -2));
+                balls.push(newBall);
+
+                // 限制球的数量
+                if (balls.length > 15) {
+                    balls.shift();
+                }
+            }
+        }
+
+        // 按R键重置
+        function keyPressed() {
+            if (key === 'r' || key === 'R') {
+                balls = [];
+                for (let i = 0; i < 10; i++) {
+                    let radius = random(15, 25);
+                    let angle = (TWO_PI / 10) * i;
+                    let r = hexagonSize * 0.3;
+                    let x = hexagonCenter.x + cos(angle) * r;
+                    let y = hexagonCenter.y + sin(angle) * r;
+                    let colors = [
+                        color(255, 107, 107), color(78, 205, 196), color(255, 195, 113),
+                        color(106, 176, 76), color(199, 125, 255), color(255, 121, 121),
+                        color(85, 230, 193), color(255, 220, 115), color(121, 134, 203),
+                        color(240, 98, 146)
+                    ];
+                    balls.push(new Ball(x, y, radius, colors[i]));
+                }
+            }
+        }
+    </script>
+</body>
+</html>

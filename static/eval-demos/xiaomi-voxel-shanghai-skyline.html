@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海天际线 - 体素艺术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0f1419 0%, #1a2a40 30%, #2d4263 60%, #87CEEB 100%);
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        /* 标题样式 */
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            z-index: 1000;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+            width: 90%;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, #fff, #ffd700, #fff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.9; filter: brightness(1); }
+            50% { opacity: 1; filter: brightness(1.2); }
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            letter-spacing: 1px;
+        }
+
+        /* 控制面板 */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 95%;
+            z-index: 1000;
+        }
+
+        .btn {
+            padding: 8px 14px;
+            background: rgba(30, 30, 50, 0.85);
+            color: #fff;
+            border: 2px solid rgba(100, 150, 255, 0.4);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .btn:hover {
+            background: rgba(60, 80, 180, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(100, 150, 255, 0.4);
+            border-color: rgba(150, 200, 255, 0.8);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.active {
+            background: rgba(255, 100, 50, 0.9);
+            border-color: rgba(255, 150, 100, 1);
+            box-shadow: 0 0 15px rgba(255, 100, 50, 0.5);
+        }
+
+        /* 城市场景容器 */
+        .cityscape {
+            position: relative;
+            width: 900px;
+            height: 600px;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: gentle-float 15s ease-in-out infinite;
+        }
+
+        @keyframes gentle-float {
+            0%, 100% { transform: translateZ(0) translateY(0); }
+            50% { transform: translateZ(20px) translateY(-10px); }
+        }
+
+        .cityscape.paused {
+            animation: none;
+        }
+
+        /* 基础体素样式 */
+        .voxel {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            transform-style: preserve-3d;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .voxel::before,
+        .voxel::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+        }
+
+        .voxel::before {
+            transform: translateZ(-8px) rotateY(180deg);
+            filter: brightness(0.8);
+        }
+
+        .voxel::after {
+            transform: rotateX(90deg) translateZ(-8px);
+            filter: brightness(0.9);
+        }
+
+        .voxel:hover {
+            transform: scale(1.4) translateZ(5px);
+            filter: brightness(1.3);
+            z-index: 100;
+            border-color: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px currentColor;
+        }
+
+        /* 地面 */
+        .ground {
+            background: #2C3E50;
+            width: 100%;
+            height: 50px;
+            bottom: 0;
+            position: absolute;
+            transform: translateZ(-5px);
+            filter: brightness(0.8);
+        }
+
+        /* 建筑类型颜色系统 */
+        .building-old { background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%); }
+        .building-residential { background: linear-gradient(135deg, #6B8E23 0%, #8FBC8F 100%); }
+        .building-office { background: linear-gradient(135deg, #4682B4 0%, #87CEEB 100%); }
+        .building-leader { background: linear-gradient(135deg, #FF6B6B 0%, #FFA500 100%); }
+        .building-crystal { background: linear-gradient(135deg, #E0E0E0 0%, #F0F8FF 100%); }
+        .building-pearl { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+        .building-tower { background: linear-gradient(135deg, #4B0082 0%, #9370DB 100%); }
+        .building-bridge { background: linear-gradient(135deg, #5F9EA0 0%, #B0C4DE 100%); }
+
+        /* 特殊建筑结构 */
+        .window {
+            background: rgba(255, 255, 200, 0.9);
+            width: 8px;
+            height: 8px;
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.3);
+        }
+
+        .window::before,
+        .window::after {
+            background: rgba(255, 255, 200, 0.9);
+        }
+
+        .antenna {
+            background: #C0C0C0;
+            width: 4px;
+            height: 4px;
+        }
+
+        .spire {
+            background: #FFD700;
+            width: 6px;
+            height: 6px;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        .bridge-cable {
+            background: transparent;
+            width: 30px;
+            height: 1px;
+            border-top: 2px solid #4682B4;
+            transform-origin: left;
+            transform: rotateZ(-45deg) translateZ(-2px);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.7; filter: brightness(1.5); }
+        }
+
+        /* 动态效果 */
+        .lit {
+            animation: window-light 6s ease-in-out infinite;
+        }
+
+        @keyframes window-light {
+            0%, 100% { background: rgba(255, 255, 200, 0.9); }
+            50% { background: rgba(255, 255, 150, 1); filter: brightness(1.5); }
+        }
+
+        .glow {
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px currentColor; }
+            50% { box-shadow: 0 0 20px currentColor; }
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: rgba(20, 20, 40, 0.95);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid rgba(100, 150, 255, 0.5);
+            font-size: 12px;
+            max-width: 220px;
+            line-height: 1.6;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.4s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-panel.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .info-panel h3 {
+            color: #FFD700;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            padding-bottom: 4px;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .info-panel ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .info-panel li {
+            margin: 3px 0;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .info-panel li::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: #FF6B6B;
+        }
+
+        /* 建筑标记 */
+        .building-label {
+            position: absolute;
+            color: #FFD700;
+            font-size: 10px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .building-label.show {
+            opacity: 1;
+            animation: float-up 2s ease-out forwards;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-20px); opacity: 0; }
+        }
+
+        /* 背景装饰 */
+        .stars {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 4s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* 粒子 */
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: particle-float 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes particle-float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            50% { transform: translateY(-40px) translateX(20px); }
+        }
+
+        /* 灯光光晕 */
+        .light-glow {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(255, 200, 50, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: pulse-glow 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .cityscape { transform: scale(0.8); }
+            .header h1 { font-size: 28px; }
+            .info-panel { font-size: 11px; max-width: 180px; top: 70px; right: 10px; }
+        }
+
+        @media (max-width: 768px) {
+            .cityscape { transform: scale(0.6); }
+            .header h1 { font-size: 22px; }
+            .header p { font-size: 11px; }
+        }
+
+        /* 特殊效果 - 视差 */
+        .parallax-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        /* 水平滚动 */
+        .pan {
+            animation: pan-scan 25s linear infinite;
+        }
+
+        @keyframes pan-scan {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(50px); }
+        }
+
+        /* 交互提示 */
+        .hint {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            animation: fade-in 2s ease-out forwards;
+            z-index: 999;
+        }
+
+        @keyframes fade-in {
+            0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.3) transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题 -->
+        <div class="header">
+            <h1>上海天际线</h1>
+            <p>SHANGHAI SKYLINE • 体素艺术 • 浦东风情</p>
+        </div>
+
+        <!-- 信息面板 -->
+        <div class="info-panel" id="infoPanel">
+            <h3>🏙️ 标志性建筑</h3>
+            <ul>
+                <li>上海中心 (632m)</li>
+                <li>环球金融中心 (492m)</li>
+                <li>金茂大厦 (420.5m)</li>
+                <li>东方明珠 (468m)</li>
+                <li>南浦大桥 (834m主跨)</li>
+                <li>外滩历史建筑群</li>
+                <li>传统石库门</li>
+            </ul>
+            <p style="margin-top: 8px; color: #aaa; line-height: 1.4;">
+                💡 点击观察 · 🖱️ 拖动旋转 · ⚡ 开启特效
+            </p>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="controls">
+            <button class="btn" onclick="toggleRotate()">🔄 旋转</button>
+            <button class="btn" onclick="toggleInfo()">📚 建筑</button>
+            <button class="btn" onclick="toggleLights()">💡 灯光</button>
+            <button class="btn" onclick="toggleWeather()">🌧️ 烟雨</button>
+            <button class="btn" onclick="toggleParallax()">🎭 视差</button>
+            <button class="btn" onclick="resetView()">🏠 重置</button>
+        </div>
+
+        <!-- 提示 -->
+        <div class="hint" id="hint">点击任意建筑查看详情 • 鼠标悬停放大</div>
+
+        <!-- 城市场景 -->
+        <div class="cityscape" id="cityscape">
+            <!-- 粒子容器 -->
+            <div id="particles" style="position: absolute; width: 100%; height: 100%;"></div>
+
+            <!-- 星空 -->
+            <div id="stars" style="position: absolute; width: 100%; height: 100%;"></div>
+
+            <!-- 地面 -->
+            <div class="ground"></div>
+
+            <!-- 建筑群开始 -->
+
+            <!-- 左侧：历史建筑群 -->
+            <div id="historic-district"></div>
+
+            <!-- 中心：陆家嘴核心区 -->
+            <div id="lujiazui-core"></div>
+
+            <!-- 右侧：现代建筑 -->
+            <div id="modern-district"></div>
+
+            <!-- 桥梁 -->
+            <div id="bridge"></div>
+
+            <!-- 浦东天际线 -->
+            <div id="pudong-skyline"></div>
+
+            <!-- 外滩建筑群 -->
+            <div id="bund-buildings"></div>
+
+            <!-- 背景层 -->
+            <div id="background-layer"></div>
+        </div>
+    </div>
+
+    <script>
+        // 全局状态
+        let state = {
+            rotate: true,
+            showInfo: false,
+            lightsOn: false,
+            weatherOn: false,
+            parallaxOn: false,
+            buildings: []
+        };
+
+        // 建筑数据
+        const buildingsData = [
+            // 东方明珠
+            { name: "东方明珠", type: "pearl", x: 120, y: 200, height: 20, width: 3, color: "#FFD700", special: "sphere" },
+            // 金茂大厦
+            { name: "金茂大厦", type: "classic", x: 150, y: 180, height: 18, width: 4, color: "#4682B4" },
+            // 环球金融中心
+            { name: "环球金融中心", type: "office", x: 180, y: 170, height: 20, width: 5, color: "#00CED1", special: "trapezoid" },
+            // 上海中心
+            { name: "上海中心", type: "leader", x: 210, y: 160, height: 28, width: 4, color: "#FF6B6B", special: "spiral" },
+
+            // 右侧现代建筑
+            { name: "震旦大厦", type: "residential", x: 260, y: 200, height: 15, width: 3, color: "#9370DB" },
+            { name: "花旗集团", type: "office", x: 285, y: 210, height: 13, width: 4, color: "#87CEEB" },
+            { name: "未来建筑", type: "crystal", x: 315, y: 220, height: 12, width: 3, color: "#E0E0E0" },
+
+            // 外滩历史建筑
+            { name: "和平饭店", type: "old", x: 380, y: 230, height: 8, width: 5, color: "#A0522D" },
+            { name: "海关大楼", type: "old", x: 410, y: 225, height: 9, width: 4, color: "#8B4513", special: "clock" },
+            { name: "外滩18号", type: "old", x: 440, y: 232, height: 7, width: 5, color: "#696969" },
+            { name: "汇丰银行", type: "old", x: 470, y: 228, height: 8, width: 4, color: "#A0522D" },
+
+            // 传统建筑
+            { name: "石库门", type: "old", x: 520, y: 245, height: 5, width: 3, color: "#8B6969" },
+            { name: " aggregate", type: "old", x: 540, y: 245, height: 5, width: 3, color: "#9C7C5F" },
+
+            // 左侧现代群楼
+            { name: "白玉兰", type: "office", x: 70, y: 220, height: 10, width: 4, color: "#87CEEB" },
+            { name: "凯德", type: "residential", x: 95, y: 215, height: 11, width: 3, color: "#6B8E23" },
+            { name: "北外滩", type: "office", x: 40, y: 210, height: 12, width: 4, color: "#4682B4" }
+        ];
+
+        // 初始化函数
+        function init() {
+            createStars();
+            createBuildings();
+            createParticles();
+            setupInteractions();
+            startAutoHint();
+
+            // 自动显示信息面板引导
+            setTimeout(() => {
+                toggleInfo();
+            }, 2000);
+        }
+
+        // 创建星空背景
+        function createStars() {
+            const container = document.getElementById('stars');
+            for (let i = 0; i < 80; i++) {
+                const star = document.createElement('div');
+                star.className = 'stars';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 40 + '%';
+                star.style.animationDelay = Math.random() * 4 + 's';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                container.appendChild(star);
+            }
+        }
+
+        // 创建粒子效果
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = (Math.random() * 80 + 10) + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 创建所有建筑
+        function createBuildings() {
+            const historic = document.getElementById('historic-district');
+            const lujiazui = document.getElementById('lujiazui-core');
+            const modern = document.getElementById('modern-district');
+            const bund = document.getElementById('bund-buildings');
+            const main = document.getElementById('pudong-skyline');
+            const bg = document.getElementById('background-layer');
+            const bridge = document.getElementById('bridge');
+
+            buildingsData.forEach((building, index) => {
+                // 选择容器
+                let container;
+                if (index < 4) container = main;
+                else if (index < 7) container = modern;
+                else if (index < 11) container = bund;
+                else if (index < 13) container = historic;
+                else container = lujiazui;
+
+                createBuilding(building, container, index);
+            });
+
+            // 创建桥梁
+            createBridge(bridge);
+
+            // 背景建筑
+            createBackground(bg);
+        }
+
+        // 创建单个建筑
+        function createBuilding(data, container, index) {
+            const baseX = data.x;
+            const baseY = data.y;
+
+            // 建筑主体
+            for (let h = 0; h < data.height; h++) {
+                const voxel = document.createElement('div');
+                voxel.className = `voxel building-${data.type}`;
+                voxel.style.transform = `translate3d(${baseX}px, ${baseY - (h * 12)}px, ${h * 2}px)`;
+                voxel.dataset.name = data.name;
+                voxel.dataset.type = data.type;
+                voxel.dataset.index = index;
+
+                // 随机添加一些窗户
+                if (Math.random() > 0.6 && h > 1) {
+                    voxel.classList.add('window');
+                    voxel.style.opacity = '0.9';
+                }
+
+                // 特殊建筑顶部
+                if (h === data.height - 1) {
+                    if (data.special === 'spire') {
+                        const spire = document.createElement('div');
+                        spire.className = 'voxel spire';
+                        spire.style.transform = `translate3d(${baseX}px, ${baseY - (h * 12)}px, ${h * 2 + 5}px)`;
+                        spire.dataset.name = data.name + ' (塔尖)';
+                        container.appendChild(spire);
+                    } else if (data.special === 'sphere') {
+                        // 珍珠球体
+                        for (let i = 0; i < 5; i++) {
+                            const sphere = document.createElement('div');
+                            sphere.className = 'voxel building-pearl';
+                            sphere.style.transform = `translate3d(${baseX - 12 + i*4}px, ${baseY - (h * 12) - 10}px, ${h * 2 + 2}px)`;
+                            sphere.style.borderRadius = '50%';
+                            sphere.style.width = '8px';
+                            sphere.style.height = '8px';
+                            sphere.dataset.name = data.name + ' (球体)';
+                            if (i === 0 || i === 4) {
+                                sphere.classList.add('glow');
+                            }
+                            container.appendChild(sphere);
+                        }
+                    } else if (data.special === 'trapezoid') {
+                        // 环球中心梯形
+                        const trap = document.createElement('div');
+                        trap.className = 'voxel building-office';
+                        trap.style.transform = `translate3d(${baseX}px, ${baseY - (h * 12)}px, ${h * 2 + 2}px)`;
+                        trap.style.width = '16px';
+                        trap.style.borderRadius = '8px 8px 0 0';
+                        trap.dataset.name = data.name + ' (顶部)';
+                        container.appendChild(trap);
+                    }
+                }
+
+                // 随机添加天线
+                if (h === data.height - 2 && Math.random() > 0.7 && !data.special) {
+                    const antenna = document.createElement('div');
+                    antenna.className = 'voxel antenna';
+                    antenna.style.transform = `translate3d(${baseX + 2}px, ${baseY - (h * 12)}px, ${h * 2 + 3}px)`;
+                    antenna.dataset.name = data.name + ' (天线)';
+                    container.appendChild(antenna);
+                }
+
+                // 东方明珠的特殊处理 - 单独创建
+                if (data.special === 'sphere') continue;
+
+                container.appendChild(voxel);
+            }
+
+            // 添加标签（用于显示建筑名称）
+            const label = document.createElement('div');
+            label.className = 'building-label';
+            label.textContent = data.name;
+            label.style.left = baseX + 'px';
+            label.style.top = (baseY - data.height * 12 - 10) + 'px';
+            label.style.transform = 'translateX(-50%)';
+            label.id = `label-${index}`;
+            container.appendChild(label);
+
+            state.buildings.push({
+                ...data,
+                container: container,
+                index: index
+            });
+        }
+
+        // 创建桥梁
+        function createBridge(container) {
+            const bridgeStart = 580;
+            const bridgeY = 260;
+
+            // 桥塔
+            for (let i = 0; i < 6; i++) {
+                const tower1 = document.createElement('div');
+                tower1.className = 'voxel building-bridge';
+                tower1.style.transform = `translate3d(${bridgeStart}px, ${bridgeY - i * 12}px, ${i}px)`;
+                tower1.dataset.name = "南浦大桥 (桥塔)";
+                container.appendChild(tower1);
+
+                const tower2 = document.createElement('div');
+                tower2.className = 'voxel building-bridge';
+                tower2.style.transform = `translate3d(${bridgeStart + 100}px, ${bridgeY - i * 12}px, ${i}px)`;
+                tower2.dataset.name = "南浦大桥 (桥塔)";
+                container.appendChild(tower2);
+            }
+
+            // 拉索
+            for (let i = 0; i < 8; i++) {
+                const cable = document.createElement('div');
+                cable.className = 'voxel bridge-cable';
+                cable.style.transform = `translate3d(${bridgeStart + i * 12}px, ${bridgeY - 20}px, 0px) rotateZ(-45deg)`;
+                cable.style.width = '12px';
+                container.appendChild(cable);
+
+                const cable2 = document.createElement('div');
+                cable2.className = 'voxel bridge-cable';
+                cable2.style.transform = `translate3d(${bridgeStart + 50 + i * 12}px, ${bridgeY - 25}px, 0px) rotateZ(45deg)`;
+                cable2.style.width = '12px';
+                container.appendChild(cable2);
+            }
+
+            // 桥面
+            for (let i = 0; i < 16; i++) {
+                const deck = document.createElement('div');
+                deck.className = 'voxel building-bridge';
+                deck.style.transform = `translate3d(${bridgeStart + i * 6}px, ${bridgeY + 30}px, 0px)`;
+                deck.style.width = '6px';
+                deck.dataset.name = "南浦大桥";
+                container.appendChild(deck);
+            }
+        }
+
+        // 创建背景建筑
+        function createBackground(container) {
+            // 左侧远景
+            for (let i = 0; i < 8; i++) {
+                const group = document.createElement('div');
+                const h = Math.floor(Math.random() * 8) + 5;
+
+                for (let j = 0; j < h; j++) {
+                    const voxel = document.createElement('div');
+                    voxel.className = 'voxel';
+                    voxel.style.background = 'rgba(40, 50, 70, 0.4)';
+                    voxel.style.transform = `translate3d(${40 + i * 15}px, ${250 - j * 10}px, ${-50 - j}px)`;
+                    voxel.style.width = '10px';
+                    voxel.style.height = '10px';
+                    container.appendChild(voxel);
+                }
+            }
+
+            // 右侧远景
+            for (let i = 0; i < 8; i++) {
+                const h = Math.floor(Math.random() * 6) + 4;
+                for (let j = 0; j < h; j++) {
+                    const voxel = document.createElement('div');
+                    voxel.className = 'voxel';
+                    voxel.style.background = 'rgba(50, 60, 80, 0.4)';
+                    voxel.style.transform = `translate3d(${330 + i * 12}px, ${240 - j * 8}px, ${-50 - j}px)`;
+                    voxel.style.width = '8px';
+                    voxel.style.height = '8px';
+                    container.appendChild(voxel);
+                }
+            }
+        }
+
+        // 交互功能
+        function setupInteractions() {
+            const cityscape = document.getElementById('cityscape');
+
+            // 点击建筑
+            cityscape.addEventListener('click', (e) => {
+                if (e.target.classList.contains('voxel') && !e.target.classList.contains('ground')) {
+                    const name = e.target.dataset.name || '建筑';
+                    const rect = e.target.getBoundingClientRect();
+
+                    // 显示标签
+                    showLabel(name, rect.left, rect.top, e.target.dataset.index);
+
+                    // 添加点击反馈 - 短暂闪烁
+                    e.target.style.filter = 'brightness(2) saturate(2)';
+                    setTimeout(() => {
+                        e.target.style.filter = '';
+                    }, 300);
+
+                    // 创建反馈粒子
+                    e.target.style.transform += ' scale(1.2)';
+                    setTimeout(() => {
+                        e.target.style.transform = e.target.style.transform.replace(' scale(1.2)', '');
+                    }, 150);
+                }
+            });
+
+            // 鼠标移动视差
+            document.addEventListener('mousemove', (e) => {
+                if (!state.rotate && state.parallaxOn) {
+                    const x = (e.clientX / window.innerWidth - 0.5) * 30;
+                    const y = (e.clientY / window.innerHeight - 0.5) * 15;
+                    cityscape.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
+                }
+            });
+
+            // 移除提示
+            setTimeout(() => {
+                const hint = document.getElementById('hint');
+                if (hint) {
+                    hint.style.transition = 'opacity 1s ease';
+                    hint.style.opacity = '0';
+                    setTimeout(() => hint.remove(), 1000);
+                }
+            }, 8000);
+        }
+
+        // 显示建筑标签
+        function showLabel(name, x, y, index) {
+            const label = document.getElementById(`label-${index}`);
+            if (label) {
+                label.textContent = name;
+                label.style.left = x + 'px';
+                label.style.top = (y - 30) + 'px';
+                label.classList.add('show');
+
+                setTimeout(() => {
+                    label.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        // 控制函数
+        function toggleRotate() {
+            state.rotate = !state.rotate;
+            const cityscape = document.getElementById('cityscape');
+            const btn = event.target;
+
+            if (state.rotate) {
+                cityscape.classList.remove('paused');
+                btn.textContent = '🔄 旋转';
+                btn.classList.remove('active');
+            } else {
+                cityscape.classList.add('paused');
+                btn.textContent = '⏸️ 停止';
+                btn.classList.add('active');
+            }
+        }
+
+        function toggleInfo() {
+            state.showInfo = !state.showInfo;
+            const panel = document.getElementById('infoPanel');
+            const btn = event.target;
+
+            if (state.showInfo) {
+                panel.classList.add('show');
+                btn.classList.add('active');
+            } else {
+                panel.classList.remove('show');
+                btn.classList.remove('active');
+            }
+        }
+
+        function toggleLights() {
+            state.lightsOn = !state.lightsOn;
+            const windows = document.querySelectorAll('.window');
+            const btn = event.target;
+            const cityscape = document.getElementById('cityscape');
+
+            if (state.lightsOn) {
+                windows.forEach(w => w.classList.add('lit'));
+                btn.classList.add('active');
+                btn.textContent = '💡 熄灯';
+
+                // 添加光晕
+                addLightGlows();
+                cityscape.style.animation = 'gentle-float 10s ease-in-out infinite';
+            } else {
+                windows.forEach(w => w.classList.remove('lit'));
+                btn.classList.remove('active');
+                btn.textContent = '💡 灯光';
+
+                // 移除光晕
+                const glows = document.querySelectorAll('.light-glow');
+                glows.forEach(g => g.remove());
+                cityscape.style.animation = '';
+            }
+        }
+
+        function addLightGlows() {
+            const cityscape = document.getElementById('cityscape');
+            const randomPositions = [
+                { x: 120, y: 180 }, { x: 150, y: 160 }, { x: 180, y: 150 },
+                { x: 210, y: 140 }, { x: 380, y: 210 }, { x: 410, y: 205 },
+                { x: 440, y: 210 }, { x: 185, y: 150 }, { x: 205, y: 140 }
+            ];
+
+            randomPositions.forEach(pos => {
+                const glow = document.createElement('div');
+                glow.className = 'light-glow';
+                glow.style.left = (pos.x - 20) + 'px';
+                glow.style.top = (pos.y - 20) + 'px';
+                cityscape.appendChild(glow);
+
+                setTimeout(() => {
+                    glow.style.animationDelay = Math.random() * 3 + 's';
+                }, 100);
+            });
+        }
+
+        function toggleWeather() {
+            state.weatherOn = !state.weatherOn;
+            const btn = event.target;
+            const cityscape = document.getElementById('cityscape');
+
+            if (state.weatherOn) {
+                addRainEffect();
+                btn.classList.add('active');
+                btn.textContent = '☀️ 晴朗';
+
+                // 改变背景色调
+                cityscape.style.filter = 'contrast(1.2) brightness(0.9) saturate(0.8)';
+            } else {
+                removeRainEffect();
+                btn.classList.remove('active');
+                btn.textContent = '🌧️ 烟雨';
+
+                cityscape.style.filter = '';
+            }
+        }
+
+        function addRainEffect() {
+            const cityscape = document.getElementById('cityscape');
+
+            for (let i = 0; i < 40; i++) {
+                const rain = document.createElement('div');
+                rain.className = 'particle';
+                rain.style.width = '1px';
+                rain.style.height = '15px';
+                rain.style.background = 'linear-gradient(to bottom, transparent, rgba(174, 194, 224, 0.6))';
+                rain.style.left = Math.random() * 100 + '%';
+                rain.style.top = Math.random() * 100 + '%';
+                rain.style.animation = `rain-fall ${0.5 + Math.random() * 0.5}s linear infinite`;
+                rain.style.animationDelay = Math.random() * 2 + 's';
+                rain.dataset.rain = 'true';
+                cityscape.appendChild(rain);
+            }
+
+            // 动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes rain-fall {
+                    0% { transform: translateY(-20px) translateX(0); opacity: 0; }
+                    10% { opacity: 0.8; }
+                    100% { transform: translateY(200px) translateX(20px); opacity: 0; }
+                }
+            `;
+            style.id = 'rain-style';
+            document.head.appendChild(style);
+
+            // 雾气效果
+            const mist = document.createElement('div');
+            mist.style.position = 'absolute';
+            mist.style.width = '200%';
+            mist.style.height = '100%';
+            mist.style.left = '-50%';
+            mist.style.background = 'radial-gradient(ellipse at center, rgba(200,220,240,0.15) 0%, transparent 70%)';
+            mist.style.pointerEvents = 'none';
+            mist.style.animation = 'mist-move 6s ease-in-out infinite';
+            mist.style.filter = 'blur(2px)';
+            mist.id = 'mist';
+            cityscape.appendChild(mist);
+
+            const mistStyle = document.createElement('style');
+            mistStyle.textContent = `
+                @keyframes mist-move {
+                    0%, 100% { transform: translateX(0); opacity: 0.4; }
+                    50% { transform: translateX(20px); opacity: 0.6; }
+                }
+            `;
+            mistStyle.id = 'mist-style';
+            document.head.appendChild(mistStyle);
+        }
+
+        function removeRainEffect() {
+            const rains = document.querySelectorAll('[data-rain="true"]');
+            rains.forEach(r => r.remove());
+            const mist = document.getElementById('mist');
+            if (mist) mist.remove();
+
+            const rainStyle = document.getElementById('rain-style');
+            const mistStyle = document.getElementById('mist-style');
+            if (rainStyle) rainStyle.remove();
+            if (mistStyle) mistStyle.remove();
+        }
+
+        function toggleParallax() {
+            state.parallaxOn = !state.parallaxOn;
+            const btn = event.target;
+
+            if (state.parallaxOn) {
+                btn.classList.add('active');
+                btn.textContent = '🎭 立体';
+
+                // 显示引导
+                showFloatingHint('鼠标移动查看3D视差效果');
+            } else {
+                btn.classList.remove('active');
+                btn.textContent = '🎭 视差';
+                document.getElementById('cityscape').style.transform = '';
+            }
+        }
+
+        function resetView() {
+            // 重置所有状态
+            if (state.rotate) toggleRotate();
+            if (state.showInfo) toggleInfo();
+            if (state.lightsOn) toggleLights();
+            if (state.weatherOn) toggleWeather();
+            if (state.parallaxOn) toggleParallax();
+
+            const cityscape = document.getElementById('cityscape');
+            cityscape.style.transform = '';
+            cityscape.classList.remove('paused');
+
+            state.rotate = true;
+            event.target.textContent = '🏠 重置';
+            event.target.classList.add('active');
+
+            setTimeout(() => {
+                event.target.classList.remove('active');
+            }, 500);
+
+            // 显示欢迎标签
+            showFloatingHint('欢迎来到上海体素天际线！');
+        }
+
+        // 辅助函数
+        function showFloatingHint(text) {
+            const hint = document.createElement('div');
+            hint.style.position = 'absolute';
+            hint.style.top = '50%';
+            hint.style.left = '50%';
+            hint.style.transform = 'translate(-50%, -50%)';
+            hint.style.color = 'white';
+            hint.style.fontSize = '16px';
+            hint.style.fontWeight = 'bold';
+            hint.style.background = 'rgba(0,0,0,0.7)';
+            hint.style.padding = '15px 25px';
+            hint.style.borderRadius = '8px';
+            hint.style.zIndex = '2000';
+            hint.style.backdropFilter = 'blur(10px)';
+            hint.style.textAlign = 'center';
+            hint.textContent = text;
+            hint.style.animation = 'fade-in-out 2s ease-in-out forwards';
+
+            document.body.appendChild(hint);
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fade-in-out {
+                    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                    20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            setTimeout(() => {
+                hint.remove();
+                style.remove();
+            }, 2000);
+        }
+
+        // 自动提示循环
+        function startAutoHint() {
+            const tips = [
+                '💡 点击建筑查看名称',
+                '🔄 使用旋转功能全方位观察',
+                '🌊 开启烟雨效果，感受浦东风情',
+                '🐁 移动鼠标体验视差3D',
+                '✨ 所有建筑都是可交互的！'
+            ];
+
+            let index = 0;
+            setInterval(() => {
+                if (!document.getElementById('hint') && !state.showInfo) {
+                    showFloatingHint(tips[index]);
+                    index = (index + 1) % tips.length;
+                }
+            }, 12000);
+        }
+
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleRotate();
+                    break;
+                case 'l':
+                case 'L':
+                    toggleLights();
+                    break;
+                case 'r':
+                case 'R':
+                    toggleWeather();
+                    break;
+                case 'i':
+                case 'I':
+                    toggleInfo();
+                    break;
+                case 'p':
+                case 'P':
+                    toggleParallax();
+                    break;
+                case '0':
+                    resetView();
+                    break;
+            }
+        });
+
+        // 启动
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

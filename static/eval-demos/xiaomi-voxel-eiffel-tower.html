@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>埃菲尔铁塔 - 体素艺术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1e3c72 0%, #2a5298 30%, #87CEEB 70%, #E6F3FF 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            perspective: 1500px;
+        }
+
+        .container {
+            position: relative;
+            width: 1000px;
+            height: 800px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+            letter-spacing: 2px;
+            z-index: 1000;
+            text-align: center;
+            width: 100%;
+        }
+
+        .subtitle {
+            position: absolute;
+            top: 55px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            text-align: center;
+            width: 100%;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 90%;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            background: rgba(41, 128, 185, 0.9);
+            color: white;
+            border: 2px solid #3498db;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .btn:hover {
+            background: rgba(52, 152, 219, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .eiffel {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            transform-style: preserve-3d;
+            transform: rotateX(70deg) rotateZ(0deg);
+            transition: transform 0.5s ease;
+            animation: rotate 30s linear infinite;
+        }
+
+        .eiffel.paused {
+            animation: none;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotateX(70deg) rotateZ(0deg); }
+            100% { transform: rotateX(70deg) rotateZ(360deg); }
+        }
+
+        @keyframes gentle-sway {
+            0%, 100% { transform: rotateX(70deg) rotateZ(0deg) translateX(0); }
+            50% { transform: rotateX(70deg) rotateZ(0deg) translateX(5px); }
+        }
+
+        .sway {
+            animation: gentle-sway 8s ease-in-out infinite;
+        }
+
+        .voxel {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            transform-style: preserve-3d;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .voxel:hover {
+            transform: scale(1.3);
+            filter: brightness(1.5);
+            z-index: 100;
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .voxel::before,
+        .voxel::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+        }
+
+        .voxel::before {
+            transform: translateZ(-10px) rotateY(180deg);
+            filter: brightness(0.7);
+        }
+
+        .voxel::after {
+            transform: rotateX(90deg) translateZ(-10px);
+            filter: brightness(0.85);
+        }
+
+        /* 基础色 - 金属铁色 */
+        .iron {
+            background: #4A4A4A;
+        }
+
+        /* 深色铁 - 阴影面 */
+        .iron-dark {
+            background: #2C3E50;
+        }
+
+        /* 浅色铁 - 高光 */
+        .iron-light {
+            background: #6C7A89;
+        }
+
+        /* 金色 - 灯光 */
+        .gold {
+            background: #F39C12;
+            box-shadow: 0 0 8px rgba(243, 156, 18, 0.5);
+        }
+
+        .gold::before,
+        .gold::after {
+            background: #F39C12;
+        }
+
+        /* 材质效果 */
+        .wire-frame {
+            background: transparent;
+            border: 2px solid #4A4A4A;
+            border-radius: 2px;
+        }
+
+        .wire-frame::before,
+        .wire-frame::after {
+            background: transparent;
+            border: 2px solid #4A4A4A;
+        }
+
+        /* 特殊层高亮 */
+        @keyframes level-glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
+        }
+
+        .level-highlight {
+            animation: level-glow 3s ease-in-out infinite;
+        }
+
+        /* 灯光闪烁 */
+        @keyframes blink {
+            0%, 40%, 100% { opacity: 0.8; }
+            50% { opacity: 1; filter: brightness(1.5); }
+        }
+
+        .blink {
+            animation: blink 4s ease-in-out infinite;
+        }
+
+        /* 顶部尖顶 */
+        .spire {
+            background: #34495E;
+            width: 8px;
+            height: 8px;
+        }
+
+        /* 观景台 */
+        .observation-deck {
+            background: #5D6D7E;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* 拱门 */
+        .arch {
+            background: #424949;
+            width: 15px;
+            height: 25px;
+            border-radius: 50% 50% 0 0;
+        }
+
+        /* 云朵装饰 */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50px;
+            filter: blur(1px);
+            animation: drift 25s linear infinite;
+            width: 100px;
+            height: 40px;
+        }
+
+        @keyframes drift {
+            0% { transform: translateX(-150px); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateX(150px); opacity: 0; }
+        }
+
+        /* 信息面板 */
+        .info-panel {
+            position: absolute;
+            top: 100px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #3498db;
+            font-size: 12px;
+            line-height: 1.6;
+            max-width: 240px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(20px);
+            z-index: 1001;
+        }
+
+        .info-panel.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .info-panel h3 {
+            color: #2980b9;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 4px;
+        }
+
+        /* 层级标记 */
+        .level-markers {
+            position: absolute;
+            left: 30px;
+            top: 100px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            text-align: left;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .level-markers.show {
+            opacity: 1;
+        }
+
+        .level-markers div {
+            margin: 8px 0;
+            padding: 5px 8px;
+            background: rgba(41, 128, 185, 0.3);
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+        }
+
+        /* 雨滴效果 */
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.4));
+            animation: rain 1.5s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes rain {
+            0% { transform: translateY(-20px); opacity: 0; }
+            20% { opacity: 0.6; }
+            100% { transform: translateY(200px); opacity: 0; }
+        }
+
+        /* 陀螺仪提示 */
+        .gyro-hint {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            z-index: 999;
+        }
+
+        /* 按钮激活状态 */
+        .btn.active {
+            background: rgba(46, 204, 113, 0.9);
+            border-color: #27ae60;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+        }
+
+        /* 粒子动画 */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .eiffel { transform: scale(0.7) rotateX(70deg); }
+            .title { font-size: 24px; }
+            .info-panel {
+                max-width: 180px;
+                font-size: 11px;
+                top: 80px;
+                right: 10px;
+            }
+            .level-markers {
+                left: 10px;
+                top: 80px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">埃菲尔铁塔</div>
+        <div class="subtitle">Eiffel Tower • 体素艺术 • 巴黎</div>
+
+        <div class="controls">
+            <button class="btn" onclick="toggleAnimation()">🔄 旋转</button>
+            <button class="btn" onclick="toggleInfo()">📚 结构</button>
+            <button class="btn" onclick="toggleLevels()">🗼 层级</button>
+            <button class="btn" onclick="toggleWireframe()">⚙️ 线框</button>
+            <button class="btn" onclick="addWeather()">🌤️ 天气</button>
+            <button class="btn" onclick="addLightEffect()">💡 灯光</button>
+        </div>
+
+        <div class="gyro-hint">鼠标悬停查看细节 • 点击方块交互</div>
+
+        <div class="info-panel" id="infoPanel">
+            <h3>🏗️ 建筑结构</h3>
+            总高度: 300米<br>
+            建成: 1889年<br>
+            设计师: 古斯塔夫·埃菲尔<br>
+            <br>
+            <strong>结构层级:</strong><br>
+            • 底部拱门基座<br>
+            • 下层观景台<br>
+            • 中层观景台<br>
+            • 上层塔身<br>
+            • 插尖顶天线
+        </div>
+
+        <div class="level-markers" id="levelMarkers">
+            <div>🌟 顶部天线 (300m)</div>
+            <div>🗼 上层塔身 (276m)</div>
+            <div>👁️ 中层观景台 (115m)</div>
+            <div>👀 下层观景台 (57m)</div>
+            <div>🏛️ 双拱底座 (0m)</div>
+        </div>
+
+        <div class="eiffel" id="eiffel">
+            <!-- 云朵 -->
+            <div class="cloud" style="top: -80px; left: -100px; animation-delay: 0s;"></div>
+            <div class="cloud" style="top: -60px; right: -120px; animation-delay: 8s;"></div>
+            <div class="cloud" style="top: -100px; left: 50px; animation-delay: 15s;"></div>
+
+            <!-- 粒子容器 -->
+            <div class="particles" id="particles"></div>
+
+            <!-- 底部 - 拱门基座 -->
+            <!-- 左右拱门 -->
+            <div class="voxel arch" style="transform: translate3d(-60px, 240px, -50px);"></div>
+            <div class="voxel arch" style="transform: translate3d(-45px, 240px, -50px);"></div>
+            <div class="voxel arch" style="transform: translate3d(-30px, 240px, -50px);"></div>
+            <div class="voxel arch" style="transform: translate3d(-15px, 240px, -50px);"></div>
+
+            <div class="voxel arch" style="transform: translate3d(15px, 240px, -50px);"></div>
+            <div class="voxel arch" style="transform: translate3d(30px, 240px, -50px);"></div>
+            <div class="voxel arch" style="transform: translate3d(45px, 240px, -50px);"></div>
+            <div class="voxel arch" style="transform: translate3d(60px, 240px, -50px);"></div>
+
+            <!-- 基座柱子 -->
+            <div class="voxel iron" style="transform: translate3d(-80px, 210px, -50px); height: 40px;"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(-70px, 170px, -50px); height: 50px;"></div>
+
+            <div class="voxel iron" style="transform: translate3d(80px, 210px, -50px); height: 40px;"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(70px, 170px, -50px); height: 50px;"></div>
+
+            <!-- 基座连接梁 -->
+            <div class="voxel iron-light" style="transform: translate3d(-50px, 190px, -50px); width: 120px;"></div>
+            <div class="voxel iron-light" style="transform: translate3d(-50px, 210px, -50px); width: 120px;"></div>
+
+            <!-- 下层观景台 (57m) - 用方块显示 -->
+            <div class="voxel observation-deck level-highlight" style="transform: translate3d(-70px, 140px, -40px); width: 25px;"></div>
+            <div class="voxel observation-deck level-highlight" style="transform: translate3d(-45px, 140px, -40px); width: 25px;"></div>
+            <div class="voxel observation-deck level-highlight" style="transform: translate3d(-20px, 140px, -40px); width: 25px;"></div>
+            <div class="voxel observation-deck level-highlight" style="transform: translate3d(5px, 140px, -40px); width: 25px;"></div>
+            <div class="voxel observation-deck level-highlight" style="transform: translate3d(30px, 140px, -40px); width: 25px;"></div>
+            <div class="voxel observation-deck level-highlight" style="transform: translate3d(55px, 140px, -40px); width: 25px;"></div>
+
+            <!-- 下层支撑 -->
+            <div class="voxel iron-dark" style="transform: translate3d(-70px, 170px, -40px); height: 30px;"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(55px, 170px, -40px); height: 30px;"></div>
+
+            <!-- 中层以下坡度塔身 -->
+            <div class="voxel iron" style="transform: translate3d(-60px, 110px, -30px);"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(-45px, 100px, -28px);"></div>
+            <div class="voxel iron" style="transform: translate3d(-30px, 90px, -26px);"></div>
+            <div class="voxel iron-light" style="transform: translate3d(-15px, 80px, -24px);"></div>
+
+            <div class="voxel iron" style="transform: translate3d(60px, 110px, -30px);"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(45px, 100px, -28px);"></div>
+            <div class="voxel iron" style="transform: translate3d(30px, 90px, -26px);"></div>
+            <div class="voxel iron-light" style="transform: translate3d(15px, 80px, -24px);"></div>
+
+            <!-- 中间横向连接 -->
+            <div class="voxel iron" style="transform: translate3d(-50px, 115px, -26px); width: 30px;"></div>
+            <div class="voxel iron" style="transform: translate3d(20px, 115px, -26px); width: 30px;"></div>
+
+            <!-- 中层观景台 (115m) -->
+            <div class="voxel observation-deck level-highlight blink" style="transform: translate3d(-40px, 70px, -20px); width: 30px;"></div>
+            <div class="voxel observation-deck level-highlight blink" style="transform: translate3d(-10px, 70px, -20px); width: 30px;"></div>
+            <div class="voxel observation-deck level-highlight blink" style="transform: translate3d(20px, 70px, -20px); width: 30px;"></div>
+
+            <!-- 中层装饰 -->
+            <div class="voxel gold" style="transform: translate3d(0px, 65px, -15px);"></div>
+            <div class="voxel gold" style="transform: translate3d(-30px, 65px, -15px);"></div>
+            <div class="voxel gold" style="transform: translate3d(30px, 65px, -15px);"></div>
+
+            <!-- 上层塔身 -->
+            <div class="voxel iron" style="transform: translate3d(-35px, 50px, -15px);"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(-25px, 40px, -12px);"></div>
+            <div class="voxel iron" style="transform: translate3d(-15px, 30px, -10px);"></div>
+            <div class="voxel iron-light" style="transform: translate3d(-5px, 20px, -8px);"></div>
+
+            <div class="voxel iron" style="transform: translate3d(35px, 50px, -15px);"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(25px, 40px, -12px);"></div>
+            <div class="voxel iron" style="transform: translate3d(15px, 30px, -10px);"></div>
+            <div class="voxel iron-light" style="transform: translate3d(5px, 20px, -8px);"></div>
+
+            <!-- 上层连接 -->
+            <div class="voxel iron" style="transform: translate3d(-20px, 35px, -10px); width: 20px;"></div>
+            <div class="voxel iron" style="transform: translate3d(0px, 25px, -8px); width: 10px;"></div>
+
+            <!-- 上层装饰 -->
+            <div class="voxel gold" style="transform: translate3d(0px, 28px, -5px);"></div>
+
+            <!-- 顶部塔身 -->
+            <div class="voxel iron-light" style="transform: translate3d(-15px, 15px, -5px);"></div>
+            <div class="voxel iron" style="transform: translate3d(-10px, 8px, -3px);"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(-5px, -2px, -2px);"></div>
+
+            <div class="voxel iron-light" style="transform: translate3d(15px, 15px, -5px);"></div>
+            <div class="voxel iron" style="transform: translate3d(10px, 8px, -3px);"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(5px, -2px, -2px);"></div>
+
+            <!-- 顶部连接 -->
+            <div class="voxel iron-light" style="transform: translate3d(0px, -8px, -1px); width: 12px;"></div>
+
+            <!-- 顶部尖顶 -->
+            <div class="voxel spire" style="transform: translate3d(-2px, -15px, 0px); height: 20px;"></div>
+            <div class="voxel spire" style="transform: translate3d(2px, -25px, 0px); height: 15px;"></div>
+            <div class="voxel spire level-highlight" style="transform: translate3d(0px, -35px, 0px); height: 12px; width: 6px;"></div>
+
+            <!-- 天线顶端 -->
+            <div class="voxel gold blink" style="transform: translate3d(0px, -42px, 2px); width: 4px; height: 4px;"></div>
+
+            <!-- 钢架细节 - 斜拉线 -->
+            <div class="voxel wire-frame" style="transform: translate3d(-60px, 180px, -45px); width: 25px; height: 2px;"></div>
+            <div class="voxel wire-frame" style="transform: translate3d(-75px, 200px, -45px); width: 2px; height: 25px;"></div>
+
+            <div class="voxel wire-frame" style="transform: translate3d(35px, 180px, -45px); width: 25px; height: 2px;"></div>
+            <div class="voxel wire-frame" style="transform: translate3d(75px, 200px, -45px); width: 2px; height: 25px;"></div>
+
+            <!-- 中层框架细节 -->
+            <div class="voxel wire-frame" style="transform: translate3d(-50px, 55px, -18px); width: 15px; height: 2px;"></div>
+            <div class="voxel wire-frame" style="transform: translate3d(35px, 55px, -18px); width: 15px; height: 2px;"></div>
+
+            <!-- 精细斜线装饰 -->
+            <div class="voxel iron-dark" style="transform: translate3d(-45px, 130px, -35px); width: 20px; height: 2px;"></div>
+            <div class="voxel iron-dark" style="transform: translate3d(25px, 130px, -35px); width: 20px; height: 2px;"></div>
+
+            <!-- 阴影 -->
+            <div class="voxel" style="transform: translate3d(-80px, 260px, -100px); width: 180px; height: 40px; background: rgba(0,0,0,0.3); filter: blur(5px); opacity: 0.6;"></div>
+        </div>
+
+        <!-- 天气效果容器 -->
+        <div id="weatherContainer"></div>
+    </div>
+
+    <script>
+        let isAnimating = true;
+        let wireframeMode = false;
+        let lightsActive = false;
+        let weatherActive = false;
+
+        // 切换动画
+        function toggleAnimation() {
+            const eiffel = document.getElementById('eiffel');
+            const btn = event.target;
+
+            if (isAnimating) {
+                eiffel.classList.add('paused');
+                eiffel.classList.remove('sway');
+                btn.textContent = '▶️ 播放';
+                btn.style.background = 'rgba(231, 76, 60, 0.9)';
+                btn.style.borderColor = '#c0392b';
+            } else {
+                eiffel.classList.remove('paused');
+                btn.textContent = '🔄 旋转';
+                btn.style.background = 'rgba(41, 128, 185, 0.9)';
+                btn.style.borderColor = '#3498db';
+            }
+
+            isAnimating = !isAnimating;
+            btn.classList.toggle('active');
+        }
+
+        // 切换信息面板
+        function toggleInfo() {
+            const panel = document.getElementById('infoPanel');
+            const btn = event.target;
+
+            panel.classList.toggle('show');
+            btn.classList.toggle('active');
+        }
+
+        // 切换层级显示
+        function toggleLevels() {
+            const markers = document.getElementById('levelMarkers');
+            const btn = event.target;
+
+            markers.classList.toggle('show');
+            btn.classList.toggle('active');
+        }
+
+        // 切换线框模式
+        function toggleWireframe() {
+            const allVoxels = document.querySelectorAll('.voxel');
+            const btn = event.target;
+
+            wireframeMode = !wireframeMode;
+
+            allVoxels.forEach(voxel => {
+                if (wireframeMode) {
+                    if (!voxel.classList.contains('gold') &&
+                        !voxel.classList.contains('spire') &&
+                        !voxel.classList.contains('wire-frame')) {
+                        voxel.style.opacity = '0.2';
+                        voxel.style.border = '1px solid #666';
+                    } else if (voxel.classList.contains('gold')) {
+                        voxel.style.opacity = '0.5';
+                    }
+                } else {
+                    voxel.style.opacity = '';
+                    voxel.style.border = '';
+                }
+            });
+
+            if (wireframeMode) {
+                btn.textContent = '🔧 实体';
+                btn.style.background = 'rgba(149, 165, 166, 0.9)';
+                btn.style.borderColor = '#95a5a6';
+            } else {
+                btn.textContent = '⚙️ 线框';
+                btn.style.background = 'rgba(41, 128, 185, 0.9)';
+                btn.style.borderColor = '#3498db';
+            }
+
+            btn.classList.toggle('active');
+        }
+
+        // 添加天气效果
+        function addWeather() {
+            const container = document.getElementById('weatherContainer');
+            const btn = event.target;
+
+            if (weatherActive) {
+                container.innerHTML = '';
+                weatherActive = false;
+                btn.textContent = '🌤️ 天气';
+                btn.style.background = 'rgba(41, 128, 185, 0.9)';
+                btn.classList.remove('active');
+                return;
+            }
+
+            weatherActive = true;
+            btn.textContent = '🌧️ 停止';
+            btn.style.background = 'rgba(52, 73, 94, 0.9)';
+            btn.classList.add('active');
+
+            // 创建雨滴
+            for (let i = 0; i < 30; i++) {
+                const drop = document.createElement('div');
+                drop.className = 'raindrop';
+                drop.style.left = Math.random() * 100 + '%';
+                drop.style.animationDelay = Math.random() * 1.5 + 's';
+                drop.style.animationDuration = (Math.random() * 0.5 + 1) + 's';
+                container.appendChild(drop);
+            }
+
+            // 添加云的效果
+            const eiffel = document.getElementById('eiffel');
+            eiffel.style.filter = 'brightness(0.9) contrast(1.1)';
+        }
+
+        // 添加灯光效果
+        function addLightEffect() {
+            const eiffel = document.getElementById('eiffel');
+            const btn = event.target;
+
+            lightsActive = !lightsActive;
+
+            if (lightsActive) {
+                // 增加金色发光点
+                const navLight = document.createElement('div');
+                navLight.className = 'voxel gold blink';
+                navLight.style.transform = 'translate3d(0px, -48px, 3px); width: 3px; height: 3px;';
+                navLight.id = 'nav-light';
+                eiffel.appendChild(navLight);
+
+                // 添加更多灯光装饰
+                const lightPositions = [
+                    { x: -60, y: 230, z: -45 },
+                    { x: 60, y: 230, z: -45 },
+                    { x: -35, y: 80, z: -15 },
+                    { x: 35, y: 80, z: -15 },
+                    { x: 0, y: 30, z: -8 }
+                ];
+
+                lightPositions.forEach((pos, index) => {
+                    const light = document.createElement('div');
+                    light.className = 'voxel gold blink';
+                    light.style.transform = `translate3d(${pos.x}px, ${pos.y}px, ${pos.z}px); width: 4px; height: 4px;`;
+                    light.style.animationDelay = `${index * 0.5}s`;
+                    light.id = `light-${index}`;
+                    eiffel.appendChild(light);
+                });
+
+                // 创建粒子效果
+                createParticles();
+
+                btn.textContent = '💡 关灯';
+                btn.style.background = 'rgba(243, 156, 18, 0.9)';
+                btn.style.borderColor = '#F39C12';
+                btn.classList.add('active');
+
+                // 摇摆动画
+                document.getElementById('eiffel').classList.add('sway');
+
+            } else {
+                // 移除灯光和粒子
+                const navLight = document.getElementById('nav-light');
+                if (navLight) navLight.remove();
+
+                for (let i = 0; i < 5; i++) {
+                    const light = document.getElementById(`light-${i}`);
+                    if (light) light.remove();
+                }
+
+                const particlesContainer = document.getElementById('particles');
+                particlesContainer.innerHTML = '';
+
+                document.getElementById('eiffel').classList.remove('sway');
+
+                btn.textContent = '💡 灯光';
+                btn.style.background = 'rgba(41, 128, 185, 0.9)';
+                btn.style.borderColor = '#3498db';
+                btn.classList.remove('active');
+            }
+        }
+
+        // 创建粒子效果
+        function createParticles() {
+            const container = document.getElementById('particles');
+
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = (Math.random() * 100 - 50) + '%';
+                particle.style.top = (Math.random() * 100) + '%';
+                particle.style.animation = `float ${2 + Math.random() * 2}s ease-in-out infinite`;
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(particle);
+            }
+
+            // 添加动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.6; }
+                    50% { transform: translateY(-20px) translateX(10px); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 交互：点击方块
+        document.getElementById('eiffel').addEventListener('click', function(e) {
+            if (e.target.classList.contains('voxel')) {
+                const voxel = e.target;
+
+                // 震动效果
+                voxel.style.transform += ' scale(0.8)';
+                setTimeout(() => {
+                    voxel.style.transform = voxel.style.transform.replace(' scale(0.8)', '');
+                }, 100);
+
+                // 创建临时提示
+                showVoxelInfo(voxel);
+            }
+        });
+
+        // 显示方块信息
+        function showVoxelInfo(voxel) {
+            const info = document.createElement('div');
+
+            let text = '金属框架';
+            if (voxel.classList.contains('gold')) text = '装饰灯光';
+            if (voxel.classList.contains('observation-deck')) text = '观景台';
+            if (voxel.classList.contains('arch')) text = '拱门基座';
+            if (voxel.classList.contains('spire')) text = '塔尖';
+            if (voxel.classList.contains('door')) text = '门户';
+
+            info.textContent = text;
+            info.style.position = 'absolute';
+
+            const rect = voxel.getBoundingClientRect();
+            info.style.left = rect.left + 'px';
+            info.style.top = (rect.top - 25) + 'px';
+
+            info.style.color = 'white';
+            info.style.fontSize = '11px';
+            info.style.background = 'rgba(41, 128, 185, 0.9)';
+            info.style.padding = '4px 8px';
+            info.style.borderRadius = '4px';
+            info.style.zIndex = '10000';
+            info.style.pointerEvents = 'none';
+            info.style.fontWeight = 'bold';
+            info.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)';
+            info.style.boxShadow = '0 2px 8px rgba(0,0,0,0.4)';
+
+            document.body.appendChild(info);
+
+            setTimeout(() => {
+                info.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                info.style.opacity = '0';
+                info.style.transform = 'translateY(-10px)';
+                setTimeout(() => info.remove(), 300);
+            }, 1000);
+        }
+
+        // 鼠标移动3D视差
+        document.addEventListener('mousemove', (e) => {
+            const eiffel = document.getElementById('eiffel');
+
+            if (isAnimating) return;
+
+            const x = (e.clientX / window.innerWidth - 0.5) * 15;
+            const y = (e.clientY / window.innerHeight - 0.5) * 15;
+
+            eiffel.style.transition = 'transform 0.2s ease';
+            eiffel.style.transform = `rotateX(${70 + -y}deg) rotateZ(${x * 3}deg)`;
+        });
+
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleAnimation();
+                    break;
+                case 'w':
+                case 'W':
+                    toggleWireframe();
+                    break;
+                case 'l':
+                case 'L':
+                    addLightEffect();
+                    break;
+                case 'r':
+                case 'R':
+                    addWeather();
+                    break;
+                case 'i':
+                case 'I':
+                    toggleInfo();
+                    break;
+                case '1':
+                    toggleAnimation();
+                    break;
+            }
+        });
+
+        // 自动生成欢迎动画
+        window.addEventListener('load', () => {
+            const eiffel = document.getElementById('eiffel');
+
+            // 隐藏状态
+            eiffel.style.opacity = '0';
+            eiffel.style.transform = 'rotateX(0deg) showScale(0.3) translateY(100px)';
+
+            // 逐步显示
+            setTimeout(() => {
+                eiffel.style.transition = 'all 1.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                eiffel.style.opacity = '1';
+                eiffel.style.transform = 'rotateX(70deg) rotateZ(0deg) scale(1) translateY(0)';
+            }, 200);
+
+            // 显示提示
+            setTimeout(() => {
+                document.querySelector('.gyro-hint').style.animation = 'pulse 2s ease-in-out 2';
+            }, 2000);
+        });
+
+        // 自动轮询增强灯光闪烁
+        setInterval(() => {
+            if (lightsActive) {
+                const goldVoxels = document.querySelectorAll('.voxel.gold');
+                goldVoxels.forEach((voxel, index) => {
+                    if (Math.random() > 0.7) {
+                        voxel.style.filter = 'brightness(2) drop-shadow(0 0 8px #F39C12)';
+                        setTimeout(() => {
+                            voxel.style.filter = '';
+                        }, 200);
+                    }
+                });
+            }
+        }, 1500);
+    </script>
+</body>
+</html>
