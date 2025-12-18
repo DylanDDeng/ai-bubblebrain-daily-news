@@ -1,0 +1,274 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Meet Your AI Assistant</title>  
+    <!-- Google Fonts -->  
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">  
+    <!-- Font Awesome for Icons -->  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+    <style>  
+        :root {  
+            --primary: #6366f1;  
+            --secondary: #a855f7;  
+            --dark: #0f172a;  
+            --light: #f8fafc;  
+            --gray: #64748b;  
+        }  
+  
+        * {  
+            margin: 0;  
+            padding: 0;  
+            box-sizing: border-box;  
+        }  
+  
+        body {  
+            font-family: 'Inter', sans-serif;  
+            background-color: var(--light);  
+            color: var(--dark);  
+            line-height: 1.6;  
+            scroll-behavior: smooth;  
+        }  
+  
+        /* --- Navigation --- */  
+        nav {  
+            position: fixed;  
+            top: 0;  
+            width: 100%;  
+            background: rgba(248, 250, 252, 0.8);  
+            backdrop-filter: blur(10px);  
+            z-index: 1000;  
+            padding: 1rem 5%;  
+            display: flex;  
+            justify-content: space-between;  
+            align-items: center;  
+            border-bottom: 1px solid rgba(0,0,0,0.1);  
+        }  
+  
+        .logo {  
+            font-weight: 800;  
+            font-size: 1.5rem;  
+            color: var(--primary);  
+            text-decoration: none;  
+        }  
+  
+        .nav-links {  
+            display: flex;  
+            list-style: none;  
+        }  
+  
+        .nav-links li {  
+            margin-left: 2rem;  
+        }  
+  
+        .nav-links a {  
+            text-decoration: none;  
+            color: var(--dark);  
+            font-weight: 500;  
+            transition: color 0.3s;  
+        }  
+  
+        .nav-links a:hover {  
+            color: var(--primary);  
+        }  
+  
+        /* --- Hero Section --- */  
+        #hero {  
+            height: 100vh;  
+            display: flex;  
+            flex-direction: column;  
+            justify-content: center;  
+            align-items: center;  
+            text-align: center;  
+            background: radial-gradient(circle at top right, #e0e7ff, transparent),  
+                        radial-gradient(circle at bottom left, #f3e8ff, transparent);  
+            padding: 0 10%;  
+        }  
+  
+        .hero-content h1 {  
+            font-size: 4rem;  
+            margin-bottom: 1rem;  
+            background: linear-gradient(to right, var(--primary), var(--secondary));  
+            -webkit-background-clip: text;  
+            -webkit-text-fill-color: transparent;  
+        }  
+  
+        .hero-content p {  
+            font-size: 1.25rem;  
+            color: var(--gray);  
+            max-width: 600px;  
+            margin-bottom: 2rem;  
+        }  
+  
+        .btn {  
+            padding: 0.8rem 2rem;  
+            border-radius: 50px;  
+            text-decoration: none;  
+            font-weight: 600;  
+            transition: transform 0.3s, box-shadow 0.3s;  
+            display: inline-block;  
+        }  
+  
+        .btn-primary {  
+            background: var(--primary);  
+            color: white;  
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);  
+        }  
+  
+        .btn-primary:hover {  
+            transform: translateY(-3px);  
+            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);  
+        }  
+  
+        /* --- Sections --- */  
+        section {  
+            padding: 100px 10% 60px;  
+        }  
+  
+        h2 {  
+            font-size: 2.5rem;  
+            margin-bottom: 3rem;  
+            text-align: center;  
+        }  
+  
+        /* --- About/Skills Grid --- */  
+        .grid {  
+            display: grid;  
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  
+            gap: 2rem;  
+        }  
+  
+        .card {  
+            background: white;  
+            padding: 2rem;  
+            border-radius: 20px;  
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);  
+            transition: transform 0.3s;  
+        }  
+  
+        .card:hover {  
+            transform: translateY(-10px);  
+        }  
+  
+        .card i {  
+            font-size: 2.5rem;  
+            color: var(--primary);  
+            margin-bottom: 1.5rem;  
+        }  
+  
+        .card h3 {  
+            margin-bottom: 1rem;  
+        }  
+  
+        /* --- Contact --- */  
+        #contact {  
+            text-align: center;  
+            background: var(--dark);  
+            color: white;  
+        }  
+  
+        .social-links {  
+            margin-top: 2rem;  
+        }  
+  
+        .social-links a {  
+            color: white;  
+            font-size: 2rem;  
+            margin: 0 1rem;  
+            transition: color 0.3s;  
+        }  
+  
+        .social-links a:hover {  
+            color: var(--secondary);  
+        }  
+  
+        footer {  
+            text-align: center;  
+            padding: 2rem;  
+            font-size: 0.9rem;  
+            color: var(--gray);  
+        }  
+  
+        /* --- Responsive --- */  
+        @media (max-width: 768px) {  
+            .hero-content h1 { font-size: 2.5rem; }  
+            .nav-links { display: none; }  
+        }  
+    </style>  
+</head>  
+<body>  
+  
+    <nav>  
+        <a href="#" class="logo">AI Portfolio</a>  
+        <ul class="nav-links">  
+            <li><a href="#hero">Home</a></li>  
+            <li><a href="#about">About</a></li>  
+            <li><a href="#skills">Capabilities</a></li>  
+            <li><a href="#contact">Contact</a></li>  
+        </ul>  
+    </nav>  
+  
+    <section id="hero">  
+        <div class="hero-content">  
+            <h1>Hi, I'm Your AI Assistant</h1>  
+            <p>I specialize in generating code, writing creative content, and solving complex problems in seconds.</p>  
+            <a href="#about" class="btn btn-primary">Learn More</a>  
+        </div>  
+    </section>  
+  
+    <section id="about">  
+        <h2>Who Am I?</h2>  
+        <div class="grid">  
+            <div class="card">  
+                <i class="fas fa-brain"></i>  
+                <h3>Fast Learner</h3>  
+                <p>I process vast amounts of data to provide accurate and helpful information instantly.</p>  
+            </div>  
+            <div class="card">  
+                <i class="fas fa-code"></i>  
+                <h3>Multilingual</h3>  
+                <p>I speak dozens of programming languages and hundreds of human languages fluently.</p>  
+            </div>  
+            <div class="card">  
+                <i class="fas fa-clock"></i>  
+                <h3>Always Available</h3>  
+                <p>I don't sleep. I'm here 24/7 to help you build, fix, and create whatever you need.</p>  
+            </div>  
+        </div>  
+    </section>  
+  
+    <section id="skills">  
+        <h2>What I Can Do</h2>  
+        <div class="grid">  
+            <div class="card">  
+                <h3>Web Development</h3>  
+                <p>HTML, CSS, JavaScript, React, Python, and more.</p>  
+            </div>  
+            <div class="card">  
+                <h3>Content Creation</h3>  
+                <p>Articles, poetry, scripts, and professional emails.</p>  
+            </div>  
+            <div class="card">  
+                <h3>Data Analysis</h3>  
+                <p>Summarizing long documents and explaining complex math.</p>  
+            </div>  
+        </div>  
+    </section>  
+  
+    <section id="contact">  
+        <h2>Let's Connect</h2>  
+        <p>Want to start a project? I'm just a prompt away.</p>  
+        <div class="social-links">  
+            <a href="#"><i class="fab fa-github"></i></a>  
+            <a href="#"><i class="fab fa-twitter"></i></a>  
+            <a href="#"><i class="fab fa-linkedin"></i></a>  
+        </div>  
+    </section>  
+  
+    <footer>  
+        <p>&copy; 2023 AI Assistant Portfolio. Built for the future.</p>  
+    </footer>  
+  
+</body>  
+</html>  

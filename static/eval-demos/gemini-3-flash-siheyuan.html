@@ -1,0 +1,180 @@
+<!DOCTYPE html>  
+<html lang="zh-CN">  
+<head>  
+    <meta charset="UTF-8">  
+    <title>体素中国四合院 - Three.js Voxel Siheyuan</title>  
+    <style>  
+        body { margin: 0; background-color: #f0f0f0; overflow: hidden; font-family: sans-serif; }  
+        #info {  
+            position: absolute;  
+            top: 10px;  
+            width: 100%;  
+            text-align: center;  
+            color: #333;  
+            pointer-events: none;  
+        }  
+        canvas { display: block; }  
+    </style>  
+</head>  
+<body>  
+    <div id="info">  
+        <h1>传统中国四合院 (Voxel Art)</h1>  
+        <p>鼠标左键旋转 | 中键缩放 | 右键平移</p>  
+    </div>  
+  
+    <!-- 引入 Three.js -->  
+    <script type="importmap">  
+        {  
+            "imports": {  
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",  
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"  
+            }  
+        }  
+    </script>  
+  
+    <script type="module">  
+        import * as THREE from 'three';  
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';  
+  
+        // --- 初始化场景 ---  
+        const scene = new THREE.Scene();  
+        scene.background = new THREE.Color(0x87ceeb); // 天蓝色背景  
+  
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);  
+        camera.position.set(40, 40, 40);  
+  
+        const renderer = new THREE.WebGLRenderer({ antialias: true });  
+        renderer.setSize(window.innerWidth, window.innerHeight);  
+        renderer.shadowMap.enabled = true;  
+        document.body.appendChild(renderer.domElement);  
+  
+        const controls = new OrbitControls(camera, renderer.domElement);  
+        controls.target.set(0, 5, 0);  
+        controls.update();  
+  
+        // --- 灯光 ---  
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);  
+        scene.add(ambientLight);  
+  
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);  
+        dirLight.position.set(50, 100, 50);  
+        dirLight.castShadow = true;  
+        scene.add(dirLight);  
+  
+        // --- 材质定义 ---  
+        const materials = {  
+            wall: new THREE.MeshLambertMaterial({ color: 0x888888 }),      // 灰墙  
+            roof: new THREE.MeshLambertMaterial({ color: 0x333333 }),      // 灰瓦  
+            gate: new THREE.MeshLambertMaterial({ color: 0xaa0000 }),      // 红门  
+            pillar: new THREE.MeshLambertMaterial({ color: 0x880000 }),    // 朱红柱子  
+            ground: new THREE.MeshLambertMaterial({ color: 0x555555 }),    // 地面  
+            floor: new THREE.MeshLambertMaterial({ color: 0xaaaaaa })      // 院落铺装  
+        };  
+  
+        const voxelSize = 1;  
+        const geometry = new THREE.BoxGeometry(voxelSize, voxelSize, voxelSize);  
+  
+        // --- 辅助函数：放置方块 ---  
+        function setVoxel(x, y, z, material) {  
+            const mesh = new THREE.Mesh(geometry, material);  
+            mesh.position.set(x, y, z);  
+            mesh.castShadow = true;  
+            mesh.receiveShadow = true;  
+            scene.add(mesh);  
+        }  
+  
+        // --- 辅助函数：绘制长方体区域 ---  
+        function drawBox(x1, y1, z1, x2, y2, z2, material) {  
+            for (let x = x1; x <= x2; x++) {  
+                for (let y = y1; y <= y2; y++) {  
+                    for (let z = z1; z <= z2; z++) {  
+                        setVoxel(x, y, z, material);  
+                    }  
+                }  
+            }  
+        }  
+  
+        // --- 辅助函数：绘制屋顶 ---  
+        function drawRoof(x1, z1, x2, z2, height, orientation) {  
+            // orientation: 'h' (水平/东西向) or 'v' (垂直/南北向)  
+            let step = 0;  
+            if (orientation === 'h') {  
+                const depth = z2 - z1;  
+                for (let z = z1; z <= z2; z++) {  
+                    // 计算坡度  
+                    const hOffset = Math.min(z - z1, z2 - z);  
+                    for (let x = x1; x <= x2; x++) {  
+                        setVoxel(x, height + hOffset, z, materials.roof);  
+                    }  
+                }  
+            } else {  
+                for (let x = x1; x <= x2; x++) {  
+                    const hOffset = Math.min(x - x1, x2 - x);  
+                    for (let z = z1; z <= z2; z++) {  
+                        setVoxel(x, height + hOffset, z, materials.roof);  
+                    }  
+                }  
+            }  
+        }  
+  
+        // --- 构建四合院 ---  
+  
+        // 1. 地基  
+        drawBox(-15, 0, -15, 15, 0, 15, materials.ground);  
+        drawBox(-10, 0, -10, 10, 0, 10, materials.floor); // 院子内部铺装  
+  
+        // 2. 正房 (北面 - North)  
+        drawBox(-12, 1, -12, 12, 5, -9, materials.wall); // 墙体  
+        drawRoof(-13, -13, 13, -8, 5, 'h');             // 屋顶  
+        // 柱子  
+        for(let x of [-11, -5, 0, 5, 11]) {  
+            drawBox(x, 1, -9, x, 4, -9, materials.pillar);  
+        }  
+  
+        // 3. 厢房 (东面 - East)  
+        drawBox(9, 1, -7, 12, 4, 7, materials.wall);  
+        drawRoof(8, -8, 13, 8, 4, 'v');  
+        // 柱子  
+        for(let z of [-6, 0, 6]) {  
+            drawBox(9, 1, z, 9, 3, z, materials.pillar);  
+        }  
+  
+        // 4. 厢房 (西面 - West)  
+        drawBox(-12, 1, -7, -9, 4, 7, materials.wall);  
+        drawRoof(-13, -8, -8, 8, 4, 'v');  
+        // 柱子  
+        for(let z of [-6, 0, 6]) {  
+            drawBox(-9, 1, z, -9, 3, z, materials.pillar);  
+        }  
+  
+        // 5. 倒座房 (南面 - South)  
+        drawBox(-12, 1, 9, 12, 4, 12, materials.wall);  
+        drawRoof(-13, 8, 13, 13, 4, 'h');  
+  
+        // 6. 大门 (位于东南角或正中，这里设为南墙中心)  
+        drawBox(-2, 1, 12, 2, 4, 12, materials.gate); // 门框/装饰  
+        drawBox(-1, 1, 12.1, 1, 3, 12.1, materials.gate); // 突出显示的大门  
+  
+        // 7. 围墙连接处  
+        drawBox(-12, 1, -9, -12, 3, -7, materials.wall);  
+        drawBox(12, 1, -9, 12, 3, -7, materials.wall);  
+        drawBox(-12, 1, 7, -12, 3, 9, materials.wall);  
+        drawBox(12, 1, 7, 12, 3, 9, materials.wall);  
+  
+        // --- 渲染循环 ---  
+        function animate() {  
+            requestAnimationFrame(animate);  
+            controls.update();  
+            renderer.render(scene, camera);  
+        }  
+  
+        window.addEventListener('resize', () => {  
+            camera.aspect = window.innerWidth / window.innerHeight;  
+            camera.updateProjectionMatrix();  
+            renderer.setSize(window.innerWidth, window.innerHeight);  
+        });  
+  
+        animate();  
+    </script>  
+</body>  
+</html>  

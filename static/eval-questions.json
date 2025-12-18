@@ -56,6 +56,10 @@
       "deepseek-v3.2": {
         "type": "html",
         "content": "<iframe src='/eval-demos/deepseek-v3.2-about.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+      "Gemini 3 Flash Preview": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-flash-about.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -301,7 +305,7 @@
     "title": "四合院",
     "category": "代码能力",
     "difficulty": "中等",
-    "question": " 用HTML、CSS和JavaScript创建传统中国四合院的体素艺术作品。包含四面建筑围合的中央院落、瓦片屋顶、红色大门和传统建筑细节",
+    "question": "用HTML、CSS和JavaScript创建传统中国四合院的体素艺术作品。包含四面建筑围合的中央院落、瓦片屋顶、红色大门和传统建筑细节",
     "answers": {
       "Gemini 3 Pro(high)": {
         "type": "html",
@@ -319,6 +323,10 @@
       "Xiaomi MIMO": {
         "type": "html",
         "content": "<iframe src='/eval-demos/xiaomi-voxel-siheyuan.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "Gemini 3 Flash Preview": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gemini-3-flash-siheyuan.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
