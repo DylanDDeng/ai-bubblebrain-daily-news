@@ -22,7 +22,6 @@ export default {
             'AIBASE_FETCH_PAGES', 'XIAOHU_FETCH_PAGES', 'HGPAPERS_FETCH_PAGES', 'TWITTER_FETCH_PAGES',
             //'AIBASE_API_URL', 'XIAOHU_API_URL','PROJECTS_API_URL','HGPAPERS_API_URL', 'TWITTER_API_URL', 'TWITTER_USERNAMES',
         ];
-        console.log(env);
         const missingVars = requiredEnvVars.filter(varName => !env[varName]);
 
         if (missingVars.length > 0) {
