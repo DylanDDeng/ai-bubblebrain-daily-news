@@ -1,0 +1,204 @@
+<!DOCTYPE html>  
+<html lang="zh-CN">  
+<head>  
+    <meta charset="UTF-8">  
+    <title>体素埃菲尔铁塔 - Three.js</title>  
+    <style>  
+        body { margin: 0; overflow: hidden; background-color: #87CEEB; }  
+        #info {  
+            position: absolute;  
+            top: 10px;  
+            width: 100%;  
+            text-align: center;  
+            color: #2c3e50;  
+            font-family: 'Microsoft YaHei', sans-serif;  
+            pointer-events: none;  
+            text-shadow: 1px 1px 2px white;  
+        }  
+        canvas { display: block; }  
+    </style>  
+</head>  
+<body>  
+    <div id="info">  
+        <h1>体素艺术：埃菲尔铁塔</h1>  
+        <p>左键旋转 | 右键平移 | 滚轮缩放</p>  
+    </div>  
+  
+    <!-- 引入 Three.js -->  
+    <script type="importmap">  
+        {  
+            "imports": {  
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",  
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"  
+            }  
+        }  
+    </script>  
+  
+    <script type="module">  
+        import * as THREE from 'three';  
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';  
+  
+        // --- 初始化场景 ---  
+        const scene = new THREE.Scene();  
+        scene.background = new THREE.Color(0xaaccff);  
+  
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);  
+        camera.position.set(40, 40, 80);  
+  
+        const renderer = new THREE.WebGLRenderer({ antialias: true });  
+        renderer.setSize(window.innerWidth, window.innerHeight);  
+        renderer.shadowMap.enabled = true;  
+        document.body.appendChild(renderer.domElement);  
+  
+        const controls = new OrbitControls(camera, renderer.domElement);  
+        controls.target.set(0, 30, 0);  
+        controls.update();  
+  
+        // --- 灯光 ---  
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);  
+        scene.add(ambientLight);  
+  
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);  
+        dirLight.position.set(50, 100, 50);  
+        dirLight.castShadow = true;  
+        scene.add(dirLight);  
+  
+        // --- 地面 ---  
+        const planeGeo = new THREE.PlaneGeometry(200, 200);  
+        const planeMat = new THREE.MeshPhongMaterial({ color: 0x76a35d });  
+        const plane = new THREE.Mesh(planeGeo, planeMat);  
+        plane.rotation.x = -Math.PI / 2;  
+        plane.receiveShadow = true;  
+        scene.add(plane);  
+  
+        // --- 体素材质与几何体 ---  
+        const voxelSize = 1;  
+        const boxGeo = new THREE.BoxGeometry(voxelSize, voxelSize, voxelSize);  
+        const ironMaterial = new THREE.MeshPhongMaterial({ color: 0x4a4542 }); // 铁塔深褐色/灰色  
+        const deckMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 }); // 观景台颜色  
+  
+        // 辅助函数：放置方块  
+        function addVoxel(x, y, z, material = ironMaterial) {  
+            const voxel = new THREE.Mesh(boxGeo, material);  
+            voxel.position.set(x, y + 0.5, z); // 让底部对齐 y=0  
+            voxel.castShadow = true;  
+            voxel.receiveShadow = true;  
+            scene.add(voxel);  
+        }  
+  
+        // --- 核心构建算法 ---  
+  
+        /**  
+         * 构建埃菲尔铁塔模型  
+         */  
+        function buildEiffelTower() {  
+            // 参数设置  
+            const baseSize = 20;    // 底座宽度  
+            const height = 80;      // 总高度  
+              
+            for (let y = 0; y < height; y++) {  
+                // 计算当前高度层的收缩比例（抛物线拟合塔身曲线）  
+                // 简化公式：随着 y 增加，塔身宽度变窄  
+                let ratio = Math.pow((height - y) / height, 1.5);  
+                let currentHalfWidth = (baseSize / 2) * ratio;  
+                  
+                // 四个角的坐标  
+                let offset = Math.round(currentHalfWidth);  
+  
+                // --- 1. 构建支柱 (四个角) ---  
+                if (y < height - 5) {  
+                    addVoxel(offset, y, offset);  
+                    addVoxel(-offset, y, offset);  
+                    addVoxel(offset, y, -offset);  
+                    addVoxel(-offset, y, -offset);  
+  
+                    // 增加格构感：在低处添加额外的连接块  
+                    if (y % 3 === 0 && y < 40) {  
+                        for(let i = -offset; i <= offset; i += 2) {  
+                            if (Math.abs(i) === offset || y === 0) continue;   
+                            // 简单的横梁装饰  
+                        }  
+                    }  
+                }  
+  
+                // --- 2. 第一层观景台 (约 y=20) ---  
+                if (y === 20) {  
+                    for (let i = -offset; i <= offset; i++) {  
+                        for (let j = -offset; j <= offset; j++) {  
+                            addVoxel(i, y, j, deckMaterial);  
+                        }  
+                    }  
+                }  
+  
+                // --- 3. 第二层观景台 (约 y=40) ---  
+                if (y === 40) {  
+                    for (let i = -offset; i <= offset; i++) {  
+                        for (let j = -offset; j <= offset; j++) {  
+                            addVoxel(i, y, j, deckMaterial);  
+                        }  
+                    }  
+                }  
+  
+                // --- 4. 底座拱门 (y < 10) ---  
+                // 在四个侧面绘制简单的拱形结构  
+                if (y < 10) {  
+                    let archH = 10;  
+                    let archGap = offset;  
+                    for (let i = -offset; i <= offset; i++) {  
+                        // 简单的拱形逻辑：中间留空  
+                        let archLimit = Math.sqrt(Math.max(0, 1 - Math.pow(i/offset, 2))) * archH;  
+                        if (y > archLimit) {  
+                            // 侧面填充  
+                            addVoxel(i, y, offset);  
+                            addVoxel(i, y, -offset);  
+                            addVoxel(offset, y, i);  
+                            addVoxel(-offset, y, i);  
+                        }  
+                    }  
+                }  
+  
+                // --- 5. 塔尖 (y > 60) ---  
+                if (y >= 60) {  
+                    // 塔尖逐渐汇聚到中心  
+                    addVoxel(0, y, 0);  
+                    if (y < 75) {  
+                        addVoxel(1, y, 0);  
+                        addVoxel(-1, y, 0);  
+                        addVoxel(0, y, 1);  
+                        addVoxel(0, y, -1);  
+                    }  
+                }  
+  
+                // --- 6. 核心连接线 (格构框架增强) ---  
+                if (y > 20 && y < 60 && y % 4 === 0) {  
+                    // 在四根支柱间连线  
+                    for (let k = -offset; k <= offset; k++) {  
+                        addVoxel(k, y, offset);  
+                        addVoxel(k, y, -offset);  
+                        addVoxel(offset, y, k);  
+                        addVoxel(-offset, y, k);  
+                    }  
+                }  
+            }  
+        }  
+  
+        buildEiffelTower();  
+  
+        // --- 动画循环 ---  
+        function animate() {  
+            requestAnimationFrame(animate);  
+            controls.update();  
+            renderer.render(scene, camera);  
+        }  
+  
+        // 响应窗口缩放  
+        window.addEventListener('resize', () => {  
+            camera.aspect = window.innerWidth / window.innerHeight;  
+            camera.updateProjectionMatrix();  
+            renderer.setSize(window.innerWidth, window.innerHeight);  
+        });  
+  
+        animate();  
+    </script>  
+</body>  
+</html>  

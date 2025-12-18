@@ -1,0 +1,169 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Voxel Art Snowman</title>  
+    <style>  
+        body { margin: 0; overflow: hidden; background: #87CEEB; font-family: sans-serif; }  
+        #info {  
+            position: absolute;  
+            top: 10px;  
+            width: 100%;  
+            text-align: center;  
+            color: white;  
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);  
+            pointer-events: none;  
+        }  
+    </style>  
+</head>  
+<body>  
+    <div id="info">  
+        <h1>Voxel Snowman</h1>  
+        <p>Click and drag to rotate</p>  
+    </div>  
+  
+    <!-- Load Three.js from CDN -->  
+    <script type="importmap">  
+        {  
+            "imports": {  
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",  
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"  
+            }  
+        }  
+    </script>  
+  
+    <script type="module">  
+        import * as THREE from 'three';  
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';  
+  
+        // --- Configuration ---  
+        const VOXEL_SIZE = 1;  
+        const scene = new THREE.Scene();  
+        scene.background = new THREE.Color(0xadd8e6); // Sky blue  
+  
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);  
+        camera.position.set(15, 15, 25);  
+  
+        const renderer = new THREE.WebGLRenderer({ antialias: true });  
+        renderer.setSize(window.innerWidth, window.innerHeight);  
+        renderer.shadowMap.enabled = true;  
+        document.body.appendChild(renderer.domElement);  
+  
+        const controls = new OrbitControls(camera, renderer.domElement);  
+        controls.enableDamping = true;  
+  
+        // --- Lighting ---  
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);  
+        scene.add(ambientLight);  
+  
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);  
+        sunLight.position.set(10, 20, 10);  
+        sunLight.castShadow = true;  
+        scene.add(sunLight);  
+  
+        // --- Helper Function to Create a Voxel ---  
+        const geometry = new THREE.BoxGeometry(VOXEL_SIZE, VOXEL_SIZE, VOXEL_SIZE);  
+          
+        function addVoxel(x, y, z, color) {  
+            const material = new THREE.MeshLambertMaterial({ color: color });  
+            const voxel = new THREE.Mesh(geometry, material);  
+            voxel.position.set(x, y, z);  
+            voxel.castShadow = true;  
+            voxel.receiveShadow = true;  
+            scene.add(voxel);  
+        }  
+  
+        // --- Procedural Voxel Shapes ---  
+          
+        // Function to create a "sphere" of voxels  
+        function createVoxelSphere(centerX, centerY, centerZ, radius, color) {  
+            for (let x = -radius; x <= radius; x++) {  
+                for (let y = -radius; y <= radius; y++) {  
+                    for (let z = -radius; z <= radius; z++) {  
+                        const dist = Math.sqrt(x*x + y*y + z*z);  
+                        if (dist < radius) {  
+                            addVoxel(centerX + x, centerY + y, centerZ + z, color);  
+                        }  
+                    }  
+                }  
+            }  
+        }  
+  
+        // 1. Bottom Snowball  
+        createVoxelSphere(0, 4, 0, 5, 0xFFFFFF);  
+  
+        // 2. Middle Snowball  
+        createVoxelSphere(0, 11, 0, 4, 0xFFFFFF);  
+  
+        // 3. Head  
+        createVoxelSphere(0, 17, 0, 3, 0xFFFFFF);  
+  
+        // 4. Eyes (Black)  
+        addVoxel(1, 18, 2.5, 0x000000);  
+        addVoxel(-1, 18, 2.5, 0x000000);  
+  
+        // 5. Carrot Nose (Orange)  
+        addVoxel(0, 17, 3, 0xFFA500);  
+        addVoxel(0, 17, 4, 0xFFA500);  
+  
+        // 6. Smile (Black)  
+        addVoxel(-1.5, 16, 2.2, 0x000000);  
+        addVoxel(-0.5, 15.5, 2.5, 0x000000);  
+        addVoxel(0.5, 15.5, 2.5, 0x000000);  
+        addVoxel(1.5, 16, 2.2, 0x000000);  
+  
+        // 7. Buttons (Black)  
+        addVoxel(0, 12, 3.5, 0x222222);  
+        addVoxel(0, 10, 3.8, 0x222222);  
+        addVoxel(0, 8, 3.5, 0x222222);  
+  
+        // 8. Hat (Black)  
+        // Brim  
+        for(let x=-3; x<=3; x++) {  
+            for(let z=-3; z<=3; z++) {  
+                addVoxel(x, 19.5, z, 0x222222);  
+            }  
+        }  
+        // Top part  
+        for(let y=20; y<=23; y++) {  
+            for(let x=-2; x<=2; x++) {  
+                for(let z=-2; z<=2; z++) {  
+                    addVoxel(x, y, z, 0x222222);  
+                }  
+            }  
+        }  
+  
+        // 9. Arms (Brown)  
+        for(let i=1; i<=5; i++) {  
+            addVoxel(3 + i, 11 + (i*0.5), 0, 0x4b3621); // Right arm  
+            addVoxel(-3 - i, 11 + (i*0.5), 0, 0x4b3621); // Left arm  
+        }  
+  
+        // 10. Ground (Snow Plane)  
+        const planeGeo = new THREE.PlaneGeometry(100, 100);  
+        const planeMat = new THREE.MeshLambertMaterial({ color: 0xFFFFFF });  
+        const ground = new THREE.Mesh(planeGeo, planeMat);  
+        ground.rotation.x = -Math.PI / 2;  
+        ground.position.y = -0.5;  
+        ground.receiveShadow = true;  
+        scene.add(ground);  
+  
+        // --- Animation Loop ---  
+        function animate() {  
+            requestAnimationFrame(animate);  
+            controls.update();  
+            renderer.render(scene, camera);  
+        }  
+  
+        // Handle window resize  
+        window.addEventListener('resize', () => {  
+            camera.aspect = window.innerWidth / window.innerHeight;  
+            camera.updateProjectionMatrix();  
+            renderer.setSize(window.innerWidth, window.innerHeight);  
+        });  
+  
+        animate();  
+    </script>  
+</body>  
+</html>  

@@ -1,0 +1,175 @@
+<!DOCTYPE html>  
+<html lang="zh-CN">  
+<head>  
+    <meta charset="UTF-8">  
+    <title>旋转六边形中的彩色弹球 - p5.js</title>  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>  
+    <style>  
+        body {  
+            margin: 0;  
+            padding: 0;  
+            overflow: hidden;  
+            background-color: #1a1a1a;  
+            display: flex;  
+            justify-content: center;  
+            align-items: center;  
+            height: 100vh;  
+        }  
+        canvas {  
+            display: block;  
+        }  
+    </style>  
+</head>  
+<body>  
+  
+<script>  
+    let balls = [];  
+    const numBalls = 10;  
+    const gravity = 0.25;      // 重力  
+    const friction = 0.98;     // 空气阻力/摩擦力  
+    const wallBounciness = 0.8; // 墙壁弹性 (1.0 为无损)  
+      
+    let hexRadius = 250;       // 六边形半径  
+    let angle = 0;             // 六边形初始角度  
+    let rotateSpeed = 0.015;   // 旋转速度  
+  
+    function setup() {  
+        createCanvas(windowWidth, windowHeight);  
+          
+        // 初始化小球  
+        for (let i = 0; i < numBalls; i++) {  
+            balls.push(new Ball(  
+                random(-50, 50),   
+                random(-50, 50),   
+                random(12, 20),   
+                color(random(100, 255), random(100, 255), random(100, 255))  
+            ));  
+        }  
+    }  
+  
+    function draw() {  
+        background(20);  
+        translate(width / 2, height / 2); // 将坐标原点移至中心  
+  
+        // 更新并绘制六边形  
+        angle += rotateSpeed;  
+        let hexPoints = getHexagonPoints(0, 0, hexRadius, angle);  
+          
+        drawHexagon(hexPoints);  
+  
+        // 更新并绘制小球  
+        for (let ball of balls) {  
+            ball.update();  
+            ball.checkHexCollision(hexPoints);  
+            ball.display();  
+        }  
+    }  
+  
+    // 计算六边形顶点坐标  
+    function getHexagonPoints(x, y, radius, rot) {  
+        let points = [];  
+        for (let i = 0; i < 6; i++) {  
+            let theta = rot + PI / 3 * i;  
+            let px = x + cos(theta) * radius;  
+            let py = y + sin(theta) * radius;  
+            points.push(createVector(px, py));  
+        }  
+        return points;  
+    }  
+  
+    function drawHexagon(points) {  
+        stroke(255);  
+        strokeWeight(4);  
+        noFill();  
+        beginShape();  
+        for (let p of points) {  
+            vertex(p.x, p.y);  
+        }  
+        endShape(CLOSE);  
+    }  
+  
+    class Ball {  
+        constructor(x, y, r, col) {  
+            this.pos = createVector(x, y);  
+            this.vel = createVector(random(-5, 5), random(-5, 5));  
+            this.r = r;  
+            this.col = col;  
+        }  
+  
+        update() {  
+            // 应用重力  
+            this.vel.y += gravity;  
+            // 应用空气阻力  
+            this.vel.mult(friction);  
+            // 更新位置  
+            this.pos.add(this.vel);  
+        }  
+  
+        display() {  
+            noStroke();  
+            fill(this.col);  
+            ellipse(this.pos.x, this.pos.y, this.r * 2);  
+              
+            // 发光效果  
+            fill(this.col.levels[0], this.col.levels[1], this.col.levels[2], 50);  
+            ellipse(this.pos.x, this.pos.y, this.r * 2.5);  
+        }  
+  
+        // 检测与六边形每一条边的碰撞  
+        checkHexCollision(points) {  
+            for (let i = 0; i < 6; i++) {  
+                let p1 = points[i];  
+                let p2 = points[(i + 1) % 6];  
+  
+                // 计算线段向量和法向量  
+                let lineVec = p5.Vector.sub(p2, p1);  
+                let lineLenSq = lineVec.magSq();  
+                  
+                // 计算球心在线段上的投影比例  
+                let t = p5.Vector.dot(p5.Vector.sub(this.pos, p1), lineVec) / lineLenSq;  
+                t = constrain(t, 0, 1);  
+                  
+                // 找到线段上离球心最近的点  
+                let closestPoint = p5.Vector.add(p1, p5.Vector.mult(lineVec, t));  
+                let distVec = p5.Vector.sub(this.pos, closestPoint);  
+                let distance = distVec.mag();  
+  
+                // 如果距离小于半径，发生碰撞  
+                if (distance < this.r) {  
+                    // 1. 修正位置，防止穿透墙壁  
+                    let overlap = this.r - distance;  
+                    let normal = distVec.copy().normalize();  
+                      
+                    // 如果球在中心（距离极小），手动设置法向朝向中心  
+                    if (distance === 0) {  
+                        normal = createVector(-lineVec.y, lineVec.x).normalize();  
+                    }  
+                    this.pos.add(p5.Vector.mult(normal, overlap));  
+  
+                    // 2. 反弹速度计算: v_out = v_in - 2 * (v_in . n) * n  
+                    let dot = this.vel.dot(normal);  
+                    if (dot < 0) { // 只在向墙壁移动时反弹  
+                        let reflection = p5.Vector.mult(normal, -2 * dot);  
+                        this.vel.add(reflection);  
+                        this.vel.mult(wallBounciness);  
+  
+                        // 3. 加上墙体旋转带来的动量转移 (简单模拟)  
+                        // 计算墙面上该点的旋转切线速度  
+                        let tangentialVel = p5.Vector.sub(closestPoint, createVector(0,0));  
+                        tangentialVel = createVector(-tangentialVel.y, tangentialVel.x); // 旋转 90 度得到切线  
+                        tangentialVel.mult(rotateSpeed);   
+                          
+                        this.vel.add(p5.Vector.mult(tangentialVel, 0.5));  
+                    }  
+                }  
+            }  
+        }  
+    }  
+  
+    function windowResized() {  
+        resizeCanvas(windowWidth, windowHeight);  
+    }  
+</script>  
+  
+</body>  
+</html>  
