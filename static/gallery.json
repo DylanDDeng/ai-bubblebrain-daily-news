@@ -1841,7 +1841,183 @@
     "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251217110257749.png",
     "prompt": "A dynamic aerial view of a bustling city street, focusing on a miniature [BRAND] store. The camera performs a smooth, sweeping dolly in towards the storefront, capturing the vibrant activity of pedestrians, cyclists, and vehicles. Bright daylight illuminates the scene, highlighting the distinctive branding and merchandise displayed in the window. The atmosphere is lively and energetic, with a playful, miniature aesthetic that emphasizes the intricate details of the cityscape. 1080x1080 dimension.",
     "tags": ["3D"]
-     }
+     },
+
+     { 
+      "id": "140",
+      "title": "女生对镜自拍",
+      "author": "@ZaraIrahh",
+      "source": "Nano Banana Pro",
+      "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251219103821431.png",
+      "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251219103821431.png",
+      "prompt": {
+        "image_prompt": {
+          "reference": {
+            "face_identity": "uploaded reference image",
+            "identity_lock": true,
+            "face_preservation": "100% identical facial structure, proportions, skin texture, freckles, redness from workout, eye shape, lips, nose, brows, and natural expression"
+          },
+          "subject": {
+            "type": "young woman",
+            "expression": "relaxed, slightly tired but satisfied post-workout smile",
+            "gaze": "looking into mirror selfie",
+            "pose": {
+              "position": "sitting cross-legged on a blue yoga mat",
+              "hands": [
+                "right hand holding a smartphone for a mirror selfie",
+                "left hand holding a small workout towel near her neck"
+              ],
+              "posture": "casual, grounded, post-exercise rest"
+            }
+          },
+          "hair": {
+            "color": "dark brown",
+            "style": "high messy ponytail with loose strands, slightly damp from workout"
+          },
+          "makeup": {
+            "style": "no makeup / natural",
+            "details": [
+              "natural flushed skin from exercise",
+              "visible skin texture and pores",
+              "slight sweat sheen"
+            ]
+          },
+          "outfit": {
+            "top": "dark gray top(belly covered)",
+            "bottom": "black high-waisted leggings",
+            "accessories": [
+              "fitness watch on wrist"
+            ]
+          },
+          "environment": {
+            "location": "minimal modern gym",
+            "background_elements": [
+              "power rack",
+              "dumbbells",
+              "cable machine",
+              "large mirror wall"
+            ],
+            "foreground": [
+              "stainless steel water bottle",
+              "detached bottle cap on mat"
+            ],
+            "floor": "light gym flooring with black yoga mat"
+          },
+          "lighting": {
+            "type": "bright natural indoor lighting",
+            "characteristics": [
+              "even illumination",
+              "soft shadows",
+              "clean neutral tones"
+            ]
+          },
+          "photography_style": {
+            "style": "authentic gym mirror selfie",
+            "camera_look": "smartphone photography",
+            "depth_of_field": "moderate depth of field",
+            "mood": "healthy, real, candid, athletic"
+          },
+          "render_quality": {
+            "realism": "ultra-photorealistic",
+            "detail_level": "high",
+            "skin_texture": "fully realistic with natural redness and sweat",
+            "resolution": "high resolution",
+            "color_grading": "neutral fitness photography tones"
+          }
+        }
+      },
+      "tags": ["人像"]
+       },  
+
+       { 
+        "id": "141",
+        "title": "女性人像",
+        "author": "@sumiturkude007",
+        "source": "Nano Banana Pro",
+        "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251219104954775.png",
+        "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251219104954775.png",
+        "prompt": {
+          "aspect_ratio": "9:16",
+          "scene_type": "outdoor terrace fashion lifestyle photography",
+          "camera": {
+            "device": "smartphone or mirrorless",
+            "angle": "slightly elevated rear three-quarter",
+            "position": "behind and slightly above subject’s right side",
+            "framing": "full body with terrace and sky",
+            "orientation": "vertical",
+            "focus": "sharp subject, clear background",
+            "lens_effect": "natural perspective, mild wide-angle"
+          },
+          "subject": {
+            "gender": "female",
+            "age": "adult",
+            "skin_tone": "light to medium with daylight highlights",
+            "hair": "medium brown, shoulder-length, straight with slight texture, center-parted, tucked behind ears",
+            "face": {
+              "shape": "oval",
+              "expression": "playful, relaxed smile",
+              "gaze": "looking directly at camera over shoulder",
+              "eyes": "open and engaged",
+              "features": "natural brows, straight nose, small decorative cheek mark"
+            },
+            "posture": {
+              "pose": "deep squat with heels down",
+              "lower_body": "knees fully bent and angled outward, feet flat and slightly apart, balanced stance",
+              "hips_silhouette": "hips lowered close to ground, neutral pelvis, natural curves emphasized by garment fit",
+              "torso": "facing mostly away, upper torso twisted back toward camera, naturally curved spine",
+              "shoulders": "relaxed, slightly rolled back",
+              "arms": "one hand resting on thigh for balance, other near hip",
+              "head_neck": "head turned back over shoulder with slight tilt, controlled and stable"
+            },
+            "wardrobe": {
+              "top": "red strappy crop top with lace-up back ties, snug fit",
+              "bottom": "mustard yellow fitted shorts, stretch knit, body-contouring",
+              "footwear": "white low-top sneakers",
+              "accessories": "small hoop earrings, smartwatch or fitness band"
+            }
+          },
+          "environment": {
+            "location": "outdoor terrace or rooftop patio",
+            "ground": "light speckled stone or concrete",
+            "background": {
+              "furniture": "modern lounge chairs with cushions",
+              "railing": "dark metal",
+              "plants": "large potted tropical plants",
+              "architecture": "modern residential elements"
+            },
+            "sky": "light blue with soft scattered clouds"
+          },
+          "lighting": {
+            "type": "natural daylight",
+            "time_of_day": "late morning or afternoon",
+            "direction": "even frontal and side light",
+            "highlights": "soft on hair, shoulders, fabric",
+            "shadows": "gentle beneath body and furniture"
+          },
+          "artistic_style": {
+            "genre": "fashion and lifestyle photography",
+            "aesthetic": "modern, casual, body-positive",
+            "mood": "confident, playful, relaxed",
+            "focus": "curves presented as fashion silhouette and garment fit",
+            "palette": ["yellow", "red", "neutral tones", "blue sky"]
+          },
+          "quality_tags": [
+            "photorealistic",
+            "accurate posture",
+            "locked gaze",
+            "natural anatomy",
+            "editorial casual fashion",
+            "no text",
+            "no watermark"
+          ]
+        },
+        "tags": ["人像"]
+         }
+
+
+
+
+  
 
 
 
