@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旋转六边形内的彩色球弹跳</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a2e;
+            overflow: hidden;
+        }
+        canvas {
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let balls = [];
+        const NUM_BALLS = 10;
+        const HEXAGON_RADIUS = 250;
+        const HEXAGON_ROTATION_SPEED = 0.008;
+        let hexagonAngle = 0;
+
+        // 物理参数
+        const GRAVITY = 0.3;
+        const FRICTION = 0.99;
+        const RESTITUTION = 0.85;
+        const WALL_FRICTION = 0.95;
+
+        class Ball {
+            constructor(x, y, r) {
+                this.pos = createVector(x, y);
+                this.vel = createVector(random(-3, 3), random(-3, 3));
+                this.r = r;
+                this.mass = r * 0.5;
+                // 生成鲜艳的随机颜色
+                this.color = color(random(100, 255), random(100, 255), random(100, 255));
+            }
+
+            update() {
+                // 应用重力
+                this.vel.y += GRAVITY;
+
+                // 应用摩擦力
+                this.vel.mult(FRICTION);
+
+                // 更新位置
+                this.pos.add(this.vel);
+            }
+
+            draw() {
+                noStroke();
+                // 添加发光效果
+                fill(red(this.color), green(this.color), blue(this.color), 100);
+                ellipse(this.pos.x, this.pos.y, this.r * 2.4);
+                fill(this.color);
+                ellipse(this.pos.x, this.pos.y, this.r * 2);
+                // 高光
+                fill(255, 255, 255, 150);
+                ellipse(this.pos.x - this.r * 0.3, this.pos.y - this.r * 0.3, this.r * 0.6);
+            }
+
+            // 获取六边形边界
+            checkHexagonBoundary(hexAngle) {
+                let hexVertices = [];
+                for (let i = 0; i < 6; i++) {
+                    let angle = hexAngle + i * PI / 3;
+                    hexVertices.push(createVector(
+                        width / 2 + cos(angle) * HEXAGON_RADIUS,
+                        height / 2 + sin(angle) * HEXAGON_RADIUS
+                    ));
+                }
+
+                // 检查每个边
+                for (let i = 0; i < 6; i++) {
+                    let v1 = hexVertices[i];
+                    let v2 = hexVertices[(i + 1) % 6];
+                    this.handleWallCollision(v1, v2);
+                }
+            }
+
+            handleWallCollision(v1, v2) {
+                // 计算墙壁法线
+                let wall = p5.Vector.sub(v2, v1);
+                let wallLen = wall.mag();
+                wall.normalize();
+
+                let normal = createVector(-wall.y, wall.x);
+
+                // 确保法线指向六边形内部
+                let centerToWall = p5.Vector.sub(
+                    createVector(width / 2, height / 2),
+                    p5.Vector.add(v1, v2).mult(0.5)
+                );
+                if (normal.dot(centerToWall) < 0) {
+                    normal.mult(-1);
+                }
+
+                // 计算点到直线的距离
+                let toPoint = p5.Vector.sub(this.pos, v1);
+                let dist = toPoint.dot(normal);
+
+                // 如果球在墙壁外侧
+                if (dist < this.r) {
+                    // 位置修正
+                    this.pos.add(p5.Vector.mult(normal, this.r - dist));
+
+                    // 速度反射
+                    let velNormal = normal.copy().mult(this.vel.dot(normal));
+                    let velTangent = p5.Vector.sub(this.vel, velNormal);
+
+                    // 应用弹性和墙壁摩擦
+                    velNormal.mult(-RESTITUTION);
+                    velTangent.mult(WALL_FRICTION);
+
+                    this.vel = p5.Vector.add(velNormal, velTangent);
+                }
+            }
+        }
+
+        function setup() {
+            createCanvas(800, 800);
+
+            // 创建球，确保它们初始位置在六边形内部
+            for (let i = 0; i < NUM_BALLS; i++) {
+                let angle = random(TWO_PI);
+                let r = random(0.3, 0.7) * HEXAGON_RADIUS;
+                let x = width / 2 + cos(angle) * r;
+                let y = height / 2 + sin(angle) * r;
+                balls.push(new Ball(x, y, random(15, 30)));
+            }
+        }
+
+        function draw() {
+            background(26, 26, 46);
+
+            // 更新六边形角度
+            hexagonAngle += HEXAGON_ROTATION_SPEED;
+
+            // 绘制六边形
+            drawHexagon();
+
+            // 更新和绘制球
+            for (let ball of balls) {
+                ball.update();
+                ball.checkHexagonBoundary(hexagonAngle);
+                ball.draw();
+            }
+
+            // 球之间的碰撞检测
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    checkBallCollision(balls[i], balls[j]);
+                }
+            }
+        }
+
+        function drawHexagon() {
+            // 绘制六边形边框
+            noFill();
+            strokeWeight(4);
+
+            // 外层发光
+            for (let i = 3; i > 0; i--) {
+                stroke(100, 200, 255, 50 * i);
+                drawHexagonShape(hexagonAngle, HEXAGON_RADIUS + i * 5);
+            }
+
+            stroke(100, 200, 255);
+            drawHexagonShape(hexagonAngle, HEXAGON_RADIUS);
+
+            // 绘制顶点
+            for (let i = 0; i < 6; i++) {
+                let angle = hexagonAngle + i * PI / 3;
+                let x = width / 2 + cos(angle) * HEXAGON_RADIUS;
+                let y = height / 2 + sin(angle) * HEXAGON_RADIUS;
+
+                noStroke();
+                fill(255, 255, 255, 200);
+                ellipse(x, y, 12);
+                fill(100, 200, 255, 150);
+                ellipse(x, y, 8);
+            }
+        }
+
+        function drawHexagonShape(angle, radius) {
+            beginShape();
+            for (let i = 0; i < 6; i++) {
+                let a = angle + i * PI / 3;
+                let x = width / 2 + cos(a) * radius;
+                let y = height / 2 + sin(a) * radius;
+                vertex(x, y);
+            }
+            endShape(CLOSE);
+        }
+
+        function checkBallCollision(b1, b2) {
+            let diff = p5.Vector.sub(b2.pos, b1.pos);
+            let dist = diff.mag();
+            let minDist = b1.r + b2.r;
+
+            if (dist < minDist && dist > 0) {
+                // 计算碰撞法线
+                let normal = diff.copy().normalize();
+
+                // 位置修正（防止重叠）
+                let overlap = minDist - dist;
+                let correction = normal.copy().mult(overlap * 0.5);
+                b2.pos.add(correction);
+                b1.pos.sub(correction);
+
+                // 相对速度
+                let relVel = p5.Vector.sub(b2.vel, b1.vel);
+                let velAlongNormal = relVel.dot(normal);
+
+                // 只在球相向运动时处理
+                if (velAlongNormal > 0) return;
+
+                // 计算冲量（考虑质量）
+                let impulse = -(1 + RESTITUTION) * velAlongNormal;
+                impulse /= (1 / b1.mass + 1 / b2.mass);
+
+                let impulseVec = normal.copy().mult(impulse);
+
+                b1.vel.sub(p5.Vector.mult(impulseVec, 1 / b1.mass));
+                b2.vel.add(p5.Vector.mult(impulseVec, 1 / b2.mass));
+
+                // 添加碰撞时的颜色闪烁效果
+                b1.color = color(255, 255, 255);
+                b2.color = color(255, 255, 255);
+            }
+        }
+    </script>
+</body>
+</html>

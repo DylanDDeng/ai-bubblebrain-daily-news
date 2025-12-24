@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海体素建筑风景 - Voxel Shanghai</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F4FF 50%, #FFF5E6 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        .scene {
+            width: 100vw;
+            height: 100vh;
+            perspective: 2000px;
+            perspective-origin: 50% 30%;
+            overflow: hidden;
+        }
+
+        .world {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: floatWorld 20s ease-in-out infinite;
+        }
+
+        @keyframes floatWorld {
+            0%, 100% { transform: rotateX(60deg) rotateZ(0deg); }
+            50% { transform: rotateX(58deg) rotateZ(2deg); }
+        }
+
+        .ground {
+            position: absolute;
+            width: 2000px;
+            height: 2000px;
+            background: linear-gradient(45deg, #4a7c59 0%, #5a8f6a 50%, #4a7c59 100%);
+            transform: rotateX(90deg) translateZ(-200px) translateX(-500px) translateY(-500px);
+            left: 50%;
+            top: 50%;
+        }
+
+        .river {
+            position: absolute;
+            width: 2000px;
+            height: 150px;
+            background: linear-gradient(90deg, #4DA6FF 0%, #6BB3FF 50%, #4DA6FF 100%);
+            transform: rotateX(90deg) translateZ(-190px) translateX(-500px) translateY(-200px);
+            opacity: 0.8;
+            animation: riverFlow 8s linear infinite;
+        }
+
+        @keyframes riverFlow {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 0.9; }
+        }
+
+        .voxel {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voxel:hover {
+            filter: brightness(1.3);
+            transform: scale(1.1);
+        }
+
+        .voxel-face {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .voxel-front  { transform: translateZ(10px); }
+        .voxel-back   { transform: rotateY(180deg) translateZ(10px); }
+        .voxel-right  { transform: rotateY(90deg) translateZ(10px); }
+        .voxel-left   { transform: rotateY(-90deg) translateZ(10px); }
+        .voxel-top    { transform: rotateX(90deg) translateZ(10px); }
+        .voxel-bottom { transform: rotateX(-90deg) translateZ(10px); }
+
+        .building {
+            position: absolute;
+            transform-style: preserve-3d;
+        }
+
+        .cloud {
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: cloudFloat 30s linear infinite;
+        }
+
+        @keyframes cloudFloat {
+            0% { transform: translateX(-200px) rotateY(0deg); }
+            100% { transform: translateX(2000px) rotateY(360deg); }
+        }
+
+        .sun {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #FFE066 0%, #FFB347 50%, #FF8C00 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #FFE066, 0 0 100px #FFB347;
+            top: 80px;
+            right: 150px;
+            animation: sunPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes sunPulse {
+            0%, 100% { box-shadow: 0 0 60px #FFE066, 0 0 100px #FFB347; }
+            50% { box-shadow: 0 0 80px #FFE066, 0 0 140px #FFB347; }
+        }
+
+        .title {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            z-index: 1000;
+            letter-spacing: 8px;
+        }
+
+        .info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #555;
+            background: rgba(255,255,255,0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 1000;
+        }
+
+        .boat {
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: boatMove 15s linear infinite;
+        }
+
+        @keyframes boatMove {
+            0% { transform: translateX(-400px); }
+            100% { transform: translateX(400px); }
+        }
+
+        .helicopter {
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: helicopterFly 20s linear infinite;
+        }
+
+        @keyframes helicopterFly {
+            0% { transform: translateX(-300px) translateY(0px); }
+            25% { transform: translateX(0px) translateY(20px); }
+            50% { transform: translateX(300px) translateY(-10px); }
+            75% { transform: translateX(100px) translateY(10px); }
+            100% { transform: translateX(-300px) translateY(0px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <div class="sun"></div>
+        <h1 class="title">上海体素风景</h1>
+        <div class="world" id="world">
+            <!-- Ground and river -->
+            <div class="ground" id="ground"></div>
+            <div class="river" id="river"></div>
+            <!-- Buildings will be generated here -->
+        </div>
+        <div class="info">鼠标悬停在建筑上查看效果 · 拖拽旋转视角</div>
+    </div>
+
+    <script>
+        const world = document.getElementById('world');
+        const ground = document.getElementById('ground');
+        const river = document.getElementById('river');
+
+        // Color palette for buildings
+        const colors = {
+            glass: ['#87CEEB', '#ADD8E6', '#B0E0E6', '#AFEEEE', '#E0FFFF', '#98FB98'],
+            concrete: ['#D3D3D3', '#C0C0C0', '#A9A9A9', '#808080', '#DCDCDC'],
+            red: ['#DC143C', '#B22222', '#CD5C5C', '#F08080', '#FA8072'],
+            gold: ['#FFD700', '#FFA500', '#DAA520', '#CD853F'],
+            white: ['#FFFFFF', '#FFFAFA', '#F5F5F5', '#FAF0E6'],
+            blue: ['#4169E1', '#1E90FF', '#00BFFF', '#87CEFA'],
+            green: ['#228B22', '#2E8B57', '#3CB371', '#32CD32'],
+            purple: ['#9370DB', '#8A2BE2', '#9932CC', '#BA55D3']
+        };
+
+        // Create a single voxel
+        function createVoxel(color, x, y, z) {
+            const voxel = document.createElement('div');
+            voxel.className = 'voxel';
+            voxel.style.left = x + 'px';
+            voxel.style.top = y + 'px';
+            voxel.style.transform = `translateZ(${z}px)`;
+
+            const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+            faces.forEach(face => {
+                const faceEl = document.createElement('div');
+                faceEl.className = `voxel-face voxel-${face}`;
+                faceEl.style.backgroundColor = color;
+                if (face === 'top') {
+                    faceEl.style.backgroundColor = lightenColor(color, 20);
+                } else if (face === 'bottom') {
+                    faceEl.style.backgroundColor = darkenColor(color, 20);
+                } else if (face === 'left') {
+                    faceEl.style.backgroundColor = darkenColor(color, 10);
+                } else if (face === 'right') {
+                    faceEl.style.backgroundColor = lightenColor(color, 10);
+                }
+                voxel.appendChild(faceEl);
+            });
+
+            return voxel;
+        }
+
+        // Color utility functions
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.min(255, (num >> 16) + amt);
+            const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+            const B = Math.min(255, (num & 0x0000FF) + amt);
+            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        }
+
+        function darkenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.max(0, (num >> 16) - amt);
+            const G = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+            const B = Math.max(0, (num & 0x0000FF) - amt);
+            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        }
+
+        function randomColor(palette) {
+            return palette[Math.floor(Math.random() * palette.length)];
+        }
+
+        // Create Oriental Pearl Tower
+        function createOrientalPearl() {
+            const tower = document.createElement('div');
+            tower.className = 'building';
+            tower.style.left = '50%';
+            tower.style.top = '40%';
+            tower.style.marginLeft = '-200px';
+            tower.style.marginTop = '-300px';
+
+            const baseY = 0;
+            const centerX = 0;
+
+            // Lower sphere
+            for (let y = 0; y < 100; y += 20) {
+                const radius = Math.sin((y / 100) * Math.PI) * 60 + 20;
+                for (let angle = 0; angle < 360; angle += 30) {
+                    const rad = angle * Math.PI / 180;
+                    const x = Math.cos(rad) * radius;
+                    const z = Math.sin(rad) * radius;
+                    const voxel = createVoxel('#FF6B6B', centerX + x, baseY + y, z);
+                    tower.appendChild(voxel);
+                }
+            }
+
+            // Middle sphere (larger)
+            for (let y = 120; y < 260; y += 20) {
+                const radius = Math.sin(((y - 120) / 140) * Math.PI) * 80 + 30;
+                for (let angle = 0; angle < 360; angle += 20) {
+                    const rad = angle * Math.PI / 180;
+                    const x = Math.cos(rad) * radius;
+                    const z = Math.sin(rad) * radius;
+                    const voxel = createVoxel('#FF8FAB', centerX + x, baseY + y, z);
+                    tower.appendChild(voxel);
+                }
+            }
+
+            // Top sphere
+            for (let y = 280; y < 360; y += 20) {
+                const radius = Math.sin(((y - 280) / 80) * Math.PI) * 50 + 15;
+                for (let angle = 0; angle < 360; angle += 30) {
+                    const rad = angle * Math.PI / 180;
+                    const x = Math.cos(rad) * radius;
+                    const z = Math.sin(rad) * radius;
+                    const voxel = createVoxel('#FFB3BA', centerX + x, baseY + y, z);
+                    tower.appendChild(voxel);
+                }
+            }
+
+            // Connecting pillars
+            for (let y = 100; y < 280; y += 20) {
+                for (let side = -1; side <= 1; side += 2) {
+                    const xOffset = side * 50;
+                    const voxel = createVoxel('#C0C0C0', centerX + xOffset, baseY + y, 0);
+                    tower.appendChild(voxel);
+                }
+            }
+
+            // Antenna spire
+            for (let y = 380; y < 500; y += 15) {
+                const voxel = createVoxel('#DAA520', centerX, baseY + y, 0);
+                tower.appendChild(voxel);
+            }
+
+            world.appendChild(tower);
+        }
+
+        // Create Shanghai Tower style building
+        function createShanghaiTower() {
+            const tower = document.createElement('div');
+            tower.className = 'building';
+            tower.style.left = '35%';
+            tower.style.top = '35%';
+
+            const baseY = 0;
+            const centerX = 0;
+
+            // Curved tower body
+            for (let y = 0; y < 400; y += 15) {
+                const progress = y / 400;
+                const radius = 30 + (1 - Math.pow(progress - 0.5, 2) * 4) * 20;
+                const twist = progress * Math.PI * 2;
+
+                for (let angle = 0; angle < 360; angle += 30) {
+                    const rad = (angle * Math.PI / 180) + twist;
+                    const x = Math.cos(rad) * radius;
+                    const z = Math.sin(rad) * radius;
+                    const color = angle % 60 === 0 ? '#4169E1' : '#1E90FF';
+                    const voxel = createVoxel(color, centerX + x, baseY + y, z);
+                    tower.appendChild(voxel);
+                }
+            }
+
+            // Tapered top
+            for (let y = 400; y < 480; y += 15) {
+                const radius = Math.max(5, (480 - y) / 80 * 30);
+                for (let angle = 0; angle < 360; angle += 45) {
+                    const rad = angle * Math.PI / 180;
+                    const x = Math.cos(rad) * radius;
+                    const z = Math.sin(rad) * radius;
+                    const voxel = createVoxel('#228B22', centerX + x, baseY + y, z);
+                    tower.appendChild(voxel);
+                }
+            }
+
+            world.appendChild(tower);
+        }
+
+        // Create Jin Mao Tower
+        function createJinMaoTower() {
+            const tower = document.createElement('div');
+            tower.className = 'building';
+            tower.style.left = '60%';
+            tower.style.top = '38%';
+
+            const baseY = 0;
+            const centerX = 0;
+
+            // Tiered building
+            const tiers = [
+                { height: 80, width: 70, color: '#8B8B83' },
+                { height: 70, width: 55, color: '#696969' },
+                { height: 60, width: 45, color: '#4A4A4A' },
+                { height: 50, width: 35, color: '#2F2F2F' },
+                { height: 40, width: 25, color: '#1A1A1A' }
+            ];
+
+            let currentY = 0;
+            tiers.forEach((tier, tierIndex) => {
+                for (let y = 0; y < tier.height; y += 20) {
+                    for (let angle = 0; angle < 360; angle += 30) {
+                        const rad = angle * Math.PI / 180;
+                        const x = Math.cos(rad) * tier.width;
+                        const z = Math.sin(rad) * tier.width;
+                        const voxel = createVoxel(tier.color, centerX + x, baseY + currentY + y, z);
+                        tower.appendChild(voxel);
+                    }
+                }
+                currentY += tier.height;
+            });
+
+            // Spire
+            for (let y = currentY; y < currentY + 60; y += 15) {
+                const voxel = createVoxel('#FFD700', centerX, baseY + y, 0);
+                tower.appendChild(voxel);
+            }
+
+            world.appendChild(tower);
+        }
+
+        // Create generic skyscrapers
+        function createSkyscraper(x, y, width, height, color1, color2) {
+            const building = document.createElement('div');
+            building.className = 'building';
+            building.style.left = x + '%';
+            building.style.top = y + '%';
+
+            for (let py = 0; py < height; py += 20) {
+                for (let px = 0; px < width; px += 20) {
+                    for (let pz = 0; pz < width; pz += 20) {
+                        const color = (px + pz) % 40 === 0 ? color1 : color2;
+                        const voxel = createVoxel(color, px, py - height, pz);
+                        building.appendChild(voxel);
+                    }
+                }
+            }
+
+            world.appendChild(building);
+        }
+
+        // Create traditional Chinese building
+        function createChineseBuilding(x, y) {
+            const building = document.createElement('div');
+            building.className = 'building';
+            building.style.left = x + '%';
+            building.style.top = y + '%';
+
+            // Base
+            for (let py = -60; py < 0; py += 20) {
+                for (let px = -60; px <= 60; px += 20) {
+                    for (let pz = -40; pz <= 40; pz += 20) {
+                        const voxel = createVoxel('#8B4513', px, py, pz);
+                        building.appendChild(voxel);
+                    }
+                }
+            }
+
+            // Main structure
+            for (let py = 0; py < 80; py += 20) {
+                for (let px = -40; px <= 40; px += 20) {
+                    for (let pz = -30; pz <= 30; pz += 20) {
+                        const voxel = createVoxel('#CD853F', px, py, pz);
+                        building.appendChild(voxel);
+                    }
+                }
+            }
+
+            // Roof
+            for (let layer = 0; layer < 3; layer++) {
+                const roofWidth = 60 - layer * 15;
+                const roofY = 80 + layer * 15;
+                for (let px = -roofWidth; px <= roofWidth; px += 20) {
+                    for (let pz = -roofWidth; pz <= roofWidth; pz += 20) {
+                        if (Math.abs(px) + Math.abs(pz) <= roofWidth * 1.5) {
+                            const voxel = createVoxel('#D2691E', px, roofY, pz);
+                            building.appendChild(voxel);
+                        }
+                    }
+                }
+            }
+
+            // Curved roof edges
+            for (let side = -1; side <= 1; side += 2) {
+                for (let px = -80; px <= 80; px += 20) {
+                    const voxel = createVoxel('#8B0000', px, 110, side * 50);
+                    building.appendChild(voxel);
+                }
+            }
+
+            world.appendChild(building);
+        }
+
+        // Create cloud
+        function createCloud(x, y, z) {
+            const cloud = document.createElement('div');
+            cloud.className = 'cloud';
+            cloud.style.left = x + 'px';
+            cloud.style.top = y + 'px';
+            cloud.style.transform = `translateZ(${z}px)`;
+
+            const cloudParts = [
+                { x: 0, y: 0, z: 0, size: 40, color: '#FFFFFF' },
+                { x: 30, y: -10, z: 0, size: 35, color: '#FFFAFA' },
+                { x: -30, y: -5, z: 0, size: 30, color: '#F5F5F5' },
+                { x: 15, y: -20, z: 10, size: 25, color: '#FFFFFF' },
+                { x: -20, y: -15, z: -10, size: 28, color: '#FFFAFA' }
+            ];
+
+            cloudParts.forEach(part => {
+                for (let py = 0; py < part.size; py += 15) {
+                    for (let px = 0; px < part.size; px += 15) {
+                        const dist = Math.sqrt(Math.pow(px - part.size/2, 2) + Math.pow(py - part.size/2, 2));
+                        if (dist < part.size / 2) {
+                            const voxel = createVoxel(part.color, part.x + px, part.y + py, part.z);
+                            cloud.appendChild(voxel);
+                        }
+                    }
+                }
+            });
+
+            return cloud;
+        }
+
+        // Create boat
+        function createBoat(x, y, z) {
+            const boat = document.createElement('div');
+            boat.className = 'boat';
+            boat.style.left = x + 'px';
+            boat.style.top = y + 'px';
+            boat.style.transform = `translateZ(${z}px)`;
+
+            // Hull
+            for (let py = 0; py < 20; py += 10) {
+                for (let px = -30; px <= 30; px += 10) {
+                    for (let pz = -15; pz <= 15; pz += 10) {
+                        const voxel = createVoxel('#8B4513', px, py - 20, pz);
+                        boat.appendChild(voxel);
+                    }
+                }
+            }
+
+            // Mast
+            for (let py = 0; py < 50; py += 10) {
+                const voxel = createVoxel('#654321', 0, py, 0);
+                boat.appendChild(voxel);
+            }
+
+            // Sail
+            for (let py = 10; py < 40; py += 10) {
+                for (let pz = 0; pz < 20; pz += 10) {
+                    const voxel = createVoxel('#FFF8DC', 0, py, pz);
+                    boat.appendChild(voxel);
+                }
+            }
+
+            return boat;
+        }
+
+        // Create helicopter
+        function createHelicopter(x, y, z) {
+            const helicopter = document.createElement('div');
+            helicopter.className = 'helicopter';
+            helicopter.style.left = x + 'px';
+            helicopter.style.top = y + 'px';
+            helicopter.style.transform = `translateZ(${z}px)`;
+
+            // Body
+            for (let py = 0; py < 15; py += 5) {
+                for (let px = -20; px <= 20; px += 5) {
+                    for (let pz = -10; pz <= 10; pz += 5) {
+                        const voxel = createVoxel('#4169E1', px, py, pz);
+                        helicopter.appendChild(voxel);
+                    }
+                }
+            }
+
+            // Tail
+            for (let px = 25; px < 45; px += 5) {
+                const voxel = createVoxel('#1E90FF', px, 5, 0);
+                helicopter.appendChild(voxel);
+            }
+
+            // Main rotor
+            for (let px = -25; px <= 25; px += 5) {
+                const voxel = createVoxel('#333333', px, -5, 0);
+                helicopter.appendChild(voxel);
+            }
+
+            // Skids
+            for (let px = -15; px <= 15; px += 5) {
+                const voxel = createVoxel('#555555', px, -15, 0);
+                helicopter.appendChild(voxel);
+            }
+
+            return helicopter;
+        }
+
+        // Create park/trees
+        function createPark(x, y) {
+            const park = document.createElement('div');
+            park.className = 'building';
+            park.style.left = x + '%';
+            park.style.top = y + '%';
+
+            // Ground
+            for (let px = 0; px < 100; px += 20) {
+                for (let pz = 0; pz < 80; pz += 20) {
+                    const voxel = createVoxel('#228B22', px, 0, pz);
+                    park.appendChild(voxel);
+                }
+            }
+
+            // Trees
+            for (let i = 0; i < 5; i++) {
+                const treeX = i * 20 + 10;
+                const treeZ = 30 + (i % 2) * 20;
+
+                // Trunk
+                for (let py = 0; py < 40; py += 10) {
+                    const voxel = createVoxel('#8B4513', treeX, py, treeZ);
+                    park.appendChild(voxel);
+                }
+
+                // Foliage
+                for (let py = 40; py < 80; py += 10) {
+                    const radius = Math.max(5, (80 - py) / 2);
+                    for (let angle = 0; angle < 360; angle += 45) {
+                        const rad = angle * Math.PI / 180;
+                        const vx = treeX + Math.cos(rad) * radius;
+                        const vz = treeZ + Math.sin(rad) * radius;
+                        const voxel = createVoxel('#228B22', vx, py, vz);
+                        park.appendChild(voxel);
+                    }
+                }
+            }
+
+            world.appendChild(park);
+        }
+
+        // Create bridge
+        function createBridge(x, y) {
+            const bridge = document.createElement('div');
+            bridge.className = 'building';
+            bridge.style.left = x + '%';
+            bridge.style.top = y + '%';
+
+            // Bridge deck
+            for (let px = 0; px < 300; px += 20) {
+                for (let pz = -20; pz <= 20; pz += 20) {
+                    const voxel = createVoxel('#808080', px, 20, pz);
+                    bridge.appendChild(voxel);
+                }
+            }
+
+            // Support cables (simplified as pillars)
+            for (let px = 50; px < 250; px += 50) {
+                for (let py = 20; py > -50; py -= 20) {
+                    const voxel = createVoxel('#696969', px, py, 0);
+                    bridge.appendChild(voxel);
+                }
+            }
+
+            world.appendChild(bridge);
+        }
+
+        // Initialize scene
+        function init() {
+            // Create main buildings
+            createOrientalPearl();
+            createShanghaiTower();
+            createJinMaoTower();
+
+            // Create surrounding skyscrapers
+            createSkyscraper('20', '50', 40, 200, '#1E90FF', '#87CEEB');
+            createSkyscraper('75', '45', 35, 250, '#9370DB', '#BA55D3');
+            createSkyscraper('15', '60', 30, 150, '#4169E1', '#00BFFF');
+            createSkyscraper('80', '55', 40, 180, '#FF6347', '#FF4500');
+            createSkyscraper('25', '42', 25, 120, '#32CD32', '#228B22');
+            createSkyscraper('70', '42', 30, 200, '#FFD700', '#FFA500');
+
+            // Create Chinese style buildings
+            createChineseBuilding('10', '70');
+            createChineseBuilding('85', '70');
+
+            // Create parks
+            createPark('5', '55');
+            createPark('88', '55');
+
+            // Create bridge
+            createBridge('30', '85');
+
+            // Create clouds
+            world.appendChild(createCloud(100, 50, 200));
+            world.appendChild(createCloud(400, 30, 150));
+            world.appendChild(createCloud(700, 60, 180));
+            world.appendChild(createCloud(200, 80, 100));
+
+            // Create boats on river
+            world.appendChild(createBoat(200, 90, -180));
+            world.appendChild(createBoat(500, 85, -185));
+            world.appendChild(createBoat(700, 88, -182));
+
+            // Create helicopter
+            world.appendChild(createHelicopter(300, 35, 100));
+        }
+
+        // Mouse drag rotation
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let rotation = { x: 60, z: 0 };
+
+        document.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.clientX - previousMousePosition.x;
+            const deltaY = e.clientY - previousMousePosition.y;
+
+            rotation.z += deltaX * 0.5;
+            rotation.x += deltaY * 0.3;
+            rotation.x = Math.max(20, Math.min(80, rotation.x));
+
+            world.style.transform = `rotateX(${rotation.x}deg) rotateZ(${rotation.z}deg)`;
+
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Touch support
+        document.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+
+            const deltaX = e.touches[0].clientX - previousMousePosition.x;
+            const deltaY = e.touches[0].clientY - previousMousePosition.y;
+
+            rotation.z += deltaX * 0.5;
+            rotation.x += deltaY * 0.3;
+            rotation.x = Math.max(20, Math.min(80, rotation.x));
+
+            world.style.transform = `rotateX(${rotation.x}deg) rotateZ(${rotation.z}deg)`;
+
+            previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
