@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传统中国四合院 - 体素艺术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #98D8AA 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            perspective: 1200px;
+            perspective-origin: 50% 50%;
+        }
+
+        .scene {
+            transform-style: preserve-3d;
+            animation: rotate 20s infinite linear;
+            width: 400px;
+            height: 400px;
+            position: relative;
+        }
+
+        @keyframes rotate {
+            from { transform: rotateX(-25deg) rotateY(0deg); }
+            to { transform: rotateX(-25deg) rotateY(360deg); }
+        }
+
+        .voxel {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            transform-style: preserve-3d;
+        }
+
+        .voxel .face {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .voxel .front { transform: translateZ(10px); }
+        .voxel .back { transform: translateZ(-10px) rotateY(180deg); }
+        .voxel .left { transform: translateX(-10px) rotateY(-90deg); }
+        .voxel .right { transform: translateX(10px) rotateY(90deg); }
+        .voxel .top { transform: translateY(-10px) rotateX(90deg); }
+        .voxel .bottom { transform: translateY(10px) rotateX(-90deg); }
+
+        /* 颜色定义 */
+        .wall-gray { background: #D4C4B0; }
+        .wall-gray-d { background: #C4B4A0; }
+        .wall-gray-l { background: #E4D4C0; }
+        .red { background: #C83030; }
+        .red-d { background: #A82020; }
+        .red-l { background: #E84040; }
+        .roof-gray { background: #696969; }
+        .roof-gray-d { background: #505050; }
+        .roof-gray-l { background: #808080; }
+        .gold { background: #D4A040; }
+        .gold-d { background: #B89030; }
+        .wood { background: #8B6914; }
+        .wood-d { background: #6B4F10; }
+        .ground { background: #C4A060; }
+        .ground-d { background: #A48040; }
+        .white { background: #F8F8F0; }
+        .black { background: #2A2A2A; }
+        .blue { background: #4080C8; }
+        .green { background: #50A050; }
+
+        /* 标题 */
+        .title {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: #8B4513;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+            z-index: 100;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            background: #8B4513;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .controls button:hover {
+            background: #A0522D;
+            transform: scale(1.05);
+        }
+
+        .info {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        /* 瓦片纹理效果 */
+        .tile-pattern {
+            background-image: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 8px,
+                rgba(0,0,0,0.1) 8px,
+                rgba(0,0,0,0.1) 10px
+            );
+        }
+
+        /* 暂停动画 */
+        .scene.paused {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">传统中国四合院</h1>
+    <div class="info">拖动鼠标旋转视角 | 滚轮缩放</div>
+
+    <div class="container">
+        <div class="scene" id="scene"></div>
+    </div>
+
+    <div class="controls">
+        <button onclick="toggleRotation()">暂停/继续旋转</button>
+        <button onclick="resetView()">重置视角</button>
+        <button onclick="toggleDayNight()">昼夜切换</button>
+    </div>
+
+    <script>
+        const scene = document.getElementById('scene');
+        let isPaused = false;
+        let isNight = false;
+        let rotationX = -25;
+        let rotationY = 0;
+        let isDragging = false;
+        let lastX, lastY;
+
+        // 体素创建函数
+        function createVoxel(x, y, z, colorArr) {
+            const voxel = document.createElement('div');
+            voxel.className = 'voxel';
+            voxel.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+
+            const faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+            faces.forEach((face, i) => {
+                const faceEl = document.createElement('div');
+                faceEl.className = `face ${face}`;
+                // 获取颜色，支持数组和字符串
+                let colorValue;
+                if (Array.isArray(colorArr)) {
+                    colorValue = colorArr[i] || colorArr[0];
+                } else {
+                    colorValue = colorArr;
+                }
+                // 如果colorValue仍是数组（嵌套情况），取第一个元素
+                if (Array.isArray(colorValue)) {
+                    colorValue = colorValue[0];
+                }
+                // 直接设置背景色
+                faceEl.style.background = colorValue;
+                voxel.appendChild(faceEl);
+            });
+
+            return voxel;
+        }
+
+        // 快速添加体素
+        function addVoxel(x, y, z, color) {
+            // 如果color已经是数组，直接使用；否则创建6个面的颜色数组
+            if (Array.isArray(color)) {
+                return createVoxel(x, y, z, color);
+            }
+            return createVoxel(x, y, z, color);
+        }
+
+        // 颜色映射
+        const colors = {
+            wall: ['#D4C4B0', '#C4B4A0', '#B4A490', '#E4D4C0', '#C8B8A8', '#A89888'],
+            wallTop: ['#D4C4B0', '#C4B4A0', '#B4A490', '#E4D4C0', '#F0E8D8', '#A89888'],
+            roof: ['#696969', '#505050', '#454545', '#606060', '#808080', '#404040'],
+            roofEdge: ['#808080', '#606060', '#505050', '#707070', '#909090', '#505050'],
+            roofRidge: '#A08050',
+            redDoor: ['#C83030', '#A82020', '#981818', '#B82828', '#D04040', '#901010'],
+            goldTrim: ['#D4A040', '#B89030', '#A88020', '#C89838', '#E0B048', '#987018'],
+            wood: ['#8B6914', '#6B4F10', '#5B3F08', '#7B5F12', '#9B7916', '#4B2F06'],
+            ground: ['#C4A060', '#A48040', '#947030', '#B09050', '#D4B070', '#846020'],
+            groundInner: ['#D4C0A0', '#C4B090', '#B4A080', '#E0D0B0', '#E8D8B8', '#A49070'],
+            pillar: ['#5C4033', '#4A3025', '#3C2018', '#6C5043', '#7C6053', '#2C1008'],
+            pillarRed: ['#B03030', '#902828', '#802020', '#A02828', '#C04040', '#701818'],
+            window: '#4080C8',
+            windowFrame: '#D4A040',
+            step: ['#908070', '#706050', '#605040', '#807060', '#A09080', '#504030']
+        };
+
+        // 构建四合院
+        function buildSiheyuan() {
+            const voxels = [];
+
+            // 地面 - 内院
+            for (let x = -6; x <= 6; x++) {
+                for (let z = -6; z <= 6; z++) {
+                    voxels.push(addVoxel(x * 20, 80, z * 20, colors.groundInner));
+                }
+            }
+
+            // 地面 - 外围
+            for (let x = -10; x <= 10; x++) {
+                for (let z = -10; z <= 10; z++) {
+                    if (Math.abs(x) > 6 || Math.abs(z) > 6) {
+                        voxels.push(addVoxel(x * 20, 80, z * 20, colors.ground));
+                    }
+                }
+            }
+
+            // 北房（正房）- 主建筑
+            buildNorthHouse(voxels);
+
+            // 南房（倒座房）
+            buildSouthHouse(voxels);
+
+            // 东厢房
+            buildEastHouse(voxels);
+
+            // 西厢房
+            buildWestHouse(voxels);
+
+            // 中央装饰
+            buildCenterDecoration(voxels);
+
+            return voxels;
+        }
+
+        // 北房（正房）
+        function buildNorthHouse(voxels) {
+            const baseY = 60;
+            const width = 10;
+            const depth = 4;
+            const height = 6;
+
+            // 墙体
+            for (let x = -width/2; x <= width/2; x++) {
+                for (let z = -depth/2; z <= -depth/2 + 1; z++) {
+                    for (let y = 0; y < height; y++) {
+                        voxels.push(addVoxel(x * 20, baseY - y * 20, z * 20, colors.wall));
+                    }
+                }
+            }
+
+            // 侧墙
+            for (let z = -depth/2; z <= -depth/2 + 1; z++) {
+                for (let y = 0; y < height; y++) {
+                    voxels.push(addVoxel(-width/2 * 20, baseY - y * 20, z * 20, colors.wall));
+                    voxels.push(addVoxel(width/2 * 20, baseY - y * 20, z * 20, colors.wall));
+                }
+            }
+
+            // 红色大门
+            for (let y = 0; y < 4; y++) {
+                voxels.push(addVoxel(-40, baseY - y * 20, -60, colors.redDoor));
+                voxels.push(addVoxel(40, baseY - y * 20, -60, colors.redDoor));
+            }
+            // 门框金色装饰
+            voxels.push(addVoxel(-40, baseY - 4 * 20, -60, colors.goldTrim));
+            voxels.push(addVoxel(40, baseY - 4 * 20, -60, colors.goldTrim));
+            voxels.push(addVoxel(-40, baseY, -60, colors.goldTrim));
+            voxels.push(addVoxel(40, baseY, -60, colors.goldTrim));
+
+            // 窗户
+            for (let x = -2; x <= 2; x++) {
+                if (Math.abs(x) !== 1) {
+                    for (let y = 1; y <= 3; y++) {
+                        voxels.push(addVoxel(x * 20, baseY - y * 20, -60, colors.window));
+                    }
+                }
+            }
+
+            // 屋顶 - 两坡顶
+            for (let layer = 0; layer < 4; layer++) {
+                const roofWidth = width/2 + 2 - layer;
+                for (let x = -roofWidth; x <= roofWidth; x++) {
+                    voxels.push(addVoxel(x * 20, baseY - height * 20 - layer * 20, -60, colors.roof));
+                    voxels.push(addVoxel(x * 20, baseY - height * 20 - layer * 20, -40, colors.roof));
+                }
+                // 屋檐
+                voxels.push(addVoxel((-roofWidth - 1) * 20, baseY - height * 20 - layer * 20, -60, colors.roofEdge));
+                voxels.push(addVoxel((roofWidth + 1) * 20, baseY - height * 20 - layer * 20, -60, colors.roofEdge));
+            }
+
+            // 屋脊
+            for (let x = -width/2 - 1; x <= width/2 + 1; x++) {
+                voxels.push(addVoxel(x * 20, baseY - height * 20 - 4 * 20, -50, colors.roofRidge));
+            }
+
+            // 柱子
+            for (let y = 0; y < height; y++) {
+                voxels.push(addVoxel(-width/2 * 20, baseY - y * 20, -40, colors.pillarRed));
+                voxels.push(addVoxel(width/2 * 20, baseY - y * 20, -40, colors.pillarRed));
+            }
+
+            // 台阶
+            for (let step = 0; step < 3; step++) {
+                for (let x = -2 + step; x <= 2 - step; x++) {
+                    voxels.push(addVoxel(x * 20, baseY + 20 + step * 5, -40 - step * 15, colors.step));
+                }
+            }
+        }
+
+        // 南房
+        function buildSouthHouse(voxels) {
+            const baseY = 50;
+            const width = 10;
+            const depth = 3;
+            const height = 4;
+
+            // 墙体
+            for (let x = -width/2; x <= width/2; x++) {
+                for (let z = depth/2 - 1; z <= depth/2; z++) {
+                    for (let y = 0; y < height; y++) {
+                        if (!(z === depth/2 && y < 3 && Math.abs(x) <= 1)) {
+                            voxels.push(addVoxel(x * 20, baseY - y * 20, z * 20, colors.wall));
+                        }
+                    }
+                }
+            }
+
+            // 门
+            for (let y = 0; y < 3; y++) {
+                voxels.push(addVoxel(-20, baseY - y * 20, 60, colors.redDoor));
+                voxels.push(addVoxel(20, baseY - y * 20, 60, colors.redDoor));
+            }
+
+            // 柱子
+            for (let y = 0; y < height; y++) {
+                voxels.push(addVoxel(-width/2 * 20, baseY - y * 20, 40, colors.pillarRed));
+                voxels.push(addVoxel(width/2 * 20, baseY - y * 20, 40, colors.pillarRed));
+            }
+
+            // 屋顶
+            for (let layer = 0; layer < 3; layer++) {
+                const roofWidth = width/2 + 1 - layer;
+                for (let x = -roofWidth; x <= roofWidth; x++) {
+                    voxels.push(addVoxel(x * 20, baseY - height * 20 - layer * 20, 50, colors.roof));
+                    voxels.push(addVoxel(x * 20, baseY - height * 20 - layer * 20, 60, colors.roof));
+                }
+            }
+
+            // 屋脊
+            for (let x = -width/2; x <= width/2; x++) {
+                voxels.push(addVoxel(x * 20, baseY - height * 20 - 3 * 20, 55, colors.roofRidge));
+            }
+        }
+
+        // 东厢房
+        function buildEastHouse(voxels) {
+            const baseY = 55;
+            const width = 3;
+            const depth = 8;
+            const height = 4;
+
+            // 墙体
+            for (let z = -depth/2; z <= depth/2; z++) {
+                for (let x = width/2 - 1; x <= width/2; x++) {
+                    for (let y = 0; y < height; y++) {
+                        if (!(x === width/2 && y < 3 && Math.abs(z) <= 1)) {
+                            voxels.push(addVoxel(x * 20, baseY - y * 20, z * 20, colors.wall));
+                        }
+                    }
+                }
+            }
+
+            // 门
+            for (let y = 0; y < 3; y++) {
+                voxels.push(addVoxel(60, baseY - y * 20, -20, colors.redDoor));
+                voxels.push(addVoxel(60, baseY - y * 20, 20, colors.redDoor));
+            }
+
+            // 柱子
+            for (let y = 0; y < height; y++) {
+                voxels.push(addVoxel(40, baseY - y * 20, -depth/2 * 20, colors.pillarRed));
+                voxels.push(addVoxel(40, baseY - y * 20, depth/2 * 20, colors.pillarRed));
+            }
+
+            // 屋顶
+            for (let layer = 0; layer < 3; layer++) {
+                const roofDepth = depth/2 + 1 - layer;
+                for (let z = -roofDepth; z <= roofDepth; z++) {
+                    voxels.push(addVoxel(50, baseY - height * 20 - layer * 20, z * 20, colors.roof));
+                    voxels.push(addVoxel(60, baseY - height * 20 - layer * 20, z * 20, colors.roof));
+                }
+            }
+
+            // 屋脊
+            for (let z = -depth/2; z <= depth/2; z++) {
+                voxels.push(addVoxel(55, baseY - height * 20 - 3 * 20, z * 20, colors.roofRidge));
+            }
+        }
+
+        // 西厢房
+        function buildWestHouse(voxels) {
+            const baseY = 55;
+            const width = 3;
+            const depth = 8;
+            const height = 4;
+
+            // 墙体
+            for (let z = -depth/2; z <= depth/2; z++) {
+                for (let x = -width/2; x <= -width/2 + 1; x++) {
+                    for (let y = 0; y < height; y++) {
+                        if (!(x === -width/2 && y < 3 && Math.abs(z) <= 1)) {
+                            voxels.push(addVoxel(x * 20, baseY - y * 20, z * 20, colors.wall));
+                        }
+                    }
+                }
+            }
+
+            // 门
+            for (let y = 0; y < 3; y++) {
+                voxels.push(addVoxel(-60, baseY - y * 20, -20, colors.redDoor));
+                voxels.push(addVoxel(-60, baseY - y * 20, 20, colors.redDoor));
+            }
+
+            // 柱子
+            for (let y = 0; y < height; y++) {
+                voxels.push(addVoxel(-40, baseY - y * 20, -depth/2 * 20, colors.pillarRed));
+                voxels.push(addVoxel(-40, baseY - y * 20, depth/2 * 20, colors.pillarRed));
+            }
+
+            // 屋顶
+            for (let layer = 0; layer < 3; layer++) {
+                const roofDepth = depth/2 + 1 - layer;
+                for (let z = -roofDepth; z <= roofDepth; z++) {
+                    voxels.push(addVoxel(-50, baseY - height * 20 - layer * 20, z * 20, colors.roof));
+                    voxels.push(addVoxel(-60, baseY - height * 20 - layer * 20, z * 20, colors.roof));
+                }
+            }
+
+            // 屋脊
+            for (let z = -depth/2; z <= depth/2; z++) {
+                voxels.push(addVoxel(-55, baseY - height * 20 - 3 * 20, z * 20, colors.roofRidge));
+            }
+        }
+
+        // 中央装饰
+        function buildCenterDecoration(voxels) {
+            // 中央石桌
+            for (let y = 0; y < 2; y++) {
+                voxels.push(addVoxel(-20, 80 - y * 10, 0, colors.step));
+                voxels.push(addVoxel(20, 80 - y * 10, 0, colors.step));
+                voxels.push(addVoxel(0, 80 - y * 10, -20, colors.step));
+                voxels.push(addVoxel(0, 80 - y * 10, 20, colors.step));
+            }
+            voxels.push(addVoxel(0, 70, 0, colors.step));
+
+            // 树木
+            buildTree(voxels, -80, 80, -80);
+            buildTree(voxels, 80, 80, -80);
+            buildTree(voxels, -80, 80, 80);
+            buildTree(voxels, 80, 80, 80);
+        }
+
+        // 树木
+        function buildTree(voxels, x, y, z) {
+            // 树干
+            for (let h = 0; h < 4; h++) {
+                voxels.push(addVoxel(x, y - h * 15, z, colors.pillar));
+            }
+            // 树冠
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dz = -1; dz <= 1; dz++) {
+                    for (let dy = 0; dy < 2; dy++) {
+                        voxels.push(addVoxel(x + dx * 15, y - 60 - dy * 15, z + dz * 15, colors.green));
+                    }
+                }
+            }
+            voxels.push(addVoxel(x, y - 90, z, colors.green));
+        }
+
+        // 初始化场景
+        function init() {
+            const voxels = buildSiheyuan();
+            voxels.forEach(v => scene.appendChild(v));
+        }
+
+        // 控制函数
+        function toggleRotation() {
+            isPaused = !isPaused;
+            scene.classList.toggle('paused', isPaused);
+        }
+
+        function resetView() {
+            rotationX = -25;
+            rotationY = 0;
+            scene.style.animation = 'none';
+            setTimeout(() => {
+                scene.style.animation = '';
+                scene.classList.remove('paused');
+                isPaused = false;
+            }, 10);
+        }
+
+        function toggleDayNight() {
+            isNight = !isNight;
+            if (isNight) {
+                document.body.style.background = 'linear-gradient(180deg, #1a1a3e 0%, #2a2a5e 50%, #1a3a2a 100%)';
+            } else {
+                document.body.style.background = 'linear-gradient(180deg, #87CEEB 0%, #E0F6FF 50%, #98D8AA 100%)';
+            }
+        }
+
+        // 鼠标拖动控制
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.controls')) return;
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            scene.style.animation = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - lastX;
+            const deltaY = e.clientY - lastY;
+            rotationY += deltaX * 0.5;
+            rotationX -= deltaY * 0.3;
+            rotationX = Math.max(-60, Math.min(10, rotationX));
+            scene.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // 滚轮缩放
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const currentScale = scene.style.transform.match(/scale\(([\d.]+)\)/);
+            let scale = currentScale ? parseFloat(currentScale[1]) : 1;
+            scale += e.deltaY * -0.001;
+            scale = Math.max(0.5, Math.min(2, scale));
+
+            if (isDragging || isPaused) {
+                scene.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${scale})`;
+            }
+        });
+
+        // 触摸支持
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.controls')) return;
+            isDragging = true;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+            scene.style.animation = 'none';
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.touches[0].clientX - lastX;
+            const deltaY = e.touches[0].clientY - lastY;
+            rotationY += deltaX * 0.5;
+            rotationX -= deltaY * 0.3;
+            rotationX = Math.max(-60, Math.min(10, rotationX));
+            scene.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // 初始化
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素雪人</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1a3a5c 0%, #4a7a9c 30%, #87CEEB 60%, #fff 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 雪花效果 */
+        .snowflake {
+            position: fixed;
+            color: white;
+            font-size: 1em;
+            opacity: 0.8;
+            animation: fall linear infinite;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0.3;
+            }
+        }
+
+        .container {
+            perspective: 1000px;
+            perspective-origin: 50% 50%;
+        }
+
+        .scene {
+            transform-style: preserve-3d;
+            animation: rotate 15s infinite linear;
+            width: 300px;
+            height: 400px;
+            position: relative;
+        }
+
+        @keyframes rotate {
+            from { transform: rotateX(-15deg) rotateY(0deg); }
+            to { transform: rotateX(-15deg) rotateY(360deg); }
+        }
+
+        .voxel {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            transform-style: preserve-3d;
+        }
+
+        .voxel .face {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 1px solid rgba(200, 220, 255, 0.3);
+        }
+
+        .voxel .face.front { transform: translateZ(8px); }
+        .voxel .face.back { transform: translateZ(-8px) rotateY(180deg); }
+        .voxel .face.left { transform: translateX(-8px) rotateY(-90deg); }
+        .voxel .face.right { transform: translateX(8px) rotateY(90deg); }
+        .voxel .face.top { transform: translateY(-8px) rotateX(90deg); }
+        .voxel .face.bottom { transform: translateY(8px) rotateX(-90deg); }
+
+        /* 标题 */
+        .title {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            z-index: 100;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.9);
+            color: #3a6a8c;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .controls button:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        .info {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: white;
+            text-align: center;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+        }
+
+        /* 暂停动画 */
+        .scene.paused {
+            animation-play-state: paused;
+        }
+
+        /* 地面 */
+        .ground {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(ellipse at center, #f0f8ff 0%, #e0f0ff 50%, #d0e8ff 100%);
+            border-radius: 50%;
+            transform: rotateX(90deg) translateZ(60px);
+            box-shadow: 0 0 50px rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">⛄ 体素雪人</h1>
+    <div class="info">拖动鼠标旋转视角 | 滚轮缩放</div>
+
+    <div class="container">
+        <div class="scene" id="scene">
+            <div class="ground"></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="toggleRotation()">暂停/继续旋转</button>
+        <button onclick="resetView()">重置视角</button>
+        <button onclick="toggleSnow()">开关雪花</button>
+    </div>
+
+    <script>
+        const scene = document.getElementById('scene');
+        let isPaused = false;
+        let snowEnabled = true;
+        let rotationX = -15;
+        let rotationY = 0;
+        let isDragging = false;
+        let lastX, lastY;
+        let scale = 1;
+
+        // 颜色定义
+        const colors = {
+            snow: ['#FAFAFA', '#F0F0F0', '#E8E8E8', '#F5F5F5', '#FFFFFF', '#E0E0E0'],
+            snowShadow: ['#E8E8E8', '#D8D8D8', '#C8C8C8', '#E0E0E0', '#F0F0F0', '#D0D0D0'],
+            carrot: ['#FF6B35', '#E55A2A', '#D54A1A', '#F06B30', '#FF7B45', '#C53A0A'],
+            coal: ['#2A2A2A', '#1A1A1A', '#0A0A0A', '#222222', '#333333', '#000000'],
+            hatBlack: ['#2A2A2A', '#1A1A1A', '#0A0A0A', '#222222', '#3A3A3A', '#151515'],
+            hatRed: ['#C41E3A', '#A01830', '#801020', '#B01830', '#D4284A', '#700818'],
+            hatBand: ['#4169E1', '#3050C0', '#2040A0', '#3860D0', '#5080F0', '#183080'],
+            scarfRed: ['#E53935', '#C62828', '#B71C1C', '#D32F2F', '#EF5350', '#9C1515'],
+            scarfStripe: ['#FFEB3B', '#FDD835', '#FBC02D', '#FFEE58', '#FFF176', '#F9A825'],
+            stick: ['#8B5A2B', '#6B4A1B', '#5B3A0B', '#7B4A2B', '#9B6A3B', '#4B2A0B'],
+            stickDark: ['#5B3A1B', '#4B2A0B', '#3B1A00', '#4B2A0B', '#6B4A2B', '#2B1A00'],
+            button: ['#2A2A2A', '#1A1A1A', '#0A0A0A', '#222222', '#3A3A3A', '#151515'],
+            blush: ['#FFB6C1', '#FFA0B0', '#F890A0', '#FFC0D0', '#FFD0E0', '#F08090'],
+            arm: ['#6B4423', '#5B3418', '#4B2410', '#7B5428', '#8B6433', '#3B1408']
+        };
+
+        // 创建体素
+        function createVoxel(x, y, z, colorArr) {
+            const voxel = document.createElement('div');
+            voxel.className = 'voxel';
+            voxel.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+
+            const faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+            faces.forEach((face, i) => {
+                const faceEl = document.createElement('div');
+                faceEl.className = `face ${face}`;
+                let colorValue;
+                if (Array.isArray(colorArr)) {
+                    colorValue = colorArr[i] || colorArr[0];
+                } else {
+                    colorValue = colorArr;
+                }
+                if (Array.isArray(colorValue)) {
+                    colorValue = colorValue[0];
+                }
+                faceEl.style.background = colorValue;
+                voxel.appendChild(faceEl);
+            });
+
+            return voxel;
+        }
+
+        function addVoxel(x, y, z, color) {
+            if (Array.isArray(color)) {
+                return createVoxel(x, y, z, color);
+            }
+            return createVoxel(x, y, z, color);
+        }
+
+        // 构建雪人
+        function buildSnowman() {
+            const voxels = [];
+
+            // 底部雪球 (最大) - 半径约5个体素
+            buildSnowball(voxels, 0, 64, 0, 5);
+
+            // 中部雪球 - 半径约4个体素
+            buildSnowball(voxels, 0, 24, 0, 4);
+
+            // 头部雪球 - 半径约3个体素
+            buildSnowball(voxels, 0, -12, 0, 3);
+
+            // 脸部特征
+            buildFace(voxels);
+
+            // 帽子
+            buildHat(voxels);
+
+            // 围巾
+            buildScarf(voxels);
+
+            // 手臂
+            buildArms(voxels);
+
+            // 纽扣
+            buildButtons(voxels);
+
+            return voxels;
+        }
+
+        // 构建雪球 (使用椭球形状)
+        function buildSnowball(voxels, cx, cy, cz, radius) {
+            for (let x = -radius; x <= radius; x++) {
+                for (let y = -radius; y <= radius; y++) {
+                    for (let z = -radius; z <= radius; z++) {
+                        // 椭球方程：x²/a² + y²/b² + z²/c² <= 1
+                        // y轴稍微压缩，使雪球看起来更扁
+                        const dist = (x * x) / (radius * radius) +
+                                    (y * y * 1.2) / (radius * radius) +
+                                    (z * z) / (radius * radius);
+
+                        if (dist <= 1) {
+                            // 使用带阴影的颜色增加立体感
+                            const color = (x + y + z) % 3 === 0 ? colors.snowShadow : colors.snow;
+                            voxels.push(addVoxel(cx + x * 16, cy + y * 16, cz + z * 16, color));
+                        }
+                    }
+                }
+            }
+        }
+
+        // 构建脸部
+        function buildFace(voxels) {
+            const headY = -12;
+
+            // 眼睛 (两个煤块)
+            voxels.push(addVoxel(-16, headY - 8, -28, colors.coal));
+            voxels.push(addVoxel(16, headY - 8, -28, colors.coal));
+
+            // 鼻子 (胡萝卜) - 向前突出
+            for (let i = 0; i < 4; i++) {
+                voxels.push(addVoxel(0, headY, -28 - i * 16, colors.carrot));
+            }
+
+            // 微笑的嘴巴 (使用煤块形成微笑曲线)
+            // 微笑曲线：y = x²/2 - 1
+            const smileY = headY + 8;
+            for (let x = -3; x <= 3; x++) {
+                const yOffset = Math.floor((x * x) / 4);
+                // 上嘴唇 - 微笑弧线
+                if (x !== 0) {
+                    voxels.push(addVoxel(x * 12, smileY + yOffset, -28, colors.coal));
+                }
+            }
+            // 嘴角加深
+            voxels.push(addVoxel(-36, smileY + 2, -28, colors.coal));
+            voxels.push(addVoxel(36, smileY + 2, -28, colors.coal));
+
+            // 腮红
+            voxels.push(addVoxel(-28, headY, -24, colors.blush));
+            voxels.push(addVoxel(32, headY, -24, colors.blush));
+        }
+
+        // 构建帽子
+        function buildHat(voxels) {
+            const headY = -12;
+
+            // 帽檐 (黑色宽边)
+            for (let x = -5; x <= 5; x++) {
+                for (let z = -3; z <= 3; z++) {
+                    voxels.push(addVoxel(x * 14, headY - 42, z * 14 - 14, colors.hatBlack));
+                }
+            }
+
+            // 帽顶 (红色高顶礼帽)
+            for (let y = 0; y < 6; y++) {
+                for (let x = -3 + Math.floor(y/3); x <= 3 - Math.floor(y/3); x++) {
+                    for (let z = -2; z <= 2; z++) {
+                        voxels.push(addVoxel(x * 14, headY - 56 - y * 12, z * 14 - 14, colors.hatRed));
+                    }
+                }
+            }
+
+            // 帽子蓝色带子
+            for (let x = -4; x <= 4; x++) {
+                for (let z = -3; z <= 3; z++) {
+                    voxels.push(addVoxel(x * 14, headY - 54, z * 14 - 14, colors.hatBand));
+                }
+            }
+
+            // 帽顶装饰
+            voxels.push(addVoxel(0, headY - 130, -14, '#FFD700'));
+        }
+
+        // 构建围巾
+        function buildScarf(voxels) {
+            const neckY = 8;
+
+            // 围巾围绕脖子
+            for (let angle = 0; angle < 360; angle += 30) {
+                const rad = angle * Math.PI / 180;
+                const x = Math.cos(rad) * 40;
+                const z = Math.sin(rad) * 40;
+                const stripeColor = Math.floor(angle / 45) % 2 === 0 ? colors.scarfRed : colors.scarfStripe;
+                voxels.push(addVoxel(x, neckY, z, stripeColor));
+            }
+
+            // 围巾垂下的部分 (右侧)
+            for (let y = 0; y < 6; y++) {
+                const stripeColor = y % 2 === 0 ? colors.scarfRed : colors.scarfStripe;
+                voxels.push(addVoxel(50, neckY + y * 12, 20, stripeColor));
+                voxels.push(addVoxel(60, neckY + y * 12, 25, stripeColor));
+            }
+
+            // 围巾末端流苏
+            for (let i = 0; i < 3; i++) {
+                voxels.push(addVoxel(55, neckY + 72, 15 + i * 10, colors.scarfRed));
+                voxels.push(addVoxel(60, neckY + 72, 20 + i * 10, colors.scarfRed));
+                voxels.push(addVoxel(65, neckY + 72, 25 + i * 10, colors.scarfRed));
+            }
+        }
+
+        // 构建手臂
+        function buildArms(voxels) {
+            const bodyY = 24;
+
+            // 左臂
+            for (let i = 0; i < 5; i++) {
+                const angle = -20 + i * 8;
+                const rad = angle * Math.PI / 180;
+                const x = -56 - i * 18;
+                const y = bodyY + Math.sin(rad) * i * 8;
+                const z = Math.cos(rad) * i * 10;
+                voxels.push(addVoxel(x, y, z, i % 2 === 0 ? colors.stick : colors.stickDark));
+            }
+            // 左手（分叉）
+            voxels.push(addVoxel(-130, bodyY - 10, 40, colors.stick));
+            voxels.push(addVoxel(-140, bodyY - 20, 50, colors.stick));
+            voxels.push(addVoxel(-130, bodyY, 55, colors.stick));
+
+            // 右臂
+            for (let i = 0; i < 5; i++) {
+                const angle = 20 - i * 8;
+                const rad = angle * Math.PI / 180;
+                const x = 56 + i * 18;
+                const y = bodyY + Math.sin(rad) * i * 8;
+                const z = Math.cos(rad) * i * 10;
+                voxels.push(addVoxel(x, y, z, i % 2 === 0 ? colors.stick : colors.stickDark));
+            }
+            // 右手（分叉，挥手姿势）
+            voxels.push(addVoxel(130, bodyY - 30, 40, colors.stick));
+            voxels.push(addVoxel(140, bodyY - 40, 50, colors.stick));
+            voxels.push(addVoxel(130, bodyY - 20, 55, colors.stick));
+        }
+
+        // 构建纽扣
+        function buildButtons(voxels) {
+            const bodyY = 24;
+
+            // 中部身体上的三个纽扣
+            for (let i = 0; i < 3; i++) {
+                const y = bodyY + i * 20;
+                voxels.push(addVoxel(0, y, -40, colors.button));
+            }
+        }
+
+        // 初始化场景
+        function init() {
+            const voxels = buildSnowman();
+            voxels.forEach(v => scene.appendChild(v));
+            createSnowflakes();
+        }
+
+        // 创建雪花
+        function createSnowflakes() {
+            const snowflakes = ['❄', '❅', '❆', '•', '·'];
+            for (let i = 0; i < 50; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.innerHTML = snowflakes[Math.floor(Math.random() * snowflakes.length)];
+                snowflake.style.left = Math.random() * 100 + 'vw';
+                snowflake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                snowflake.style.animationDelay = (Math.random() * 10) + 's';
+                snowflake.style.fontSize = (Math.random() * 15 + 8) + 'px';
+                document.body.appendChild(snowflake);
+            }
+        }
+
+        // 控制函数
+        function toggleRotation() {
+            isPaused = !isPaused;
+            scene.classList.toggle('paused', isPaused);
+        }
+
+        function resetView() {
+            rotationX = -15;
+            rotationY = 0;
+            scale = 1;
+            scene.style.animation = 'none';
+            setTimeout(() => {
+                scene.style.animation = '';
+                scene.classList.remove('paused');
+                isPaused = false;
+            }, 10);
+        }
+
+        function toggleSnow() {
+            snowEnabled = !snowEnabled;
+            const snowflakes = document.querySelectorAll('.snowflake');
+            snowflakes.forEach(s => s.style.display = snowEnabled ? 'block' : 'none');
+        }
+
+        // 鼠标拖动控制
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.controls')) return;
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+            scene.style.animation = 'none';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - lastX;
+            const deltaY = e.clientY - lastY;
+            rotationY += deltaX * 0.5;
+            rotationX -= deltaY * 0.3;
+            rotationX = Math.max(-60, Math.min(30, rotationX));
+            scene.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${scale})`;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // 滚轮缩放
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            scale += e.deltaY * -0.001;
+            scale = Math.max(0.5, Math.min(2, scale));
+            if (isDragging || isPaused) {
+                scene.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${scale})`;
+            }
+        });
+
+        // 触摸支持
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.controls')) return;
+            isDragging = true;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+            scene.style.animation = 'none';
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.touches[0].clientX - lastX;
+            const deltaY = e.touches[0].clientY - lastY;
+            rotationY += deltaX * 0.5;
+            rotationX -= deltaY * 0.3;
+            rotationX = Math.max(-60, Math.min(30, rotationX));
+            scene.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${scale})`;
+            lastX = e.touches[0].clientX;
+            lastY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        // 初始化
+        init();
+    </script>
+</body>
+</html>
