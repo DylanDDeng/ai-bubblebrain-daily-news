@@ -54,8 +54,14 @@
 
 <script>
 (() => {
-  const modelsUrl = "{{ "/model-evals.json" | relLangURL }}";
+  let modelsUrl = "{{ "/model-evals.json" | relLangURL }}";
   const questionsUrl = "{{ "/eval-questions.json" | relLangURL }}";
+  
+  if (window.location.pathname.includes('/2025')) {
+    modelsUrl = "{{ "/model-evals-2025.json" | relLangURL }}";
+  } else if (window.location.pathname.includes('/2026')) {
+    modelsUrl = "{{ "/model-evals-2026.json" | relLangURL }}";
+  }
   const I18N = {
     modalQuestionsTitle: "{{ i18n "eval_modal_questions_title" }}",
     unknownModel: "{{ i18n "eval_unknown_model" }}",

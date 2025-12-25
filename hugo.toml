@@ -114,8 +114,17 @@ disableKinds = ['taxonomy', 'term']
         weight = 35
       [[languages.zh-CN.menu.main]]
         name = '模型评测'
-        pageRef = '/model-evals'
         weight = 36
+        [[languages.zh-CN.menu.main]]
+          name = '2025'
+          pageRef = '/model-evals/2025'
+          parent = '模型评测'
+          weight = 1
+        [[languages.zh-CN.menu.main]]
+          name = '2026'
+          pageRef = '/model-evals/2026'
+          parent = '模型评测'
+          weight = 2
       [[languages.zh-CN.menu.main]]
         name = '关于'
         pageRef = '/about'
@@ -168,8 +177,17 @@ disableKinds = ['taxonomy', 'term']
         weight = 35
       [[languages.en.menu.main]]
         name = 'Model Evals'
-        pageRef = '/model-evals'
         weight = 36
+        [[languages.en.menu.main]]
+          name = '2025'
+          pageRef = '/model-evals/2025'
+          parent = 'Model Evals'
+          weight = 1
+        [[languages.en.menu.main]]
+          name = '2026'
+          pageRef = '/model-evals/2026'
+          parent = 'Model Evals'
+          weight = 2
       [[languages.en.menu.main]]
         name = 'About'
         pageRef = '/about'

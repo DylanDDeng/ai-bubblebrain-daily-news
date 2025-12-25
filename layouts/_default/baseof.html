@@ -65,10 +65,31 @@
                 {{ $currentPage := . }}
                 {{ range .Site.Menus.main }}
                     {{ $isActive := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}
-                    {{ if .Page }}
-                        <a class="{{ if $isActive }}active{{ end }}" href="{{ .Page.RelPermalink }}">{{ .Name }}</a>
+                    {{ $hasChildren := .HasChildren }}
+                    {{ if $hasChildren }}
+                        <div class="nav-dropdown {{ if $isActive }}active{{ end }}">
+                            {{ if .Page }}
+                                <button class="nav-dropdown-toggle" aria-expanded="false">{{ .Name }}</button>
+                            {{ else }}
+                                <button class="nav-dropdown-toggle" aria-expanded="false">{{ .Name }}</button>
+                            {{ end }}
+                            <div class="nav-dropdown-menu">
+                                {{ range .Children }}
+                                    {{ $isChildActive := $currentPage.IsMenuCurrent "main" . }}
+                                    {{ if .Page }}
+                                        <a class="{{ if $isChildActive }}active{{ end }}" href="{{ .Page.RelPermalink }}">{{ .Name }}</a>
+                                    {{ else }}
+                                        <a class="{{ if $isChildActive }}active{{ end }}" href="{{ .URL | relLangURL }}">{{ .Name }}</a>
+                                    {{ end }}
+                                {{ end }}
+                            </div>
+                        </div>
                     {{ else }}
-                        <a class="{{ if $isActive }}active{{ end }}" href="{{ .URL | relLangURL }}">{{ .Name }}</a>
+                        {{ if .Page }}
+                            <a class="{{ if $isActive }}active{{ end }}" href="{{ .Page.RelPermalink }}">{{ .Name }}</a>
+                        {{ else }}
+                            <a class="{{ if $isActive }}active{{ end }}" href="{{ .URL | relLangURL }}">{{ .Name }}</a>
+                        {{ end }}
                     {{ end }}
                 {{ end }}
             </nav>
