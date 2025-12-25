@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体素龙 - Voxel Dragon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            perspective: 1500px;
+        }
+
+        /* Stars background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            width: 600px;
+            height: 500px;
+            z-index: 1;
+        }
+
+        .dragon-scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            25% { transform: translateY(-20px) rotateY(5deg); }
+            50% { transform: translateY(-10px) rotateY(0deg); }
+            75% { transform: translateY(-25px) rotateY(-5deg); }
+        }
+
+        /* Voxel base styles */
+        .voxel {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            transform-style: preserve-3d;
+        }
+
+        .voxel .face {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+
+        .voxel .face.front { transform: translateZ(7px); }
+        .voxel .face.back { transform: translateZ(-7px) rotateY(180deg); }
+        .voxel .face.left { transform: translateX(-7px) rotateY(-90deg); }
+        .voxel .face.right { transform: translateX(7px) rotateY(90deg); }
+        .voxel .face.top { transform: translateY(-7px) rotateX(90deg); }
+        .voxel .face.bottom { transform: translateY(7px) rotateX(-90deg); }
+
+        /* Dragon parts */
+        .dragon-body, .dragon-head, .dragon-tail, .dragon-wing, .dragon-leg, .dragon-scale {
+            transform-style: preserve-3d;
+        }
+
+        /* Left wing */
+        .wing-left {
+            position: absolute;
+            transform-origin: right center;
+            animation: flap-left 0.8s ease-in-out infinite;
+        }
+
+        @keyframes flap-left {
+            0%, 100% { transform: rotateZ(-20deg) rotateX(10deg); }
+            50% { transform: rotateZ(30deg) rotateX(-30deg); }
+        }
+
+        /* Right wing */
+        .wing-right {
+            position: absolute;
+            transform-origin: left center;
+            animation: flap-right 0.8s ease-in-out infinite;
+        }
+
+        @keyframes flap-right {
+            0%, 100% { transform: rotateZ(20deg) rotateX(10deg); }
+            50% { transform: rotateZ(-30deg) rotateX(-30deg); }
+        }
+
+        /* Tail animation */
+        .dragon-tail {
+            animation: tail-wag 2s ease-in-out infinite;
+            transform-origin: left center;
+        }
+
+        @keyframes tail-wag {
+            0%, 100% { transform: rotateZ(-5deg); }
+            50% { transform: rotateZ(5deg); }
+        }
+
+        /* Fire breath */
+        .fire-container {
+            position: absolute;
+            transform-style: preserve-3d;
+            opacity: 0;
+            animation: fire-breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes fire-breathe {
+            0%, 70%, 100% { opacity: 0; }
+            75%, 95% { opacity: 1; }
+        }
+
+        .fire-particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: fire-fly 0.8s linear infinite;
+        }
+
+        @keyframes fire-fly {
+            0% {
+                transform: translateX(0) translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-150px) translateY(var(--drift)) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* Scale shimmer effect */
+        .scale-shimmer {
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+
+        /* Eye glow */
+        .eye-glow {
+            animation: eye-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes eye-pulse {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 5px #ff0000); }
+            50% { filter: brightness(1.5) drop-shadow(0 0 15px #ff0000); }
+        }
+
+        /* UI Controls */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .controls button {
+            padding: 12px 24px;
+            font-size: 14px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .controls button:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+
+        .title {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5rem;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 100, 0, 0.3);
+            z-index: 100;
+            letter-spacing: 5px;
+        }
+
+        .info {
+            position: fixed;
+            bottom: 85px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        /* Smoke particles */
+        .smoke {
+            position: absolute;
+            background: rgba(100, 100, 100, 0.3);
+            border-radius: 50%;
+            animation: smoke-rise 2s ease-out infinite;
+        }
+
+        @keyframes smoke-rise {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100px) scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <h1 class="title">🐉 体素龙</h1>
+    <p class="info">拖动鼠标旋转视角 | 滚轮缩放</p>
+
+    <div class="container">
+        <div class="dragon-scene" id="dragon-scene">
+            <!-- Dragon will be built here by JavaScript -->
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="toggleFire()">🔥 喷火开关</button>
+        <button onclick="toggleWings()">🪽 翅膀开关</button>
+        <button onclick="toggleFloat()">✈️ 悬浮开关</button>
+        <button onclick="changeColor()">🎨 换色</button>
+    </div>
+
+    <script>
+        const scene = document.getElementById('dragon-scene');
+        let isFireOn = true;
+        let isWingsOn = true;
+        let isFloatOn = true;
+        let currentColorIndex = 0;
+
+        // Dragon color schemes
+        const colorSchemes = [
+            {
+                body: ['#8B0000', '#A00000', '#B00000', '#700000', '#600000', '#500000'],
+                belly: ['#FFE4B5', '#FFDAB9', '#FFE4C4', '#FAEBD7', '#FFDEAD', '#F5DEB3'],
+                scale: ['#DC143C', '#FF0000', '#B22222', '#CD5C5C', '#F08080', '#E9967A'],
+                wing: ['#4A0000', '#3A0000', '#2A0000', '#5A0000', '#6A0000', '#7A0000'],
+                horn: ['#2F2F2F', '#3F3F3F', '#1F1F1F', '#4F4F4F', '#5F5F5F', '#6F6F6F'],
+                eye: '#FFD700',
+                fire: ['#FF4500', '#FF6347', '#FFD700', '#FFA500', '#FF0000', '#FFFF00']
+            },
+            {
+                body: ['#006400', '#007700', '#008800', '#005500', '#004400', '#003300'],
+                belly: ['#90EE90', '#98FB98', '#00FF7F', '#7CFC00', '#32CD32', '#228B22'],
+                scale: ['#00FF00', '#32CD32', '#7CFC00', '#00FA9A', '#3CB371', '#2E8B57'],
+                wing: ['#1A3A1A', '#0A2A0A', '#2A4A2A', '#3A5A3A', '#4A6A4A', '#5A7A5A'],
+                horn: ['#4A3728', '#3A2718', '#5A4738', '#6A5748', '#7A6758', '#8A7768'],
+                eye: '#00FF00',
+                fire: ['#00FF00', '#7CFC00', '#32CD32', '#00FA9A', '#ADFF2F', '#98FB98']
+            },
+            {
+                body: ['#00008B', '#0000AA', '#0000CC', '#00006B', '#00005B', '#00004B'],
+                belly: ['#E6E6FA', '#D8BFD8', '#DDA0DD', '#EE82EE', '#FF00FF', '#DA70D6'],
+                scale: ['#4169E1', '#0000FF', '#1E90FF', '#00BFFF', '#87CEEB', '#4169E1'],
+                wing: ['#000033', '#000044', '#000055', '#000066', '#000077', '#000088'],
+                horn: ['#4A4A4A', '#3A3A3A', '#5A5A5A', '#6A6A6A', '#7A7A7A', '#8A8A8A'],
+                eye: '#00BFFF',
+                fire: ['#00BFFF', '#1E90FF', '#4169E1', '#87CEEB', '#00CED1', '#40E0D0']
+            },
+            {
+                body: ['#4B0082', '#5B0092', '#6B00A2', '#3B0072', '#2B0062', '#1B0052'],
+                belly: ['#DDA0DD', '#EE82EE', '#DA70D6', '#FF00FF', '#FF69B4', '#FFB6C1'],
+                scale: ['#9400D3', '#8A2BE2', '#9932CC', '#BA55D3', '#DA70D6', '#EE82EE'],
+                wing: ['#1A002A', '#2A003A', '#3A004A', '#4A005A', '#5A006A', '#6A007A'],
+                horn: ['#3D3D3D', '#2D2D2D', '#4D4D4D', '#5D5D5D', '#6D6D6D', '#7D7D7D'],
+                eye: '#FF69B4',
+                fire: ['#FF00FF', '#FF69B4', '#DA70D6', '#BA55D3', '#9932CC', '#8A2BE2']
+            }
+        ];
+
+        let colors = colorSchemes[0];
+
+        // Create voxel
+        function createVoxel(x, y, z, colorArr, extraClass = '') {
+            const voxel = document.createElement('div');
+            voxel.className = 'voxel ' + extraClass;
+            voxel.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+
+            const faces = ['front', 'back', 'left', 'right', 'top', 'bottom'];
+            faces.forEach((face, i) => {
+                const faceEl = document.createElement('div');
+                faceEl.className = `face ${face}`;
+                let colorValue;
+                if (Array.isArray(colorArr)) {
+                    colorValue = colorArr[i] || colorArr[0];
+                } else {
+                    colorValue = colorArr;
+                }
+                if (Array.isArray(colorValue)) {
+                    colorValue = colorValue[0];
+                }
+                faceEl.style.background = colorValue;
+                voxel.appendChild(faceEl);
+            });
+
+            return voxel;
+        }
+
+        // Build dragon
+        function buildDragon() {
+            scene.innerHTML = '';
+
+            // Groups for different parts
+            const bodyGroup = document.createElement('div');
+            bodyGroup.className = 'dragon-body';
+            bodyGroup.style.transformStyle = 'preserve-3d';
+
+            const wingLeftGroup = document.createElement('div');
+            wingLeftGroup.className = 'wing-left';
+            wingLeftGroup.style.transformStyle = 'preserve-3d';
+
+            const wingRightGroup = document.createElement('div');
+            wingRightGroup.className = 'wing-right';
+            wingRightGroup.style.transformStyle = 'preserve-3d';
+
+            const tailGroup = document.createElement('div');
+            tailGroup.className = 'dragon-tail';
+            tailGroup.style.transformStyle = 'preserve-3d';
+
+            const fireGroup = document.createElement('div');
+            fireGroup.className = 'fire-container';
+            fireGroup.id = 'fire-group';
+
+            // Offset to center
+            const ox = 200, oy = 200, oz = 0;
+
+            // === HEAD ===
+            buildHead(bodyGroup, ox, oy - 80, oz);
+
+            // === NECK ===
+            buildNeck(bodyGroup, ox, oy - 40, oz);
+
+            // === BODY ===
+            buildBody(bodyGroup, ox, oy + 40, oz);
+
+            // === TAIL ===
+            buildTail(tailGroup, ox + 70, oy + 60, oz);
+
+            // === LEGS ===
+            buildLegs(bodyGroup, ox - 30, oy + 40, oz);
+
+            // === WINGS ===
+            buildWingLeft(wingLeftGroup, ox - 50, oy, oz + 30);
+            buildWingRight(wingRightGroup, ox + 50, oy, oz + 30);
+
+            // === FIRE ===
+            buildFire(fireGroup, ox - 90, oy - 70, oz);
+
+            scene.appendChild(bodyGroup);
+            scene.appendChild(wingLeftGroup);
+            scene.appendChild(wingRightGroup);
+            scene.appendChild(tailGroup);
+            scene.appendChild(fireGroup);
+        }
+
+        function buildHead(group, ox, oy, oz) {
+            // Main head shape
+            for (let x = -3; x <= 3; x++) {
+                for (let y = -2; y <= 2; y++) {
+                    for (let z = -2; z <= 1; z++) {
+                        const dist = Math.sqrt(x*x + y*y + z*z);
+                        if (dist <= 3.5) {
+                            const isBelly = y > 0 && z > -1;
+                            const color = isBelly ? colors.belly : colors.body;
+                            group.appendChild(createVoxel(ox + x * 14, oy + y * 14, oz + z * 14, color));
+                        }
+                    }
+                }
+            }
+
+            // Snout
+            for (let x = -4; x <= -6; x--) {
+                for (let y = -1; y <= 1; y++) {
+                    for (let z = -1; z <= 0; z++) {
+                        group.appendChild(createVoxel(ox + x * 14, oy + y * 14, oz + z * 14, colors.body));
+                    }
+                }
+            }
+
+            // Horns
+            for (let i = 0; i < 4; i++) {
+                const hx = -2 - Math.floor(i/2);
+                const hz = -3 - i;
+                group.appendChild(createVoxel(ox + (-2) * 14, oy + (-2 - i) * 14, oz + (-2) * 14, colors.horn));
+                group.appendChild(createVoxel(ox + (2) * 14, oy + (-2 - i) * 14, oz + (-2) * 14, colors.horn));
+            }
+
+            // Eyes
+            const eyeLeft = createVoxel(ox + (-1) * 14, oy + (-1) * 14, oz + (-2) * 14, colors.eye, 'eye-glow');
+            const eyeRight = createVoxel(ox + (1) * 14, oy + (-1) * 14, oz + (-2) * 14, colors.eye, 'eye-glow');
+            group.appendChild(eyeLeft);
+            group.appendChild(eyeRight);
+
+            // Scales on head
+            for (let x = -2; x <= 2; x += 2) {
+                for (let z = 0; z <= 1; z++) {
+                    group.appendChild(createVoxel(ox + x * 14, oy + (2) * 14, oz + z * 14, colors.scale, 'scale-shimmer'));
+                }
+            }
+        }
+
+        function buildNeck(group, ox, oy, oz) {
+            for (let y = 0; y < 4; y++) {
+                const radius = 2 - Math.floor(y / 2);
+                for (let x = -radius; x <= radius; x++) {
+                    for (let z = -radius; z <= radius; z++) {
+                        const isBelly = z > 0;
+                        const color = isBelly ? colors.belly : colors.body;
+                        group.appendChild(createVoxel(ox + x * 14, oy + y * 14, oz + z * 14, color));
+                    }
+                }
+                // Scales
+                if (y % 2 === 0) {
+                    group.appendChild(createVoxel(ox + (radius + 1) * 14, oy + y * 14, oz, colors.scale, 'scale-shimmer'));
+                }
+            }
+        }
+
+        function buildBody(group, ox, oy, oz) {
+            // Main body - elongated
+            for (let x = -3; x <= 3; x++) {
+                for (let y = -1; y <= 3; y++) {
+                    for (let z = -2; z <= 2; z++) {
+                        const dist = Math.sqrt(x*x/4 + y*y/4 + z*z);
+                        if (dist <= 2.5) {
+                            const isBelly = z > 0 && y > 0;
+                            const color = isBelly ? colors.belly : colors.body;
+                            group.appendChild(createVoxel(ox + x * 14, oy + y * 14, oz + z * 14, color));
+                        }
+                    }
+                }
+            }
+
+            // Scales pattern
+            for (let x = -3; x <= 3; x += 2) {
+                for (let z = -2; z <= -1; z++) {
+                    for (let y = 0; y <= 2; y++) {
+                        group.appendChild(createVoxel(ox + x * 14, oy + y * 14, oz + z * 14, colors.scale, 'scale-shimmer'));
+                    }
+                }
+            }
+
+            // Belly scales
+            for (let x = -2; x <= 2; x++) {
+                group.appendChild(createVoxel(ox + x * 14, oy + 2 * 14, oz + 2 * 14, colors.scale, 'scale-shimmer'));
+            }
+        }
+
+        function buildTail(group, ox, oy, oz) {
+            // Tail segments - getting smaller
+            const segments = [
+                { x: 0, z: 0, w: 3, h: 2 },
+                { x: 2, z: 0, w: 2, h: 2 },
+                { x: 4, z: 0, w: 2, h: 1 },
+                { x: 6, z: 0, w: 1, h: 1 },
+                { x: 8, z: 0, w: 1, h: 1 },
+                { x: 10, z: 0, w: 1, h: 0 }, // tail tip
+            ];
+
+            segments.forEach((seg, i) => {
+                for (let dx = 0; dx < seg.w; dx++) {
+                    for (let dz = -seg.h; dz <= seg.h; dz++) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            const isBelly = dz > 0;
+                            const color = isBelly ? colors.belly : colors.body;
+                            group.appendChild(createVoxel(ox + (seg.x + dx) * 14, oy + dy * 14, oz + dz * 14, color));
+                        }
+                    }
+                }
+                // Scale on top
+                if (i < segments.length - 1) {
+                    group.appendChild(createVoxel(ox + seg.x * 14, oy - 14, oz, colors.scale, 'scale-shimmer'));
+                }
+            });
+
+            // Tail spike
+            group.appendChild(createVoxel(ox + 11 * 14, oy, oz, colors.horn));
+        }
+
+        function buildLegs(group, ox, oy, oz) {
+            // Front legs
+            buildLeg(group, ox - 2 * 14, oy + 3 * 14, oz + 2 * 14);
+            buildLeg(group, ox + 2 * 14, oy + 3 * 14, oz + 2 * 14);
+
+            // Back legs
+            buildLeg(group, ox - 2 * 14, oy + 4 * 14, oz - 2 * 14);
+            buildLeg(group, ox + 2 * 14, oy + 4 * 14, oz - 2 * 14);
+        }
+
+        function buildLeg(group, x, y, z) {
+            // Upper leg
+            for (let ly = 0; ly < 2; ly++) {
+                for (let lx = -1; lx <= 1; lx++) {
+                    for (let lz = -1; lz <= 1; lz++) {
+                        group.appendChild(createVoxel(x + lx * 14, y + ly * 14, z + lz * 14, colors.body));
+                    }
+                }
+            }
+
+            // Lower leg
+            for (let ly = 2; ly < 4; ly++) {
+                for (let lx = -1; lx <= 1; lx++) {
+                    for (let lz = -1; lz <= 1; lz++) {
+                        group.appendChild(createVoxel(x + lx * 14, y + ly * 14, z + lz * 14, colors.body));
+                    }
+                }
+            }
+
+            // Claws
+            group.appendChild(createVoxel(x - 14, y + 5 * 14, z, colors.horn));
+            group.appendChild(createVoxel(x + 14, y + 5 * 14, z, colors.horn));
+            group.appendChild(createVoxel(x, y + 5 * 14, z - 14, colors.horn));
+        }
+
+        function buildWingLeft(group, ox, oy, oz) {
+            // Wing frame - bat-like shape
+            const wingShape = [
+                // Main wing bones
+                { x: 0, y: 0, z: 0 },
+                { x: -1, y: -2, z: 1 },
+                { x: -2, y: -3, z: 2 },
+                { x: -4, y: -2, z: 3 },
+                { x: -6, y: 0, z: 3 },
+                { x: -7, y: 2, z: 2 },
+                { x: -6, y: 4, z: 1 },
+                { x: -4, y: 5, z: 0 },
+            ];
+
+            // Draw wing membrane
+            for (let i = 0; i < wingShape.length - 1; i++) {
+                const p1 = wingShape[i];
+                const p2 = wingShape[i + 1];
+
+                // Bone
+                group.appendChild(createVoxel(ox + p1.x * 14, oy + p1.y * 14, oz + p1.z * 14, colors.wing));
+
+                // Membrane between bones
+                const steps = Math.max(Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y));
+                for (let t = 0; t <= steps; t++) {
+                    const px = p1.x + (p2.x - p1.x) * t / steps;
+                    const py = p1.y + (p2.y - p1.y) * t / steps;
+                    const pz = p1.z + (p2.z - p1.z) * t / steps;
+
+                    // Membrane extends inward
+                    for (let m = 0; m < 2; m++) {
+                        group.appendChild(createVoxel(
+                            ox + px * 14 + m * 14,
+                            oy + py * 14,
+                            oz + pz * 14,
+                            colors.wing
+                        ));
+                    }
+                }
+            }
+
+            // Wing claws
+            group.appendChild(createVoxel(ox - 8 * 14, oy - 1 * 14, oz + 3 * 14, colors.horn));
+        }
+
+        function buildWingRight(group, ox, oy, oz) {
+            // Mirror of left wing
+            const wingShape = [
+                { x: 0, y: 0, z: 0 },
+                { x: 1, y: -2, z: 1 },
+                { x: 2, y: -3, z: 2 },
+                { x: 4, y: -2, z: 3 },
+                { x: 6, y: 0, z: 3 },
+                { x: 7, y: 2, z: 2 },
+                { x: 6, y: 4, z: 1 },
+                { x: 4, y: 5, z: 0 },
+            ];
+
+            for (let i = 0; i < wingShape.length - 1; i++) {
+                const p1 = wingShape[i];
+                const p2 = wingShape[i + 1];
+
+                group.appendChild(createVoxel(ox + p1.x * 14, oy + p1.y * 14, oz + p1.z * 14, colors.wing));
+
+                const steps = Math.max(Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y));
+                for (let t = 0; t <= steps; t++) {
+                    const px = p1.x + (p2.x - p1.x) * t / steps;
+                    const py = p1.y + (p2.y - p1.y) * t / steps;
+                    const pz = p1.z + (p2.z - p1.z) * t / steps;
+
+                    for (let m = 0; m < 2; m++) {
+                        group.appendChild(createVoxel(
+                            ox + px * 14 - m * 14,
+                            oy + py * 14,
+                            oz + pz * 14,
+                            colors.wing
+                        ));
+                    }
+                }
+            }
+
+            group.appendChild(createVoxel(ox + 8 * 14, oy - 1 * 14, oz + 3 * 14, colors.horn));
+        }
+
+        function buildFire(group, ox, oy, oz) {
+            // Create fire particles
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'fire-particle';
+
+                const size = 8 + Math.random() * 16;
+                const yOffset = (Math.random() - 0.5) * 40;
+                const delay = Math.random() * 0.5;
+
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = '0px';
+                particle.style.top = '0px';
+                particle.style.background = colors.fire[Math.floor(Math.random() * colors.fire.length)];
+                particle.style.setProperty('--drift', yOffset + 'px');
+                particle.style.animationDelay = delay + 's';
+                particle.style.boxShadow = `0 0 ${size}px ${colors.fire[0]}`;
+
+                group.appendChild(particle);
+            }
+
+            // Smoke
+            for (let i = 0; i < 5; i++) {
+                const smoke = document.createElement('div');
+                smoke.className = 'smoke';
+                smoke.style.width = (10 + Math.random() * 20) + 'px';
+                smoke.style.height = smoke.style.width;
+                smoke.style.left = (Math.random() * 50 - 100) + 'px';
+                smoke.style.top = (Math.random() * 30 - 50) + 'px';
+                smoke.style.animationDelay = (Math.random() * 2) + 's';
+                group.appendChild(smoke);
+            }
+        }
+
+        // Create stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDelay = (Math.random() * 3) + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Control functions
+        function toggleFire() {
+            isFireOn = !isFireOn;
+            const fire = document.getElementById('fire-group');
+            if (fire) {
+                fire.style.display = isFireOn ? 'block' : 'none';
+            }
+        }
+
+        function toggleWings() {
+            isWingsOn = !isWingsOn;
+            const wings = document.querySelectorAll('.wing-left, .wing-right');
+            wings.forEach(w => {
+                w.style.animationPlayState = isWingsOn ? 'running' : 'paused';
+            });
+        }
+
+        function toggleFloat() {
+            isFloatOn = !isFloatOn;
+            scene.style.animationPlayState = isFloatOn ? 'running' : 'paused';
+        }
+
+        function changeColor() {
+            currentColorIndex = (currentColorIndex + 1) % colorSchemes.length;
+            colors = colorSchemes[currentColorIndex];
+            buildDragon();
+        }
+
+        // Mouse rotation
+        let isDragging = false;
+        let lastX = 0;
+        let rotationY = 0;
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.controls')) return;
+            isDragging = true;
+            lastX = e.clientX;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - lastX;
+            rotationY += deltaX * 0.5;
+            scene.style.transform = `rotateY(${rotationY}deg)`;
+            lastX = e.clientX;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // Initialize
+        createStars();
+        buildDragon();
+    </script>
+</body>
+</html>

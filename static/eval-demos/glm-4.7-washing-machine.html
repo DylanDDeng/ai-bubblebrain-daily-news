@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>洗衣机工作原理演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 30px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .washing-machine {
+            width: 400px;
+            height: 500px;
+            position: relative;
+        }
+
+        /* SVG Styles */
+        .machine-body {
+            fill: #e8e8e8;
+            stroke: #333;
+            stroke-width: 2;
+        }
+
+        .machine-door-frame {
+            fill: #2a2a2a;
+            stroke: #1a1a1a;
+            stroke-width: 3;
+        }
+
+        .machine-glass {
+            fill: rgba(135, 206, 235, 0.3);
+            stroke: #4a90a4;
+            stroke-width: 2;
+        }
+
+        .drum {
+            fill: none;
+            stroke: #888;
+            stroke-width: 3;
+        }
+
+        .drum-holes {
+            fill: #666;
+        }
+
+        .water {
+            fill: rgba(64, 164, 223, 0.7);
+            transition: height 0.5s ease;
+        }
+
+        .water-wave {
+            fill: rgba(64, 164, 223, 0.5);
+        }
+
+        .clothes {
+            fill: #ff6b6b;
+        }
+
+        .clothes-2 {
+            fill: #4ecdc4;
+        }
+
+        .clothes-3 {
+            fill: #ffe66d;
+        }
+
+        .bubble {
+            fill: rgba(255, 255, 255, 0.7);
+            animation: bubble-rise 2s infinite ease-in;
+        }
+
+        @keyframes bubble-rise {
+            0% { transform: translateY(0) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+        }
+
+        .control-panel {
+            fill: #f5f5f5;
+            stroke: #333;
+            stroke-width: 2;
+        }
+
+        .display {
+            fill: #1a1a1a;
+        }
+
+        .display-text {
+            fill: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+
+        .knob {
+            fill: #ddd;
+            stroke: #666;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: fill 0.2s;
+        }
+
+        .knob:hover {
+            fill: #ccc;
+        }
+
+        .button {
+            fill: #4CAF50;
+            stroke: #45a049;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: fill 0.2s;
+        }
+
+        .button:hover {
+            fill: #45a049;
+        }
+
+        .button.stop {
+            fill: #f44336;
+        }
+
+        .button.stop:hover {
+            fill: #da190b;
+        }
+
+        .drain-pipe {
+            fill: #666;
+            stroke: #444;
+            stroke-width: 2;
+        }
+
+        .water-flow {
+            fill: rgba(64, 164, 223, 0.8);
+        }
+
+        /* Controls below */
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-fill:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-wash {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-drain {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+
+        .btn-spin {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .status-icon {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+
+        /* Phase indicators */
+        .phase-indicator {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .phase {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .phase.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .phase.completed {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spin-fast {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes agitate {
+            0%, 100% { transform: rotate(-30deg); }
+            50% { transform: rotate(30deg); }
+        }
+
+        @keyframes clothes-tumble {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -5px) rotate(90deg); }
+            50% { transform: translate(0, -10px) rotate(180deg); }
+            75% { transform: translate(-10px, -5px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🧺 洗衣机工作原理演示</h1>
+
+    <div class="container">
+        <svg class="washing-machine" viewBox="0 0 400 500">
+            <defs>
+                <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#e0e0e0"/>
+                    <stop offset="50%" style="stop-color:#f5f5f5"/>
+                    <stop offset="100%" style="stop-color:#d0d0d0"/>
+                </linearGradient>
+                <radialGradient id="glassGradient" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" style="stop-color:rgba(200,230,255,0.4)"/>
+                    <stop offset="100%" style="stop-color:rgba(100,180,220,0.3)"/>
+                </radialGradient>
+            </defs>
+
+            <!-- Machine body -->
+            <rect class="machine-body" x="50" y="30" width="300" height="440" rx="20" fill="url(#metalGradient)"/>
+
+            <!-- Control panel -->
+            <rect class="control-panel" x="70" y="50" width="260" height="80" rx="10"/>
+
+            <!-- Display -->
+            <rect class="display" x="85" y="65" width="100" height="50" rx="5"/>
+            <text class="display-text" x="95" y="98" id="display-text">READY</text>
+
+            <!-- Knobs -->
+            <circle class="knob" cx="220" cy="80" r="20" id="temp-knob"/>
+            <text x="205" y="115" fill="#666" font-size="10">温度</text>
+
+            <circle class="knob" cx="280" cy="80" r="20" id="spin-knob"/>
+            <text x="265" y="115" fill="#666" font-size="10">转速</text>
+
+            <!-- Buttons on panel -->
+            <circle class="button" cx="200" cy="115" r="12" id="power-btn"/>
+            <text x="188" y="135" fill="#666" font-size="9">电源</text>
+
+            <!-- Door frame -->
+            <circle class="machine-door-frame" cx="200" cy="280" r="130" fill="#2a2a2a"/>
+            <circle class="machine-glass" cx="200" cy="280" r="110" fill="url(#glassGradient)"/>
+
+            <!-- Door handle -->
+            <rect x="305" y="270" width="25" height="20" rx="5" fill="#666" stroke="#444" stroke-width="2"/>
+
+            <!-- Drum -->
+            <g id="drum-group">
+                <circle class="drum" cx="200" cy="280" r="95" fill="none" stroke="#666" stroke-width="4"/>
+                <!-- Drum holes -->
+                <g id="drum-holes">
+                    <circle class="drum-holes" cx="200" cy="200" r="5"/>
+                    <circle class="drum-holes" cx="200" cy="360" r="5"/>
+                    <circle class="drum-holes" cx="120" cy="280" r="5"/>
+                    <circle class="drum-holes" cx="280" cy="280" r="5"/>
+                    <circle class="drum-holes" cx="143" cy="223" r="5"/>
+                    <circle class="drum-holes" cx="257" cy="223" r="5"/>
+                    <circle class="drum-holes" cx="143" cy="337" r="5"/>
+                    <circle class="drum-holes" cx="257" cy="337" r="5"/>
+                </g>
+            </g>
+
+            <!-- Water -->
+            <g id="water-group">
+                <path class="water" id="water-level" d="M 110 280 Q 200 290 290 280 L 290 350 Q 200 360 110 350 Z" opacity="0"/>
+                <path class="water-wave" id="water-wave-1" d="M 110 280 Q 130 275 150 280 T 190 280 T 230 280 T 270 280 T 290 280" opacity="0"/>
+                <path class="water-wave" id="water-wave-2" d="M 110 285 Q 130 280 150 285 T 190 285 T 230 285 T 270 285 T 290 285" opacity="0"/>
+            </g>
+
+            <!-- Clothes -->
+            <g id="clothes-group">
+                <ellipse class="clothes" id="cloth1" cx="180" cy="300" rx="25" ry="15" transform="rotate(-20, 180, 300)"/>
+                <ellipse class="clothes-2" id="cloth2" cx="220" cy="280" rx="20" ry="12" transform="rotate(45, 220, 280)"/>
+                <ellipse class="clothes-3" id="cloth3" cx="190" cy="260" rx="22" ry="14" transform="rotate(10, 190, 260)"/>
+            </g>
+
+            <!-- Bubbles container -->
+            <g id="bubbles-container"></g>
+
+            <!-- Drain pipe -->
+            <g id="drain-group">
+                <rect class="drain-pipe" x="180" y="440" width="40" height="30" fill="#666"/>
+                <ellipse cx="200" cy="470" rx="20" ry="5" fill="#444"/>
+                <!-- Water flow indicator -->
+                <g id="water-flow" opacity="0">
+                    <ellipse cx="195" cy="455" rx="8" ry="12" fill="rgba(64,164,223,0.8)">
+                        <animate attributeName="cy" values="455;475" dur="0.5s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.8;0" dur="0.5s" repeatCount="indefinite"/>
+                    </ellipse>
+                    <ellipse cx="205" cy="465" rx="6" ry="10" fill="rgba(64,164,223,0.8)">
+                        <animate attributeName="cy" values="465;480" dur="0.4s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="0.8;0" dur="0.4s" repeatCount="indefinite"/>
+                    </ellipse>
+                </g>
+            </g>
+
+            <!-- Agitator (center) -->
+            <g id="agitator">
+                <polygon points="200,240 190,280 200,320 210,280" fill="#888" stroke="#666" stroke-width="2"/>
+                <ellipse cx="200" cy="240" rx="12" ry="5" fill="#999" stroke="#666"/>
+            </g>
+
+            <!-- Bottom panel -->
+            <rect x="70" y="430" width="260" height="30" rx="5" fill="#ddd" stroke="#bbb"/>
+            <rect x="80" y="438" width="40" height="14" rx="2" fill="#888"/>
+            <text x="85" y="448" fill="white" font-size="8">滤网</text>
+        </svg>
+
+        <div class="phase-indicator">
+            <div class="phase" id="phase-fill">💧 进水</div>
+            <div class="phase" id="phase-wash">🫧 洗涤</div>
+            <div class="phase" id="phase-drain">🌀 排水</div>
+            <div class="phase" id="phase-spin">🔄 脱水</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn btn-fill" id="btn-start" onclick="startFullCycle()">▶️ 开始完整流程</button>
+        <button class="control-btn btn-wash" id="btn-fill" onclick="startFillPhase()">💧 进水</button>
+        <button class="control-btn btn-wash" id="btn-wash" onclick="startWashPhase()" disabled>🫧 洗涤</button>
+        <button class="control-btn btn-drain" id="btn-drain" onclick="startDrainPhase()" disabled>🌀 排水</button>
+        <button class="control-btn btn-spin" id="btn-spin" onclick="startSpinPhase()" disabled>🔄 脱水</button>
+        <button class="control-btn stop" id="btn-stop" onclick="stopAll()" disabled>⏹️ 停止</button>
+    </div>
+
+    <div class="status">
+        <span class="status-icon" id="status-icon">⚪</span>
+        <span id="status-text">准备就绪，请选择操作</span>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentPhase = 'idle';
+        let animationFrameId = null;
+        let waterLevel = 0;
+        let drumRotation = 0;
+        let isRunning = false;
+
+        // DOM elements
+        const waterLevelEl = document.getElementById('water-level');
+        const waterWave1 = document.getElementById('water-wave-1');
+        const waterWave2 = document.getElementById('water-wave-2');
+        const drumGroup = document.getElementById('drum-group');
+        const drumHoles = document.getElementById('drum-holes');
+        const clothesGroup = document.getElementById('clothes-group');
+        const bubblesContainer = document.getElementById('bubbles-container');
+        const agitator = document.getElementById('agitator');
+        const waterFlow = document.getElementById('water-flow');
+        const displayText = document.getElementById('display-text');
+        const statusText = document.getElementById('status-text');
+        const statusIcon = document.getElementById('status-icon');
+        const progressFill = document.getElementById('progress-fill');
+        const clothes = [document.getElementById('cloth1'), document.getElementById('cloth2'), document.getElementById('cloth3')];
+
+        const phases = {
+            'phase-fill': document.getElementById('phase-fill'),
+            'phase-wash': document.getElementById('phase-wash'),
+            'phase-drain': document.getElementById('phase-drain'),
+            'phase-spin': document.getElementById('phase-spin')
+        };
+
+        const buttons = {
+            start: document.getElementById('btn-start'),
+            fill: document.getElementById('btn-fill'),
+            wash: document.getElementById('btn-wash'),
+            drain: document.getElementById('btn-drain'),
+            spin: document.getElementById('btn-spin'),
+            stop: document.getElementById('btn-stop')
+        };
+
+        // Update status display
+        function setStatus(icon, text, progress = 0) {
+            statusIcon.textContent = icon;
+            statusText.textContent = text;
+            progressFill.style.width = progress + '%';
+        }
+
+        // Update display text
+        function setDisplayText(text) {
+            displayText.textContent = text;
+        }
+
+        // Update phase indicators
+        function updatePhase(activePhase, completedPhases = []) {
+            Object.keys(phases).forEach(key => {
+                phases[key].classList.remove('active', 'completed');
+                if (key === activePhase) {
+                    phases[key].classList.add('active');
+                } else if (completedPhases.includes(key)) {
+                    phases[key].classList.add('completed');
+                }
+            });
+        }
+
+        // Reset all phases
+        function resetPhases() {
+            Object.keys(phases).forEach(key => {
+                phases[key].classList.remove('active', 'completed');
+            });
+        }
+
+        // Enable/disable buttons
+        function setButtons(state) {
+            switch(state) {
+                case 'idle':
+                    buttons.start.disabled = false;
+                    buttons.fill.disabled = false;
+                    buttons.wash.disabled = true;
+                    buttons.drain.disabled = true;
+                    buttons.spin.disabled = true;
+                    buttons.stop.disabled = true;
+                    break;
+                case 'filled':
+                    buttons.start.disabled = true;
+                    buttons.fill.disabled = true;
+                    buttons.wash.disabled = false;
+                    buttons.drain.disabled = false;
+                    buttons.spin.disabled = true;
+                    buttons.stop.disabled = false;
+                    break;
+                case 'running':
+                    buttons.start.disabled = true;
+                    buttons.fill.disabled = true;
+                    buttons.wash.disabled = true;
+                    buttons.drain.disabled = true;
+                    buttons.spin.disabled = true;
+                    buttons.stop.disabled = false;
+                    break;
+            }
+        }
+
+        // Stop all animations
+        function stopAll() {
+            isRunning = false;
+            currentPhase = 'idle';
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+
+            // Reset animations
+            drumGroup.style.animation = 'none';
+            drumHoles.style.animation = 'none';
+            agitator.style.animation = 'none';
+            clothes.forEach(c => c.style.animation = 'none');
+            bubblesContainer.innerHTML = '';
+            waterFlow.setAttribute('opacity', '0');
+
+            setButtons('idle');
+            setStatus('⚪', '已停止');
+            setDisplayText('READY');
+            resetPhases();
+        }
+
+        // Phase 1: Fill (进水)
+        function startFillPhase() {
+            if (isRunning) return;
+            isRunning = true;
+            currentPhase = 'fill';
+            setButtons('running');
+            updatePhase('phase-fill');
+            setStatus('💧', '正在进水...');
+            setDisplayText('FILL');
+
+            let progress = 0;
+            const fillAnimation = () => {
+                if (!isRunning || currentPhase !== 'fill') return;
+
+                progress += 1;
+                waterLevel = progress / 100;
+
+                // Update water visibility
+                const waterPath = `M 110 280 Q 200 ${290 - waterLevel * 50} 290 280 L 290 ${350 - waterLevel * 50} Q 200 ${360 - waterLevel * 50} 110 ${350 - waterLevel * 50} Z`;
+                waterLevelEl.setAttribute('d', waterPath);
+                waterLevelEl.setAttribute('opacity', waterLevel * 0.7);
+
+                // Update waves
+                if (waterLevel > 0.1) {
+                    const waveY1 = 280 - waterLevel * 50;
+                    waterWave1.setAttribute('d', `M 110 ${waveY1} Q 130 ${waveY1 - 5} 150 ${waveY1} T 190 ${waveY1} T 230 ${waveY1} T 270 ${waveY1} T 290 ${waveY1}`);
+                    waterWave1.setAttribute('opacity', waterLevel * 0.5);
+                    waterWave2.setAttribute('d', `M 110 ${waveY1 + 5} Q 130 ${waveY1} 150 ${waveY1 + 5} T 190 ${waveY1 + 5} T 230 ${waveY1 + 5} T 270 ${waveY1 + 5} T 290 ${waveY1 + 5}`);
+                    waterWave2.setAttribute('opacity', waterLevel * 0.3);
+                }
+
+                setStatus('💧', `正在进水... ${Math.round(progress)}%`, progress);
+
+                if (progress >= 100) {
+                    setStatus('✅', '进水完成', 100);
+                    setDisplayText('WASH');
+                    currentPhase = 'filled';
+                    setButtons('filled');
+                    updatePhase(null, ['phase-fill']);
+                    isRunning = false;
+                } else {
+                    animationFrameId = requestAnimationFrame(fillAnimation);
+                }
+            };
+
+            fillAnimation();
+        }
+
+        // Phase 2: Wash (洗涤)
+        function startWashPhase() {
+            if (isRunning) return;
+            isRunning = true;
+            currentPhase = 'wash';
+            setButtons('running');
+            updatePhase('phase-wash');
+            setStatus('🫧', '正在洗涤...');
+            setDisplayText('WASH');
+
+            // Start drum rotation
+            drumGroup.style.transformOrigin = '200px 280px';
+            drumGroup.style.animation = 'spin 3s linear infinite';
+            drumHoles.style.transformOrigin = '200px 280px';
+            drumHoles.style.animation = 'spin 3s linear infinite reverse';
+            agitator.style.transformOrigin = '200px 280px';
+            agitator.style.animation = 'agitate 0.5s ease-in-out infinite';
+
+            // Clothes tumbling animation
+            clothes.forEach((cloth, i) => {
+                cloth.style.animation = `clothes-tumble 2s ease-in-out infinite`;
+                cloth.style.animationDelay = `${i * 0.3}s`;
+                cloth.style.transformOrigin = '200px 280px';
+            });
+
+            let progress = 0;
+            let bubbleCount = 0;
+            const washDuration = 300; // frames
+
+            const washAnimation = () => {
+                if (!isRunning || currentPhase !== 'wash') return;
+
+                progress += 100 / washDuration;
+
+                // Add bubbles
+                if (bubbleCount % 20 === 0 && waterLevel > 0) {
+                    createBubble();
+                }
+                bubbleCount++;
+
+                // Animate waves
+                const waveOffset = Math.sin(Date.now() / 200) * 3;
+                const waveY1 = 280 - waterLevel * 50;
+                waterWave1.setAttribute('d', `M 110 ${waveY1 + waveOffset} Q 130 ${waveY1 + waveOffset - 5} 150 ${waveY1 + waveOffset} T 190 ${waveY1 + waveOffset} T 230 ${waveY1 + waveOffset} T 270 ${waveY1 + waveOffset} T 290 ${waveY1 + waveOffset}`);
+
+                setStatus('🫧', `正在洗涤... ${Math.round(progress)}%`, progress);
+
+                if (progress >= 100) {
+                    setStatus('✅', '洗涤完成', 100);
+                    setDisplayText('DRAIN');
+                    updatePhase(null, ['phase-fill', 'phase-wash']);
+                    drumGroup.style.animation = 'none';
+                    drumHoles.style.animation = 'none';
+                    agitator.style.animation = 'none';
+                    clothes.forEach(c => c.style.animation = 'none');
+                    currentPhase = 'washed';
+                    setButtons('filled');
+                    isRunning = false;
+                } else {
+                    animationFrameId = requestAnimationFrame(washAnimation);
+                }
+            };
+
+            washAnimation();
+        }
+
+        // Create bubble
+        function createBubble() {
+            const bubble = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            const x = 120 + Math.random() * 160;
+            const y = 320;
+            const size = 3 + Math.random() * 6;
+            bubble.setAttribute('cx', x);
+            bubble.setAttribute('cy', y);
+            bubble.setAttribute('r', size);
+            bubble.setAttribute('class', 'bubble');
+            bubble.style.animationDuration = (1.5 + Math.random()) + 's';
+            bubblesContainer.appendChild(bubble);
+
+            setTimeout(() => {
+                if (bubblesContainer.contains(bubble)) {
+                    bubblesContainer.removeChild(bubble);
+                }
+            }, 2000);
+        }
+
+        // Phase 3: Drain (排水)
+        function startDrainPhase() {
+            if (isRunning) return;
+            isRunning = true;
+            currentPhase = 'drain';
+            setButtons('running');
+            updatePhase('phase-drain');
+            setStatus('🌀', '正在排水...');
+            setDisplayText('DRAIN');
+
+            // Show water flow
+            waterFlow.setAttribute('opacity', '1');
+
+            let progress = 0;
+            const drainAnimation = () => {
+                if (!isRunning || currentPhase !== 'drain') return;
+
+                progress += 1.5;
+                waterLevel = Math.max(0, (100 - progress) / 100);
+
+                // Update water visibility
+                const waterPath = `M 110 280 Q 200 ${290 - waterLevel * 50} 290 280 L 290 ${350 - waterLevel * 50} Q 200 ${360 - waterLevel * 50} 110 ${350 - waterLevel * 50} Z`;
+                waterLevelEl.setAttribute('d', waterPath);
+                waterLevelEl.setAttribute('opacity', waterLevel * 0.7);
+
+                if (waterLevel > 0.1) {
+                    const waveY1 = 280 - waterLevel * 50;
+                    waterWave1.setAttribute('d', `M 110 ${waveY1} Q 130 ${waveY1 - 5} 150 ${waveY1} T 190 ${waveY1} T 230 ${waveY1} T 270 ${waveY1} T 290 ${waveY1}`);
+                    waterWave1.setAttribute('opacity', waterLevel * 0.5);
+                    waterWave2.setAttribute('opacity', waterLevel * 0.3);
+                } else {
+                    waterWave1.setAttribute('opacity', '0');
+                    waterWave2.setAttribute('opacity', '0');
+                }
+
+                setStatus('🌀', `正在排水... ${Math.round(Math.min(100, progress))}%`, Math.min(100, progress));
+
+                if (progress >= 100) {
+                    waterFlow.setAttribute('opacity', '0');
+                    setStatus('✅', '排水完成', 100);
+                    setDisplayText('SPIN');
+                    updatePhase(null, ['phase-fill', 'phase-wash', 'phase-drain']);
+                    currentPhase = 'drained';
+                    setButtons('filled');
+                    isRunning = false;
+                } else {
+                    animationFrameId = requestAnimationFrame(drainAnimation);
+                }
+            };
+
+            drainAnimation();
+        }
+
+        // Phase 4: Spin (脱水)
+        function startSpinPhase() {
+            if (isRunning) return;
+            isRunning = true;
+            currentPhase = 'spin';
+            setButtons('running');
+            updatePhase('phase-spin');
+            setStatus('🔄', '正在脱水...');
+            setDisplayText('SPIN');
+
+            // Fast spin animation
+            drumGroup.style.transformOrigin = '200px 280px';
+            drumGroup.style.animation = 'spin-fast 0.5s linear infinite';
+            drumHoles.style.transformOrigin = '200px 280px';
+            drumHoles.style.animation = 'spin-fast 0.5s linear infinite reverse';
+
+            // Press clothes against drum wall
+            clothes.forEach((cloth, i) => {
+                const angle = (i * 120) * Math.PI / 180;
+                const radius = 70;
+                const x = 200 + Math.cos(angle) * radius - 20;
+                const y = 280 + Math.sin(angle) * radius - 10;
+                cloth.style.transform = `translate(${x - 180}px, ${y - 280}px) rotate(${i * 120}deg)`;
+            });
+
+            let progress = 0;
+            const spinDuration = 200;
+
+            const spinAnimation = () => {
+                if (!isRunning || currentPhase !== 'spin') return;
+
+                progress += 100 / spinDuration;
+                setStatus('🔄', `正在脱水... ${Math.round(progress)}%`, progress);
+
+                if (progress >= 100) {
+                    drumGroup.style.animation = 'none';
+                    drumHoles.style.animation = 'none';
+                    clothes.forEach(c => c.style.transform = '');
+                    setStatus('✅', '脱水完成！流程结束', 100);
+                    setDisplayText('DONE');
+                    updatePhase(null, ['phase-fill', 'phase-wash', 'phase-drain', 'phase-spin']);
+                    currentPhase = 'done';
+                    setButtons('idle');
+                    isRunning = false;
+                } else {
+                    animationFrameId = requestAnimationFrame(spinAnimation);
+                }
+            };
+
+            spinAnimation();
+        }
+
+        // Full cycle
+        async function startFullCycle() {
+            if (isRunning) return;
+
+            stopAll();
+            await delay(500);
+
+            // Phase 1: Fill
+            startFillPhase();
+            await waitForPhase('filled');
+
+            // Phase 2: Wash
+            await delay(500);
+            startWashPhase();
+            await waitForPhase('washed');
+
+            // Phase 3: Drain
+            await delay(500);
+            startDrainPhase();
+            await waitForPhase('drained');
+
+            // Phase 4: Spin
+            await delay(500);
+            startSpinPhase();
+            await waitForPhase('done');
+
+            setStatus('🎉', '洗衣流程完成！', 100);
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function waitForPhase(phase) {
+            return new Promise(resolve => {
+                const check = () => {
+                    if (currentPhase === phase || !isRunning) {
+                        resolve();
+                    } else {
+                        setTimeout(check, 100);
+                    }
+                };
+                check();
+            });
+        }
+
+        // Knob interactions
+        document.getElementById('temp-knob').addEventListener('click', function() {
+            const temps = ['30°C', '40°C', '60°C', '90°C'];
+            const current = this.getAttribute('data-temp') || '30°C';
+            const nextIndex = (temps.indexOf(current) + 1) % temps.length;
+            const next = temps[nextIndex];
+            this.setAttribute('data-temp', next);
+            this.style.transform = `rotate(${nextIndex * 90}deg)`;
+        });
+
+        document.getElementById('spin-knob').addEventListener('click', function() {
+            const speeds = ['400', '800', '1200', '1400'];
+            const current = this.getAttribute('data-speed') || '800';
+            const nextIndex = (speeds.indexOf(current) + 1) % speeds.length;
+            const next = speeds[nextIndex];
+            this.setAttribute('data-speed', next);
+            this.style.transform = `rotate(${nextIndex * 90}deg)`;
+        });
+
+        // Power button
+        document.getElementById('power-btn').addEventListener('click', function() {
+            if (isRunning) {
+                stopAll();
+            } else {
+                setDisplayText('READY');
+            }
+        });
+
+        // Initialize
+        setButtons('idle');
+    </script>
+</body>
+</html>
