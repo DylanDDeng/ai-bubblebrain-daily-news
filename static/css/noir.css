@@ -118,7 +118,7 @@ a:hover {
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  padding: 0.35rem 0.65rem;
+  padding: 0;
   font-family: inherit;
   font-size: inherit;
   text-transform: uppercase;
@@ -150,7 +150,7 @@ a:hover {
 .nav-dropdown.active .nav-dropdown-menu {
   opacity: 1;
   visibility: visible;
-  transform: translateY(0.5rem);
+  transform: translateY(0);
 }
 
 .nav-dropdown-menu a {
