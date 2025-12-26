@@ -2237,17 +2237,151 @@
         { 
           "id": "145",
           "title": "女性人像",
-          "author": "BubbleBrain",
+          "author": "@underwoodxie96",
           "source": "Nano Banana Pro",
           "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251224101945368.png",
           "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251224101945368.png",
           "prompt": "Analog film photography aesthetic, heavy film grain, Kodak Portra 400.A candid, natural portrait of a young Korean female K-pop idol sitting casually on the edge of a dimly lit wooden concert stage during a soundcheck. She has a 'pure yet sexy' vibe, looking at the camera with a shy, gentle smile. Minimal, natural makeup, slightly messy hair.She wears a simple white ribbed short-sleeve crop top and a vintage-style red and white striped A-line skirt (a subtle nod to the diner uniform colors). White sneakers.The background shows microphones, cables on the floor, and empty auditorium seats blurred out. Soft, warm ambient stage lighting, authentic light leaks, nostalgic atmosphere. Not excessively flashy, no aggressive LEDs.",
           "tags": ["人像"]
+        },
+
+        {
+          "id": "146",
+          "title": "男性人像",
+          "author": "BubbleBrain",
+          "source": "Nano Banana Pro",
+          "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251226091404275.png",
+          "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251226091404275.png",
+          "prompt":{
+  "subject": {
+    "description": "A young woman fashion model with long black hair, sitting on a sculptural black chair in a clean white studio, wearing an oversized black sweatshirt with bold '1977' on the chest and white socks printed '1977'.",
+    "mirror_rules": null,
+    "age": "early 20s",
+    "expression": {
+      "eyes": {
+        "look": "direct eye contact",
+        "energy": "calm, confident",
+        "direction": "toward camera"
+      },
+      "mouth": {
+        "position": "relaxed, slightly pressed",
+        "energy": "cool, composed"
+      },
+      "overall": "high-fashion, slightly aloof"
+    },
+    "face": {
+      "preserve_original": true,
+      "makeup": "clean editorial makeup, defined brows, subtle eyeliner, soft matte skin, natural lips"
+    },
+    "hair": {
+      "color": "jet black",
+      "style": "long, straight, loose with slight natural volume",
+      "effect": "smooth shine, a few soft flyaways"
+    },
+    "body": {
+      "frame": "slim",
+      "waist": "slim",
+      "chest": "not emphasized",
+      "legs": "very long-looking due to pose and framing",
+      "skin": {
+        "visible_areas": ["legs"],
+        "tone": "fair to light",
+        "texture": "smooth, natural",
+        "lighting_effect": "soft highlights, minimal shadow"
+      }
+    },
+    "pose": {
+      "position": "seated on a modern sculptural chair",
+      "base": "one knee pulled up close to the torso, arms resting around the raised leg, the other leg extended diagonally toward the lower-left",
+      "overall": "compact upper body, elongated legs, editorial attitude"
+    },
+    "clothing": {
+      "top": {
+        "type": "oversized black sweatshirt",
+        "color": "black",
+        "details": "large bold numbers '1977' on the front, long sleeves, loose fit",
+        "effect": "minimalist streetwear meets fashion editorial"
+      },
+      "bottom": {
+        "type": "shorts (mostly covered by sweatshirt)",
+        "color": "black",
+        "details": "short hem visible at the hips",
+        "effect": "clean silhouette"
+      }
+    }
+  },
+  "accessories": {
+    "jewelry": null,
+    "device": null,
+    "prop": null,
+    "headwear": null
+  },
+  "photography": {
+    "camera_style": "high-end studio fashion editorial photo, clean and modern",
+    "angle": "slightly above eye level to eye level, front-facing",
+    "shot_type": "3/4 body to full-body portrait with strong negative space",
+    "aspect_ratio": "4:5 vertical",
+    "texture": "sharp details, smooth skin, crisp edges, minimal grain",
+    "lighting": "soft diffused high-key studio lighting, gentle shadow under chair, even illumination",
+    "depth_of_field": "moderate depth of field, subject fully in focus, background seamless"
+  },
+  "background": {
+    "setting": "minimal white studio with seamless backdrop",
+    "wall_color": "white to very light gray",
+    "elements": [
+      "sculptural black chair with curved silhouette",
+      "vertical left-side layout text including 'SONDRA STUDIO' (editorial poster-like design)"
+    ],
+    "atmosphere": "quiet, premium, gallery-clean",
+    "lighting": "bright, soft, shadow controlled"
+  },
+  "the_vibe": {
+    "energy": "minimal, confident, premium",
+    "mood": "cool, composed, editorial",
+    "aesthetic": "high-end minimalist fashion, black-and-white contrast, negative space composition",
+    "authenticity": "studio campaign look",
+    "intimacy": "medium (direct gaze, clean set)",
+    "story": "a modern streetwear editorial emphasizing silhouette and long legs in a sparse studio layout",
+    "caption_energy": "short, chic, brand-like"
+  },
+  "constraints": {
+    "must_keep": [
+      "white seamless studio background",
+      "large negative space on the left",
+      "model placed on the right side of the frame",
+      "oversized black sweatshirt with visible '1977'",
+      "white socks with visible '1977'",
+      "seated pose with one leg raised and the other extended",
+      "soft high-key lighting",
+      "sculptural black chair"
+    ],
+    "avoid": [
+      "busy background",
+      "extra accessories",
+      "heavy color grading",
+      "strong harsh shadows",
+      "blurry face",
+      "incorrect or missing text '1977'"
+    ]
+  },
+  "negative_prompt": [
+    "low quality",
+    "blurry",
+    "overexposed face",
+    "harsh flash",
+    "busy background",
+    "extra fingers",
+    "deformed hands",
+    "bad anatomy",
+    "wrong text",
+    "misspelled numbers",
+    "watermark",
+    "cartoon",
+    "oil painting",
+    "heavy film grain"
+  ]
+}, 
+"tags":["人像"]
+
         }
-
- 
-
-
-
-
 ]
