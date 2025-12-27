@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
     <meta name="description" content="{{ .Description | default .Site.Params.description }}">
+
+    <!-- 预连接关键第三方域名 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://images.unsplash.com">
+
+    <!-- Google Fonts - 非阻塞加载 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,600&family=Manrope:wght@300;400;600&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,600&family=Manrope:wght@300;400;600&display=swap">
+    </noscript>
+
     {{ if and .IsHome (eq .Site.LanguageCode "zh-CN") }}
       {{ $enSite := index (where site.Sites "Language.LanguageCode" "en") 0 }}
       <script>
@@ -60,7 +72,15 @@
 
     <header class="nav-bar">
         <a href="{{ "/" | relLangURL }}" class="nav-logo">{{ .Site.Title }}</a>
-        <div class="nav-right">
+
+        <!-- 移动端汉堡菜单按钮 -->
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
+        <div class="nav-right" id="nav-menu">
             <nav class="nav-links">
                 {{ $currentPage := . }}
                 {{ range .Site.Menus.main }}

@@ -17,6 +17,55 @@
     });
   }
 
+  // 移动端汉堡菜单
+  const hamburger = document.getElementById("nav-hamburger");
+  const navMenu = document.getElementById("nav-menu");
+
+  if (hamburger && navMenu) {
+    // 创建遮罩层
+    const overlay = document.createElement("div");
+    overlay.className = "nav-overlay";
+    document.body.appendChild(overlay);
+
+    const toggleMenu = () => {
+      const isActive = hamburger.classList.toggle("active");
+      navMenu.classList.toggle("active");
+      overlay.classList.toggle("active");
+      hamburger.setAttribute("aria-expanded", isActive);
+      document.body.style.overflow = isActive ? "hidden" : "";
+    };
+
+    const closeMenu = () => {
+      hamburger.classList.remove("active");
+      navMenu.classList.remove("active");
+      overlay.classList.remove("active");
+      hamburger.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+    };
+
+    hamburger.addEventListener("click", toggleMenu);
+    overlay.addEventListener("click", closeMenu);
+
+    // 点击菜单链接后关闭菜单
+    navMenu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    // ESC 键关闭菜单
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && hamburger.classList.contains("active")) {
+        closeMenu();
+      }
+    });
+
+    // 窗口大小变化时关闭菜单
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 768) {
+        closeMenu();
+      }
+    });
+  }
+
   const dropdownToggles = document.querySelectorAll(".nav-dropdown-toggle");
   dropdownToggles.forEach((toggle) => {
     toggle.addEventListener("click", (e) => {

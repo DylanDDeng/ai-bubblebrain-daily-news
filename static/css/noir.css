@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,600&family=Manrope:wght@300;400;600&display=swap");
+/* Google Fonts 已移至 HTML head 中以非阻塞方式加载 */
 
 :root {
   --bg: #080808;
@@ -730,15 +730,129 @@ footer {
   }
 }
 
+/* 汉堡菜单按钮 */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 101;
+  transition: border-color 0.2s ease;
+}
+
+.nav-hamburger:hover {
+  border-color: var(--accent);
+}
+
+.hamburger-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--text-main);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* 汉堡菜单激活状态 - X 形 */
+.nav-hamburger.active .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-hamburger.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-hamburger.active .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
 @media (max-width: 768px) {
   :root {
     --page-padding: 1.5rem;
   }
 
+  /* 显示汉堡菜单按钮 */
+  .nav-hamburger {
+    display: flex;
+  }
+
+  /* 移动端导航菜单 */
+  .nav-right {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 5rem 2rem 2rem;
+    gap: 2rem;
+    transition: right 0.3s ease;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .nav-right.active {
+    right: 0;
+  }
+
   .nav-links {
-    gap: 0.75rem;
-    letter-spacing: 0.12em;
-    font-size: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    width: 100%;
+  }
+
+  .nav-links a,
+  .nav-dropdown-toggle {
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    width: 100%;
+    display: block;
+  }
+
+  .nav-dropdown-menu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .nav-lang {
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* 移动端菜单遮罩 */
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+  }
+
+  .nav-overlay.active {
+    display: block;
   }
 
   .page-shell {
@@ -765,12 +879,12 @@ footer {
   .daily-article {
     padding: 2rem 1.5rem;
   }
-  
+
   .article-nav {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .nav-next {
     align-items: flex-start;
     text-align: left;
