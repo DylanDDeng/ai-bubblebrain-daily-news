@@ -98,6 +98,8 @@
   let currentFilter = "all";
   let searchTerm = "";
   let filtersCollapsed = true;
+  let isInitialLoad = true;
+  let revealTimers = [];
 
   const I18N = {
     allWithCount: "{{ i18n "gallery_all_with_count" }}",
@@ -118,6 +120,22 @@
     copyFailed: "{{ i18n "gallery_copy_failed" }}",
     networkError: "{{ i18n "gallery_network_error" }}"
   };
+
+  // COS 图片优化：为腾讯云 COS 图片添加处理参数
+  // 缩略图：转 WebP + 限制宽度 400px
+  // 模态框：转 WebP + 限制宽度 1200px（保持较高清晰度）
+  const COS_THUMB_PARAMS = "?imageMogr2/format/webp/thumbnail/400x/quality/85";
+  const COS_MODAL_PARAMS = "?imageMogr2/format/webp/thumbnail/1200x/quality/90";
+
+  function optimizeImageUrl(url, isThumb = true) {
+    if (!url || typeof url !== "string") return url;
+    // 只处理腾讯云 COS 图片（包含 .cos. 的域名）
+    if (!url.includes(".cos.")) return url;
+    // 如果已经有查询参数，不再添加（避免重复处理）
+    if (url.includes("?")) return url;
+    // 根据用途添加不同的优化参数
+    return url + (isThumb ? COS_THUMB_PARAMS : COS_MODAL_PARAMS);
+  }
 
   const normalizeImages = (item) => {
     const arr = Array.isArray(item.images) ? item.images.filter(Boolean) : [];
@@ -297,11 +315,27 @@
     }
 
     const imgWrap = document.createElement("div");
-    imgWrap.className = "gallery-thumb";
+    imgWrap.className = "gallery-thumb loading";
     const img = document.createElement("img");
-    img.src = primary.thumb || primary.full;
+    // 使用优化后的缩略图 URL（WebP 格式 + 限制宽度）
+    img.src = optimizeImageUrl(primary.thumb || primary.full, true);
     img.alt = item.title || I18N.untitled;
     img.loading = "lazy";
+
+    img.onload = () => {
+      imgWrap.classList.remove("loading");
+    };
+
+    img.onerror = () => {
+      imgWrap.classList.remove("loading");
+      imgWrap.classList.add("error");
+      img.style.display = "none";
+      const errorPlaceholder = document.createElement("div");
+      errorPlaceholder.className = "gallery-error-placeholder";
+      errorPlaceholder.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>加载失败</span>';
+      imgWrap.appendChild(errorPlaceholder);
+    };
+
     imgWrap.appendChild(img);
 
     if (images.length > 1) {
@@ -384,6 +418,11 @@
 
   function renderGrid() {
     if (!grid) return;
+
+    // Clear previous timers to prevent animation conflicts
+    revealTimers.forEach(clearTimeout);
+    revealTimers = [];
+
     grid.innerHTML = "";
 
     const totalItems = filteredItems.length;
@@ -398,14 +437,24 @@
     grid.appendChild(frag);
 
     requestAnimationFrame(() => {
-      const MAX_REVEAL_ITEMS = 60;
-      grid.querySelectorAll(".reveal-text").forEach((el, index) => {
-        if (index >= MAX_REVEAL_ITEMS) {
-          el.classList.add("active");
-          return;
-        }
-        setTimeout(() => el.classList.add("active"), index * 60);
-      });
+      const cards = grid.querySelectorAll(".reveal-text");
+
+      if (isInitialLoad) {
+        // First load: staggered animation with shorter delay
+        const MAX_REVEAL_ITEMS = 60;
+        cards.forEach((el, index) => {
+          if (index >= MAX_REVEAL_ITEMS) {
+            el.classList.add("active");
+            return;
+          }
+          const timer = setTimeout(() => el.classList.add("active"), index * 30);
+          revealTimers.push(timer);
+        });
+        isInitialLoad = false;
+      } else {
+        // Filter/search: show immediately without animation delay
+        cards.forEach(el => el.classList.add("active"));
+      }
     });
   }
 
@@ -499,7 +548,8 @@
     currentIndex = ((index % len) + len) % len;
     const active = currentImages[currentIndex];
 
-    modalImage.src = active.full || active.thumb;
+    // 模态框使用优化后的图片 URL（WebP 格式 + 较大尺寸以保持清晰度）
+    modalImage.src = optimizeImageUrl(active.full || active.thumb, false);
     modalImage.alt = active.caption ? `${currentItemTitle} - ${active.caption}` : currentItemTitle;
     if (modalCounter) {
       modalCounter.textContent = len > 1 ? `${currentIndex + 1} / ${len}` : I18N.singleImage;
@@ -856,6 +906,53 @@
 
 .gallery-card:hover .gallery-thumb img {
   transform: scale(1.03);
+}
+
+/* Image loading state - shimmer skeleton */
+.gallery-thumb.loading {
+  min-height: 180px;
+  background: linear-gradient(90deg, var(--surface-highlight) 25%, var(--surface) 50%, var(--surface-highlight) 75%);
+  background-size: 200% 100%;
+  animation: gallery-shimmer 1.5s infinite;
+}
+
+.gallery-thumb.loading img {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-thumb:not(.loading) img {
+  opacity: 1;
+}
+
+@keyframes gallery-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Image error state */
+.gallery-thumb.error {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-error-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  padding: 1rem;
+}
+
+.gallery-error-placeholder svg {
+  opacity: 0.5;
+}
+
+.gallery-error-placeholder span {
+  font-size: 0.85rem;
 }
 
 .gallery-overlay {

@@ -700,9 +700,9 @@ footer {
 
 /* Reveal effect */
 .reveal-text {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.15;
+  transform: translateY(16px);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reveal-text.active {
