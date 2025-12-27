@@ -55,6 +55,8 @@
     return null;
   };
 
+  const MIN_IFRAME_HEIGHT = 450;
+
   const styleIframe = () => {
     const iframe = getIframe();
     if (!iframe) return;
@@ -62,6 +64,12 @@
     iframe.style.border = "0";
     iframe.style.display = "block";
     iframe.setAttribute("scrolling", "no");
+
+    // Always ensure minimum height (works for Shadow DOM too)
+    const currentHeight = parseInt(iframe.style.height, 10) || 0;
+    if (currentHeight < MIN_IFRAME_HEIGHT) {
+      iframe.style.height = `${MIN_IFRAME_HEIGHT}px`;
+    }
 
     if (cusdisDebugEnabled && !cusdisLoggedIframe) {
       cusdisLoggedIframe = true;
@@ -146,12 +154,15 @@
   const applyHeight = (height) => {
     const iframe = getIframe();
     if (!iframe) return null;
-    styleIframe();
 
     const clamped = Math.max(100, Math.min(10000, Math.floor(height)));
     // Increased extra padding to ensure Reply textarea is fully visible
     const extra = clamped < 400 ? 280 : clamped < 600 ? 220 : 160;
-    const appliedHeight = Math.max(450, clamped + extra);
+    const appliedHeight = Math.max(MIN_IFRAME_HEIGHT, clamped + extra);
+    iframe.style.width = "100%";
+    iframe.style.border = "0";
+    iframe.style.display = "block";
+    iframe.setAttribute("scrolling", "no");
     iframe.style.height = `${appliedHeight}px`;
     return appliedHeight;
   };
@@ -184,18 +195,24 @@
   cusdisObserver.observe(cusdisThread, { childList: true, subtree: true });
 
   const start = Date.now();
+  let iframeFound = false;
   const poll = setInterval(() => {
     styleIframe();
-    if (getIframe() || Date.now() - start > 10_000) {
+    const iframe = getIframe();
+    if (iframe) {
+      iframeFound = true;
+    }
+    // Keep polling for 30 seconds to handle Cusdis resetting height after load
+    if (Date.now() - start > 30_000) {
       clearInterval(poll);
-      if (cusdisDebugEnabled && !getIframe()) {
+      if (cusdisDebugEnabled && !iframeFound) {
         try {
           // eslint-disable-next-line no-console
           console.log("[cusdis_debug] iframe_not_found");
         } catch (e) {}
       }
     }
-  }, 200);
+  }, 500);
 
   window.addEventListener("message", (event) => {
     const iframe = getIframe();
