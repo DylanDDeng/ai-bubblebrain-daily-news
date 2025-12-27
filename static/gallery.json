@@ -2383,5 +2383,121 @@
 }, 
 "tags":["人像"]
 
-        }
+        },  
+     { 
+    "id": "147",
+    "title": "人像照片",
+    "author": "@underwoodxie96",
+    "source": "Nano Banana Pro",
+    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251227192519112.png",
+    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251227192519112.png",
+    "prompt": {
+  "subject": {
+    "description": "A surreal conceptual portrait of a young woman whose face is horizontally sliced into three segments, with the middle eye-section shifted to the right.",
+    "age": "Early 20s",
+    "expression": {
+      "eyes": {
+        "look": "Direct and melancholic",
+        "energy": "Intense and calm",
+        "direction": "Looking towards the camera from the shifted slice"
+      },
+      "mouth": {
+        "position": "Slightly parted",
+        "energy": "Soft and relaxed"
+      },
+      "overall": "Surreal, artistic, and fragmented"
+    },
+    "face": {
+      "preserve_original": true,
+      "makeup": "Natural, minimal, highlighting skin texture"
+    },
+    "hair": {
+      "color": "Dirty blonde or light brown",
+      "style": "Straight with slight texture, fragmented across slices",
+      "effect": "Analog paper cut-out look"
+    },
+    "body": {
+      "frame": "Slender, visible from shoulders up",
+      "waist": null,
+      "chest": "Top of the chest visible",
+      "legs": null,
+      "skin": {
+        "visible_areas": "Face and neck",
+        "tone": "Warm, slightly desaturated",
+        "texture": "Grainy, paper-like texture",
+        "lighting_effect": "Soft, diffused indoor light"
+      }
+    },
+    "pose": {
+      "position": "Centered",
+      "base": "Static portrait",
+      "overall": "The head is fragmented; a human finger from the left edge is pushing the middle facial slice."
+    },
+    "clothing": {
+      "top": {
+        "type": "White cable-knit sweater",
+        "color": "Off-white",
+        "details": "High neck, textured knit patterns",
+        "effect": "Soft and cozy contrast to the sharp facial slices"
+      }
+    }
+  },
+  "accessories": {
+    "prop": "A human hand/index finger entering from the left frame, making contact with the edge of the shifted facial slice."
+  },
+  "photography": {
+    "camera_style": "Analog collage photography, experimental art",
+    "angle": "Eye-level, straight-on",
+    "shot_type": "Close-up portrait",
+    "aspect_ratio": "1:1",
+    "texture": "Vintage film grain, paper matte texture, slight shadow at cut edges",
+    "lighting": "Soft natural light, low contrast",
+    "depth_of_field": "Flat composition as if made of paper"
+  },
+  "background": {
+    "setting": "Minimalist studio",
+    "wall_color": "Beige / Off-white",
+    "elements": [],
+    "atmosphere": "Quiet, artistic, surreal",
+    "lighting": "Even and soft"
+  },
+  "the_vibe": {
+    "energy": "Contemplative and surreal",
+    "mood": "Thought-provoking, slightly melancholic",
+    "aesthetic": "Vintage paper collage, retro avant-garde",
+    "authenticity": "High artistic authenticity, handcrafted feel",
+    "intimacy": "Close and personal",
+    "story": "A metaphor for fragmented identity or external pressure altering one's self-perception.",
+    "caption_energy": "Poetic, deep, philosophical"
+  },
+  "constraints": {
+    "must_keep": [
+      "horizontal face slicing",
+      "middle slice shifted to the right",
+      "finger pushing from the left",
+      "paper texture",
+      "white knitted sweater"
+    ],
+    "avoid": [
+      "high saturation",
+      "3D digital rendering look",
+      "neon colors",
+      "busy background"
+    ]
+  },
+  "negative_prompt": [
+    "glossy",
+    "3d render",
+    "modern digital art",
+    "saturated colors",
+    "smooth plastic skin",
+    "symmetry",
+    "uninterrupted face"
+  ]
+},
+    "tags": ["人像","海报"]
+     }
+
+
+        
 ]
