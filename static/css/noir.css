@@ -432,15 +432,14 @@ a:hover {
 .page-body img,
 .article-content img,
 .curation-content img {
-  max-width: 100%;
+  max-width: 85%;
   max-height: 70vh;
   height: auto;
   display: block;
   margin: 1.5rem auto;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface-highlight);
-  padding: 8px;
+  border: none;
+  background: transparent;
+  padding: 0;
   object-fit: contain;
 }
 
