@@ -185,6 +185,10 @@ a:hover {
   position: relative;
 }
 
+.section.section-article {
+  justify-content: flex-start;
+}
+
 .section-narrow {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -489,6 +493,32 @@ a:hover {
   border: 1px solid var(--border);
   background: var(--surface);
   padding: 3rem 2.5rem;
+}
+
+.comments-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.comments-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2rem;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+#cusdis_thread {
+  width: 100%;
+  min-height: 450px;
+}
+
+#cusdis_thread iframe {
+  width: 100%;
+  min-height: 450px;
+  display: block;
+  border: 0;
 }
 
 .article-header {
