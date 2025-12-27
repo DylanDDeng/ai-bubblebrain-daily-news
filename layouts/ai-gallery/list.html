@@ -34,7 +34,8 @@
     <button class="gallery-modal__close" type="button" data-close aria-label="{{ i18n "gallery_modal_close" }}">×</button>
     <div class="gallery-modal__body">
       <div class="gallery-modal__image">
-        <img id="modal-image" alt="" loading="lazy">
+        <img id="modal-image" alt="">
+        <div class="modal-image-loader" id="modal-loader"></div>
         <div class="gallery-modal__controls">
           <button class="gallery-nav" type="button" data-prev aria-label="{{ i18n "gallery_prev" }}">←</button>
           <div class="gallery-counter" id="modal-counter"></div>
@@ -535,6 +536,8 @@
     modal.querySelector(".gallery-modal__close").focus();
   }
 
+  const modalLoader = document.getElementById("modal-loader");
+
   function setActiveImage(index) {
     if (!currentImages.length) {
       modalImage.src = "";
@@ -548,9 +551,36 @@
     currentIndex = ((index % len) + len) % len;
     const active = currentImages[currentIndex];
 
-    // 模态框使用优化后的图片 URL（WebP 格式 + 较大尺寸以保持清晰度）
-    modalImage.src = optimizeImageUrl(active.full || active.thumb, false);
+    // 渐进式加载：先显示缩略图，再加载高清图
+    const thumbUrl = optimizeImageUrl(active.thumb || active.full, true);
+    const fullUrl = optimizeImageUrl(active.full || active.thumb, false);
+
+    // 1. 立即显示缩略图（已缓存，瞬间显示）
+    modalImage.classList.remove("loaded");
+    modalImage.classList.add("loading-blur");
+    modalImage.src = thumbUrl;
     modalImage.alt = active.caption ? `${currentItemTitle} - ${active.caption}` : currentItemTitle;
+
+    // 显示加载指示器
+    if (modalLoader) modalLoader.classList.add("active");
+
+    // 2. 后台加载高清图
+    const hdImage = new Image();
+    hdImage.onload = () => {
+      // 高清图加载完成，淡入替换
+      modalImage.src = fullUrl;
+      modalImage.classList.remove("loading-blur");
+      modalImage.classList.add("loaded");
+      if (modalLoader) modalLoader.classList.remove("active");
+    };
+    hdImage.onerror = () => {
+      // 高清图加载失败，保持缩略图显示
+      modalImage.classList.remove("loading-blur");
+      modalImage.classList.add("loaded");
+      if (modalLoader) modalLoader.classList.remove("active");
+    };
+    hdImage.src = fullUrl;
+
     if (modalCounter) {
       modalCounter.textContent = len > 1 ? `${currentIndex + 1} / ${len}` : I18N.singleImage;
     }
@@ -1157,6 +1187,44 @@
   max-width: 100%;
   height: auto;
   border-radius: 0 !important;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* 渐进式加载 - 缩略图模糊状态 */
+.gallery-modal__image img.loading-blur {
+  filter: blur(8px);
+  transform: scale(1.02);
+}
+
+/* 渐进式加载 - 高清图加载完成状态 */
+.gallery-modal__image img.loaded {
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* 加载指示器 */
+.modal-image-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-image-loader.active {
+  opacity: 1;
+  animation: modal-spin 0.8s linear infinite;
+}
+
+@keyframes modal-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .gallery-modal__controls {
