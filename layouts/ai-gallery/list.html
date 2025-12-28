@@ -99,8 +99,7 @@
   let currentFilter = "all";
   let searchTerm = "";
   let filtersCollapsed = true;
-  let isInitialLoad = true;
-  let revealTimers = [];
+  let revealObserver = null;
 
   const I18N = {
     allWithCount: "{{ i18n "gallery_all_with_count" }}",
@@ -420,9 +419,10 @@
   function renderGrid() {
     if (!grid) return;
 
-    // Clear previous timers to prevent animation conflicts
-    revealTimers.forEach(clearTimeout);
-    revealTimers = [];
+    // Disconnect previous observer to prevent conflicts
+    if (revealObserver) {
+      revealObserver.disconnect();
+    }
 
     grid.innerHTML = "";
 
@@ -437,25 +437,23 @@
 
     grid.appendChild(frag);
 
+    // Use Intersection Observer for natural reveal on scroll
     requestAnimationFrame(() => {
       const cards = grid.querySelectorAll(".reveal-text");
 
-      if (isInitialLoad) {
-        // First load: staggered animation with shorter delay
-        const MAX_REVEAL_ITEMS = 60;
-        cards.forEach((el, index) => {
-          if (index >= MAX_REVEAL_ITEMS) {
-            el.classList.add("active");
-            return;
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            revealObserver.unobserve(entry.target);
           }
-          const timer = setTimeout(() => el.classList.add("active"), index * 30);
-          revealTimers.push(timer);
         });
-        isInitialLoad = false;
-      } else {
-        // Filter/search: show immediately without animation delay
-        cards.forEach(el => el.classList.add("active"));
-      }
+      }, {
+        threshold: 0.1,
+        rootMargin: "50px 0px"  // Start revealing slightly before entering viewport
+      });
+
+      cards.forEach(card => revealObserver.observe(card));
     });
   }
 
