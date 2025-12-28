@@ -66,15 +66,6 @@
     return url + (isThumb ? COS_THUMB_PARAMS : COS_MODAL_PARAMS);
   }
 
-  // 卡片 ID 到详情页 URL 的映射
-  const DETAIL_URL_MAP = {
-    "highlight-06": "/highlights/2025-11-10-best-practices-prompt-engineering/",
-    "highlight-05": "/highlights/2025-11-14-gpt-5.1-prompt-guide/",
-    "highlight-03": "/highlights/2025-11-15-claude-skills-explained/",
-    "highlight-04": "/highlights/2025-11-15-vibe-coding/",
-    "highlight-02": "/highlights/2025-11-16-claude-skills-example/",
-    "highlight-01": "/highlights/2025-11-18-how-three-startups-use-claudecode/"
-  };
 
   const MAX_TAGS_VISIBLE = 8;
   let filtersCollapsed = true;
@@ -376,10 +367,9 @@
     }
 
     // 处理详细解读链接
-    const detailUrl = item.id ? DETAIL_URL_MAP[item.id] : null;
     if (modalDetail) {
-      if (detailUrl) {
-        modalDetail.href = detailUrl;
+      if (item.detailUrl) {
+        modalDetail.href = item.detailUrl;
         modalDetail.style.display = "";
       } else {
         modalDetail.style.display = "none";
