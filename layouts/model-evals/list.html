@@ -9,6 +9,11 @@
       {{ end }}
     </header>
 
+    <!-- 搜索框 -->
+    <div class="eval-search-bar">
+      <input type="text" id="eval-search" class="eval-search-input" placeholder="{{ i18n "eval_search_placeholder" | default "搜索模型名称、公司、标签..." }}">
+    </div>
+
     <div id="model-grid" class="eval-grid" aria-live="polite"></div>
     <div id="model-empty" class="eval-empty" hidden>
       <p>{{ i18n "eval_empty_title" }}</p>
@@ -38,14 +43,43 @@
   <div class="eval-modal__backdrop" data-close></div>
   <div class="eval-modal__dialog eval-modal__dialog--wide" role="dialog" aria-modal="true">
     <button class="eval-modal__close" type="button" data-close aria-label="{{ i18n "eval_modal_close" }}">&times;</button>
+
+    <!-- 导航按钮 -->
+    <div class="answer-nav">
+      <button class="answer-nav__btn answer-nav__prev" id="answer-prev" title="上一题 (←)">
+        <span>←</span> 上一题
+      </button>
+      <span class="answer-nav__indicator" id="answer-indicator">1 / 4</span>
+      <button class="answer-nav__btn answer-nav__next" id="answer-next" title="下一题 (→)">
+        下一题 <span>→</span>
+      </button>
+    </div>
+
     <div class="eval-modal__header">
       <p class="answer-breadcrumb"><span id="answer-model"></span> / <span id="answer-category"></span></p>
       <h2 id="answer-title">{{ i18n "eval_modal_answer_title" }}</h2>
+      <!-- 分享按钮 -->
+      <button class="share-btn" id="share-btn" title="复制分享链接">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        <span id="share-btn-text">分享</span>
+      </button>
     </div>
     <div class="eval-modal__body">
       <div class="answer-question">
         <h4>{{ i18n "eval_question_label" }}</h4>
         <p id="answer-question-text"></p>
+      </div>
+      <!-- 全屏按钮容器 -->
+      <div class="answer-toolbar" id="answer-toolbar" style="display:none;">
+        <button class="fullscreen-btn" id="fullscreen-btn" title="全屏查看">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+          全屏查看
+        </button>
       </div>
       <div class="answer-content" id="answer-content"></div>
     </div>
@@ -56,12 +90,13 @@
 (() => {
   let modelsUrl = "{{ "/model-evals.json" | relLangURL }}";
   const questionsUrl = "{{ "/eval-questions.json" | relLangURL }}";
-  
+
   if (window.location.pathname.includes('/2025')) {
     modelsUrl = "{{ "/model-evals-2025.json" | relLangURL }}";
   } else if (window.location.pathname.includes('/2026')) {
     modelsUrl = "{{ "/model-evals-2026.json" | relLangURL }}";
   }
+
   const I18N = {
     modalQuestionsTitle: "{{ i18n "eval_modal_questions_title" }}",
     unknownModel: "{{ i18n "eval_unknown_model" }}",
@@ -69,10 +104,13 @@
     allWithCount: "{{ i18n "eval_filter_all_with_count" }}",
     noQuestions: "{{ i18n "eval_no_questions" }}",
     viewAnswer: "{{ i18n "eval_view_answer" }}",
-    generatedImageAlt: "{{ i18n "eval_generated_image_alt" }}"
+    generatedImageAlt: "{{ i18n "eval_generated_image_alt" }}",
+    questionsCount: "{{ i18n "eval_questions_count" | default "{count} 道题目" }}"
   };
+
   const grid = document.getElementById("model-grid");
   const empty = document.getElementById("model-empty");
+  const searchInput = document.getElementById("eval-search");
 
   const questionsModal = document.getElementById("questions-modal");
   const modalModelName = document.getElementById("modal-model-name");
@@ -86,19 +124,39 @@
   const answerTitle = document.getElementById("answer-title");
   const answerQuestionText = document.getElementById("answer-question-text");
   const answerContent = document.getElementById("answer-content");
+  const answerToolbar = document.getElementById("answer-toolbar");
+  const fullscreenBtn = document.getElementById("fullscreen-btn");
+  const shareBtn = document.getElementById("share-btn");
+  const shareBtnText = document.getElementById("share-btn-text");
+
+  // 导航元素
+  const answerPrev = document.getElementById("answer-prev");
+  const answerNext = document.getElementById("answer-next");
+  const answerIndicator = document.getElementById("answer-indicator");
 
   let allModels = [];
   let allQuestions = [];
+  let filteredModels = [];
   let currentModelId = null;
   let currentCategory = "all";
+  let currentQuestionIndex = 0;
+  let currentFilteredQuestions = [];
+  let revealObserver = null;
+  let searchTerm = "";
 
   function setEmpty(show) {
     if (empty) empty.hidden = !show;
   }
 
+  // 获取模型的题目数量
+  function getModelQuestionCount(modelId) {
+    return allQuestions.filter(q => q.answers && q.answers[modelId]).length;
+  }
+
   function buildModelCard(model) {
     const card = document.createElement("article");
     card.className = "eval-card reveal-text";
+    card.dataset.modelId = model.id;
 
     const logoWrap = document.createElement("div");
     logoWrap.className = "eval-card__logo";
@@ -106,6 +164,7 @@
       const img = document.createElement("img");
       img.src = model.logo;
       img.alt = model.company;
+      img.loading = "lazy";
       img.onerror = function() { this.style.display = 'none'; };
       logoWrap.appendChild(img);
     } else {
@@ -134,6 +193,12 @@
       tagRow.appendChild(span);
     });
 
+    // 题目数量显示
+    const questionCount = getModelQuestionCount(model.id);
+    const countBadge = document.createElement("div");
+    countBadge.className = "eval-card__count";
+    countBadge.innerHTML = `<span class="count-number">${questionCount}</span> <span class="count-label">道题目</span>`;
+
     const btn = document.createElement("button");
     btn.className = "eval-btn";
     btn.textContent = I18N.viewQuestions;
@@ -143,6 +208,7 @@
     meta.appendChild(name);
     if (desc.textContent) meta.appendChild(desc);
     if (tagRow.children.length) meta.appendChild(tagRow);
+    meta.appendChild(countBadge);
     meta.appendChild(btn);
 
     card.appendChild(logoWrap);
@@ -153,24 +219,75 @@
 
   function renderModels() {
     if (!grid) return;
+
+    // 断开旧的 observer
+    if (revealObserver) {
+      revealObserver.disconnect();
+    }
+
     grid.innerHTML = "";
 
-    if (!allModels.length) {
+    const modelsToRender = searchTerm ? filteredModels : allModels;
+
+    if (!modelsToRender.length) {
       setEmpty(true);
       return;
     }
     setEmpty(false);
 
     const frag = document.createDocumentFragment();
-    allModels.forEach(model => {
+    modelsToRender.forEach(model => {
       frag.appendChild(buildModelCard(model));
     });
     grid.appendChild(frag);
 
+    // 使用 Intersection Observer 实现滚动显示
     requestAnimationFrame(() => {
-      grid.querySelectorAll(".reveal-text").forEach((el, i) => {
-        setTimeout(() => el.classList.add("active"), i * 60);
+      const cards = grid.querySelectorAll(".reveal-text");
+
+      revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: "50px 0px"
       });
+
+      cards.forEach(card => revealObserver.observe(card));
+    });
+  }
+
+  // 搜索功能
+  function applySearch() {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) {
+      filteredModels = allModels;
+    } else {
+      filteredModels = allModels.filter(model => {
+        const haystack = [
+          model.name,
+          model.company,
+          model.description,
+          ...(model.tags || [])
+        ].map(v => (v || "").toLowerCase()).join(" ");
+        return haystack.includes(term);
+      });
+    }
+    renderModels();
+  }
+
+  if (searchInput) {
+    let searchTimeout;
+    searchInput.addEventListener("input", (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchTerm = e.target.value;
+        applySearch();
+      }, 200);
     });
   }
 
@@ -224,14 +341,17 @@
       filtered = questions.filter(q => q.category === currentCategory);
     }
 
+    // 保存当前过滤后的题目列表
+    currentFilteredQuestions = filtered;
+
     questionList.innerHTML = "";
     if (!filtered.length) {
-      questionList.innerHTML = `<p class=\"no-questions\">${I18N.noQuestions}</p>`;
+      questionList.innerHTML = `<p class="no-questions">${I18N.noQuestions}</p>`;
       return;
     }
 
     const frag = document.createDocumentFragment();
-    filtered.forEach(q => {
+    filtered.forEach((q, index) => {
       const item = document.createElement("div");
       item.className = "question-item";
 
@@ -266,7 +386,10 @@
       const viewBtn = document.createElement("button");
       viewBtn.className = "eval-btn eval-btn--sm";
       viewBtn.textContent = I18N.viewAnswer;
-      viewBtn.addEventListener("click", () => openAnswerModal(q));
+      viewBtn.addEventListener("click", () => {
+        currentQuestionIndex = index;
+        openAnswerModal(q);
+      });
 
       item.appendChild(header);
       item.appendChild(questionText);
@@ -296,6 +419,16 @@
     document.body.style.overflow = "hidden";
   }
 
+  function updateNavIndicator() {
+    const total = currentFilteredQuestions.length;
+    const current = currentQuestionIndex + 1;
+    answerIndicator.textContent = `${current} / ${total}`;
+
+    // 禁用边界按钮
+    answerPrev.disabled = currentQuestionIndex <= 0;
+    answerNext.disabled = currentQuestionIndex >= total - 1;
+  }
+
   function openAnswerModal(question) {
     const model = allModels.find(m => m.id === currentModelId);
     const answer = question.answers[currentModelId];
@@ -307,23 +440,94 @@
 
     answerContent.innerHTML = "";
 
+    // 更新 URL hash 用于分享
+    const hash = `#${currentModelId}/${question.id}`;
+    history.replaceState(null, "", window.location.pathname + hash);
+
     if (answer.type === "html") {
       answerContent.innerHTML = answer.content;
+      answerToolbar.style.display = "flex";
     } else if (answer.type === "image") {
       const img = document.createElement("img");
       img.src = answer.content;
       img.alt = answer.alt || I18N.generatedImageAlt;
       img.className = "answer-image";
       answerContent.appendChild(img);
+      answerToolbar.style.display = "none";
     } else {
       const pre = document.createElement("pre");
       pre.className = "answer-text";
       pre.textContent = answer.content;
       answerContent.appendChild(pre);
+      answerToolbar.style.display = "none";
     }
+
+    updateNavIndicator();
 
     answerModal.classList.add("open");
     answerModal.setAttribute("aria-hidden", "false");
+  }
+
+  function goToPrevQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      const q = currentFilteredQuestions[currentQuestionIndex];
+      openAnswerModal(q);
+    }
+  }
+
+  function goToNextQuestion() {
+    if (currentQuestionIndex < currentFilteredQuestions.length - 1) {
+      currentQuestionIndex++;
+      const q = currentFilteredQuestions[currentQuestionIndex];
+      openAnswerModal(q);
+    }
+  }
+
+  // 导航按钮事件
+  if (answerPrev) answerPrev.addEventListener("click", goToPrevQuestion);
+  if (answerNext) answerNext.addEventListener("click", goToNextQuestion);
+
+  // 全屏功能
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener("click", () => {
+      const iframe = answerContent.querySelector("iframe");
+      if (iframe) {
+        if (iframe.requestFullscreen) {
+          iframe.requestFullscreen();
+        } else if (iframe.webkitRequestFullscreen) {
+          iframe.webkitRequestFullscreen();
+        } else if (iframe.msRequestFullscreen) {
+          iframe.msRequestFullscreen();
+        }
+      }
+    });
+  }
+
+  // 分享功能
+  if (shareBtn) {
+    shareBtn.addEventListener("click", async () => {
+      const url = window.location.href;
+      try {
+        await navigator.clipboard.writeText(url);
+        shareBtnText.textContent = "已复制!";
+        setTimeout(() => {
+          shareBtnText.textContent = "分享";
+        }, 2000);
+      } catch (err) {
+        // 降级方案
+        const input = document.createElement("input");
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand("copy");
+        document.body.removeChild(input);
+        shareBtnText.textContent = "已复制!";
+        setTimeout(() => {
+          shareBtnText.textContent = "分享";
+        }, 2000);
+      }
+    });
   }
 
   function closeModal(modal) {
@@ -331,6 +535,8 @@
     modal.setAttribute("aria-hidden", "true");
     if (!questionsModal.classList.contains("open") && !answerModal.classList.contains("open")) {
       document.body.style.overflow = "";
+      // 清除 hash
+      history.replaceState(null, "", window.location.pathname);
     }
   }
 
@@ -349,7 +555,51 @@
         closeModal(questionsModal);
       }
     }
+    // 上一题 / 下一题快捷键
+    if (answerModal.classList.contains("open")) {
+      if (e.key === "ArrowLeft") {
+        goToPrevQuestion();
+      } else if (e.key === "ArrowRight") {
+        goToNextQuestion();
+      }
+    }
   });
+
+  // 处理 URL hash，支持分享链接
+  function handleUrlHash() {
+    const hash = window.location.hash;
+    if (!hash || hash.length < 2) return;
+
+    const parts = hash.slice(1).split("/");
+    if (parts.length !== 2) return;
+
+    const [modelId, questionId] = parts;
+    const model = allModels.find(m => m.id === modelId);
+    if (!model) return;
+
+    const questions = getModelQuestions(modelId);
+    const questionIndex = questions.findIndex(q => q.id === questionId);
+    if (questionIndex === -1) return;
+
+    // 打开对应的模态框
+    currentModelId = modelId;
+    currentCategory = "all";
+    currentFilteredQuestions = questions;
+    currentQuestionIndex = questionIndex;
+
+    modalModelName.textContent = `${model.name || I18N.unknownModel} · ${I18N.modalQuestionsTitle}`;
+    modalModelCompany.textContent = model.company;
+
+    const categories = collectCategories(questions);
+    renderQuestionFilters(categories, questions);
+    renderQuestionList();
+
+    questionsModal.classList.add("open");
+    questionsModal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+
+    openAnswerModal(questions[questionIndex]);
+  }
 
   Promise.all([
     fetch(modelsUrl).then(r => r.json()),
@@ -358,7 +608,11 @@
     .then(([models, questions]) => {
       allModels = models || [];
       allQuestions = questions || [];
+      filteredModels = allModels;
       renderModels();
+
+      // 处理分享链接
+      handleUrlHash();
     })
     .catch(() => setEmpty(true));
 })();
@@ -367,6 +621,33 @@
 <style>
 .eval-shell {
   padding-bottom: 5rem;
+}
+
+/* 搜索框 */
+.eval-search-bar {
+  margin-bottom: 1.5rem;
+}
+
+.eval-search-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.75rem 1rem;
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.eval-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+.eval-search-input::placeholder {
+  color: var(--text-muted);
 }
 
 .eval-grid {
@@ -455,6 +736,27 @@
   border-radius: 999px;
   padding: 0.2rem 0.7rem;
   font-size: 0.8rem;
+}
+
+/* 题目数量显示 */
+.eval-card__count {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0;
+  margin-top: auto;
+}
+
+.eval-card__count .count-number {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: "Cormorant Garamond", serif;
+}
+
+.eval-card__count .count-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 .eval-btn {
@@ -549,6 +851,7 @@
 .eval-modal__header {
   padding: 1.5rem 1.5rem 1rem;
   border-bottom: 1px solid var(--border);
+  position: relative;
 }
 
 .eval-modal__header h2 {
@@ -556,6 +859,7 @@
   font-family: "Cormorant Garamond", serif;
   font-weight: 300;
   font-size: 1.8rem;
+  padding-right: 100px;
 }
 
 .modal-company {
@@ -586,6 +890,97 @@
 }
 
 .eval-modal__close:hover {
+  color: var(--accent);
+}
+
+/* 导航按钮 */
+.answer-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-highlight);
+  border-bottom: 1px solid var(--border);
+}
+
+.answer-nav__btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.answer-nav__btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.answer-nav__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.answer-nav__indicator {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  min-width: 60px;
+  text-align: center;
+}
+
+/* 分享按钮 */
+.share-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.share-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 工具栏 */
+.answer-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.fullscreen-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.fullscreen-btn:hover {
+  border-color: var(--accent);
   color: var(--accent);
 }
 
@@ -770,6 +1165,20 @@
   .eval-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .answer-nav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .share-btn {
+    position: static;
+    margin-top: 0.5rem;
+  }
+
+  .eval-modal__header h2 {
+    padding-right: 50px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -785,6 +1194,10 @@
   .question-item__header {
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .answer-nav__btn span {
+    display: none;
   }
 }
 </style>
