@@ -35,13 +35,17 @@
     <div class="highlight-modal__body">
       <div class="highlight-modal__image">
         <img id="highlight-modal-image" alt="">
+        <div class="highlight-modal-loader" id="highlight-modal-loader"></div>
       </div>
 	      <div class="highlight-modal__meta">
 	        <p class="modal-eyebrow" id="highlight-modal-source">{{ i18n "highlights_modal_eyebrow" }}</p>
 	        <h2 id="highlight-modal-title"></h2>
 	        <div class="highlight-modal__tags" id="highlight-modal-tags"></div>
 	        <p class="highlight-modal__desc" id="highlight-modal-desc"></p>
-	        <a class="highlight-link highlight-link--cta" id="highlight-modal-original" target="_blank" rel="noopener noreferrer">{{ i18n "highlights_read_original" | default (cond (eq .Site.LanguageCode "zh-CN") "阅读原文 →" "Read original →") }}</a>
+	        <div class="highlight-modal__links">
+          <a class="highlight-link highlight-link--cta" id="highlight-modal-original" target="_blank" rel="noopener noreferrer">{{ i18n "highlights_read_original" | default (cond (eq .Site.LanguageCode "zh-CN") "阅读原文 →" "Read original →") }}</a>
+          <a class="highlight-link highlight-link--cta highlight-link--detail" id="highlight-modal-detail" href="#">{{ i18n "highlights_read_detail" | default (cond (eq .Site.LanguageCode "zh-CN") "详细解读 →" "Read detail →") }}</a>
+        </div>
 	      </div>
 		    </div>
 		  </div>
@@ -50,13 +54,40 @@
 <script>
 (() => {
   const dataUrl = "{{ "/highlights.json" | relLangURL }}";
-	  const I18N = {
-	    allWithCount: "{{ i18n "highlights_all_with_count" }}",
-	    untitled: "{{ i18n "highlights_untitled" }}",
-	    defaultAlt: "{{ i18n "highlights_default_alt" }}",
-	    defaultEyebrow: "{{ i18n "highlights_modal_eyebrow" }}",
-	    readOriginal: "{{ i18n "highlights_read_original" | default (cond (eq .Site.LanguageCode "zh-CN") "阅读原文 →" "Read original →") }}"
-	  };
+
+  // COS 图片优化：为腾讯云 COS 图片添加处理参数
+  const COS_THUMB_PARAMS = "?imageMogr2/format/webp/thumbnail/400x/quality/85";
+  const COS_MODAL_PARAMS = "?imageMogr2/format/webp/thumbnail/1200x/quality/90";
+
+  function optimizeImageUrl(url, isThumb = true) {
+    if (!url || typeof url !== "string") return url;
+    if (!url.includes(".cos.")) return url;
+    if (url.includes("?")) return url;
+    return url + (isThumb ? COS_THUMB_PARAMS : COS_MODAL_PARAMS);
+  }
+
+  // 卡片 ID 到详情页 URL 的映射
+  const DETAIL_URL_MAP = {
+    "highlight-06": "/highlights/2025-11-10-best-practices-prompt-engineering/",
+    "highlight-05": "/highlights/2025-11-14-gpt-5.1-prompt-guide/",
+    "highlight-03": "/highlights/2025-11-15-claude-skills-explained/",
+    "highlight-04": "/highlights/2025-11-15-vibe-coding/",
+    "highlight-02": "/highlights/2025-11-16-claude-skills-example/",
+    "highlight-01": "/highlights/2025-11-18-how-three-startups-use-claudecode/"
+  };
+
+  const MAX_TAGS_VISIBLE = 8;
+  let filtersCollapsed = true;
+
+  const I18N = {
+    allWithCount: "{{ i18n "highlights_all_with_count" }}",
+    untitled: "{{ i18n "highlights_untitled" }}",
+    defaultAlt: "{{ i18n "highlights_default_alt" }}",
+    defaultEyebrow: "{{ i18n "highlights_modal_eyebrow" }}",
+    readOriginal: "{{ i18n "highlights_read_original" | default (cond (eq .Site.LanguageCode "zh-CN") "阅读原文 →" "Read original →") }}",
+    expandTags: "{{ i18n "highlights_expand_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "展开更多 (+{count})" "Show more (+{count})") }}",
+    collapseTags: "{{ i18n "highlights_collapse_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "收起" "Collapse") }}"
+  };
   const grid = document.getElementById("highlight-grid");
   const empty = document.getElementById("highlight-empty");
   const filtersWrap = document.getElementById("highlight-filters");
@@ -69,6 +100,7 @@
 	  const modalTags = document.getElementById("highlight-modal-tags");
 	  const modalDesc = document.getElementById("highlight-modal-desc");
 	  const modalOriginal = document.getElementById("highlight-modal-original");
+  const modalDetail = document.getElementById("highlight-modal-detail");
 	  let activeFocus = null;
 	  let allItems = [];
 	  let filteredItems = [];
@@ -114,38 +146,70 @@
     if (!filtersWrap) return;
     filtersWrap.innerHTML = "";
 
+    // 根据折叠状态决定显示哪些标签
+    const visibleTags = (() => {
+      if (!filtersCollapsed) return tags;
+      const base = tags.slice(0, MAX_TAGS_VISIBLE);
+      // 确保当前选中的标签始终可见
+      if (currentFilter !== "all" && tags.includes(currentFilter) && !base.includes(currentFilter)) {
+        base.push(currentFilter);
+      }
+      return base;
+    })();
+
     const frag = document.createDocumentFragment();
+    const currentFilterLower = (currentFilter || "all").toString().trim().toLowerCase();
+
+    // "全部" 按钮
     const allBtn = document.createElement("button");
-    allBtn.className = "highlight-filter-pill active";
+    allBtn.className = "highlight-filter-pill" + (currentFilterLower === "all" ? " active" : "");
     allBtn.textContent = I18N.allWithCount.replace("{count}", String(allItems.length));
     allBtn.dataset.tag = "all";
     frag.appendChild(allBtn);
 
     const counts = collectTagCounts(allItems);
-    tags.forEach((tag) => {
+    visibleTags.forEach((tag) => {
       const btn = document.createElement("button");
-      btn.className = "highlight-filter-pill";
+      const isActive = currentFilterLower !== "all" && currentFilterLower === (tag || "").toString().trim().toLowerCase();
+      btn.className = "highlight-filter-pill" + (isActive ? " active" : "");
       btn.textContent = `${tag} @${counts[tag] || 0}`;
       btn.dataset.tag = tag;
       frag.appendChild(btn);
     });
 
+    // 展开/收起按钮
+    if (tags.length > MAX_TAGS_VISIBLE) {
+      const toggle = document.createElement("button");
+      toggle.className = "highlight-filter-toggle";
+      toggle.type = "button";
+      const more = tags.length - MAX_TAGS_VISIBLE;
+      toggle.textContent = filtersCollapsed
+        ? I18N.expandTags.replace("{count}", String(more))
+        : I18N.collapseTags;
+      toggle.addEventListener("click", () => {
+        filtersCollapsed = !filtersCollapsed;
+        renderFilters(tags);
+      });
+      frag.appendChild(toggle);
+    }
+
     filtersWrap.appendChild(frag);
 
-    filtersWrap.querySelectorAll("button").forEach((btn) => {
+    // 绑定过滤按钮点击事件
+    filtersWrap.querySelectorAll("button[data-tag]").forEach((btn) => {
       btn.addEventListener("click", () => {
         currentFilter = btn.dataset.tag || "all";
-        filtersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        filtersWrap.querySelectorAll("button[data-tag]").forEach((el) => el.classList.remove("active"));
         btn.classList.add("active");
         applyFilter();
       });
     });
   }
 
-	  function buildCard(item) {
-	    if (!item) return null;
-	    const imgUrl = item.thumb || item.full || "";
-	    if (!imgUrl) return null;
+  function buildCard(item) {
+    if (!item) return null;
+    const imgUrl = item.thumb || item.full || "";
+    if (!imgUrl) return null;
 
     const card = document.createElement("article");
     card.className = "highlight-card reveal-text";
@@ -153,12 +217,29 @@
     card.setAttribute("role", "button");
 
     const thumb = document.createElement("div");
-    thumb.className = "highlight-thumb";
+    thumb.className = "highlight-thumb loading";
 
     const img = document.createElement("img");
-    img.src = imgUrl;
+    // 使用 COS 优化后的缩略图 URL
+    img.src = optimizeImageUrl(imgUrl, true);
     img.alt = item.title || I18N.defaultAlt;
     img.loading = "lazy";
+
+    // 图片加载完成
+    img.onload = () => {
+      thumb.classList.remove("loading");
+    };
+
+    // 图片加载失败处理
+    img.onerror = () => {
+      thumb.classList.remove("loading");
+      thumb.classList.add("error");
+      img.style.display = "none";
+      const errorPlaceholder = document.createElement("div");
+      errorPlaceholder.className = "highlight-error-placeholder";
+      errorPlaceholder.innerHTML = '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>加载失败</span>';
+      thumb.appendChild(errorPlaceholder);
+    };
 
     const overlay = document.createElement("div");
     overlay.className = "highlight-overlay";
@@ -240,30 +321,70 @@
     renderGrid();
   }
 
+  const modalLoader = document.getElementById("highlight-modal-loader");
+
   function openModal(item) {
     if (!modal) return;
     activeFocus = document.activeElement;
     const imgUrl = item.full || item.thumb || "";
-    modalImage.src = imgUrl;
-	    modalImage.alt = item.title || I18N.defaultAlt;
-	    modalTitle.textContent = item.title || I18N.untitled;
-	    if (modalSource) {
-	      modalSource.textContent = I18N.defaultEyebrow;
-	    }
-	    modalTags.innerHTML = "";
-	    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
-	      const span = document.createElement("span");
-	      span.textContent = tag;
-	      modalTags.appendChild(span);
-	    });
-	    modalDesc.textContent = item.description || "";
-	    if (item.originalUrl) {
-	      modalOriginal.href = item.originalUrl;
-	      modalOriginal.textContent = I18N.readOriginal;
-	      modalOriginal.style.display = "";
-	    } else {
-	      modalOriginal.style.display = "none";
-	    }
+
+    // 渐进式加载：先显示缩略图，再加载高清图
+    const thumbUrl = optimizeImageUrl(imgUrl, true);
+    const fullUrl = optimizeImageUrl(imgUrl, false);
+
+    // 1. 立即显示缩略图（已缓存）
+    modalImage.classList.remove("loaded");
+    modalImage.classList.add("loading-blur");
+    modalImage.src = thumbUrl;
+    modalImage.alt = item.title || I18N.defaultAlt;
+
+    // 显示加载指示器
+    if (modalLoader) modalLoader.classList.add("active");
+
+    // 2. 后台加载高清图
+    const hdImage = new Image();
+    hdImage.onload = () => {
+      modalImage.src = fullUrl;
+      modalImage.classList.remove("loading-blur");
+      modalImage.classList.add("loaded");
+      if (modalLoader) modalLoader.classList.remove("active");
+    };
+    hdImage.onerror = () => {
+      modalImage.classList.remove("loading-blur");
+      modalImage.classList.add("loaded");
+      if (modalLoader) modalLoader.classList.remove("active");
+    };
+    hdImage.src = fullUrl;
+
+    modalTitle.textContent = item.title || I18N.untitled;
+    if (modalSource) {
+      modalSource.textContent = I18N.defaultEyebrow;
+    }
+    modalTags.innerHTML = "";
+    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
+      const span = document.createElement("span");
+      span.textContent = tag;
+      modalTags.appendChild(span);
+    });
+    modalDesc.textContent = item.description || "";
+    if (item.originalUrl) {
+      modalOriginal.href = item.originalUrl;
+      modalOriginal.textContent = I18N.readOriginal;
+      modalOriginal.style.display = "";
+    } else {
+      modalOriginal.style.display = "none";
+    }
+
+    // 处理详细解读链接
+    const detailUrl = item.id ? DETAIL_URL_MAP[item.id] : null;
+    if (modalDetail) {
+      if (detailUrl) {
+        modalDetail.href = detailUrl;
+        modalDetail.style.display = "";
+      } else {
+        modalDetail.style.display = "none";
+      }
+    }
 
     modal.classList.add("open");
     modal.setAttribute("aria-hidden", "false");
@@ -402,6 +523,23 @@
   border-color: var(--accent);
 }
 
+/* 标签折叠按钮 */
+.highlight-filter-toggle {
+  border: 1px dashed var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.highlight-filter-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .highlight-grid {
   column-gap: 1.25rem;
   column-width: 300px;
@@ -447,11 +585,57 @@
   height: auto;
   display: block;
   border-radius: 0 !important;
-  transition: transform 0.8s ease;
+  transition: transform 0.8s ease, opacity 0.3s ease;
 }
 
 .highlight-card:hover .highlight-thumb img {
   transform: scale(1.03);
+}
+
+/* 图片加载骨架屏 shimmer 效果 */
+.highlight-thumb.loading {
+  min-height: 180px;
+  background: linear-gradient(90deg, var(--surface-highlight) 25%, var(--surface) 50%, var(--surface-highlight) 75%);
+  background-size: 200% 100%;
+  animation: highlight-shimmer 1.5s infinite;
+}
+
+.highlight-thumb.loading img {
+  opacity: 0;
+}
+
+.highlight-thumb:not(.loading) img {
+  opacity: 1;
+}
+
+@keyframes highlight-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 图片加载错误状态 */
+.highlight-thumb.error {
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlight-error-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  padding: 1rem;
+}
+
+.highlight-error-placeholder svg {
+  opacity: 0.5;
+}
+
+.highlight-error-placeholder span {
+  font-size: 0.85rem;
 }
 
 .highlight-overlay {
@@ -506,6 +690,26 @@
   color: #000;
   border-color: var(--accent);
   text-decoration: none;
+}
+
+/* 详细解读按钮 - 使用不同颜色区分 */
+.highlight-link--detail {
+  border-color: var(--text-muted);
+  color: var(--text-main);
+}
+
+.highlight-link--detail:hover {
+  background: var(--text-main);
+  color: var(--surface);
+  border-color: var(--text-main);
+}
+
+/* Modal 链接容器 */
+.highlight-modal__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .highlight-empty {
@@ -569,6 +773,44 @@
   max-width: 100%;
   height: auto;
   border-radius: 0 !important;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+/* 渐进式加载 - 缩略图模糊状态 */
+.highlight-modal__image img.loading-blur {
+  filter: blur(8px);
+  transform: scale(1.02);
+}
+
+/* 渐进式加载 - 高清图加载完成 */
+.highlight-modal__image img.loaded {
+  filter: blur(0);
+  transform: scale(1);
+}
+
+/* 模态框加载指示器 */
+.highlight-modal-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.highlight-modal-loader.active {
+  opacity: 1;
+  animation: highlight-modal-spin 0.8s linear infinite;
+}
+
+@keyframes highlight-modal-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .highlight-modal__meta h2 {
