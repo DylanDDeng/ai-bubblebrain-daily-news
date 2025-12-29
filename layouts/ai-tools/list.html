@@ -259,8 +259,11 @@
   }
 
   function buildCard(item) {
-    const card = document.createElement("article");
+    const card = document.createElement("a");
     card.className = "tools-card reveal-text";
+    card.href = item.url || "#";
+    card.target = "_blank";
+    card.rel = "noopener noreferrer";
     card.dataset.id = item.id || "";
     if (item.company) {
       card.dataset.company = item.company.toLowerCase();
@@ -275,7 +278,7 @@
     logo.loading = "lazy";
     logoWrap.appendChild(logo);
 
-    // 中间信息区
+    // 右侧信息区
     const meta = document.createElement("div");
     meta.className = "tools-card__meta";
 
@@ -298,18 +301,8 @@
     meta.appendChild(title);
     meta.appendChild(tags);
 
-    // 右侧访问按钮
-    const visitBtn = document.createElement("a");
-    visitBtn.className = "tools-card__visit";
-    visitBtn.href = item.url || "#";
-    visitBtn.target = "_blank";
-    visitBtn.rel = "noopener noreferrer";
-    visitBtn.textContent = I18N.viewDetail;
-    visitBtn.addEventListener("click", (e) => e.stopPropagation());
-
     card.appendChild(logoWrap);
     card.appendChild(meta);
-    card.appendChild(visitBtn);
 
     return card;
   }
@@ -685,15 +678,16 @@
 }
 
 .tools-card {
-  position: relative;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
   display: flex;
   flex-direction: row;
   align-items: stretch;
   gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
   transition: transform 0.25s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease;
   outline: none;
 }
@@ -776,15 +770,6 @@
 .tools-tag--company {
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-muted);
-}
-
-.tools-card__visit {
-  position: absolute;
-  right: 0.875rem;
-  bottom: 0.65rem;
-  color: var(--text-muted);
-  font-size: 0.7rem;
-  text-decoration: none;
 }
 
 .tools-empty {
@@ -977,12 +962,6 @@
   .tools-tag {
     font-size: 0.68rem;
     padding: 0.15rem 0.45rem;
-  }
-
-  .tools-card__visit {
-    right: 0.65rem;
-    bottom: 0.5rem;
-    font-size: 0.65rem;
   }
 }
 </style>
