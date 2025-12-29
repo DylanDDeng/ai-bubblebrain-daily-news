@@ -1,0 +1,293 @@
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+// Supabase 配置
+const SUPABASE_URL = 'https://znurdobjryrhshzkalup.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpudXJkb2JqcnlyaHNoemthbHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5OTM1ODAsImV4cCI6MjA4MjU2OTU4MH0.1a5V2EECu9_To8KneGQRpt73JJSaIxLf592LPjxdp1Y';
+
+// 避免与 Supabase SDK 暴露的全局标识符 `supabase` 冲突
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// 全局用户状态
+let currentUser = null;
+let userFavorites = new Set();
+
+// 初始化认证状态
+async function initAuth() {
+  // 未登录状态也需要绑定按钮点击事件
+  updateAuthUI();
+
+  // 获取当前会话
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session?.user) {
+    currentUser = session.user;
+    await loadUserFavorites();
+    updateAuthUI();
+  }
+
+  // 监听认证状态变化
+  supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      currentUser = session.user;
+      await loadUserFavorites();
+      updateAuthUI();
+      // 触发自定义事件，通知其他组件
+      window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: currentUser } }));
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      userFavorites.clear();
+      updateAuthUI();
+      window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: null } }));
+    }
+  });
+}
+
+// 加载用户收藏
+async function loadUserFavorites() {
+  if (!currentUser) return;
+
+  const { data, error } = await supabaseClient
+    .from('favorites')
+    .select('image_id')
+    .eq('user_id', currentUser.id);
+
+  if (!error && data) {
+    userFavorites = new Set(data.map(f => f.image_id));
+    // 触发收藏更新事件
+    window.dispatchEvent(new CustomEvent('favoritesUpdated', { detail: { favorites: userFavorites } }));
+  }
+}
+
+// 检查是否已收藏
+function isFavorited(imageId) {
+  return userFavorites.has(imageId);
+}
+
+// 切换收藏状态
+async function toggleFavorite(imageId) {
+  if (!currentUser) {
+    // 未登录，触发登录
+    signInWithGoogle();
+    return false;
+  }
+
+  const isFav = isFavorited(imageId);
+
+  if (isFav) {
+    // 取消收藏
+    const { error } = await supabaseClient
+      .from('favorites')
+      .delete()
+      .eq('user_id', currentUser.id)
+      .eq('image_id', imageId);
+
+    if (!error) {
+      userFavorites.delete(imageId);
+      window.dispatchEvent(new CustomEvent('favoritesUpdated', { detail: { favorites: userFavorites } }));
+      return false;
+    }
+  } else {
+    // 添加收藏
+    const { error } = await supabaseClient
+      .from('favorites')
+      .insert({ user_id: currentUser.id, image_id: imageId });
+
+    if (!error) {
+      userFavorites.add(imageId);
+      window.dispatchEvent(new CustomEvent('favoritesUpdated', { detail: { favorites: userFavorites } }));
+      return true;
+    }
+  }
+
+  return isFav;
+}
+
+// Google 登录
+async function signInWithGoogle() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.href
+    }
+  });
+
+  if (error) {
+    console.error('登录失败:', error);
+  }
+}
+
+// 登出
+async function signOut() {
+  const { error } = await supabaseClient.auth.signOut();
+  if (error) {
+    console.error('登出失败:', error);
+  }
+}
+
+// 更新认证 UI
+function updateAuthUI() {
+  const authBtn = document.getElementById('auth-btn');
+  const authAvatar = document.getElementById('auth-avatar');
+  const authText = document.getElementById('auth-text');
+
+  if (!authBtn) return;
+
+  if (currentUser) {
+    // 已登录
+    const avatar = currentUser.user_metadata?.avatar_url || currentUser.user_metadata?.picture;
+    const name = currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || '用户';
+
+    if (authAvatar && avatar) {
+      authAvatar.src = avatar;
+      authAvatar.style.display = 'block';
+    }
+    if (authText) {
+      authText.textContent = name;
+    }
+    authBtn.classList.add('logged-in');
+    authBtn.onclick = showUserMenu;
+  } else {
+    // 未登录
+    if (authAvatar) {
+      authAvatar.style.display = 'none';
+    }
+    if (authText) {
+      authText.textContent = '登录';
+    }
+    authBtn.classList.remove('logged-in');
+    authBtn.onclick = signInWithGoogle;
+  }
+}
+
+// 显示用户菜单
+function showUserMenu() {
+  const menu = document.getElementById('user-menu');
+  if (menu) {
+    menu.classList.toggle('open');
+  }
+}
+
+// 点击其他地方关闭用户菜单
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('user-menu');
+  const authBtn = document.getElementById('auth-btn');
+  if (menu && !menu.contains(e.target) && !authBtn?.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', initAuth);
+</script>
+
+<style>
+/* 登录按钮样式 */
+.auth-container {
+  position: relative;
+  margin-left: 0.75rem;
+}
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.auth-btn.logged-in {
+  padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+}
+
+.auth-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: none;
+}
+
+.auth-btn.logged-in .auth-avatar {
+  display: block;
+}
+
+/* 用户菜单 */
+.user-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 140px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.user-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.user-menu-item:hover {
+  background: var(--surface-highlight);
+}
+
+.user-menu-item:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.user-menu-item:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.user-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .auth-container {
+    margin-left: 0;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .auth-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+</style>
