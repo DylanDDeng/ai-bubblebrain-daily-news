@@ -87,7 +87,7 @@
   const domainFiltersWrap = document.getElementById("tools-domain-filters");
   const searchInput = document.getElementById("tools-search");
   const MAX_TAGS_VISIBLE = 8;
-  const pageSize = 20;
+  const pageSize = 21;
   let allItems = [];
   let filteredItems = [];
   let currentPage = 1;
@@ -523,10 +523,10 @@
 <style>
 .tools-shell {
   padding-bottom: 5rem;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 .tools-hero {
@@ -673,7 +673,7 @@
 
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
@@ -840,7 +840,7 @@
   transform: translateY(0);
 }
 
-/* 平板端：侧边栏变窄 */
+/* 平板端：侧边栏变窄，网格变2列 */
 @media (max-width: 1024px) {
   .tools-sidebar {
     width: 180px;
@@ -848,6 +848,10 @@
 
   .tools-layout {
     gap: 1.5rem;
+  }
+
+  .tools-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
