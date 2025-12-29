@@ -52,33 +52,57 @@
   </div>
 </section>
 
-<div class="gallery-modal" id="gallery-modal" aria-hidden="true">
-  <div class="gallery-modal__backdrop" data-close></div>
-  <div class="gallery-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-    <button class="gallery-modal__close" type="button" data-close aria-label="{{ i18n "gallery_modal_close" }}">×</button>
-    <div class="gallery-modal__body">
-      <div class="gallery-modal__image">
-        <img id="modal-image" alt="">
-        <div class="modal-image-loader" id="modal-loader"></div>
-        <div class="gallery-modal__controls">
-          <button class="gallery-nav" type="button" data-prev aria-label="{{ i18n "gallery_prev" }}">←</button>
-          <div class="gallery-counter" id="modal-counter"></div>
-          <button class="gallery-nav" type="button" data-next aria-label="{{ i18n "gallery_next" }}">→</button>
-        </div>
+<!-- 全屏展示模式 -->
+<div class="gallery-fullscreen" id="gallery-fullscreen" aria-hidden="true">
+  <div class="gallery-fullscreen__backdrop" data-close></div>
+
+  <div class="gallery-fullscreen__container">
+    <!-- 左侧：大图展示 -->
+    <div class="gallery-fullscreen__main">
+      <!-- 关闭按钮（在图片区域右上角） -->
+      <button class="gallery-fullscreen__close" type="button" data-close aria-label="{{ i18n "gallery_modal_close" }}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="gallery-fullscreen__image-wrap">
+        <img id="fullscreen-image" alt="">
+        <div class="fullscreen-loader" id="fullscreen-loader"></div>
+
+        <!-- 图片内导航按钮 -->
+        <button class="fullscreen-nav fullscreen-nav--prev" type="button" data-prev aria-label="{{ i18n "gallery_prev" }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="fullscreen-nav fullscreen-nav--next" type="button" data-next aria-label="{{ i18n "gallery_next" }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- 图片计数器（多图情况） -->
+        <div class="fullscreen-image-counter" id="fullscreen-image-counter"></div>
       </div>
-      <div class="gallery-modal__meta">
-        <p class="modal-eyebrow" id="modal-source"></p>
-        <h2 id="modal-title"></h2>
-        <div class="gallery-pillset">
-          <span class="meta-pill" id="modal-author"></span>
-          <span class="meta-pill" id="modal-model"></span>
+    </div>
+
+    <!-- 中间：图片信息 -->
+    <div class="gallery-fullscreen__info">
+      <div class="fullscreen-info-content">
+        <p class="fullscreen-eyebrow" id="fullscreen-source"></p>
+        <h2 class="fullscreen-title" id="fullscreen-title"></h2>
+        <div class="fullscreen-meta">
+          <span class="fullscreen-author" id="fullscreen-author"></span>
+          <span class="fullscreen-model" id="fullscreen-model"></span>
         </div>
-        <div class="gallery-caption" id="modal-caption"></div>
-        <div class="gallery-tags" id="modal-tags"></div>
-        <div class="gallery-prompt-block">
+        <div class="fullscreen-caption" id="fullscreen-caption"></div>
+        <div class="fullscreen-tags" id="fullscreen-tags"></div>
+        <div class="fullscreen-prompt-block">
           <div class="prompt-header">
             <p class="prompt-label">{{ i18n "gallery_prompt_label" | default "Prompt" }}</p>
-            <button class="prompt-copy-btn" id="copy-prompt-btn" type="button" aria-label="{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}">
+            <button class="prompt-copy-btn" id="fullscreen-copy-btn" type="button" aria-label="{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}">
               <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -86,8 +110,18 @@
               <span class="copy-text">{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}</span>
             </button>
           </div>
-          <pre id="modal-prompt"></pre>
+          <pre id="fullscreen-prompt"></pre>
         </div>
+      </div>
+    </div>
+
+    <!-- 右侧：缩略图列表 -->
+    <div class="gallery-fullscreen__thumbs">
+      <div class="fullscreen-thumbs-header">
+        <span id="fullscreen-counter">1 / 10</span>
+      </div>
+      <div class="fullscreen-thumbs-list" id="fullscreen-thumbs-list">
+        <!-- 缩略图由 JS 动态生成 -->
       </div>
     </div>
   </div>
@@ -98,21 +132,27 @@
   const dataUrl = "{{ "/gallery.json" | relLangURL }}";
   const grid = document.getElementById("gallery-grid");
   const empty = document.getElementById("gallery-empty");
-  const modal = document.getElementById("gallery-modal");
-  const modalImage = document.getElementById("modal-image");
-  const modalTitle = document.getElementById("modal-title");
-  const modalAuthor = document.getElementById("modal-author");
-  const modalModel = document.getElementById("modal-model");
-  const modalSource = document.getElementById("modal-source");
-  const modalPrompt = document.getElementById("modal-prompt");
-  const modalTags = document.getElementById("modal-tags");
-  const modalCounter = document.getElementById("modal-counter");
-  const modalCaption = document.getElementById("modal-caption");
+
+  // 全屏展示模式元素
+  const fullscreen = document.getElementById("gallery-fullscreen");
+  const fullscreenImage = document.getElementById("fullscreen-image");
+  const fullscreenTitle = document.getElementById("fullscreen-title");
+  const fullscreenAuthor = document.getElementById("fullscreen-author");
+  const fullscreenModel = document.getElementById("fullscreen-model");
+  const fullscreenSource = document.getElementById("fullscreen-source");
+  const fullscreenPrompt = document.getElementById("fullscreen-prompt");
+  const fullscreenTags = document.getElementById("fullscreen-tags");
+  const fullscreenCaption = document.getElementById("fullscreen-caption");
+  const fullscreenCounter = document.getElementById("fullscreen-counter");
+  const fullscreenImageCounter = document.getElementById("fullscreen-image-counter");
+  const fullscreenThumbsList = document.getElementById("fullscreen-thumbs-list");
+  const fullscreenLoader = document.getElementById("fullscreen-loader");
+
   const filtersWrap = document.getElementById("gallery-filters");
   const searchInput = document.getElementById("gallery-search");
-  const closeTargets = modal.querySelectorAll("[data-close]");
-  const prevBtn = modal.querySelector("[data-prev]");
-  const nextBtn = modal.querySelector("[data-next]");
+  const closeTargets = fullscreen.querySelectorAll("[data-close]");
+  const prevBtn = fullscreen.querySelector("[data-prev]");
+  const nextBtn = fullscreen.querySelector("[data-next]");
   const MAX_TAGS_VISIBLE = 8;
   let activeFocus = null;
   let currentImages = [];
@@ -429,11 +469,11 @@
 
     card.appendChild(imgWrap);
 
-    card.addEventListener("click", () => openModal(item));
+    card.addEventListener("click", () => openFullscreen(item));
     card.addEventListener("keypress", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        openModal(item);
+        openFullscreen(item);
       }
     });
 
@@ -527,45 +567,127 @@
   }
 
   let currentPrompt = "";
+  let currentItem = null;
+  let currentItemIndex = 0;  // 当前查看的是 filteredItems 中的第几个
 
-  function openModal(item) {
+  // 渲染缩略图列表
+  function renderThumbnailList() {
+    if (!fullscreenThumbsList) return;
+    fullscreenThumbsList.innerHTML = "";
+
+    const listItems = filteredItems.length > 0 ? filteredItems : allItems;
+    const frag = document.createDocumentFragment();
+
+    listItems.forEach((item, index) => {
+      const images = normalizeImages(item);
+      const primary = images[0] || {};
+      if (!primary.thumb && !primary.full) return;
+
+      const thumb = document.createElement("div");
+      thumb.className = "fullscreen-thumb-item" + (index === currentItemIndex ? " active" : "");
+      thumb.dataset.index = index;
+
+      const img = document.createElement("img");
+      img.src = optimizeImageUrl(primary.thumb || primary.full, true);
+      img.alt = item.title || I18N.untitled;
+      img.loading = "lazy";
+
+      thumb.appendChild(img);
+      thumb.addEventListener("click", () => {
+        switchToItem(index);
+      });
+
+      frag.appendChild(thumb);
+    });
+
+    fullscreenThumbsList.appendChild(frag);
+    updateThumbnailHighlight();
+  }
+
+  // 更新缩略图高亮状态
+  function updateThumbnailHighlight() {
+    const thumbs = fullscreenThumbsList.querySelectorAll(".fullscreen-thumb-item");
+    thumbs.forEach((thumb, index) => {
+      if (index === currentItemIndex) {
+        thumb.classList.add("active");
+        // 滚动使当前缩略图可见
+        thumb.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } else {
+        thumb.classList.remove("active");
+      }
+    });
+  }
+
+  // 切换到指定索引的图片
+  function switchToItem(index) {
+    const listItems = filteredItems.length > 0 ? filteredItems : allItems;
+    if (index < 0 || index >= listItems.length) return;
+
+    currentItemIndex = index;
+    const item = listItems[index];
+    openFullscreen(item, false);  // 不重新渲染缩略图列表
+    updateThumbnailHighlight();
+    updateFullscreenCounter();
+  }
+
+  // 更新全屏计数器
+  function updateFullscreenCounter() {
+    const listItems = filteredItems.length > 0 ? filteredItems : allItems;
+    if (fullscreenCounter) {
+      fullscreenCounter.textContent = `${currentItemIndex + 1} / ${listItems.length}`;
+    }
+  }
+
+  // 打开全屏展示
+  function openFullscreen(item, renderThumbs = true) {
     activeFocus = document.activeElement;
+    currentItem = item;
     currentImages = normalizeImages(item);
     currentIndex = 0;
     currentItemTitle = item.title || I18N.untitled;
     currentPrompt = formatPrompt(item.prompt) || I18N.noPrompt;
 
-    modalTitle.textContent = currentItemTitle;
-    modalAuthor.textContent = item.author ? `${I18N.authorPrefix}${item.author}` : `${I18N.authorPrefix}${I18N.unknown}`;
-    modalModel.textContent = item.source ? `${I18N.sourcePrefix}${item.source}` : `${I18N.sourcePrefix}${I18N.unknown}`;
-    modalSource.textContent = item.source || "";
-    modalPrompt.textContent = currentPrompt;
+    // 如果是首次打开，找到当前 item 在列表中的位置
+    if (renderThumbs) {
+      const listItems = filteredItems.length > 0 ? filteredItems : allItems;
+      currentItemIndex = listItems.findIndex(i => i === item || i.id === item.id);
+      if (currentItemIndex === -1) currentItemIndex = 0;
+    }
 
-    modalTags.innerHTML = "";
+    fullscreenTitle.textContent = currentItemTitle;
+    fullscreenAuthor.textContent = item.author ? `${I18N.authorPrefix}${item.author}` : `${I18N.authorPrefix}${I18N.unknown}`;
+    fullscreenModel.textContent = item.source ? `${I18N.sourcePrefix}${item.source}` : `${I18N.sourcePrefix}${I18N.unknown}`;
+    fullscreenSource.textContent = item.source || "";
+    fullscreenPrompt.textContent = currentPrompt;
+
+    fullscreenTags.innerHTML = "";
     if (item.tags && item.tags.length) {
       item.tags.forEach((tag) => {
         const span = document.createElement("span");
         span.textContent = tag;
-        modalTags.appendChild(span);
+        fullscreenTags.appendChild(span);
       });
     }
 
     setActiveImage(0);
 
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-    modal.querySelector(".gallery-modal__close").focus();
-  }
+    if (renderThumbs) {
+      renderThumbnailList();
+    }
+    updateFullscreenCounter();
 
-  const modalLoader = document.getElementById("modal-loader");
+    fullscreen.classList.add("open");
+    fullscreen.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    fullscreen.querySelector(".gallery-fullscreen__close").focus();
+  }
 
   function setActiveImage(index) {
     if (!currentImages.length) {
-      modalImage.src = "";
-      modalImage.alt = "暂无图片";
-      if (modalCounter) modalCounter.textContent = "";
-      if (modalCaption) modalCaption.textContent = "";
+      fullscreenImage.src = "";
+      fullscreenImage.alt = "暂无图片";
+      if (fullscreenImageCounter) fullscreenImageCounter.textContent = "";
+      if (fullscreenCaption) fullscreenCaption.textContent = "";
       return;
     }
 
@@ -578,54 +700,64 @@
     const fullUrl = optimizeImageUrl(active.full || active.thumb, false);
 
     // 1. 立即显示缩略图（已缓存，瞬间显示）
-    modalImage.classList.remove("loaded");
-    modalImage.classList.add("loading-blur");
-    modalImage.src = thumbUrl;
-    modalImage.alt = active.caption ? `${currentItemTitle} - ${active.caption}` : currentItemTitle;
+    fullscreenImage.classList.remove("loaded");
+    fullscreenImage.classList.add("loading-blur");
+    fullscreenImage.src = thumbUrl;
+    fullscreenImage.alt = active.caption ? `${currentItemTitle} - ${active.caption}` : currentItemTitle;
 
     // 显示加载指示器
-    if (modalLoader) modalLoader.classList.add("active");
+    if (fullscreenLoader) fullscreenLoader.classList.add("active");
 
     // 2. 后台加载高清图
     const hdImage = new Image();
     hdImage.onload = () => {
       // 高清图加载完成，淡入替换
-      modalImage.src = fullUrl;
-      modalImage.classList.remove("loading-blur");
-      modalImage.classList.add("loaded");
-      if (modalLoader) modalLoader.classList.remove("active");
+      fullscreenImage.src = fullUrl;
+      fullscreenImage.classList.remove("loading-blur");
+      fullscreenImage.classList.add("loaded");
+      if (fullscreenLoader) fullscreenLoader.classList.remove("active");
     };
     hdImage.onerror = () => {
       // 高清图加载失败，保持缩略图显示
-      modalImage.classList.remove("loading-blur");
-      modalImage.classList.add("loaded");
-      if (modalLoader) modalLoader.classList.remove("active");
+      fullscreenImage.classList.remove("loading-blur");
+      fullscreenImage.classList.add("loaded");
+      if (fullscreenLoader) fullscreenLoader.classList.remove("active");
     };
     hdImage.src = fullUrl;
 
-    if (modalCounter) {
-      modalCounter.textContent = len > 1 ? `${currentIndex + 1} / ${len}` : I18N.singleImage;
+    // 多图时显示图片计数器
+    if (fullscreenImageCounter) {
+      fullscreenImageCounter.textContent = len > 1 ? `${currentIndex + 1} / ${len}` : "";
+      fullscreenImageCounter.style.display = len > 1 ? "block" : "none";
     }
-    if (modalCaption) {
-      modalCaption.textContent = active.caption || "";
+    if (fullscreenCaption) {
+      fullscreenCaption.textContent = active.caption || "";
     }
 
-    const disableNav = len <= 1;
-    [prevBtn, nextBtn].forEach((btn) => {
-      if (!btn) return;
-      btn.disabled = disableNav;
-      btn.classList.toggle("is-disabled", disableNav);
+    // 图片内导航按钮（用于同一 item 的多图切换，仅在多图时显示）
+    const imageNavBtns = fullscreen.querySelectorAll(".fullscreen-nav");
+    imageNavBtns.forEach(btn => {
+      btn.style.display = len > 1 ? "flex" : "none";
     });
   }
 
+  // 同一 item 的多图切换
   function stepImage(delta) {
     if (!currentImages.length || currentImages.length === 1) return;
     setActiveImage(currentIndex + delta);
   }
 
-  function closeModal() {
-    modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
+  // 切换到列表中的上一个/下一个 item
+  function stepItem(delta) {
+    const listItems = filteredItems.length > 0 ? filteredItems : allItems;
+    const newIndex = currentItemIndex + delta;
+    if (newIndex < 0 || newIndex >= listItems.length) return;
+    switchToItem(newIndex);
+  }
+
+  function closeFullscreen() {
+    fullscreen.classList.remove("open");
+    fullscreen.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
     if (activeFocus) {
       activeFocus.focus();
@@ -633,28 +765,31 @@
   }
 
   closeTargets.forEach((el) => {
-    el.addEventListener("click", closeModal);
+    el.addEventListener("click", closeFullscreen);
   });
 
+  // 图片内导航按钮（用于同一 item 的多图切换）
   if (prevBtn) {
     prevBtn.addEventListener("click", () => stepImage(-1));
   }
-
   if (nextBtn) {
     nextBtn.addEventListener("click", () => stepImage(1));
   }
 
   document.addEventListener("keydown", (event) => {
-    if (!modal.classList.contains("open")) return;
+    if (!fullscreen.classList.contains("open")) return;
 
     if (event.key === "Escape") {
-      return closeModal();
+      return closeFullscreen();
     }
+    // 键盘左右箭头切换列表中的 item（而不是同一 item 的多图）
     if (event.key === "ArrowLeft") {
-      return stepImage(-1);
+      event.preventDefault();
+      return stepItem(-1);
     }
     if (event.key === "ArrowRight") {
-      return stepImage(1);
+      event.preventDefault();
+      return stepItem(1);
     }
   });
 
@@ -665,7 +800,7 @@
     });
   }
 
-  const copyBtn = document.getElementById("copy-prompt-btn");
+  const copyBtn = document.getElementById("fullscreen-copy-btn");
   if (copyBtn) {
     copyBtn.addEventListener("click", async () => {
       if (!currentPrompt || currentPrompt === I18N.noPrompt) {
@@ -678,7 +813,7 @@
         const originalText = copyText.textContent;
         copyText.textContent = I18N.copied;
         copyBtn.classList.add("copied");
-        
+
         setTimeout(() => {
           copyText.textContent = originalText;
           copyBtn.classList.remove("copied");
@@ -688,7 +823,7 @@
         const copyText = copyBtn.querySelector(".copy-text");
         const originalText = copyText.textContent;
         copyText.textContent = I18N.copyFailed;
-        
+
         setTimeout(() => {
           copyText.textContent = originalText;
         }, 2000);
@@ -1227,83 +1362,106 @@
   color: #000;
 }
 
-.gallery-modal {
+/* ===== 全屏展示模式 ===== */
+.gallery-fullscreen {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
   z-index: 2000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s ease;
 }
 
-.gallery-modal.open {
+.gallery-fullscreen.open {
   opacity: 1;
   pointer-events: auto;
 }
 
-.gallery-modal__backdrop {
+.gallery-fullscreen__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(10px);
 }
 
-.gallery-modal__dialog {
+.gallery-fullscreen__container {
   position: relative;
-  max-width: 1000px;
-  width: min(92vw, 1000px);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
-}
-
-.gallery-modal__body {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 1.5rem;
-  padding: 1.5rem;
+  grid-template-columns: 1fr 420px 110px;
+  height: 100vh;
+  z-index: 1;
 }
 
-.gallery-modal__image {
-  border: 1px solid var(--border);
-  background: var(--surface-highlight);
-  padding: 0.75rem;
+/* 大图区域 */
+.gallery-fullscreen__main {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.gallery-fullscreen__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.gallery-fullscreen__close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.gallery-fullscreen__image-wrap {
   position: relative;
-}
-
-.gallery-modal__image img {
   max-width: 100%;
-  height: auto;
-  border-radius: 0 !important;
-  transition: filter 0.3s ease, opacity 0.3s ease;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 渐进式加载 - 缩略图模糊状态 */
-.gallery-modal__image img.loading-blur {
+.gallery-fullscreen__image-wrap img {
+  max-width: 100%;
+  max-height: calc(100vh - 4rem);
+  object-fit: contain;
+  border-radius: 0 !important;
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.gallery-fullscreen__image-wrap img.loading-blur {
   filter: blur(8px);
   transform: scale(1.02);
 }
 
-/* 渐进式加载 - 高清图加载完成状态 */
-.gallery-modal__image img.loaded {
+.gallery-fullscreen__image-wrap img.loaded {
   filter: blur(0);
   transform: scale(1);
 }
 
-/* 加载指示器 */
-.modal-image-loader {
+/* 全屏加载指示器 */
+.fullscreen-loader {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--border);
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
   border-top-color: var(--accent);
   border-radius: 50%;
   opacity: 0;
@@ -1311,138 +1469,167 @@
   transition: opacity 0.2s ease;
 }
 
-.modal-image-loader.active {
+.fullscreen-loader.active {
   opacity: 1;
-  animation: modal-spin 0.8s linear infinite;
+  animation: fullscreen-spin 0.8s linear infinite;
 }
 
-@keyframes modal-spin {
+@keyframes fullscreen-spin {
   to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-.gallery-modal__controls {
+/* 图片内导航按钮（用于多图切换） */
+.fullscreen-nav {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.6rem;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-}
-
-.gallery-nav {
-  width: 34px;
-  height: 34px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
   cursor: pointer;
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
-.gallery-nav:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.fullscreen-nav:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
-.gallery-nav.is-disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.fullscreen-nav--prev {
+  left: 1rem;
 }
 
-.gallery-counter {
-  min-width: 64px;
-  text-align: center;
+.fullscreen-nav--next {
+  right: 1rem;
+}
+
+/* 图片计数器（多图情况） */
+.fullscreen-image-counter {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  color: #fff;
   font-size: 0.85rem;
-  color: var(--text-main);
   letter-spacing: 0.05em;
 }
 
-.gallery-modal__meta h2 {
-  margin: 0.3rem 0 0.8rem;
-  font-family: "Cormorant Garamond", serif;
-  font-weight: 300;
-  letter-spacing: -0.01em;
+/* 信息面板 */
+.gallery-fullscreen__info {
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 2rem 1.5rem;
 }
 
-.modal-eyebrow {
+.fullscreen-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fullscreen-eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   margin: 0;
 }
 
-.gallery-pillset {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin: 0.5rem 0 0.75rem;
-}
-
-.gallery-caption {
-  color: var(--text-muted);
+.fullscreen-title {
   margin: 0.25rem 0 0.75rem;
-  min-height: 1.2em;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  font-size: 1.6rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
-.gallery-tags {
+.fullscreen-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.fullscreen-author,
+.fullscreen-model {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.fullscreen-caption {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  min-height: 0;
+}
+
+.fullscreen-tags {
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
 
-.gallery-tags span {
+.fullscreen-tags span {
   background: var(--surface-highlight);
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 0.25rem 0.8rem;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
-.gallery-prompt-block {
+.fullscreen-prompt-block {
   background: var(--surface-highlight);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 1rem 1.1rem;
+  padding: 1rem;
   color: var(--text-main);
 }
 
-.gallery-prompt-block #modal-prompt {
-  max-height: 200px;
+.fullscreen-prompt-block pre {
+  max-height: 400px;
   overflow-y: auto;
   margin: 0;
   line-height: 1.6;
   padding-right: 0.5rem;
   white-space: pre-wrap;
   word-break: break-word;
+  font-size: 0.85rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-.gallery-prompt-block #modal-prompt::-webkit-scrollbar {
-  width: 8px;
+.fullscreen-prompt-block pre::-webkit-scrollbar {
+  width: 6px;
 }
 
-.gallery-prompt-block #modal-prompt::-webkit-scrollbar-track {
+.fullscreen-prompt-block pre::-webkit-scrollbar-track {
   background: var(--surface);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
-.gallery-prompt-block #modal-prompt::-webkit-scrollbar-thumb {
+.fullscreen-prompt-block pre::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  border-radius: 3px;
 }
 
-.gallery-prompt-block #modal-prompt::-webkit-scrollbar-thumb:hover {
+.fullscreen-prompt-block pre::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
 
+/* 共用样式 */
 .prompt-header {
   display: flex;
   align-items: center;
@@ -1453,7 +1640,7 @@
 .prompt-label {
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
   margin: 0;
 }
@@ -1462,12 +1649,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
+  padding: 0.35rem 0.7rem;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--text-main);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
   outline: none;
@@ -1490,8 +1677,8 @@
 }
 
 .copy-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
 }
 
@@ -1500,22 +1687,89 @@
   letter-spacing: 0.02em;
 }
 
-.gallery-modal__close {
-  position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
-  background: var(--surface-highlight);
-  color: var(--text-main);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  width: 38px;
-  height: 38px;
-  font-size: 1.2rem;
-  cursor: pointer;
+/* 缩略图列表 */
+.gallery-fullscreen__thumbs {
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.gallery-modal__close:hover {
-  color: var(--accent);
+.fullscreen-thumbs-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.85rem;
+  text-align: center;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+
+.fullscreen-thumbs-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fullscreen-thumbs-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fullscreen-thumbs-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.fullscreen-thumbs-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.fullscreen-thumbs-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.fullscreen-thumb-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.fullscreen-thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(5px);
+  transition: filter 0.25s ease;
+}
+
+.fullscreen-thumb-item:hover img {
+  filter: blur(0);
+}
+
+.fullscreen-thumb-item:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 当前选中的缩略图 - 凸出效果 + 清晰显示 */
+.fullscreen-thumb-item.active {
+  border-color: var(--accent);
+  transform: scale(1.08) translateX(-4px);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+  z-index: 1;
+}
+
+.fullscreen-thumb-item.active img {
+  filter: blur(0);
 }
 
 /* 平板端：侧边栏变窄 */
@@ -1526,6 +1780,15 @@
 
   .gallery-layout {
     gap: 1.5rem;
+  }
+
+  /* 全屏模式：隐藏缩略图列表，信息面板变窄 */
+  .gallery-fullscreen__container {
+    grid-template-columns: 1fr 280px;
+  }
+
+  .gallery-fullscreen__thumbs {
+    display: none;
   }
 }
 
@@ -1603,8 +1866,28 @@
     pointer-events: auto;
   }
 
-  .gallery-modal__body {
+  /* 全屏模式：只显示大图 */
+  .gallery-fullscreen__container {
     grid-template-columns: 1fr;
+  }
+
+  .gallery-fullscreen__info {
+    display: none;
+  }
+
+  .gallery-fullscreen__thumbs {
+    display: none;
+  }
+
+  .gallery-fullscreen__main {
+    padding: 1rem;
+  }
+
+  .gallery-fullscreen__close {
+    top: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
   }
 }
 
@@ -1612,10 +1895,6 @@
   .gallery-grid {
     column-width: auto;
     column-count: 1;
-  }
-
-  .gallery-modal__dialog {
-    width: 94vw;
   }
 }
 </style>
