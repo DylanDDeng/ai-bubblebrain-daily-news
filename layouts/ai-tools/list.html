@@ -1,6 +1,6 @@
 {{ define "main" }}
 <section class="section">
-  <div class="section-narrow tools-shell">
+  <div class="tools-shell">
     <header class="page-header tools-hero">
       <p class="page-eyebrow">{{ i18n "tools_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
@@ -9,23 +9,50 @@
       {{ end }}
     </header>
 
-    <div class="tools-actions">
-      <div class="tools-search">
-        <input type="search" id="tools-search" placeholder="{{ i18n "tools_search_placeholder" }}" aria-label="{{ i18n "tools_search_aria" }}">
-      </div>
-      <div class="tools-filter-row" id="tools-company-filters" aria-label="{{ i18n "tools_company_filter_aria" }}"></div>
-      <div class="tools-filter-row" id="tools-domain-filters" aria-label="{{ i18n "tools_domain_filter_aria" }}"></div>
-    </div>
+    <div class="tools-layout">
+      <!-- 移动端筛选按钮 -->
+      <button class="tools-mobile-toggle" id="tools-mobile-toggle" type="button">
+        <span>{{ i18n "tools_filter_label" | default "筛选" }}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+      </button>
 
-    <div id="tools-grid" class="tools-grid" aria-live="polite"></div>
-    <nav id="tools-pagination" class="pagination" aria-label="{{ i18n "tools_pagination_aria" }}" hidden></nav>
-    <div id="tools-empty" class="tools-empty" hidden>
-      <p>{{ i18n "tools_empty_title" }}</p>
-      <p>{{ i18n "tools_empty_hint" }}</p>
-    </div>
-    <div id="tools-empty-filter" class="tools-empty" hidden>
-      <p>{{ i18n "tools_empty_filter_title" }}</p>
-      <p>{{ i18n "tools_empty_filter_hint" }}</p>
+      <!-- 左侧边栏 -->
+      <aside class="tools-sidebar" id="tools-sidebar">
+        <div class="tools-sidebar__header">
+          <span>{{ i18n "tools_filter_label" | default "筛选" }}</span>
+          <button class="tools-sidebar__close" id="tools-sidebar-close" type="button">&times;</button>
+        </div>
+        <div class="tools-search">
+          <input type="search" id="tools-search" placeholder="{{ i18n "tools_search_placeholder" }}" aria-label="{{ i18n "tools_search_aria" }}">
+        </div>
+        <div class="tools-filter-group">
+          <h4>{{ i18n "tools_company_label" | default "公司" }}</h4>
+          <div class="tools-filter-list" id="tools-company-filters" aria-label="{{ i18n "tools_company_filter_aria" }}"></div>
+        </div>
+        <div class="tools-filter-group">
+          <h4>{{ i18n "tools_domain_label" | default "领域" }}</h4>
+          <div class="tools-filter-list" id="tools-domain-filters" aria-label="{{ i18n "tools_domain_filter_aria" }}"></div>
+        </div>
+      </aside>
+
+      <!-- 侧边栏遮罩 -->
+      <div class="tools-sidebar-backdrop" id="tools-sidebar-backdrop"></div>
+
+      <!-- 右侧内容区 -->
+      <main class="tools-content">
+        <div id="tools-grid" class="tools-grid" aria-live="polite"></div>
+        <nav id="tools-pagination" class="pagination" aria-label="{{ i18n "tools_pagination_aria" }}" hidden></nav>
+        <div id="tools-empty" class="tools-empty" hidden>
+          <p>{{ i18n "tools_empty_title" }}</p>
+          <p>{{ i18n "tools_empty_hint" }}</p>
+        </div>
+        <div id="tools-empty-filter" class="tools-empty" hidden>
+          <p>{{ i18n "tools_empty_filter_title" }}</p>
+          <p>{{ i18n "tools_empty_filter_hint" }}</p>
+        </div>
+      </main>
     </div>
   </div>
 </section>
@@ -469,17 +496,49 @@
       console.error('加载ai-tools.json失败:', err);
       setEmpty(true);
     });
+
+  // 移动端侧边栏控制
+  const sidebar = document.getElementById("tools-sidebar");
+  const sidebarBackdrop = document.getElementById("tools-sidebar-backdrop");
+  const mobileToggle = document.getElementById("tools-mobile-toggle");
+  const sidebarClose = document.getElementById("tools-sidebar-close");
+
+  function openSidebar() {
+    sidebar.classList.add("open");
+    sidebarBackdrop.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("open");
+    sidebarBackdrop.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  if (mobileToggle) {
+    mobileToggle.addEventListener("click", openSidebar);
+  }
+  if (sidebarClose) {
+    sidebarClose.addEventListener("click", closeSidebar);
+  }
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener("click", closeSidebar);
+  }
 })();
 </script>
 
 <style>
 .tools-shell {
   padding-bottom: 5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .tools-hero {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .tools-hero h1 {
@@ -490,81 +549,133 @@
   letter-spacing: -0.01em;
 }
 
-.tools-actions {
+/* 主布局：侧边栏 + 内容区 */
+.tools-layout {
   display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin: 1rem 0 2rem;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* 移动端筛选按钮 */
+.tools-mobile-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.tools-mobile-toggle svg {
+  opacity: 0.7;
+}
+
+/* 侧边栏 */
+.tools-sidebar {
+  flex-shrink: 0;
+  width: 220px;
+  position: sticky;
+  top: 2rem;
+}
+
+.tools-sidebar__header {
+  display: none;
 }
 
 .tools-search {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
+  margin-bottom: 1.5rem;
 }
 
 .tools-search input {
   width: 100%;
-  padding: 0.7rem 1rem;
-  border-radius: 12px;
+  padding: 0.6rem 0.875rem;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface-highlight);
   color: var(--text-main);
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .tools-search input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
 }
 
-.tools-filter-row {
+.tools-filter-group {
+  margin-bottom: 1.25rem;
+}
+
+.tools-filter-group h4 {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.tools-filter-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .tools-filter-pill {
-  border: 1px solid var(--border);
-  background: var(--surface);
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
   color: var(--text-main);
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  font-size: 0.85rem;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .tools-filter-pill:hover {
-  border-color: var(--accent);
+  background: var(--surface-highlight);
 }
 
 .tools-filter-pill.active {
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--accent);
 }
 
 .tools-filter-toggle {
-  border: 1px dashed var(--border);
-  background: var(--surface-highlight);
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
   color: var(--text-muted);
-  padding: 0.7rem 1.3rem;
-  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: color 0.2s ease, border-color 0.2s ease;
-  margin-left: 0.4rem;
-  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  transition: color 0.15s ease;
 }
 
 .tools-filter-toggle:hover {
   color: var(--accent);
-  border-color: var(--accent);
+}
+
+/* 侧边栏遮罩 */
+.tools-sidebar-backdrop {
+  display: none;
+}
+
+/* 内容区 */
+.tools-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .tools-grid {
@@ -744,20 +855,86 @@
   transform: translateY(0);
 }
 
-@media (max-width: 900px) {
-  .tools-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.6rem;
+/* 平板端：侧边栏变窄 */
+@media (max-width: 1024px) {
+  .tools-sidebar {
+    width: 180px;
   }
 
-  .tools-search {
-    max-width: none;
-    width: 100%;
+  .tools-layout {
+    gap: 1.5rem;
   }
 }
 
+/* 移动端：侧边栏变为抽屉 */
 @media (max-width: 768px) {
+  .tools-layout {
+    flex-direction: column;
+  }
+
+  .tools-mobile-toggle {
+    display: flex;
+  }
+
+  .tools-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    z-index: 1000;
+    padding: 1rem;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .tools-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .tools-sidebar__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+
+  .tools-sidebar__close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .tools-sidebar__close:hover {
+    color: var(--text-main);
+  }
+
+  .tools-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .tools-sidebar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .tools-grid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
@@ -778,6 +955,11 @@
 }
 
 @media (max-width: 480px) {
+  .tools-shell {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
   .tools-logo {
     width: 64px;
     height: 64px;
