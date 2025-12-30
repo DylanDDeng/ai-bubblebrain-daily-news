@@ -1,13 +1,13 @@
 (() => {
-  const ROOT_PAGE_SIZE = 20;
-  const REPLY_PAGE_SIZE = 10;
+  const COMMENTS_ROOT_PAGE_SIZE = 20;
+  const COMMENTS_REPLY_PAGE_SIZE = 10;
 
   const DEFAULT_I18N = {
     loading: "Loading...",
     empty: "No comments yet. Be the first.",
     loadMore: "Load more",
     reply: "Reply",
-    cancel: "Cancel",
+    cancel: "Collapse",
     delete: "Delete",
     expandReplies: "Show replies ({count})",
     collapseReplies: "Hide replies",
@@ -19,6 +19,9 @@
     sendFailed: "Failed to send",
     deleteConfirm: "Delete this comment?",
     deleteFailed: "Failed to delete",
+    typeQuestion: "Question",
+    typeRepro: "Repro feedback",
+    typeSuggestion: "Suggestion",
   };
 
   const I18N = (() => {
@@ -74,7 +77,7 @@
   }
 
   function createAvatar(profile, fallbackUserId) {
-    const wrap = createElement("div", "supabase-comment__avatar");
+    const wrap = createElement("div", "gallery-comment__avatar");
     const name = (profile?.display_name || "").toString().trim();
     const avatarUrl = (profile?.avatar_url || "").toString().trim();
     const label = name || (fallbackUserId ? fallbackUserId.slice(0, 6) : "User");
@@ -99,13 +102,19 @@
     return created;
   }
 
-  async function fetchCommentsPage({ threadId, parentId = null, offset = 0, limit = ROOT_PAGE_SIZE }) {
-    const client = getSupabase();
+  function typeLabel(type) {
+    const t = (type || "").toString().trim().toLowerCase();
+    if (t === "repro") return I18N.typeRepro;
+    if (t === "suggestion") return I18N.typeSuggestion;
+    return I18N.typeQuestion;
+  }
+
+  async function fetchCommentsPage(client, threadId, { parentId = null, offset = 0, limit = COMMENTS_ROOT_PAGE_SIZE } = {}) {
     if (!client || !threadId) return { data: [], count: 0, error: new Error("missing_client") };
 
     const base = client
       .from("comments")
-      .select("id, thread_id, parent_id, user_id, content, created_at, profiles(display_name, avatar_url)", { count: "exact" })
+      .select("id, thread_id, parent_id, user_id, type, content, created_at, profiles(display_name, avatar_url)", { count: "exact" })
       .eq("thread_id", threadId)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
@@ -116,7 +125,7 @@
 
     const fallbackBase = client
       .from("comments")
-      .select("id, thread_id, parent_id, user_id, content, created_at", { count: "exact" })
+      .select("id, thread_id, parent_id, user_id, type, content, created_at", { count: "exact" })
       .eq("thread_id", threadId)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
@@ -129,39 +138,20 @@
     };
   }
 
-  async function refreshReplyCounts(threadId) {
-    const client = getSupabase();
-    if (!client || !threadId) return new Map();
-
-    try {
-      const { data, error } = await client
-        .from("comments")
-        .select("parent_id")
-        .eq("thread_id", threadId)
-        .not("parent_id", "is", null);
-      if (error || !Array.isArray(data)) return new Map();
-
-      const map = new Map();
-      data.forEach((row) => {
-        const pid = row?.parent_id;
-        if (!pid) return;
-        map.set(pid, (map.get(pid) || 0) + 1);
-      });
-      return map;
-    } catch (err) {
-      return new Map();
-    }
-  }
-
   function init(container) {
     const threadId = (container.getAttribute("data-thread-id") || "").toString().trim();
     if (!threadId) return;
 
+    const countBadge = container.querySelector("[data-comments-count]");
+    const toggleBtn = container.querySelector("[data-comments-toggle]");
+    const panel = container.querySelector("[data-comments-panel]");
     const statusEl = container.querySelector("[data-comments-status]");
     const listEl = container.querySelector("[data-comments-list]");
     const moreBtn = container.querySelector("[data-comments-more]");
     const loginHint = container.querySelector("[data-comments-login-hint]");
-    const form = container.querySelector("[data-comments-form]");
+    const fieldsWrap = container.querySelector("[data-comments-fields]");
+    const composer = container.querySelector("[data-comments-composer]");
+    const typeSelect = container.querySelector("[data-comments-type]");
     const textArea = container.querySelector("[data-comments-text]");
     const submitBtn = container.querySelector("[data-comments-submit]");
 
@@ -171,17 +161,25 @@
 
     const state = {
       threadId,
+      loadedThreadId: null,
+      accordionOpen: true,
+      loadingRoot: false,
       root: [],
       rootCount: 0,
       rootOffset: 0,
       rootHasMore: false,
-      loadingRoot: false,
       replyCounts: new Map(),
       expandedReplies: new Set(),
       replies: new Map(),
       activeReplyParentId: null,
       replyDraft: "",
     };
+
+    function setCount(value) {
+      if (!countBadge) return;
+      const num = Number.isFinite(value) ? value : 0;
+      countBadge.textContent = String(num);
+    }
 
     function setStatus(text) {
       if (!statusEl) return;
@@ -190,11 +188,55 @@
       statusEl.hidden = !msg;
     }
 
+    function setAccordion(open) {
+      state.accordionOpen = !!open;
+      if (toggleBtn) toggleBtn.setAttribute("aria-expanded", state.accordionOpen ? "true" : "false");
+      container.classList.toggle("open", state.accordionOpen);
+      if (panel) panel.hidden = !state.accordionOpen;
+      if (state.accordionOpen) void ensureRootLoaded();
+    }
+
     function updateComposerAuthUI() {
       const authed = isAuthed();
       if (loginHint) loginHint.hidden = authed;
-      if (form) form.hidden = !authed;
+      if (fieldsWrap) fieldsWrap.hidden = !authed;
       if (submitBtn) submitBtn.disabled = !authed;
+    }
+
+    async function refreshCount() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { count, error } = await client
+          .from("comments")
+          .select("id", { count: "exact", head: true })
+          .eq("thread_id", state.threadId);
+        if (error) return;
+        setCount(count || 0);
+      } catch (err) {}
+    }
+
+    async function refreshReplyCounts() {
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from("comments")
+          .select("parent_id")
+          .eq("thread_id", state.threadId)
+          .not("parent_id", "is", null);
+        if (error || !Array.isArray(data)) return;
+
+        const map = new Map();
+        data.forEach((row) => {
+          const pid = row?.parent_id;
+          if (!pid) return;
+          map.set(pid, (map.get(pid) || 0) + 1);
+        });
+        state.replyCounts = map;
+      } catch (err) {}
     }
 
     function canDelete(comment) {
@@ -207,7 +249,6 @@
 
     function render() {
       if (!listEl) return;
-
       updateComposerAuthUI();
 
       if (state.loadingRoot && state.root.length === 0) {
@@ -219,33 +260,46 @@
       listEl.innerHTML = "";
 
       if (state.rootCount === 0) {
-        listEl.appendChild(createElement("div", "supabase-comments__empty", I18N.empty));
+        const empty = createElement("div", "gallery-comments-empty", I18N.empty);
+        listEl.appendChild(empty);
+        if (moreBtn) moreBtn.hidden = true;
         return;
       }
 
       const frag = document.createDocumentFragment();
 
       state.root.forEach((comment) => {
-        const card = createElement("article", "supabase-comment");
+        const card = createElement("article", "gallery-comment");
         card.dataset.id = comment.id;
 
-        const header = createElement("div", "supabase-comment__header");
+        const header = createElement("div", "gallery-comment__header");
         header.appendChild(createAvatar(comment.profiles, comment.user_id));
 
-        const meta = createElement("div", "supabase-comment__meta");
-        const metaTop = createElement("div", "supabase-comment__meta-top");
+        const meta = createElement("div", "gallery-comment__meta");
+        const metaTop = createElement("div", "gallery-comment__meta-top");
         const name =
           (comment.profiles?.display_name || "").toString().trim() ||
           (comment.user_id ? comment.user_id.slice(0, 6) : "User");
-        metaTop.appendChild(createElement("span", "supabase-comment__name", name));
-        metaTop.appendChild(createElement("span", "supabase-comment__time", formatTime(comment.created_at)));
+        metaTop.appendChild(createElement("span", "gallery-comment__name", name));
+        metaTop.appendChild(createElement("span", "gallery-comment__time", formatTime(comment.created_at)));
+
+        const typeVal = (comment.type || "question").toString().trim().toLowerCase();
+        if (typeVal !== "reply") {
+          const typePill = createElement(
+            "span",
+            `gallery-comment__type gallery-comment__type--${typeVal}`,
+            typeLabel(typeVal)
+          );
+          metaTop.appendChild(typePill);
+        }
+
         meta.appendChild(metaTop);
-        meta.appendChild(createElement("div", "supabase-comment__content", comment.content || ""));
+        meta.appendChild(createElement("div", "gallery-comment__content", comment.content || ""));
         header.appendChild(meta);
         card.appendChild(header);
 
-        const actions = createElement("div", "supabase-comment__actions");
-        const replyBtn = createElement("button", "supabase-comment__action", I18N.reply);
+        const actions = createElement("div", "gallery-comment__actions");
+        const replyBtn = createElement("button", "gallery-comment__action", I18N.reply);
         replyBtn.type = "button";
         replyBtn.addEventListener("click", () => {
           if (!isAuthed()) {
@@ -261,7 +315,7 @@
         actions.appendChild(replyBtn);
 
         if (canDelete(comment)) {
-          const delBtn = createElement("button", "supabase-comment__action supabase-comment__action--danger", I18N.delete);
+          const delBtn = createElement("button", "gallery-comment__action gallery-comment__action--danger", I18N.delete);
           delBtn.type = "button";
           delBtn.addEventListener("click", () => void deleteComment(comment.id));
           actions.appendChild(delBtn);
@@ -269,15 +323,15 @@
 
         const replyCount = state.replyCounts.get(comment.id) || 0;
         if (replyCount > 0 || state.expandedReplies.has(comment.id)) {
-          const toggleBtn = createElement(
+          const toggleRepliesBtn = createElement(
             "button",
-            "supabase-comment__action supabase-comment__action--muted",
+            "gallery-comment__action gallery-comment__action--muted",
             state.expandedReplies.has(comment.id)
               ? I18N.collapseReplies
               : I18N.expandReplies.replace("{count}", String(replyCount))
           );
-          toggleBtn.type = "button";
-          toggleBtn.addEventListener("click", () => {
+          toggleRepliesBtn.type = "button";
+          toggleRepliesBtn.addEventListener("click", () => {
             if (state.expandedReplies.has(comment.id)) {
               state.expandedReplies.delete(comment.id);
               render();
@@ -287,13 +341,13 @@
             void ensureRepliesLoaded(comment.id);
             render();
           });
-          actions.appendChild(toggleBtn);
+          actions.appendChild(toggleRepliesBtn);
         }
 
         card.appendChild(actions);
 
         if (state.expandedReplies.has(comment.id)) {
-          const repliesWrap = createElement("div", "supabase-comment__replies");
+          const repliesWrap = createElement("div", "gallery-comment__replies");
           const repliesState = ensureMapEntry(state.replies, comment.id, () => ({
             items: [],
             offset: 0,
@@ -302,31 +356,31 @@
           }));
 
           if (repliesState.loading && repliesState.items.length === 0) {
-            repliesWrap.appendChild(createElement("div", "supabase-comment__replies-status", I18N.loading));
+            repliesWrap.appendChild(createElement("div", "gallery-comment__replies-status", I18N.loading));
           } else {
             repliesState.items.forEach((reply) => {
-              const replyEl = createElement("article", "supabase-comment supabase-comment--reply");
+              const replyEl = createElement("article", "gallery-comment gallery-comment--reply");
 
-              const replyHeader = createElement("div", "supabase-comment__header");
+              const replyHeader = createElement("div", "gallery-comment__header");
               replyHeader.appendChild(createAvatar(reply.profiles, reply.user_id));
 
-              const replyMeta = createElement("div", "supabase-comment__meta");
-              const replyTop = createElement("div", "supabase-comment__meta-top");
+              const replyMeta = createElement("div", "gallery-comment__meta");
+              const replyTop = createElement("div", "gallery-comment__meta-top");
               const replyName =
                 (reply.profiles?.display_name || "").toString().trim() ||
                 (reply.user_id ? reply.user_id.slice(0, 6) : "User");
-              replyTop.appendChild(createElement("span", "supabase-comment__name", replyName));
-              replyTop.appendChild(createElement("span", "supabase-comment__time", formatTime(reply.created_at)));
+              replyTop.appendChild(createElement("span", "gallery-comment__name", replyName));
+              replyTop.appendChild(createElement("span", "gallery-comment__time", formatTime(reply.created_at)));
               replyMeta.appendChild(replyTop);
-              replyMeta.appendChild(createElement("div", "supabase-comment__content", reply.content || ""));
+              replyMeta.appendChild(createElement("div", "gallery-comment__content", reply.content || ""));
               replyHeader.appendChild(replyMeta);
               replyEl.appendChild(replyHeader);
 
-              const replyActions = createElement("div", "supabase-comment__actions");
+              const replyActions = createElement("div", "gallery-comment__actions");
               if (canDelete(reply)) {
                 const delBtn = createElement(
                   "button",
-                  "supabase-comment__action supabase-comment__action--danger",
+                  "gallery-comment__action gallery-comment__action--danger",
                   I18N.delete
                 );
                 delBtn.type = "button";
@@ -339,7 +393,7 @@
             });
 
             if (repliesState.hasMore) {
-              const moreRepliesBtn = createElement("button", "supabase-comment__more", I18N.loadMore);
+              const moreRepliesBtn = createElement("button", "gallery-comment__more", I18N.loadMore);
               moreRepliesBtn.type = "button";
               moreRepliesBtn.addEventListener("click", () => void loadMoreReplies(comment.id));
               repliesWrap.appendChild(moreRepliesBtn);
@@ -347,37 +401,37 @@
           }
 
           if (state.activeReplyParentId === comment.id) {
-            const replyForm = createElement("form", "supabase-comment__reply-form");
+            const form = createElement("form", "gallery-comment__reply-form");
             const ta = document.createElement("textarea");
-            ta.className = "supabase-comment__reply-textarea";
+            ta.className = "gallery-comment__reply-textarea";
             ta.rows = 2;
             ta.placeholder = I18N.reply;
             ta.value = state.replyDraft;
             ta.addEventListener("input", () => {
               state.replyDraft = ta.value || "";
             });
-            replyForm.appendChild(ta);
+            form.appendChild(ta);
 
-            const formActions = createElement("div", "supabase-comment__reply-actions");
-            const cancelBtn = createElement("button", "supabase-comment__reply-cancel", I18N.cancel);
-            cancelBtn.type = "button";
-            cancelBtn.addEventListener("click", () => {
+            const formActions = createElement("div", "gallery-comment__reply-actions");
+            const cancel = createElement("button", "gallery-comment__reply-cancel", I18N.cancel);
+            cancel.type = "button";
+            cancel.addEventListener("click", () => {
               state.activeReplyParentId = null;
               state.replyDraft = "";
               render();
             });
-            const sendBtn = createElement("button", "supabase-comment__reply-send", I18N.send);
-            sendBtn.type = "submit";
-            formActions.appendChild(cancelBtn);
-            formActions.appendChild(sendBtn);
-            replyForm.appendChild(formActions);
+            const send = createElement("button", "gallery-comment__reply-send", I18N.send);
+            send.type = "submit";
+            formActions.appendChild(cancel);
+            formActions.appendChild(send);
+            form.appendChild(formActions);
 
-            replyForm.addEventListener("submit", (e) => {
+            form.addEventListener("submit", (e) => {
               e.preventDefault();
               void postReply(comment.id);
             });
 
-            repliesWrap.appendChild(replyForm);
+            repliesWrap.appendChild(form);
           }
 
           card.appendChild(repliesWrap);
@@ -389,11 +443,14 @@
       listEl.appendChild(frag);
 
       if (moreBtn) {
-        moreBtn.hidden = !state.rootHasMore;
+        moreBtn.hidden = !(state.rootHasMore && state.accordionOpen);
       }
     }
 
     async function ensureRootLoaded({ reset = false } = {}) {
+      if (!state.threadId) return;
+      if (!state.accordionOpen) return;
+
       const client = getSupabase();
       if (!client) {
         setStatus(I18N.unavailable);
@@ -401,6 +458,7 @@
       }
 
       if (reset) {
+        state.loadedThreadId = null;
         state.root = [];
         state.rootCount = 0;
         state.rootOffset = 0;
@@ -412,12 +470,17 @@
         state.replyDraft = "";
       }
 
+      if (state.loadedThreadId === state.threadId) {
+        render();
+        return;
+      }
+
       state.loadingRoot = true;
       render();
 
-      state.replyCounts = await refreshReplyCounts(state.threadId);
+      await refreshReplyCounts();
 
-      const page = await fetchCommentsPage({ threadId: state.threadId, parentId: null, offset: 0, limit: ROOT_PAGE_SIZE });
+      const page = await fetchCommentsPage(client, state.threadId, { parentId: null, offset: 0, limit: COMMENTS_ROOT_PAGE_SIZE });
       state.loadingRoot = false;
 
       if (page.error) {
@@ -430,19 +493,23 @@
       state.rootCount = page.count || (state.root ? state.root.length : 0);
       state.rootOffset = state.root.length;
       state.rootHasMore = state.rootOffset < state.rootCount;
+      state.loadedThreadId = state.threadId;
+
       render();
     }
 
     async function loadMoreRoot() {
-      if (state.loadingRoot || !state.rootHasMore) return;
+      if (!state.threadId || state.loadingRoot || !state.rootHasMore) return;
+      const client = getSupabase();
+      if (!client) return;
+
       state.loadingRoot = true;
       render();
 
-      const page = await fetchCommentsPage({
-        threadId: state.threadId,
+      const page = await fetchCommentsPage(client, state.threadId, {
         parentId: null,
         offset: state.rootOffset,
-        limit: ROOT_PAGE_SIZE,
+        limit: COMMENTS_ROOT_PAGE_SIZE,
       });
       state.loadingRoot = false;
 
@@ -465,15 +532,13 @@
       }));
 
       if (repliesState.items.length || repliesState.loading) return;
+      const client = getSupabase();
+      if (!client) return;
+
       repliesState.loading = true;
       render();
 
-      const page = await fetchCommentsPage({
-        threadId: state.threadId,
-        parentId,
-        offset: 0,
-        limit: REPLY_PAGE_SIZE,
-      });
+      const page = await fetchCommentsPage(client, state.threadId, { parentId, offset: 0, limit: COMMENTS_REPLY_PAGE_SIZE });
       repliesState.loading = false;
 
       if (!page.error) {
@@ -489,14 +554,16 @@
       const repliesState = state.replies.get(parentId);
       if (!repliesState || repliesState.loading || !repliesState.hasMore) return;
 
+      const client = getSupabase();
+      if (!client) return;
+
       repliesState.loading = true;
       render();
 
-      const page = await fetchCommentsPage({
-        threadId: state.threadId,
+      const page = await fetchCommentsPage(client, state.threadId, {
         parentId,
         offset: repliesState.offset,
-        limit: REPLY_PAGE_SIZE,
+        limit: COMMENTS_REPLY_PAGE_SIZE,
       });
       repliesState.loading = false;
 
@@ -510,6 +577,7 @@
     }
 
     async function postRoot() {
+      if (!state.threadId) return;
       const client = getSupabase();
       const user = getUser();
       if (!client) return;
@@ -519,6 +587,7 @@
       }
 
       const content = (textArea?.value || "").toString().trim();
+      const type = (typeSelect?.value || "question").toString().trim().toLowerCase();
       if (!content) return;
 
       if (submitBtn) submitBtn.disabled = true;
@@ -528,12 +597,13 @@
           thread_id: state.threadId,
           parent_id: null,
           user_id: user.id,
-          type: "question",
+          type: ["question", "repro", "suggestion"].includes(type) ? type : "question",
           content,
         });
         if (error) throw error;
 
         if (textArea) textArea.value = "";
+        await refreshCount();
         await ensureRootLoaded({ reset: true });
       } catch (err) {
         console.error("comment post failed:", err);
@@ -544,6 +614,7 @@
     }
 
     async function postReply(parentId) {
+      if (!state.threadId) return;
       const client = getSupabase();
       const user = getUser();
       if (!client) return;
@@ -567,7 +638,8 @@
 
         state.replyDraft = "";
         state.activeReplyParentId = null;
-        state.replyCounts = await refreshReplyCounts(state.threadId);
+        await refreshCount();
+        await refreshReplyCounts();
 
         state.replies.delete(parentId);
         state.expandedReplies.add(parentId);
@@ -580,6 +652,7 @@
     }
 
     async function deleteComment(commentId) {
+      if (!state.threadId) return;
       const client = getSupabase();
       const user = getUser();
       if (!client || !user?.id) return;
@@ -591,6 +664,7 @@
         const { error } = await client.from("comments").delete().eq("id", commentId).eq("user_id", user.id);
         if (error) throw error;
 
+        await refreshCount();
         await ensureRootLoaded({ reset: true });
       } catch (err) {
         console.error("delete failed:", err);
@@ -598,12 +672,19 @@
       }
     }
 
+    // Event wiring
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", () => {
+        setAccordion(!state.accordionOpen);
+      });
+    }
+
     if (moreBtn) {
       moreBtn.addEventListener("click", () => void loadMoreRoot());
     }
 
-    if (form) {
-      form.addEventListener("submit", (e) => {
+    if (composer) {
+      composer.addEventListener("submit", (e) => {
         e.preventDefault();
         void postRoot();
       });
@@ -620,11 +701,22 @@
       render();
     });
 
+    // Initial paint
+    try {
+      const expanded = toggleBtn?.getAttribute("aria-expanded");
+      const initialOpen = expanded === "true" || container.classList.contains("open");
+      setAccordion(initialOpen);
+    } catch (err) {
+      setAccordion(true);
+    }
+
+    setCount(0);
     setStatus("");
     updateComposerAuthUI();
     render();
-    void ensureRootLoaded();
+    void refreshCount();
   }
 
   document.querySelectorAll("[data-supabase-comments]").forEach((container) => init(container));
 })();
+

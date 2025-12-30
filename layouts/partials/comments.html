@@ -1,5 +1,4 @@
-<section class="comments-section">
-  <h2 class="comments-title">{{ i18n "comments_title" }}</h2>
+<div class="gallery-comments-slot gallery-comments-slot--page">
   {{- $threadPath := .RelPermalink -}}
   {{- range .AllTranslations -}}
     {{- if eq .Language.LanguageCode "zh-CN" -}}
@@ -8,23 +7,40 @@
   {{- end -}}
   {{- $threadId := printf "page:%s" $threadPath -}}
 
-  <div class="supabase-comments" data-supabase-comments data-thread-id="{{ $threadId }}">
-    <div class="supabase-comments__status" data-comments-status hidden></div>
-    <div class="supabase-comments__list" data-comments-list></div>
-    <div class="supabase-comments__list-actions">
-      <button class="supabase-comments__btn" type="button" data-comments-more hidden>{{ i18n "gallery_comments_load_more" }}</button>
+  <section class="gallery-comments open gallery-comments--expanded" data-supabase-comments data-thread-id="{{ $threadId }}" aria-label="{{ i18n "comments_title" }}">
+    <div class="gallery-comments__toggle gallery-comments__toggle--static">
+      <span class="gallery-comments__title">{{ i18n "comments_title" }}</span>
+      <span class="gallery-comments__meta">
+        <span class="gallery-comments__count" data-comments-count>0</span>
+      </span>
     </div>
 
-    <div class="supabase-comments__composer">
-      <div class="supabase-comments__login-hint" data-comments-login-hint hidden>{{ i18n "gallery_comments_login_to_comment" }}</div>
-      <form class="supabase-comments__fields" data-comments-form>
-        <textarea class="supabase-comments__textarea" data-comments-text rows="3" placeholder="{{ i18n "gallery_comments_placeholder" }}"></textarea>
-        <div class="supabase-comments__composer-actions">
-          <button class="supabase-comments__send" data-comments-submit type="submit">{{ i18n "gallery_comments_send" }}</button>
+    <div class="gallery-comments__panel" data-comments-panel>
+      <div class="gallery-comments__status" data-comments-status></div>
+      <div class="gallery-comments__list" data-comments-list></div>
+      <div class="gallery-comments__list-actions">
+        <button class="gallery-comments__btn" type="button" data-comments-more hidden>{{ i18n "gallery_comments_load_more" }}</button>
+      </div>
+
+      <form class="gallery-comments__composer" data-comments-composer>
+        <div class="gallery-comments__login-hint" data-comments-login-hint hidden>{{ i18n "gallery_comments_login_to_comment" }}</div>
+        <div class="gallery-comments__fields" data-comments-fields>
+          <label class="gallery-comments__label">
+            <span>{{ i18n "gallery_comments_type_label" }}</span>
+            <select class="gallery-comments__select" data-comments-type>
+              <option value="question">{{ i18n "gallery_comments_type_question" }}</option>
+              <option value="repro">{{ i18n "gallery_comments_type_repro" }}</option>
+              <option value="suggestion">{{ i18n "gallery_comments_type_suggestion" }}</option>
+            </select>
+          </label>
+          <textarea class="gallery-comments__textarea" data-comments-text rows="3" placeholder="{{ i18n "gallery_comments_placeholder" }}"></textarea>
+          <div class="gallery-comments__composer-actions">
+            <button class="gallery-comments__send" data-comments-submit type="submit">{{ i18n "gallery_comments_send" }}</button>
+          </div>
         </div>
       </form>
     </div>
-  </div>
+  </section>
 
   {{- $commentsI18N := dict
       "loading" (i18n "gallery_comments_loading")
@@ -38,6 +54,9 @@
       "loginToComment" (i18n "gallery_comments_login_to_comment")
       "placeholder" (i18n "gallery_comments_placeholder")
       "send" (i18n "gallery_comments_send")
+      "typeQuestion" (i18n "gallery_comments_type_question")
+      "typeRepro" (i18n "gallery_comments_type_repro")
+      "typeSuggestion" (i18n "gallery_comments_type_suggestion")
       "unavailable" (i18n "gallery_comments_unavailable")
       "loadFailed" (i18n "gallery_comments_load_failed")
       "sendFailed" (i18n "gallery_comments_send_failed")
@@ -48,4 +67,4 @@
     window.SUPABASE_COMMENTS_I18N = {{ $commentsI18N | jsonify | safeJS }};
   </script>
   <script defer src="{{ "js/supabase-comments.js" | relURL }}"></script>
-</section>
+</div>
