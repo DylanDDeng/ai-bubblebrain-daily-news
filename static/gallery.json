@@ -1279,7 +1279,7 @@
     "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251209101215940.png",
     "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251209101215940.png",
     "prompt": "Navy blue and white Lolita dress with ornate baroque design and gold trim details. White puff sleeves with lace ruffles and navy ribbon ties. Navy blue bodice with gold embroidered motifs and lace-up front corset styling. White lace collar with decorative brooch detail. Navy blue full skirt with gold embroidered patterns and brocade fabric. White lace apron overlay with ruffled edges. Navy and white hair bow accessory with lace and ribbon details. Classic Lolita style with navy, white, and gold color palette. Baroque elegant aesthetic with ornate decorative elements. NOT casual wear, NOT minimalist design, NOT modern styling.",
-    "tags": ["人像"]
+    "tags": ["人像","自拍"]
      },
 
 
@@ -1454,7 +1454,7 @@
     "subject_excludes": "no mole, wrong mole placement, heavy eyeliner, heavy lipstick, bright red lips, wide smile with teeth, glasses, strong contouring, different hair color, child/teen"
   }
 },
-    "tags": ["多表情"]
+    "tags": ["多表情","自拍"]
      }, 
 
           { 
@@ -2769,6 +2769,202 @@
   "prompt": "Cinematic 3D commercial close-up of a classic Coca-Cola glass bottle, covered in realistic condensation droplets. Scene: Abstract zero-gravity ice environment with floating geometric ice crystals. Action: Dark caramel soda liquid swirling violently inside the bottle and bursting out the top, mixing with effervescent bubbles and ice shards. Surrounding elements: Red metallic spheres reflecting the scene, cold steam rising. Camera: Dynamic orbital spin. Lighting: Dramatic backlighting with volumetric god rays, high contrast red and gold tones. Style: Octane Render aesthetic, crisp, kinetic, hyper-realistic commercial CGI, 8k resolution.",
   "tags":["产品宣传图"]
 
+ },
+
+ {
+  "id":"155", 
+  "title":"商业产品创意", 
+  "author":"@Strength04_X", 
+  "source":"Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230150016499.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230150016499.png", 
+  "prompt": {
+  "type": "image_generation",
+  "style": "hyper_photorealistic",
+  "resolution": "8K",
+  "aspect_ratio": "1:1",
+  "quality": "premium commercial",
+  "scene": {
+    "subject": "A cosmetic skincare jar placed at center",
+    "surface": "Smooth puddle of translucent pink liquid spreading organically beneath the jar with soft reflections and fluid edges",
+    "props": [
+      "Fresh triangular watermelon wedge with visible black seeds placed on the right",
+      "Several ice cubes embedded with small watermelon pieces around the jar"
+    ],
+    "background": {
+      "color": "soft pastel pink gradient",
+      "texture": "smooth, seamless, no visible lines or edges"
+    }
+  },
+  "lighting": {
+    "type": "high-end studio lighting",
+    "key_light": "bright diffused light from upper left",
+    "fill_light": "soft fill for even exposure",
+    "shadows": "soft natural shadows grounding the product",
+    "effects": "enhanced sparkle on sugar crystals and crystal-clear ice"
+  },
+  "color_palette": [
+    "watermelon red",
+    "blush pink",
+    "soft peach",
+    "clear ice tones",
+    "crisp white highlights"
+  ],
+  "composition": {
+    "camera_angle": "eye-level",
+    "shot_type": "close-up hero shot",
+    "depth_of_field": "moderate, sharp foreground with smooth background blur"
+  },
+  "aesthetic": [
+    "clean skincare advertising",
+    "fresh and refreshing mood",
+    "glossy realism",
+    "ultra-detailed textures",
+    "luxury commercial finish"
+  ]
+},
+  "tags":["产品宣传图"]
+ },
+
+
+ {
+  "id":"156", 
+  "title":"女生自拍照", 
+  "author":"@IamEmily2050", 
+  "source":"Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230151552089.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230151552089.png", 
+  "prompt":{
+  "intent": {
+    "image_type": "selfie",
+    "era_preset": "modern_standard",
+    "notes": "Simulating iPhone 14 Pro raw capture in harsh lighting"
+  },
+  "subjects": {
+    "count": 1,
+    "primary": {
+      "type": "person",
+      "age_range": "young_adult",
+      "gender_presentation": "female",
+      "region_target": "unspecified",
+      "expression": "deadpan_pout",
+      "pose": "peace_sign_over_left_eye",
+      "gaze": "looking_into_lens"
+    },
+    "additional": []
+  },
+  "framing_and_perspective": {
+    "framing": "tight_head_and_shoulders",
+    "subject_fill_ratio": 0.8,
+    "camera_angle": "slightly_high",
+    "distance": "arm_length",
+    "camera_class": "smartphone_front",
+    "lens_equiv_mm": 23,
+    "distortion": {
+      "type": "mild_barrel",
+      "strength_1to5": 2
+    },
+    "perspective_effects": {
+      "foreground_scale_emphasis_1to5": 4,
+      "nose_emphasis_1to5": 3,
+      "ear_recession_1to5": 3
+    },
+    "depth_of_field": {
+      "mode": "minimal",
+      "strength_1to5": 1,
+      "focus_target": "eyes"
+    }
+  },
+  "lighting_and_exposure": {
+    "key_light": {
+      "type": "sunlight_window",
+      "direction": "camera_left",
+      "hardness_1to5": 5,
+      "halo_bloom_1to5": 3
+    },
+    "exposure_behavior": {
+      "auto_exposure": true,
+      "hdr_tone_mapping_1to5": 3,
+      "overall_brightness_1to5": 5,
+      "contrast_1to5": 5,
+      "shadow_depth_1to5": 4,
+      "highlight_overflow_1to5": 5
+    },
+    "failure_modes_active": {
+      "highlight_clipping": true,
+      "shadow_chroma_noise": true,
+      "denoise_smear": false,
+      "sharpen_halos": true,
+      "motion_blur": false,
+      "jpeg_ringing_banding": false,
+      "banding_in_gradients": false,
+      "focus_falloff_edge_softness": false
+    }
+  },
+  "computational_pipeline": {
+    "skin_smoothing": {
+      "method": "edge_aware",
+      "strength_1to5": 3,
+      "specular_preservation": "required"
+    },
+    "sharpening": {
+      "strength_1to5": 4,
+      "halo_risk_1to5": 3
+    },
+    "noise_and_denoise": {
+      "shadow_chroma_noise_1to5": 3,
+      "denoise_smear_1to5": 2,
+      "grain_strength_1to5": 2
+    },
+    "compression": {
+      "jpeg_artifacts_1to5": 2,
+      "banding_risk_1to5": 1
+    },
+    "white_balance": {
+      "mode": "auto",
+      "highlight_temp_bias": "neutral",
+      "shadow_temp_bias": "cool"
+    }
+  },
+  "region_and_face_feature_sliders": {
+    "non_stereotype_policy": "sliders_over_labels",
+    "beauty_mark_under_right_eye": false,
+    "sliders_1to5": {
+      "face_oval_vline_1to5": 3,
+      "cheekbone_prominence_1to5": 3,
+      "brow_definition_1to5": 3,
+      "eye_emphasis_1to5": 3,
+      "eyelid_crease_definition_1to5": 3,
+      "nose_bridge_definition_1to5": 3,
+      "lip_fullness_1to5": 4,
+      "makeup_intensity_1to5": 3,
+      "skin_undertone": "neutral"
+    }
+  },
+  "environment_and_materials": {
+    "setting": "indoor_home",
+    "clutter_level_1to5": 5,
+    "props": [
+      "white_pump_bottle",
+      "blue_bottle",
+      "brown_glass_medicine_jar",
+      "wet_wipes",
+      "wrappers",
+      "red_snack_box",
+      "stainless_steel_fridge"
+    ],
+    "background_coherence_constraints": [
+      "no_melted_objects",
+      "plausible_thickness",
+      "stable_edges"
+    ]
+  },
+  "deliverables": {
+    "format_A_prompt": "phone photo of a young woman taking a selfie in a messy kitchen, chaotic domestic setting, deadpan pout expression, looking directly into lens, making a peace sign V-gesture over her left eye, hand features excessive glossy nail art with hard specular reflections, brown shoulder-length hair with bangs and two small black flower hair clips, wearing a white ribbed tank top with lace trim and small bow, texture of ribbed cotton visible, brutal direct sunlight from camera-left casting sharp high-contrast shadows across right side of face and chest, highlight clipping on left cheek and shoulder (paper-white overflow), messy table in foreground containing a large white pump bottle, blue bottle, small brown glass medicine jar with yellow cap, wet wipes package, crinkled plastic wrappers, red snack box, hair tie, background shows stainless steel fridge with magnets and white cabinets, deep depth of field, almost everything in focus, wide-angle 23mm smartphone lens, mild barrel distortion, slight nose distortion due to proximity, harsh computational HDR tone mapping, shadow chroma noise, sharpening halos on edges, raw amateur aesthetic.",
+    "format_A_negative_prompt": "professional studio lighting, soft lighting, diffused light, bokeh, blurry background, shallow depth of field, melted fingers, fused fingers, missing fingers, extra digits, deformed hands, illustration, painting, drawing, 3d render, sketch, cartoon, anime, text, watermark, logo, brand name, flawless skin, airbrushed, low contrast."
+  }
+},
+"tags":["人像","自拍"]
  }
 
      
