@@ -1,0 +1,100 @@
+-- Supabase comments schema for AI Gallery (and future site-wide migration)
+-- Usage:
+-- 1) Open Supabase Dashboard → SQL Editor
+-- 2) Paste this file content and run
+-- 3) Deploy the updated frontend
+
+create extension if not exists pgcrypto;
+
+-- Public profiles (derived from auth.users)
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  display_name text,
+  avatar_url text,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+drop policy if exists "Profiles are viewable by everyone" on public.profiles;
+create policy "Profiles are viewable by everyone"
+on public.profiles
+for select
+using (true);
+
+drop policy if exists "Users can insert their own profile" on public.profiles;
+create policy "Users can insert their own profile"
+on public.profiles
+for insert
+with check (auth.uid() = id);
+
+drop policy if exists "Users can update their own profile" on public.profiles;
+create policy "Users can update their own profile"
+on public.profiles
+for update
+using (auth.uid() = id)
+with check (auth.uid() = id);
+
+-- Generic comments (supports 2-level threads: root comment -> replies)
+-- thread_id examples:
+-- - AI Gallery image: 'ai-gallery:01'
+-- - Article page: .RelPermalink (future migration)
+create table if not exists public.comments (
+  id uuid primary key default gen_random_uuid(),
+  thread_id text not null,
+  parent_id uuid references public.comments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  type text not null default 'question' check (type in ('question', 'repro', 'suggestion', 'reply')),
+  content text not null check (char_length(content) between 1 and 4000),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists comments_thread_created_idx
+  on public.comments (thread_id, created_at desc);
+
+create index if not exists comments_parent_created_idx
+  on public.comments (parent_id, created_at desc);
+
+create index if not exists comments_user_created_idx
+  on public.comments (user_id, created_at desc);
+
+alter table public.comments enable row level security;
+
+drop policy if exists "Comments are viewable by everyone" on public.comments;
+create policy "Comments are viewable by everyone"
+on public.comments
+for select
+using (true);
+
+drop policy if exists "Authenticated users can create comments" on public.comments;
+create policy "Authenticated users can create comments"
+on public.comments
+for insert
+with check (
+  auth.role() = 'authenticated'
+  and auth.uid() = user_id
+  and (
+    parent_id is null
+    or exists (
+      select 1
+      from public.comments parent
+      where parent.id = comments.parent_id
+        and parent.thread_id = comments.thread_id
+        and parent.parent_id is null
+    )
+  )
+);
+
+-- Allow deleting your own comment only when it has no replies.
+drop policy if exists "Users can delete their own comments without replies" on public.comments;
+create policy "Users can delete their own comments without replies"
+on public.comments
+for delete
+using (
+  auth.uid() = user_id
+  and not exists (
+    select 1
+    from public.comments child
+    where child.parent_id = comments.id
+  )
+);

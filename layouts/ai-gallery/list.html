@@ -72,6 +72,13 @@
         <svg class="fav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
       </button>
 
+      <!-- 移动端评论按钮 -->
+      <button class="gallery-fullscreen__comments" type="button" data-comments-open aria-label="{{ i18n "comments_title" }}">
+        <svg class="comments-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+        </svg>
+      </button>
+
       <div class="gallery-fullscreen__image-wrap">
         <img id="fullscreen-image" alt="">
         <div class="fullscreen-loader" id="fullscreen-loader"></div>
@@ -120,22 +127,78 @@
               </svg>
               <span class="copy-text">{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}</span>
             </button>
-          </div>
-          <pre id="fullscreen-prompt"></pre>
-        </div>
-      </div>
-    </div>
+	          </div>
+	          <pre id="fullscreen-prompt"></pre>
+	        </div>
 
-    <!-- 右侧：缩略图列表 -->
+          <!-- 评论区（桌面端：右侧信息栏底部手风琴；移动端：会被挪到抽屉里展示） -->
+          <div class="gallery-comments-slot" id="gallery-comments-slot">
+            <section class="gallery-comments" id="gallery-comments" aria-label="{{ i18n "comments_title" }}">
+              <button class="gallery-comments__toggle" type="button" data-comments-toggle aria-expanded="false">
+                <span class="gallery-comments__title">{{ i18n "comments_title" }}</span>
+                <span class="gallery-comments__meta">
+                  <span class="gallery-comments__count" data-comments-count>0</span>
+                  <svg class="gallery-comments__chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </span>
+              </button>
+
+              <div class="gallery-comments__panel" data-comments-panel hidden>
+                <div class="gallery-comments__status" data-comments-status></div>
+                <div class="gallery-comments__list" data-comments-list></div>
+                <div class="gallery-comments__list-actions">
+                  <button class="gallery-comments__btn" type="button" data-comments-viewall></button>
+                  <button class="gallery-comments__btn" type="button" data-comments-more hidden>{{ i18n "gallery_comments_load_more" }}</button>
+                </div>
+
+                <form class="gallery-comments__composer" data-comments-composer>
+                  <div class="gallery-comments__login-hint" data-comments-login-hint hidden>{{ i18n "gallery_comments_login_to_comment" }}</div>
+                  <div class="gallery-comments__fields" data-comments-fields>
+                    <label class="gallery-comments__label">
+                      <span>{{ i18n "gallery_comments_type_label" }}</span>
+                      <select class="gallery-comments__select" data-comments-type>
+                        <option value="question">{{ i18n "gallery_comments_type_question" }}</option>
+                        <option value="repro">{{ i18n "gallery_comments_type_repro" }}</option>
+                        <option value="suggestion">{{ i18n "gallery_comments_type_suggestion" }}</option>
+                      </select>
+                    </label>
+                    <textarea class="gallery-comments__textarea" data-comments-text rows="3" placeholder="{{ i18n "gallery_comments_placeholder" }}"></textarea>
+                    <div class="gallery-comments__composer-actions">
+                      <button class="gallery-comments__send" data-comments-submit type="submit">{{ i18n "gallery_comments_send" }}</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </section>
+          </div>
+	      </div>
+	    </div>
+
+	    <!-- 右侧：缩略图列表 -->
     <div class="gallery-fullscreen__thumbs">
       <div class="fullscreen-thumbs-header">
         <span id="fullscreen-counter">1 / 10</span>
       </div>
       <div class="fullscreen-thumbs-list" id="fullscreen-thumbs-list">
         <!-- 缩略图由 JS 动态生成 -->
+	    </div>
+	  </div>
+
+    <!-- 移动端评论抽屉 -->
+    <div class="gallery-comments-sheet" id="gallery-comments-sheet" aria-hidden="true">
+      <div class="gallery-comments-sheet__backdrop" data-comments-close></div>
+      <div class="gallery-comments-sheet__panel" role="dialog" aria-label="{{ i18n "comments_title" }}">
+        <div class="gallery-comments-sheet__header">
+          <span class="gallery-comments-sheet__title">{{ i18n "comments_title" }}</span>
+          <button class="gallery-comments-sheet__close" type="button" data-comments-close aria-label="{{ i18n "gallery_modal_close" }}">
+            {{ i18n "gallery_modal_close" }}
+          </button>
+        </div>
+        <div class="gallery-comments-sheet__content" id="gallery-comments-sheet-content"></div>
       </div>
     </div>
-  </div>
+	</div>
 </div>
 
 <script>
@@ -158,6 +221,14 @@
   const fullscreenImageCounter = document.getElementById("fullscreen-image-counter");
   const fullscreenThumbsList = document.getElementById("fullscreen-thumbs-list");
   const fullscreenLoader = document.getElementById("fullscreen-loader");
+
+  // 评论区元素
+  const commentsSlot = document.getElementById("gallery-comments-slot");
+  const commentsEl = document.getElementById("gallery-comments");
+  const commentsSheet = document.getElementById("gallery-comments-sheet");
+  const commentsSheetContent = document.getElementById("gallery-comments-sheet-content");
+  const commentsOpenBtn = fullscreen.querySelector("[data-comments-open]");
+  const commentsCloseTargets = fullscreen.querySelectorAll("[data-comments-close]");
 
   const filtersWrap = document.getElementById("gallery-filters");
   const searchInput = document.getElementById("gallery-search");
@@ -193,7 +264,27 @@
     copyPrompt: "{{ i18n "gallery_copy_prompt" }}",
     copied: "{{ i18n "gallery_copied" }}",
     copyFailed: "{{ i18n "gallery_copy_failed" }}",
-    networkError: "{{ i18n "gallery_network_error" }}"
+    networkError: "{{ i18n "gallery_network_error" }}",
+
+    commentsTitle: "{{ i18n "comments_title" }}",
+    commentsViewAll: "{{ i18n "gallery_comments_view_all" }}",
+    commentsCollapse: "{{ i18n "gallery_comments_collapse" }}",
+    commentsLoadMore: "{{ i18n "gallery_comments_load_more" }}",
+    commentsLoading: "{{ i18n "gallery_comments_loading" }}",
+    commentsEmpty: "{{ i18n "gallery_comments_empty" }}",
+    commentsReply: "{{ i18n "gallery_comments_reply" }}",
+    commentsDelete: "{{ i18n "gallery_comments_delete" }}",
+    commentsExpandReplies: "{{ i18n "gallery_comments_expand_replies" }}",
+    commentsCollapseReplies: "{{ i18n "gallery_comments_collapse_replies" }}",
+    commentsSend: "{{ i18n "gallery_comments_send" }}",
+    commentsTypeQuestion: "{{ i18n "gallery_comments_type_question" }}",
+    commentsTypeRepro: "{{ i18n "gallery_comments_type_repro" }}",
+    commentsTypeSuggestion: "{{ i18n "gallery_comments_type_suggestion" }}",
+    commentsUnavailable: "{{ i18n "gallery_comments_unavailable" }}",
+    commentsLoadFailed: "{{ i18n "gallery_comments_load_failed" }}",
+    commentsSendFailed: "{{ i18n "gallery_comments_send_failed" }}",
+    commentsDeleteConfirm: "{{ i18n "gallery_comments_delete_confirm" }}",
+    commentsDeleteFailed: "{{ i18n "gallery_comments_delete_failed" }}"
   };
 
   const FAVORITES_FILTER_ICON = `<svg class="fav-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -595,6 +686,750 @@
   let currentItem = null;
   let currentItemIndex = 0;  // 当前查看的是 filteredItems 中的第几个
 
+  // ===== 评论区（Supabase）=====
+  const COMMENTS_ROOT_PAGE_SIZE = 20;
+  const COMMENTS_ROOT_PREVIEW_SIZE = 3;
+  const COMMENTS_REPLY_PAGE_SIZE = 10;
+
+  const commentsUI = (() => {
+    if (!commentsEl) return null;
+
+    const toggleBtn = commentsEl.querySelector("[data-comments-toggle]");
+    const panel = commentsEl.querySelector("[data-comments-panel]");
+    const countBadge = commentsEl.querySelector("[data-comments-count]");
+    const statusEl = commentsEl.querySelector("[data-comments-status]");
+    const listEl = commentsEl.querySelector("[data-comments-list]");
+    const viewAllBtn = commentsEl.querySelector("[data-comments-viewall]");
+    const moreBtn = commentsEl.querySelector("[data-comments-more]");
+    const composer = commentsEl.querySelector("[data-comments-composer]");
+    const loginHint = commentsEl.querySelector("[data-comments-login-hint]");
+    const fieldsWrap = commentsEl.querySelector("[data-comments-fields]");
+    const typeSelect = commentsEl.querySelector("[data-comments-type]");
+    const textArea = commentsEl.querySelector("[data-comments-text]");
+    const submitBtn = commentsEl.querySelector("[data-comments-submit]");
+
+    const state = {
+      threadId: null,
+      loadedThreadId: null,
+      accordionOpen: false,
+      viewAll: false,
+      root: [],
+      rootCount: 0,
+      rootOffset: 0,
+      rootHasMore: false,
+      loadingRoot: false,
+      replyCounts: new Map(),
+      expandedReplies: new Set(),
+      replies: new Map(), // parentId -> { items, offset, hasMore, loading }
+      activeReplyParentId: null,
+      replyDraft: "",
+      sheetOpen: false,
+      accordionOpenBeforeSheet: false
+    };
+
+    function getSupabase() {
+      try {
+        return typeof supabaseClient !== "undefined" ? supabaseClient : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function getUser() {
+      try {
+        return typeof currentUser !== "undefined" ? currentUser : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function isAuthed() {
+      return !!getUser()?.id;
+    }
+
+    function threadIdForImage(imageId) {
+      const id = (imageId || "").toString().trim();
+      return id ? `ai-gallery:${id}` : "";
+    }
+
+    function setCount(value) {
+      if (!countBadge) return;
+      const num = Number.isFinite(value) ? value : 0;
+      countBadge.textContent = String(num);
+    }
+
+    function setStatus(text) {
+      if (!statusEl) return;
+      const msg = (text || "").toString().trim();
+      statusEl.textContent = msg;
+      statusEl.hidden = !msg;
+    }
+
+    function formatTime(value) {
+      const d = value ? new Date(value) : null;
+      if (!d || Number.isNaN(d.getTime())) return "";
+      return d.toLocaleString(undefined, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+    }
+
+    function typeLabel(type) {
+      const t = (type || "").toString().trim().toLowerCase();
+      if (t === "repro") return I18N.commentsTypeRepro;
+      if (t === "suggestion") return I18N.commentsTypeSuggestion;
+      return I18N.commentsTypeQuestion;
+    }
+
+    function ensureMapEntry(map, key, factory) {
+      if (map.has(key)) return map.get(key);
+      const created = factory();
+      map.set(key, created);
+      return created;
+    }
+
+    function updateComposerAuthUI() {
+      const authed = isAuthed();
+      if (loginHint) loginHint.hidden = authed;
+      if (fieldsWrap) fieldsWrap.hidden = !authed;
+      if (submitBtn) submitBtn.disabled = !authed;
+    }
+
+    async function refreshCount() {
+      if (!state.threadId) return;
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { count, error } = await client
+          .from("comments")
+          .select("id", { count: "exact", head: true })
+          .eq("thread_id", state.threadId);
+        if (error) return;
+        setCount(count || 0);
+      } catch (err) {}
+    }
+
+    async function refreshReplyCounts() {
+      if (!state.threadId) return;
+      const client = getSupabase();
+      if (!client) return;
+
+      try {
+        const { data, error } = await client
+          .from("comments")
+          .select("parent_id")
+          .eq("thread_id", state.threadId)
+          .not("parent_id", "is", null);
+        if (error || !Array.isArray(data)) return;
+
+        const map = new Map();
+        data.forEach((row) => {
+          const pid = row?.parent_id;
+          if (!pid) return;
+          map.set(pid, (map.get(pid) || 0) + 1);
+        });
+        state.replyCounts = map;
+      } catch (err) {}
+    }
+
+    async function fetchCommentsPage({ parentId = null, offset = 0, limit = 20 } = {}) {
+      const client = getSupabase();
+      if (!client || !state.threadId) return { data: [], count: 0, error: new Error("missing_client") };
+
+      const base = client
+        .from("comments")
+        .select("id, thread_id, parent_id, user_id, type, content, created_at, profiles(display_name, avatar_url)", { count: "exact" })
+        .eq("thread_id", state.threadId)
+        .order("created_at", { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      const query = parentId ? base.eq("parent_id", parentId) : base.is("parent_id", null);
+
+      const { data, error, count } = await query;
+      if (!error) return { data: Array.isArray(data) ? data : [], count: count || 0, error: null };
+
+      // Fallback when relationship/table is not ready
+      const fallbackBase = client
+        .from("comments")
+        .select("id, thread_id, parent_id, user_id, type, content, created_at", { count: "exact" })
+        .eq("thread_id", state.threadId)
+        .order("created_at", { ascending: false })
+        .range(offset, offset + limit - 1);
+      const fallbackQuery = parentId ? fallbackBase.eq("parent_id", parentId) : fallbackBase.is("parent_id", null);
+      const fallback = await fallbackQuery;
+      return {
+        data: Array.isArray(fallback.data) ? fallback.data : [],
+        count: fallback.count || 0,
+        error: fallback.error || error
+      };
+    }
+
+    function canDelete(comment) {
+      const userId = getUser()?.id;
+      if (!userId || !comment) return false;
+      if (comment.user_id !== userId) return false;
+      const replyCount = state.replyCounts.get(comment.id) || 0;
+      return replyCount === 0;
+    }
+
+    function createElement(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text != null) el.textContent = text;
+      return el;
+    }
+
+    function createAvatar(profile, fallbackUserId) {
+      const wrap = createElement("div", "gallery-comment__avatar");
+      const name = (profile?.display_name || "").toString().trim();
+      const avatarUrl = (profile?.avatar_url || "").toString().trim();
+      const label = name || (fallbackUserId ? fallbackUserId.slice(0, 6) : "User");
+
+      if (avatarUrl) {
+        const img = document.createElement("img");
+        img.src = avatarUrl;
+        img.alt = label;
+        img.loading = "lazy";
+        wrap.appendChild(img);
+        return wrap;
+      }
+
+      wrap.textContent = label.slice(0, 1).toUpperCase();
+      return wrap;
+    }
+
+    function render() {
+      if (!listEl) return;
+
+      updateComposerAuthUI();
+
+      // Header buttons
+      if (viewAllBtn) {
+        if (state.rootCount > COMMENTS_ROOT_PREVIEW_SIZE) {
+          viewAllBtn.hidden = false;
+          viewAllBtn.textContent = state.viewAll
+            ? I18N.commentsCollapse
+            : `${I18N.commentsViewAll} (${state.rootCount})`;
+        } else {
+          viewAllBtn.hidden = true;
+        }
+      }
+
+      if (moreBtn) {
+        moreBtn.hidden = !(state.viewAll && state.rootHasMore);
+      }
+
+      listEl.innerHTML = "";
+
+      if (state.loadingRoot && state.root.length === 0) {
+        setStatus(I18N.commentsLoading);
+        return;
+      }
+
+      setStatus("");
+
+      if (state.rootCount === 0) {
+        const empty = createElement("div", "gallery-comments-empty", I18N.commentsEmpty);
+        listEl.appendChild(empty);
+        return;
+      }
+
+      const items = state.viewAll ? state.root : state.root.slice(0, COMMENTS_ROOT_PREVIEW_SIZE);
+      const frag = document.createDocumentFragment();
+
+      items.forEach((comment) => {
+        const card = createElement("article", "gallery-comment");
+        card.dataset.id = comment.id;
+
+        const header = createElement("div", "gallery-comment__header");
+        header.appendChild(createAvatar(comment.profiles, comment.user_id));
+
+        const meta = createElement("div", "gallery-comment__meta");
+        const metaTop = createElement("div", "gallery-comment__meta-top");
+        const name = (comment.profiles?.display_name || "").toString().trim() || (comment.user_id ? comment.user_id.slice(0, 6) : "User");
+        metaTop.appendChild(createElement("span", "gallery-comment__name", name));
+        metaTop.appendChild(createElement("span", "gallery-comment__time", formatTime(comment.created_at)));
+
+        const typePill = createElement("span", `gallery-comment__type gallery-comment__type--${(comment.type || "question").toString().trim().toLowerCase()}`, typeLabel(comment.type));
+        metaTop.appendChild(typePill);
+
+        meta.appendChild(metaTop);
+        meta.appendChild(createElement("div", "gallery-comment__content", comment.content || ""));
+        header.appendChild(meta);
+        card.appendChild(header);
+
+        const actions = createElement("div", "gallery-comment__actions");
+        const replyBtn = createElement("button", "gallery-comment__action", I18N.commentsReply);
+        replyBtn.type = "button";
+        replyBtn.addEventListener("click", () => {
+          if (!isAuthed()) {
+            if (typeof signInWithGoogle === "function") signInWithGoogle();
+            return;
+          }
+          state.activeReplyParentId = comment.id;
+          state.replyDraft = "";
+          state.expandedReplies.add(comment.id);
+          void ensureRepliesLoaded(comment.id);
+          render();
+        });
+        actions.appendChild(replyBtn);
+
+        if (canDelete(comment)) {
+          const delBtn = createElement("button", "gallery-comment__action gallery-comment__action--danger", I18N.commentsDelete);
+          delBtn.type = "button";
+          delBtn.addEventListener("click", () => void deleteComment(comment.id));
+          actions.appendChild(delBtn);
+        }
+
+        const replyCount = state.replyCounts.get(comment.id) || 0;
+        if (replyCount > 0 || state.expandedReplies.has(comment.id)) {
+          const toggleRepliesBtn = createElement(
+            "button",
+            "gallery-comment__action gallery-comment__action--muted",
+            state.expandedReplies.has(comment.id)
+              ? I18N.commentsCollapseReplies
+              : I18N.commentsExpandReplies.replace("{count}", String(replyCount))
+          );
+          toggleRepliesBtn.type = "button";
+          toggleRepliesBtn.addEventListener("click", () => {
+            if (state.expandedReplies.has(comment.id)) {
+              state.expandedReplies.delete(comment.id);
+              render();
+              return;
+            }
+            state.expandedReplies.add(comment.id);
+            void ensureRepliesLoaded(comment.id);
+            render();
+          });
+          actions.appendChild(toggleRepliesBtn);
+        }
+
+        card.appendChild(actions);
+
+        // Replies
+        if (state.expandedReplies.has(comment.id)) {
+          const repliesWrap = createElement("div", "gallery-comment__replies");
+          const repliesState = ensureMapEntry(state.replies, comment.id, () => ({
+            items: [],
+            offset: 0,
+            hasMore: false,
+            loading: false
+          }));
+
+          if (repliesState.loading && repliesState.items.length === 0) {
+            repliesWrap.appendChild(createElement("div", "gallery-comment__replies-status", I18N.commentsLoading));
+          } else {
+            repliesState.items.forEach((reply) => {
+              const replyEl = createElement("article", "gallery-comment gallery-comment--reply");
+              const replyHeader = createElement("div", "gallery-comment__header");
+              replyHeader.appendChild(createAvatar(reply.profiles, reply.user_id));
+
+              const replyMeta = createElement("div", "gallery-comment__meta");
+              const replyTop = createElement("div", "gallery-comment__meta-top");
+              const replyName = (reply.profiles?.display_name || "").toString().trim() || (reply.user_id ? reply.user_id.slice(0, 6) : "User");
+              replyTop.appendChild(createElement("span", "gallery-comment__name", replyName));
+              replyTop.appendChild(createElement("span", "gallery-comment__time", formatTime(reply.created_at)));
+              replyMeta.appendChild(replyTop);
+              replyMeta.appendChild(createElement("div", "gallery-comment__content", reply.content || ""));
+              replyHeader.appendChild(replyMeta);
+              replyEl.appendChild(replyHeader);
+
+              const replyActions = createElement("div", "gallery-comment__actions");
+              if (canDelete(reply)) {
+                const delBtn = createElement("button", "gallery-comment__action gallery-comment__action--danger", I18N.commentsDelete);
+                delBtn.type = "button";
+                delBtn.addEventListener("click", () => void deleteComment(reply.id));
+                replyActions.appendChild(delBtn);
+              }
+              replyEl.appendChild(replyActions);
+
+              repliesWrap.appendChild(replyEl);
+            });
+
+            if (repliesState.hasMore) {
+              const moreRepliesBtn = createElement("button", "gallery-comment__more", I18N.commentsLoadMore);
+              moreRepliesBtn.type = "button";
+              moreRepliesBtn.addEventListener("click", () => void loadMoreReplies(comment.id));
+              repliesWrap.appendChild(moreRepliesBtn);
+            }
+          }
+
+          // Reply composer (only one active)
+          if (state.activeReplyParentId === comment.id) {
+            const form = createElement("form", "gallery-comment__reply-form");
+            const ta = document.createElement("textarea");
+            ta.className = "gallery-comment__reply-textarea";
+            ta.rows = 2;
+            ta.placeholder = I18N.commentsReply;
+            ta.value = state.replyDraft;
+            ta.addEventListener("input", () => {
+              state.replyDraft = ta.value || "";
+            });
+            form.appendChild(ta);
+
+            const formActions = createElement("div", "gallery-comment__reply-actions");
+            const cancel = createElement("button", "gallery-comment__reply-cancel", I18N.commentsCollapse);
+            cancel.type = "button";
+            cancel.addEventListener("click", () => {
+              state.activeReplyParentId = null;
+              state.replyDraft = "";
+              render();
+            });
+            const send = createElement("button", "gallery-comment__reply-send", I18N.commentsSend);
+            send.type = "submit";
+            formActions.appendChild(cancel);
+            formActions.appendChild(send);
+            form.appendChild(formActions);
+
+            form.addEventListener("submit", (e) => {
+              e.preventDefault();
+              void postReply(comment.id);
+            });
+
+            repliesWrap.appendChild(form);
+          }
+
+          card.appendChild(repliesWrap);
+        }
+
+        frag.appendChild(card);
+      });
+
+      listEl.appendChild(frag);
+    }
+
+    async function ensureRootLoaded({ reset = false } = {}) {
+      if (!state.threadId) return;
+      const client = getSupabase();
+      if (!client) {
+        setStatus(I18N.commentsUnavailable);
+        return;
+      }
+
+      if (reset) {
+        state.loadedThreadId = null;
+        state.root = [];
+        state.rootCount = 0;
+        state.rootOffset = 0;
+        state.rootHasMore = false;
+        state.replyCounts = new Map();
+        state.expandedReplies = new Set();
+        state.replies = new Map();
+        state.activeReplyParentId = null;
+        state.replyDraft = "";
+      }
+
+      if (state.loadedThreadId === state.threadId) {
+        render();
+        return;
+      }
+
+      state.loadingRoot = true;
+      render();
+
+      await refreshReplyCounts();
+
+      const page = await fetchCommentsPage({ parentId: null, offset: 0, limit: COMMENTS_ROOT_PAGE_SIZE });
+      state.loadingRoot = false;
+
+      if (page.error) {
+        setStatus(I18N.commentsLoadFailed);
+        render();
+        return;
+      }
+
+      state.root = page.data || [];
+      state.rootCount = page.count || (state.root ? state.root.length : 0);
+      state.rootOffset = state.root.length;
+      state.rootHasMore = state.rootOffset < state.rootCount;
+      state.loadedThreadId = state.threadId;
+      setCount(state.rootCount);
+      render();
+    }
+
+    async function loadMoreRoot() {
+      if (!state.threadId || state.loadingRoot || !state.rootHasMore) return;
+      const client = getSupabase();
+      if (!client) return;
+
+      state.loadingRoot = true;
+      render();
+
+      const page = await fetchCommentsPage({ parentId: null, offset: state.rootOffset, limit: COMMENTS_ROOT_PAGE_SIZE });
+      state.loadingRoot = false;
+
+      if (!page.error) {
+        state.root = state.root.concat(page.data || []);
+        state.rootCount = page.count || state.rootCount;
+        state.rootOffset = state.root.length;
+        state.rootHasMore = state.rootOffset < state.rootCount;
+        setCount(state.rootCount);
+      }
+
+      render();
+    }
+
+    async function ensureRepliesLoaded(parentId) {
+      const repliesState = ensureMapEntry(state.replies, parentId, () => ({
+        items: [],
+        offset: 0,
+        hasMore: false,
+        loading: false
+      }));
+
+      if (repliesState.items.length || repliesState.loading) return;
+      repliesState.loading = true;
+      render();
+
+      const page = await fetchCommentsPage({ parentId, offset: 0, limit: COMMENTS_REPLY_PAGE_SIZE });
+      repliesState.loading = false;
+
+      if (!page.error) {
+        repliesState.items = (page.data || []).map((row) => ({ ...row, type: "reply" }));
+        repliesState.offset = repliesState.items.length;
+        repliesState.hasMore = repliesState.offset < (page.count || repliesState.offset);
+      }
+
+      render();
+    }
+
+    async function loadMoreReplies(parentId) {
+      const repliesState = state.replies.get(parentId);
+      if (!repliesState || repliesState.loading || !repliesState.hasMore) return;
+
+      repliesState.loading = true;
+      render();
+
+      const page = await fetchCommentsPage({ parentId, offset: repliesState.offset, limit: COMMENTS_REPLY_PAGE_SIZE });
+      repliesState.loading = false;
+
+      if (!page.error) {
+        repliesState.items = repliesState.items.concat(page.data || []);
+        repliesState.offset = repliesState.items.length;
+        repliesState.hasMore = repliesState.offset < (page.count || repliesState.offset);
+      }
+
+      render();
+    }
+
+    async function postRoot() {
+      if (!state.threadId) return;
+      const client = getSupabase();
+      const user = getUser();
+      if (!client) return;
+      if (!user?.id) {
+        if (typeof signInWithGoogle === "function") signInWithGoogle();
+        return;
+      }
+
+      const content = (textArea?.value || "").toString().trim();
+      const type = (typeSelect?.value || "question").toString().trim().toLowerCase();
+      if (!content) return;
+
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const { error } = await client.from("comments").insert({
+          thread_id: state.threadId,
+          parent_id: null,
+          user_id: user.id,
+          type: ["question", "repro", "suggestion"].includes(type) ? type : "question",
+          content
+        });
+        if (error) throw error;
+
+        if (textArea) textArea.value = "";
+        state.viewAll = true;
+        await refreshCount();
+        await ensureRootLoaded({ reset: true });
+      } catch (err) {
+        console.error("comment post failed:", err);
+        setStatus(I18N.commentsSendFailed);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    }
+
+    async function postReply(parentId) {
+      if (!state.threadId) return;
+      const client = getSupabase();
+      const user = getUser();
+      if (!client) return;
+      if (!user?.id) {
+        if (typeof signInWithGoogle === "function") signInWithGoogle();
+        return;
+      }
+
+      const content = (state.replyDraft || "").toString().trim();
+      if (!content) return;
+
+      try {
+        const { error } = await client.from("comments").insert({
+          thread_id: state.threadId,
+          parent_id: parentId,
+          user_id: user.id,
+          type: "reply",
+          content
+        });
+        if (error) throw error;
+
+        state.replyDraft = "";
+        state.activeReplyParentId = null;
+        await refreshCount();
+        await refreshReplyCounts();
+
+        // Refresh replies for this parent
+        state.replies.delete(parentId);
+        state.expandedReplies.add(parentId);
+        await ensureRepliesLoaded(parentId);
+        render();
+      } catch (err) {
+        console.error("reply post failed:", err);
+        setStatus(I18N.commentsSendFailed);
+      }
+    }
+
+    async function deleteComment(commentId) {
+      if (!state.threadId) return;
+      const client = getSupabase();
+      const user = getUser();
+      if (!client || !user?.id) return;
+
+      const ok = window.confirm(I18N.commentsDeleteConfirm);
+      if (!ok) return;
+
+      try {
+        const { error } = await client
+          .from("comments")
+          .delete()
+          .eq("id", commentId)
+          .eq("user_id", user.id);
+        if (error) throw error;
+
+        await refreshCount();
+        await ensureRootLoaded({ reset: true });
+      } catch (err) {
+        console.error("delete failed:", err);
+        setStatus(I18N.commentsDeleteFailed);
+      }
+    }
+
+    function setAccordion(open) {
+      state.accordionOpen = !!open;
+      if (toggleBtn) toggleBtn.setAttribute("aria-expanded", state.accordionOpen ? "true" : "false");
+      commentsEl.classList.toggle("open", state.accordionOpen);
+      if (panel) panel.hidden = !state.accordionOpen;
+      if (state.accordionOpen) void ensureRootLoaded();
+    }
+
+    function openSheet() {
+      if (!commentsSheet || !commentsSheetContent || !commentsSlot) return;
+
+      state.sheetOpen = true;
+      state.accordionOpenBeforeSheet = state.accordionOpen;
+
+      commentsSheetContent.appendChild(commentsEl);
+      commentsEl.classList.add("in-sheet");
+      commentsSheet.classList.add("open");
+      commentsSheet.setAttribute("aria-hidden", "false");
+
+      setAccordion(true);
+    }
+
+    function closeSheet() {
+      if (!commentsSheet || !commentsSheetContent || !commentsSlot) return;
+      if (!state.sheetOpen) return;
+
+      state.sheetOpen = false;
+      commentsSheet.classList.remove("open");
+      commentsSheet.setAttribute("aria-hidden", "true");
+
+      commentsSlot.appendChild(commentsEl);
+      commentsEl.classList.remove("in-sheet");
+
+      // Restore accordion state on desktop
+      setAccordion(state.accordionOpenBeforeSheet);
+    }
+
+    function isSheetOpen() {
+      return state.sheetOpen;
+    }
+
+    function setThread(imageId) {
+      const next = threadIdForImage(imageId);
+      if (!next) return;
+      if (state.threadId === next) return;
+
+      state.threadId = next;
+      state.loadedThreadId = null;
+      state.viewAll = false;
+      state.root = [];
+      state.rootCount = 0;
+      state.rootOffset = 0;
+      state.rootHasMore = false;
+      state.replyCounts = new Map();
+      state.expandedReplies = new Set();
+      state.replies = new Map();
+      state.activeReplyParentId = null;
+      state.replyDraft = "";
+
+      setCount(0);
+      setStatus("");
+      void refreshCount();
+      if (state.accordionOpen) void ensureRootLoaded({ reset: true });
+    }
+
+    // Event wiring
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", () => {
+        setAccordion(!state.accordionOpen);
+      });
+    }
+
+    if (viewAllBtn) {
+      viewAllBtn.addEventListener("click", () => {
+        state.viewAll = !state.viewAll;
+        render();
+      });
+    }
+
+    if (moreBtn) {
+      moreBtn.addEventListener("click", () => void loadMoreRoot());
+    }
+
+    if (composer) {
+      composer.addEventListener("submit", (e) => {
+        e.preventDefault();
+        void postRoot();
+      });
+    }
+
+    if (loginHint) {
+      loginHint.addEventListener("click", () => {
+        if (typeof signInWithGoogle === "function") signInWithGoogle();
+      });
+    }
+
+    if (commentsOpenBtn) {
+      commentsOpenBtn.addEventListener("click", () => openSheet());
+    }
+
+    commentsCloseTargets.forEach((btn) => {
+      btn.addEventListener("click", closeSheet);
+    });
+
+    window.addEventListener("authStateChanged", () => {
+      updateComposerAuthUI();
+      render();
+    });
+
+    // Initial paint
+    setCount(0);
+    setStatus("");
+    updateComposerAuthUI();
+    render();
+
+    return { setThread, openSheet, closeSheet, isSheetOpen };
+  })();
+
   // 渲染缩略图列表
   function renderThumbnailList() {
     if (!fullscreenThumbsList) return;
@@ -699,6 +1534,11 @@
     // 更新收藏按钮状态
     updateFullscreenFavButton(item.id);
 
+    // 切换评论 thread
+    if (commentsUI) {
+      commentsUI.setThread(item.id);
+    }
+
     if (renderThumbs) {
       renderThumbnailList();
     }
@@ -796,6 +1636,9 @@
   }
 
   function closeFullscreen() {
+    if (commentsUI) {
+      commentsUI.closeSheet();
+    }
     fullscreen.classList.remove("open");
     fullscreen.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
@@ -820,6 +1663,10 @@
     if (!fullscreen.classList.contains("open")) return;
 
     if (event.key === "Escape") {
+      if (commentsUI && commentsUI.isSheetOpen()) {
+        commentsUI.closeSheet();
+        return;
+      }
       return closeFullscreen();
     }
     // 键盘左右箭头切换列表中的 item（而不是同一 item 的多图）
@@ -1457,6 +2304,506 @@
   stroke: #ef4444;
 }
 
+.gallery-fullscreen__comments {
+  position: absolute;
+  top: 1rem;
+  left: 3.75rem;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.gallery-fullscreen__comments:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.gallery-fullscreen__comments .comments-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.gallery-comments-slot {
+  margin-top: 1rem;
+}
+
+.gallery-comments {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-highlight);
+  overflow: hidden;
+}
+
+.gallery-comments__toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.gallery-comments__toggle:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.gallery-comments__title {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.gallery-comments__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.gallery-comments__count {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery-comments__chev {
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.gallery-comments.open .gallery-comments__chev {
+  transform: rotate(180deg);
+}
+
+.gallery-comments__panel {
+  padding: 0 1rem 1rem;
+}
+
+.gallery-comments__status {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 0.35rem 0 0.5rem;
+}
+
+.gallery-comments__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.gallery-comments-empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.gallery-comments__list-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.75rem;
+}
+
+.gallery-comments__btn {
+  padding: 0.35rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gallery-comments__btn:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.gallery-comments__composer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.gallery-comments__login-hint {
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  text-align: center;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.gallery-comments__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.gallery-comments__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.gallery-comments__select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-main);
+  padding: 0.35rem 0.7rem;
+}
+
+.gallery-comments__textarea {
+  width: 100%;
+  resize: vertical;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.7rem 0.8rem;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  outline: none;
+  line-height: 1.6;
+}
+
+.gallery-comments__textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+.gallery-comments__composer-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.gallery-comments__send {
+  padding: 0.5rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.gallery-comments__send:active {
+  transform: scale(0.98);
+}
+
+.gallery-comments__send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gallery-comment {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 0.8rem;
+}
+
+.gallery-comment--reply {
+  margin-left: 1.75rem;
+}
+
+.gallery-comment__header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.gallery-comment__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.gallery-comment__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-comment__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.gallery-comment__meta-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gallery-comment__name {
+  font-weight: 700;
+}
+
+.gallery-comment__time {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.gallery-comment__type {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-muted);
+}
+
+.gallery-comment__type--repro {
+  border-color: rgba(245, 158, 11, 0.35);
+  color: rgba(245, 158, 11, 0.95);
+}
+
+.gallery-comment__type--suggestion {
+  border-color: rgba(34, 197, 94, 0.35);
+  color: rgba(34, 197, 94, 0.95);
+}
+
+.gallery-comment__content {
+  margin-top: 0.35rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.gallery-comment__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.gallery-comment__action {
+  padding: 0.25rem 0.6rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gallery-comment__action:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.gallery-comment__action--danger:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.gallery-comment__action--muted {
+  opacity: 0.9;
+}
+
+.gallery-comment__replies {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.gallery-comment__replies-status {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-left: 1.75rem;
+}
+
+.gallery-comment__more {
+  align-self: flex-start;
+  margin-left: 1.75rem;
+  padding: 0.35rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gallery-comment__more:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.gallery-comment__reply-form {
+  margin-left: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gallery-comment__reply-textarea {
+  width: 100%;
+  resize: vertical;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.6rem 0.75rem;
+  color: var(--text-main);
+  outline: none;
+  line-height: 1.6;
+}
+
+.gallery-comment__reply-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+.gallery-comment__reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.gallery-comment__reply-cancel,
+.gallery-comment__reply-send {
+  padding: 0.35rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gallery-comment__reply-send {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+}
+
+.gallery-comment__reply-cancel:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.gallery-comments-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.gallery-comments-sheet.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gallery-comments-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.gallery-comments-sheet__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-radius: 16px 16px 0 0;
+  padding: 0.75rem 1rem 1rem;
+  max-height: 85vh;
+  transform: translateY(12px);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-comments-sheet.open .gallery-comments-sheet__panel {
+  transform: translateY(0);
+}
+
+.gallery-comments-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.gallery-comments-sheet__title {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.gallery-comments-sheet__close {
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.gallery-comments-sheet__content {
+  overflow-y: auto;
+  padding-top: 0.75rem;
+}
+
+.gallery-comments.in-sheet {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.gallery-comments.in-sheet .gallery-comments__toggle {
+  display: none;
+}
+
+.gallery-comments.in-sheet .gallery-comments__panel {
+  padding: 0;
+}
+
 .gallery-fullscreen__image-wrap {
   position: relative;
   max-width: 100%;
@@ -1562,6 +2909,14 @@
   border-left: 1px solid var(--border);
   overflow-y: auto;
   padding: 2rem 1.5rem;
+  /* Hide scrollbar but keep scrolling (scheme A) */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gallery-fullscreen__info::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 .fullscreen-info-content {
@@ -1922,6 +3277,10 @@
   }
 
   .gallery-fullscreen__fav {
+    display: flex;
+  }
+
+  .gallery-fullscreen__comments {
     display: flex;
   }
 }

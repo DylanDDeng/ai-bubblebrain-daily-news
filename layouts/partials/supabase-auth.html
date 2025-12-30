@@ -13,6 +13,41 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let currentUser = null;
 let userFavorites = new Set();
 
+function getProfilePayloadFromUser(user) {
+  if (!user) return null;
+  const avatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || "";
+  const name =
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.email?.split("@")[0] ||
+    "用户";
+  return {
+    id: user.id,
+    display_name: name,
+    avatar_url: avatar || null,
+    updated_at: new Date().toISOString()
+  };
+}
+
+async function upsertUserProfile() {
+  if (!currentUser) return;
+
+  const payload = getProfilePayloadFromUser(currentUser);
+  if (!payload) return;
+
+  try {
+    const { error } = await supabaseClient
+      .from("profiles")
+      .upsert(payload, { onConflict: "id" });
+    if (error) {
+      console.warn("profiles upsert failed:", error);
+    }
+  } catch (err) {
+    // 表可能尚未创建，或网络/权限问题：不应阻塞登录/收藏功能
+    console.warn("profiles upsert exception:", err);
+  }
+}
+
 // 初始化认证状态
 async function initAuth() {
   // 未登录状态也需要绑定按钮点击事件
@@ -22,6 +57,7 @@ async function initAuth() {
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session?.user) {
     currentUser = session.user;
+    await upsertUserProfile();
     await loadUserFavorites();
     updateAuthUI();
   }
@@ -30,6 +66,7 @@ async function initAuth() {
   supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session?.user) {
       currentUser = session.user;
+      await upsertUserProfile();
       await loadUserFavorites();
       updateAuthUI();
       // 触发自定义事件，通知其他组件
