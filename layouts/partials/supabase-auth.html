@@ -60,6 +60,7 @@ async function initAuth() {
     await upsertUserProfile();
     await loadUserFavorites();
     updateAuthUI();
+    window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { user: currentUser } }));
   }
 
   // 监听认证状态变化

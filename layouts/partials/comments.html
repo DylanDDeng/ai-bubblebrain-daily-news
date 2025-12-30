@@ -1,69 +1,51 @@
-{{ $cusdis := .Site.Params.cusdis }}
-{{ $host := $cusdis.host | default "https://cusdis.com" }}
-{{ $appID := $cusdis.app_id | default $cusdis.appId }}
-{{ if and $cusdis $appID }}
-{{ $cusdisLang := cond (eq .Site.LanguageCode "zh-CN") "zh-cn" "en" }}
 <section class="comments-section">
   <h2 class="comments-title">{{ i18n "comments_title" }}</h2>
-  <div
-    id="cusdis_thread"
-    data-host="{{ $host }}"
-    data-app-id="{{ $appID }}"
-    data-page-id="{{ .RelPermalink }}"
-    data-page-url="{{ .Permalink }}"
-    data-page-title="{{ .Title }}"
-    data-theme="dark"
-    data-lang="{{ $cusdisLang }}"
-  ></div>
-  <script defer src="{{ printf "%s/js/cusdis.es.js" $host }}"></script>
+  {{- $threadPath := .RelPermalink -}}
+  {{- range .AllTranslations -}}
+    {{- if eq .Language.LanguageCode "zh-CN" -}}
+      {{- $threadPath = .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $threadId := printf "page:%s" $threadPath -}}
+
+  <div class="supabase-comments" data-supabase-comments data-thread-id="{{ $threadId }}">
+    <div class="supabase-comments__status" data-comments-status hidden></div>
+    <div class="supabase-comments__list" data-comments-list></div>
+    <div class="supabase-comments__list-actions">
+      <button class="supabase-comments__btn" type="button" data-comments-more hidden>{{ i18n "gallery_comments_load_more" }}</button>
+    </div>
+
+    <div class="supabase-comments__composer">
+      <div class="supabase-comments__login-hint" data-comments-login-hint hidden>{{ i18n "gallery_comments_login_to_comment" }}</div>
+      <form class="supabase-comments__fields" data-comments-form>
+        <textarea class="supabase-comments__textarea" data-comments-text rows="3" placeholder="{{ i18n "gallery_comments_placeholder" }}"></textarea>
+        <div class="supabase-comments__composer-actions">
+          <button class="supabase-comments__send" data-comments-submit type="submit">{{ i18n "gallery_comments_send" }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {{- $commentsI18N := dict
+      "loading" (i18n "gallery_comments_loading")
+      "empty" (i18n "gallery_comments_empty")
+      "loadMore" (i18n "gallery_comments_load_more")
+      "reply" (i18n "gallery_comments_reply")
+      "cancel" (i18n "gallery_comments_collapse")
+      "delete" (i18n "gallery_comments_delete")
+      "expandReplies" (i18n "gallery_comments_expand_replies")
+      "collapseReplies" (i18n "gallery_comments_collapse_replies")
+      "loginToComment" (i18n "gallery_comments_login_to_comment")
+      "placeholder" (i18n "gallery_comments_placeholder")
+      "send" (i18n "gallery_comments_send")
+      "unavailable" (i18n "gallery_comments_unavailable")
+      "loadFailed" (i18n "gallery_comments_load_failed")
+      "sendFailed" (i18n "gallery_comments_send_failed")
+      "deleteConfirm" (i18n "gallery_comments_delete_confirm")
+      "deleteFailed" (i18n "gallery_comments_delete_failed")
+    -}}
   <script>
-  // Cusdis iframe 高度自适应脚本
-  // 解决点击回复时，回复表单被截断的问题
-  (function() {
-    // 监听 Cusdis iframe 的 message 事件
-    window.addEventListener('message', function(e) {
-      if (e.data && e.data.from === 'cusdis') {
-        const iframe = document.querySelector('#cusdis_thread iframe');
-        if (iframe && e.data.height) {
-          iframe.style.height = e.data.height + 'px';
-        }
-      }
-    });
-
-    // 定时检查并更新 iframe 高度（备用方案，处理回复表单展开等情况）
-    let lastHeight = 0;
-    const checkHeight = function() {
-      const iframe = document.querySelector('#cusdis_thread iframe');
-      if (iframe) {
-        try {
-          // 尝试获取 iframe 内容高度
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-          if (iframeDoc && iframeDoc.body) {
-            const height = iframeDoc.body.scrollHeight;
-            // 只在高度变化时更新，避免频繁重绘
-            if (height > 0 && height !== lastHeight) {
-              iframe.style.height = (height + 20) + 'px';
-              lastHeight = height;
-            }
-          }
-        } catch(e) {
-          // 跨域情况下无法访问 iframe 内容，忽略错误
-        }
-      }
-    };
-
-    // 页面加载完成后开始检查
-    if (document.readyState === 'complete') {
-      setInterval(checkHeight, 500);
-    } else {
-      window.addEventListener('load', function() {
-        // 延迟启动，等待 Cusdis 脚本加载完成
-        setTimeout(function() {
-          setInterval(checkHeight, 500);
-        }, 1000);
-      });
-    }
-  })();
+    window.SUPABASE_COMMENTS_I18N = {{ $commentsI18N | jsonify | safeJS }};
   </script>
+  <script defer src="{{ "js/supabase-comments.js" | relURL }}"></script>
 </section>
-{{ end }}
