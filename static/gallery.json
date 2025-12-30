@@ -2634,9 +2634,142 @@
   }
 },
   "tags":["人像"]
+ },
+
+ {
+  "id":"152", 
+  "title":"人像照", 
+  "author":"@xmliisu", 
+  "source":"Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230082651946.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230082651946.png",
+  "prompt": {
+  "image_details": {
+    "subject": {
+      "appearance": {
+        "gender": "female",
+        "age_group": "young adult",
+        "hair": {
+          "color": "blonde",
+          "style": "long, wavy",
+          "parting": "center"
+        },
+        "face": {
+          "complexion": "fair, freckled",
+          "eyes": "dark",
+          "makeup": "natural, light mascara, pink blush, glossy lips"
+        },
+        "expression": "slight smile, looking at camera"
+      },
+      "pose": {
+        "type": "high-angle shot",
+        "stance": "standing, slight twist",
+        "arms": "one arm back, one hand near hip"
+      },
+      "attire": {
+        "top": {
+          "type": "tube top",
+          "color": "black",
+          "graphic": "brown 'HAWAIIAN TROPIC' text"
+        },
+        "bottoms": {
+          "type": "shorts",
+          "color": "white",
+          "graphic": "brown hibiscus flower"
+        },
+        "accessories": {
+          "necklace": "gold pendant chain"
+        }
+      }
+    },
+    "environment": {
+      "location": "modern indoor living space",
+      "background": {
+        "elements": [
+          "large dark TV screen",
+          "dark wood media console",
+          "vase with white fluffy plants",
+          "vertical wooden slatted wall panel",
+          "white tiled floor",
+          "doorway"
+        ]
+      }
+    },
+    "lighting": {
+      "source": "natural sunlight",
+      "direction": "from the side (right)",
+      "quality": "bright, warm, casting soft shadows"
+    },
+    "mood": "relaxed, confident, casual, sunny",
+    "photography_style": {
+      "type": "ultra-photorealistic",
+      "camera_details": {
+        "shot_type": "high-angle",
+        "focus": "sharp on subject",
+        "resolution": "high",
+        "color_palette": "warm, natural"
+      }
+    }
+  }
+},
+"tags":["人像"] 
+
+ }, 
+
+ {
+  "id":"153", 
+  "title":"女生人像照", 
+  "author":"BubbleBrain", 
+  "source":"Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230083805441.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230083805441.png",
+  "prompt": {
+  "subject": {
+    "desc": "1girl, solo, young woman, asian, japanese",
+    "details": "japanese idol, cute face, natural skin texture"
+  },
+  "appearance": {
+    "hair": "black hair, ponytail, messy bangs, loose strands",
+    "eyes": "brown eyes, bright eyes"
+  },
+  "expression": {
+    "emotion": "happy, energetic, bright smile, laughing",
+    "facial_features": "open mouth, showing teeth, blushing"
+  },
+  "pose": {
+    "action": "leaning forward, hand on face, touching cheek, head tilt",
+    "view": "looking at viewer, close-up, dynamic angle, upper body"
+  },
+  "clothing": {
+    "outfit": "black long sleeve shirt, sweater, tight fit, casual wear"
+  },
+  "environment": {
+    "scene": "indoors, by the window, white wall, bright room",
+    "lighting": "natural light, sunlight, overexposure, extreme bright, misty"
+  },
+  "style": {
+    "art_style": "photography, dreamy atmosphere, ethereal portrait",
+    "effects": "extreme soft focus, heavy bloom effect, diffused glow, hazy, hazy lens, dreamy",
+    "quality": "high quality, 8k, film grain, shallow depth of field"
+  },
+  "full_prompt": "1girl, solo, asian, japanese idol, black hair, ponytail, messy bangs, happy, bright smile, open mouth, showing teeth, leaning forward, hand on face, touching cheek, looking at viewer, black long sleeve shirt, indoors, window, natural light, overexposure, photography, dreamy atmosphere, extreme soft focus, heavy bloom effect, ethereal glow, diffused light, hazy lens, film grain"
+}, 
+
+"tags":["人像"]
+
+ }, 
+
+ {
+  "id":"154", 
+  "title":"商业产品创意", 
+  "author":"@_MehdiSharifi_", 
+  "source":"Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230092110183.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230092110183.png",
+  "prompt": "Cinematic 3D commercial close-up of a classic Coca-Cola glass bottle, covered in realistic condensation droplets. Scene: Abstract zero-gravity ice environment with floating geometric ice crystals. Action: Dark caramel soda liquid swirling violently inside the bottle and bursting out the top, mixing with effervescent bubbles and ice shards. Surrounding elements: Red metallic spheres reflecting the scene, cold steam rising. Camera: Dynamic orbital spin. Lighting: Dramatic backlighting with volumetric god rays, high contrast red and gold tones. Style: Octane Render aesthetic, crisp, kinetic, hyper-realistic commercial CGI, 8k resolution.",
+  "tags":["产品宣传图"]
+
  }
-
-
 
      
 ]
