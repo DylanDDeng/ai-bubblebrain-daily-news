@@ -2965,7 +2965,36 @@
   }
 },
 "tags":["人像","自拍"]
- }
+ },  
 
-     
-]
+      { 
+    "id": "157",
+    "title": "创意人像照片",
+    "author": "BubbleBrain",
+    "source": "Nano Banana Pro",
+    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230165225199.png",
+    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251230165225199.png",
+    "prompt": {
+    "image_generation": {
+      "quality": "hyper-realistic",
+      "face": { "preserve_original": true },
+      "subject": {
+        "clothing": "light grey knitted sweater, blue high-waisted jeans, white high-top sneakers",
+        "pose": "standing with arm around giant 3D Tom; Jerry on Tom's shoulder",
+        "expression": "fun, mischievous",
+        "character_element": {
+          "name": "Tom & Jerry",
+          "type": "3D photorealistic duo",
+          "interaction": "Tom posing confidently, Jerry playfully"
+        }
+      },
+      "environment": "clean grey-blue backdrop"
+    }
+  },
+    "tags": ["人像"]
+     } 
+
+
+    ]
+
+
