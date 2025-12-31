@@ -13,25 +13,25 @@
 
     {{ if $paginator.Pages }}
       <div class="daily-grid">
-        {{ range $paginator.Pages }}
-          {{ $model := .Params.model | default (i18n "prompts_model_fallback") }}
-          {{ $tone := .Params.tone }}
-          {{ $tags := .Params.tags }}
-          <article class="daily-card prompt-card reveal-text">
+        {{ range $index, $page := $paginator.Pages }}
+          {{ $model := $page.Params.model | default (i18n "prompts_model_fallback") }}
+          {{ $tone := $page.Params.tone }}
+          {{ $tags := $page.Params.tags }}
+          <article class="daily-card prompt-card reveal-text{{ if lt $index 6 }} active{{ end }}">
             <div class="card-header">
               <h2>
-                <a href="{{ .Permalink }}">{{ .Title }}</a>
+                <a href="{{ $page.Permalink }}">{{ $page.Title }}</a>
               </h2>
-              <time datetime="{{ .Date.Format "2006-01-02" }}">
-                {{ .Date.Format (i18n "date_format") }}
+              <time datetime="{{ $page.Date.Format "2006-01-02" }}">
+                {{ $page.Date.Format (i18n "date_format") }}
               </time>
             </div>
 
             <div class="card-content">
-              {{ with .Description }}
+              {{ with $page.Description }}
                 <p>{{ . }}</p>
               {{ else }}
-                <p>{{ .Summary | truncate 200 }}</p>
+                <p>{{ $page.Summary | truncate 200 }}</p>
               {{ end }}
               {{ if and $tags (gt (len $tags) 0) }}
                 <div class="prompt-tags">
@@ -50,7 +50,7 @@
             </div>
 
             <div class="card-footer">
-              <a class="read-more" href="{{ .Permalink }}">{{ i18n "prompts_view_prompt" }}</a>
+              <a class="read-more" href="{{ $page.Permalink }}">{{ i18n "prompts_view_prompt" }}</a>
             </div>
           </article>
         {{ end }}
@@ -89,8 +89,6 @@
     {{ end }}
   </div>
 </section>
-
-{{ partial "daily-section-styles.html" . }}
 
 <style>
 .prompt-hero {

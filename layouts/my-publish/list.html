@@ -13,27 +13,27 @@
 
     {{ if $paginator.Pages }}
       <div class="daily-grid">
-        {{ range $paginator.Pages }}
-          <article class="daily-card reveal-text">
+        {{ range $index, $page := $paginator.Pages }}
+          <article class="daily-card reveal-text{{ if lt $index 6 }} active{{ end }}">
             <div class="card-header">
               <h2>
-                <a href="{{ .Permalink }}">{{ .Title }}</a>
+                <a href="{{ $page.Permalink }}">{{ $page.Title }}</a>
               </h2>
-              <time datetime="{{ .Date.Format "2006-01-02" }}">
-                {{ .Date.Format (i18n "date_format") }}
+              <time datetime="{{ $page.Date.Format "2006-01-02" }}">
+                {{ $page.Date.Format (i18n "date_format") }}
               </time>
             </div>
             
             <div class="card-content">
-              {{ with .Description }}
+              {{ with $page.Description }}
                 <p>{{ . }}</p>
               {{ else }}
-                <p>{{ .Summary | truncate 200 }}</p>
+                <p>{{ $page.Summary | truncate 200 }}</p>
               {{ end }}
             </div>
             
             <div class="card-footer">
-              <a href="{{ .Permalink }}" class="read-more">
+              <a href="{{ $page.Permalink }}" class="read-more">
                 {{ i18n "my_publish_read_more" }}
               </a>
             </div>
@@ -75,5 +75,4 @@
   </div>
 </section>
 
-{{ partial "daily-section-styles.html" . }}
 {{ end }}

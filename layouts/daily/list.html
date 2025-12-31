@@ -18,39 +18,54 @@
 
     {{ if $paginator.Pages }}
       <div class="daily-grid">
-        {{ range $paginator.Pages }}
-          {{ $dateId := .Date.Format "2006-01-02" }}
+        {{ range $index, $page := $paginator.Pages }}
+          {{ $dateId := $page.Date.Format "2006-01-02" }}
           {{ $coverImage := "" }}
           {{ range $dailyData }}
             {{ if eq .id $dateId }}
               {{ $coverImage = .cover }}
             {{ end }}
           {{ end }}
-          <article class="daily-card reveal-text">
+          {{ $coverSmall := $coverImage }}
+          {{ $coverLarge := $coverImage }}
+          {{ if and $coverImage (or (in $coverImage ".cos.") (in $coverImage "myqcloud.com")) (not (in $coverImage "imageMogr2")) }}
+            {{ if not (in $coverImage "?") }}
+              {{ $coverSmall = printf "%s?imageMogr2/format/webp/thumbnail/480x/quality/85" $coverImage }}
+              {{ $coverLarge = printf "%s?imageMogr2/format/webp/thumbnail/960x/quality/85" $coverImage }}
+            {{ end }}
+          {{ end }}
+          <article class="daily-card reveal-text{{ if lt $index 6 }} active{{ end }}">
             {{ if $coverImage }}
             <div class="card-cover">
-              <img src="{{ $coverImage }}" alt="{{ .Title }}">
+              <img
+                src="{{ $coverSmall }}"
+                srcset="{{ $coverSmall }} 480w, {{ $coverLarge }} 960w"
+                sizes="(max-width: 768px) 100vw, 480px"
+                alt="{{ $page.Title }}"
+                decoding="async"
+                {{ if eq $index 0 }}fetchpriority="high"{{ else }}loading="lazy"{{ end }}
+              >
             </div>
             {{ end }}
             <div class="card-header">
               <h2>
-                <a href="{{ .Permalink }}">{{ .Title }}</a>
+                <a href="{{ $page.Permalink }}">{{ $page.Title }}</a>
               </h2>
-              <time datetime="{{ .Date.Format "2006-01-02" }}">
-                {{ .Date.Format (i18n "date_format") }}
+              <time datetime="{{ $page.Date.Format "2006-01-02" }}">
+                {{ $page.Date.Format (i18n "date_format") }}
               </time>
             </div>
             
             <div class="card-content">
-              {{ with .Description }}
+              {{ with $page.Description }}
                 <p>{{ . }}</p>
               {{ else }}
-                <p>{{ .Summary | truncate 200 }}</p>
+                <p>{{ $page.Summary | truncate 200 }}</p>
               {{ end }}
             </div>
             
             <div class="card-footer">
-              <a href="{{ .Permalink }}" class="read-more">
+              <a href="{{ $page.Permalink }}" class="read-more">
                 {{ i18n "daily_read_more" }}
               </a>
             </div>
@@ -92,5 +107,4 @@
   </div>
 </section>
 
-{{ partial "daily-section-styles.html" . }}
 {{ end }}

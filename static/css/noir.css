@@ -91,6 +91,104 @@ a:hover {
   gap: 1.25rem;
 }
 
+.auth-container {
+  position: relative;
+  margin-left: 0.75rem;
+}
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  width: 160px;
+  min-width: 160px;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#auth-text {
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.auth-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: none;
+}
+
+.auth-btn.logged-in .auth-avatar {
+  display: block;
+}
+
+.user-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 140px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.user-menu.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.user-menu-item:hover {
+  background: var(--surface-highlight);
+}
+
+.user-menu-item:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.user-menu-item:last-child {
+  border-radius: 0 0 8px 8px;
+}
+
+.user-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
 .nav-lang {
   gap: 0.6rem;
 }
@@ -486,6 +584,191 @@ a:hover {
 .page-list-item:hover {
   background: var(--surface-highlight);
   transform: translateY(-3px);
+}
+
+/* Shared list pages (Daily / Prompts / My Publish) */
+.daily-list-container {
+  width: 100%;
+  padding: 0 var(--page-padding) 4rem;
+}
+
+.daily-list-container .daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.daily-list-container .daily-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0;
+  transition: transform 0.3s ease, background 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.daily-list-container .daily-card:hover {
+  transform: translateY(-4px);
+  background: var(--surface-highlight);
+}
+
+.daily-list-container .card-cover {
+  width: 100%;
+  height: 200px;
+  background: var(--surface-highlight);
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.daily-list-container .card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+.daily-list-container .daily-card:hover .card-cover img {
+  transform: scale(1.05);
+}
+
+.daily-list-container .card-header {
+  margin-bottom: 1.5rem;
+  padding: 1.75rem 1.75rem 0 1.75rem;
+}
+
+.daily-list-container .card-header h2 {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.daily-list-container .card-header h2 a {
+  text-decoration: none;
+  transition: color 0.3s ease, letter-spacing 0.2s ease;
+}
+
+.daily-list-container .card-header h2 a:hover {
+  letter-spacing: 0.02em;
+}
+
+.daily-list-container .card-header time {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+}
+
+.daily-list-container .card-content {
+  flex: 1;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  padding: 0 1.75rem;
+}
+
+.daily-list-container .card-content p {
+  margin-bottom: 0.9rem;
+}
+
+.daily-list-container .card-footer {
+  border-top: 1px solid var(--border);
+  padding: 1rem 1.75rem 1.75rem 1.75rem;
+}
+
+.daily-list-container .read-more {
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.daily-list-container .read-more:hover {
+  color: var(--accent);
+  transform: translateX(5px);
+}
+
+.daily-list-container .empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  margin: 2rem auto;
+  max-width: 500px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .daily-list-container .daily-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .daily-list-container {
+    padding: 0 1.5rem 3rem;
+  }
+
+  .daily-list-container .daily-card {
+    padding: 0;
+  }
+}
+
+.daily-list-container .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.daily-list-container .pagination-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.daily-list-container .pagination-link.disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.daily-list-container .pagination-pages {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.daily-list-container .pagination-page {
+  min-width: 36px;
+  text-align: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.daily-list-container .pagination-page:hover {
+  background: var(--surface-highlight);
+}
+
+.daily-list-container .pagination-page.current {
+  background: var(--accent);
+  color: #000;
 }
 
 /* Article pages */
@@ -1234,6 +1517,20 @@ footer {
     justify-content: flex-start;
     padding-top: 1rem;
     border-top: 1px solid var(--border);
+  }
+
+  .auth-container {
+    margin-left: 0;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    width: 100%;
+  }
+
+  .auth-btn {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
   }
 
   /* 移动端菜单遮罩 */
