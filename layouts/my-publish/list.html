@@ -44,10 +44,10 @@
             <div class="mypublish-month-list">
               {{ range $monthGroup := $monthGroups }}
                 {{ $monthKey := $monthGroup.Key }}
-                {{ $monthInt := int $monthKey }}
-                {{ $monthLabel := printf "%d月" $monthInt }}
+                {{ $monthTime := time (printf "%s-%s-01" $year $monthKey) }}
+                {{ $monthLabel := printf "%s月" ($monthTime.Format "1") }}
                 {{ if ne $.Site.LanguageCode "zh-CN" }}
-                  {{ $monthLabel = (time (printf "%s-%s-01" $year $monthKey)).Format "January" }}
+                  {{ $monthLabel = $monthTime.Format "January" }}
                 {{ end }}
 
                 <div class="mypublish-month">

@@ -1,7 +1,7 @@
 {{ define "main" }}
 <section class="section">
-  <div class="section-narrow daily-list-container">
-    <header class="prompt-hero">
+  <div class="section-narrow daily-list-container mypublish-archive prompts-archive">
+    <header class="page-header">
       <p class="page-eyebrow">{{ i18n "prompts_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
       {{ with .Description }}
@@ -9,78 +9,127 @@
       {{ end }}
     </header>
 
-    {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 9 }}
+    {{ $pages := .Pages.ByDate.Reverse }}
+    {{ $yearGroups := sort ($pages.GroupByDate "2006") "Key" "desc" }}
 
-    {{ if $paginator.Pages }}
-      <div class="daily-grid">
-        {{ range $index, $page := $paginator.Pages }}
-          {{ $model := $page.Params.model | default (i18n "prompts_model_fallback") }}
-          {{ $tone := $page.Params.tone }}
-          {{ $tags := $page.Params.tags }}
-          <article class="daily-card prompt-card reveal-text{{ if lt $index 6 }} active{{ end }}">
-            <div class="card-header">
-              <h2>
-                <a href="{{ $page.Permalink }}">{{ $page.Title }}</a>
-              </h2>
-              <time datetime="{{ $page.Date.Format "2006-01-02" }}">
-                {{ $page.Date.Format (i18n "date_format") }}
-              </time>
-            </div>
+    {{ if gt (len $pages) 0 }}
+      <nav class="mypublish-year-nav" aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "按年份切换" "Browse by year" }}">
+        <div class="mypublish-year-pills">
+          {{ range $index, $group := $yearGroups }}
+            {{ $year := $group.Key }}
+            <button
+              type="button"
+              class="mypublish-year-pill{{ if eq $index 0 }} active{{ end }}"
+              data-year="{{ $year }}"
+              aria-controls="prompts-year-{{ $year }}"
+              aria-expanded="{{ if eq $index 0 }}true{{ else }}false{{ end }}"
+            >
+              <span class="mypublish-year-label">{{ $year }}</span>
+              <span class="mypublish-year-count">{{ len $group.Pages }}</span>
+            </button>
+          {{ end }}
+        </div>
+      </nav>
 
-            <div class="card-content">
-              {{ with $page.Description }}
-                <p>{{ . }}</p>
-              {{ else }}
-                <p>{{ $page.Summary | truncate 200 }}</p>
-              {{ end }}
-              {{ if and $tags (gt (len $tags) 0) }}
-                <div class="prompt-tags">
-                  {{ range $index, $tag := $tags }}
-                    {{ if lt $index 3 }}<span>{{ $tag }}</span>{{ end }}
-                  {{ end }}
+      <div class="mypublish-year-list">
+        {{ range $index, $group := $yearGroups }}
+          {{ $year := $group.Key }}
+          {{ $monthGroups := sort ($group.Pages.GroupByDate "01") "Key" "desc" }}
+          <details id="prompts-year-{{ $year }}" class="mypublish-year" {{ if eq $index 0 }}open{{ end }}>
+            <summary class="mypublish-year-summary">
+              <span class="mypublish-year-title">{{ $year }}</span>
+              <span class="mypublish-year-total">{{ len $group.Pages }}</span>
+            </summary>
+
+            <div class="mypublish-month-list">
+              {{ range $monthGroup := $monthGroups }}
+                {{ $monthKey := $monthGroup.Key }}
+                {{ $monthTime := time (printf "%s-%s-01" $year $monthKey) }}
+                {{ $monthLabel := printf "%s月" ($monthTime.Format "1") }}
+                {{ if ne $.Site.LanguageCode "zh-CN" }}
+                  {{ $monthLabel = $monthTime.Format "January" }}
+                {{ end }}
+
+                <div class="mypublish-month">
+                  <div class="mypublish-month-label">
+                    <span class="mypublish-month-name">{{ $monthLabel }}</span>
+                    <span class="mypublish-month-count">{{ len $monthGroup.Pages }}</span>
+                  </div>
+
+                  <div class="mypublish-items">
+                    {{ range $page := $monthGroup.Pages.ByDate.Reverse }}
+                      <article class="mypublish-item">
+                        <h2 class="mypublish-item-title">
+                          <a href="{{ $page.Permalink }}">{{ $page.Title }}</a>
+                        </h2>
+                      </article>
+                    {{ end }}
+                  </div>
                 </div>
               {{ end }}
             </div>
-
-            <div class="prompt-pillset">
-              <span class="prompt-pill">{{ i18n "prompts_recommended_model" }}{{ $model }}</span>
-              {{ if $tone }}
-                <span class="prompt-pill">{{ i18n "prompts_tone" }}{{ $tone }}</span>
-              {{ end }}
-            </div>
-
-            <div class="card-footer">
-              <a class="read-more" href="{{ $page.Permalink }}">{{ i18n "prompts_view_prompt" }}</a>
-            </div>
-          </article>
+          </details>
         {{ end }}
       </div>
 
-      {{ if gt $paginator.TotalPages 1 }}
-        <nav class="pagination" aria-label="{{ i18n "prompts_pagination_aria" }}">
-          {{ if $paginator.HasPrev }}
-            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">{{ i18n "pagination_prev" }}</a>
-          {{ else }}
-            <span class="pagination-link disabled">{{ i18n "pagination_prev" }}</span>
-          {{ end }}
+      <script>
+      (() => {
+        const root = document.querySelector(".prompts-archive");
+        if (!root) return;
 
-          <div class="pagination-pages">
-            {{ range $pager := $paginator.Pagers }}
-              {{ if eq $pager.PageNumber $paginator.PageNumber }}
-                <span class="pagination-page current">{{ $pager.PageNumber }}</span>
-              {{ else }}
-                <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
-              {{ end }}
-            {{ end }}
-          </div>
+        const pills = Array.from(root.querySelectorAll(".mypublish-year-pill"));
+        const years = Array.from(root.querySelectorAll("details.mypublish-year"));
+        if (!pills.length || !years.length) return;
 
-          {{ if $paginator.HasNext }}
-            <a class="pagination-link" href="{{ $paginator.Next.URL }}">{{ i18n "pagination_next" }}</a>
-          {{ else }}
-            <span class="pagination-link disabled">{{ i18n "pagination_next" }}</span>
-          {{ end }}
-        </nav>
-      {{ end }}
+        const yearOf = (detailsEl) => (detailsEl.id || "").replace("prompts-year-", "").trim();
+        const byYear = new Map(years.map((el) => [yearOf(el), el]));
+
+        const setActive = (year) => {
+          pills.forEach((pill) => {
+            const isActive = pill.dataset.year === year;
+            pill.classList.toggle("active", isActive);
+            pill.setAttribute("aria-expanded", isActive ? "true" : "false");
+          });
+        };
+
+        const openYear = (year, { scroll = true, updateHash = true } = {}) => {
+          const target = byYear.get(year);
+          if (!target) return;
+          years.forEach((el) => { if (el !== target) el.open = false; });
+          target.open = true;
+          setActive(year);
+          if (scroll) target.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (updateHash && window.history && window.history.replaceState) {
+            window.history.replaceState(null, "", `#prompts-year-${year}`);
+          }
+        };
+
+        pills.forEach((pill) => {
+          pill.addEventListener("click", () => openYear(pill.dataset.year));
+        });
+
+        years.forEach((detailsEl) => {
+          detailsEl.addEventListener("toggle", () => {
+            if (!detailsEl.open) return;
+            const year = yearOf(detailsEl);
+            years.forEach((el) => { if (el !== detailsEl) el.open = false; });
+            setActive(year);
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState(null, "", `#prompts-year-${year}`);
+            }
+          });
+        });
+
+        const match = window.location.hash.match(/prompts-year-(\d{4})/);
+        if (match && byYear.has(match[1])) {
+          openYear(match[1], { scroll: false, updateHash: false });
+          return;
+        }
+
+        const openEl = years.find((el) => el.open);
+        setActive(openEl ? yearOf(openEl) : (pills[0].dataset.year || ""));
+      })();
+      </script>
     {{ else }}
       <div class="empty-state">
         <p>{{ i18n "prompts_empty_title" }}</p>
@@ -89,58 +138,4 @@
     {{ end }}
   </div>
 </section>
-
-<style>
-.prompt-hero {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.prompt-hero h1 {
-  margin: 0.5rem 0;
-  font-size: 2.6rem;
-  font-family: "Cormorant Garamond", serif;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-}
-
-.prompt-hero .page-desc {
-  max-width: 60ch;
-  margin: 0.5rem auto 0;
-}
-
-.prompt-card .card-content p {
-  margin-bottom: 0.9rem;
-}
-
-.prompt-tags {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin-top: 0.75rem;
-}
-
-.prompt-tags span {
-  background: var(--surface-highlight);
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-}
-
-.prompt-pillset {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin: 1rem 0;
-}
-
-.prompt-pill {
-  background: var(--surface-highlight);
-  border-radius: 999px;
-  padding: 0.35rem 1rem;
-  font-size: 0.9rem;
-  color: var(--text-main);
-  border: 1px solid var(--border);
-}
-</style>
 {{ end }}
