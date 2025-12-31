@@ -35,6 +35,8 @@
 (() => {
   const dataUrl = "{{ "/x-trending.json" | relLangURL }}";
   const TWITTER_THEME = "dark";
+  const SEARCH_DEBOUNCE_MS = 250;
+  const EMBED_ROOT_MARGIN = "700px 0px";
 
   // 标签折叠配置
   const MAX_TAGS_VISIBLE = 8;
@@ -43,7 +45,8 @@
   const I18N = {
     all: "{{ i18n "xtrending_all" }}",
     expandTags: "{{ i18n "xtrending_expand_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "展开更多 (+{count})" "Show more (+{count})") }}",
-    collapseTags: "{{ i18n "xtrending_collapse_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "收起" "Collapse") }}"
+    collapseTags: "{{ i18n "xtrending_collapse_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "收起" "Collapse") }}",
+    openOriginal: "{{ i18n "xtrending_open_original" | default (cond (eq .Site.LanguageCode "zh-CN") "推文加载失败，点击打开原文" "Tweet failed to load. Open on X") }}"
   };
 
   const grid = document.getElementById("xtrending-grid");
@@ -53,9 +56,10 @@
   const tagFiltersWrap = document.getElementById("xtrending-tag-filters");
 
   let allItems = [];
-  let filteredItems = [];
   let currentTag = "all";
   let searchTerm = "";
+  let cardRecords = [];
+  let twitterReadyPromise = null;
 
   function setEmpty(show) { if (empty) empty.hidden = !show; }
   function setFilterEmpty(show) { if (filterEmpty) filterEmpty.hidden = !show; }
@@ -92,6 +96,88 @@
       uniq.forEach((t) => { counts[t] = (counts[t] || 0) + 1; });
     });
     return counts;
+  }
+
+  function ensureTwitterReady() {
+    if (twitterReadyPromise) return twitterReadyPromise;
+    twitterReadyPromise = new Promise((resolve) => {
+      if (window.twttr && window.twttr.widgets) {
+        resolve(window.twttr);
+        return;
+      }
+      window.twttr = window.twttr || {};
+      window.twttr.ready = window.twttr.ready || function(fn) {
+        if (window.twttr.widgets) fn(window.twttr);
+        else (window.twttr._e = window.twttr._e || []).push(fn);
+      };
+      window.twttr.ready(() => resolve(window.twttr));
+    });
+    return twitterReadyPromise;
+  }
+
+  const embedObserver = ("IntersectionObserver" in window)
+    ? new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const card = entry.target;
+        if (!card || card.hidden) return;
+        queueEmbed(card);
+      });
+    }, { rootMargin: EMBED_ROOT_MARGIN, threshold: 0.01 })
+    : null;
+
+  function queueEmbed(card) {
+    if (!card || card.hidden) return;
+    const state = card.dataset.embedState || "idle";
+    if (state === "loaded" || state === "loading" || state === "queued" || state === "failed") return;
+    card.dataset.embedState = "queued";
+    ensureTwitterReady().then(() => embedTweet(card));
+  }
+
+  function embedTweet(card) {
+    if (!card || card.hidden) return;
+    const state = card.dataset.embedState || "idle";
+    if (state === "loaded" || state === "loading" || state === "failed") return;
+
+    const tweetId = card.dataset.tweetId;
+    if (!tweetId) {
+      card.dataset.embedState = "failed";
+      return;
+    }
+
+    const embedWrap = card.querySelector(".xtrending-embed");
+    if (!embedWrap) {
+      card.dataset.embedState = "failed";
+      return;
+    }
+
+    if (!(window.twttr && window.twttr.widgets && window.twttr.widgets.createTweet)) {
+      // widgets.js 可能还没真正可用，保持 queued 等待下一次触发
+      card.dataset.embedState = "queued";
+      return;
+    }
+
+    card.dataset.embedState = "loading";
+    embedWrap.hidden = false;
+    embedWrap.innerHTML = "";
+
+    window.twttr.widgets.createTweet(tweetId, embedWrap, {
+      theme: TWITTER_THEME,
+      dnt: true,
+      align: "center"
+    }).then(() => {
+      card.dataset.embedState = "loaded";
+      const skeleton = card.querySelector(".xtrending-skeleton");
+      if (skeleton) skeleton.classList.add("is-hidden");
+      if (embedObserver) embedObserver.unobserve(card);
+    }).catch(() => {
+      card.dataset.embedState = "failed";
+      embedWrap.hidden = true;
+      const skeleton = card.querySelector(".xtrending-skeleton");
+      if (skeleton) skeleton.classList.add("is-failed");
+      const link = card.querySelector(".xtrending-fallback-link");
+      if (link) link.hidden = false;
+    });
   }
 
   function renderTagPills(tags) {
@@ -153,50 +239,81 @@
     });
   }
 
-  function buildCard(item, container) {
+  function buildCard(item) {
     if (!item) return null;
     const tweetId = parseTweetId(item.originalUrl);
     if (!tweetId) return null;
 
     const card = document.createElement("article");
     card.className = "xtrending-card reveal-text";
+    card.dataset.tweetId = tweetId;
+    card.dataset.embedState = "idle";
 
-    // 创建嵌入容器
+    const skeleton = document.createElement("div");
+    skeleton.className = "xtrending-skeleton";
+    card.appendChild(skeleton);
+
+    const fallback = document.createElement("a");
+    fallback.className = "xtrending-fallback-link";
+    fallback.href = item.originalUrl || "#";
+    fallback.target = "_blank";
+    fallback.rel = "noopener noreferrer";
+    fallback.textContent = I18N.openOriginal;
+    fallback.hidden = true;
+    card.appendChild(fallback);
+
+    // 创建嵌入容器（进入可视区后再 createTweet）
     const embedWrap = document.createElement("div");
     embedWrap.className = "xtrending-embed";
+    embedWrap.hidden = true;
     card.appendChild(embedWrap);
-    container.appendChild(card);
 
-    // 使用 twttr.widgets.createTweet 创建推文
-    if (window.twttr && window.twttr.widgets) {
-      window.twttr.widgets.createTweet(tweetId, embedWrap, {
-        theme: TWITTER_THEME,
-        dnt: true,
-        align: "center"
-      }).then(() => {
-        card.classList.add("active");
-      });
-    }
+    if (embedObserver) embedObserver.observe(card);
+    requestAnimationFrame(() => card.classList.add("active"));
 
-    return card;
+    return { card, item };
   }
 
-  function renderGrid() {
+  function renderGridOnce(items) {
     if (!grid) return;
     grid.innerHTML = "";
 
-    const totalItems = filteredItems.length;
-    if (!totalItems) return;
+    cardRecords = [];
 
-    // 直接将卡片添加到 grid，buildCard 内部会调用 createTweet
-    filteredItems.forEach((item) => {
-      buildCard(item, grid);
+    const frag = document.createDocumentFragment();
+    items.forEach((item) => {
+      const built = buildCard(item);
+      if (!built) return;
+      cardRecords.push(built);
+      frag.appendChild(built.card);
     });
+    grid.appendChild(frag);
+
+    // 兼容不支持 IntersectionObserver 的环境：直接创建所有嵌入
+    if (!embedObserver) {
+      ensureTwitterReady().then(() => {
+        cardRecords.forEach((rec) => {
+          if (!rec.card.hidden) {
+            rec.card.dataset.embedState = "queued";
+            embedTweet(rec.card);
+          }
+        });
+      });
+    }
+  }
+
+  function debounce(fn, delayMs) {
+    let timer = null;
+    return (...args) => {
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(() => fn(...args), delayMs);
+    };
   }
 
   function applyFilter() {
-    if (!allItems.length) return;
+    if (!cardRecords.length) return;
     const term = searchTerm.trim().toLowerCase();
+    let visibleCount = 0;
 
     const matchesSearch = (item) => {
       if (!term) return true;
@@ -217,10 +334,25 @@
       return tags.some((t) => (t || "").toString().trim().toLowerCase() === currentTag.toLowerCase());
     };
 
-    filteredItems = allItems.filter((item) => matchesSearch(item) && byTag(item));
-    const noMatch = filteredItems.length === 0;
+    cardRecords.forEach((rec) => {
+      const show = matchesSearch(rec.item) && byTag(rec.item);
+      rec.card.hidden = !show;
+      if (show) visibleCount += 1;
+    });
+
+    const noMatch = visibleCount === 0;
     setFilterEmpty(noMatch && (currentTag !== "all" || term));
-    renderGrid();
+
+    // 如果筛选后有内容且支持 IO，确保可视区内的卡片能触发 embed
+    if (embedObserver && visibleCount > 0) {
+      requestAnimationFrame(() => {
+        cardRecords.forEach((rec) => {
+          if (rec.card.hidden) return;
+          // 触发一次观察回调（某些情况下从 hidden -> visible 不会立刻触发）
+          embedObserver.observe(rec.card);
+        });
+      });
+    }
   }
 
   function render(items) {
@@ -230,28 +362,21 @@
     }
     setEmpty(false);
     allItems = items;
-    filteredItems = [...allItems];
     renderTagPills(collectTags(allItems));
     setFilterEmpty(false);
 
-    // 等待 widgets.js 加载完成后再渲染
-    if (window.twttr && window.twttr.widgets) {
-      renderGrid();
-    } else {
-      // 监听 widgets.js 加载完成事件
-      window.twttr = window.twttr || {};
-      window.twttr.ready = window.twttr.ready || function(fn) {
-        if (window.twttr.widgets) fn(window.twttr);
-        else (window.twttr._e = window.twttr._e || []).push(fn);
-      };
-      window.twttr.ready(() => renderGrid());
-    }
+    renderGridOnce(allItems);
+    applyFilter();
   }
 
   if (searchInput) {
-    searchInput.addEventListener("input", (event) => {
-      searchTerm = event.target.value || "";
+    const onSearch = debounce((value) => {
+      searchTerm = value || "";
       applyFilter();
+    }, SEARCH_DEBOUNCE_MS);
+
+    searchInput.addEventListener("input", (event) => {
+      onSearch(event.target.value);
     });
   }
 
@@ -379,11 +504,70 @@
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
+  position: relative;
+}
+
+.xtrending-card[data-embed-state="idle"],
+.xtrending-card[data-embed-state="queued"],
+.xtrending-card[data-embed-state="loading"] {
+  min-height: 420px;
 }
 
 /* 推文嵌入容器 */
 .xtrending-embed {
   position: relative;
+  z-index: 1;
+}
+
+.xtrending-skeleton.is-hidden {
+  display: none;
+}
+
+.xtrending-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--surface-highlight);
+}
+
+.xtrending-skeleton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.09) 45%,
+    rgba(255,255,255,0.03) 100%);
+  transform: translateX(-60%);
+  animation: xtrendingShimmer 1.4s ease-in-out infinite;
+}
+
+.xtrending-skeleton.is-failed::before {
+  display: none;
+}
+
+.xtrending-fallback-link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.xtrending-fallback-link:hover {
+  color: var(--accent);
+}
+
+@keyframes xtrendingShimmer {
+  0% { transform: translateX(-60%); }
+  100% { transform: translateX(60%); }
 }
 
 /* Twitter 嵌入推文样式覆盖 */

@@ -2,7 +2,7 @@
 title: "AI解读文章"
 slug: "ai-ask-article"
 description: "适用于Gemini 3等一流模型"
-date: 2026-12-27
+date: 2025-12-27
 tags: ["analyze",]
 model: "Gemini 3" 
 ---    

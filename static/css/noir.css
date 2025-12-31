@@ -771,6 +771,192 @@ a:hover {
   color: #000;
 }
 
+/* My Publish archive list */
+.mypublish-archive .mypublish-year-nav {
+  margin: -0.75rem 0 2rem;
+}
+
+.mypublish-archive .mypublish-year-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.mypublish-archive .mypublish-year-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.mypublish-archive .mypublish-year-pill:hover {
+  border-color: var(--accent);
+}
+
+.mypublish-archive .mypublish-year-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+.mypublish-archive .mypublish-year-count {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.mypublish-archive .mypublish-year-pill.active .mypublish-year-count {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.mypublish-archive .mypublish-year-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.mypublish-archive details.mypublish-year {
+  border-top: 1px solid var(--border);
+  padding: 1.75rem 0;
+  scroll-margin-top: 140px;
+}
+
+.mypublish-archive details.mypublish-year:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.mypublish-archive details.mypublish-year > summary {
+  list-style: none;
+}
+
+.mypublish-archive details.mypublish-year > summary::-webkit-details-marker {
+  display: none;
+}
+
+.mypublish-archive .mypublish-year-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mypublish-archive .mypublish-year-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.6rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.mypublish-archive .mypublish-year-total {
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.mypublish-archive .mypublish-month-list {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.mypublish-archive .mypublish-month {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 2.25rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.mypublish-archive .mypublish-month:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.mypublish-archive .mypublish-month-label {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  color: var(--text-main);
+}
+
+.mypublish-archive .mypublish-month-name {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+.mypublish-archive .mypublish-month-count {
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+}
+
+.mypublish-archive .mypublish-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+
+.mypublish-archive .mypublish-item-title {
+  margin: 0;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.4rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.mypublish-archive .mypublish-item-title a {
+  transition: color 0.2s ease, letter-spacing 0.2s ease;
+}
+
+.mypublish-archive .mypublish-item-title a:hover {
+  letter-spacing: 0.02em;
+}
+
+.mypublish-archive .mypublish-item-meta {
+  margin-top: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.mypublish-archive .mypublish-item-summary {
+  margin-top: 0.55rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  max-width: 70ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .mypublish-archive .mypublish-month {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .mypublish-archive .mypublish-year-title {
+    font-size: 2.2rem;
+  }
+}
+
 /* Article pages */
 .daily-article {
   border: 1px solid var(--border);

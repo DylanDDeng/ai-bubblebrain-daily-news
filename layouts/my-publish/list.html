@@ -1,6 +1,6 @@
 {{ define "main" }}
 <section class="section">
-  <div class="section-narrow daily-list-container">
+  <div class="section-narrow daily-list-container mypublish-archive">
     <header class="page-header">
       <p class="page-eyebrow">{{ i18n "my_publish_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
@@ -9,63 +9,138 @@
       {{ end }}
     </header>
 
-    {{ $paginator := .Paginate (.Pages.ByDate.Reverse) 10 }}
+    {{ $pages := .Pages.ByDate.Reverse }}
+    {{ $yearGroups := sort ($pages.GroupByDate "2006") "Key" "desc" }}
 
-    {{ if $paginator.Pages }}
-      <div class="daily-grid">
-        {{ range $index, $page := $paginator.Pages }}
-          <article class="daily-card reveal-text{{ if lt $index 6 }} active{{ end }}">
-            <div class="card-header">
-              <h2>
-                <a href="{{ $page.Permalink }}">{{ $page.Title }}</a>
-              </h2>
-              <time datetime="{{ $page.Date.Format "2006-01-02" }}">
-                {{ $page.Date.Format (i18n "date_format") }}
-              </time>
-            </div>
-            
-            <div class="card-content">
-              {{ with $page.Description }}
-                <p>{{ . }}</p>
-              {{ else }}
-                <p>{{ $page.Summary | truncate 200 }}</p>
+    {{ if gt (len $pages) 0 }}
+      <nav class="mypublish-year-nav" aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "按年份切换" "Browse by year" }}">
+        <div class="mypublish-year-pills">
+          {{ range $index, $group := $yearGroups }}
+            {{ $year := $group.Key }}
+            <button
+              type="button"
+              class="mypublish-year-pill{{ if eq $index 0 }} active{{ end }}"
+              data-year="{{ $year }}"
+              aria-controls="mypublish-year-{{ $year }}"
+              aria-expanded="{{ if eq $index 0 }}true{{ else }}false{{ end }}"
+            >
+              <span class="mypublish-year-label">{{ $year }}</span>
+              <span class="mypublish-year-count">{{ len $group.Pages }}</span>
+            </button>
+          {{ end }}
+        </div>
+      </nav>
+
+      <div class="mypublish-year-list">
+        {{ range $index, $group := $yearGroups }}
+          {{ $year := $group.Key }}
+          {{ $monthGroups := sort ($group.Pages.GroupByDate "01") "Key" "desc" }}
+          <details id="mypublish-year-{{ $year }}" class="mypublish-year" {{ if eq $index 0 }}open{{ end }}>
+            <summary class="mypublish-year-summary">
+              <span class="mypublish-year-title">{{ $year }}</span>
+              <span class="mypublish-year-total">{{ len $group.Pages }}</span>
+            </summary>
+
+            <div class="mypublish-month-list">
+              {{ range $monthGroup := $monthGroups }}
+                {{ $monthKey := $monthGroup.Key }}
+                {{ $monthInt := int $monthKey }}
+                {{ $monthLabel := printf "%d月" $monthInt }}
+                {{ if ne $.Site.LanguageCode "zh-CN" }}
+                  {{ $monthLabel = (time (printf "%s-%s-01" $year $monthKey)).Format "January" }}
+                {{ end }}
+
+                <div class="mypublish-month">
+                  <div class="mypublish-month-label">
+                    <span class="mypublish-month-name">{{ $monthLabel }}</span>
+                    <span class="mypublish-month-count">{{ len $monthGroup.Pages }}</span>
+                  </div>
+
+                  <div class="mypublish-items">
+                    {{ range $page := $monthGroup.Pages.ByDate.Reverse }}
+                      <article class="mypublish-item">
+                        <h2 class="mypublish-item-title">
+                          <a href="{{ $page.Permalink }}">{{ $page.Title }}</a>
+                        </h2>
+                        <div class="mypublish-item-meta">
+                          <time datetime="{{ $page.Date.Format "2006-01-02" }}">
+                            {{ $page.Date.Format (i18n "date_format") }}
+                          </time>
+                        </div>
+                        {{ $excerpt := "" }}
+                        {{ with $page.Description }}
+                          {{ $excerpt = . }}
+                        {{ else }}
+                          {{ $excerpt = $page.Summary | plainify }}
+                        {{ end }}
+                        {{ with $excerpt }}
+                          <p class="mypublish-item-summary">{{ . | truncate 160 }}</p>
+                        {{ end }}
+                      </article>
+                    {{ end }}
+                  </div>
+                </div>
               {{ end }}
             </div>
-            
-            <div class="card-footer">
-              <a href="{{ $page.Permalink }}" class="read-more">
-                {{ i18n "my_publish_read_more" }}
-              </a>
-            </div>
-          </article>
+          </details>
         {{ end }}
       </div>
 
-      {{ if gt $paginator.TotalPages 1 }}
-        <nav class="pagination" aria-label="{{ i18n "my_publish_pagination_aria" }}">
-          {{ if $paginator.HasPrev }}
-            <a class="pagination-link" href="{{ $paginator.Prev.URL }}">{{ i18n "pagination_prev" }}</a>
-          {{ else }}
-            <span class="pagination-link disabled">{{ i18n "pagination_prev" }}</span>
-          {{ end }}
+      <script>
+      (() => {
+        const root = document.querySelector(".mypublish-archive");
+        if (!root) return;
 
-          <div class="pagination-pages">
-            {{ range $pager := $paginator.Pagers }}
-              {{ if eq $pager.PageNumber $paginator.PageNumber }}
-                <span class="pagination-page current">{{ $pager.PageNumber }}</span>
-              {{ else }}
-                <a class="pagination-page" href="{{ $pager.URL }}">{{ $pager.PageNumber }}</a>
-              {{ end }}
-            {{ end }}
-          </div>
+        const pills = Array.from(root.querySelectorAll(".mypublish-year-pill"));
+        const years = Array.from(root.querySelectorAll("details.mypublish-year"));
+        if (!pills.length || !years.length) return;
 
-          {{ if $paginator.HasNext }}
-            <a class="pagination-link" href="{{ $paginator.Next.URL }}">{{ i18n "pagination_next" }}</a>
-          {{ else }}
-            <span class="pagination-link disabled">{{ i18n "pagination_next" }}</span>
-          {{ end }}
-        </nav>
-      {{ end }}
+        const yearOf = (detailsEl) => (detailsEl.id || "").replace("mypublish-year-", "").trim();
+        const byYear = new Map(years.map((el) => [yearOf(el), el]));
+
+        const setActive = (year) => {
+          pills.forEach((pill) => {
+            const isActive = pill.dataset.year === year;
+            pill.classList.toggle("active", isActive);
+            pill.setAttribute("aria-expanded", isActive ? "true" : "false");
+          });
+        };
+
+        const openYear = (year, { scroll = true, updateHash = true } = {}) => {
+          const target = byYear.get(year);
+          if (!target) return;
+          years.forEach((el) => { if (el !== target) el.open = false; });
+          target.open = true;
+          setActive(year);
+          if (scroll) target.scrollIntoView({ behavior: "smooth", block: "start" });
+          if (updateHash && window.history && window.history.replaceState) {
+            window.history.replaceState(null, "", `#mypublish-year-${year}`);
+          }
+        };
+
+        pills.forEach((pill) => {
+          pill.addEventListener("click", () => openYear(pill.dataset.year));
+        });
+
+        years.forEach((detailsEl) => {
+          detailsEl.addEventListener("toggle", () => {
+            if (!detailsEl.open) return;
+            const year = yearOf(detailsEl);
+            years.forEach((el) => { if (el !== detailsEl) el.open = false; });
+            setActive(year);
+          });
+        });
+
+        const match = window.location.hash.match(/mypublish-year-(\d{4})/);
+        if (match && byYear.has(match[1])) {
+          openYear(match[1], { scroll: false, updateHash: false });
+          return;
+        }
+
+        const openEl = years.find((el) => el.open);
+        setActive(openEl ? yearOf(openEl) : (pills[0].dataset.year || ""));
+      })();
+      </script>
     {{ else }}
       <div class="empty-state">
         <p>{{ i18n "my_publish_empty_title" }}</p>
