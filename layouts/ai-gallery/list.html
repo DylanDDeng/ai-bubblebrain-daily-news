@@ -116,20 +116,27 @@
           <span class="fullscreen-model" id="fullscreen-model"></span>
         </div>
         <div class="fullscreen-caption" id="fullscreen-caption"></div>
-        <div class="fullscreen-tags" id="fullscreen-tags"></div>
-        <div class="fullscreen-prompt-block">
-          <div class="prompt-header">
-            <p class="prompt-label">{{ i18n "gallery_prompt_label" | default "Prompt" }}</p>
-            <button class="prompt-copy-btn" id="fullscreen-copy-btn" type="button" aria-label="{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}">
-              <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              <span class="copy-text">{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}</span>
-            </button>
-	          </div>
-	          <pre id="fullscreen-prompt"></pre>
-	        </div>
+	        <div class="fullscreen-tags" id="fullscreen-tags"></div>
+	        <div class="fullscreen-prompt-block">
+	          <div class="prompt-header">
+	            <div class="prompt-header-left">
+	              <p class="prompt-label">{{ i18n "gallery_prompt_label" | default "Prompt" }}</p>
+	              <div class="prompt-view-toggle" role="group" aria-label="{{ i18n "gallery_prompt_view_aria" | default "Prompt view" }}">
+	                <button class="prompt-view-btn active" type="button" data-prompt-view="raw" aria-pressed="true">{{ i18n "gallery_prompt_view_original" | default (cond (eq .Site.LanguageCode "zh-CN") "原文" "Original") }}</button>
+	                <button class="prompt-view-btn" type="button" data-prompt-view="breakdown" aria-pressed="false">{{ i18n "gallery_prompt_view_breakdown" | default (cond (eq .Site.LanguageCode "zh-CN") "拆解" "Breakdown") }}</button>
+	              </div>
+	            </div>
+	            <button class="prompt-copy-btn" id="fullscreen-copy-btn" type="button" aria-label="{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}">
+	              <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+	                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+	                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+	              </svg>
+	              <span class="copy-text">{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}</span>
+	            </button>
+		          </div>
+		          <pre id="fullscreen-prompt"></pre>
+		          <div class="prompt-breakdown" id="fullscreen-prompt-breakdown" hidden></div>
+		        </div>
 
           <!-- 评论区（桌面端：右侧信息栏底部手风琴；移动端：会被挪到抽屉里展示） -->
           <div class="gallery-comments-slot" id="gallery-comments-slot">
@@ -212,13 +219,14 @@
   const fullscreenImage = document.getElementById("fullscreen-image");
   const fullscreenTitle = document.getElementById("fullscreen-title");
   const fullscreenAuthor = document.getElementById("fullscreen-author");
-  const fullscreenModel = document.getElementById("fullscreen-model");
-  const fullscreenSource = document.getElementById("fullscreen-source");
-  const fullscreenPrompt = document.getElementById("fullscreen-prompt");
-  const fullscreenTags = document.getElementById("fullscreen-tags");
-  const fullscreenCaption = document.getElementById("fullscreen-caption");
-  const fullscreenCounter = document.getElementById("fullscreen-counter");
-  const fullscreenImageCounter = document.getElementById("fullscreen-image-counter");
+	  const fullscreenModel = document.getElementById("fullscreen-model");
+	  const fullscreenSource = document.getElementById("fullscreen-source");
+	  const fullscreenPrompt = document.getElementById("fullscreen-prompt");
+	  const fullscreenPromptBreakdown = document.getElementById("fullscreen-prompt-breakdown");
+	  const fullscreenTags = document.getElementById("fullscreen-tags");
+	  const fullscreenCaption = document.getElementById("fullscreen-caption");
+	  const fullscreenCounter = document.getElementById("fullscreen-counter");
+	  const fullscreenImageCounter = document.getElementById("fullscreen-image-counter");
   const fullscreenThumbsList = document.getElementById("fullscreen-thumbs-list");
   const fullscreenLoader = document.getElementById("fullscreen-loader");
 
@@ -244,12 +252,15 @@
   let currentItemTitle = "";
   let currentFilter = "all";
   let searchTerm = "";
-  let filtersCollapsed = true;
-  let revealObserver = null;
+	  let filtersCollapsed = true;
+	  let revealObserver = null;
+	  let promptView = "raw";
+	  let promptBreakdownCacheKey = "";
+	  let promptBreakdownCache = null;
 
-  const I18N = {
-    allWithCount: "{{ i18n "gallery_all_with_count" }}",
-    expandTags: "{{ i18n "gallery_expand_tags" }}",
+	  const I18N = {
+	    allWithCount: "{{ i18n "gallery_all_with_count" }}",
+	    expandTags: "{{ i18n "gallery_expand_tags" }}",
     collapseTags: "{{ i18n "gallery_collapse_tags" }}",
     promptHint: "{{ i18n "gallery_prompt_hint" }}",
     untitled: "{{ i18n "gallery_untitled" }}",
@@ -261,10 +272,11 @@
     unknown: "{{ i18n "gallery_unknown" }}",
     noPrompt: "{{ i18n "gallery_no_prompt" }}",
     singleImage: "{{ i18n "gallery_single_image" }}",
-    copyPrompt: "{{ i18n "gallery_copy_prompt" }}",
-    copied: "{{ i18n "gallery_copied" }}",
-    copyFailed: "{{ i18n "gallery_copy_failed" }}",
-    networkError: "{{ i18n "gallery_network_error" }}",
+	    copyPrompt: "{{ i18n "gallery_copy_prompt" }}",
+	    copied: "{{ i18n "gallery_copied" }}",
+	    copyFailed: "{{ i18n "gallery_copy_failed" }}",
+	    breakdownEmpty: "{{ i18n "gallery_prompt_breakdown_empty" | default (cond (eq .Site.LanguageCode "zh-CN") "暂时无法拆解该 Prompt。" "No breakdown available for this prompt.") }}",
+	    networkError: "{{ i18n "gallery_network_error" }}",
 
     commentsTitle: "{{ i18n "comments_title" }}",
     commentsViewAll: "{{ i18n "gallery_comments_view_all" }}",
@@ -399,11 +411,325 @@
     }
   }
 
-  function promptForSearch(value) {
-    const text = formatPrompt(value);
-    if (!text) return "";
-    return text.replace(/\s+/g, " ").trim();
-  }
+	  function promptForSearch(value) {
+	    const text = formatPrompt(value);
+	    if (!text) return "";
+	    return text.replace(/\s+/g, " ").trim();
+	  }
+
+	  const PROMPT_CATEGORIES = (() => {
+	    const lang = (document.documentElement.lang || "").toString().trim().toLowerCase();
+	    const zh = lang.startsWith("zh");
+	    return [
+	      { key: "subject", label: zh ? "主体" : "Subject" },
+	      { key: "outfit", label: zh ? "服装" : "Outfit" },
+	      { key: "environment", label: zh ? "场景" : "Environment" },
+	      { key: "composition", label: zh ? "构图/镜头" : "Composition / Camera" },
+	      { key: "lighting", label: zh ? "光影" : "Lighting" },
+	      { key: "style", label: zh ? "风格/质感" : "Style / Look" },
+	      { key: "quality", label: zh ? "画质/渲染" : "Quality" },
+	      { key: "params", label: zh ? "参数" : "Params" },
+	      { key: "negative", label: zh ? "负面/限制" : "Negative" },
+	      { key: "other", label: zh ? "其他" : "Other" }
+	    ];
+	  })();
+
+	  const PROMPT_KEY_CATEGORY_HINTS = [
+	    { key: "negative", re: /(negative|neg|exclude|avoid|ban|forbid|no_?|not_?|bad|负面|反向|不要|避免|去除)/i },
+	    { key: "params", re: /(params?|parameter|seed|steps|cfg|sampler|size|resolution|ratio|aspect|ar|v)\b/i },
+	    { key: "composition", re: /(camera|composition|lens|shot|angle|focal|构图|镜头|相机|焦段|景深|散景)/i },
+	    { key: "lighting", re: /(light|lighting|shadow|highlight|glow|bloom|neon|光|灯光|逆光|阴影|高光|霓虹|泛光)/i },
+	    { key: "style", re: /(style|aesthetic|look|render|cinematic|noir|film|grain|vintage|写实|风格|质感|电影|胶片|复古|颗粒)/i },
+	    { key: "outfit", re: /(outfit|clothing|dress|wear|jacket|shirt|skirt|socks|shoes|服装|穿搭|外套|上衣|裙|袜|鞋)/i },
+	    { key: "environment", re: /(environment|scene|background|setting|city|street|room|forest|night|rain|雪|环境|场景|背景|城市|街|室内|房间|夜|雨)/i },
+	    { key: "subject", re: /(subject|character|person|portrait|selfie|girl|woman|man|boy|idol|人物|主体|人像|自拍|角色|女生|男生|女孩|男孩)/i },
+	    { key: "quality", re: /(quality|detail|8k|4k|hdr|uhd|high\s*res|ultra|sharp|professional|studio|画质|细节|高清|超清|锐利|专业)/i }
+	  ];
+
+	  const PROMPT_TEXT_RULES = {
+	    negative: [
+	      [/(^|[\s,;])(--no\b|no\b|without\b|avoid\b|exclude\b|forbid\b|ban\b)/i, 6],
+	      [/(watermark|logo|text|blurry|deformed|artifact|nsfw)/i, 3],
+	      [/(不要|避免|去除|无水印|无文字|模糊|畸形|噪点)/, 4]
+	    ],
+	    params: [
+	      [/--[a-z][\w-]*/i, 8],
+	      [/\b(seed|steps|cfg|sampler|size|resolution|ratio|aspect|ar|v)\b/i, 6],
+	      [/\b\d{2,4}\s*x\s*\d{2,4}\b/i, 6]
+	    ],
+	    composition: [
+	      [/\b(macro|close[- ]?up|wide(?:\s*shot)?|telephoto|portrait(?:\s*shot)?|top[- ]?down|low[- ]?angle|high[- ]?angle|panning|motion blur|long exposure|bokeh|depth of field|dof|lens|35mm|50mm|85mm|f\/\d+(?:\.\d+)?)\b/i, 6],
+	      [/(俯拍|仰拍|特写|广角|长焦|顶视|低角度|高角度|摇拍|运动模糊|长曝光|散景|景深|微距|焦段)/, 6]
+	    ],
+	    lighting: [
+	      [/\b(lighting|backlit|rim light|soft light|hard light|shadow|highlight|neon|glow|bloom|halos?)\b/i, 5],
+	      [/(灯光|光影|逆光|柔光|硬光|阴影|高光|霓虹|辉光|泛光|光晕)/, 5]
+	    ],
+	    style: [
+	      [/\b(cinematic|noir|film|analog|vintage|photorealistic|realistic|3d|anime|watercolor|oil painting|illustration|pro[- ]?mist|grain|hazy|dreamlike)\b/i, 5],
+	      [/(电影|黑色电影|胶片|复古|写实|三维|3d|二次元|水彩|油画|插画|颗粒|朦胧|梦幻|氛围)/, 5]
+	    ],
+	    outfit: [
+	      [/\b(outfit|wearing|dress|skirt|jacket|shirt|pants|socks|shoes|camisole|satin|lace)\b/i, 5],
+	      [/(服装|穿搭|外套|上衣|短袖|裙|短裙|裤|袜|鞋|蕾丝|缎面)/, 5]
+	    ],
+	    environment: [
+	      [/\b(environment|scene|background|setting|city|street|room|forest|backdrop|studio|night|rain|snow)\b/i, 4],
+	      [/(环境|场景|背景|城市|街|房间|室内|森林|幕布|棚拍|夜|雨|雪)/, 4]
+	    ],
+	    subject: [
+	      [/\b(girl|woman|man|boy|person|portrait|selfie|idol|model|character|human)\b/i, 4],
+	      [/(人物|主体|人像|自拍|偶像|模特|角色|女生|男生|女孩|男孩|人类)/, 4]
+	    ],
+	    quality: [
+	      [/\b(8k|4k|uhd|hdr|high[- ]?res|ultra[- ]?detailed|sharp focus|highly detailed|studio lighting|professional)\b/i, 4],
+	      [/(高清|高分辨率|8k|4k|超清|细节|锐利|专业|棚拍)/, 4]
+	    ]
+	  };
+
+	  function normalizeMarkerChunk(chunk) {
+	    const m = /^\s*([A-Za-z\u4e00-\u9fff][A-Za-z\u4e00-\u9fff \/_-]{0,18})\s*[:：]\s*(.+)$/.exec(chunk);
+	    if (!m) return { text: chunk, markerKey: "" };
+	    const key = (m[1] || "").toString().trim().toLowerCase();
+	    const text = (m[2] || "").toString().trim();
+	    return { text: text || chunk, markerKey: key };
+	  }
+
+	  function hintCategoryFromKey(key) {
+	    const k = (key || "").toString();
+	    if (!k) return "";
+	    const found = PROMPT_KEY_CATEGORY_HINTS.find((h) => h.re.test(k));
+	    return found ? found.key : "";
+	  }
+
+	  function classifyPromptChunk(chunk) {
+	    const { text, markerKey } = normalizeMarkerChunk(chunk);
+	    const hinted = hintCategoryFromKey(markerKey);
+	    if (hinted) return { category: hinted, text };
+
+	    const input = (text || "").toString().trim();
+	    if (!input) return { category: "other", text: "" };
+
+	    const scores = Object.create(null);
+	    for (const cat of Object.keys(PROMPT_TEXT_RULES)) {
+	      scores[cat] = 0;
+	      for (const [re, weight] of PROMPT_TEXT_RULES[cat]) {
+	        if (re.test(input)) scores[cat] += weight;
+	      }
+	    }
+
+	    // 兜底：如果含有明确的 -- 参数/seed 等优先归到 params
+	    if (scores.params > 0 && scores.params >= Math.max(scores.negative, scores.quality)) {
+	      return { category: "params", text: input };
+	    }
+
+	    let best = "other";
+	    let bestScore = 0;
+	    Object.entries(scores).forEach(([cat, score]) => {
+	      if (score > bestScore) {
+	        bestScore = score;
+	        best = cat;
+	      }
+	    });
+
+	    return { category: bestScore > 0 ? best : "other", text: input };
+	  }
+
+	  function splitPromptText(text) {
+	    const normalized = (text || "")
+	      .toString()
+	      .replace(/\r\n/g, "\n")
+	      .replace(/[•●]+/g, "\n")
+	      .replace(/\s+\n/g, "\n")
+	      .trim();
+	    if (!normalized) return [];
+
+	    const chunks = [];
+	    normalized.split(/\n+/).forEach((line) => {
+	      line.split(/[,，;；|]+/).forEach((part) => {
+	        const s = (part || "").toString().trim();
+	        if (!s) return;
+	        if (s.length > 180) {
+	          s.split(/[。！？!?]\s*|\.\s+/).forEach((sentence) => {
+	            const t = (sentence || "").toString().trim();
+	            if (t) chunks.push(t);
+	          });
+	          return;
+	        }
+	        chunks.push(s);
+	      });
+	    });
+	    return chunks;
+	  }
+
+	  function tryParseJsonPrompt(text) {
+	    const trimmed = (text || "").toString().trim();
+	    if (!trimmed) return null;
+	    if (!(trimmed.startsWith("{") || trimmed.startsWith("["))) return null;
+	    try {
+	      return JSON.parse(trimmed);
+	    } catch (err) {
+	      return null;
+	    }
+	  }
+
+	  function flattenPromptObject(value, path = []) {
+	    const out = [];
+	    if (value == null) return out;
+	    if (typeof value === "string") {
+	      const v = value.toString().trim();
+	      if (v) out.push({ path, value: v });
+	      return out;
+	    }
+	    if (Array.isArray(value)) {
+	      value.forEach((v) => out.push(...flattenPromptObject(v, path)));
+	      return out;
+	    }
+	    if (typeof value === "object") {
+	      Object.entries(value).forEach(([k, v]) => {
+	        out.push(...flattenPromptObject(v, path.concat([k])));
+	      });
+	    }
+	    return out;
+	  }
+
+	  function createPromptBreakdown(promptText) {
+	    const trimmed = (promptText || "").toString().trim();
+	    const sections = Object.create(null);
+	    PROMPT_CATEGORIES.forEach((c) => { sections[c.key] = []; });
+
+	    if (!trimmed || trimmed === I18N.noPrompt) {
+	      return { sections, text: "" };
+	    }
+
+	    const json = tryParseJsonPrompt(trimmed);
+	    if (json) {
+	      const entries = flattenPromptObject(json);
+	      entries.forEach(({ path, value }) => {
+	        const keyHint = hintCategoryFromKey(path.join("."));
+	        const classified = classifyPromptChunk(value);
+	        const category = keyHint || classified.category;
+	        const text = classified.text || value;
+	        if (!text) return;
+	        sections[category].push(text);
+	      });
+	    } else {
+	      const negativeSplit = /(negative prompt|neg(?:ative)?|负面(?:提示词)?|反向提示词)\s*[:：]/i.exec(trimmed);
+	      let mainText = trimmed;
+	      let negativeText = "";
+	      if (negativeSplit) {
+	        mainText = trimmed.slice(0, negativeSplit.index).trim();
+	        negativeText = trimmed.slice(negativeSplit.index + negativeSplit[0].length).trim();
+	      }
+
+	      splitPromptText(mainText).forEach((chunk) => {
+	        const { category, text } = classifyPromptChunk(chunk);
+	        if (!text) return;
+	        sections[category].push(text);
+	      });
+
+	      if (negativeText) {
+	        splitPromptText(negativeText).forEach((chunk) => {
+	          const { text } = classifyPromptChunk(chunk);
+	          if (!text) return;
+	          sections.negative.push(text);
+	        });
+	      }
+	    }
+
+	    // 去重 + 限制数量（避免极端长 prompt）
+	    Object.keys(sections).forEach((key) => {
+	      const uniq = [];
+	      const seen = new Set();
+	      sections[key].forEach((v) => {
+	        const val = (v || "").toString().trim();
+	        if (!val) return;
+	        const norm = val.toLowerCase();
+	        if (seen.has(norm)) return;
+	        seen.add(norm);
+	        uniq.push(val);
+	      });
+	      sections[key] = uniq.slice(0, 30);
+	    });
+
+	    const lang = (document.documentElement.lang || "").toString().trim().toLowerCase();
+	    const zh = lang.startsWith("zh");
+	    const joiner = zh ? " · " : " · ";
+	    const lines = PROMPT_CATEGORIES
+	      .filter((c) => sections[c.key] && sections[c.key].length)
+	      .map((c) => `${c.label}${zh ? "：" : ":"} ${sections[c.key].join(joiner)}`);
+
+	    return { sections, text: lines.join("\n") };
+	  }
+
+	  function renderPromptBreakdown() {
+	    if (!fullscreenPromptBreakdown) return;
+
+	    const key = `${currentItem?.id || ""}::${currentPrompt || ""}`;
+	    if (!promptBreakdownCache || promptBreakdownCacheKey !== key) {
+	      promptBreakdownCacheKey = key;
+	      promptBreakdownCache = createPromptBreakdown(currentPrompt);
+	    }
+
+	    fullscreenPromptBreakdown.innerHTML = "";
+	    const frag = document.createDocumentFragment();
+	    let hasAny = false;
+
+	    PROMPT_CATEGORIES.forEach((cat) => {
+	      const items = promptBreakdownCache.sections[cat.key] || [];
+	      if (!items.length) return;
+	      hasAny = true;
+
+	      const section = document.createElement("section");
+	      section.className = `prompt-section prompt-section--${cat.key}`;
+
+	      const header = document.createElement("div");
+	      header.className = "prompt-section__header";
+	      const dot = document.createElement("span");
+	      dot.className = `prompt-section__dot prompt-section__dot--${cat.key}`;
+	      const title = document.createElement("span");
+	      title.className = "prompt-section__title";
+	      title.textContent = cat.label;
+	      header.appendChild(dot);
+	      header.appendChild(title);
+	      section.appendChild(header);
+
+	      const chips = document.createElement("div");
+	      chips.className = "prompt-section__chips";
+	      items.forEach((text) => {
+	        const chip = document.createElement("span");
+	        chip.className = `prompt-chip prompt-chip--${cat.key}`;
+	        chip.textContent = text;
+	        chips.appendChild(chip);
+	      });
+	      section.appendChild(chips);
+	      frag.appendChild(section);
+	    });
+
+	    if (!hasAny) {
+	      const emptyEl = document.createElement("div");
+	      emptyEl.className = "prompt-breakdown-empty";
+	      emptyEl.textContent = I18N.breakdownEmpty;
+	      frag.appendChild(emptyEl);
+	    }
+
+	    fullscreenPromptBreakdown.appendChild(frag);
+	  }
+
+		  function setPromptView(next) {
+		    const view = next === "breakdown" ? "breakdown" : "raw";
+		    promptView = view;
+
+		    (fullscreen ? fullscreen.querySelectorAll("[data-prompt-view]") : []).forEach((btn) => {
+		      const isActive = btn.dataset.promptView === view;
+		      btn.classList.toggle("active", isActive);
+		      btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+		    });
+
+	    if (fullscreenPrompt) fullscreenPrompt.hidden = view !== "raw";
+	    if (fullscreenPromptBreakdown) fullscreenPromptBreakdown.hidden = view !== "breakdown";
+	    if (view === "breakdown") renderPromptBreakdown();
+	  }
 
   function setEmpty(isEmpty) {
     empty.hidden = !isEmpty;
@@ -1512,13 +1838,13 @@
   }
 
   // 打开全屏展示
-  function openFullscreen(item, renderThumbs = true) {
-    activeFocus = document.activeElement;
-    currentItem = item;
-    currentImages = normalizeImages(item);
-    currentIndex = 0;
-    currentItemTitle = item.title || I18N.untitled;
-    currentPrompt = formatPrompt(item.prompt) || I18N.noPrompt;
+	  function openFullscreen(item, renderThumbs = true) {
+	    activeFocus = document.activeElement;
+	    currentItem = item;
+	    currentImages = normalizeImages(item);
+	    currentIndex = 0;
+	    currentItemTitle = item.title || I18N.untitled;
+	    currentPrompt = formatPrompt(item.prompt) || I18N.noPrompt;
 
     // 如果是首次打开，找到当前 item 在列表中的位置
     if (renderThumbs) {
@@ -1528,14 +1854,18 @@
     }
 
     fullscreenTitle.textContent = currentItemTitle;
-    fullscreenAuthor.textContent = item.author ? `${I18N.authorPrefix}${item.author}` : `${I18N.authorPrefix}${I18N.unknown}`;
-    fullscreenModel.textContent = item.source ? `${I18N.sourcePrefix}${item.source}` : `${I18N.sourcePrefix}${I18N.unknown}`;
-    fullscreenSource.textContent = item.source || "";
-    fullscreenPrompt.textContent = currentPrompt;
+	    fullscreenAuthor.textContent = item.author ? `${I18N.authorPrefix}${item.author}` : `${I18N.authorPrefix}${I18N.unknown}`;
+	    fullscreenModel.textContent = item.source ? `${I18N.sourcePrefix}${item.source}` : `${I18N.sourcePrefix}${I18N.unknown}`;
+	    fullscreenSource.textContent = item.source || "";
+	    fullscreenPrompt.textContent = currentPrompt;
+	    promptBreakdownCacheKey = "";
+	    promptBreakdownCache = null;
+	    if (fullscreenPromptBreakdown) fullscreenPromptBreakdown.innerHTML = "";
+	    setPromptView(promptView);
 
-    fullscreenTags.innerHTML = "";
-    if (item.tags && item.tags.length) {
-      item.tags.forEach((tag) => {
+	    fullscreenTags.innerHTML = "";
+	    if (item.tags && item.tags.length) {
+	      item.tags.forEach((tag) => {
         const span = document.createElement("span");
         span.textContent = tag;
         fullscreenTags.appendChild(span);
@@ -1700,12 +2030,12 @@
     });
   }
 
-  const copyBtn = document.getElementById("fullscreen-copy-btn");
-  if (copyBtn) {
-    copyBtn.addEventListener("click", async () => {
-      if (!currentPrompt || currentPrompt === I18N.noPrompt) {
-        return;
-      }
+	  const copyBtn = document.getElementById("fullscreen-copy-btn");
+	  if (copyBtn) {
+	    copyBtn.addEventListener("click", async () => {
+	      if (!currentPrompt || currentPrompt === I18N.noPrompt) {
+	        return;
+	      }
 
       try {
         await navigator.clipboard.writeText(currentPrompt);
@@ -1728,14 +2058,21 @@
           copyText.textContent = originalText;
         }, 2000);
       }
-    });
-  }
+	    });
+	  }
 
-  // 全屏收藏按钮点击事件
-  document.querySelectorAll("[data-fullscreen-fav]").forEach((fullscreenFavBtn) => {
-    fullscreenFavBtn.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      if (!currentItem?.id) return;
+	  // Prompt view toggle (raw / breakdown)
+	  (fullscreen ? fullscreen.querySelectorAll("[data-prompt-view]") : []).forEach((btn) => {
+	    btn.addEventListener("click", () => {
+	      setPromptView(btn.dataset.promptView);
+	    });
+	  });
+
+	  // 全屏收藏按钮点击事件
+	  document.querySelectorAll("[data-fullscreen-fav]").forEach((fullscreenFavBtn) => {
+	    fullscreenFavBtn.addEventListener("click", async (e) => {
+	      e.stopPropagation();
+	      if (!currentItem?.id) return;
 
       if (typeof toggleFavorite === 'function') {
         const isNowFav = await toggleFavorite(currentItem.id);
@@ -3033,7 +3370,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
   margin-bottom: 0.5rem;
+}
+
+.prompt-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
 }
 
 .prompt-label {
@@ -3042,6 +3388,43 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   margin: 0;
+}
+
+.prompt-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.prompt-view-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  outline: none;
+}
+
+.prompt-view-btn:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.prompt-view-btn:active {
+  transform: scale(0.98);
+}
+
+.prompt-view-btn.active {
+  background: var(--accent);
+  color: #000;
 }
 
 .prompt-copy-btn {
@@ -3085,6 +3468,133 @@
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+
+/* Prompt breakdown */
+.prompt-breakdown {
+  --prompt-subject-rgb: 96, 165, 250;
+  --prompt-outfit-rgb: 244, 114, 182;
+  --prompt-environment-rgb: 52, 211, 153;
+  --prompt-composition-rgb: 167, 139, 250;
+  --prompt-lighting-rgb: 251, 191, 36;
+  --prompt-style-rgb: 251, 113, 133;
+  --prompt-quality-rgb: 34, 211, 238;
+  --prompt-params-rgb: 148, 163, 184;
+  --prompt-negative-rgb: 248, 113, 113;
+  --prompt-other-rgb: 163, 163, 163;
+
+  max-height: 400px;
+  overflow-y: auto;
+  margin: 0;
+  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.prompt-breakdown[hidden] {
+  display: none;
+}
+
+.prompt-breakdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.prompt-breakdown::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 3px;
+}
+
+.prompt-breakdown::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.prompt-breakdown::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+.prompt-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.prompt-section__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prompt-section__title {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.prompt-section__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.prompt-section__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.prompt-chip {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  font-size: 0.8rem;
+}
+
+.prompt-breakdown-empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.prompt-section__dot--subject { background: rgba(var(--prompt-subject-rgb), 1); }
+.prompt-chip--subject { border-color: rgba(var(--prompt-subject-rgb), 0.35); background: rgba(var(--prompt-subject-rgb), 0.12); color: rgba(var(--prompt-subject-rgb), 0.95); }
+
+.prompt-section__dot--outfit { background: rgba(var(--prompt-outfit-rgb), 1); }
+.prompt-chip--outfit { border-color: rgba(var(--prompt-outfit-rgb), 0.35); background: rgba(var(--prompt-outfit-rgb), 0.12); color: rgba(var(--prompt-outfit-rgb), 0.95); }
+
+.prompt-section__dot--environment { background: rgba(var(--prompt-environment-rgb), 1); }
+.prompt-chip--environment { border-color: rgba(var(--prompt-environment-rgb), 0.35); background: rgba(var(--prompt-environment-rgb), 0.12); color: rgba(var(--prompt-environment-rgb), 0.95); }
+
+.prompt-section__dot--composition { background: rgba(var(--prompt-composition-rgb), 1); }
+.prompt-chip--composition { border-color: rgba(var(--prompt-composition-rgb), 0.35); background: rgba(var(--prompt-composition-rgb), 0.12); color: rgba(var(--prompt-composition-rgb), 0.95); }
+
+.prompt-section__dot--lighting { background: rgba(var(--prompt-lighting-rgb), 1); }
+.prompt-chip--lighting { border-color: rgba(var(--prompt-lighting-rgb), 0.35); background: rgba(var(--prompt-lighting-rgb), 0.12); color: rgba(var(--prompt-lighting-rgb), 0.95); }
+
+.prompt-section__dot--style { background: rgba(var(--prompt-style-rgb), 1); }
+.prompt-chip--style { border-color: rgba(var(--prompt-style-rgb), 0.35); background: rgba(var(--prompt-style-rgb), 0.12); color: rgba(var(--prompt-style-rgb), 0.95); }
+
+.prompt-section__dot--quality { background: rgba(var(--prompt-quality-rgb), 1); }
+.prompt-chip--quality { border-color: rgba(var(--prompt-quality-rgb), 0.35); background: rgba(var(--prompt-quality-rgb), 0.12); color: rgba(var(--prompt-quality-rgb), 0.95); }
+
+.prompt-section__dot--params { background: rgba(var(--prompt-params-rgb), 1); }
+.prompt-chip--params { border-color: rgba(var(--prompt-params-rgb), 0.35); background: rgba(var(--prompt-params-rgb), 0.12); color: rgba(var(--prompt-params-rgb), 0.95); }
+
+.prompt-section__dot--negative { background: rgba(var(--prompt-negative-rgb), 1); }
+.prompt-chip--negative { border-color: rgba(var(--prompt-negative-rgb), 0.35); background: rgba(var(--prompt-negative-rgb), 0.12); color: rgba(var(--prompt-negative-rgb), 0.95); }
+
+.prompt-section__dot--other { background: rgba(var(--prompt-other-rgb), 1); }
+.prompt-chip--other { border-color: rgba(var(--prompt-other-rgb), 0.35); background: rgba(var(--prompt-other-rgb), 0.12); color: rgba(var(--prompt-other-rgb), 0.95); }
 
 /* 缩略图列表 */
 .gallery-fullscreen__thumbs {
