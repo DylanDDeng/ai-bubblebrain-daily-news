@@ -668,19 +668,32 @@
     renderGrid();
   }
 
-  function render(items) {
-    if (!items || !items.length) {
-      setEmpty(true);
-      return;
-    }
+	  function render(items) {
+	    if (!items || !items.length) {
+	      setEmpty(true);
+	      return;
+	    }
 
-    setEmpty(false);
-    allItems = items;
-    filteredItems = [...allItems];
-    renderFilters(collectTags(allItems));
-    setFilterEmpty(false);
-    renderGrid();
-  }
+	    setEmpty(false);
+
+	    const normalizeId = (value) => {
+	      const num = Number.parseInt((value ?? "").toString(), 10);
+	      return Number.isFinite(num) ? num : -1;
+	    };
+
+	    // 默认按“新 → 旧”排序：id 越大越新；若 id 无法解析，则保持原有追加顺序（后追加的更靠前）
+	    allItems = items
+	      .map((item, index) => ({ item, index, key: normalizeId(item?.id) }))
+	      .sort((a, b) => {
+	        if (a.key !== b.key) return b.key - a.key;
+	        return b.index - a.index;
+	      })
+	      .map(({ item }) => item);
+	    filteredItems = [...allItems];
+	    renderFilters(collectTags(allItems));
+	    setFilterEmpty(false);
+	    renderGrid();
+	  }
 
   let currentPrompt = "";
   let currentItem = null;
