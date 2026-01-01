@@ -3153,11 +3153,95 @@
   }
 },
       "tags":["海报"]
-     }
+     },
 
+{
+"id": "164",
+"title": "新年人像",
+"author": "BubbleBrain",
+"source": "Nano Banana Pro",
+"thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260102035637417.png",
+"full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260102035637417.png", 
+"prompt": {
+  "type": "image_generation",
+  "style": "photorealistic, direct flash photography, realistic skin tone, shallow depth of field",
+  "face_reference": {
+    "use_uploaded_image": true,
+    "instruction": "Keep facial features, proportions, and identity exactly the same. Do not beautify excessively."
+  },
+  "composition": {
+    "layout": "vertical 3-photo collage",
+    "focus": "subject-centric, background slightly dark or blurred",
+    "lighting": "direct on-camera flash, natural contrast, no overexposed skin"
+  },
+  "subject": {
+    "gender": "female",
+    "outfit": {
+      "top": "pale blue and cream cardigan"
+    },
+    "hair": {
+      "style": "short layered haircut"
+    },
+    "makeup": {
+      "style": "very soft natural makeup",
+      "eyelashes": "curled, subtle",
+      "skin_finish": "natural, not too bright"
+    }
+  },
+  "scenes": {
+    "top_panel": {
+      "description": "Subject eating various satay and frozen food",
+      "pose": {
+        "direction": "facing left",
+        "hands": "one hand raised holding satay, the other hand lower"
+      },
+      "framing": "head to waist",
+      "environment": {
+        "left": "active grill with meat and frozen food still grilling",
+        "right": "modern table partially visible with fresh drinks, straws, and a thermos",
+        "background": "dark wall not clearly visible"
+      },
+      "mood": "casual, candid, lively"
+    },
+    "middle_panel": {
+      "description": "Subject pointing at the grill",
+      "expression": "smiling",
+      "pose": "highlighting the grilled food as main focus",
+      "camera_angle": "front angle slightly downward",
+      "mood": "playful, engaging"
+    },
+    "bottom_panel": {
+      "description": "Celebratory portrait",
+      "background": {
+        "wall": "cream-colored",
+        "curtain": "soft neutral curtain",
+        "balloons": {
+          "count": 4,
+          "color": "gold",
+          "text": ["2", "0", "2", "6"]
+        }
+      },
+      "mood": "warm, hopeful, new year vibe"
+    }
+  },
+  "camera": {
+    "flash": "direct flash",
+    "focus": "sharp on subject, background subdued",
+    "realism": "high"
+  },
+  "negative_prompt": [
+    "overexposed skin",
+    "AI beauty face",
+    "blurred subject",
+    "cartoon style",
+    "heavy makeup",
+    "unrealistic lighting"
+  ]
+},
 
+"tags":["人像"] 
 
-
+}
 
     ]
 

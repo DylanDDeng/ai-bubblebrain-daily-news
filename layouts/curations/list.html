@@ -17,9 +17,7 @@
     </div>
 
     <div id="curation-content" aria-live="polite">
-      <nav class="mypublish-year-nav" id="curation-year-nav" aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "按年份切换" "Browse by year" }}">
-        <div class="mypublish-year-pills" id="curation-year-pills"></div>
-      </nav>
+      <div class="mypublish-year-pills" id="curation-year-pills"></div>
       <div class="mypublish-year-list" id="curation-year-list"></div>
     </div>
 
@@ -458,6 +456,10 @@
   background: var(--accent);
   color: #000;
   border-color: var(--accent);
+}
+
+.curation-archive .mypublish-year-pills {
+  display: none;
 }
 
 @media (max-width: 768px) {

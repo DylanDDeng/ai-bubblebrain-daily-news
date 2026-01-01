@@ -3,7 +3,7 @@
     "id": "curation-01",
     "date": "2025-11-24",
     "title": "AMO-Bench",
-    "description": "Meituan's new math reasoning benchmark.",
+    "description": "A math reasoning benchmark from Meituan.",
     "tags": ["Benchmark", "Meituan"],
     "originalUrl": "https://arxiv.org/abs/2510.26768",
     "detailUrl": "/en/curations/amo-bench/"
@@ -12,7 +12,7 @@
     "id": "curation-02",
     "date": "2025-11-20",
     "title": "Attention is all you need",
-    "description": "The foundational architecture of LLMs — Transformer.",
+    "description": "Transformer as the foundational architecture for large language models.",
     "tags": ["Model", "Google"],
     "originalUrl": "https://arxiv.org/abs/1706.03762",
     "detailUrl": "/en/curations/attention-is-all-you-need/"
@@ -21,9 +21,18 @@
     "id": "curation-03",
     "date": "2025-11-28",
     "title": "DeepSeekMath-V2",
-    "description": "DeepSeek's latest math reasoning model.",
+    "description": "A math reasoning model from DeepSeek.",
     "tags": ["Model", "DeepSeek"],
     "originalUrl": "https://github.com/deepseek-ai/DeepSeek-Math-V2/blob/main/DeepSeekMath_V2.pdf",
     "detailUrl": "/en/curations/deepseekmath-v2/"
+  },
+  {
+    "id": "curation-04",
+    "date": "2026-01-01",
+    "title": "mHC: Manifold-Constrained Hyper-Connections",
+    "description": "DeepSeek introduces the mHC module for stable hyper connections.",
+    "tags": ["Model", "DeepSeek"],
+    "originalUrl": "https://arxiv.org/pdf/2512.24880",
+    "detailUrl": "/en/curations/mhc/"
   }
 ]

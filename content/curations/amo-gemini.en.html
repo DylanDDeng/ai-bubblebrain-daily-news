@@ -3,39 +3,39 @@ title: "AMO-Bench"
 date: 2025-11-12T11:00:00+08:00
 slug: "amo-bench"
 aliases:
-  - "/curations/amo-gemini/"
-kicker: "论文精选"
-summary: "AMO-Bench 是美团提出的一个考察模型数学推理能力的Benchmark"
-description: "围绕 AMO-Bench 发布的论文要点、难题拆解、模型对比图，配套引用 footnote。"
+  - "/en/curations/amo-gemini/"
+kicker: "Paper Picks"
+summary: "AMO-Bench is a math reasoning benchmark from Meituan."
+description: "Key points, problem design, and model comparisons around AMO-Bench."
 reading_time: "5 min"
-topics: ["Paper Digest", "Math Reasoning", "Agent","Benchmark"]
-cta_label: "查看论文介绍"
+topics: ["Paper Digest", "Math Reasoning", "Agent", "Benchmark"]
+cta_label: "Read the notes"
 layout: "amo-gemini"
 ---
 
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>信息图：AMO-Bench</title>
+    <title>Infographic: AMO-Bench</title>
     <style>
-        /* 导入字体 */
+        /* Import fonts */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
 
-        /* * 核心风格与美学
-         * 主题: 温和、理性、日光感
-         * 美学: 纸感与留白，细线与衬线体
+        /* Core aesthetics
+         * Theme: calm, rational, daylight
+         * Look: paper texture, whitespace, fine lines
          */
         :root {
-            --bg-color: #f9f9f8; /* 暖白背景 */
-            --text-color: #2b2b2b; /* 深灰文字 */
-            --border-color: #e6e6e6; /* 细线边框 */
-            --accent-color: #b0c4de; /* 浅灰蓝（点缀）*/
-            --card-bg: #ffffff; /* 卡片白底 */
+            --bg-color: #f9f9f8;
+            --text-color: #2b2b2b;
+            --border-color: #e6e6e6;
+            --accent-color: #b0c4de;
+            --card-bg: #ffffff;
             --footer-bg: #f0f0f0;
             --footer-text: #777;
-            
+
             --font-serif: 'Inter', sans-serif;
             --font-sans: 'Inter', sans-serif;
         }
@@ -50,7 +50,6 @@ layout: "amo-gemini"
             font-weight: 300;
         }
 
-        /* 顶部导航 */
         header {
             padding: 2rem 3rem;
             border-bottom: 1px solid var(--border-color);
@@ -63,9 +62,6 @@ layout: "amo-gemini"
             letter-spacing: 1px;
         }
 
-        /* * 布局与结构
-         * 响应式两栏网格，强调留白与呼吸感
-         */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -89,7 +85,6 @@ layout: "amo-gemini"
             color: #555;
         }
 
-        /* 网格系统 */
         .grid-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -98,7 +93,6 @@ layout: "amo-gemini"
 
         @media (min-width: 900px) {
             .grid-container {
-                /* 左为文本逻辑线 (2fr)，右为视觉展示 (1fr) */
                 grid-template-columns: 2fr 1fr;
             }
 
@@ -119,9 +113,6 @@ layout: "amo-gemini"
             gap: 2.5rem;
         }
 
-        /* * 卡片模块
-         * 白底、细边框，如印在高级纸张上
-         */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -162,7 +153,6 @@ layout: "amo-gemini"
             margin-bottom: 0.5rem;
         }
 
-        /* 引用/重点突出 */
         blockquote {
             border-left: 3px solid var(--accent-color);
             margin: 2rem 0;
@@ -172,8 +162,6 @@ layout: "amo-gemini"
             background-color: #fdfdfd;
         }
 
-        /* * 特殊模块：数据可视化 
-         */
         .bar-chart-container {
             width: 100%;
         }
@@ -212,13 +200,13 @@ layout: "amo-gemini"
             background: #f0f0f0;
             height: 24px;
         }
-        
+
         .bar {
             height: 100%;
             background-color: var(--text-color);
             transition: width 1s ease-out;
         }
-        
+
         .bar-value {
             padding-left: 0.75rem;
             font-weight: 500;
@@ -226,13 +214,9 @@ layout: "amo-gemini"
             color: #333;
         }
 
-        /* 特定颜色 */
-        .bar.math500 { background-color: #dcdcdc; } /* 饱和的灰色 */
-        .bar.amo-bench { background-color: var(--accent-color); } /* 突出的蓝色 */
+        .bar.math500 { background-color: #dcdcdc; }
+        .bar.amo-bench { background-color: var(--accent-color); }
 
-
-        /* * 特殊模块：流程图 
-         */
         .process-flow {
             display: flex;
             flex-wrap: wrap;
@@ -256,7 +240,6 @@ layout: "amo-gemini"
             font-weight: 700;
         }
 
-        /* 底部脚注 */
         footer {
             text-align: center;
             padding: 2.5rem;
@@ -267,7 +250,6 @@ layout: "amo-gemini"
             border-top: 1px solid var(--border-color);
         }
 
-        /* 打印样式 */
         @media print {
             body {
                 background-color: #fff;
@@ -302,122 +284,122 @@ layout: "amo-gemini"
     </header>
 
     <div class="container">
-        
-        <h1 class="main-title">饱和的终结：AMO-Bench</h1>
-        <p class="subtitle">一份新的奥林匹克级数学基准，揭示了顶级大型语言模型 (LLM) 的真实推理极限。</p>
+
+        <h1 class="main-title">End of saturation: AMO-Bench</h1>
+        <p class="subtitle">A new olympiad level math benchmark that reveals the reasoning limits of top large language models.</p>
 
         <div class="grid-container">
-            
+
             <div class="text-column">
 
                 <div class="card">
-                    <h2 class="card-title">“饱和” 的问题</h2>
-                    [cite_start]<p>为什么需要新的基准？因为现有的数学基准（如 AIME24/25）正面临严重的“性能饱和”问题 [cite: 12, 76]。</p>
-                    [cite_start]<p>近期的研究结果显示，顶尖的 LLM 在这些测试上已经能够取得惊人的成绩，部分甚至超过了 90% 的准确率 [cite: 75][cite_start]。这种高分使得这些基准逐渐失去了区分和评估模型进一步发展的能力 [cite: 12, 76]。</p>
+                    <h2 class="card-title">The saturation problem</h2>
+                    <p>Why a new benchmark is needed: existing math benchmarks such as AIME24 and AIME25 face severe performance saturation.</p>
+                    <p>Recent results show that leading models can exceed 90% accuracy on these tests. Such scores reduce the ability of these benchmarks to distinguish further progress.</p>
                 </div>
 
                 <div class="card">
-                    <h2 class="card-title">AMO-Bench：高级数学推理</h2>
-                    [cite_start]<p>为了解决这一问题，研究人员推出了 AMO-Bench，一个包含50个人工精心制作问题的高级数学推理基准 [cite: 10]。</p>
-                    <p>其核心特征确保了评估的严格性：</p>
+                    <h2 class="card-title">AMO-Bench: advanced math reasoning</h2>
+                    <p>To address this, researchers introduce AMO-Bench, an advanced math reasoning benchmark with 50 carefully crafted problems.</p>
+                    <p>Key properties ensure strict evaluation:</p>
                     <ul>
-                        [cite_start]<li><strong>极高难度：</strong> 所有问题均经过专家交叉验证，确保其难度达到或超过国际数学奥林匹克 (IMO) 的标准 [cite: 13, 85]。</li>
-                        [cite_start]<li><strong>完全原创：</strong> 全部50个问题均为全新创建 [cite: 83][cite_start]，以防止模型通过“数据记忆”已有竞赛题库而获得虚高分数 [cite: 13]。</li>
-                        [cite_start]<li><strong>自动评分：</strong> 每个问题都设计为只需要一个最终答案（而非完整的证明过程） [cite: 14][cite_start]，这使得大规模的自动评分成为可能，保证了评估的高效和一致性 [cite: 87]。</li>
+                        <li><strong>Very high difficulty:</strong> experts cross validate every problem to reach or exceed International Mathematical Olympiad level.</li>
+                        <li><strong>Fully original:</strong> all 50 problems are newly created to prevent inflated scores from memorizing existing contest sets.</li>
+                        <li><strong>Automatic grading:</strong> each problem requires only a final answer rather than a full proof, enabling scalable automatic scoring with consistent evaluation.</li>
                     </ul>
                 </div>
 
                 <div class="card">
-                    <h2 class="card-title">核心发现：LLM仍在挣扎</h2>
-                    <p>在 AMO-Bench 的严格考验下，当代 LLM 的“光环”迅速褪去。</p>
-                    
+                    <h2 class="card-title">Key finding: models still struggle</h2>
+                    <p>Under the stricter AMO-Bench setting, the apparent advantage of current large language models fades quickly.</p>
+
                     <blockquote>
-                        [cite_start]实验结果显示，即便是表现最好的模型 GPT-5-Thinking (High)，其准确率也仅为 52.4% [cite: 15, 92, 320]。
+                        Results show that the best performing model GPT-5 Thinking High reaches only 52.4% accuracy.
                     </blockquote>
-                    
-                    [cite_start]<p>更重要的是，绝大多数 LLM 在此基准上的得分都低于 40% [cite: 15, 92, 320]。</p>
-                    [cite_start]<p>这些并不理想的成绩清晰地表明，尽管 LLM 在许多任务上取得了长足进步，但其在复杂数学推理方面的能力仍有巨大且显著的提升空间 [cite: 17, 321]。</p>
+
+                    <p>Most models score below 40% on this benchmark.</p>
+                    <p>These results indicate substantial room for improvement in complex mathematical reasoning.</p>
                 </div>
 
             </div>
-            
+
             <div class="visual-column">
 
                 <div class="card">
-                    <h2 class="card-title">性能对比</h2>
-                    <h3 class="card-subtitle">AMO-Bench vs. MATH500 (数据源: 图1)</h3>
-                    
+                    <h2 class="card-title">Performance comparison</h2>
+                    <h3 class="card-subtitle">AMO-Bench vs MATH500, source Figure 1</h3>
+
                     <div class="bar-chart-container">
                         <div class="bar-group">
-                            <div class="bar-group-title">MATH500 (已饱和)</div>
-                            
+                            <div class="bar-group-title">MATH500, saturated</div>
+
                             <div class="bar-item">
-                                <div class="bar-label">GPT-5-Thinking (High)</div>
+                                <div class="bar-label">GPT-5 Thinking High</div>
                                 <div class="bar-wrapper">
                                     <div class="bar math500" style="width: 99.6%;"></div>
                                 </div>
-                                [cite_start]<div class="bar-value">99.6% [cite: 54]</div>
-                            </div>
-                            
-                            <div class="bar-item">
-                                <div class="bar-label">LongCat-Flash-Thinking</div>
-                                <div class="bar-wrapper">
-                                    <div class="bar math500" style="width: 99.2%;"></div>
-                                </div>
-                                [cite_start]<div class="bar-value">99.2% [cite: 53]</div>
+                                <div class="bar-value">99.6%</div>
                             </div>
 
                             <div class="bar-item">
-                                <div class="bar-label">Gemini-2.5-Pro</div>
+                                <div class="bar-label">LongCat Flash Thinking</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar math500" style="width: 99.2%;"></div>
+                                </div>
+                                <div class="bar-value">99.2%</div>
+                            </div>
+
+                            <div class="bar-item">
+                                <div class="bar-label">Gemini 2.5 Pro</div>
                                 <div class="bar-wrapper">
                                     <div class="bar math500" style="width: 98.8%;"></div>
                                 </div>
-                                [cite_start]<div class="bar-value">98.8% [cite: 55]</div>
+                                <div class="bar-value">98.8%</div>
                             </div>
                         </div>
 
                         <div class="bar-group">
-                            <div class="bar-group-title">AMO-Bench (新挑战)</div>
-                            
+                            <div class="bar-group-title">AMO-Bench, new challenge</div>
+
                             <div class="bar-item">
-                                <div class="bar-label">GPT-5-Thinking (High)</div>
+                                <div class="bar-label">GPT-5 Thinking High</div>
                                 <div class="bar-wrapper">
                                     <div class="bar amo-bench" style="width: 52.4%;"></div>
                                 </div>
-                                [cite_start]<div class="bar-value">52.4% [cite: 42]</div>
-                            </div>
-                            
-                            <div class="bar-item">
-                                <div class="bar-label">LongCat-Flash-Thinking</div>
-                                <div class="bar-wrapper">
-                                    <div class="bar amo-bench" style="width: 43.6%;"></div>
-                                </div>
-                                [cite_start]<div class="bar-value">43.6% [cite: 45]</div>
+                                <div class="bar-value">52.4%</div>
                             </div>
 
                             <div class="bar-item">
-                                <div class="bar-label">Gemini-2.5-Pro</div>
+                                <div class="bar-label">LongCat Flash Thinking</div>
+                                <div class="bar-wrapper">
+                                    <div class="bar amo-bench" style="width: 43.6%;"></div>
+                                </div>
+                                <div class="bar-value">43.6%</div>
+                            </div>
+
+                            <div class="bar-item">
+                                <div class="bar-label">Gemini 2.5 Pro</div>
                                 <div class="bar-wrapper">
                                     <div class="bar amo-bench" style="width: 38.7%;"></div>
                                 </div>
-                                [cite_start]<div class="bar-value">38.7% [cite: 44, 48, 49]</div>
+                                <div class="bar-value">38.7%</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h2 class="card-title">基准的构建流程</h2>
-                    <h3 class="card-subtitle">确保质量、原创性与难度</h3>
-                    [cite_start]<p>AMO-Bench 的构建采用了一个全面的多阶段流程 [cite: 140]，以保证其极高的标准：</p>
+                    <h2 class="card-title">Benchmark construction process</h2>
+                    <h3 class="card-subtitle">Quality, originality, and difficulty controls</h3>
+                    <p>AMO-Bench uses a multi stage pipeline to maintain a high standard:</p>
                     <div class="process-flow">
-                        <div class="process-step">人类专家<br>(Data Creation)</div>
+                        <div class="process-step">Human experts<br>Data creation</div>
                         <span class="process-arrow">→</span>
-                        [cite_start]<div class="process-step">质量审查 [cite: 145]<br>(Quality Review)</div>
+                        <div class="process-step">Quality review<br>Quality review</div>
                         <span class="process-arrow">→</span>
-                        [cite_start]<div class="process-step">独创性审查 [cite: 149]<br>(Originality Review)</div>
+                        <div class="process-step">Originality review<br>Originality review</div>
                         <span class="process-arrow">→</span>
-                        [cite_start]<div class="process-step">难度审查 [cite: 154]<br>(Difficulty Review)</div>
+                        <div class="process-step">Difficulty review<br>Difficulty review</div>
                     </div>
                 </div>
 
@@ -427,8 +409,9 @@ layout: "amo-gemini"
     </div>
 
     <footer>
-        内容基于 arXiv:2510.26768v1 [cs.CL] 30 Oct 2025 (用户上传文件)
+        Content based on arXiv:2510.26768v1 cs.CL 30 Oct 2025.
     </footer>
 
 </body>
 </html>
+

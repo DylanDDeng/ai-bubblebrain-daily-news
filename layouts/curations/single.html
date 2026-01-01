@@ -9,7 +9,7 @@
         <h1>{{ .Title }}</h1>
         <div class="article-meta">
           <time datetime="{{ .Date.Format "2006-01-02" }}">
-            {{ .Date.Format "2006年01月02日" }}
+            {{ .Date.Format (i18n "date_format") }}
           </time>
           {{ with .Params.reading_time }}
             <span class="meta-reading-time">{{ . }}</span>
@@ -42,7 +42,7 @@
     <!-- 文章目录侧边栏 -->
     <aside class="toc-sidebar" id="toc-sidebar">
       <div class="toc-container">
-        <div class="toc-header">目录</div>
+        <div class="toc-header">{{ i18n "toc_header" }}</div>
         <nav class="toc-nav" id="toc-nav">
           <!-- TOC 内容由 JS 动态生成 -->
         </nav>
@@ -55,7 +55,7 @@
   <div class="section-narrow article-nav">
     <div class="nav-prev">
       {{ with .PrevInSection }}
-        <span class="nav-label">上一篇</span>
+        <span class="nav-label">{{ i18n "article_prev_label" }}</span>
         <a href="{{ .Permalink }}">
           ← {{ .Title }}
         </a>
@@ -63,7 +63,7 @@
     </div>
     <div class="nav-next">
       {{ with .NextInSection }}
-        <span class="nav-label">下一篇</span>
+        <span class="nav-label">{{ i18n "article_next_label" }}</span>
         <a href="{{ .Permalink }}">
           {{ .Title }} →
         </a>
@@ -72,8 +72,8 @@
   </div>
 
   <div class="section-narrow nav-back">
-    <a href="/curations/" class="read-more">
-      返回论文精选
+    <a href="{{ "/curations/" | relLangURL }}" class="read-more">
+      {{ i18n "curations_back" }}
     </a>
   </div>
 </footer>
