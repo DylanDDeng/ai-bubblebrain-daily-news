@@ -54,6 +54,12 @@ a:hover {
   color: var(--accent);
 }
 
+strong,
+b {
+  color: #3b82f6;
+  font-weight: 700;
+}
+
 /* Noise overlay */
 .noise-overlay {
   position: fixed;

@@ -96,6 +96,26 @@
 .article-layout .daily-article {
   flex: 1;
   min-width: 0;
+  max-width: 900px;
+}
+
+.article-layout .daily-article .article-content {
+  font-size: 1.1rem;
+}
+
+.article-layout .daily-article .article-content img {
+  max-width: 65%;
+}
+
+.article-layout .daily-article .article-content video {
+  width: 100%;
+  max-width: 65%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #000;
 }
 
 /* TOC 侧边栏 */
@@ -182,6 +202,13 @@
 
   .article-layout {
     display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .article-layout .daily-article .article-content img,
+  .article-layout .daily-article .article-content video {
+    max-width: 100%;
   }
 }
 

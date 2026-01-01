@@ -49,4 +49,37 @@
   </div>
 </footer>
 
+<style>
+.section-article .daily-article {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.section-article .daily-article .article-content {
+  font-size: 1.1rem;
+}
+
+.section-article .daily-article .article-content img {
+  max-width: 65%;
+}
+
+.section-article .daily-article .article-content video {
+  width: 100%;
+  max-width: 65%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+@media (max-width: 768px) {
+  .section-article .daily-article .article-content img,
+  .section-article .daily-article .article-content video {
+    max-width: 100%;
+  }
+}
+</style>
+
 {{ end }}
