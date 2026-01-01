@@ -1,14 +1,11 @@
 {{ define "main" }}
 <section class="section">
-  <div class="section-narrow curation-shell">
-    <header class="page-header gallery-hero">
+  <div class="section-narrow daily-list-container curation-archive mypublish-archive">
+    <header class="page-header">
       <p class="page-eyebrow">{{ i18n "curations_eyebrow" }}</p>
       <h1>{{ .Title }}</h1>
-      {{ with .Params.description }}
+      {{ with .Description }}
         <p class="page-desc">{{ . }}</p>
-      {{ end }}
-      {{ with .Content }}
-        <div class="curations-body">{{ . }}</div>
       {{ end }}
     </header>
 
@@ -16,75 +13,62 @@
       <div class="curation-search">
         <input type="search" id="curation-search" placeholder="{{ i18n "curations_search_placeholder" }}" aria-label="{{ i18n "curations_search_aria" }}">
       </div>
-      <div class="highlight-filter-row" id="curation-filters" aria-label="{{ i18n "curations_filter_aria" }}"></div>
+      <div class="curation-filter-row" id="curation-filters" aria-label="{{ i18n "curations_filter_aria" }}"></div>
     </div>
 
-    <div id="curation-grid" class="highlight-grid" aria-live="polite"></div>
-    <div id="curation-empty" class="highlight-empty" hidden>
+    <div id="curation-content" aria-live="polite">
+      <nav class="mypublish-year-nav" id="curation-year-nav" aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "按年份切换" "Browse by year" }}">
+        <div class="mypublish-year-pills" id="curation-year-pills"></div>
+      </nav>
+      <div class="mypublish-year-list" id="curation-year-list"></div>
+    </div>
+
+    <div id="curation-empty" class="empty-state" hidden>
       <p>{{ i18n "curations_empty_title" }}</p>
       <p>{{ i18n "curations_empty_hint" }}</p>
     </div>
-    <div id="curation-empty-filter" class="highlight-empty" hidden>
+    <div id="curation-empty-filter" class="empty-state" hidden>
       <p>{{ i18n "curations_empty_filter_title" }}</p>
       <p>{{ i18n "curations_empty_filter_hint" }}</p>
     </div>
   </div>
 </section>
 
-<div class="highlight-modal" id="curation-modal" aria-hidden="true">
-  <div class="highlight-modal__backdrop" data-close></div>
-  <div class="highlight-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="curation-modal-title">
-    <button class="highlight-modal__close" type="button" data-close aria-label="{{ i18n "curations_modal_close" }}">×</button>
-    <div class="highlight-modal__body">
-      <div class="highlight-modal__image">
-        <img id="curation-modal-image" alt="">
-      </div>
-      <div class="highlight-modal__meta">
-        <p class="modal-eyebrow" id="curation-modal-source">{{ i18n "curations_modal_eyebrow" }}</p>
-        <h2 id="curation-modal-title"></h2>
-        <div class="highlight-modal__tags" id="curation-modal-tags"></div>
-        <p class="highlight-modal__desc" id="curation-modal-desc"></p>
-        <a class="highlight-link" id="curation-modal-original" target="_blank" rel="noopener noreferrer">{{ i18n "curations_read_original" }}</a>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
 (() => {
   const dataUrl = "{{ "/curations.json" | relLangURL }}";
+  const langCode = "{{ .Site.LanguageCode }}";
+  const isZh = langCode === "zh-CN";
+
   const I18N = {
-    allWithCount: "{{ i18n "curations_all_with_count" }}",
-    untitled: "{{ i18n "curations_untitled" }}",
-    defaultAlt: "{{ i18n "curations_default_alt" }}",
-    defaultEyebrow: "{{ i18n "curations_modal_eyebrow" }}",
-    viewCard: "{{ i18n "curations_view_card" }}",
-    readOriginal: "{{ i18n "curations_read_original" }}"
+    allWithCount: "{{ i18n "curations_all_with_count" | default "全部 ({count})" }}",
+    untitled: "{{ i18n "curations_untitled" | default "无标题" }}",
+    noDescription: "{{ i18n "curations_no_description" | default "暂无描述" }}"
   };
-  const grid = document.getElementById("curation-grid");
+
+  const yearNav = document.getElementById("curation-year-nav");
+  const yearPills = document.getElementById("curation-year-pills");
+  const yearList = document.getElementById("curation-year-list");
   const empty = document.getElementById("curation-empty");
-  const filtersWrap = document.getElementById("curation-filters");
   const filterEmpty = document.getElementById("curation-empty-filter");
-  const modal = document.getElementById("curation-modal");
-  const modalImage = document.getElementById("curation-modal-image");
-  const modalTitle = document.getElementById("curation-modal-title");
-  const modalSource = document.getElementById("curation-modal-source");
-  const modalTags = document.getElementById("curation-modal-tags");
-  const modalDesc = document.getElementById("curation-modal-desc");
-  const modalOriginal = document.getElementById("curation-modal-original");
-  const pageSize = 24;
+  const filtersWrap = document.getElementById("curation-filters");
+  const searchInput = document.getElementById("curation-search");
+
   let allItems = [];
   let filteredItems = [];
-  let currentPage = 1;
   let currentFilter = "all";
   let searchTerm = "";
 
   function setEmpty(isEmpty) {
     if (empty) empty.hidden = !isEmpty;
+    if (yearNav) yearNav.style.display = isEmpty ? "none" : "";
+    if (yearList) yearList.style.display = isEmpty ? "none" : "";
   }
 
   function setFilterEmpty(isEmpty) {
     if (filterEmpty) filterEmpty.hidden = !isEmpty;
+    if (yearNav) yearNav.style.display = isEmpty ? "none" : "";
+    if (yearList) yearList.style.display = isEmpty ? "none" : "";
   }
 
   function collectTags(items) {
@@ -98,127 +82,254 @@
     return Array.from(tags).filter(Boolean);
   }
 
+  function collectTagCounts(items) {
+    const counts = Object.create(null);
+    items.forEach((item) => {
+      const tags = Array.isArray(item.tags) ? item.tags : [];
+      const uniq = new Set(tags.map((t) => (t || "").toString().trim()).filter(Boolean));
+      uniq.forEach((tag) => {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    });
+    return counts;
+  }
+
   function renderFilters(tags) {
     if (!filtersWrap) return;
     filtersWrap.innerHTML = "";
 
     const frag = document.createDocumentFragment();
+    const currentFilterLower = (currentFilter || "all").toString().trim().toLowerCase();
+
     const allBtn = document.createElement("button");
-    allBtn.className = "highlight-filter-pill active";
+    allBtn.className = "curation-filter-pill" + (currentFilterLower === "all" ? " active" : "");
     allBtn.textContent = I18N.allWithCount.replace("{count}", String(allItems.length));
     allBtn.dataset.tag = "all";
     frag.appendChild(allBtn);
 
+    const counts = collectTagCounts(allItems);
     tags.forEach((tag) => {
       const btn = document.createElement("button");
-      btn.className = "highlight-filter-pill";
-      btn.textContent = `${tag}`;
+      const isActive = currentFilterLower !== "all" && currentFilterLower === (tag || "").toString().trim().toLowerCase();
+      btn.className = "curation-filter-pill" + (isActive ? " active" : "");
+      btn.textContent = `${tag} (${counts[tag] || 0})`;
       btn.dataset.tag = tag;
       frag.appendChild(btn);
     });
 
     filtersWrap.appendChild(frag);
 
-    filtersWrap.querySelectorAll("button").forEach((btn) => {
+    filtersWrap.querySelectorAll("button[data-tag]").forEach((btn) => {
       btn.addEventListener("click", () => {
         currentFilter = btn.dataset.tag || "all";
-        filtersWrap.querySelectorAll("button").forEach((el) => el.classList.remove("active"));
+        filtersWrap.querySelectorAll("button[data-tag]").forEach((el) => el.classList.remove("active"));
         btn.classList.add("active");
         applyFilter();
       });
     });
   }
 
-  function buildCard(item) {
-    if (!item) return null;
-    const card = document.createElement("article");
-    card.className = "highlight-card reveal-text";
-    card.setAttribute("tabindex", "0");
+  function groupByYearMonth(items) {
+    const groups = {};
+    items.forEach((item) => {
+      if (!item.date) return;
+      const date = new Date(item.date);
+      if (isNaN(date.getTime())) return;
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
 
-    const imgWrap = document.createElement("div");
-    imgWrap.className = "highlight-thumb";
-    const img = document.createElement("img");
-    img.src = item.thumb || item.full || "";
-    img.alt = item.title || I18N.defaultAlt;
-    img.loading = "lazy";
-    imgWrap.appendChild(img);
-    imgWrap.addEventListener("click", () => openModal(item));
-
-    const meta = document.createElement("div");
-    meta.className = "highlight-card__meta";
-
-    const eyebrow = document.createElement("p");
-    eyebrow.className = "highlight-eyebrow";
-    eyebrow.textContent = item.eyebrow || I18N.defaultEyebrow;
-
-    const title = document.createElement("h3");
-    title.textContent = item.title || I18N.untitled;
-
-    const desc = document.createElement("p");
-    desc.className = "highlight-desc";
-    desc.textContent = item.description || "";
-
-    const tagRow = document.createElement("div");
-    tagRow.className = "highlight-tags";
-    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
-      const span = document.createElement("span");
-      span.textContent = tag;
-      tagRow.appendChild(span);
+      if (!groups[year]) groups[year] = {};
+      if (!groups[year][month]) groups[year][month] = [];
+      groups[year][month].push(item);
     });
-
-    const actions = document.createElement("div");
-    actions.className = "highlight-card__actions";
-
-    const viewBtn = document.createElement("button");
-    viewBtn.type = "button";
-    viewBtn.className = "highlight-btn";
-    viewBtn.textContent = I18N.viewCard;
-    viewBtn.addEventListener("click", () => openModal(item));
-    actions.appendChild(viewBtn);
-
-    if (item.originalUrl) {
-      const sourceLink = document.createElement("a");
-      sourceLink.className = "highlight-link";
-      sourceLink.href = item.originalUrl;
-      sourceLink.target = "_blank";
-      sourceLink.rel = "noopener noreferrer";
-      sourceLink.textContent = I18N.readOriginal;
-      actions.appendChild(sourceLink);
-    }
-
-    meta.appendChild(eyebrow);
-    meta.appendChild(title);
-    if (desc.textContent) meta.appendChild(desc);
-    if (tagRow.children.length) meta.appendChild(tagRow);
-    meta.appendChild(actions);
-
-    card.appendChild(imgWrap);
-    card.appendChild(meta);
-
-    return card;
+    return groups;
   }
 
-  function renderGrid() {
-    if (!grid) return;
-    grid.innerHTML = "";
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+    if (isZh) {
+      return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+    }
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  }
 
-    const totalItems = filteredItems.length;
-    if (!totalItems) return;
+  function getMonthLabel(year, monthKey) {
+    const monthTime = new Date(`${year}-${monthKey}-01`);
+    if (isZh) {
+      return `${monthTime.getMonth() + 1}月`;
+    }
+    return monthTime.toLocaleDateString("en-US", { month: "long" });
+  }
 
-    const start = (currentPage - 1) * pageSize;
-    const pageItems = filteredItems.slice(start, start + pageSize);
+  function renderYearList() {
+    if (!yearPills || !yearList) return;
+    yearPills.innerHTML = "";
+    yearList.innerHTML = "";
 
-    const frag = document.createDocumentFragment();
-    pageItems.forEach((item) => {
-      const card = buildCard(item);
-      if (card) frag.appendChild(card);
+    const groups = groupByYearMonth(filteredItems);
+    const years = Object.keys(groups).sort((a, b) => b - a);
+
+    if (years.length === 0) {
+      setFilterEmpty(true);
+      return;
+    }
+    setFilterEmpty(false);
+    if (yearNav) yearNav.style.display = years.length > 1 ? "" : "none";
+
+    years.forEach((year, yearIndex) => {
+      const pill = document.createElement("button");
+      pill.type = "button";
+      pill.className = "mypublish-year-pill" + (yearIndex === 0 ? " active" : "");
+      pill.dataset.year = year;
+      pill.setAttribute("aria-controls", `curation-year-${year}`);
+      pill.setAttribute("aria-expanded", yearIndex === 0 ? "true" : "false");
+
+      const label = document.createElement("span");
+      label.className = "mypublish-year-label";
+      label.textContent = year;
+
+      const count = document.createElement("span");
+      count.className = "mypublish-year-count";
+      const yearItems = Object.values(groups[year]).flat();
+      count.textContent = yearItems.length;
+
+      pill.appendChild(label);
+      pill.appendChild(count);
+      yearPills.appendChild(pill);
+
+      const details = document.createElement("details");
+      details.id = `curation-year-${year}`;
+      details.className = "mypublish-year";
+      if (yearIndex === 0) details.open = true;
+
+      const summary = document.createElement("summary");
+      summary.className = "mypublish-year-summary";
+
+      const yearTitle = document.createElement("span");
+      yearTitle.className = "mypublish-year-title";
+      yearTitle.textContent = year;
+
+      const yearTotal = document.createElement("span");
+      yearTotal.className = "mypublish-year-total";
+      yearTotal.textContent = yearItems.length;
+
+      summary.appendChild(yearTitle);
+      summary.appendChild(yearTotal);
+      details.appendChild(summary);
+
+      const monthListDiv = document.createElement("div");
+      monthListDiv.className = "mypublish-month-list";
+
+      const months = Object.keys(groups[year]).sort((a, b) => b - a);
+      months.forEach((monthKey) => {
+        const monthDiv = document.createElement("div");
+        monthDiv.className = "mypublish-month";
+
+        const monthLabel = document.createElement("div");
+        monthLabel.className = "mypublish-month-label";
+
+        const monthName = document.createElement("span");
+        monthName.className = "mypublish-month-name";
+        monthName.textContent = getMonthLabel(year, monthKey);
+
+        const monthCount = document.createElement("span");
+        monthCount.className = "mypublish-month-count";
+        monthCount.textContent = groups[year][monthKey].length;
+
+        monthLabel.appendChild(monthName);
+        monthLabel.appendChild(monthCount);
+        monthDiv.appendChild(monthLabel);
+
+        const itemsDiv = document.createElement("div");
+        itemsDiv.className = "mypublish-items";
+
+        const sortedItems = groups[year][monthKey].sort((a, b) => new Date(b.date) - new Date(a.date));
+        sortedItems.forEach((item) => {
+          const article = document.createElement("article");
+          article.className = "mypublish-item";
+
+          const h2 = document.createElement("h2");
+          h2.className = "mypublish-item-title";
+
+          const link = document.createElement("a");
+          link.href = item.detailUrl || item.originalUrl || "#";
+          if (!item.detailUrl && item.originalUrl) {
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+          }
+          link.textContent = item.title || I18N.untitled;
+          h2.appendChild(link);
+
+          const meta = document.createElement("div");
+          meta.className = "mypublish-item-meta";
+
+          const time = document.createElement("time");
+          time.setAttribute("datetime", item.date);
+          time.textContent = formatDate(item.date);
+          meta.appendChild(time);
+
+          article.appendChild(h2);
+          article.appendChild(meta);
+
+          if (item.description) {
+            const summary = document.createElement("p");
+            summary.className = "mypublish-item-summary";
+            summary.textContent = item.description.length > 160 ? item.description.slice(0, 160) + "..." : item.description;
+            article.appendChild(summary);
+          }
+
+          itemsDiv.appendChild(article);
+        });
+
+        monthDiv.appendChild(itemsDiv);
+        monthListDiv.appendChild(monthDiv);
+      });
+
+      details.appendChild(monthListDiv);
+      yearList.appendChild(details);
     });
 
-    grid.appendChild(frag);
+    bindYearInteractions();
+  }
 
-    requestAnimationFrame(() => {
-      grid.querySelectorAll(".reveal-text").forEach((el, index) => {
-        setTimeout(() => el.classList.add("active"), index * 50);
+  function bindYearInteractions() {
+    const pills = Array.from(document.querySelectorAll(".curation-archive .mypublish-year-pill"));
+    const years = Array.from(document.querySelectorAll(".curation-archive details.mypublish-year"));
+
+    if (!pills.length || !years.length) return;
+
+    const yearOf = (el) => (el.id || "").replace("curation-year-", "").trim();
+    const byYear = new Map(years.map((el) => [yearOf(el), el]));
+
+    const setActive = (year) => {
+      pills.forEach((pill) => {
+        const isActive = pill.dataset.year === year;
+        pill.classList.toggle("active", isActive);
+        pill.setAttribute("aria-expanded", isActive ? "true" : "false");
+      });
+    };
+
+    const openYear = (year, { scroll = true } = {}) => {
+      const target = byYear.get(year);
+      if (!target) return;
+      years.forEach((el) => { if (el !== target) el.open = false; });
+      target.open = true;
+      setActive(year);
+      if (scroll) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    pills.forEach((pill) => {
+      pill.addEventListener("click", () => openYear(pill.dataset.year));
+    });
+
+    years.forEach((detailsEl) => {
+      detailsEl.addEventListener("toggle", () => {
+        if (!detailsEl.open) return;
+        const year = yearOf(detailsEl);
+        years.forEach((el) => { if (el !== detailsEl) el.open = false; });
+        setActive(year);
       });
     });
   }
@@ -249,64 +360,12 @@
     filteredItems = allItems.filter((item) => byTag(item) && matchesSearch(item));
 
     const noMatch = filteredItems.length === 0;
-    setFilterEmpty(noMatch && (currentFilter !== "all" || term));
-    currentPage = 1;
-    renderGrid();
-  }
-
-  function openModal(item) {
-    if (!modal) return;
-    const imgUrl = item.full || item.thumb || "";
-    modalImage.src = imgUrl;
-    modalImage.alt = item.title || I18N.defaultAlt;
-    modalTitle.textContent = item.title || I18N.untitled;
-    if (modalSource) {
-      modalSource.textContent = item.source || I18N.defaultEyebrow;
-    }
-    modalTags.innerHTML = "";
-    (Array.isArray(item.tags) ? item.tags : []).forEach((tag) => {
-      const span = document.createElement("span");
-      span.textContent = tag;
-      modalTags.appendChild(span);
-    });
-    modalDesc.textContent = item.description || "";
-    if (item.originalUrl) {
-      modalOriginal.href = item.originalUrl;
-      modalOriginal.style.display = "";
+    if (noMatch && (currentFilter !== "all" || term)) {
+      setFilterEmpty(true);
     } else {
-      modalOriginal.style.display = "none";
+      setFilterEmpty(false);
+      renderYearList();
     }
-
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal() {
-    if (!modal) return;
-    modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-  }
-
-  const searchInput = document.getElementById("curation-search");
-  if (searchInput) {
-    searchInput.addEventListener("input", (event) => {
-      searchTerm = event.target.value || "";
-      applyFilter();
-    });
-  }
-
-  if (modal) {
-    modal.querySelectorAll("[data-close]").forEach((el) => {
-      el.addEventListener("click", closeModal);
-    });
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && modal.classList.contains("open")) {
-        closeModal();
-      }
-    });
   }
 
   function render(items) {
@@ -316,17 +375,23 @@
     }
 
     setEmpty(false);
-    allItems = items;
+    allItems = items.sort((a, b) => new Date(b.date) - new Date(a.date));
     filteredItems = [...allItems];
-    currentPage = 1;
     renderFilters(collectTags(allItems));
     setFilterEmpty(false);
-    renderGrid();
+    renderYearList();
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener("input", (event) => {
+      searchTerm = event.target.value || "";
+      applyFilter();
+    });
   }
 
   fetch(dataUrl)
     .then((res) => {
-      if (!res.ok) throw new Error("网络异常");
+      if (!res.ok) throw new Error("Network error");
       return res.json();
     })
     .then((items) => render(items))
@@ -337,35 +402,11 @@
 </script>
 
 <style>
-.curation-shell {
-  padding-bottom: 5rem;
-}
-
-.gallery-hero {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.gallery-hero h1 {
-  margin: 0.35rem 0;
-  font-size: 2.8rem;
-  font-family: inherit;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-}
-
-.curations-body {
-  margin-top: 1.5rem;
-  color: var(--text-muted);
-  line-height: 1.8;
-  text-align: center;
-}
-
 .curation-actions {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  margin: 1rem 0 2rem;
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
 }
 
 .curation-search {
@@ -391,14 +432,14 @@
   box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
 }
 
-.highlight-filter-row {
+.curation-filter-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
   justify-content: center;
 }
 
-.highlight-filter-pill {
+.curation-filter-pill {
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-main);
@@ -409,262 +450,26 @@
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.highlight-filter-pill:hover {
+.curation-filter-pill:hover {
   border-color: var(--accent);
 }
 
-.highlight-filter-pill.active {
+.curation-filter-pill.active {
   background: var(--accent);
   color: #000;
   border-color: var(--accent);
 }
 
-.highlight-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.25rem;
-}
-
-.highlight-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: transform 0.35s ease, background 0.3s ease, border-color 0.3s ease;
-  outline: none;
-}
-
-.highlight-card:hover {
-  transform: translateY(-6px);
-  background: var(--surface-highlight);
-  border-color: rgba(255, 255, 255, 0.12);
-}
-
-.highlight-thumb {
-  position: relative;
-  overflow: hidden;
-  background: var(--surface-highlight);
-  aspect-ratio: 16 / 9;
-  cursor: zoom-in;
-}
-
-.highlight-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.8s ease;
-}
-
-.highlight-card:hover .highlight-thumb img {
-  transform: scale(1.03);
-}
-
-.highlight-card__meta {
-  padding: 0 1.25rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.highlight-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.highlight-card h3 {
-  margin: 0;
-  font-family: inherit;
-  font-weight: 300;
-  font-size: 1.5rem;
-}
-
-.highlight-desc {
-  color: var(--text-muted);
-  margin: 0;
-  line-height: 1.6;
-}
-
-.highlight-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-
-.highlight-tags span {
-  background: var(--surface-highlight);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.25rem 0.8rem;
-  font-size: 0.85rem;
-}
-
-.highlight-card__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  margin-top: 0.5rem;
-  align-items: center;
-}
-
-.highlight-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
-  color: var(--text-main);
-  background: transparent;
-  font-size: 0.9rem;
-  text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.highlight-btn:hover {
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
-}
-
-.highlight-link {
-  color: var(--accent);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  margin-left: 0.35rem;
-}
-
-.highlight-link:hover {
-  text-decoration: underline;
-}
-
-.highlight-empty {
-  margin-top: 2rem;
-  text-align: center;
-  padding: 2rem;
-  border: 1px solid var(--border);
-  background: var(--surface-highlight);
-  color: var(--text-muted);
-}
-
-.highlight-modal {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  z-index: 2000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-
-.highlight-modal.open {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.highlight-modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(6px);
-}
-
-.highlight-modal__dialog {
-  position: relative;
-  max-width: 960px;
-  width: min(92vw, 960px);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
-}
-
-.highlight-modal__body {
-  display: grid;
-  grid-template-columns: 1fr 0.9fr;
-  gap: 1.25rem;
-  padding: 1.25rem;
-}
-
-.highlight-modal__image {
-  border: 1px solid var(--border);
-  background: var(--surface-highlight);
-  padding: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.highlight-modal__image img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.highlight-modal__meta h2 {
-  margin: 0.3rem 0 0.8rem;
-  font-family: inherit;
-  font-weight: 300;
-  letter-spacing: -0.01em;
-}
-
-.highlight-modal__tags {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin: 0.5rem 0 0.75rem;
-}
-
-.highlight-modal__tags span {
-  background: var(--surface-highlight);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 0.25rem 0.8rem;
-  font-size: 0.85rem;
-}
-
-.highlight-modal__desc {
-  color: var(--text-muted);
-  margin: 0.25rem 0 0.75rem;
-  line-height: 1.6;
-}
-
-.highlight-modal__close {
-  position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
-  background: var(--surface-highlight);
-  color: var(--text-main);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  width: 38px;
-  height: 38px;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
-
-.highlight-modal__close:hover {
-  color: var(--accent);
-}
-
-@media (max-width: 900px) {
-  .highlight-modal__body {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .highlight-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 768px) {
+  .curation-filter-row {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.5rem;
   }
 
-  .highlight-modal__dialog {
-    width: 94vw;
+  .curation-filter-pill {
+    flex-shrink: 0;
   }
 }
 </style>

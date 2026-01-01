@@ -1,35 +1,39 @@
 [
   {
     "id": "curation-01",
+    "date": "2025-11-24",
     "title": "AMO-Bench",
     "description": "美团推出了数学推理Benchmark",
-    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251124115448143.png",
-    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251124115448143.png",
     "tags": ["Benchmark", "Meituan"],
-    "originalUrl": "https://arxiv.org/abs/2510.26768"
+    "originalUrl": "https://arxiv.org/abs/2510.26768",
+    "detailUrl": "/curations/amo-bench/"
   },
-
   {
     "id": "curation-02",
+    "date": "2025-11-20",
     "title": "Attention is all you need",
     "description": "大模型的基础架构--Transformer",
-    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251124172831610.png",
-    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251124172831610.png",
     "tags": ["Model", "Google"],
-    "originalUrl": "https://arxiv.org/abs/1706.03762"
-  }, 
-
+    "originalUrl": "https://arxiv.org/abs/1706.03762",
+    "detailUrl": "/curations/attention-is-all-you-need/"
+  },
   {
     "id": "curation-03",
+    "date": "2025-11-28",
     "title": "DeepSeekMath-V2",
     "description": "DeepSeek 最新推出的数学推理模型",
-    "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251128091012684.png",
-    "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251128091012684.png",
     "tags": ["Model", "DeepSeek"],
-    "originalUrl": "https://github.com/deepseek-ai/DeepSeek-Math-V2/blob/main/DeepSeekMath_V2.pdf"
+    "originalUrl": "https://github.com/deepseek-ai/DeepSeek-Math-V2/blob/main/DeepSeekMath_V2.pdf",
+    "detailUrl": "/curations/deepseekmath-v2/"
+  },
+
+    {
+    "id": "curation-04",
+    "date": "2026-01-01",
+    "title": "mHC: Manifold-Constrained Hyper-Connections",
+    "description": "DeepSeek 新研究，提出mHC模块",
+    "tags": ["Model","DeepSeek"],
+    "originalUrl": "https://arxiv.org/pdf/2512.24880",
+    "detailUrl": "/curations/mhc/"
   }
-
-  
-
-
 ]
