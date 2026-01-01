@@ -45,8 +45,7 @@
   const I18N = {
     all: "{{ i18n "xtrending_all" }}",
     expandTags: "{{ i18n "xtrending_expand_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "展开更多 (+{count})" "Show more (+{count})") }}",
-    collapseTags: "{{ i18n "xtrending_collapse_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "收起" "Collapse") }}",
-    openOriginal: "{{ i18n "xtrending_open_original" | default (cond (eq .Site.LanguageCode "zh-CN") "推文加载失败，点击打开原文" "Tweet failed to load. Open on X") }}"
+    collapseTags: "{{ i18n "xtrending_collapse_tags" | default (cond (eq .Site.LanguageCode "zh-CN") "收起" "Collapse") }}"
   };
 
   const grid = document.getElementById("xtrending-grid");
@@ -175,8 +174,6 @@
       embedWrap.hidden = true;
       const skeleton = card.querySelector(".xtrending-skeleton");
       if (skeleton) skeleton.classList.add("is-failed");
-      const link = card.querySelector(".xtrending-fallback-link");
-      if (link) link.hidden = false;
     });
   }
 
@@ -252,15 +249,6 @@
     const skeleton = document.createElement("div");
     skeleton.className = "xtrending-skeleton";
     card.appendChild(skeleton);
-
-    const fallback = document.createElement("a");
-    fallback.className = "xtrending-fallback-link";
-    fallback.href = item.originalUrl || "#";
-    fallback.target = "_blank";
-    fallback.rel = "noopener noreferrer";
-    fallback.textContent = I18N.openOriginal;
-    fallback.hidden = true;
-    card.appendChild(fallback);
 
     // 创建嵌入容器（进入可视区后再 createTweet）
     const embedWrap = document.createElement("div");
@@ -544,25 +532,6 @@
 
 .xtrending-skeleton.is-failed::before {
   display: none;
-}
-
-.xtrending-fallback-link {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.25rem;
-  text-align: center;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.95rem;
-  line-height: 1.45;
-}
-
-.xtrending-fallback-link:hover {
-  color: var(--accent);
 }
 
 @keyframes xtrendingShimmer {
