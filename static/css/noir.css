@@ -22,12 +22,26 @@
 body {
   background-color: var(--bg);
   color: var(--text-main);
-  font-family: "Manrope", sans-serif;
+  font-family: serif;
   overflow-x: hidden;
   width: 100%;
   line-height: 1.7;
   letter-spacing: 0.01em;
   cursor: default;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: inherit;
 }
 
 a {
@@ -69,7 +83,7 @@ a:hover {
 }
 
 .nav-logo {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 1.5rem;
   letter-spacing: 0.05em;
   font-weight: 600;
@@ -301,7 +315,7 @@ a:hover {
 }
 
 .hero h1 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 8vw;
   line-height: 0.9;
   font-weight: 300;
@@ -411,7 +425,7 @@ a:hover {
 }
 
 .card h3 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 2rem;
   font-weight: 300;
   font-style: italic;
@@ -472,7 +486,7 @@ a:hover {
 }
 
 .page-header h1 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 3rem;
   font-weight: 300;
   margin: 0;
@@ -489,7 +503,7 @@ a:hover {
 .page-body h4,
 .page-body h5,
 .page-body h6 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-weight: 400;
   margin-top: 2.5rem;
   margin-bottom: 1rem;
@@ -521,7 +535,7 @@ a:hover {
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   color: var(--accent);
-  font-family: "Manrope", monospace;
+  font-family: inherit;
 }
 
 .page-body pre {
@@ -642,7 +656,7 @@ a:hover {
 
 .daily-list-container .card-header h2 {
   margin: 0;
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-weight: 300;
   letter-spacing: -0.01em;
 }
@@ -850,7 +864,7 @@ a:hover {
 }
 
 .mypublish-archive .mypublish-year-title {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 2.6rem;
   font-weight: 300;
   letter-spacing: -0.01em;
@@ -893,7 +907,7 @@ a:hover {
 }
 
 .mypublish-archive .mypublish-month-name {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 1.3rem;
   font-weight: 400;
 }
@@ -912,7 +926,7 @@ a:hover {
 
 .mypublish-archive .mypublish-item-title {
   margin: 0;
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 1.4rem;
   font-weight: 300;
   letter-spacing: -0.01em;
@@ -971,7 +985,7 @@ a:hover {
 }
 
 .comments-title {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 2rem;
   font-weight: 300;
   text-align: center;
@@ -1393,7 +1407,7 @@ a:hover {
 }
 
 .article-header h1 {
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 3rem;
   font-weight: 300;
   margin-bottom: 1rem;
@@ -1558,7 +1572,7 @@ footer {
   border-top: 1px solid var(--border);
   padding: 4rem var(--page-padding);
   text-align: center;
-  font-family: "Cormorant Garamond", serif;
+  font-family: inherit;
   font-size: 1.2rem;
   font-style: italic;
   color: var(--text-muted);

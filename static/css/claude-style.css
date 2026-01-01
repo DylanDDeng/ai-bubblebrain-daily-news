@@ -1,11 +1,10 @@
 /* Claude 风格自定义样式 */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Josefin+Sans:wght@400;600&display=swap");
 
 /* 字体设置 - 优化中文显示 */
 :root {
-  --font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --font-secondary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --font-mono: "Inter", monospace;
+  --font-primary: serif;
+  --font-secondary: serif;
+  --font-mono: serif;
   
   /* Claude 配色方案 */
   --claude-bg: #F7F7F4;
@@ -201,7 +200,7 @@ p {
 .post-card p,
 .daily-card time,
 .post-card time {
-  font-family: "Inter", var(--font-secondary);
+  font-family: inherit;
   color: #9C9589;
 }
 
@@ -233,7 +232,7 @@ p {
 #todays-ai-news strong,
 #today-s-ai-news,
 #today-s-ai-news strong {
-  font-family: "Josefin Sans", "Inter", var(--font-secondary);
+  font-family: inherit;
   color: var(--claude-primary);
   font-style: italic;
 }

@@ -7,16 +7,8 @@
     <meta name="description" content="{{ .Description | default .Site.Params.description }}">
 
     <!-- 预连接关键第三方域名 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://images.unsplash.com">
     <link rel="preconnect" href="https://image-1325800846.cos.ap-nanjing.myqcloud.com">
-
-    <!-- Google Fonts - 非阻塞加载 -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,600&family=Manrope:wght@300;400;600&display=swap" media="print" onload="this.media='all'">
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,600&family=Manrope:wght@300;400;600&display=swap">
-    </noscript>
 
     {{ if and .IsHome (eq .Site.LanguageCode "zh-CN") }}
       {{ $enSite := index (where site.Sites "Language.LanguageCode" "en") 0 }}
