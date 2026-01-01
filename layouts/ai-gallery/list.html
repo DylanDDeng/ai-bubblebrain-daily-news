@@ -1,4 +1,29 @@
 {{ define "main" }}
+<style>
+/* Critical CSS: prevent FOUC before this page's main <style> loads */
+.gallery-mobile-toggle { display: none; }
+.gallery-sidebar__header { display: none; }
+.gallery-sidebar-backdrop { display: none; }
+
+.gallery-fullscreen,
+.gallery-comments-sheet {
+  position: fixed;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gallery-fullscreen.open,
+.gallery-comments-sheet.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .gallery-mobile-toggle { display: flex; }
+  .gallery-sidebar__header { display: flex; }
+}
+</style>
 <section class="section">
   <div class="gallery-shell">
     <header class="page-header gallery-hero">
