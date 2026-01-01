@@ -5,6 +5,22 @@
 .gallery-sidebar__header { display: none; }
 .gallery-sidebar-backdrop { display: none; }
 
+.gallery-search input {
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.gallery-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
 .gallery-fullscreen,
 .gallery-comments-sheet {
   position: fixed;
@@ -2210,21 +2226,31 @@
     }
   }
 
-  fetch(dataUrl)
-    .then((res) => {
-      console.log('fetch response:', res.status, res.statusText);
-      if (!res.ok) throw new Error(`${I18N.networkError}: ${res.status}`);
-      return res.text();
-    })
-    .then((text) => {
-      const items = parseGalleryJson(text);
-      console.log('gallery items loaded:', Array.isArray(items) ? items.length : 0);
-      render(Array.isArray(items) ? items : []);
-    })
-    .catch((err) => {
-      console.error('加载gallery.json失败:', err);
-      setEmpty(true);
-    });
+  // 避免极快的缓存命中导致在样式块解析前就渲染（会短暂出现未样式化的闪烁）
+  // 等 DOM 解析完成（包含本页 <style>）后再开始渲染。
+  const startFetch = () => {
+    fetch(dataUrl)
+      .then((res) => {
+        if (!res.ok) throw new Error(`${I18N.networkError}: ${res.status}`);
+        return res.text();
+      })
+      .then((text) => {
+        const items = parseGalleryJson(text);
+        render(Array.isArray(items) ? items : []);
+      })
+      .catch(() => setEmpty(true));
+  };
+
+  const scheduleFetch = () => {
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(startFetch);
+    else setTimeout(startFetch, 0);
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", scheduleFetch, { once: true });
+  } else {
+    scheduleFetch();
+  }
 
   // 移动端侧边栏控制
   const sidebar = document.getElementById("gallery-sidebar");
