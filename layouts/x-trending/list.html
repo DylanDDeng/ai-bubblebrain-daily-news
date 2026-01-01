@@ -370,7 +370,10 @@
 
   fetch(dataUrl)
     .then((res) => { if (!res.ok) throw new Error("网络异常"); return res.json(); })
-    .then((items) => render(items))
+    .then((items) => {
+      items.reverse();
+      render(items);
+    })
     .catch(() => setEmpty(true));
 })();
 </script>

@@ -2331,6 +2331,41 @@
   gap: 0.25rem;
 }
 
+/* 桌面端：标签过多时侧边栏内滚动（避免滚动“串”到右侧图片） */
+@media (min-width: 769px) {
+  .gallery-sidebar {
+    height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gallery-filter-group {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
+  .gallery-filter-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.75rem;
+
+    /* Hide scrollbar but keep scroll */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge legacy */
+  }
+
+  .gallery-filter-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
 .gallery-filter-pill {
   display: block;
   width: 100%;
