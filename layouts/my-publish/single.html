@@ -96,6 +96,15 @@
 .article-layout .daily-article {
   flex: 1;
   min-width: 0;
+  max-width: 900px;
+}
+
+.article-layout .daily-article .article-content {
+  font-size: 1.1rem;
+}
+
+.article-layout .daily-article .article-content img {
+  max-width: 75%;
 }
 
 /* TOC 侧边栏 */
@@ -182,6 +191,12 @@
 
   .article-layout {
     display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .article-layout .daily-article .article-content img {
+    max-width: 100%;
   }
 }
 
