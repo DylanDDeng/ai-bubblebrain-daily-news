@@ -1466,6 +1466,13 @@ b {
   margin-bottom: 0.9rem;
 }
 
+.article-content a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
 .article-content ul li,
 .article-content ol li {
   margin-bottom: 0.8rem;
