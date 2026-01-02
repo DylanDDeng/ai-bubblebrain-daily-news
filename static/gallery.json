@@ -3241,6 +3241,57 @@
 
 "tags":["人像"] 
 
+},
+
+{
+  "id":165,
+  "title": "商业产品创意海报",
+  "author": "@YaseenK7212",
+  "source": "Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260103021758604.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260103021758604.png", 
+  "prompt": {
+  "food_photography_series": {
+    "subject": "Fried Chicken Thigh",
+    "technical_specs": {
+      "style": "Hyper-realistic hero shot",
+      "aspect_ratio": "3:4",
+      "lighting": "Cinematic / Studio"
+    },
+    "variations": [
+      {
+        "theme": "Tartar Refresh",
+        "sauce": "Thick tartar sauce",
+        "accents": ["capers", "dill", "chopped pickles"],
+        "background": "Bright lemon-yellow",
+        "prompt": "Hyper-realistic hero shot of a fried chicken thigh in midair with thick tartar sauce bursting around it, flecks of capers, dill, and chopped pickles frozen in motion. The sauce flows like creamy waves, dancing around the crispy surface. Bright lemon-yellow background with moody studio backlight creates a gourmet, refreshing tone ultra-detailed commercial look, --ar 3:4"
+      },
+      {
+        "theme": "White Truffle Luxury",
+        "sauce": "Creamy white truffle sauce",
+        "accents": ["shaved mushrooms", "fine porcini powder"],
+        "background": "Warm yellow-beige with soft haze",
+        "prompt": "Hyper-realistic hero shot of a luxurious fried chicken thigh floating in the center, surrounded by a splash of creamy white truffle sauce, with shaved mushrooms and fine powder of porcini dusting the motion. Golden skin shines under cinematic key light, background in warm yellow-beige hues with soft haze premium gourmet commercial, --ar 3:4"
+      },
+      {
+        "theme": "Smoked Cheese Indulgence",
+        "sauce": "Molten smoked cheese fondue",
+        "accents": ["golden crouton crumble"],
+        "background": "Creamy yellow with taupe haze",
+        "prompt": "Hyper-realistic hero shot of a crisp fried chicken thigh surrounded by a molten splash of smoked cheese fondue mid-air, with bits of golden crouton crumble suspended in orbit. Deep lighting creates dimensional drama on the crispy crust. The backdrop blends creamy yellow with taupe haze indulgent cheese-forward visual, --ar 3:4"
+      },
+      {
+        "theme": "Miso Umami",
+        "sauce": "Miso butter glaze and umami cream",
+        "accents": ["toasted seaweed powder", "sesame seeds"],
+        "background": "Muted beige",
+        "prompt": "Hyper-realistic hero shot of a rich fried chicken thigh hovering mid-air, glazed with miso butter and surrounded by a dynamic splash of umami cream, flecked with toasted seaweed powder and sesame seeds. Dramatic soft shadows sculpt the skin texture. Muted beige background, clean and warm umami-focused food ad, --ar 3:4"
+      }
+    ]
+  }
+}, 
+"tags":["创意海报"]
+
 }
 
     ]
