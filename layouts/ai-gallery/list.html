@@ -179,6 +179,14 @@
 		          <div class="prompt-breakdown" id="fullscreen-prompt-breakdown" hidden></div>
 		        </div>
 
+          <!-- 相似作品 -->
+          <section class="gallery-similar" id="gallery-similar" hidden>
+            <div class="gallery-similar__header">
+              <h3 class="gallery-similar__title" id="gallery-similar-title"></h3>
+            </div>
+            <div class="gallery-similar__grid" id="gallery-similar-grid"></div>
+          </section>
+
           <!-- 评论区（桌面端：右侧信息栏底部手风琴；移动端：会被挪到抽屉里展示） -->
           <div class="gallery-comments-slot" id="gallery-comments-slot">
             <section class="gallery-comments" id="gallery-comments" aria-label="{{ i18n "comments_title" }}">
@@ -265,10 +273,13 @@
 	  const fullscreenSource = document.getElementById("fullscreen-source");
 	  const fullscreenPrompt = document.getElementById("fullscreen-prompt");
 	  const fullscreenPromptBreakdown = document.getElementById("fullscreen-prompt-breakdown");
-	  const fullscreenTags = document.getElementById("fullscreen-tags");
+  const fullscreenTags = document.getElementById("fullscreen-tags");
 	  const fullscreenCaption = document.getElementById("fullscreen-caption");
 	  const fullscreenCounter = document.getElementById("fullscreen-counter");
 	  const fullscreenImageCounter = document.getElementById("fullscreen-image-counter");
+	  const similarSection = document.getElementById("gallery-similar");
+	  const similarTitleEl = document.getElementById("gallery-similar-title");
+	  const similarGridEl = document.getElementById("gallery-similar-grid");
   const fullscreenThumbsList = document.getElementById("fullscreen-thumbs-list");
   const fullscreenLoader = document.getElementById("fullscreen-loader");
 
@@ -322,6 +333,8 @@
 	    copyFailed: "{{ i18n "gallery_copy_failed" }}",
 	    breakdownEmpty: "{{ i18n "gallery_prompt_breakdown_empty" | default (cond (eq .Site.LanguageCode "zh-CN") "暂时无法拆解该 Prompt。" "No breakdown available for this prompt.") }}",
 	    networkError: "{{ i18n "gallery_network_error" }}",
+	    similarTitle: "{{ i18n "gallery_similar_title" | default (cond (eq .Site.LanguageCode "zh-CN") "相似作品" "Similar picks") }}",
+	    similarEmpty: "{{ i18n "gallery_similar_empty" | default (cond (eq .Site.LanguageCode "zh-CN") "暂时没有相似推荐。" "No similar items yet.") }}",
 
     commentsTitle: "{{ i18n "comments_title" }}",
     commentsViewAll: "{{ i18n "gallery_comments_view_all" }}",
@@ -795,6 +808,222 @@
 	    const text = formatPrompt(value);
 	    if (!text) return "";
 	    return text.replace(/\s+/g, " ").trim();
+	  }
+
+	  // ===== 相似作品推荐（标签权重更高）=====
+	  const SIMILAR_TOP_N = 8;
+	  const SIMILAR_SCORE_THRESHOLD = 0.18;
+	  const SIMILAR_WEIGHTS = {
+	    tags: 0.55,
+	    terms: 0.30,
+	    source: 0.10,
+	    specs: 0.05
+	  };
+
+	  const similarFeatureCache = new Map();
+
+	  function normalizeTagValue(tag) {
+	    return (tag || "").toString().trim().toLowerCase();
+	  }
+
+	  function normalizeSourceValue(source) {
+	    return (source || "").toString().trim().toLowerCase();
+	  }
+
+	  function setIntersectionSize(a, b) {
+	    if (!a || !b || !a.size || !b.size) return 0;
+	    const small = a.size <= b.size ? a : b;
+	    const big = small === a ? b : a;
+	    let count = 0;
+	    small.forEach((v) => {
+	      if (big.has(v)) count += 1;
+	    });
+	    return count;
+	  }
+
+	  function overlapRatio(a, b) {
+	    if (!a || !b || !a.size || !b.size) return 0;
+	    const denom = Math.max(a.size, b.size);
+	    if (!denom) return 0;
+	    return setIntersectionSize(a, b) / denom;
+	  }
+
+	  function extractGlossaryIds(text) {
+	    if (!promptGlossaryIndex || !text) return new Set();
+	    const source = text.toString();
+	    const lower = source.toLowerCase();
+	    const out = new Set();
+
+	    for (let i = 0; i < source.length; i += 1) {
+	      for (const entry of promptGlossaryIndex) {
+	        const alias = entry.alias;
+	        const end = i + alias.length;
+	        if (end > source.length) continue;
+
+	        if (entry.ascii) {
+	          if (!lower.startsWith(entry.lower, i)) continue;
+	          if (!isAsciiBoundary(source, i, end)) continue;
+	        } else {
+	          if (!source.startsWith(alias, i)) continue;
+	        }
+
+	        out.add(entry.id);
+	        i = end - 1;
+	        break;
+	      }
+	    }
+
+	    return out;
+	  }
+
+	  function extractAspectKey(text) {
+	    const s = (text || "").toString();
+	    let m = /--ar\s*([0-9]{1,2}:[0-9]{1,2})/i.exec(s);
+	    if (m) return m[1];
+	    m = /aspect\s*ratio\s*[:：]?\s*([0-9]{1,2}:[0-9]{1,2})/i.exec(s);
+	    if (m) return m[1];
+	    m = /([0-9]{1,2}:[0-9]{1,2})/.exec(s);
+	    if (m) return m[1];
+	    return "";
+	  }
+
+	  function extractResolutionKey(text) {
+	    const s = (text || "").toString().toLowerCase();
+	    const sizeMatch = /\b(\d{3,4})\s*x\s*(\d{3,4})\b/.exec(s);
+	    if (sizeMatch) return `${sizeMatch[1]}x${sizeMatch[2]}`;
+	    if (/\b8k\b/.test(s)) return "8k";
+	    if (/\b4k\b/.test(s)) return "4k";
+	    if (/\b2k\b/.test(s)) return "2k";
+	    if (/\b1k\b/.test(s)) return "1k";
+	    if (/\b1080p\b/.test(s)) return "1080p";
+	    if (/\b720p\b/.test(s)) return "720p";
+	    if (/\buhd\b/.test(s) || /ultra[- ]?hd/.test(s)) return "uhd";
+	    return "";
+	  }
+
+	  function getSimilarFeatures(item) {
+	    if (!item) return null;
+	    const key = (item.id || item.title || "").toString();
+	    if (similarFeatureCache.has(key)) return similarFeatureCache.get(key);
+
+	    const tags = new Set(
+	      (Array.isArray(item.tags) ? item.tags : [])
+	        .map(normalizeTagValue)
+	        .filter(Boolean)
+	    );
+
+	    const promptText = formatPrompt(item.prompt) || "";
+	    const termIds = extractGlossaryIds(promptText);
+	    const sourceKey = normalizeSourceValue(item.source);
+	    const aspectKey = extractAspectKey(promptText);
+	    const resolutionKey = extractResolutionKey(promptText);
+
+	    const features = {
+	      key,
+	      tags,
+	      termIds,
+	      sourceKey,
+	      aspectKey,
+	      resolutionKey
+	    };
+
+	    similarFeatureCache.set(key, features);
+	    return features;
+	  }
+
+	  function computeSimilarScore(a, b) {
+	    const af = getSimilarFeatures(a);
+	    const bf = getSimilarFeatures(b);
+	    if (!af || !bf) return 0;
+
+	    const tagScore = overlapRatio(af.tags, bf.tags);
+	    const termScore = overlapRatio(af.termIds, bf.termIds);
+	    const sourceScore = af.sourceKey && bf.sourceKey && af.sourceKey === bf.sourceKey ? 1 : 0;
+	    const aspectMatch = af.aspectKey && bf.aspectKey && af.aspectKey === bf.aspectKey ? 1 : 0;
+	    const resolutionMatch = af.resolutionKey && bf.resolutionKey && af.resolutionKey === bf.resolutionKey ? 1 : 0;
+	    const specsScore = 0.6 * aspectMatch + 0.4 * resolutionMatch;
+
+	    return (
+	      SIMILAR_WEIGHTS.tags * tagScore +
+	      SIMILAR_WEIGHTS.terms * termScore +
+	      SIMILAR_WEIGHTS.source * sourceScore +
+	      SIMILAR_WEIGHTS.specs * specsScore
+	    );
+	  }
+
+	  function getSimilarCandidates() {
+	    const currentFilterLower = (currentFilter || "all").toString().trim().toLowerCase();
+	    const inFilteredContext = currentFilterLower !== "all";
+	    const list = inFilteredContext && filteredItems && filteredItems.length ? filteredItems : allItems;
+	    return Array.isArray(list) ? list : [];
+	  }
+
+	  function clearSimilarUI() {
+	    if (similarGridEl) similarGridEl.innerHTML = "";
+	    if (similarSection) similarSection.hidden = true;
+	  }
+
+	  function renderSimilarItems() {
+	    if (!similarSection || !similarGridEl || !currentItem) return;
+
+	    if (similarTitleEl) similarTitleEl.textContent = I18N.similarTitle;
+	    similarGridEl.innerHTML = "";
+
+	    const candidates = getSimilarCandidates().filter((item) => item && item.id !== currentItem.id);
+	    if (!candidates.length) {
+	      similarSection.hidden = true;
+	      return;
+	    }
+
+	    const scored = candidates
+	      .map((item) => ({ item, score: computeSimilarScore(currentItem, item) }))
+	      .filter((x) => x.score >= SIMILAR_SCORE_THRESHOLD)
+	      .sort((a, b) => b.score - a.score)
+	      .slice(0, SIMILAR_TOP_N);
+
+	    if (!scored.length) {
+	      const empty = document.createElement("div");
+	      empty.className = "gallery-similar__empty";
+	      empty.textContent = I18N.similarEmpty;
+	      similarGridEl.appendChild(empty);
+	      similarSection.hidden = false;
+	      return;
+	    }
+
+	    const frag = document.createDocumentFragment();
+	    scored.forEach(({ item }) => {
+	      const images = normalizeImages(item);
+	      const primary = images[0] || {};
+	      const src = optimizeImageUrl(primary.thumb || primary.full, true);
+	      if (!src) return;
+
+	      const btn = document.createElement("button");
+	      btn.type = "button";
+	      btn.className = "gallery-similar__item";
+	      btn.dataset.id = (item.id || "").toString();
+
+	      const img = document.createElement("img");
+	      img.src = src;
+	      img.alt = item.title || I18N.untitled;
+	      img.loading = "lazy";
+	      btn.appendChild(img);
+
+	      const meta = document.createElement("div");
+	      meta.className = "gallery-similar__meta";
+	      meta.textContent = item.title || I18N.untitled;
+	      btn.appendChild(meta);
+
+	      btn.addEventListener("click", () => {
+	        const pool = getSimilarCandidates();
+	        const target = pool.find((x) => x && (x.id === item.id || x === item));
+	        if (target) openFullscreen(target, true);
+	      });
+
+	      frag.appendChild(btn);
+	    });
+
+	    similarGridEl.appendChild(frag);
+	    similarSection.hidden = false;
 	  }
 
 	  const PROMPT_CATEGORIES = (() => {
@@ -2245,6 +2474,7 @@
 	    promptBreakdownCache = null;
 	    if (fullscreenPromptBreakdown) fullscreenPromptBreakdown.innerHTML = "";
 	    setPromptView(promptView);
+	    renderSimilarItems();
 
 	    fullscreenTags.innerHTML = "";
 	    if (item.tags && item.tags.length) {
@@ -2366,6 +2596,7 @@
       commentsUI.closeSheet();
     }
     hidePromptTooltip(true);
+    clearSimilarUI();
     fullscreen.classList.remove("open");
     fullscreen.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
@@ -2604,6 +2835,10 @@
 	        if (fullscreen && fullscreen.classList.contains("open") && promptView === "raw") {
 	          promptRawRenderKey = "";
 	          renderPromptRaw({ preserveScroll: true });
+	        }
+	        if (fullscreen && fullscreen.classList.contains("open") && currentItem) {
+	          similarFeatureCache.clear();
+	          renderSimilarItems();
 	        }
 	      })
 	      .catch(() => {});
@@ -3890,6 +4125,77 @@
 .prompt-glossary-tooltip__example-label {
   color: var(--text-main);
   opacity: 0.9;
+}
+
+.gallery-similar {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+
+.gallery-similar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.gallery-similar__title {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.gallery-similar__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.gallery-similar__item {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.gallery-similar__item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(212, 175, 55, 0.35);
+  background: rgba(26, 26, 26, 0.92);
+}
+
+.gallery-similar__item img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-similar__meta {
+  padding: 0.55rem 0.7rem 0.65rem;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gallery-similar__empty {
+  grid-column: 1 / -1;
+  padding: 0.75rem 0.85rem;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
 }
 
 /* 共用样式 */
