@@ -252,6 +252,7 @@
 <script>
 (() => {
   const dataUrl = "{{ "/gallery.json" | relLangURL }}";
+  const glossaryUrl = "{{ "/gallery-glossary.json" | relURL }}";
   const grid = document.getElementById("gallery-grid");
   const empty = document.getElementById("gallery-empty");
 
@@ -298,6 +299,9 @@
 	  let promptView = "raw";
 	  let promptBreakdownCacheKey = "";
 	  let promptBreakdownCache = null;
+	  let promptRawRenderKey = "";
+	  let promptGlossaryIndex = null;
+	  let promptGlossaryById = null;
 
 	  const I18N = {
 	    allWithCount: "{{ i18n "gallery_all_with_count" }}",
@@ -451,6 +455,341 @@
       return String(value);
     }
   }
+
+	  function escapeHtml(value) {
+	    return (value ?? "")
+	      .toString()
+	      .replace(/&/g, "&amp;")
+	      .replace(/</g, "&lt;")
+	      .replace(/>/g, "&gt;")
+	      .replace(/\"/g, "&quot;")
+	      .replace(/'/g, "&#39;");
+	  }
+
+	  function escapeAttr(value) {
+	    return escapeHtml(value).replace(/`/g, "&#96;");
+	  }
+
+	  function isAsciiWordChar(ch) {
+	    return /[A-Za-z0-9]/.test(ch || "");
+	  }
+
+	  function isAsciiBoundary(source, start, end) {
+	    const prev = start > 0 ? source[start - 1] : "";
+	    const next = end < source.length ? source[end] : "";
+	    if (isAsciiWordChar(prev)) return false;
+	    if (isAsciiWordChar(next)) return false;
+	    return true;
+	  }
+
+	  function buildPromptGlossaryIndex(entries) {
+	    const byId = new Map();
+	    const aliasIndex = [];
+	    const list = Array.isArray(entries) ? entries : [];
+
+	    list.forEach((entry) => {
+	      if (!entry) return;
+	      const id = (entry.id || entry.term || "").toString().trim();
+	      if (!id) return;
+	      byId.set(id, entry);
+
+	      const rawAliases = []
+	        .concat(entry.term || [])
+	        .concat(entry.aliases || [])
+	        .map((v) => (v || "").toString().trim())
+	        .filter(Boolean);
+	      const uniqAliases = Array.from(new Set(rawAliases));
+
+	      uniqAliases.forEach((alias) => {
+	        const ascii = /^[\x00-\x7F]+$/.test(alias);
+	        aliasIndex.push({
+	          alias,
+	          id,
+	          ascii,
+	          lower: ascii ? alias.toLowerCase() : alias
+	        });
+	      });
+	    });
+
+	    aliasIndex.sort((a, b) => b.alias.length - a.alias.length);
+
+	    return {
+	      byId,
+	      aliasIndex
+	    };
+	  }
+
+	  function renderPromptRaw({ preserveScroll = false } = {}) {
+	    if (!fullscreenPrompt) return;
+	    hidePromptTooltip(true);
+
+	    const key = `${promptGlossaryIndex ? "glossary" : "plain"}::${currentPrompt || ""}`;
+	    if (promptRawRenderKey === key) return;
+	    promptRawRenderKey = key;
+
+	    const prevScrollTop = preserveScroll ? fullscreenPrompt.scrollTop : 0;
+
+	    if (!currentPrompt || currentPrompt === I18N.noPrompt || !promptGlossaryIndex) {
+	      fullscreenPrompt.textContent = currentPrompt || "";
+	      fullscreenPrompt.scrollTop = prevScrollTop;
+	      return;
+	    }
+
+	    const source = currentPrompt.toString();
+	    const lower = source.toLowerCase();
+	    let out = "";
+	    let i = 0;
+
+	    while (i < source.length) {
+	      let matched = null;
+	      for (const entry of promptGlossaryIndex) {
+	        const alias = entry.alias;
+	        const end = i + alias.length;
+	        if (end > source.length) continue;
+
+	        if (entry.ascii) {
+	          if (!lower.startsWith(entry.lower, i)) continue;
+	          if (!isAsciiBoundary(source, i, end)) continue;
+	        } else {
+	          if (!source.startsWith(alias, i)) continue;
+	        }
+
+	        matched = { id: entry.id, text: source.slice(i, end) };
+	        break;
+	      }
+
+	      if (!matched) {
+	        out += escapeHtml(source[i]);
+	        i += 1;
+	        continue;
+	      }
+
+	      out += `<span class="prompt-term" tabindex="0" data-glossary-id="${escapeAttr(matched.id)}">${escapeHtml(matched.text)}</span>`;
+	      i += matched.text.length;
+	    }
+
+	    fullscreenPrompt.innerHTML = out;
+	    fullscreenPrompt.scrollTop = prevScrollTop;
+	  }
+
+	  // ===== Prompt 术语 Tooltip（只作用于“原文”视图）=====
+	  const promptTooltip = (() => {
+	    const el = document.createElement("div");
+	    el.className = "prompt-glossary-tooltip";
+	    el.hidden = true;
+	    el.setAttribute("role", "tooltip");
+	    document.body.appendChild(el);
+	    return el;
+	  })();
+
+	  let activePromptTerm = null;
+	  let tooltipPinned = false;
+	  let tooltipHideTimer = null;
+	  let tooltipFadeTimer = null;
+
+	  const GLOSSARY_CATEGORY_LABELS = (() => {
+	    const lang = (document.documentElement.lang || "").toString().trim().toLowerCase();
+	    const zh = lang.startsWith("zh");
+	    return {
+	      style: zh ? "风格" : "Style",
+	      camera: zh ? "镜头" : "Camera",
+	      composition: zh ? "构图" : "Composition",
+	      lighting: zh ? "光影" : "Lighting",
+	      rendering: zh ? "渲染" : "Rendering",
+	      post: zh ? "后期" : "Post",
+	      params: zh ? "参数" : "Params",
+	      quality: zh ? "画质" : "Quality"
+	    };
+	  })();
+
+	  function clearTooltipHideTimer() {
+	    if (tooltipHideTimer) clearTimeout(tooltipHideTimer);
+	    tooltipHideTimer = null;
+	    if (tooltipFadeTimer) clearTimeout(tooltipFadeTimer);
+	    tooltipFadeTimer = null;
+	  }
+
+	  function hidePromptTooltip(immediate = false) {
+	    clearTooltipHideTimer();
+	    tooltipPinned = false;
+	    activePromptTerm = null;
+
+	    if (!promptTooltip || promptTooltip.hidden) return;
+	    if (immediate) {
+	      promptTooltip.classList.remove("open");
+	      promptTooltip.hidden = true;
+	      return;
+	    }
+
+	    promptTooltip.classList.remove("open");
+	    tooltipFadeTimer = setTimeout(() => {
+	      promptTooltip.hidden = true;
+	      tooltipFadeTimer = null;
+	    }, 140);
+	  }
+
+	  function scheduleHidePromptTooltip() {
+	    clearTooltipHideTimer();
+	    tooltipHideTimer = setTimeout(() => {
+	      hidePromptTooltip(false);
+	    }, 120);
+	  }
+
+	  function getGlossaryText(entry) {
+	    const lang = (document.documentElement.lang || "").toString().trim().toLowerCase();
+	    const zh = lang.startsWith("zh");
+	    const text = zh ? (entry?.zh || entry?.en) : (entry?.en || entry?.zh);
+	    return (text || "").toString().trim();
+	  }
+
+	  function getGlossaryExample(entry) {
+	    const examples = Array.isArray(entry?.examples) ? entry.examples : [];
+	    const first = examples.find((v) => (v || "").toString().trim());
+	    return (first || "").toString().trim();
+	  }
+
+	  function buildPromptTooltipHtml(entry) {
+	    const id = (entry?.id || entry?.term || "").toString().trim();
+	    const term = (entry?.term || id).toString().trim();
+	    const category = (entry?.category || "").toString().trim();
+	    const label = GLOSSARY_CATEGORY_LABELS[category] || "";
+	    const desc = getGlossaryText(entry);
+	    const example = getGlossaryExample(entry);
+	    const meta = label || category;
+
+	    const lang = (document.documentElement.lang || "").toString().trim().toLowerCase();
+	    const zh = lang.startsWith("zh");
+	    const exampleLabel = zh ? "例" : "Example";
+
+	    return `
+	      ${meta ? `<div class="prompt-glossary-tooltip__meta">${escapeHtml(meta)}</div>` : ""}
+	      <div class="prompt-glossary-tooltip__title">${escapeHtml(term)}</div>
+	      <div class="prompt-glossary-tooltip__desc">${escapeHtml(desc || "")}</div>
+	      ${example ? `<div class="prompt-glossary-tooltip__example"><span class="prompt-glossary-tooltip__example-label">${exampleLabel}:</span> ${escapeHtml(example)}</div>` : ""}
+	    `;
+	  }
+
+	  function positionPromptTooltip(anchor) {
+	    if (!anchor || !promptTooltip || promptTooltip.hidden) return;
+	    const rect = anchor.getBoundingClientRect();
+	    const margin = 10;
+	    const gap = 10;
+
+	    // 先让 tooltip 有尺寸
+	    promptTooltip.style.left = "0px";
+	    promptTooltip.style.top = "0px";
+	    const tipRect = promptTooltip.getBoundingClientRect();
+
+	    let top = rect.top - tipRect.height - gap;
+	    let placeBelow = false;
+	    if (top < margin) {
+	      top = rect.bottom + gap;
+	      placeBelow = true;
+	    }
+
+	    let left = rect.left;
+	    if (left + tipRect.width > window.innerWidth - margin) {
+	      left = window.innerWidth - margin - tipRect.width;
+	    }
+	    if (left < margin) left = margin;
+
+	    // 避免 tooltip 贴边遮住 anchor
+	    if (placeBelow) {
+	      top = Math.min(top, window.innerHeight - margin - tipRect.height);
+	    } else {
+	      top = Math.max(top, margin);
+	    }
+
+	    promptTooltip.style.left = `${left}px`;
+	    promptTooltip.style.top = `${top}px`;
+	  }
+
+	  function showPromptTooltip(anchor, { pinned = false } = {}) {
+	    if (!anchor || !promptTooltip || !promptGlossaryById) return;
+	    const id = (anchor.getAttribute("data-glossary-id") || "").toString().trim();
+	    if (!id) return;
+	    const entry = promptGlossaryById.get(id);
+	    if (!entry) return;
+	    if (promptView !== "raw") return;
+
+	    clearTooltipHideTimer();
+	    activePromptTerm = anchor;
+	    tooltipPinned = Boolean(pinned);
+
+	    promptTooltip.innerHTML = buildPromptTooltipHtml(entry);
+	    promptTooltip.hidden = false;
+	    promptTooltip.classList.add("open");
+	    positionPromptTooltip(anchor);
+	  }
+
+	  if (fullscreenPrompt) {
+	    fullscreenPrompt.addEventListener("pointerover", (event) => {
+	      if (tooltipPinned) return;
+	      const term = event.target?.closest?.(".prompt-term");
+	      if (!term || !fullscreenPrompt.contains(term)) return;
+	      showPromptTooltip(term, { pinned: false });
+	    });
+
+	    fullscreenPrompt.addEventListener("pointerout", (event) => {
+	      if (tooltipPinned) return;
+	      const from = event.target?.closest?.(".prompt-term");
+	      if (!from || from !== activePromptTerm) return;
+	      const to = event.relatedTarget;
+	      if (to && (promptTooltip.contains(to) || to.closest?.(".prompt-term") === from)) return;
+	      scheduleHidePromptTooltip();
+	    });
+
+	    fullscreenPrompt.addEventListener("focusin", (event) => {
+	      if (tooltipPinned) return;
+	      const term = event.target?.closest?.(".prompt-term");
+	      if (!term || !fullscreenPrompt.contains(term)) return;
+	      showPromptTooltip(term, { pinned: false });
+	    });
+
+	    fullscreenPrompt.addEventListener("focusout", () => {
+	      if (tooltipPinned) return;
+	      hidePromptTooltip(false);
+	    });
+
+	    fullscreenPrompt.addEventListener("click", (event) => {
+	      const term = event.target?.closest?.(".prompt-term");
+	      if (!term || !fullscreenPrompt.contains(term)) return;
+	      event.preventDefault();
+	      event.stopPropagation();
+
+	      if (activePromptTerm === term && tooltipPinned) {
+	        hidePromptTooltip(true);
+	        return;
+	      }
+
+	      showPromptTooltip(term, { pinned: true });
+	    });
+
+	    fullscreenPrompt.addEventListener("scroll", () => {
+	      if (!promptTooltip.hidden) hidePromptTooltip(true);
+	    }, { passive: true });
+	  }
+
+	  if (promptTooltip) {
+	    promptTooltip.addEventListener("pointerenter", () => {
+	      clearTooltipHideTimer();
+	    });
+	    promptTooltip.addEventListener("pointerleave", () => {
+	      if (!tooltipPinned) hidePromptTooltip(false);
+	    });
+	  }
+
+	  document.addEventListener("pointerdown", (event) => {
+	    if (!promptTooltip || promptTooltip.hidden) return;
+	    const withinTooltip = promptTooltip.contains(event.target);
+	    const withinTerm = event.target?.closest?.(".prompt-term");
+	    if (withinTooltip || withinTerm) return;
+	    hidePromptTooltip(true);
+	  });
+
+	  window.addEventListener("resize", () => {
+	    if (activePromptTerm && !promptTooltip.hidden) positionPromptTooltip(activePromptTerm);
+	  });
 
 	  function promptForSearch(value) {
 	    const text = formatPrompt(value);
@@ -770,6 +1109,7 @@
 	    if (fullscreenPrompt) fullscreenPrompt.hidden = view !== "raw";
 	    if (fullscreenPromptBreakdown) fullscreenPromptBreakdown.hidden = view !== "breakdown";
 	    if (view === "breakdown") renderPromptBreakdown();
+	    if (view === "raw") renderPromptRaw({ preserveScroll: true });
 	  }
 
   function setEmpty(isEmpty) {
@@ -1880,6 +2220,7 @@
 
   // 打开全屏展示
 	  function openFullscreen(item, renderThumbs = true) {
+	    hidePromptTooltip(true);
 	    activeFocus = document.activeElement;
 	    currentItem = item;
 	    currentImages = normalizeImages(item);
@@ -1894,11 +2235,12 @@
       if (currentItemIndex === -1) currentItemIndex = 0;
     }
 
-    fullscreenTitle.textContent = currentItemTitle;
+	    fullscreenTitle.textContent = currentItemTitle;
 	    fullscreenAuthor.textContent = item.author ? `${I18N.authorPrefix}${item.author}` : `${I18N.authorPrefix}${I18N.unknown}`;
 	    fullscreenModel.textContent = item.source ? `${I18N.sourcePrefix}${item.source}` : `${I18N.sourcePrefix}${I18N.unknown}`;
 	    fullscreenSource.textContent = item.source || "";
-	    fullscreenPrompt.textContent = currentPrompt;
+	    promptRawRenderKey = "";
+	    renderPromptRaw({ preserveScroll: false });
 	    promptBreakdownCacheKey = "";
 	    promptBreakdownCache = null;
 	    if (fullscreenPromptBreakdown) fullscreenPromptBreakdown.innerHTML = "";
@@ -2023,6 +2365,7 @@
     if (commentsUI) {
       commentsUI.closeSheet();
     }
+    hidePromptTooltip(true);
     fullscreen.classList.remove("open");
     fullscreen.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
@@ -2245,6 +2588,26 @@
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(startFetch);
     else setTimeout(startFetch, 0);
   };
+
+	  // Prompt 术语词典（用于“原文”视图里的悬浮解释/高亮）
+	  (() => {
+	    if (!glossaryUrl) return;
+	    fetch(glossaryUrl)
+	      .then((res) => (res.ok ? res.json() : null))
+	      .then((payload) => {
+	        const entries = Array.isArray(payload) ? payload : payload?.terms;
+	        const built = buildPromptGlossaryIndex(entries);
+	        promptGlossaryById = built.byId;
+	        promptGlossaryIndex = built.aliasIndex;
+
+	        // 如果此时已经打开全屏且处于原文视图，补一次高亮渲染（不打断滚动位置）
+	        if (fullscreen && fullscreen.classList.contains("open") && promptView === "raw") {
+	          promptRawRenderKey = "";
+	          renderPromptRaw({ preserveScroll: true });
+	        }
+	      })
+	      .catch(() => {});
+	  })();
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", scheduleFetch, { once: true });
@@ -3449,6 +3812,84 @@
 
 .fullscreen-prompt-block pre::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
+}
+
+.fullscreen-prompt-block pre .prompt-term {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(212, 175, 55, 0.65);
+  cursor: help;
+  border-radius: 4px;
+}
+
+.fullscreen-prompt-block pre .prompt-term:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.fullscreen-prompt-block pre .prompt-term:focus {
+  outline: 2px solid rgba(212, 175, 55, 0.35);
+  outline-offset: 2px;
+}
+
+.prompt-glossary-tooltip {
+  position: fixed;
+  z-index: 2100;
+  max-width: min(380px, calc(100vw - 20px));
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(18, 18, 18, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  color: var(--text-main);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+
+.prompt-glossary-tooltip.open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.prompt-glossary-tooltip__meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.prompt-glossary-tooltip__title {
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.prompt-glossary-tooltip__desc {
+  margin-top: 0.4rem;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.prompt-glossary-tooltip__example {
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  word-break: break-word;
+}
+
+.prompt-glossary-tooltip__example-label {
+  color: var(--text-main);
+  opacity: 0.9;
 }
 
 /* 共用样式 */

@@ -1,0 +1,632 @@
+[
+  {
+    "id": "cinematic",
+    "term": "cinematic",
+    "aliases": ["cinematic", "电影感", "电影级"],
+    "category": "style",
+    "zh": "电影感：强调镜头语言与氛围调色，通常意味着更明确的光影方向、对比与景深，让画面更像电影画面而不是普通快照。",
+    "en": "Cinematic: film-like lighting, grading, and lens language, usually with clearer key light direction, contrast, and depth cues.",
+    "examples": ["cinematic lighting", "电影感生活方式摄影"]
+  },
+  {
+    "id": "noir",
+    "term": "noir",
+    "aliases": ["noir", "黑色电影"],
+    "category": "style",
+    "zh": "Noir：黑色电影氛围，常见特征是高对比光影、深阴影、冷峻情绪与更克制的色彩。",
+    "en": "Noir: high-contrast, shadow-heavy, moody film-noir aesthetic with restrained color and a colder emotional tone.",
+    "examples": ["noir atmosphere", "电影 noir"]
+  },
+  {
+    "id": "photorealistic",
+    "term": "photorealistic",
+    "aliases": ["photorealistic", "photo-realistic", "realistic", "写实", "超写实", "拟真"],
+    "category": "quality",
+    "zh": "写实：目标是像真实拍摄照片一样的质感，重点是光照逻辑、材质细节与真实的噪点/锐化行为。",
+    "en": "Photorealistic: aims to look like a real photo with coherent lighting, material response, and believable texture and noise.",
+    "examples": ["photorealistic textures", "超写实质感"]
+  },
+  {
+    "id": "bokeh",
+    "term": "bokeh",
+    "aliases": ["bokeh", "散景", "背景虚化"],
+    "category": "camera",
+    "zh": "散景：浅景深导致背景高光模糊成光斑，常用于突出主体与营造氛围。",
+    "en": "Bokeh: out-of-focus highlights caused by shallow depth of field, used to isolate the subject and add mood.",
+    "examples": ["creamy bokeh", "bokeh background"]
+  },
+  {
+    "id": "dof",
+    "term": "depth of field",
+    "aliases": ["depth of field", "dof", "景深"],
+    "category": "camera",
+    "zh": "景深：从清晰到模糊的景物范围。景深越浅，主体越突出，背景越虚。",
+    "en": "Depth of field: the range that appears acceptably sharp; shallower DOF isolates the subject more strongly.",
+    "examples": ["shallow depth of field", "moderate depth of field"]
+  },
+  {
+    "id": "macro",
+    "term": "macro",
+    "aliases": ["macro", "微距"],
+    "category": "camera",
+    "zh": "微距：近距离拍摄小物体或细节，通常会强化纹理、细小结构与浅景深效果。",
+    "en": "Macro: close-focus photography emphasizing small details, texture, and often very shallow DOF.",
+    "examples": ["100mm macro lens", "macro perspective"]
+  },
+  {
+    "id": "closeup",
+    "term": "close-up",
+    "aliases": ["close-up", "close up", "特写", "近景"],
+    "category": "composition",
+    "zh": "特写：画面更贴近主体（面部、手部、产品细节等），信息密度高，情绪更直接。",
+    "en": "Close-up: tight framing on the subject or details, increasing intimacy and visual information density.",
+    "examples": ["close-up portrait", "extreme close-up"]
+  },
+  {
+    "id": "wide-shot",
+    "term": "wide shot",
+    "aliases": ["wide shot", "wide-angle", "wide angle", "广角", "大远景", "全景"],
+    "category": "composition",
+    "zh": "广角/大景别：更多环境信息进入画面，适合交代场景与氛围，但主体占比会更小。",
+    "en": "Wide shot / wide-angle: includes more environment for context; the subject occupies less of the frame.",
+    "examples": ["wide shot showing interior details", "wide-angle 23mm"]
+  },
+  {
+    "id": "dutch-angle",
+    "term": "Dutch angle",
+    "aliases": ["dutch angle", "Dutch angle", "荷兰角", "倾斜构图"],
+    "category": "composition",
+    "zh": "荷兰角：刻意倾斜地平线的构图，用于制造紧张、不稳定或更强的动感。",
+    "en": "Dutch angle: intentionally tilted horizon to add tension, instability, or dynamic energy.",
+    "examples": ["low dutch angle tilt", "dramatic skew"]
+  },
+  {
+    "id": "tilt-shift",
+    "term": "tilt-shift",
+    "aliases": ["tilt-shift", "tilt shift", "移轴"],
+    "category": "camera",
+    "zh": "移轴：通过特殊镜头或后期让景深分布非常集中，常用于制造微缩模型感或让建筑线条更规整。",
+    "en": "Tilt-shift: lens effect that reshapes the focus plane, often used for miniature diorama look or corrected perspective.",
+    "examples": ["tilt-shift lens effect", "miniature photography feel"]
+  },
+  {
+    "id": "lens-85mm",
+    "term": "85mm",
+    "aliases": ["85mm", "85 mm"],
+    "category": "camera",
+    "zh": "85mm：常见人像焦段，透视更自然、背景更易虚化，适合特写与半身人像。",
+    "en": "85mm: a classic portrait focal length with flattering perspective and easy background separation.",
+    "examples": ["shot on 85mm lens", "85mm lens feel"]
+  },
+  {
+    "id": "lens-35mm",
+    "term": "35mm",
+    "aliases": ["35mm", "35 mm"],
+    "category": "camera",
+    "zh": "35mm：更接近日常视角的环境人像焦段，能同时保留人物与场景信息。",
+    "en": "35mm: a versatile focal length for environmental portraits with context and a natural everyday feel.",
+    "examples": ["35mm film portrait", "35mm film-style flash"]
+  },
+  {
+    "id": "aperture-f18",
+    "term": "f/1.8",
+    "aliases": ["f/1.8", "f1.8"],
+    "category": "camera",
+    "zh": "f/1.8：大光圈，通常带来更浅景深与更明显的背景虚化，同时高光更容易产生柔和扩散。",
+    "en": "f/1.8: wide aperture that often yields shallow DOF and stronger background blur, with more pronounced highlight bloom.",
+    "examples": ["f/1.8 aperture", "Shot on 85mm lens, f/1.8"]
+  },
+  {
+    "id": "studio-lighting",
+    "term": "studio lighting",
+    "aliases": ["studio lighting", "studio-style lighting", "棚拍", "棚拍灯光"],
+    "category": "lighting",
+    "zh": "棚拍灯光：可控的影棚布光，强调干净高质感的高光与阴影边界，常用于产品/时尚。",
+    "en": "Studio lighting: controlled light setup producing clean highlights and deliberate shadow shapes, common for product and fashion.",
+    "examples": ["professional studio lighting", "studio-style, cinematic"]
+  },
+  {
+    "id": "on-camera-flash",
+    "term": "on-camera flash",
+    "aliases": ["on-camera flash", "on camera flash", "direct flash", "机顶闪光", "直闪"],
+    "category": "lighting",
+    "zh": "机顶闪光/直闪：闪光灯直接打向主体，产生硬阴影与明显反光，常见于抓拍、派对、复古傻瓜机质感。",
+    "en": "On-camera flash: direct flash that creates hard shadows and specular highlights, often used for candid, party, or vintage point-and-shoot look.",
+    "examples": ["direct harsh on-camera flash", "Shot with direct flash at night"]
+  },
+  {
+    "id": "high-key",
+    "term": "high-key",
+    "aliases": ["high-key", "high key", "高调", "高调光"],
+    "category": "lighting",
+    "zh": "高调：整体更明亮、阴影更轻，画面更干净通透，常用于清新或极简氛围。",
+    "en": "High-key: overall brighter exposure with softer shadows, producing a clean and airy look.",
+    "examples": ["high-key atmosphere", "soft diffused high-key studio lighting"]
+  },
+  {
+    "id": "overexposure",
+    "term": "overexposure",
+    "aliases": ["overexposure", "overexposed", "过曝", "过度曝光"],
+    "category": "post",
+    "zh": "过曝：高光区域被压扁成纯白或细节丢失。用于氛围时要控制在“可读”的范围内。",
+    "en": "Overexposure: highlights clip and lose detail; can be used stylistically if the subject remains readable.",
+    "examples": ["slightly overexposed highlights", "highlight clipping"]
+  },
+  {
+    "id": "underexposed",
+    "term": "underexposed",
+    "aliases": ["underexposed", "欠曝", "曝光不足"],
+    "category": "post",
+    "zh": "欠曝：整体偏暗、暗部细节被压缩甚至丢失。常用于营造神秘或更强对比。",
+    "en": "Underexposed: darker overall exposure that compresses shadow detail, often used for moody contrast.",
+    "examples": ["pitch black and underexposed", "deep darkness"]
+  },
+  {
+    "id": "film-grain",
+    "term": "film grain",
+    "aliases": ["film grain", "grainy", "胶片颗粒", "颗粒感"],
+    "category": "style",
+    "zh": "胶片颗粒：类似胶片感光颗粒的纹理噪声，会让画面更“复古/真实”，也能削弱AI的过度平滑感。",
+    "en": "Film grain: textured noise resembling film stock grain, adding realism, vintage feel, and reducing overly smooth AI look.",
+    "examples": ["Kodak Portra 800 film grain", "heavy film grain"]
+  },
+  {
+    "id": "analog",
+    "term": "analog",
+    "aliases": ["analog", "胶片感", "模拟胶片"],
+    "category": "style",
+    "zh": "Analog：强调胶片/暗房/扫描等物理介质的质感特征，例如颗粒、色偏、划痕、漏光与暗角。",
+    "en": "Analog: film and darkroom feel with physical artifacts such as grain, color shift, dust, scratches, leaks, and vignetting.",
+    "examples": ["Candid analog film photograph", "analog photobooth collage"]
+  },
+  {
+    "id": "vintage",
+    "term": "vintage",
+    "aliases": ["vintage", "复古", "怀旧"],
+    "category": "style",
+    "zh": "复古：更偏旧年代的色彩与质感取向，常搭配胶片颗粒、偏色与旧器材的成像特征。",
+    "en": "Vintage: older-era color and texture choices, often paired with film grain and point-and-shoot camera artifacts.",
+    "examples": ["vintage compact camera", "vintage lifestyle editorial"]
+  },
+  {
+    "id": "lomography",
+    "term": "Lomography",
+    "aliases": ["Lomography", "lomography", "Lomo", "LOMO"],
+    "category": "style",
+    "zh": "Lomography：更“随手拍”的胶片审美，常见特征是强烈色彩、暗角、随机光斑与不完美。",
+    "en": "Lomography: lo-fi film aesthetic with vivid color, vignetting, light leaks, and imperfect, spontaneous character.",
+    "examples": ["Lomography style", "raw and Lomography style"]
+  },
+  {
+    "id": "vsco",
+    "term": "VSCO",
+    "aliases": ["VSCO", "VSCO vibe"],
+    "category": "style",
+    "zh": "VSCO 风：偏柔和的滤镜调色与轻颗粒，整体更生活方式、轻杂志感。",
+    "en": "VSCO vibe: soft lifestyle grading with subtle grain for an everyday editorial look.",
+    "examples": ["warm vintage VSCO vibe"]
+  },
+  {
+    "id": "tumblr",
+    "term": "Tumblr",
+    "aliases": ["Tumblr", "Tumblr 风"],
+    "category": "style",
+    "zh": "Tumblr 风：更偏 2010 年代早期网络审美，常见霓虹配色、轻颗粒与随手抓拍氛围。",
+    "en": "Tumblr aesthetic: early-2010s internet look, often neon colors, light grain, and casual candid mood.",
+    "examples": ["2010 年代初的 Tumblr 风"]
+  },
+  {
+    "id": "portra",
+    "term": "Kodak Portra",
+    "aliases": ["Kodak Portra", "Portra 800", "Portra 400", "Portra"],
+    "category": "style",
+    "zh": "Kodak Portra：常用人像负片胶片系列，特点是肤色自然、颗粒细腻、整体更温润。",
+    "en": "Kodak Portra: popular portrait negative film known for natural skin tones, fine grain, and warm, smooth rendering.",
+    "examples": ["Kodak Portra 800", "KODAK PORTRA 400"]
+  },
+  {
+    "id": "superia",
+    "term": "Fujifilm Superia 400",
+    "aliases": ["Fujifilm Superia 400", "Superia 400"],
+    "category": "style",
+    "zh": "Fujifilm Superia 400：偏街拍/日常的彩色负片胶片风格，颗粒与色彩更“生活感”。",
+    "en": "Fujifilm Superia 400: everyday color negative film vibe with lively, street-friendly grain and color response.",
+    "examples": ["Fujifilm Superia 400 film grain"]
+  },
+  {
+    "id": "pro-400h",
+    "term": "Fujifilm Pro 400H",
+    "aliases": ["Fujifilm Pro 400H", "Pro 400H", "400H"],
+    "category": "style",
+    "zh": "Fujifilm Pro 400H：更偏柔和的色彩与低对比，常用于通透、干净、略带粉绿调的清新人像。",
+    "en": "Fujifilm Pro 400H: softer color and lower contrast, often used for airy portraits with gentle pastel tonality.",
+    "examples": ["Fujifilm Pro 400H"]
+  },
+  {
+    "id": "promist",
+    "term": "Pro-Mist",
+    "aliases": ["Pro-mist", "Pro-Mist", "promist", "柔焦滤镜"],
+    "category": "post",
+    "zh": "Pro-Mist 柔焦滤镜：让高光扩散、边缘更柔和，形成更梦幻的氛围，同时保留主体结构。",
+    "en": "Pro-Mist diffusion filter: blooms highlights and softens edges for a dreamy look while keeping structure intact.",
+    "examples": ["Pro-mist diffusion filter", "heavy Pro-mist diffusion filter"]
+  },
+  {
+    "id": "bloom",
+    "term": "bloom",
+    "aliases": ["bloom", "glow", "辉光", "泛光", "光晕"],
+    "category": "post",
+    "zh": "Bloom/辉光：高亮区域向外扩散的光晕效果，常用于营造柔和、梦幻或霓虹氛围。",
+    "en": "Bloom: highlight glow that spreads outward, often used for dreamy, soft, or neon-heavy atmospheres.",
+    "examples": ["heavy bloom effect", "soft halos"]
+  },
+  {
+    "id": "light-leaks",
+    "term": "light leaks",
+    "aliases": ["light leak", "light leaks", "漏光"],
+    "category": "post",
+    "zh": "漏光：胶片或老相机常见的随机光斑/光带，带来更真实的“物理介质”痕迹。",
+    "en": "Light leaks: random light streaks and flares typical of film or old cameras, adding physical medium artifacts.",
+    "examples": ["authentic light leaks", "Add old-photo aging effects"]
+  },
+  {
+    "id": "vignetting",
+    "term": "vignetting",
+    "aliases": ["vignetting", "vignette", "暗角"],
+    "category": "post",
+    "zh": "暗角：画面边缘变暗，能把视线拉回中心，也更像老镜头/胶片的成像特征。",
+    "en": "Vignetting: darker edges that pull focus to the center and mimic older lens or film characteristics.",
+    "examples": ["light vignetting", "dark vignette edges"]
+  },
+  {
+    "id": "color-bleed",
+    "term": "color bleed",
+    "aliases": ["color bleed", "色彩溢出", "色溢"],
+    "category": "post",
+    "zh": "色彩溢出：高饱和区域边缘出现轻微染色扩散，常见于胶片扫描或老镜头质感。",
+    "en": "Color bleed: slight color fringing and spreading around saturated areas, common in film scans or old optics.",
+    "examples": ["slight color bleed"]
+  },
+  {
+    "id": "motion-blur",
+    "term": "motion blur",
+    "aliases": ["motion blur", "运动模糊"],
+    "category": "post",
+    "zh": "运动模糊：运动导致的拖影，能强化速度与抓拍感，但需要保证主体信息仍可读。",
+    "en": "Motion blur: blur trails from movement; increases speed and candid feel if key subject remains readable.",
+    "examples": ["heavy motion blur", "motion blur trails"]
+  },
+  {
+    "id": "long-exposure",
+    "term": "long exposure",
+    "aliases": ["long exposure", "长曝光"],
+    "category": "post",
+    "zh": "长曝光：更长的快门时间会拉出光轨或产生“幽灵感”，适合氛围化的动态表达。",
+    "en": "Long exposure: longer shutter time creates light trails or ghosting, useful for atmospheric motion expression.",
+    "examples": ["long exposure effect"]
+  },
+  {
+    "id": "panning",
+    "term": "panning",
+    "aliases": ["panning", "摇拍"],
+    "category": "camera",
+    "zh": "摇拍：跟随主体移动拍摄，让背景拉出速度线，主体相对更清晰，适合动感街拍。",
+    "en": "Panning: tracking the subject so the background streaks while the subject stays relatively sharper.",
+    "examples": ["extreme panning photograph"]
+  },
+  {
+    "id": "lens-flare",
+    "term": "lens flare",
+    "aliases": ["lens flare", "flare", "镜头光晕"],
+    "category": "post",
+    "zh": "镜头光晕：强光进入镜头产生的耀斑/光斑，会带来更真实的镜头质感。",
+    "en": "Lens flare: flare artifacts from strong light entering the lens, adding optical realism and atmosphere.",
+    "examples": ["slight lens flare", "flash reflections"]
+  },
+  {
+    "id": "barrel-distortion",
+    "term": "barrel distortion",
+    "aliases": ["barrel distortion", "桶形畸变"],
+    "category": "camera",
+    "zh": "桶形畸变：广角镜头边缘向外鼓起的变形，能增强“手机/小相机”的真实感。",
+    "en": "Barrel distortion: wide-angle bulging distortion near edges, often associated with phone or compact cameras.",
+    "examples": ["mild barrel distortion", "wide-angle 23mm smartphone lens"]
+  },
+  {
+    "id": "hdr",
+    "term": "HDR",
+    "aliases": ["HDR", "hdr", "tone mapping", "HDR tone mapping"],
+    "category": "post",
+    "zh": "HDR/色调映射：把高动态范围压进可显示范围，可能带来更硬的局部对比与边缘锐化痕迹。",
+    "en": "HDR tone mapping: compresses dynamic range, sometimes producing stronger local contrast and sharpening halos.",
+    "examples": ["harsh computational HDR tone mapping", "8K HDR连接"]
+  },
+  {
+    "id": "resolution",
+    "term": "8K / 4K",
+    "aliases": ["8k", "8K", "4k", "4K", "Ultra-HD", "UHD", "Ultra-HD quality", "4K HD"],
+    "category": "quality",
+    "zh": "分辨率标记：多用于强调细节丰富与清晰度。实际效果仍取决于模型与输入图像质量。",
+    "en": "Resolution markers: signal high detail and clarity, but the real result still depends on the model and inputs.",
+    "examples": ["8k resolution", "4K HD"]
+  },
+  {
+    "id": "aspect-ratio",
+    "term": "aspect ratio",
+    "aliases": ["aspect ratio", "--ar", "ar", "比例", "纵横比"],
+    "category": "params",
+    "zh": "画幅比例：决定画面宽高关系，例如 1:1、3:4、4:5、16:9、21:9，会直接影响构图空间。",
+    "en": "Aspect ratio: controls canvas shape such as 1:1, 3:4, 4:5, 16:9, 21:9 and strongly affects composition.",
+    "examples": ["--ar 3:4", "21:9", "1:1"]
+  },
+  {
+    "id": "negative-prompt",
+    "term": "negative prompt",
+    "aliases": ["negative prompt", "Negative prompt", "负面提示词", "反向提示词", "--no"],
+    "category": "params",
+    "zh": "负面提示词：明确告诉模型“不要生成什么”，常用于去水印、去文字、避免畸形手等问题。",
+    "en": "Negative prompt: tells the model what to avoid, often used to remove watermarks, text, or common anatomy issues.",
+    "examples": ["negative prompt", "--no"]
+  },
+  {
+    "id": "cfg-scale",
+    "term": "CFG scale",
+    "aliases": ["CFG scale", "cfg", "guidance"],
+    "category": "params",
+    "zh": "CFG scale：提示词遵循强度。数值更高通常更“听话”，但也更容易失真或显得生硬。",
+    "en": "CFG scale: prompt adherence strength; higher values follow the prompt more strictly but may look harsher or distorted.",
+    "examples": ["cfg", "guidance"]
+  },
+  {
+    "id": "steps",
+    "term": "steps",
+    "aliases": ["steps", "step"],
+    "category": "params",
+    "zh": "Steps：采样步数。步数增加通常更细腻，但收益递减且耗时更长。",
+    "en": "Steps: sampling steps; more steps can improve detail up to a point, with diminishing returns and higher cost.",
+    "examples": ["steps"]
+  },
+  {
+    "id": "sampler",
+    "term": "sampler",
+    "aliases": ["sampler"],
+    "category": "params",
+    "zh": "Sampler：采样器。不同采样器会影响纹理、锐度、稳定性与噪声形态。",
+    "en": "Sampler: the sampling algorithm that affects texture, sharpness, stability, and noise characteristics.",
+    "examples": ["sampler"]
+  },
+  {
+    "id": "3d-render",
+    "term": "3D render",
+    "aliases": ["3D render", "3d render", "3D", "3d", "3D 渲染", "渲染"],
+    "category": "rendering",
+    "zh": "3D 渲染：强调三维模型的材质、光照与物理真实感，常搭配 PBR、光线追踪等词。",
+    "en": "3D render: 3D scene rendering with material and lighting realism, often paired with PBR and ray tracing.",
+    "examples": ["3D C4D render style", "3d render"]
+  },
+  {
+    "id": "c4d",
+    "term": "C4D",
+    "aliases": ["C4D", "Cinema 4D", "cinema 4d"],
+    "category": "rendering",
+    "zh": "C4D（Cinema 4D）：常见三维制作软件名，用于提示更偏商业 CG 的渲染质感。",
+    "en": "C4D (Cinema 4D): 3D software reference that cues a commercial CGI rendering look.",
+    "examples": ["3D C4D render style", "Octane Render，C4D"]
+  },
+  {
+    "id": "octane",
+    "term": "Octane Render",
+    "aliases": ["Octane", "Octane Render", "octane render"],
+    "category": "rendering",
+    "zh": "Octane Render：渲染器名，常用于提示更“广告级”的高对比、干净高光与真实材质表现。",
+    "en": "Octane Render: renderer reference that suggests polished commercial CGI with clean highlights and material response.",
+    "examples": ["Octane Render aesthetic"]
+  },
+  {
+    "id": "pbr",
+    "term": "PBR",
+    "aliases": ["PBR"],
+    "category": "rendering",
+    "zh": "PBR：基于物理的材质渲染思路，让金属、玻璃、塑料等材质更符合真实光照反射规律。",
+    "en": "PBR: physically based rendering for more realistic material response such as metal, glass, and plastic.",
+    "examples": ["realistic PBR materials"]
+  },
+  {
+    "id": "sss",
+    "term": "SSS",
+    "aliases": ["SSS", "subsurface scattering", "次表面散射"],
+    "category": "rendering",
+    "zh": "次表面散射：半透明材质内部的散射效果，常用于皮肤、蜡、玉石、饮料等“透光”质感。",
+    "en": "Subsurface scattering: light diffusion inside translucent materials such as skin, wax, jade, or liquids.",
+    "examples": ["SSS texture:true", "次表面散射"]
+  },
+  {
+    "id": "caustics",
+    "term": "caustics",
+    "aliases": ["caustics", "焦散"],
+    "category": "rendering",
+    "zh": "焦散：光线经玻璃/水等折射或反射后形成的明亮纹理光斑，常见于透明材质与水面。",
+    "en": "Caustics: bright refracted or reflected light patterns from glass or water, common in transparent materials.",
+    "examples": ["slight caustics", "玻璃折射（Caustics）"]
+  },
+  {
+    "id": "volumetric-lighting",
+    "term": "volumetric lighting",
+    "aliases": ["volumetric lighting", "volumetric", "体积光"],
+    "category": "lighting",
+    "zh": "体积光：光束在空气、雾或烟里可见的效果，常用来增强空间层次与戏剧感。",
+    "en": "Volumetric lighting: visible light beams through fog or haze, adding depth and dramatic atmosphere.",
+    "examples": ["volumetric lighting inside"]
+  },
+  {
+    "id": "god-rays",
+    "term": "god rays",
+    "aliases": ["god rays", "上帝光"],
+    "category": "lighting",
+    "zh": "上帝光：更明确的体积光束穿透效果，常用于强化神圣感或强戏剧性空间。",
+    "en": "God rays: pronounced volumetric beams cutting through space, used for a dramatic or sacred feel.",
+    "examples": ["volumetric god rays"]
+  },
+  {
+    "id": "isometric",
+    "term": "isometric",
+    "aliases": ["isometric", "等距视角"],
+    "category": "composition",
+    "zh": "等距视角：三轴等比例的“工程图”视角，常用于 3D 小场景、图标与信息图。",
+    "en": "Isometric: equal-scale projection often used for 3D mini scenes, icons, and technical illustrations.",
+    "examples": ["View: isometric"]
+  },
+  {
+    "id": "high-poly",
+    "term": "high poly",
+    "aliases": ["high poly", "high-poly", "高面数"],
+    "category": "rendering",
+    "zh": "高面数：模型细分更多，边缘更圆润、细节更丰富，常用于精品级 3D 物件。",
+    "en": "High poly: more geometry detail for smoother edges and richer surface definition in 3D assets.",
+    "examples": ["high poly with rounded organic shapes"]
+  },
+  {
+    "id": "knolling",
+    "term": "knolling",
+    "aliases": ["knolling", "平铺排列"],
+    "category": "composition",
+    "zh": "Knolling：把物品整齐平铺排布（多为俯拍），强调秩序感与细节展示，常见于产品风。",
+    "en": "Knolling: neatly arranging objects in a top-down layout to emphasize order and detail, common in product visuals.",
+    "examples": ["A knolling for Cyberpunk 2077"]
+  },
+  {
+    "id": "trompe-loeil",
+    "term": "trompe-l'œil",
+    "aliases": ["trompe-l'œil", "trompe-l'oeil", "错视画", "强透视错觉"],
+    "category": "style",
+    "zh": "错视画：利用强透视与阴影制造“跳出平面”的视觉错觉，适合黑板粉笔画/立体字等题材。",
+    "en": "Trompe l'oeil: perspective and shading that create an illusion of depth, making flat surfaces look three-dimensional.",
+    "examples": ["trompe-l'œil"]
+  },
+  {
+    "id": "contact-sheet",
+    "term": "contact sheet",
+    "aliases": ["contact sheet", "Contact Sheet", "胶片印样", "电影印样"],
+    "category": "style",
+    "zh": "胶片印样：把同一卷底片的小样按格子排布，用于挑选与对比镜头，也是一种强风格化排版。",
+    "en": "Contact sheet: a grid of film frames used to review and compare shots, also a stylized layout aesthetic.",
+    "examples": ["Vintage Film Contact Sheet", "电影印样（Contact Sheet）"]
+  },
+  {
+    "id": "blueprint",
+    "term": "blueprint",
+    "aliases": ["blueprint", "蓝图", "工程图"],
+    "category": "style",
+    "zh": "蓝图/工程图：用线框、标注与尺寸表达结构与原理，适合科普、拆解、硬件与工业设计题材。",
+    "en": "Blueprint: linework with measurements and callouts for structure and mechanism explanation, common in technical visuals.",
+    "examples": ["blueprint aesthetic", "手绘蓝图"]
+  },
+  {
+    "id": "exploded-view",
+    "term": "exploded view",
+    "aliases": ["exploded view", "爆炸图"],
+    "category": "style",
+    "zh": "爆炸图：把零件沿装配方向“拉开”展示结构关系，常用于拆解与产品结构说明。",
+    "en": "Exploded view: separates parts along assembly axes to reveal structure and relationships, used in teardown visuals.",
+    "examples": ["爆炸视图", "exploded view"]
+  },
+  {
+    "id": "cutaway",
+    "term": "cutaway",
+    "aliases": ["cutaway", "cutaway view", "剖面", "剖面图"],
+    "category": "style",
+    "zh": "剖面图：切开外壳展示内部结构与通道，适合机制、光路、结构原理的解释。",
+    "en": "Cutaway: a sectioned view that reveals internal structure and pathways, useful for mechanism explanations.",
+    "examples": ["Cutaway view", "剖面分析"]
+  },
+  {
+    "id": "collage",
+    "term": "collage",
+    "aliases": ["collage", "拼贴", "手账拼贴"],
+    "category": "style",
+    "zh": "拼贴：把照片、贴纸、涂鸦等多种元素组合排版，强调层次、材质与“手作感”。",
+    "en": "Collage: layered composition combining photos, stickers, and doodles to create a tactile handmade feel.",
+    "examples": ["photobooth collage", "手账拼贴风格"]
+  },
+  {
+    "id": "hand-drawn",
+    "term": "hand-drawn",
+    "aliases": ["hand-drawn", "hand drawn", "手绘", "粉笔手绘"],
+    "category": "style",
+    "zh": "手绘：强调线条与笔触的人工感，适合信息图、教程、涂鸦、黑板报与草图。",
+    "en": "Hand-drawn: emphasizes human linework and strokes, great for infographics, tutorials, doodles, and sketches.",
+    "examples": ["手绘风格", "chalk hand-drawn style"]
+  },
+  {
+    "id": "watercolor",
+    "term": "watercolor",
+    "aliases": ["watercolor", "水彩"],
+    "category": "style",
+    "zh": "水彩：更柔和的色彩过渡与纸张纹理，适合温暖、轻盈、带手作质感的画面。",
+    "en": "Watercolor: soft color transitions with paper texture, suited for warm, light, handmade visuals.",
+    "examples": ["水彩插画质感", "watercolor"]
+  },
+  {
+    "id": "oil-painting",
+    "term": "oil painting",
+    "aliases": ["oil painting", "oil-painting", "油画"],
+    "category": "style",
+    "zh": "油画：更厚重的笔触与层叠质感，适合强调光影塑造与艺术感。",
+    "en": "Oil painting: thicker brushwork and layered texture, often used for sculpted light and a fine-art feel.",
+    "examples": ["oil painting"]
+  },
+  {
+    "id": "illustration",
+    "term": "illustration",
+    "aliases": ["illustration", "插画", "科普插画"],
+    "category": "style",
+    "zh": "插画：非摄影写实路线，更多依赖线条、形状与色块表达信息或情绪。",
+    "en": "Illustration: non-photographic visual style using line, shape, and color blocks to convey information or mood.",
+    "examples": ["科普插画", "插画情绪板"]
+  },
+  {
+    "id": "infographic",
+    "term": "infographic",
+    "aliases": ["infographic", "信息图", "图表"],
+    "category": "style",
+    "zh": "信息图：用结构化布局把要点可视化，关键是层级、对齐、留白与可快速扫读。",
+    "en": "Infographic: structured layout that visualizes key points with clear hierarchy, alignment, whitespace, and scanability.",
+    "examples": ["信息图卡片", "Bento 网格布局"]
+  },
+  {
+    "id": "chalkboard",
+    "term": "chalkboard",
+    "aliases": ["chalkboard", "黑板报", "粉笔"],
+    "category": "style",
+    "zh": "黑板报/粉笔风：模拟粉笔线条与黑板材质，适合知识科普与课堂氛围。",
+    "en": "Chalkboard style: chalk strokes on a blackboard texture, good for educational and classroom mood visuals.",
+    "examples": ["黑板报风格", "粉笔手绘风格"]
+  },
+  {
+    "id": "cyberpunk",
+    "term": "cyberpunk",
+    "aliases": ["cyberpunk", "Cyberpunk", "赛博朋克"],
+    "category": "style",
+    "zh": "赛博朋克：高密度城市夜景、霓虹光源、科技感 UI 与更强对比的未来氛围。",
+    "en": "Cyberpunk: neon-heavy futuristic city vibe with high contrast, dense urban details, and tech UI elements.",
+    "examples": ["Cyberpunk city background", "Cyberpunk medical imaging aesthetic"]
+  },
+  {
+    "id": "neon",
+    "term": "neon",
+    "aliases": ["neon", "霓虹"],
+    "category": "lighting",
+    "zh": "霓虹：高饱和的发光色源，常用于夜景氛围与反射光斑效果。",
+    "en": "Neon: saturated emissive light sources often used for night mood and reflective bokeh accents.",
+    "examples": ["neon signs", "城市霓虹"]
+  },
+  {
+    "id": "editorial",
+    "term": "editorial",
+    "aliases": ["editorial", "杂志感", "时尚大片"],
+    "category": "style",
+    "zh": "杂志感/Editorial：更强调造型、构图与灯光的“可发表”质感，常见干净背景与明确视觉中心。",
+    "en": "Editorial: publish-ready fashion or lifestyle look with deliberate styling, composition, and lighting.",
+    "examples": ["magazine editorial style", "Vogue editorial aesthetic"]
+  }
+]
