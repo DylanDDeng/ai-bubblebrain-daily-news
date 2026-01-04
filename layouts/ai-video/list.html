@@ -1,0 +1,1234 @@
+{{ define "main" }}
+<section class="section">
+  <div class="ai-video-shell">
+    <header class="page-header ai-video-hero">
+      <p class="page-eyebrow">{{ cond (eq .Site.LanguageCode "zh-CN") "AI 创意" "AI Creativity" }}</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
+      {{ end }}
+    </header>
+
+    <!-- 移动端筛选按钮（与 AI 生图一致） -->
+    <button class="ai-video-mobile-toggle" id="ai-video-mobile-toggle" type="button">
+      <span>{{ cond (eq .Site.LanguageCode "zh-CN") "筛选" "Filter" }}</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+      </svg>
+    </button>
+
+    <div class="ai-video-layout">
+      <aside class="ai-video-sidebar" id="ai-video-sidebar" aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "筛选" "Filters" }}">
+        <div class="ai-video-sidebar__header">
+          <span>{{ cond (eq .Site.LanguageCode "zh-CN") "筛选" "Filter" }}</span>
+          <button class="ai-video-sidebar__close" id="ai-video-sidebar-close" type="button" aria-label="{{ i18n "gallery_modal_close" | default "Close" }}">&times;</button>
+        </div>
+        <div class="ai-video-search">
+          <input
+            id="ai-video-search"
+            type="search"
+            placeholder="{{ cond (eq .Site.LanguageCode "zh-CN") "搜索标题 / 描述 / 标签" "Search title / description / tags" }}"
+            aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "搜索视频" "Search videos" }}"
+          >
+        </div>
+        <div class="ai-video-filter-group">
+          <h4>{{ cond (eq .Site.LanguageCode "zh-CN") "标签" "Tags" }}</h4>
+          <div class="ai-video-filters" id="ai-video-filters" aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "按标签筛选" "Filter by tags" }}"></div>
+        </div>
+      </aside>
+
+      <div class="ai-video-sidebar-backdrop" id="ai-video-sidebar-backdrop" aria-hidden="true"></div>
+
+      <main class="ai-video-content" aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "视频列表" "Video list" }}">
+        <div class="ai-video-grid" id="ai-video-grid" aria-live="polite"></div>
+
+        <div class="ai-video-empty" id="ai-video-empty" hidden>
+          <p class="ai-video-empty__title">{{ cond (eq .Site.LanguageCode "zh-CN") "暂时还没有视频。" "No videos yet." }}</p>
+          <p class="ai-video-empty__hint">{{ cond (eq .Site.LanguageCode "zh-CN") "在 static/ai-videos.json 里添加数据后刷新即可。" "Add entries to static/ai-videos.json and refresh." }}</p>
+        </div>
+
+        <div class="ai-video-empty" id="ai-video-empty-filter" hidden>
+          <p class="ai-video-empty__title">{{ cond (eq .Site.LanguageCode "zh-CN") "当前筛选下没有匹配的视频。" "No videos match the current filters." }}</p>
+          <p class="ai-video-empty__hint">{{ cond (eq .Site.LanguageCode "zh-CN") "换个标签或清空搜索试试。" "Try a different tag or clear the search." }}</p>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- 全屏三栏展示（参考 AI 生图） -->
+<div class="video-fullscreen" id="video-fullscreen" aria-hidden="true">
+  <div class="video-fullscreen__backdrop" data-close></div>
+  <div class="video-fullscreen__container">
+    <!-- 左：视频 -->
+    <div class="video-fullscreen__main">
+      <button class="video-fullscreen__close" type="button" data-close aria-label="{{ i18n "gallery_modal_close" | default "Close" }}">×</button>
+      <button class="video-fullscreen__prev" type="button" data-prev aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "上一个" "Previous" }}">‹</button>
+      <button class="video-fullscreen__next" type="button" data-next aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "下一个" "Next" }}">›</button>
+
+      <div class="video-fullscreen__player" id="video-player"></div>
+      <div class="video-fullscreen__counter" id="video-counter"></div>
+    </div>
+
+    <!-- 中：信息 -->
+    <div class="video-fullscreen__info" id="video-info">
+      <div class="video-info-content">
+        <p class="video-eyebrow" id="video-source"></p>
+        <h2 class="video-title" id="video-title"></h2>
+        <div class="video-meta" id="video-meta"></div>
+        <div class="video-desc" id="video-desc"></div>
+        <div class="video-tags" id="video-tags"></div>
+      </div>
+    </div>
+
+    <!-- 右：缩略列表 -->
+    <div class="video-fullscreen__thumbs" id="video-thumbs">
+      <div class="video-thumbs__header">
+        <span>{{ cond (eq .Site.LanguageCode "zh-CN") "全部视频" "All videos" }}</span>
+      </div>
+      <div class="video-thumbs__list" id="video-thumbs-list"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+.ai-video-shell {
+  padding-bottom: 5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.ai-video-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.ai-video-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.ai-video-mobile-toggle {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin: 0 auto 1rem;
+}
+
+.ai-video-mobile-toggle svg {
+  opacity: 0.7;
+}
+
+.ai-video-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-video-sidebar {
+  flex-shrink: 0;
+  width: 240px;
+  position: sticky;
+  top: 2rem;
+}
+
+.ai-video-sidebar__header {
+  display: none;
+}
+
+.ai-video-sidebar__close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.ai-video-sidebar__close:hover {
+  color: var(--accent);
+}
+
+.ai-video-sidebar-backdrop {
+  display: none;
+}
+
+.ai-video-search {
+  margin-bottom: 1.5rem;
+}
+
+.ai-video-search input {
+  width: 100%;
+  padding: 0.6rem 0.875rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ai-video-search input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+.ai-video-filter-group h4 {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ai-video-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ai-video-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ai-video-pill:hover {
+  background: var(--surface);
+}
+
+.ai-video-pill.active {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.35);
+  color: var(--accent);
+}
+
+.ai-video-pill-count {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.ai-video-grid {
+  column-gap: 1.25rem;
+  column-width: 280px;
+}
+
+.ai-video-card {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 1.25rem;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  border-radius: 0;
+  overflow: hidden;
+  cursor: zoom-in;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  outline: none;
+}
+
+.ai-video-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.ai-video-thumb {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-highlight);
+  line-height: 0;
+}
+
+.ai-video-thumb img,
+.ai-video-thumb video {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+}
+
+.ai-video-empty {
+  margin-top: 1.5rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  color: var(--text-muted);
+  background: rgba(18, 18, 18, 0.45);
+}
+
+.ai-video-empty__title {
+  margin: 0 0 0.35rem;
+  color: var(--text-main);
+}
+
+/* ===== 全屏三栏展示 ===== */
+.video-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.video-fullscreen.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.video-fullscreen__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.video-fullscreen__container {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 420px 110px;
+  height: 100vh;
+  z-index: 1;
+}
+
+.video-fullscreen__main {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.video-fullscreen__player {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #000;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+}
+
+.video-fullscreen__player video,
+.video-fullscreen__player iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  display: block;
+}
+
+.video-player-error {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  color: var(--text-main);
+  background: radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.08), rgba(0, 0, 0, 0.92));
+}
+
+.video-player-error__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.video-player-error__hint {
+  color: var(--text-muted);
+  max-width: 60ch;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.video-player-error__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--border);
+  background: rgba(18,18,18,0.55);
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  color: var(--text-main);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.video-player-error__link:hover {
+  border-color: rgba(212, 175, 55, 0.55);
+  color: var(--accent);
+}
+
+.video-fullscreen__close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(18, 18, 18, 0.6);
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 1.4rem;
+  display: grid;
+  place-items: center;
+}
+
+.video-fullscreen__prev,
+.video-fullscreen__next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(18, 18, 18, 0.55);
+  color: var(--text-main);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+}
+
+.video-fullscreen__prev { left: 1.25rem; }
+.video-fullscreen__next { right: 1.25rem; }
+
+.video-fullscreen__counter {
+  position: absolute;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 10;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(18, 18, 18, 0.55);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.video-fullscreen__info {
+  position: relative;
+  padding: 2rem 1.75rem;
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+}
+
+.video-fullscreen__info::-webkit-scrollbar {
+  width: 6px;
+}
+.video-fullscreen__info::-webkit-scrollbar-track { background: transparent; }
+.video-fullscreen__info::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+.video-eyebrow {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 0.65rem;
+}
+
+.video-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.video-meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.9rem;
+}
+
+.video-desc {
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+}
+
+.video-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.video-tags span {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.8rem;
+  color: var(--text-main);
+}
+
+.video-fullscreen__thumbs {
+  position: relative;
+  border-left: 1px solid var(--border);
+  padding: 1.25rem 0.75rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-thumbs__header {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0 0.35rem 0.75rem;
+}
+
+.video-thumbs__list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding-right: 0.15rem;
+}
+
+.video-thumbs__list::-webkit-scrollbar { width: 6px; }
+.video-thumbs__list::-webkit-scrollbar-track { background: transparent; }
+.video-thumbs__list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+
+.video-thumb-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  background: rgba(18,18,18,0.55);
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.video-thumb-item.active {
+  border-color: rgba(212, 175, 55, 0.55);
+}
+
+.video-thumb-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(212, 175, 55, 0.35);
+}
+
+.video-thumb-item video,
+.video-thumb-item img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+.ai-video-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 2;
+}
+
+.ai-video-loader--loading,
+.ai-video-loader--error {
+  display: block;
+}
+
+.ai-video-loader__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(212, 175, 55, 0.3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: ai-video-spin 0.8s linear infinite;
+}
+
+.ai-video-loader--error .ai-video-loader__spinner {
+  border: none;
+  width: 32px;
+  height: 32px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E") no-repeat center;
+  animation: none;
+}
+
+@keyframes ai-video-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 980px) {
+  .ai-video-shell {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-video-mobile-toggle { display: inline-flex; }
+  .ai-video-layout { gap: 0; }
+  .ai-video-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: min(320px, calc(100vw - 3rem));
+    background: rgba(10, 10, 10, 0.98);
+    border-right: 1px solid var(--border);
+    padding: 1rem 1rem 1.25rem;
+    transform: translateX(-110%);
+    transition: transform 0.25s ease;
+    z-index: 2100;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ai-video-sidebar.open { transform: translateX(0); }
+  .ai-video-sidebar__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+  .ai-video-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 2050;
+  }
+  .ai-video-sidebar-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .ai-video-filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .ai-video-pill {
+    width: auto;
+    border-radius: 999px;
+    padding: 0.32rem 0.85rem;
+  }
+  .ai-video-pill-count {
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (max-width: 680px) {
+  .video-fullscreen__container {
+    grid-template-columns: 1fr;
+  }
+  .video-fullscreen__thumbs,
+  .video-fullscreen__info {
+    display: none;
+  }
+  .video-fullscreen__main {
+    padding: 1.25rem;
+  }
+  .video-fullscreen__prev,
+  .video-fullscreen__next {
+    display: none;
+  }
+}
+</style>
+
+<script>
+(() => {
+  const dataUrl = "{{ "/ai-videos.json" | relLangURL }}";
+  const grid = document.getElementById("ai-video-grid");
+  const filters = document.getElementById("ai-video-filters");
+  const search = document.getElementById("ai-video-search");
+  const empty = document.getElementById("ai-video-empty");
+  const emptyFilter = document.getElementById("ai-video-empty-filter");
+
+  const sidebar = document.getElementById("ai-video-sidebar");
+  const sidebarBackdrop = document.getElementById("ai-video-sidebar-backdrop");
+  const mobileToggle = document.getElementById("ai-video-mobile-toggle");
+  const sidebarClose = document.getElementById("ai-video-sidebar-close");
+
+  const fullscreen = document.getElementById("video-fullscreen");
+  const player = document.getElementById("video-player");
+  const fsTitle = document.getElementById("video-title");
+  const fsMeta = document.getElementById("video-meta");
+  const fsDesc = document.getElementById("video-desc");
+  const fsTags = document.getElementById("video-tags");
+  const fsSource = document.getElementById("video-source");
+  const thumbsList = document.getElementById("video-thumbs-list");
+  const counter = document.getElementById("video-counter");
+  const closeTargets = fullscreen ? fullscreen.querySelectorAll("[data-close]") : [];
+  const prevBtn = fullscreen ? fullscreen.querySelector("[data-prev]") : null;
+  const nextBtn = fullscreen ? fullscreen.querySelector("[data-next]") : null;
+
+	  const I18N = {
+	    all: "{{ cond (eq .Site.LanguageCode "zh-CN") "全部" "All" }}",
+	    unknown: "{{ i18n "gallery_unknown" | default "Unknown" }}",
+	    by: "{{ i18n "gallery_by_prefix" | default (cond (eq .Site.LanguageCode "zh-CN") "作者：" "By ") }}",
+	    source: "{{ i18n "gallery_source_prefix" | default (cond (eq .Site.LanguageCode "zh-CN") "来源：" "Source: ") }}",
+	  };
+
+	  const normalize = (v) => (v || "").toString().trim();
+	  const lower = (v) => normalize(v).toLowerCase();
+	  const canHoverPreview = (() => {
+	    try { return window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches; } catch (e) { return false; }
+	  })();
+
+	  const STATIC_TIME = 0;
+
+	  const videoObserver = new IntersectionObserver((entries) => {
+	    entries.forEach((entry) => {
+	      const card = entry.target;
+	      const video = card.querySelector("video");
+	      if (!video) return;
+
+	      if (entry.isIntersecting) {
+	        video.preload = "auto";
+	      } else {
+	        video.preload = "metadata";
+	      }
+	    });
+	  }, {
+	    root: null,
+	    rootMargin: "0px",
+	    threshold: 0.1
+	  });
+
+	  function primePreview(video) {
+	    if (!video) return;
+	    video.dataset.hover = "0";
+	    const ensureStatic = () => {
+	      if (video.dataset.hover === "1") return;
+	      try { video.pause(); } catch (e) {}
+	      try {
+	        if (Number.isFinite(video.currentTime) && video.currentTime > 0.02) video.currentTime = STATIC_TIME;
+	      } catch (e) {}
+	    };
+	    if (video.readyState >= 2) ensureStatic();
+	    else video.addEventListener("loadeddata", ensureStatic, { once: true });
+	  }
+
+	  function startPreview(video) {
+	    if (!video) return;
+	    video.dataset.hover = "1";
+	    try { video.preload = "auto"; } catch (e) {}
+	    try { if (video.readyState === 0) video.load(); } catch (e) {}
+	    const play = () => {
+	      if (video.dataset.hover !== "1") return;
+	      try { video.play().catch(() => {}); } catch (e) {}
+	    };
+	    play();
+	    video.addEventListener("canplay", play, { once: true });
+	  }
+
+	  function stopPreview(video) {
+	    if (!video) return;
+	    video.dataset.hover = "0";
+	    try { video.pause(); } catch (e) {}
+	    const reset = () => {
+	      try { video.currentTime = STATIC_TIME; } catch (e) {}
+	    };
+	    if (video.readyState >= 1) reset();
+	    else video.addEventListener("loadedmetadata", reset, { once: true });
+	  }
+
+	  function pauseAllPreviews() {
+	    if (!grid) return;
+	    grid.querySelectorAll("video").forEach((v) => {
+	      try { v.pause(); } catch (e) {}
+	    });
+	  }
+
+	  function openSidebar() {
+	    if (!sidebar) return;
+	    sidebar.classList.add("open");
+	    if (sidebarBackdrop) sidebarBackdrop.classList.add("open");
+	    document.body.style.overflow = "hidden";
+	  }
+
+	  function closeSidebar() {
+	    if (!sidebar) return;
+	    sidebar.classList.remove("open");
+	    if (sidebarBackdrop) sidebarBackdrop.classList.remove("open");
+	    document.body.style.overflow = "";
+	  }
+
+	  if (mobileToggle) mobileToggle.addEventListener("click", openSidebar);
+	  if (sidebarClose) sidebarClose.addEventListener("click", closeSidebar);
+	  if (sidebarBackdrop) sidebarBackdrop.addEventListener("click", closeSidebar);
+
+  let allItems = [];
+  let filteredItems = [];
+  let activeTag = "all";
+  let searchTerm = "";
+  let currentItem = null;
+  let currentIndex = 0;
+  let activeFocus = null;
+
+  function setEmpty(isEmpty) {
+    if (empty) empty.hidden = !isEmpty;
+  }
+
+  function setFilterEmpty(isEmpty) {
+    if (emptyFilter) emptyFilter.hidden = !isEmpty;
+  }
+
+  function collectTags(items) {
+    const tags = new Set();
+    items.forEach((item) => {
+      (Array.isArray(item.tags) ? item.tags : []).forEach((t) => {
+        const tag = normalize(t);
+        if (tag) tags.add(tag);
+      });
+    });
+    return Array.from(tags);
+  }
+
+  function tagCounts(items) {
+    const counts = Object.create(null);
+    items.forEach((item) => {
+      const uniq = new Set((Array.isArray(item.tags) ? item.tags : []).map((t) => lower(t)).filter(Boolean));
+      uniq.forEach((t) => { counts[t] = (counts[t] || 0) + 1; });
+    });
+    return counts;
+  }
+
+  function renderFilters(tags) {
+    if (!filters) return;
+    filters.innerHTML = "";
+    const counts = tagCounts(allItems);
+
+    const mk = (label, tag, count) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "ai-video-pill" + (activeTag === tag ? " active" : "");
+      btn.dataset.tag = tag;
+      btn.innerHTML = `<span class="ai-video-pill-label">${label}</span><span class="ai-video-pill-count">${count}</span>`;
+      btn.addEventListener("click", () => {
+        activeTag = tag;
+        renderFilters(tags);
+        applyFilter();
+      });
+      return btn;
+    };
+
+    filters.appendChild(mk(I18N.all, "all", allItems.length));
+    tags
+      .slice()
+      .sort((a, b) => (counts[lower(b)] || 0) - (counts[lower(a)] || 0))
+      .forEach((t) => {
+        filters.appendChild(mk(t, lower(t), counts[lower(t)] || 0));
+      });
+  }
+
+  function matchesSearch(item) {
+    if (!searchTerm) return true;
+    const hay = [
+      item.title,
+      item.description,
+      item.author,
+      item.source,
+      (Array.isArray(item.tags) ? item.tags.join(" ") : "")
+    ].map((v) => normalize(v)).join(" ").toLowerCase();
+    return hay.includes(searchTerm);
+  }
+
+  function matchesTag(item) {
+    if (activeTag === "all") return true;
+    const tags = Array.isArray(item.tags) ? item.tags.map((t) => lower(t)) : [];
+    return tags.includes(activeTag);
+  }
+
+  function applyFilter() {
+    filteredItems = allItems.filter((item) => matchesTag(item) && matchesSearch(item));
+    renderGrid();
+    setEmpty(allItems.length === 0);
+    setFilterEmpty(allItems.length > 0 && filteredItems.length === 0);
+
+    // 如果全屏已打开，筛选变化后要同步缩略列表与计数
+    if (fullscreen && fullscreen.classList.contains("open")) {
+      const list = listItemsForThumbs();
+      currentIndex = Math.max(0, Math.min(currentIndex, Math.max(0, list.length - 1)));
+      renderThumbs();
+      setActiveThumb();
+      updateCounter();
+    }
+  }
+
+  function isYouTube(url) {
+    return (url || "").toString().toLowerCase().includes("youtube.com/embed/");
+  }
+
+  function listItemsForThumbs() {
+    return filteredItems && filteredItems.length ? filteredItems : allItems;
+  }
+
+  function updateCounter() {
+    const list = listItemsForThumbs();
+    if (!counter) return;
+    counter.textContent = list.length ? `${currentIndex + 1} / ${list.length}` : "";
+  }
+
+  function setActiveThumb() {
+    if (!thumbsList) return;
+    const thumbs = thumbsList.querySelectorAll(".video-thumb-item");
+    thumbs.forEach((el, idx) => {
+      el.classList.toggle("active", idx === currentIndex);
+      if (idx === currentIndex) {
+        el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    });
+  }
+
+	  function renderThumbs() {
+	    if (!thumbsList) return;
+	    thumbsList.innerHTML = "";
+	    const list = listItemsForThumbs();
+	    if (!list.length) return;
+	    const frag = document.createDocumentFragment();
+	    list.forEach((item, idx) => {
+	      const wrapper = document.createElement("div");
+	      wrapper.className = "video-thumb-item" + (idx === currentIndex ? " active" : "");
+	      wrapper.dataset.index = String(idx);
+
+		      const url = normalize(item.video);
+	      if (url && !isYouTube(url)) {
+	        const v = document.createElement("video");
+	        v.src = url;
+	        v.muted = true;
+	        v.setAttribute("muted", "");
+	        v.playsInline = true;
+	        v.setAttribute("playsinline", "");
+	        v.preload = "metadata";
+	        v.setAttribute("aria-hidden", "true");
+	        v.tabIndex = -1;
+	        wrapper.appendChild(v);
+	      } else {
+	        const img = document.createElement("img");
+        img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Crect width='100%25' height='100%25' fill='%230b0b0b'/%3E%3C/svg%3E";
+        img.alt = normalize(item.title) || "{{ i18n "gallery_untitled" | default "Untitled" }}";
+        wrapper.appendChild(img);
+      }
+
+      wrapper.addEventListener("click", () => switchToIndex(idx));
+      frag.appendChild(wrapper);
+    });
+    thumbsList.appendChild(frag);
+  }
+
+  function renderInfo(item) {
+    if (!item) return;
+    const title = normalize(item.title) || "{{ i18n "gallery_untitled" | default "Untitled" }}";
+    if (fsTitle) fsTitle.textContent = title;
+
+    const metaParts = [];
+    const author = normalize(item.author);
+    if (author) metaParts.push(`${I18N.by}${author}`);
+    const source = normalize(item.source);
+    if (source) metaParts.push(`${I18N.source}${source}`);
+    const duration = normalize(item.duration);
+    if (duration) metaParts.push(duration);
+    if (fsMeta) fsMeta.textContent = metaParts.join(" · ");
+
+    const desc = normalize(item.description);
+    if (fsDesc) fsDesc.textContent = desc;
+
+    if (fsSource) fsSource.textContent = source ? source : "";
+
+    if (fsTags) {
+      fsTags.innerHTML = "";
+      (Array.isArray(item.tags) ? item.tags : []).forEach((t) => {
+        const tag = normalize(t);
+        if (!tag) return;
+        const span = document.createElement("span");
+        span.textContent = tag;
+        fsTags.appendChild(span);
+      });
+    }
+  }
+
+  function renderPlayer(item) {
+    if (!player) return;
+    player.innerHTML = "";
+    const url = normalize(item?.video);
+    if (!url) return;
+
+    if (isYouTube(url)) {
+      const iframe = document.createElement("iframe");
+      iframe.src = url;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
+      player.appendChild(iframe);
+      return;
+    }
+
+	    const video = document.createElement("video");
+	    video.controls = true;
+	    video.playsInline = true;
+	    video.preload = "metadata";
+	    const sourceEl = document.createElement("source");
+	    sourceEl.src = url;
+	    sourceEl.type = normalize(item.mime) || (url.endsWith(".mp4") ? "video/mp4" : "");
+	    video.appendChild(sourceEl);
+    player.appendChild(video);
+
+    const lang = (document.documentElement.lang || "").toString().trim().toLowerCase();
+    const zh = lang.startsWith("zh");
+    const renderError = () => {
+      player.innerHTML = "";
+      const wrap = document.createElement("div");
+      wrap.className = "video-player-error";
+      const title = document.createElement("div");
+      title.className = "video-player-error__title";
+      title.textContent = zh ? "视频加载失败" : "Video failed to load";
+      const hint = document.createElement("div");
+      hint.className = "video-player-error__hint";
+      hint.textContent = zh
+        ? "常见原因：源站未配置 CORS 或禁止 Range 请求，或浏览器策略拦截。"
+        : "Common causes: missing CORS headers, blocked Range requests, or browser policy restrictions.";
+      const link = document.createElement("a");
+      link.className = "video-player-error__link";
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = zh ? "在新窗口打开原视频 →" : "Open the original video →";
+      wrap.appendChild(title);
+      wrap.appendChild(hint);
+      wrap.appendChild(link);
+      player.appendChild(wrap);
+    };
+
+    video.addEventListener("error", renderError, { once: true });
+
+    // 尝试自动播放（不保证一定成功）
+    setTimeout(() => {
+      try { video.play().catch(() => {}); } catch (e) {}
+    }, 0);
+  }
+
+  function switchToIndex(idx) {
+    const list = listItemsForThumbs();
+    if (!list.length) return;
+    const next = Math.max(0, Math.min(list.length - 1, idx));
+    currentIndex = next;
+    currentItem = list[next];
+    renderPlayer(currentItem);
+    renderInfo(currentItem);
+    setActiveThumb();
+    updateCounter();
+  }
+
+  function stepItem(delta) {
+    switchToIndex(currentIndex + delta);
+  }
+
+	  function openFullscreen(item) {
+	    if (!fullscreen) return;
+	    activeFocus = document.activeElement;
+	    pauseAllPreviews();
+	    const list = listItemsForThumbs();
+	    const idx = list.findIndex((x) => x && (x.id === item.id));
+	    currentIndex = idx >= 0 ? idx : 0;
+	    currentItem = item;
+
+    renderThumbs();
+    switchToIndex(currentIndex);
+
+    fullscreen.classList.add("open");
+    fullscreen.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    const closeBtn = fullscreen.querySelector(".video-fullscreen__close");
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeFullscreen() {
+    if (!fullscreen) return;
+    fullscreen.classList.remove("open");
+    fullscreen.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    if (player) player.innerHTML = "";
+    if (activeFocus && typeof activeFocus.focus === "function") activeFocus.focus();
+  }
+
+  closeTargets.forEach((el) => el.addEventListener("click", closeFullscreen));
+  if (prevBtn) prevBtn.addEventListener("click", () => stepItem(-1));
+  if (nextBtn) nextBtn.addEventListener("click", () => stepItem(1));
+  document.addEventListener("keydown", (e) => {
+    if (!fullscreen || !fullscreen.classList.contains("open")) return;
+    if (e.key === "Escape") return closeFullscreen();
+    if (e.key === "ArrowLeft") { e.preventDefault(); return stepItem(-1); }
+    if (e.key === "ArrowRight") { e.preventDefault(); return stepItem(1); }
+  });
+
+	  function buildCard(item) {
+	    const card = document.createElement("article");
+	    card.className = "ai-video-card";
+	    card.tabIndex = 0;
+	    card.setAttribute("role", "button");
+	    card.setAttribute("aria-label", normalize(item.title) || "{{ i18n "gallery_untitled" | default "Untitled" }}");
+
+ 	    const thumb = document.createElement("div");
+	    thumb.className = "ai-video-thumb";
+		    const videoUrl = normalize(item.video);
+		    const isEmbed = isYouTube(videoUrl);
+		    let preview = null;
+		    const cardVideoUrl = videoUrl;
+	    if (cardVideoUrl && !isEmbed) {
+	      preview = document.createElement("video");
+	      preview.muted = true;
+	      preview.setAttribute("muted", "");
+	      preview.playsInline = true;
+	      preview.setAttribute("playsinline", "");
+	      preview.preload = "metadata";
+	      preview.loop = true;
+	      preview.src = cardVideoUrl;
+	      preview.setAttribute("aria-hidden", "true");
+	      preview.tabIndex = -1;
+
+	      const loader = document.createElement("div");
+	      loader.className = "ai-video-loader";
+	      loader.innerHTML = `<div class="ai-video-loader__spinner"></div>`;
+	      thumb.appendChild(loader);
+
+	      preview.addEventListener("loadstart", () => {
+	        if (loader) loader.classList.add("ai-video-loader--loading");
+	      });
+
+	      preview.addEventListener("canplay", () => {
+	        if (loader) loader.classList.remove("ai-video-loader--loading");
+	      });
+
+	      preview.addEventListener("error", () => {
+	        if (loader) loader.classList.add("ai-video-loader--error");
+	        preview.style.display = "none";
+	        const img = document.createElement("img");
+	        img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1280' height='720'%3E%3Crect width='100%25' height='100%25' fill='%230b0b0b'/%3E%3C/svg%3E";
+	        img.alt = normalize(item.title) || "{{ i18n "gallery_untitled" | default "Untitled" }}";
+	        thumb.insertBefore(img, loader);
+	      });
+
+	      thumb.appendChild(preview);
+	    } else {
+	      const img = document.createElement("img");
+	      img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1280' height='720'%3E%3Crect width='100%25' height='100%25' fill='%230b0b0b'/%3E%3C/svg%3E";
+	      img.alt = normalize(item.title) || "{{ i18n "gallery_untitled" | default "Untitled" }}";
+	      thumb.appendChild(img);
+	    }
+
+ 	    card.appendChild(thumb);
+ 	    if (preview) {
+ 	      videoObserver.observe(card);
+ 	      primePreview(preview);
+ 	      if (canHoverPreview) {
+	        let stopTimer = null;
+	        const cancelStop = () => {
+	          if (!stopTimer) return;
+	          clearTimeout(stopTimer);
+	          stopTimer = null;
+	        };
+	        card.addEventListener("pointerenter", () => {
+	          cancelStop();
+	          startPreview(preview);
+	        });
+	        card.addEventListener("pointerleave", () => {
+	          cancelStop();
+	          stopTimer = setTimeout(() => {
+	            stopTimer = null;
+	            try { if (card.matches(":hover")) return; } catch (e) {}
+	            stopPreview(preview);
+	          }, 140);
+	        });
+	      }
+	    }
+
+	    const open = () => openModal(item);
+	    card.addEventListener("click", open);
+	    card.addEventListener("keypress", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        open();
+      }
+    });
+
+    return card;
+  }
+
+  function renderGrid() {
+    if (!grid) return;
+    grid.innerHTML = "";
+    if (!filteredItems.length) return;
+    const frag = document.createDocumentFragment();
+    filteredItems.forEach((item) => frag.appendChild(buildCard(item)));
+    grid.appendChild(frag);
+  }
+
+  function render(items) {
+    allItems = Array.isArray(items) ? items : [];
+    filteredItems = [...allItems];
+    setEmpty(allItems.length === 0);
+    setFilterEmpty(false);
+    renderFilters(collectTags(allItems));
+    applyFilter();
+  }
+
+  if (search) {
+    search.addEventListener("input", (e) => {
+      searchTerm = lower(e.target.value);
+      applyFilter();
+    });
+  }
+
+  // 覆盖卡片打开逻辑：走三栏全屏
+  function openModal(item) {
+    openFullscreen(item);
+  }
+
+  fetch(dataUrl)
+    .then((res) => res.ok ? res.json() : [])
+    .then((items) => render(items))
+    .catch(() => render([]));
+})();
+</script>
+{{ end }}

@@ -97,9 +97,19 @@ disableKinds = ['taxonomy', 'term']
         pageRef = '/my-publish'
         weight = 24
       [[languages.zh-CN.menu.main]]
-        name = 'AI 生图'
-        pageRef = '/ai-gallery'
+        name = 'AI创意'
+        identifier = 'ai-creative'
         weight = 26
+        [[languages.zh-CN.menu.main]]
+          name = 'AI生图'
+          pageRef = '/ai-gallery'
+          parent = 'ai-creative'
+          weight = 1
+        [[languages.zh-CN.menu.main]]
+          name = 'AI视频'
+          pageRef = '/ai-video'
+          parent = 'ai-creative'
+          weight = 2
       [[languages.zh-CN.menu.main]]
         name = 'AI 工具'
         pageRef = '/ai-tools'
@@ -160,9 +170,19 @@ disableKinds = ['taxonomy', 'term']
         pageRef = '/my-publish'
         weight = 24
       [[languages.en.menu.main]]
-        name = 'AI Gallery'
-        pageRef = '/ai-gallery'
+        name = 'AI Creativity'
+        identifier = 'ai-creative'
         weight = 26
+        [[languages.en.menu.main]]
+          name = 'AI Images'
+          pageRef = '/ai-gallery'
+          parent = 'ai-creative'
+          weight = 1
+        [[languages.en.menu.main]]
+          name = 'AI Videos'
+          pageRef = '/ai-video'
+          parent = 'ai-creative'
+          weight = 2
       [[languages.en.menu.main]]
         name = 'AI Tools'
         pageRef = '/ai-tools'
