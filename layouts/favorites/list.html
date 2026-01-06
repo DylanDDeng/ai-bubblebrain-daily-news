@@ -871,7 +871,7 @@
     }
 
     favImages = allImages.filter(item => isFavorited(item.id));
-    favVideos = allVideos.filter(item => isFavorited(item.id));
+    favVideos = allVideos.filter(item => isFavorited("video:" + item.id));
 
     // 应用搜索
     if (searchTerm) {
@@ -892,7 +892,7 @@
   // ===== 更新计数 =====
   function updateCounts() {
     const totalImages = allImages.filter(item => typeof isFavorited === "function" && isFavorited(item.id)).length;
-    const totalVideos = allVideos.filter(item => typeof isFavorited === "function" && isFavorited(item.id)).length;
+    const totalVideos = allVideos.filter(item => typeof isFavorited === "function" && isFavorited("video:" + item.id)).length;
 
     countAll.textContent = totalImages + totalVideos;
     countImage.textContent = totalImages;
@@ -970,7 +970,7 @@
     card.querySelector(".favorites-video-card__fav").addEventListener("click", async (e) => {
       e.stopPropagation();
       if (typeof toggleFavorite === "function") {
-        await toggleFavorite(item.id);
+        await toggleFavorite("video:" + item.id);
       }
     });
 
