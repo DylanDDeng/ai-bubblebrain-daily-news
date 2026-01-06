@@ -63,6 +63,10 @@
     <!-- 左：视频 -->
     <div class="video-fullscreen__main">
       <button class="video-fullscreen__close" type="button" data-close aria-label="{{ i18n "gallery_modal_close" | default "Close" }}">×</button>
+      <!-- 移动端收藏按钮（信息栏隐藏时依然可用） -->
+      <button class="video-fullscreen__fav" type="button" data-video-fav-mobile aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "收藏" "Save" }}">
+        <svg class="fav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
       <button class="video-fullscreen__prev" type="button" data-prev aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "上一个" "Previous" }}">‹</button>
       <button class="video-fullscreen__next" type="button" data-next aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "下一个" "Next" }}">›</button>
 
@@ -74,7 +78,13 @@
     <div class="video-fullscreen__info" id="video-info">
       <div class="video-info-content">
         <p class="video-eyebrow" id="video-source"></p>
-        <h2 class="video-title" id="video-title"></h2>
+        <div class="video-title-row">
+          <h2 class="video-title" id="video-title"></h2>
+          <button class="video-fav-btn" type="button" data-video-fav aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "收藏" "Save" }}">
+            <svg class="fav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <span class="video-fav-btn__text" data-video-fav-text>{{ cond (eq .Site.LanguageCode "zh-CN") "收藏" "Save" }}</span>
+          </button>
+        </div>
         <div class="video-meta" id="video-meta"></div>
         <div class="video-tags" id="video-tags"></div>
         <div class="fullscreen-prompt-block video-prompt-block" id="video-prompt-block" hidden>
@@ -247,6 +257,9 @@
 .ai-video-pill-label {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .ai-video-pill-count {
@@ -255,6 +268,12 @@
   font-size: 0.8rem;
   letter-spacing: 0.05em;
   color: var(--text-muted);
+}
+
+.fav-filter-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .ai-video-pill.active .ai-video-pill-count {
@@ -344,6 +363,59 @@
   object-fit: contain;
   display: block;
   pointer-events: none;
+}
+
+/* ===== 收藏按钮样式（与 AI 生图一致） ===== */
+.ai-video-fav-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.ai-video-card:hover .ai-video-fav-btn,
+.ai-video-card:focus-visible .ai-video-fav-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (hover: none) {
+  .ai-video-fav-btn {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ai-video-fav-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.ai-video-fav-btn .fav-icon {
+  width: 18px;
+  height: 18px;
+  transition: all 0.2s ease;
+}
+
+.ai-video-fav-btn.active .fav-icon {
+  fill: #ef4444;
+  stroke: #ef4444;
+}
+
+.ai-video-fav-btn:not(.active):hover .fav-icon {
+  stroke: #ef4444;
 }
 
 .ai-video-empty {
@@ -476,6 +548,37 @@
   place-items: center;
 }
 
+.video-fullscreen__fav {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(18, 18, 18, 0.6);
+  color: var(--text-main);
+  cursor: pointer;
+  display: none;
+  place-items: center;
+}
+
+.video-fullscreen__fav .fav-icon {
+  width: 20px;
+  height: 20px;
+  transition: all 0.2s ease;
+}
+
+.video-fullscreen__fav.active .fav-icon {
+  fill: #ef4444;
+  stroke: #ef4444;
+}
+
+.video-fullscreen__fav:not(.active):hover .fav-icon {
+  stroke: #ef4444;
+}
+
 .video-fullscreen__prev,
 .video-fullscreen__next {
   position: absolute;
@@ -537,6 +640,55 @@
   font-size: 1.8rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+.video-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.video-title-row .video-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.video-fav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.video-fav-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.video-fav-btn .fav-icon {
+  width: 18px;
+  height: 18px;
+  transition: all 0.2s ease;
+}
+
+.video-fav-btn.active {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.video-fav-btn.active .fav-icon {
+  fill: #ef4444;
+  stroke: #ef4444;
 }
 
 .video-meta {
@@ -833,6 +985,9 @@
   .video-fullscreen__main {
     padding: 1.25rem;
   }
+  .video-fullscreen__fav {
+    display: grid;
+  }
   .video-fullscreen__prev,
   .video-fullscreen__next {
     display: none;
@@ -865,16 +1020,25 @@
 	  const fsPromptCopy = document.getElementById("video-prompt-copy");
 	  const thumbsList = document.getElementById("video-thumbs-list");
 	  const counter = document.getElementById("video-counter");
+	  const fsFavBtn = fullscreen ? fullscreen.querySelector("[data-video-fav]") : null;
+	  const fsFavBtnText = fullscreen ? fullscreen.querySelector("[data-video-fav-text]") : null;
+	  const fsFavBtnMobile = fullscreen ? fullscreen.querySelector("[data-video-fav-mobile]") : null;
 	  const closeTargets = fullscreen ? fullscreen.querySelectorAll("[data-close]") : [];
 	  const prevBtn = fullscreen ? fullscreen.querySelector("[data-prev]") : null;
 	  const nextBtn = fullscreen ? fullscreen.querySelector("[data-next]") : null;
 
 	  const I18N = {
 	    all: "{{ cond (eq .Site.LanguageCode "zh-CN") "全部" "All" }}",
+	    favorites: "{{ cond (eq .Site.LanguageCode "zh-CN") "我的收藏" "Favorites" }}",
+	    favorite: "{{ cond (eq .Site.LanguageCode "zh-CN") "收藏" "Save" }}",
+	    favorited: "{{ cond (eq .Site.LanguageCode "zh-CN") "已收藏" "Saved" }}",
 	    unknown: "{{ i18n "gallery_unknown" | default "Unknown" }}",
 	    by: "{{ i18n "gallery_by_prefix" | default (cond (eq .Site.LanguageCode "zh-CN") "作者：" "By ") }}",
 	    source: "{{ i18n "gallery_source_prefix" | default (cond (eq .Site.LanguageCode "zh-CN") "来源：" "Source: ") }}",
 	  };
+
+	  const FAVORITES_FILTER_ICON = `<svg class="fav-filter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+	  const FAVORITE_KEY_PREFIX = "video:";
 
 	  const normalize = (v) => (v || "").toString().trim();
 	  const lower = (v) => normalize(v).toLowerCase();
@@ -974,6 +1138,67 @@
 	  let activeFocus = null;
 	  let currentPromptText = "";
 
+	  function favoriteKeyForItem(item) {
+	    const base = normalize(item?.id) || normalize(item?.video) || normalize(item?.title);
+	    if (!base) return "";
+	    return `${FAVORITE_KEY_PREFIX}${base}`;
+	  }
+
+	  function isVideoFavorited(item) {
+	    const key = favoriteKeyForItem(item);
+	    if (!key) return false;
+	    return typeof isFavorited === "function" && isFavorited(key);
+	  }
+
+	  async function toggleVideoFavorite(item) {
+	    const key = favoriteKeyForItem(item);
+	    if (!key) return false;
+	    if (typeof toggleFavorite !== "function") return false;
+	    return await toggleFavorite(key);
+	  }
+
+	  function getVideoFavoritesCount() {
+	    try {
+	      if (typeof userFavorites === "undefined" || !userFavorites) return 0;
+	      let count = 0;
+	      userFavorites.forEach((id) => {
+	        if ((id || "").toString().startsWith(FAVORITE_KEY_PREFIX)) count += 1;
+	      });
+	      return count;
+	    } catch (err) {
+	      return 0;
+	    }
+	  }
+
+	  function updateFavoritesFilterCount() {
+	    if (!filters) return;
+	    const favBtn = filters.querySelector('button[data-tag="favorites"]');
+	    if (!favBtn) return;
+	    const countEl = favBtn.querySelector(".ai-video-pill-count");
+	    if (countEl) countEl.textContent = String(getVideoFavoritesCount());
+	  }
+
+	  function syncCardFavorites() {
+	    if (!grid) return;
+	    grid.querySelectorAll(".ai-video-fav-btn").forEach((btn) => {
+	      const key = normalize(btn.dataset.favKey);
+	      if (!key) return;
+	      const isFav = typeof isFavorited === "function" && isFavorited(key);
+	      btn.classList.toggle("active", !!isFav);
+	    });
+	  }
+
+	  function syncFullscreenFavorite() {
+	    if (!currentItem) return;
+	    const isFav = isVideoFavorited(currentItem);
+	    if (fsFavBtn) fsFavBtn.classList.toggle("active", isFav);
+	    if (fsFavBtnMobile) fsFavBtnMobile.classList.toggle("active", isFav);
+	    if (fsFavBtnText) fsFavBtnText.textContent = isFav ? I18N.favorited : I18N.favorite;
+	    const aria = isFav ? I18N.favorited : I18N.favorite;
+	    if (fsFavBtn) fsFavBtn.setAttribute("aria-label", aria);
+	    if (fsFavBtnMobile) fsFavBtnMobile.setAttribute("aria-label", aria);
+	  }
+
 	  async function copyToClipboard(text) {
 	    const value = normalize(text);
 	    if (!value) return false;
@@ -1045,10 +1270,10 @@
     filters.innerHTML = "";
     const counts = tagCounts(allItems);
 
-    const mk = (label, tag, count) => {
+    const mk = (label, tag, count, isFav = false) => {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "ai-video-pill" + (activeTag === tag ? " active" : "");
+      btn.className = "ai-video-pill" + (isFav ? " ai-video-pill--fav" : "") + (activeTag === tag ? " active" : "");
       btn.dataset.tag = tag;
       btn.innerHTML = `<span class="ai-video-pill-label">${label}</span><span class="ai-video-pill-count">${count}</span>`;
       btn.addEventListener("click", () => {
@@ -1060,6 +1285,7 @@
     };
 
     filters.appendChild(mk(I18N.all, "all", allItems.length));
+    filters.appendChild(mk(`${FAVORITES_FILTER_ICON}<span>${I18N.favorites}</span>`, "favorites", getVideoFavoritesCount(), true));
     tags
       .slice()
       .sort((a, b) => (counts[lower(b)] || 0) - (counts[lower(a)] || 0))
@@ -1082,6 +1308,7 @@
 
   function matchesTag(item) {
     if (activeTag === "all") return true;
+    if (activeTag === "favorites") return isVideoFavorited(item);
     const tags = Array.isArray(item.tags) ? item.tags.map((t) => lower(t)) : [];
     return tags.includes(activeTag);
   }
@@ -1264,6 +1491,7 @@
     currentItem = list[next];
     renderPlayer(currentItem);
     renderInfo(currentItem);
+    syncFullscreenFavorite();
     setActiveThumb();
     updateCounter();
   }
@@ -1322,6 +1550,22 @@
 
  	    const thumb = document.createElement("div");
 	    thumb.className = "ai-video-thumb";
+	    const favKey = favoriteKeyForItem(item);
+	    if (favKey) {
+	      const favBtn = document.createElement("button");
+	      favBtn.type = "button";
+	      favBtn.className = "ai-video-fav-btn";
+	      favBtn.dataset.favKey = favKey;
+	      favBtn.setAttribute("aria-label", I18N.favorite);
+	      favBtn.innerHTML = `<svg class="fav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+	      favBtn.classList.toggle("active", typeof isFavorited === "function" && isFavorited(favKey));
+	      favBtn.addEventListener("click", async (e) => {
+	        e.stopPropagation();
+	        const isNowFav = await toggleVideoFavorite(item);
+	        favBtn.classList.toggle("active", isNowFav);
+	      });
+	      thumb.appendChild(favBtn);
+	    }
 		    const videoUrl = normalize(item.video);
 		    const isEmbed = isYouTube(videoUrl);
 		    let preview = null;
@@ -1430,6 +1674,40 @@
       applyFilter();
     });
   }
+
+	  if (fsFavBtn) {
+	    fsFavBtn.addEventListener("click", async (e) => {
+	      e.preventDefault();
+	      e.stopPropagation();
+	      if (!currentItem) return;
+	      await toggleVideoFavorite(currentItem);
+	      syncFullscreenFavorite();
+	    });
+	  }
+
+	  if (fsFavBtnMobile) {
+	    fsFavBtnMobile.addEventListener("click", async (e) => {
+	      e.preventDefault();
+	      e.stopPropagation();
+	      if (!currentItem) return;
+	      await toggleVideoFavorite(currentItem);
+	      syncFullscreenFavorite();
+	    });
+	  }
+
+	  window.addEventListener("favoritesUpdated", () => {
+	    updateFavoritesFilterCount();
+	    syncCardFavorites();
+	    syncFullscreenFavorite();
+	    if (activeTag === "favorites") applyFilter();
+	  });
+
+	  window.addEventListener("authStateChanged", () => {
+	    updateFavoritesFilterCount();
+	    syncCardFavorites();
+	    syncFullscreenFavorite();
+	    if (activeTag === "favorites") applyFilter();
+	  });
 
   // 覆盖卡片打开逻辑：走三栏全屏
   function openModal(item) {
