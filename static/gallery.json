@@ -3330,7 +3330,7 @@
 
 {
   "id":169,
-  "title": "产品商业摄影",
+  "title": "人像写真拼图",
   "author": "BubbleBrain",
   "source": "Nano Banana Pro",
   "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260104114132794.png",
@@ -3338,6 +3338,110 @@
   "prompt":"A 2x2 grid, 4-panel artistic film collage of a sexy Korean K-pop idol, pure desire aesthetic. **[Global Style]:** Heavy film grain, soft focus, dreamy Pro-Mist diffusion filter, motion blur from camera panning, vintage color grading, flash photography.**[Panel 1 Top-Left Replacement]:**Close-up, blowing a small pink bubble gum, playful expression, focus on the bubble and lips, soft film grain.**[Panel 2 Top-Right]:** Medium shot, she is leaning forward towards the lens, wearing a fuzzy taupe knit mini dress, alluring pout, shaking hair with motion blur.**[Panel 3 Bottom-Left]:** Full body shot, seated on the floor, hugging knees, innocent but sexy posture, looking up at camera.**[Panel 4 Bottom-Right]:** A dynamic candid shot of her turning around, hair whipping across face, motion blur, looking back over shoulder with a smile.The images are arranged in a seamless square grid layout.",
   "tags":["人像"]
 
+}, 
+
+{
+  "id":170, 
+  "title":"创意人像拼图", 
+  "author":"BubbleBrain", 
+  "source":"Nano Banana Pro", 
+  "thumb":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260105192651834.png", 
+  "full":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260105192651834.png", 
+  "prompt":{
+  "subject": {
+    "description": "A dreamy, atmospheric vintage film poster featuring a sexy Korean K-pop idol in a 'Pure Desire' aesthetic. The image captures a fleeting, intimate moment with heavy film grain and soft focus. The layout preserves the 2-pose split composition (full body left, close-up right).",
+    "age": "early 20s K-pop idol",
+    "expression": {
+      "eyes": {
+        "look": "hazy, seductive yet innocent",
+        "energy": "dreamy, 'pure desire' gaze",
+        "direction": "looking into the lens with a soft squint"
+      },
+      "mouth": {
+        "position": "slightly parted, relaxed pout",
+        "energy": "soft, alluring"
+      },
+      "overall": "intimate, slightly melancholic, romantic"
+    },
+    "face": {
+      "preserve_original": false,
+      "makeup": "Pure Desire makeup: glossy glass lips, heavy drunk-blush on cheeks and nose tip, watery eyes, soft blurred eyebrows."
+    },
+    "hair": {
+      "color": "natural black or dark brown",
+      "style": "long, slightly messy waves",
+      "effect": "windblown, strands sticking to lip gloss, motion blur edges"
+    },
+    "body": {
+      "frame": "curvy but slim, soft feminine lines",
+      "waist": "snatched waist visible through crop knit",
+      "legs": "highlighted by sheer tights",
+      "skin": {
+        "tone": "pale, milky white",
+        "lighting_effect": "glowing highlights (halation) on skin due to diffusion filter, soft flash bounce"
+      }
+    },
+    "pose": {
+      "position": "two poses of the same model composited (Split Layout)",
+      "base": "relaxed, candid, dynamic motion",
+      "full_body_pose (left)": "Dynamic turning pose. She is walking away but turns her body back towards the camera. One leg is lifted slightly mid-step (highlighting leg curve). Her hair whips across her face with motion blur. The pose emphasizes the S-curve of the body.",
+      "closer_shot_pose (right)": "Intimate close-up. She is leaning forward towards the lens (foreshortening effect), chin resting on shoulder or hand near mouth. A sense of proximity, as if the camera is too close.",
+      "overall": "fluid, blurry, candid movement"
+    },
+    "clothing": {
+      "top": {
+        "type": "Fuzzy angora/mohair cropped knit cardigan (buttoned only at the chest)",
+        "color": "soft taupe / dusty rose / cream",
+        "details": "soft texture that glows under the flash, exposing the midriff",
+        "effect": "tactile, warm, soft vs skin contrast"
+      },
+      "bottom": {
+        "type": "Micro knit mini skirt + ultra-sheer black pantyhose + slouchy leg warmers",
+        "color": "matching soft neutral tones",
+        "details": "the skirt is very short, emphasizing the long legs wrapped in sheer tights",
+        "effect": "sexy but cozy 'pure desire' style"
+      }
+    },
+    "accessories": {
+      "prop": "maybe a lollipop or blowing a small bubble gum (optional), or just playing with hair strands",
+      "jewelry": "delicate silver necklace glinting in the flash"
+    }
+  },
+  "photography": {
+    "camera_style": "vintage disposable camera aesthetic / 90s film editorial",
+    "shot_type": "split composition: dynamic full-body motion blur (left) + intimate soft-focus portrait (right)",
+    "texture": "heavy film grain, noise, soft bloom, light leaks",
+    "lighting": "on-camera flash but softened with a 'Black Pro-Mist' filter (creates blooming/hazy highlights), vintage color grading",
+    "depth_of_field": "soft focus throughout, slightly out of focus for artistic effect",
+    "effects": "Motion blur from camera panning (shutter drag), halation around lights"
+  },
+  "background": {
+    "setting": "Indistinct night scene or retro karaoke room",
+    "elements": [
+      "blurred bokeh lights in warm vintage tones (orange/teal)",
+      "retro magazine typography overlay: 'DESIRE'",
+      "grainy textures"
+    ],
+    "atmosphere": "nostalgic, hazy, romantic, intoxicated mood"
+  },
+  "the_vibe": {
+    "energy": "soft, dreamy, blurry",
+    "mood": "sentimental, allure, vintage",
+    "aesthetic": "Hong Kong film style + K-pop Pure Desire + Retro Flash"
+  }
+}, 
+"tags":["人像"]
+},
+
+{
+  "id":171,
+  "title": "产品品牌创意广告",
+  "author": "@aziz4ai",
+  "source": "Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260106103445368.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260106103445368.png", 
+  "prompt": "Create a realistic yet surreal creative advertisement for [PRODUCT NAME] in the [PRODUCT CATEGORY] space. The product must be the hero, centered in the frame, and visually “formed” in a smart way that automatically reflects the brand’s spirit and identity.Use a clean, cohesive background that matches the brand’s color palette, with soft cinematic lighting, ultra-realistic premium materials, precise shadows, and a high-end editorial composition.Add one innovative surreal touch directly tied to the product’s nature—creative but not exaggerated.Integrate the real official product logo elegantly and seamlessly within the composition, and generate a short, powerful 3-word English slogan automatically that fits the product type and brand tone.Ultra-high quality, perfectly balanced framing, strong realism, luxury style—no extra text beyond the logo and the 3-word English slogan.",
+  "tags":["产品宣传图"] 
 }
 
     ]

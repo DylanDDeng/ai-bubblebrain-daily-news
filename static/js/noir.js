@@ -40,6 +40,11 @@
       navMenu.classList.remove("active");
       overlay.classList.remove("active");
       hamburger.setAttribute("aria-expanded", "false");
+      document.querySelectorAll(".nav-dropdown.open").forEach((d) => {
+        d.classList.remove("open");
+        const t = d.querySelector(".nav-dropdown-toggle");
+        if (t) t.setAttribute("aria-expanded", "false");
+      });
       document.body.style.overflow = "";
     };
 
@@ -67,19 +72,36 @@
   }
 
   const dropdownToggles = document.querySelectorAll(".nav-dropdown-toggle");
+
+  const closeDropdowns = () => {
+    document.querySelectorAll(".nav-dropdown.open").forEach((d) => {
+      d.classList.remove("open");
+      const t = d.querySelector(".nav-dropdown-toggle");
+      if (t) t.setAttribute("aria-expanded", "false");
+    });
+  };
+
   dropdownToggles.forEach((toggle) => {
     toggle.addEventListener("click", (e) => {
       e.stopPropagation();
       const dropdown = toggle.closest(".nav-dropdown");
-      const isActive = dropdown.classList.contains("active");
+      const isOpen = dropdown.classList.contains("open");
 
-      document.querySelectorAll(".nav-dropdown").forEach((d) => d.classList.remove("active"));
-      dropdown.classList.toggle("active", !isActive);
+      closeDropdowns();
+      dropdown.classList.toggle("open", !isOpen);
+      toggle.setAttribute("aria-expanded", String(!isOpen));
     });
   });
 
   document.addEventListener("click", () => {
-    document.querySelectorAll(".nav-dropdown").forEach((d) => d.classList.remove("active"));
+    closeDropdowns();
+  });
+
+  // 点击下拉菜单中的链接后，立即收起（避免页面切换后仍保持展开观感）
+  document.querySelectorAll(".nav-dropdown-menu a").forEach((link) => {
+    link.addEventListener("click", () => {
+      closeDropdowns();
+    });
   });
 
   const cusdisThread = document.getElementById("cusdis_thread");

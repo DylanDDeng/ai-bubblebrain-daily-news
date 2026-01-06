@@ -85,7 +85,7 @@
                     {{ $isActive := or ($currentPage.IsMenuCurrent "main" .) ($currentPage.HasMenuCurrent "main" .) }}
                     {{ $hasChildren := .HasChildren }}
                     {{ if $hasChildren }}
-                        <div class="nav-dropdown {{ if $isActive }}active{{ end }}">
+                        <div class="nav-dropdown {{ if $isActive }}current{{ end }}">
                             {{ if .Page }}
                                 <button class="nav-dropdown-toggle" aria-expanded="false">{{ .Name }}</button>
                             {{ else }}

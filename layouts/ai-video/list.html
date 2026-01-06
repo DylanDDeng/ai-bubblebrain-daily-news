@@ -27,7 +27,7 @@
           <input
             id="ai-video-search"
             type="search"
-            placeholder="{{ cond (eq .Site.LanguageCode "zh-CN") "搜索标题 / 描述 / 标签" "Search title / description / tags" }}"
+            placeholder="{{ cond (eq .Site.LanguageCode "zh-CN") "搜索标题 / Prompt / 标签" "Search title / prompt / tags" }}"
             aria-label="{{ cond (eq .Site.LanguageCode "zh-CN") "搜索视频" "Search videos" }}"
           >
         </div>
@@ -76,8 +76,22 @@
         <p class="video-eyebrow" id="video-source"></p>
         <h2 class="video-title" id="video-title"></h2>
         <div class="video-meta" id="video-meta"></div>
-        <div class="video-desc" id="video-desc"></div>
         <div class="video-tags" id="video-tags"></div>
+        <div class="fullscreen-prompt-block video-prompt-block" id="video-prompt-block" hidden>
+          <div class="prompt-header">
+            <div class="prompt-header-left">
+              <p class="prompt-label">{{ i18n "gallery_prompt_label" | default "Prompt" }}</p>
+            </div>
+            <button class="prompt-copy-btn" id="video-prompt-copy" type="button" aria-label="{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}">
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span class="copy-text">{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}</span>
+            </button>
+          </div>
+          <pre id="video-prompt"></pre>
+        </div>
       </div>
     </div>
 
@@ -532,13 +546,6 @@
   margin-bottom: 0.9rem;
 }
 
-.video-desc {
-  color: var(--text-muted);
-  line-height: 1.65;
-  margin-bottom: 1rem;
-  white-space: pre-wrap;
-}
-
 .video-tags {
   display: flex;
   flex-wrap: wrap;
@@ -553,6 +560,115 @@
   padding: 0.25rem 0.8rem;
   font-size: 0.8rem;
   color: var(--text-main);
+}
+
+.video-prompt-block {
+  margin-top: 0.35rem;
+}
+
+/* Prompt block（与 AI 生图一致） */
+.fullscreen-prompt-block {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  color: var(--text-main);
+}
+
+.fullscreen-prompt-block pre {
+  max-height: 400px;
+  overflow-y: auto;
+  margin: 0;
+  line-height: 1.6;
+  padding-right: 0.5rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.fullscreen-prompt-block pre::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fullscreen-prompt-block pre::-webkit-scrollbar-track {
+  background: var(--surface);
+  border-radius: 3px;
+}
+
+.fullscreen-prompt-block pre::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.fullscreen-prompt-block pre::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+.prompt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.prompt-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.prompt-label {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.prompt-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.prompt-copy-btn:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.prompt-copy-btn:active {
+  transform: scale(0.95);
+}
+
+.prompt-copy-btn.copied {
+  background: #4ade80;
+  color: #000;
+  border-color: #4ade80;
+}
+
+.copy-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.copy-text {
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .video-fullscreen__thumbs {
@@ -722,18 +838,20 @@
   const mobileToggle = document.getElementById("ai-video-mobile-toggle");
   const sidebarClose = document.getElementById("ai-video-sidebar-close");
 
-  const fullscreen = document.getElementById("video-fullscreen");
-  const player = document.getElementById("video-player");
-  const fsTitle = document.getElementById("video-title");
-  const fsMeta = document.getElementById("video-meta");
-  const fsDesc = document.getElementById("video-desc");
-  const fsTags = document.getElementById("video-tags");
-  const fsSource = document.getElementById("video-source");
-  const thumbsList = document.getElementById("video-thumbs-list");
-  const counter = document.getElementById("video-counter");
-  const closeTargets = fullscreen ? fullscreen.querySelectorAll("[data-close]") : [];
-  const prevBtn = fullscreen ? fullscreen.querySelector("[data-prev]") : null;
-  const nextBtn = fullscreen ? fullscreen.querySelector("[data-next]") : null;
+	  const fullscreen = document.getElementById("video-fullscreen");
+	  const player = document.getElementById("video-player");
+	  const fsTitle = document.getElementById("video-title");
+	  const fsMeta = document.getElementById("video-meta");
+	  const fsTags = document.getElementById("video-tags");
+	  const fsSource = document.getElementById("video-source");
+	  const fsPromptBlock = document.getElementById("video-prompt-block");
+	  const fsPrompt = document.getElementById("video-prompt");
+	  const fsPromptCopy = document.getElementById("video-prompt-copy");
+	  const thumbsList = document.getElementById("video-thumbs-list");
+	  const counter = document.getElementById("video-counter");
+	  const closeTargets = fullscreen ? fullscreen.querySelectorAll("[data-close]") : [];
+	  const prevBtn = fullscreen ? fullscreen.querySelector("[data-prev]") : null;
+	  const nextBtn = fullscreen ? fullscreen.querySelector("[data-next]") : null;
 
 	  const I18N = {
 	    all: "{{ cond (eq .Site.LanguageCode "zh-CN") "全部" "All" }}",
@@ -835,9 +953,48 @@
   let filteredItems = [];
   let activeTag = "all";
   let searchTerm = "";
-  let currentItem = null;
-  let currentIndex = 0;
-  let activeFocus = null;
+	  let currentItem = null;
+	  let currentIndex = 0;
+	  let activeFocus = null;
+	  let currentPromptText = "";
+
+	  async function copyToClipboard(text) {
+	    const value = normalize(text);
+	    if (!value) return false;
+	    try {
+	      if (navigator.clipboard && navigator.clipboard.writeText) {
+	        await navigator.clipboard.writeText(value);
+	        return true;
+	      }
+	    } catch (e) {}
+	    try {
+	      const ta = document.createElement("textarea");
+	      ta.value = value;
+	      ta.setAttribute("readonly", "");
+	      ta.style.position = "fixed";
+	      ta.style.left = "-9999px";
+	      ta.style.top = "-9999px";
+	      document.body.appendChild(ta);
+	      ta.select();
+	      const ok = document.execCommand("copy");
+	      document.body.removeChild(ta);
+	      return !!ok;
+	    } catch (e) {}
+	    return false;
+	  }
+
+	  function markCopied(btn) {
+	    if (!btn) return;
+	    btn.classList.add("copied");
+	    window.setTimeout(() => btn.classList.remove("copied"), 1200);
+	  }
+
+	  if (fsPromptCopy) {
+	    fsPromptCopy.addEventListener("click", async () => {
+	      const ok = await copyToClipboard(currentPromptText);
+	      if (ok) markCopied(fsPromptCopy);
+	    });
+	  }
 
   function setEmpty(isEmpty) {
     if (empty) empty.hidden = !isEmpty;
@@ -895,17 +1052,17 @@
       });
   }
 
-  function matchesSearch(item) {
-    if (!searchTerm) return true;
-    const hay = [
-      item.title,
-      item.description,
-      item.author,
-      item.source,
-      (Array.isArray(item.tags) ? item.tags.join(" ") : "")
-    ].map((v) => normalize(v)).join(" ").toLowerCase();
-    return hay.includes(searchTerm);
-  }
+	  function matchesSearch(item) {
+	    if (!searchTerm) return true;
+	    const hay = [
+	      item.title,
+	      item.prompt,
+	      item.author,
+	      item.source,
+	      (Array.isArray(item.tags) ? item.tags.join(" ") : "")
+	    ].map((v) => normalize(v)).join(" ").toLowerCase();
+	    return hay.includes(searchTerm);
+	  }
 
   function matchesTag(item) {
     if (activeTag === "all") return true;
@@ -990,36 +1147,38 @@
     thumbsList.appendChild(frag);
   }
 
-  function renderInfo(item) {
-    if (!item) return;
-    const title = normalize(item.title) || "{{ i18n "gallery_untitled" | default "Untitled" }}";
-    if (fsTitle) fsTitle.textContent = title;
+	  function renderInfo(item) {
+	    if (!item) return;
+	    const title = normalize(item.title) || "{{ i18n "gallery_untitled" | default "Untitled" }}";
+	    if (fsTitle) fsTitle.textContent = title;
 
     const metaParts = [];
     const author = normalize(item.author);
     if (author) metaParts.push(`${I18N.by}${author}`);
     const source = normalize(item.source);
     if (source) metaParts.push(`${I18N.source}${source}`);
-    const duration = normalize(item.duration);
-    if (duration) metaParts.push(duration);
-    if (fsMeta) fsMeta.textContent = metaParts.join(" · ");
+	    const duration = normalize(item.duration);
+	    if (duration) metaParts.push(duration);
+	    if (fsMeta) fsMeta.textContent = metaParts.join(" · ");
 
-    const desc = normalize(item.description);
-    if (fsDesc) fsDesc.textContent = desc;
+	    if (fsSource) fsSource.textContent = source ? source : "";
 
-    if (fsSource) fsSource.textContent = source ? source : "";
+	    if (fsTags) {
+	      fsTags.innerHTML = "";
+	      (Array.isArray(item.tags) ? item.tags : []).forEach((t) => {
+	        const tag = normalize(t);
+	        if (!tag) return;
+	        const span = document.createElement("span");
+	        span.textContent = tag;
+	        fsTags.appendChild(span);
+	      });
+	    }
 
-    if (fsTags) {
-      fsTags.innerHTML = "";
-      (Array.isArray(item.tags) ? item.tags : []).forEach((t) => {
-        const tag = normalize(t);
-        if (!tag) return;
-        const span = document.createElement("span");
-        span.textContent = tag;
-        fsTags.appendChild(span);
-      });
-    }
-  }
+	    const prompt = normalize(item.prompt);
+	    currentPromptText = prompt;
+	    if (fsPrompt) fsPrompt.textContent = prompt;
+	    if (fsPromptBlock) fsPromptBlock.hidden = !prompt;
+	  }
 
   function renderPlayer(item) {
     if (!player) return;
@@ -1116,14 +1275,17 @@
     if (closeBtn) closeBtn.focus();
   }
 
-  function closeFullscreen() {
-    if (!fullscreen) return;
-    fullscreen.classList.remove("open");
-    fullscreen.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-    if (player) player.innerHTML = "";
-    if (activeFocus && typeof activeFocus.focus === "function") activeFocus.focus();
-  }
+	  function closeFullscreen() {
+	    if (!fullscreen) return;
+	    fullscreen.classList.remove("open");
+	    fullscreen.setAttribute("aria-hidden", "true");
+	    document.body.style.overflow = "";
+	    if (player) player.innerHTML = "";
+	    currentPromptText = "";
+	    if (fsPrompt) fsPrompt.textContent = "";
+	    if (fsPromptBlock) fsPromptBlock.hidden = true;
+	    if (activeFocus && typeof activeFocus.focus === "function") activeFocus.focus();
+	  }
 
   closeTargets.forEach((el) => el.addEventListener("click", closeFullscreen));
   if (prevBtn) prevBtn.addEventListener("click", () => stepItem(-1));

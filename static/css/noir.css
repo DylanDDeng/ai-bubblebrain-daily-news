@@ -245,7 +245,8 @@ b {
 }
 
 .nav-dropdown-toggle:hover,
-.nav-dropdown.active .nav-dropdown-toggle {
+.nav-dropdown.current .nav-dropdown-toggle,
+.nav-dropdown.open .nav-dropdown-toggle {
   color: var(--accent);
 }
 
@@ -265,7 +266,7 @@ b {
   z-index: 100;
 }
 
-.nav-dropdown.active .nav-dropdown-menu {
+.nav-dropdown.open .nav-dropdown-menu {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
