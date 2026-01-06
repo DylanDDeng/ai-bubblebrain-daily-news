@@ -3442,6 +3442,71 @@
   "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260106103445368.png", 
   "prompt": "Create a realistic yet surreal creative advertisement for [PRODUCT NAME] in the [PRODUCT CATEGORY] space. The product must be the hero, centered in the frame, and visually “formed” in a smart way that automatically reflects the brand’s spirit and identity.Use a clean, cohesive background that matches the brand’s color palette, with soft cinematic lighting, ultra-realistic premium materials, precise shadows, and a high-end editorial composition.Add one innovative surreal touch directly tied to the product’s nature—creative but not exaggerated.Integrate the real official product logo elegantly and seamlessly within the composition, and generate a short, powerful 3-word English slogan automatically that fits the product type and brand tone.Ultra-high quality, perfectly balanced framing, strong realism, luxury style—no extra text beyond the logo and the 3-word English slogan.",
   "tags":["产品宣传图"] 
+}, 
+
+{
+  "id":172,
+  "title": "人像",
+  "author": "BubbleBrain",
+  "source": "Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260106153147031.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260106153147031.png",  
+  "prompt":"**[Global Style Aesthetic]:** Editorial film photography, heavy film grain, soft focus, dreamy Pro-Mist diffusion filter effect, vintage color grading, warm tones, direct harsh flash photography style.**[Subject & Action]:** A sultry portrait photoshoot of a stunning sexy Korean female K-pop idol. She is posing confidently directly for the camera, featuring a curvy three-quarter front stance with a hand on her hip. Her expression is alluring, making direct eye contact with the camera lens.**[Attire]:** She is wearing the iconic black sports bra with a white elastic band and matching black underwear with the white visible Calvin Klein waistband.**[Details]:** The professional flash highlights her skin sheen and creates a raw, high-fashion aesthetic against a textured, dimly lit studio background. Analog film texture is very prominent throughout the image. Vertical composition.", 
+  "tags":["人像"]
+
+}, 
+
+{
+  "id":173,
+  "title": "人像拼贴画",
+  "author": "BubbleBrain",
+  "source": "Nano Banana Pro",
+  "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260106153510075.png",
+  "full": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260106153510075.png",  
+  "prompt":{
+  "global_style_injection": "Heavy film grain, soft focus, dreamy Pro-Mist diffusion filter, motion blur from camera panning, vintage color grading, flash photography",
+  "subject": {
+    "description": "A 2x2 mirror-selfie collage of a charming Korean female idol in her bedroom. The image features a distinct 'shutter drag' effect where the subject is illuminated by flash but slightly blurred due to movement, creating a dreamy, hazy aesthetic.",
+    "vibes": "Sexy yet innocent, intimate, slightly intoxicated mood (drunk on atmosphere), atmospheric, lo-fi aesthetic.",
+    "looks": {
+      "face": "Soft features, glowing skin due to diffusion filter, 'water-color' like makeup texture",
+      "eyes": "Dreamy gaze, slightly out of focus in one panel, looking directly into the lens with a soft smile in another",
+      "hair": "Long black hair, moving with the motion blur, creating silky trails"
+    }
+  },
+  "clothing": {
+    "style": "Pure and sexy loungewear",
+    "item": "A white silk slip dress or a translucent oversized white t-shirt falling off one shoulder",
+    "texture": "Silk or soft cotton that glows under the flash and diffusion filter",
+    "details": "Hint of collarbone, casual disarray"
+  },
+  "pose": {
+    "action": "Playful and dynamic movement. Not static.",
+    "panels": [
+      "Panel 1: Laughing while turning head, hair in motion blur",
+      "Panel 2: Close-up wink with heavy Pro-Mist bloom on the face",
+      "Panel 3: Sitting on floor, camera tilted, slight double-exposure effect from movement",
+      "Panel 4: Covering mouth with hand, shy but flirting"
+    ]
+  },
+  "background": {
+    "setting": "Personal bedroom, slightly messy but cozy",
+    "lighting_elements": "Warm bedside lamp, fairy lights, or neon sign reflection that creates light trails (bokeh streaks) due to the camera panning motion",
+    "ambiance": "Dark room illuminated by the harsh but diffused flash"
+  },
+  "photography": {
+    "technique": "Slow shutter sync flash (Drag Shutter)",
+    "filter": "Black Pro-Mist 1/4 filter (creates halation around highlights)",
+    "focus": "Soft focus, slightly missed focus for artistic effect",
+    "color_grading": "Vintage film stock (Kodak Portra 800 or Cinestill 800T), greenish shadows, warm glowing highlights",
+    "texture": "Heavy film grain, noise, imperfection, analog feel"
+  },
+  "constraints": {
+    "layout": "2x2 grid collage",
+    "composition": "The camera panning effect should make the background lights streak horizontally or rotationally, while the flash freezes the face relatively clearly."
+  }
+},
+"tags":["人像"]
 }
 
     ]

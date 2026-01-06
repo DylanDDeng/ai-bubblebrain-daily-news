@@ -706,16 +706,20 @@
   overflow: hidden;
   cursor: pointer;
   background: rgba(18,18,18,0.55);
-  transition: border-color 0.18s ease, transform 0.18s ease;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .video-thumb-item.active {
-  border-color: rgba(212, 175, 55, 0.55);
+  border-color: var(--accent);
+  transform: scale(1.08) translateX(-4px);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
+  z-index: 1;
 }
 
 .video-thumb-item:hover {
-  transform: translateY(-1px);
-  border-color: rgba(212, 175, 55, 0.35);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .video-thumb-item video,
@@ -725,6 +729,18 @@
   aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
+  filter: blur(5px);
+  transition: filter 0.25s ease;
+}
+
+.video-thumb-item:hover video,
+.video-thumb-item:hover img {
+  filter: blur(0);
+}
+
+.video-thumb-item.active video,
+.video-thumb-item.active img {
+  filter: blur(0);
 }
 
 .ai-video-loader {
