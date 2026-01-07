@@ -196,38 +196,42 @@
 }
 
 .favorites-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
+  display: flex;
   gap: 2rem;
-  align-items: start;
+  align-items: flex-start;
 }
 
 /* ===== 侧边栏 ===== */
 .favorites-sidebar {
+  flex-shrink: 0;
+  width: 220px;
   position: sticky;
-  top: 100px;
-  background: var(--card-bg, #1a1a1a);
-  border-radius: 12px;
-  padding: 1.25rem;
+  top: 2rem;
 }
 
 .favorites-sidebar__header {
   display: none;
 }
 
+.favorites-search {
+  margin-bottom: 1.5rem;
+}
+
 .favorites-search input {
   width: 100%;
-  padding: 0.625rem 0.875rem;
-  border: 1px solid var(--border-color, #333);
+  padding: 0.6rem 0.875rem;
   border-radius: 8px;
-  background: var(--bg, #0a0a0a);
-  color: var(--text, #fff);
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
   font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .favorites-search input:focus {
-  outline: none;
-  border-color: var(--accent, #d4a574);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
 }
 
 .favorites-filter-group {
@@ -252,32 +256,71 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.75rem;
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: var(--text, #fff);
-  font-size: 0.875rem;
+  color: var(--text-main);
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
 .favorites-filter:hover {
-  background: var(--hover-bg, #252525);
+  background: var(--surface-highlight);
 }
 
 .favorites-filter.active {
-  background: var(--accent, #d4a574);
-  color: #000;
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--accent);
 }
 
 .favorites-filter__count {
-  font-size: 0.75rem;
-  opacity: 0.7;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
 }
 
 .favorites-filter.active .favorites-filter__count {
-  opacity: 1;
+  color: currentColor;
+  opacity: 0.85;
+}
+
+/* 桌面端：标签过多时侧边栏内滚动 */
+@media (min-width: 769px) {
+  .favorites-sidebar {
+    height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .favorites-filter-group {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
+  .favorites-filters {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.75rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .favorites-filters::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
 }
 
 /* ===== 移动端侧边栏 ===== */
