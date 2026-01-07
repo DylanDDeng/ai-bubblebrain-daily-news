@@ -369,7 +369,15 @@
 
   function getFavoritesCount() {
     try {
-      return typeof userFavorites !== "undefined" && userFavorites ? userFavorites.size : 0;
+      if (typeof isFavorited !== "function") return 0;
+      if (!Array.isArray(allItems) || !allItems.length) return 0;
+      let count = 0;
+      allItems.forEach((item) => {
+        const id = item && item.id;
+        if (!id) return;
+        if (isFavorited(id)) count += 1;
+      });
+      return count;
     } catch (err) {
       return 0;
     }

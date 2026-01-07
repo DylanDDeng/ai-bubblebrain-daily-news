@@ -11,7 +11,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 // 全局用户状态
 let currentUser = null;
-let userFavorites = new Set();
+let userFavorites = new Map(); // id -> created_at
 
 function getProfilePayloadFromUser(user) {
   if (!user) return null;
@@ -87,11 +87,19 @@ async function loadUserFavorites() {
 
   const { data, error } = await supabaseClient
     .from('favorites')
-    .select('image_id')
-    .eq('user_id', currentUser.id);
+    .select('image_id, created_at')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
 
-  if (!error && data) {
-    userFavorites = new Set(data.map(f => f.image_id));
+  if (!error && Array.isArray(data)) {
+    // 兜底去重：如存在重复行，保留最新 created_at（因为已按 created_at desc 排序）
+    const next = new Map();
+    data.forEach((f) => {
+      const id = f && f.image_id;
+      if (!id) return;
+      if (!next.has(id)) next.set(id, f.created_at || null);
+    });
+    userFavorites = next;
     // 触发收藏更新事件
     window.dispatchEvent(new CustomEvent('favoritesUpdated', { detail: { favorites: userFavorites } }));
   }
@@ -100,6 +108,11 @@ async function loadUserFavorites() {
 // 检查是否已收藏
 function isFavorited(imageId) {
   return userFavorites.has(imageId);
+}
+
+// 获取收藏时间
+function getFavoriteTime(imageId) {
+  return userFavorites.get(imageId) || null;
 }
 
 // 切换收藏状态
@@ -132,7 +145,7 @@ async function toggleFavorite(imageId) {
       .insert({ user_id: currentUser.id, image_id: imageId });
 
     if (!error) {
-      userFavorites.add(imageId);
+      userFavorites.set(imageId, new Date().toISOString());
       window.dispatchEvent(new CustomEvent('favoritesUpdated', { detail: { favorites: userFavorites } }));
       return true;
     }
