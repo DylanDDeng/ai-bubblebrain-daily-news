@@ -717,34 +717,6 @@
   stroke: var(--accent, #d4a574);
 }
 
-.favorites-video-card__play {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 48px;
-  height: 48px;
-  background: rgba(0,0,0,0.6);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  transition: transform 0.2s, background 0.2s;
-}
-
-.favorites-video-card:hover .favorites-video-card__play {
-  transform: translate(-50%, -50%) scale(1.1);
-  background: rgba(0,0,0,0.8);
-}
-
-.favorites-video-card__play svg {
-  width: 20px;
-  height: 20px;
-  fill: #fff;
-  margin-left: 2px;
-}
-
 /* ===== 响应式 ===== */
 @media (max-width: 900px) {
   .favorites-layout {
@@ -1632,9 +1604,6 @@
           <span>${item.source || ""}</span>
           ${item.duration ? `<span class="favorites-video-card__duration">${item.duration}</span>` : ""}
         </div>
-      </div>
-      <div class="favorites-video-card__play">
-        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
       </div>
       <button class="favorites-video-card__fav" type="button" data-id="${item.id}" aria-label="取消收藏">
         <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
