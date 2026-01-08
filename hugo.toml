@@ -110,6 +110,11 @@ disableKinds = ['taxonomy', 'term']
           pageRef = '/ai-video'
           parent = 'ai-creative'
           weight = 2
+        [[languages.zh-CN.menu.main]]
+          name = 'AI写作'
+          pageRef = '/ai-rewrite'
+          parent = 'ai-creative'
+          weight = 3
       [[languages.zh-CN.menu.main]]
         name = 'AI 工具'
         pageRef = '/ai-tools'
@@ -183,6 +188,11 @@ disableKinds = ['taxonomy', 'term']
           pageRef = '/ai-video'
           parent = 'ai-creative'
           weight = 2
+        [[languages.en.menu.main]]
+          name = 'AI Writing'
+          pageRef = '/ai-rewrite'
+          parent = 'ai-creative'
+          weight = 3
       [[languages.en.menu.main]]
         name = 'AI Tools'
         pageRef = '/ai-tools'
