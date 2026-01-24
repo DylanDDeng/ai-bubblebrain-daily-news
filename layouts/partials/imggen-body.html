@@ -1,0 +1,59 @@
+<div class="imggen-panel">
+  <div class="imggen-key">
+    <label class="imggen-label" for="imggen-key">{{ i18n "imggen_api_label" }}</label>
+    <div class="imggen-key-controls">
+      <input id="imggen-key" class="imggen-input" type="password" autocomplete="off" placeholder="{{ i18n "imggen_api_placeholder" }}">
+      <button class="imggen-btn imggen-btn--small" id="imggen-save-key" type="button">{{ i18n "imggen_api_save" }}</button>
+      <button class="imggen-btn imggen-btn--ghost imggen-btn--small" id="imggen-clear-key" type="button">{{ i18n "imggen_api_clear" }}</button>
+    </div>
+    <div class="imggen-key-meta">
+      <span class="imggen-key-status" id="imggen-key-status"></span>
+      <span class="imggen-key-hint">{{ i18n "imggen_api_hint" }}</span>
+    </div>
+    <div class="imggen-key-warning" id="imggen-key-warning" hidden>{{ i18n "imggen_api_missing" }}</div>
+  </div>
+
+  <label class="imggen-field">
+    <span class="imggen-label">{{ i18n "imggen_prompt_label" }}</span>
+    <textarea id="imggen-prompt" class="imggen-textarea" rows="5" placeholder="{{ i18n "imggen_prompt_placeholder" }}"></textarea>
+  </label>
+
+  <div class="imggen-row">
+    <label class="imggen-field imggen-field--compact">
+      <span class="imggen-label">{{ i18n "imggen_ratio_label" }}</span>
+      <select id="imggen-ratio" class="imggen-select">
+        <option value="1:1">1:1</option>
+        <option value="4:3">4:3</option>
+        <option value="3:2">3:2</option>
+        <option value="16:9">16:9</option>
+        <option value="9:16">9:16</option>
+        <option value="4:5">4:5</option>
+      </select>
+    </label>
+    <label class="imggen-field imggen-field--compact">
+      <span class="imggen-label">{{ i18n "imggen_size_label" }}</span>
+      <select id="imggen-size" class="imggen-select">
+        <option value="1K">1K</option>
+        <option value="2K">2K</option>
+        <option value="4K">4K</option>
+      </select>
+    </label>
+    <button class="imggen-btn" id="imggen-generate" type="button">{{ i18n "imggen_generate_btn" }}</button>
+  </div>
+
+  <div class="imggen-status" id="imggen-status" role="status"></div>
+</div>
+
+<section class="imggen-results">
+  <h2 class="imggen-section-title">{{ i18n "imggen_results_title" }}</h2>
+  <div class="imggen-grid" id="imggen-results"></div>
+</section>
+
+<section class="imggen-history">
+  <div class="imggen-history-header">
+    <h2 class="imggen-section-title">{{ i18n "imggen_history_title" }}</h2>
+    <button class="imggen-btn imggen-btn--ghost imggen-btn--small" id="imggen-clear-history" type="button">{{ i18n "imggen_history_clear" }}</button>
+  </div>
+  <div class="imggen-grid" id="imggen-history-list"></div>
+  <div class="imggen-empty" id="imggen-history-empty" hidden>{{ i18n "imggen_history_empty" }}</div>
+</section>

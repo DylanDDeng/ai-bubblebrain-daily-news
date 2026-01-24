@@ -719,6 +719,87 @@ other = "确认删除这条评论？"
 [gallery_comments_delete_failed]
 other = "删除失败"
 
+[gallery_prompt_generate]
+other = "一键生成"
+
+[imggen_eyebrow]
+other = "AI 生图"
+
+[imggen_api_label]
+other = "Gemini API Key"
+
+[imggen_api_placeholder]
+other = "输入你的 Gemini API Key"
+
+[imggen_api_save]
+other = "保存"
+
+[imggen_api_clear]
+other = "清除"
+
+[imggen_api_hint]
+other = "仅保存在你的浏览器本地，不会上传到服务器。"
+
+[imggen_api_saved]
+other = "已保存"
+
+[imggen_api_missing]
+other = "请先输入并保存 API Key 后再生成。"
+
+[imggen_prompt_label]
+other = "提示词"
+
+[imggen_prompt_placeholder]
+other = "描述你想生成的画面..."
+
+[imggen_ratio_label]
+other = "尺寸比例"
+
+[imggen_size_label]
+other = "分辨率"
+
+[imggen_generate_btn]
+other = "生成图片"
+
+[imggen_generating]
+other = "正在生成..."
+
+[imggen_error_prompt]
+other = "请先填写提示词。"
+
+[imggen_error_key]
+other = "请先填写 API Key。"
+
+[imggen_error_failed]
+other = "生成失败，请稍后重试。"
+
+[imggen_download]
+other = "下载"
+
+[imggen_reuse_prompt]
+other = "复用提示词"
+
+[imggen_results_title]
+other = "生成结果"
+
+[imggen_results_empty]
+other = "暂无生成结果。"
+
+[imggen_inline_title]
+other = "生成面板"
+
+[imggen_inline_close]
+other = "收起面板"
+
+[imggen_history_title]
+other = "我的生成历史"
+
+[imggen_history_clear]
+other = "清空历史"
+
+[imggen_history_empty]
+other = "还没有历史记录"
+
 # AI 改写
 [ai_rewrite_eyebrow]
 other = "AI 写作"

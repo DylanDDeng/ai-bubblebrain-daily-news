@@ -1,0 +1,15 @@
+{{- $imggenI18n := dict
+  "apiSaved" (i18n "imggen_api_saved")
+  "apiMissing" (i18n "imggen_api_missing")
+  "generating" (i18n "imggen_generating")
+  "errorPrompt" (i18n "imggen_error_prompt")
+  "errorKey" (i18n "imggen_error_key")
+  "errorFailed" (i18n "imggen_error_failed")
+  "download" (i18n "imggen_download")
+  "reuse" (i18n "imggen_reuse_prompt")
+  "historyEmpty" (i18n "imggen_history_empty")
+  "resultsEmpty" (i18n "imggen_results_empty")
+-}}
+<script>
+  window.IMG_GEN_I18N = {{ $imggenI18n | jsonify }};
+</script>

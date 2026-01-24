@@ -1,0 +1,29 @@
+{{ define "main" }}
+<link rel="stylesheet" href="{{ "css/imggen.css" | relURL }}">
+<section class="section">
+  <div class="section-narrow page-surface imggen-shell" id="imggen-root" data-imggen-root>
+    <div class="imggen-guarded" id="imggen-guarded">
+      <header class="page-header">
+        <p class="page-eyebrow">{{ i18n "imggen_eyebrow" | default "AI Images" }}</p>
+        <h1>{{ .Title }}</h1>
+        {{ with .Description }}
+          <p class="page-desc">{{ . }}</p>
+        {{ end }}
+      </header>
+
+      {{ partial "imggen-body.html" . }}
+    </div>
+
+    <div class="imggen-lock-overlay" id="imggen-lock-overlay" hidden>
+      <div class="imggen-lock-card">
+        <h2>{{ i18n "imgcomp_login_title" }}</h2>
+        <p>{{ i18n "imgcomp_login_desc" }}</p>
+        <button class="imggen-btn imggen-lock-btn" id="imggen-login-btn" type="button">{{ i18n "imgcomp_login_btn" }}</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ partial "imggen-i18n.html" . }}
+<script src="{{ "js/imggen.js" | relURL }}" defer></script>
+{{ end }}

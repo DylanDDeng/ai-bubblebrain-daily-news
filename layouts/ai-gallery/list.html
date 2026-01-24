@@ -1,4 +1,5 @@
 {{ define "main" }}
+<link rel="stylesheet" href="{{ "css/imggen.css" | relURL }}">
 <style>
 /* Critical CSS: prevent FOUC before this page's main <style> loads */
 .gallery-mobile-toggle { display: none; }
@@ -174,6 +175,9 @@
 	              </svg>
 	              <span class="copy-text">{{ i18n "gallery_copy_prompt" | default "Copy prompt" }}</span>
 	            </button>
+	            <button class="prompt-generate-btn" id="fullscreen-generate-btn" type="button">
+	              <span>{{ i18n "gallery_prompt_generate" | default "Generate with this prompt" }}</span>
+	            </button>
 		          </div>
 		          <pre id="fullscreen-prompt"></pre>
 		          <div class="prompt-breakdown" id="fullscreen-prompt-breakdown" hidden></div>
@@ -257,6 +261,28 @@
 	</div>
 </div>
 
+<div class="imggen-modal" id="imggen-modal" hidden>
+  <div class="imggen-modal__backdrop" data-imggen-close></div>
+  <div class="imggen-modal__panel" role="dialog" aria-modal="true" aria-label="{{ i18n "imggen_inline_title" }}">
+    <div class="imggen-modal__header">
+      <h3 class="imggen-inline__title">{{ i18n "imggen_inline_title" }}</h3>
+      <button class="imggen-btn imggen-btn--ghost imggen-btn--small" id="imggen-modal-close" type="button">{{ i18n "imggen_inline_close" }}</button>
+    </div>
+    <div class="imggen-modal__content imggen-shell" id="imggen-modal-root" data-imggen-root>
+      <div class="imggen-guarded" id="imggen-guarded">
+        {{ partial "imggen-body.html" . }}
+      </div>
+      <div class="imggen-lock-overlay" id="imggen-lock-overlay" hidden>
+        <div class="imggen-lock-card">
+          <h2>{{ i18n "imgcomp_login_title" }}</h2>
+          <p>{{ i18n "imgcomp_login_desc" }}</p>
+          <button class="imggen-btn imggen-lock-btn" id="imggen-login-btn" type="button">{{ i18n "imgcomp_login_btn" }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (() => {
   const dataUrl = "{{ "/gallery.json" | relLangURL }}";
@@ -271,8 +297,13 @@
   const fullscreenAuthor = document.getElementById("fullscreen-author");
 	  const fullscreenModel = document.getElementById("fullscreen-model");
 	  const fullscreenSource = document.getElementById("fullscreen-source");
-	  const fullscreenPrompt = document.getElementById("fullscreen-prompt");
-	  const fullscreenPromptBreakdown = document.getElementById("fullscreen-prompt-breakdown");
+  const fullscreenPrompt = document.getElementById("fullscreen-prompt");
+  const fullscreenPromptBreakdown = document.getElementById("fullscreen-prompt-breakdown");
+  const fullscreenGenerateBtn = document.getElementById("fullscreen-generate-btn");
+  const modalRoot = document.getElementById("imggen-modal");
+  const modalCloseBtn = document.getElementById("imggen-modal-close");
+  const modalBackdrop = modalRoot ? modalRoot.querySelector("[data-imggen-close]") : null;
+  const modalPromptInput = modalRoot ? modalRoot.querySelector("#imggen-prompt") : null;
   const fullscreenTags = document.getElementById("fullscreen-tags");
 	  const fullscreenCaption = document.getElementById("fullscreen-caption");
 	  const fullscreenCounter = document.getElementById("fullscreen-counter");
@@ -2462,8 +2493,19 @@
 	    currentItem = item;
 	    currentImages = normalizeImages(item);
 	    currentIndex = 0;
-	    currentItemTitle = item.title || I18N.untitled;
-	    currentPrompt = formatPrompt(item.prompt) || I18N.noPrompt;
+    currentItemTitle = item.title || I18N.untitled;
+    currentPrompt = formatPrompt(item.prompt) || I18N.noPrompt;
+      if (fullscreenGenerateBtn) {
+        const hasPrompt = !!currentPrompt && currentPrompt !== I18N.noPrompt;
+        fullscreenGenerateBtn.classList.toggle("is-disabled", !hasPrompt);
+        fullscreenGenerateBtn.disabled = !hasPrompt;
+        fullscreenGenerateBtn.setAttribute("aria-disabled", hasPrompt ? "false" : "true");
+        fullscreenGenerateBtn.dataset.prompt = hasPrompt ? currentPrompt : "";
+      }
+      if (modalRoot && !modalRoot.hidden && modalPromptInput) {
+        modalPromptInput.value = currentPrompt || "";
+        modalPromptInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
 
     // 如果是首次打开，找到当前 item 在列表中的位置
     if (renderThumbs) {
@@ -2605,6 +2647,7 @@
     }
     hidePromptTooltip(true);
     clearSimilarUI();
+    if (modalRoot) modalRoot.hidden = true;
     fullscreen.classList.remove("open");
     fullscreen.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
@@ -2629,6 +2672,10 @@
     if (!fullscreen.classList.contains("open")) return;
 
     if (event.key === "Escape") {
+      if (modalRoot && !modalRoot.hidden) {
+        modalRoot.hidden = true;
+        return;
+      }
       if (commentsUI && commentsUI.isSheetOpen()) {
         commentsUI.closeSheet();
         return;
@@ -2683,6 +2730,29 @@
       }
 	    });
 	  }
+
+    if (fullscreenGenerateBtn) {
+      fullscreenGenerateBtn.addEventListener("click", () => {
+        if (fullscreenGenerateBtn.disabled || !modalRoot) return;
+        modalRoot.hidden = false;
+        if (modalPromptInput) {
+          modalPromptInput.value = fullscreenGenerateBtn.dataset.prompt || currentPrompt || "";
+          modalPromptInput.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+      });
+    }
+
+    if (modalCloseBtn && modalRoot) {
+      modalCloseBtn.addEventListener("click", () => {
+        modalRoot.hidden = true;
+      });
+    }
+
+    if (modalBackdrop && modalRoot) {
+      modalBackdrop.addEventListener("click", () => {
+        modalRoot.hidden = true;
+      });
+    }
 
 	  // Prompt view toggle (raw / breakdown)
 	  (fullscreen ? fullscreen.querySelectorAll("[data-prompt-view]") : []).forEach((btn) => {
@@ -2887,6 +2957,9 @@
   }
 })();
 </script>
+
+{{ partial "imggen-i18n.html" . }}
+<script src="{{ "js/imggen.js" | relURL }}" defer></script>
 
 <style>
 .gallery-shell {
@@ -4283,6 +4356,32 @@
   cursor: pointer;
   transition: all 0.2s ease;
   outline: none;
+}
+
+.prompt-generate-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  color: #7dd3fc;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.prompt-generate-btn:hover {
+  background: rgba(56, 189, 248, 0.28);
+  color: #bae6fd;
+}
+
+.prompt-generate-btn.is-disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .prompt-copy-btn:hover {
