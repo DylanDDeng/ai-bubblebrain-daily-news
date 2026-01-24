@@ -3511,7 +3511,7 @@
 
 {
   "id":174,
-  "title": "人像照",
+  "title": "清冷感人像照",
   "author": "@oggii_0",
   "source": "Nano Banana Pro",
   "thumb": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260124144930362.png",
@@ -3521,13 +3521,143 @@
 }, 
 
 {
-  "id":"175", 
+  "id":175, 
   "title":"Ana de Armas 人像照", 
   "author":"BubbleBrain",
   "source":"Nano Banana Pro",
   "thumb":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260124145344835.png",
   "full":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260124145344835.png",
   "prompt":"A grainy 35mm film photograph of Ana de Armas in the style of the movie Love Letter . She is posing in a vast, snow-covered birch forest in Hokkaido. She stands leaning languidly against a snow-laden tree trunk, looking directly into the camera with a sultry, intimate expression, lips slightly parted. She wears a luxurious, long dark brown faux-fur coat, styled open to reveal a sleek black silk slip dress underneath, paired with tall leather boots. Her hair is slightly wind-blown. Soft, diffused, slightly overexposed winter daylight. Cool cyan and blue color grading, airy atmosphere, shallow depth of field, visible film grain."
+},
+
+{
+  "id":176, 
+  "title":"性感k-pop idol 九宫格人像照", 
+  "author":"BubbleBrain",
+  "source":"Nano Banana Pro",
+  "thumb":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260124150205796.png",
+  "full":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260124150205796.png",
+  "prompt":{
+  "overall_composition": {
+    "format": "3x3 photography contact sheet grid (nine frames in one image)",
+    "film_aesthetic": {
+      "style": "35mm analog film photograph, raw contact print scan",
+      "texture": "Heavy film grain, visible film sprocket holes and frame numbers on borders, slight dust and scratches",
+      "filter_effect": "Strong 'Black Pro-Mist' diffusion filter effect (soft highlight bloom, reduced contrast, creamy skin tones despite the grit)",
+      "color_grading": "Moody, desaturated warm tones, deep shadows with subtle detail, cinematic halation around light sources"
+    }
+  },
+  "subject_base": {
+    "identity": " sexy korean idol  (100% consistent likeness across all 9 frames)",
+    "consistent_outfit": {
+      "inner": "Red tiny strapless bandeau tube top and matching red low-rise briefs",
+      "accessories": "Delicate metallic body chains draped around waist, sheer black patterned luxury tights",
+      "prop_outerwear": "Oversized plush cream-beige fur coat (used variously as a prop, draped, or worn open)"
+    },
+    "hair_and_makeup": {
+      "hair": "Messy, tousled soft updo with loose tendrils, evolving slightly across frames",
+      "makeup": "Sultry, smudged dark eyeliner, matte skin with film sheen, nude lips"
+    }
+  },
+  "environment_context": {
+    "location": "Dimly lit, opulent vintage hotel hallway at night",
+    "lighting": "Diegetic warm tungsten lamps creating soft pools of light and deep shadow areas, accentuating the Black Pro-Mist bloom"
+  },
+  "grid_poses_breakdown": {
+    "instructions": "Nine distinct, seductive poses emphasizing curves, glances, and interaction with the wall and fur coat. Mood is after-hours, intimate, and alluring.",
+    "row_1_top": {
+      "frame_1_left": "Medium shot. Leaning heavily against the wall, fur coat slipping off one shoulder, looking directly into lens with heavy-lidded gaze.",
+      "frame_2_mid": "Close-up. Head tilted back against the wall, eyes closed in pleasure, soft light catching the texture of the throat and lips. Bloom effect strong here.",
+      "frame_3_right": "3/4 body. Turning away from camera, looking back over the shoulder with a smirk. Hands adjusting the waistband, highlighting the body chains and lower back curve."
+    },
+    "row_2_middle": {
+      "frame_4_left": "Medium shot. Crouched slightly, back against wall, knees apart. Arms crossed loosely over chest, looking up through eyelashes intensely.",
+      "frame_5_center": "Extreme close-up (The anchor shot). Intense eye contact, biting lower lip slightly. Hair messy framing the face. High grain visible on skin texture.",
+      "frame_6_right": "Full body leaning sideways. One arm raised high against the wall, stretching the torso. The other hand holding the fur coat bundled at the hip. Hip popped sideways."
+    },
+    "row_3_bottom": {
+      "frame_7_left": "Sitting on the floor against the wall. Legs crossed at ankles showing patterned tights. Wrapped in the fur coat but actively pulling it open to reveal the red top. Moody glance sideways.",
+      "frame_8_mid": "Medium shot profile view. Standing slightly away from wall, silhouette emphasized by backlighting. Hand running sensually through her own hair.",
+      "frame_9_right": "Final shot. Standing facing camera, exhausted but sexy. Fur coat fully off, held trailing on the floor in one hand. Direct, unwavering, confident stare into the lens."
+    }, 
+"aspect ratio": "2:3" 
+  }
+}
+
+},
+
+{
+  "id":177, 
+  "title":"Ana de Armas 人像光影照", 
+  "author":"BubbleBrain",
+  "source":"Nano Banana Pro",
+  "thumb":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260124150650845.png",
+  "full":"https://image-1325800846.cos.ap-nanjing.myqcloud.com/20260124150650845.png",
+  "prompt":{
+  "image_description": {
+    "scene": {
+      "location": {
+        "city": "Rome",
+        "setting": "Interior of a luxurious, dimly lit Roman hotel suite",
+        "details": "The room is shadowy. Large French doors are flung open to the balcony. The bed is unmade with messy, plush white linens."
+      },
+      "environment": {
+        "elements": [
+          "Rumpled white bed sheets",
+          "Dark wooden headboard",
+          "A shaft of blinding sunlight cutting through the darkness",
+          "Dust motes dancing in the light beam"
+        ],
+        "atmosphere": "Intimate, voyeuristic, cinematic, but capturing a candid, unguarded moment."
+      },
+      "lighting": {
+        "type": "Hard Beam of Sunlight (Chiaroscuro)",
+        "effect": "A single, powerful shaft of natural light pours in, illuminating the subject on the bed. The light hits her face and upper body directly, highlighting the realistic texture of her skin while leaving the background in deep darkness."
+      }
+    },
+    "subject": {
+      "identity": "Ana de Armas",
+      "pose": {
+        "description": "She is kneeling on the soft mattress, sinking slightly into the plush surface. Her body is turned towards the light source, face looking directly into the camera. Her back is slightly arched, one hand running through her hair, the other resting on her thigh."
+      },
+      "outfit": {
+        "top": {
+          "type": "Structured corset-style top",
+          "color": "Dark red",
+          "style": "The structured bodice contrasts with the soft chaos of the bedsheets. The deep red color pops vividly against the white linens."
+        },
+        "bottom": {
+          "type": "High-waisted skirt",
+          "details": "The long skirt is spread out around her on the bed. The high slit reveals one leg, highlighting the skin texture in the sunlight."
+        }
+      },
+      "hair_and_makeup": {
+        "hair": {
+          "style": "Natural, soft morning hair",
+          "details": "Loose, soft waves that look touchable and clean, not messy or greasy. The sunlight catches the golden tones in her brown hair, creating a halo effect."
+        },
+        "makeup": {
+          "style": "Hyper-realistic 'No-Makeup' look",
+          "details": "Extremely natural and fresh. No heavy contouring, no dark eyeshadow. Focus on authentic skin texture: visible pores, natural skin flush, and a healthy glow. Lips are a natural rosy shade with a slight hydration sheen, looking soft and bitten. The look is effortless and clean."
+        }
+      }
+    },
+    "composition": {
+      "aspect_ratio": "3:4",
+      "orientation": "Vertical",
+      "medium": "Analog Film Photography (Kodak Portra 400)",
+      "texture": "Fine film grain (less gritty than before), high resolution realism. The focus is razor-sharp on the eyes and skin texture, capturing the reality of the moment.",
+      "focus": {
+        "subject": "Sharp focus on the face to showcase the realistic skin details.",
+        "background": "Creamy, dark bokeh background."
+      }
+    },
+    "mood_and_theme": {
+      "style": "Authentic Portraiture / Cinematic Realism",
+      "emotion": "Pure, unguarded, sensual, and human. The feeling of waking up in a beautiful place."
+    }
+  }
+}
 }
 
     ]
