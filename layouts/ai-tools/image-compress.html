@@ -1,67 +1,77 @@
 {{ define "main" }}
 <section class="section">
   <div class="section-narrow page-surface imgc-shell" id="imgc-root">
-    <header class="page-header">
-      <p class="page-eyebrow">{{ i18n "imgcomp_eyebrow" | default "AI Tools" }}</p>
-      <h1>{{ .Title }}</h1>
-      {{ with .Description }}
-        <p class="page-desc">{{ . }}</p>
-      {{ end }}
-    </header>
+    <div class="imgc-guarded" id="imgc-guarded">
+      <header class="page-header">
+        <p class="page-eyebrow">{{ i18n "imgcomp_eyebrow" | default "AI Tools" }}</p>
+        <h1>{{ .Title }}</h1>
+        {{ with .Description }}
+          <p class="page-desc">{{ . }}</p>
+        {{ end }}
+      </header>
 
-    <div class="imgc-panel">
-      <label class="imgc-dropzone" id="imgc-dropzone">
-        <input id="imgc-input" class="imgc-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple>
-        <div class="imgc-dropzone__content">
-          <div class="imgc-dropzone__title">{{ i18n "imgcomp_drop_title" }}</div>
-          <div class="imgc-dropzone__hint">{{ i18n "imgcomp_drop_hint" }}</div>
-        </div>
-      </label>
+      <div class="imgc-panel">
+        <label class="imgc-dropzone" id="imgc-dropzone">
+          <input id="imgc-input" class="imgc-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple>
+          <div class="imgc-dropzone__content">
+            <div class="imgc-dropzone__title">{{ i18n "imgcomp_drop_title" }}</div>
+            <div class="imgc-dropzone__hint">{{ i18n "imgcomp_drop_hint" }}</div>
+          </div>
+        </label>
 
-      <div class="imgc-controls">
-        <div class="imgc-control-block">
-          <div class="imgc-mode">
-            <span class="imgc-label">{{ i18n "imgcomp_mode_label" }}</span>
-            <div class="imgc-options">
-              <label><input type="radio" name="imgc-mode" value="standard" checked>{{ i18n "imgcomp_mode_standard" }}</label>
-              <label><input type="radio" name="imgc-mode" value="high">{{ i18n "imgcomp_mode_high" }}</label>
+        <div class="imgc-controls">
+          <div class="imgc-control-block">
+            <div class="imgc-mode">
+              <span class="imgc-label">{{ i18n "imgcomp_mode_label" }}</span>
+              <div class="imgc-options">
+                <label><input type="radio" name="imgc-mode" value="standard" checked>{{ i18n "imgcomp_mode_standard" }}</label>
+                <label><input type="radio" name="imgc-mode" value="high">{{ i18n "imgcomp_mode_high" }}</label>
+              </div>
             </div>
-          </div>
-          <div class="imgc-quality">
-            <span class="imgc-label">{{ i18n "imgcomp_quality_label" }}</span>
-            <div class="imgc-options">
-              <label><input type="radio" name="imgc-quality" value="1" checked>100%</label>
-              <label><input type="radio" name="imgc-quality" value="0.5">50%</label>
-              <label><input type="radio" name="imgc-quality" value="0.3">30%</label>
+            <div class="imgc-quality">
+              <span class="imgc-label">{{ i18n "imgcomp_quality_label" }}</span>
+              <div class="imgc-options">
+                <label><input type="radio" name="imgc-quality" value="1" checked>100%</label>
+                <label><input type="radio" name="imgc-quality" value="0.5">50%</label>
+                <label><input type="radio" name="imgc-quality" value="0.3">30%</label>
+              </div>
             </div>
+            <label class="imgc-resize">
+              <span class="imgc-label">{{ i18n "imgcomp_resize_label" }}</span>
+              <select id="imgc-resize">
+                <option value="0">{{ i18n "imgcomp_resize_none" }}</option>
+                <option value="3200">{{ i18n "imgcomp_resize_3200" }}</option>
+                <option value="2048">{{ i18n "imgcomp_resize_2048" }}</option>
+                <option value="1600">{{ i18n "imgcomp_resize_1600" }}</option>
+                <option value="1280">{{ i18n "imgcomp_resize_1280" }}</option>
+                <option value="1024">{{ i18n "imgcomp_resize_1024" }}</option>
+              </select>
+            </label>
+            <label class="imgc-toggle" id="imgc-quantize-label">
+              <input type="checkbox" id="imgc-quantize" checked>
+              <span>{{ i18n "imgcomp_quantize_label" }}</span>
+            </label>
           </div>
-          <label class="imgc-resize">
-            <span class="imgc-label">{{ i18n "imgcomp_resize_label" }}</span>
-            <select id="imgc-resize">
-              <option value="0">{{ i18n "imgcomp_resize_none" }}</option>
-              <option value="3200">{{ i18n "imgcomp_resize_3200" }}</option>
-              <option value="2048">{{ i18n "imgcomp_resize_2048" }}</option>
-              <option value="1600">{{ i18n "imgcomp_resize_1600" }}</option>
-              <option value="1280">{{ i18n "imgcomp_resize_1280" }}</option>
-              <option value="1024">{{ i18n "imgcomp_resize_1024" }}</option>
-            </select>
-          </label>
-          <label class="imgc-toggle" id="imgc-quantize-label">
-            <input type="checkbox" id="imgc-quantize" checked>
-            <span>{{ i18n "imgcomp_quantize_label" }}</span>
-          </label>
+          <div class="imgc-actions">
+            <button class="imgc-btn" id="imgc-download-all" type="button" disabled>{{ i18n "imgcomp_download_zip" }}</button>
+            <button class="imgc-btn imgc-btn--ghost" id="imgc-clear" type="button" disabled>{{ i18n "imgcomp_clear" }}</button>
+          </div>
         </div>
-        <div class="imgc-actions">
-          <button class="imgc-btn" id="imgc-download-all" type="button" disabled>{{ i18n "imgcomp_download_zip" }}</button>
-          <button class="imgc-btn imgc-btn--ghost" id="imgc-clear" type="button" disabled>{{ i18n "imgcomp_clear" }}</button>
-        </div>
+
+        <p class="imgc-note" id="imgc-note">{{ i18n "imgcomp_note" }}</p>
       </div>
 
-      <p class="imgc-note" id="imgc-note">{{ i18n "imgcomp_note" }}</p>
+      <div class="imgc-summary" id="imgc-summary" hidden></div>
+      <div class="imgc-list" id="imgc-list"></div>
     </div>
 
-    <div class="imgc-summary" id="imgc-summary" hidden></div>
-    <div class="imgc-list" id="imgc-list"></div>
+    <div class="imgc-lock-overlay" id="imgc-lock-overlay" hidden>
+      <div class="imgc-lock-card">
+        <h2>{{ i18n "imgcomp_login_title" }}</h2>
+        <p>{{ i18n "imgcomp_login_desc" }}</p>
+        <button class="imgc-btn imgc-lock-btn" id="imgc-login-btn" type="button">{{ i18n "imgcomp_login_btn" }}</button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -112,6 +122,9 @@
   const quantizeToggle = document.getElementById("imgc-quantize");
   const quantizeLabel = document.getElementById("imgc-quantize-label");
   const resizeSelect = document.getElementById("imgc-resize");
+  const guarded = document.getElementById("imgc-guarded");
+  const lockOverlay = document.getElementById("imgc-lock-overlay");
+  const loginBtn = document.getElementById("imgc-login-btn");
 
   let currentQuality = parseFloat((qualityRadios.find(r => r.checked) || {}).value || "1");
   let currentMode = (modeRadios.find(r => r.checked) || {}).value || "standard";
@@ -120,6 +133,7 @@
   const items = [];
   let queue = [];
   let processing = 0;
+  let isLocked = true;
 
   qualityRadios.forEach((radio) => {
     radio.addEventListener("change", () => {
@@ -143,6 +157,68 @@
   if (resizeSelect) {
     resizeSelect.addEventListener("change", () => {
       maxSize = parseInt(resizeSelect.value || "0", 10) || 0;
+    });
+  }
+
+  const setLocked = (locked) => {
+    isLocked = locked;
+    root.classList.toggle("imgc-locked", locked);
+    if (lockOverlay) lockOverlay.hidden = !locked;
+    if (guarded) guarded.setAttribute("aria-hidden", locked ? "true" : "false");
+  };
+
+  setLocked(true);
+
+  const readGlobalUser = () => {
+    if (typeof currentUser !== "undefined" && currentUser) return currentUser;
+    return null;
+  };
+
+  window.addEventListener("authStateChanged", (event) => {
+    const user = event?.detail?.user || readGlobalUser();
+    setLocked(!user);
+  });
+
+  const syncAuthState = async () => {
+    try {
+      const globalUser = readGlobalUser();
+      if (globalUser) {
+        setLocked(false);
+        return;
+      }
+      if (typeof supabaseClient === "undefined") return;
+      const sessionRes = await supabaseClient.auth.getSession();
+      const user = sessionRes?.data?.session?.user || null;
+      setLocked(!user);
+    } catch (e) {}
+  };
+
+  const scheduleAuthSync = () => {
+    syncAuthState();
+    setTimeout(syncAuthState, 400);
+    setTimeout(syncAuthState, 1200);
+    setTimeout(syncAuthState, 2000);
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    scheduleAuthSync();
+  });
+
+  window.addEventListener("pageshow", () => {
+    scheduleAuthSync();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) scheduleAuthSync();
+  });
+
+  if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
+      if (typeof signInWithGoogle === "function") {
+        signInWithGoogle();
+      } else {
+        window.location.href = "/login";
+      }
     });
   }
 
@@ -607,9 +683,62 @@
 
 <style>
 .imgc-shell {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+.imgc-guarded {
+  position: relative;
+  z-index: 1;
+  transition: filter 0.2s ease;
+}
+
+.imgc-locked .imgc-guarded {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.imgc-lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  backdrop-filter: blur(2px);
+  background: rgba(8, 8, 8, 0.45);
+  z-index: 2;
+}
+
+.imgc-lock-overlay[hidden] {
+  display: none !important;
+}
+
+.imgc-lock-card {
+  max-width: 460px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  background: rgba(8, 8, 8, 0.9);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+.imgc-lock-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.imgc-lock-card p {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.imgc-lock-btn {
+  min-width: 160px;
 }
 
 .imgc-panel {
