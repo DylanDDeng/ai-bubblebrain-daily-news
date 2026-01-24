@@ -79,6 +79,118 @@ other = "前往"
 [home_pending]
 other = "内容准备中"
 
+[imgcomp_eyebrow]
+other = "AI 工具"
+
+[imgcomp_drop_title]
+other = "点击或拖拽上传图片"
+
+[imgcomp_drop_hint]
+other = "支持 JPG / PNG / WebP / HEIC，单张 ≤ 20MB，本地处理"
+
+[imgcomp_mode_label]
+other = "压缩模式"
+
+[imgcomp_mode_standard]
+other = "标准（保留格式）"
+
+[imgcomp_mode_high]
+other = "高压缩（转 WebP）"
+
+[imgcomp_quality_label]
+other = "压缩强度"
+
+[imgcomp_resize_label]
+other = "尺寸缩放"
+
+[imgcomp_resize_none]
+other = "不缩放"
+
+[imgcomp_resize_3200]
+other = "最大边 3200px"
+
+[imgcomp_resize_2048]
+other = "最大边 2048px"
+
+[imgcomp_resize_1600]
+other = "最大边 1600px"
+
+[imgcomp_resize_1280]
+other = "最大边 1280px"
+
+[imgcomp_resize_1024]
+other = "最大边 1024px"
+
+[imgcomp_quantize_label]
+other = "PNG 量化（更小）"
+
+[imgcomp_download_zip]
+other = "下载全部 ZIP"
+
+[imgcomp_clear]
+other = "清空列表"
+
+[imgcomp_note]
+other = "高压缩模式会输出 WebP。PNG 量化会降低颜色精度。HEIC 可能会转换为 JPG。"
+
+[imgcomp_summary]
+other = "已处理 {count} 张，原始 {original} → 压缩后 {compressed}，节省 {saved}（{percent}%）"
+
+[imgcomp_status_queued]
+other = "排队中"
+
+[imgcomp_status_processing]
+other = "处理中"
+
+[imgcomp_status_done]
+other = "完成"
+
+[imgcomp_status_error]
+other = "失败"
+
+[imgcomp_label_original]
+other = "原图"
+
+[imgcomp_label_compressed]
+other = "压缩后"
+
+[imgcomp_label_saved]
+other = "节省"
+
+[imgcomp_download]
+other = "下载"
+
+[imgcomp_processing]
+other = "处理中…"
+
+[imgcomp_zip_preparing]
+other = "打包中…"
+
+[imgcomp_zip_unavailable]
+other = "ZIP 功能不可用"
+
+[imgcomp_zip_empty]
+other = "没有可下载的文件"
+
+[imgcomp_error_unsupported]
+other = "不支持的格式"
+
+[imgcomp_error_too_large]
+other = "文件超过 20MB"
+
+[imgcomp_error_heic]
+other = "当前浏览器无法处理 HEIC"
+
+[imgcomp_error_failed]
+other = "压缩失败"
+
+[imgcomp_heic_fallback]
+other = "HEIC 已转换为 JPG"
+
+[imgcomp_webp_fallback]
+other = "当前浏览器不支持 WebP，已输出原格式"
+
+
 [about_eyebrow_fallback]
 other = "关于 Bubble's Brain"
 

@@ -58,6 +58,118 @@ other = "My Posts"
 [home_my_posts_default_desc]
 other = "Personal notes and observations, continuously updated."
 
+[imgcomp_eyebrow]
+other = "AI Tools"
+
+[imgcomp_drop_title]
+other = "Click or drop images to upload"
+
+[imgcomp_drop_hint]
+other = "Supports JPG / PNG / WebP / HEIC, ≤ 20MB each, processed locally"
+
+[imgcomp_mode_label]
+other = "Mode"
+
+[imgcomp_mode_standard]
+other = "Standard (keep format)"
+
+[imgcomp_mode_high]
+other = "High compression (WebP)"
+
+[imgcomp_quality_label]
+other = "Compression level"
+
+[imgcomp_resize_label]
+other = "Resize"
+
+[imgcomp_resize_none]
+other = "No resizing"
+
+[imgcomp_resize_3200]
+other = "Max edge 3200px"
+
+[imgcomp_resize_2048]
+other = "Max edge 2048px"
+
+[imgcomp_resize_1600]
+other = "Max edge 1600px"
+
+[imgcomp_resize_1280]
+other = "Max edge 1280px"
+
+[imgcomp_resize_1024]
+other = "Max edge 1024px"
+
+[imgcomp_quantize_label]
+other = "PNG quantization (smaller)"
+
+[imgcomp_download_zip]
+other = "Download ZIP"
+
+[imgcomp_clear]
+other = "Clear list"
+
+[imgcomp_note]
+other = "High compression outputs WebP. PNG quantization reduces color precision. HEIC may be exported as JPG."
+
+[imgcomp_summary]
+other = "Processed {count} file(s): {original} → {compressed}, saved {saved} ({percent}%)"
+
+[imgcomp_status_queued]
+other = "Queued"
+
+[imgcomp_status_processing]
+other = "Processing"
+
+[imgcomp_status_done]
+other = "Done"
+
+[imgcomp_status_error]
+other = "Failed"
+
+[imgcomp_label_original]
+other = "Original"
+
+[imgcomp_label_compressed]
+other = "Compressed"
+
+[imgcomp_label_saved]
+other = "Saved"
+
+[imgcomp_download]
+other = "Download"
+
+[imgcomp_processing]
+other = "Processing…"
+
+[imgcomp_zip_preparing]
+other = "Preparing ZIP…"
+
+[imgcomp_zip_unavailable]
+other = "ZIP is unavailable"
+
+[imgcomp_zip_empty]
+other = "No files to download"
+
+[imgcomp_error_unsupported]
+other = "Unsupported format"
+
+[imgcomp_error_too_large]
+other = "File exceeds 20MB"
+
+[imgcomp_error_heic]
+other = "HEIC is not supported in this browser"
+
+[imgcomp_error_failed]
+other = "Compression failed"
+
+[imgcomp_heic_fallback]
+other = "HEIC exported as JPG"
+
+[imgcomp_webp_fallback]
+other = "WebP is not supported; exported as original format"
+
+
 [home_x_trending_title]
 other = "X Trending AI Picks"
 

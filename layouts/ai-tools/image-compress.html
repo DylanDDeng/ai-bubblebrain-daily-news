@@ -1,0 +1,921 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-narrow page-surface imgc-shell" id="imgc-root">
+    <header class="page-header">
+      <p class="page-eyebrow">{{ i18n "imgcomp_eyebrow" | default "AI Tools" }}</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
+      {{ end }}
+    </header>
+
+    <div class="imgc-panel">
+      <label class="imgc-dropzone" id="imgc-dropzone">
+        <input id="imgc-input" class="imgc-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple>
+        <div class="imgc-dropzone__content">
+          <div class="imgc-dropzone__title">{{ i18n "imgcomp_drop_title" }}</div>
+          <div class="imgc-dropzone__hint">{{ i18n "imgcomp_drop_hint" }}</div>
+        </div>
+      </label>
+
+      <div class="imgc-controls">
+        <div class="imgc-control-block">
+          <div class="imgc-mode">
+            <span class="imgc-label">{{ i18n "imgcomp_mode_label" }}</span>
+            <div class="imgc-options">
+              <label><input type="radio" name="imgc-mode" value="standard" checked>{{ i18n "imgcomp_mode_standard" }}</label>
+              <label><input type="radio" name="imgc-mode" value="high">{{ i18n "imgcomp_mode_high" }}</label>
+            </div>
+          </div>
+          <div class="imgc-quality">
+            <span class="imgc-label">{{ i18n "imgcomp_quality_label" }}</span>
+            <div class="imgc-options">
+              <label><input type="radio" name="imgc-quality" value="1" checked>100%</label>
+              <label><input type="radio" name="imgc-quality" value="0.5">50%</label>
+              <label><input type="radio" name="imgc-quality" value="0.3">30%</label>
+            </div>
+          </div>
+          <label class="imgc-resize">
+            <span class="imgc-label">{{ i18n "imgcomp_resize_label" }}</span>
+            <select id="imgc-resize">
+              <option value="0">{{ i18n "imgcomp_resize_none" }}</option>
+              <option value="3200">{{ i18n "imgcomp_resize_3200" }}</option>
+              <option value="2048">{{ i18n "imgcomp_resize_2048" }}</option>
+              <option value="1600">{{ i18n "imgcomp_resize_1600" }}</option>
+              <option value="1280">{{ i18n "imgcomp_resize_1280" }}</option>
+              <option value="1024">{{ i18n "imgcomp_resize_1024" }}</option>
+            </select>
+          </label>
+          <label class="imgc-toggle" id="imgc-quantize-label">
+            <input type="checkbox" id="imgc-quantize" checked>
+            <span>{{ i18n "imgcomp_quantize_label" }}</span>
+          </label>
+        </div>
+        <div class="imgc-actions">
+          <button class="imgc-btn" id="imgc-download-all" type="button" disabled>{{ i18n "imgcomp_download_zip" }}</button>
+          <button class="imgc-btn imgc-btn--ghost" id="imgc-clear" type="button" disabled>{{ i18n "imgcomp_clear" }}</button>
+        </div>
+      </div>
+
+      <p class="imgc-note" id="imgc-note">{{ i18n "imgcomp_note" }}</p>
+    </div>
+
+    <div class="imgc-summary" id="imgc-summary" hidden></div>
+    <div class="imgc-list" id="imgc-list"></div>
+  </div>
+</section>
+
+{{- $imgcI18n := dict
+  "summary" (i18n "imgcomp_summary")
+  "statusQueued" (i18n "imgcomp_status_queued")
+  "statusProcessing" (i18n "imgcomp_status_processing")
+  "statusDone" (i18n "imgcomp_status_done")
+  "statusError" (i18n "imgcomp_status_error")
+  "labelOriginal" (i18n "imgcomp_label_original")
+  "labelCompressed" (i18n "imgcomp_label_compressed")
+  "labelSaved" (i18n "imgcomp_label_saved")
+  "download" (i18n "imgcomp_download")
+  "processing" (i18n "imgcomp_processing")
+  "zipPreparing" (i18n "imgcomp_zip_preparing")
+  "zipUnavailable" (i18n "imgcomp_zip_unavailable")
+  "zipEmpty" (i18n "imgcomp_zip_empty")
+  "errorUnsupported" (i18n "imgcomp_error_unsupported")
+  "errorTooLarge" (i18n "imgcomp_error_too_large")
+  "errorHeic" (i18n "imgcomp_error_heic")
+  "errorFailed" (i18n "imgcomp_error_failed")
+  "heicFallback" (i18n "imgcomp_heic_fallback")
+  "webpFallback" (i18n "imgcomp_webp_fallback")
+-}}
+<script>
+  window.IMG_COMP_I18N = {{ $imgcI18n | jsonify }};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/upng-js@2.1.0/UPNG.js" defer></script>
+<script>
+(() => {
+  const root = document.getElementById("imgc-root");
+  if (!root) return;
+
+  const I18N = window.IMG_COMP_I18N || {};
+  const MAX_SIZE = 20 * 1024 * 1024;
+  const CONCURRENCY = 2;
+
+  const input = document.getElementById("imgc-input");
+  const dropzone = document.getElementById("imgc-dropzone");
+  const listEl = document.getElementById("imgc-list");
+  const summaryEl = document.getElementById("imgc-summary");
+  const downloadAllBtn = document.getElementById("imgc-download-all");
+  const clearBtn = document.getElementById("imgc-clear");
+  const qualityRadios = Array.from(document.querySelectorAll('input[name="imgc-quality"]'));
+  const modeRadios = Array.from(document.querySelectorAll('input[name="imgc-mode"]'));
+  const quantizeToggle = document.getElementById("imgc-quantize");
+  const quantizeLabel = document.getElementById("imgc-quantize-label");
+  const resizeSelect = document.getElementById("imgc-resize");
+
+  let currentQuality = parseFloat((qualityRadios.find(r => r.checked) || {}).value || "1");
+  let currentMode = (modeRadios.find(r => r.checked) || {}).value || "standard";
+  let quantizePng = !!(quantizeToggle && quantizeToggle.checked);
+  let maxSize = parseInt((resizeSelect && resizeSelect.value) || "0", 10) || 0;
+  const items = [];
+  let queue = [];
+  let processing = 0;
+
+  qualityRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      currentQuality = parseFloat(radio.value || "1");
+    });
+  });
+
+  modeRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      currentMode = radio.value || "standard";
+      updateModeUI();
+    });
+  });
+
+  if (quantizeToggle) {
+    quantizeToggle.addEventListener("change", () => {
+      quantizePng = !!quantizeToggle.checked;
+    });
+  }
+
+  if (resizeSelect) {
+    resizeSelect.addEventListener("change", () => {
+      maxSize = parseInt(resizeSelect.value || "0", 10) || 0;
+    });
+  }
+
+  function updateModeUI() {
+    const disabled = currentMode === "high";
+    if (quantizeToggle) quantizeToggle.disabled = disabled;
+    if (quantizeLabel) quantizeLabel.classList.toggle("is-disabled", disabled);
+  }
+  updateModeUI();
+
+  const formatBytes = (bytes) => {
+    if (!Number.isFinite(bytes)) return "-";
+    if (bytes < 1024) return `${bytes} B`;
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    return `${(kb / 1024).toFixed(2)} MB`;
+  };
+
+  const formatPercent = (value) => {
+    if (!Number.isFinite(value)) return "-";
+    return `${Math.round(value)}%`;
+  };
+
+  const splitName = (name) => {
+    const idx = name.lastIndexOf(".");
+    if (idx === -1) return { base: name, ext: "" };
+    return { base: name.slice(0, idx), ext: name.slice(idx + 1).toLowerCase() };
+  };
+
+  const isSupportedType = (type, ext) => {
+    const types = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic", "image/heif"];
+    const exts = ["jpg", "jpeg", "png", "webp", "heic", "heif"];
+    return types.includes(type) || exts.includes(ext);
+  };
+
+  const extFromType = (type) => {
+    if (!type) return "";
+    if (type.includes("jpg")) return "jpg";
+    if (type.includes("jpeg")) return "jpg";
+    if (type.includes("png")) return "png";
+    if (type.includes("webp")) return "webp";
+    if (type.includes("heic")) return "heic";
+    if (type.includes("heif")) return "heif";
+    return "";
+  };
+
+  const isHeicType = (type, ext) => {
+    return ["image/heic", "image/heif"].includes(type) || ["heic", "heif"].includes(ext);
+  };
+
+  const resolveInputType = (file) => {
+    if (file.type) return file.type;
+    const { ext } = splitName(file.name || "");
+    if (ext === "jpg" || ext === "jpeg") return "image/jpeg";
+    if (ext === "png") return "image/png";
+    if (ext === "webp") return "image/webp";
+    if (ext === "heic") return "image/heic";
+    if (ext === "heif") return "image/heif";
+    return "";
+  };
+
+  const toBlob = (canvas, type, quality) => new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+
+  const encodePngQuantized = (canvas, colors = 256) => {
+    if (!window.UPNG) return null;
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const png = window.UPNG.encode([imageData.data.buffer], canvas.width, canvas.height, colors);
+    return new Blob([png], { type: "image/png" });
+  };
+
+  const decodeImage = async (blob) => {
+    if (window.createImageBitmap) {
+      try {
+        return await createImageBitmap(blob);
+      } catch (e) {}
+    }
+    return await new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(blob);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("decode_failed"));
+      };
+      img.src = url;
+    });
+  };
+
+  const decodeToCanvas = async (blob) => {
+    const image = await decodeImage(blob);
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width || image.naturalWidth || 0;
+    canvas.height = image.height || image.naturalHeight || 0;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(image, 0, 0);
+    if (image && typeof image.close === "function") image.close();
+    return canvas;
+  };
+
+  const resizeCanvas = (canvas) => {
+    if (!maxSize) return canvas;
+    const width = canvas.width;
+    const height = canvas.height;
+    const maxEdge = Math.max(width, height);
+    if (maxEdge <= maxSize) return canvas;
+    const ratio = maxSize / maxEdge;
+    const targetW = Math.max(1, Math.round(width * ratio));
+    const targetH = Math.max(1, Math.round(height * ratio));
+    const resized = document.createElement("canvas");
+    resized.width = targetW;
+    resized.height = targetH;
+    const ctx = resized.getContext("2d");
+    ctx.drawImage(canvas, 0, 0, targetW, targetH);
+    return resized;
+  };
+
+  const ensureHeicDecoded = async (file) => {
+    try {
+      const canvas = await decodeToCanvas(file);
+      return { canvas, previewBlob: file, converted: false };
+    } catch (e) {
+      if (typeof window.heic2any !== "function") {
+        throw new Error(I18N.errorHeic || "HEIC not supported");
+      }
+      const converted = await window.heic2any({ blob: file, toType: "image/jpeg", quality: 1 });
+      const convertedBlob = Array.isArray(converted) ? converted[0] : converted;
+      const canvas = await decodeToCanvas(convertedBlob);
+      return { canvas, previewBlob: convertedBlob, converted: true };
+    }
+  };
+
+  const createCard = (item) => {
+    const card = document.createElement("article");
+    card.className = "imgc-card";
+    card.innerHTML = `
+      <div class="imgc-card__header">
+        <div class="imgc-card__title">
+          <span class="imgc-filename"></span>
+          <span class="imgc-badge imgc-badge--status">${I18N.statusQueued || "Queued"}</span>
+        </div>
+        <div class="imgc-card__meta">
+          <span class="imgc-meta-item">${I18N.labelOriginal || "Original"}: <strong class="imgc-size-original">-</strong></span>
+          <span class="imgc-meta-item">${I18N.labelCompressed || "Compressed"}: <strong class="imgc-size-compressed">-</strong></span>
+          <span class="imgc-meta-item imgc-meta-item--saving">${I18N.labelSaved || "Saved"}: <strong class="imgc-size-saved">-</strong></span>
+        </div>
+      </div>
+      <div class="imgc-previews">
+        <figure class="imgc-preview">
+          <div class="imgc-preview__media">
+            <img alt="${I18N.labelOriginal || "Original"}">
+          </div>
+          <figcaption>${I18N.labelOriginal || "Original"}</figcaption>
+        </figure>
+        <figure class="imgc-preview">
+          <div class="imgc-preview__media">
+            <span class="imgc-preview__placeholder">${I18N.processing || "Processing..."}</span>
+            <img alt="${I18N.labelCompressed || "Compressed"}" hidden>
+          </div>
+          <figcaption>${I18N.labelCompressed || "Compressed"}</figcaption>
+        </figure>
+      </div>
+      <div class="imgc-card__actions">
+        <button class="imgc-btn imgc-btn--small imgc-download" type="button" disabled>${I18N.download || "Download"}</button>
+        <span class="imgc-card__message" aria-live="polite"></span>
+      </div>
+    `;
+    card.querySelector(".imgc-filename").textContent = item.name;
+    item.card = card;
+    item.statusBadge = card.querySelector(".imgc-badge--status");
+    item.sizeOriginalEl = card.querySelector(".imgc-size-original");
+    item.sizeCompressedEl = card.querySelector(".imgc-size-compressed");
+    item.sizeSavedEl = card.querySelector(".imgc-size-saved");
+    item.originalImg = card.querySelector("figure:nth-child(1) img");
+    item.compressedImg = card.querySelector("figure:nth-child(2) img");
+    item.compressedPlaceholder = card.querySelector(".imgc-preview__placeholder");
+    item.downloadBtn = card.querySelector(".imgc-download");
+    item.messageEl = card.querySelector(".imgc-card__message");
+    return card;
+  };
+
+  const updateStatus = (item, status, message) => {
+    item.status = status;
+    if (item.statusBadge) {
+      const map = {
+        queued: I18N.statusQueued || "Queued",
+        processing: I18N.statusProcessing || "Processing",
+        done: I18N.statusDone || "Done",
+        error: I18N.statusError || "Failed"
+      };
+      item.statusBadge.textContent = map[status] || status;
+      item.statusBadge.classList.toggle("is-error", status === "error");
+      item.statusBadge.classList.toggle("is-done", status === "done");
+    }
+    if (item.messageEl) {
+      item.messageEl.textContent = message || "";
+    }
+  };
+
+  const updateSummary = () => {
+    const doneItems = items.filter((item) => item.status === "done");
+    if (!doneItems.length) {
+      summaryEl.hidden = true;
+      return;
+    }
+    const totalOriginal = doneItems.reduce((sum, item) => sum + (item.size || 0), 0);
+    const totalCompressed = doneItems.reduce((sum, item) => sum + (item.compressedSize || 0), 0);
+    const saved = totalOriginal - totalCompressed;
+    const percent = totalOriginal ? Math.round((saved / totalOriginal) * 100) : 0;
+    const template = I18N.summary || "Processed {count} files";
+    summaryEl.textContent = template
+      .replace("{count}", String(doneItems.length))
+      .replace("{original}", formatBytes(totalOriginal))
+      .replace("{compressed}", formatBytes(totalCompressed))
+      .replace("{saved}", formatBytes(saved))
+      .replace("{percent}", String(percent));
+    summaryEl.hidden = false;
+  };
+
+  const updateActions = () => {
+    const doneItems = items.filter((item) => item.status === "done");
+    downloadAllBtn.disabled = doneItems.length < 2;
+    clearBtn.disabled = items.length === 0;
+  };
+
+  const downloadBlob = (blob, name) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const compressItem = async (item) => {
+    const file = item.file;
+    const inputType = resolveInputType(file);
+    const { ext } = splitName(file.name || "");
+    const heic = isHeicType(inputType, ext);
+
+    if (!isSupportedType(inputType, ext)) {
+      throw new Error(I18N.errorUnsupported || "Unsupported");
+    }
+
+    const source = heic ? await ensureHeicDecoded(file) : { canvas: await decodeToCanvas(file), previewBlob: file, converted: false };
+
+    if (!item.originalUrl) {
+      item.originalUrl = URL.createObjectURL(source.previewBlob);
+      item.originalUrls.push(item.originalUrl);
+      if (item.originalImg) item.originalImg.src = item.originalUrl;
+    }
+
+    let blob = null;
+    let outputType = heic ? "image/heic" : inputType;
+    const canvas = resizeCanvas(source.canvas);
+    if (currentMode === "high") {
+      outputType = "image/webp";
+      blob = await toBlob(canvas, "image/webp", currentQuality);
+      if (!blob) {
+        outputType = inputType || "image/jpeg";
+        blob = await toBlob(canvas, outputType, currentQuality);
+        item.note = I18N.webpFallback || "";
+      }
+    } else if (!blob && heic) {
+      blob = await toBlob(canvas, "image/heic", currentQuality);
+      if (!blob || blob.type !== "image/heic") {
+        blob = await toBlob(canvas, "image/jpeg", currentQuality);
+        outputType = "image/jpeg";
+        item.note = I18N.heicFallback || "";
+      } else {
+        outputType = "image/heic";
+      }
+    } else if (!blob) {
+      blob = await toBlob(canvas, outputType, currentQuality);
+      if (!blob) {
+        blob = await toBlob(canvas, "image/jpeg", currentQuality);
+        outputType = blob?.type || "image/jpeg";
+      } else {
+        outputType = blob.type || outputType;
+      }
+      if (outputType === "image/png" && quantizePng) {
+        try {
+          const quantized = encodePngQuantized(source.canvas, 256);
+          if (quantized) {
+            blob = quantized;
+          }
+        } catch (e) {}
+      }
+    }
+
+    const outputExt = extFromType(outputType) || ext || "jpg";
+    const baseName = splitName(file.name || "image").base || "image";
+    const outputName = `${baseName}.${outputExt}`;
+
+    item.compressedBlob = blob;
+    item.compressedSize = blob.size || 0;
+    item.outputName = outputName;
+    item.outputType = outputType;
+
+    if (item.compressedUrl) URL.revokeObjectURL(item.compressedUrl);
+    item.compressedUrl = URL.createObjectURL(blob);
+    item.originalUrls.push(item.compressedUrl);
+  };
+
+  const processQueue = () => {
+    while (processing < CONCURRENCY && queue.length) {
+      const item = queue.shift();
+      if (!item) continue;
+      processing += 1;
+      updateStatus(item, "processing");
+      compressItem(item)
+        .then(() => {
+          if (item.sizeOriginalEl) item.sizeOriginalEl.textContent = formatBytes(item.size);
+          if (item.sizeCompressedEl) item.sizeCompressedEl.textContent = formatBytes(item.compressedSize);
+          const saved = item.size - item.compressedSize;
+          const savedPercent = item.size ? (saved / item.size) * 100 : 0;
+          if (item.sizeSavedEl) item.sizeSavedEl.textContent = `${formatBytes(saved)} (${formatPercent(savedPercent)})`;
+          if (item.compressedImg) {
+            item.compressedImg.hidden = false;
+            item.compressedImg.src = item.compressedUrl;
+          }
+          if (item.compressedPlaceholder) item.compressedPlaceholder.remove();
+          if (item.downloadBtn) {
+            item.downloadBtn.disabled = false;
+            item.downloadBtn.addEventListener("click", () => downloadBlob(item.compressedBlob, item.outputName));
+          }
+          updateStatus(item, "done", item.note || "");
+        })
+        .catch((err) => {
+          updateStatus(item, "error", err?.message || I18N.errorFailed || "Failed");
+          if (item.compressedPlaceholder) {
+            item.compressedPlaceholder.textContent = I18N.statusError || "Failed";
+          }
+        })
+        .finally(() => {
+          processing -= 1;
+          updateSummary();
+          updateActions();
+          processQueue();
+        });
+    }
+  };
+
+  const enqueueFiles = (files) => {
+    Array.from(files || []).forEach((file) => {
+      const inputType = resolveInputType(file);
+      const { ext } = splitName(file.name || "");
+      const item = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        file,
+        name: file.name,
+        size: file.size || 0,
+        status: "queued",
+        originalUrls: [],
+        compressedBlob: null,
+        compressedUrl: null,
+        outputName: "",
+        note: ""
+      };
+
+      let error = "";
+      if (item.size > MAX_SIZE) {
+        error = I18N.errorTooLarge || "Too large";
+      } else if (!isSupportedType(inputType, ext)) {
+        error = I18N.errorUnsupported || "Unsupported";
+      }
+
+      createCard(item);
+      listEl.appendChild(item.card);
+      items.push(item);
+
+      if (error) {
+        updateStatus(item, "error", error);
+      } else {
+        queue.push(item);
+      }
+    });
+
+    updateSummary();
+    updateActions();
+    processQueue();
+  };
+
+  const clearAll = () => {
+    items.forEach((item) => {
+      item.originalUrls.forEach((url) => {
+        try { URL.revokeObjectURL(url); } catch (e) {}
+      });
+    });
+    items.length = 0;
+    queue = [];
+    listEl.innerHTML = "";
+    summaryEl.hidden = true;
+    updateActions();
+  };
+
+  const handleFiles = (files) => {
+    enqueueFiles(files);
+    if (input) input.value = "";
+  };
+
+  if (input) {
+    input.addEventListener("change", (e) => handleFiles(e.target.files));
+  }
+
+  if (dropzone) {
+    const highlight = (state) => {
+      dropzone.classList.toggle("is-dragover", state);
+    };
+    dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      highlight(true);
+    });
+    dropzone.addEventListener("dragleave", () => highlight(false));
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      highlight(false);
+      handleFiles(e.dataTransfer.files);
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", clearAll);
+  }
+
+  if (downloadAllBtn) {
+    downloadAllBtn.addEventListener("click", async () => {
+      const doneItems = items.filter((item) => item.status === "done");
+      if (doneItems.length < 1) {
+        alert(I18N.zipEmpty || "No files");
+        return;
+      }
+      if (!window.JSZip) {
+        alert(I18N.zipUnavailable || "ZIP unavailable");
+        return;
+      }
+      const originalText = downloadAllBtn.textContent;
+      downloadAllBtn.textContent = I18N.zipPreparing || "Preparing...";
+      downloadAllBtn.disabled = true;
+      try {
+        const zip = new JSZip();
+        doneItems.forEach((item) => {
+          zip.file(item.outputName || item.name || "image", item.compressedBlob);
+        });
+        const blob = await zip.generateAsync({ type: "blob" });
+        downloadBlob(blob, "image-compress.zip");
+      } catch (e) {
+        alert(I18N.errorFailed || "Failed");
+      } finally {
+        downloadAllBtn.textContent = originalText;
+        updateActions();
+      }
+    });
+  }
+})();
+</script>
+
+<style>
+.imgc-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.imgc-panel {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.imgc-dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 14px;
+  border: 1px dashed var(--border);
+  background: var(--surface-highlight);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.imgc-dropzone.is-dragover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
+}
+
+.imgc-input {
+  display: none;
+}
+
+.imgc-dropzone__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.imgc-dropzone__hint {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.imgc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.imgc-control-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.imgc-mode,
+.imgc-quality {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.imgc-label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.imgc-resize {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.imgc-resize select {
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+}
+
+.imgc-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.imgc-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.imgc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.imgc-toggle input {
+  accent-color: var(--accent);
+}
+
+.imgc-toggle.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.imgc-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.imgc-btn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.imgc-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.imgc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.imgc-btn--ghost {
+  background: transparent;
+}
+
+.imgc-btn--small {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+}
+
+.imgc-note {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.imgc-summary {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  background: var(--surface-highlight);
+  font-size: 0.9rem;
+}
+
+.imgc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.imgc-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem;
+  background: var(--surface);
+}
+
+.imgc-card__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.imgc-filename {
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.imgc-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.imgc-badge.is-done {
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.imgc-badge.is-error {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.imgc-card__meta {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.imgc-card__meta strong {
+  color: var(--text-main);
+}
+
+.imgc-previews {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.imgc-preview {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--surface-highlight);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.imgc-preview__media {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background: #0b0b0b;
+}
+
+.imgc-preview__media img {
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  display: block;
+}
+
+.imgc-preview__placeholder {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.imgc-preview figcaption {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.imgc-card__actions {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.imgc-card__message {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .imgc-previews {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .imgc-panel {
+    padding: 1.25rem;
+  }
+  .imgc-controls {
+    align-items: flex-start;
+  }
+  .imgc-quality {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>
+{{ end }}
