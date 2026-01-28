@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPad Air - Get the highlights</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f7;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 52px;
+            background: rgba(251, 251, 253, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-content {
+            max-width: 1024px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+        }
+
+        .nav-logo {
+            font-size: 21px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .nav-link {
+            font-size: 12px;
+            color: #1d1d1f;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+        }
+
+        .nav-link.active {
+            opacity: 0.6;
+            border-bottom: 1px solid #1d1d1f;
+        }
+
+        .buy-btn {
+            background: #0071e3;
+            color: white;
+            padding: 4px 11px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .buy-btn:hover {
+            background: #0077ed;
+        }
+
+        /* 主标题 */
+        .section-title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-top: 120px;
+            margin-bottom: 40px;
+        }
+
+        /* 轮播容器 */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            padding: 0 40px 60px;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        /* 轮播卡片 */
+        .carousel-slide {
+            flex-shrink: 0;
+            width: calc(100vw - 120px);
+            max-width: 1200px;
+            height: 600px;
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            opacity: 0.3;
+            transform: scale(0.95);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 文字区域 */
+        .slide-text {
+            flex: 0 0 40%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            z-index: 2;
+        }
+
+        .slide-text h3 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1d1d1f;
+            line-height: 1.2;
+            max-width: 400px;
+        }
+
+        /* 图片区域 */
+        .slide-image {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-image img {
+            max-width: 100%;
+            max-height: 90%;
+            object-fit: contain;
+            transition: transform 0.8s ease-out;
+        }
+
+        /* Slide 1 - iPadOS */
+        .slide-1 {
+            background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 100%);
+        }
+
+        .slide-1 .ipad-devices {
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 700px;
+            height: 500px;
+        }
+
+        .ipad-device {
+            position: absolute;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            transition: all 0.8s ease-out;
+        }
+
+        .ipad-1 {
+            width: 400px;
+            height: 300px;
+            right: 100px;
+            top: 0;
+            transform: rotate(-5deg);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .ipad-2 {
+            width: 420px;
+            height: 320px;
+            right: 50px;
+            bottom: 20px;
+            transform: rotate(3deg);
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .ipad-screen {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Slide 2 - Sizes */
+        .slide-2 {
+            background: #fff;
+        }
+
+        .size-devices {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            transform: translateX(50px);
+        }
+
+        .size-ipad {
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.8s ease-out;
+        }
+
+        .size-ipad.small {
+            width: 300px;
+            height: 400px;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .size-ipad.large {
+            width: 380px;
+            height: 480px;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        /* Slide 3 - Gaming */
+        .slide-3 {
+            background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+        }
+
+        .game-showcase {
+            width: 550px;
+            height: 420px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .game-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-character {
+            position: absolute;
+            width: 200px;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 100px 100px 20px 20px;
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-20px); }
+        }
+
+        .game-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 40px);
+            gap: 8px;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Slide 4 - Accessories */
+        .slide-4 {
+            background: #fff;
+        }
+
+        .accessories-showcase {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            transform: translateX(30px);
+        }
+
+        .keyboard-device {
+            width: 500px;
+            height: 350px;
+            background: linear-gradient(145deg, #e6e6e6 0%, #f5f5f5 100%);
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .keyboard-stand {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 200px;
+            background: linear-gradient(145deg, #d0d0d0 0%, #e8e8e8 100%);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .pencil-device {
+            width: 450px;
+            height: 30px;
+            background: linear-gradient(90deg, #f5f5f5 0%, #e0e0e0 50%, #f5f5f5 100%);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Slide 5 - M3 Chip */
+        .slide-5 {
+            background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+        }
+
+        .m3-showcase {
+            width: 550px;
+            height: 400px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .m3-ipad {
+            width: 480px;
+            height: 360px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        /* 控制栏 */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        /* 进度指示器 */
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.05);
+            padding: 12px 20px;
+            border-radius: 30px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: #1d1d1f;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .progress-bar {
+            width: 40px;
+            height: 4px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1d1d1f;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* 暂停按钮 */
+        .pause-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .pause-btn:hover {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .pause-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: #1d1d1f;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .carousel-slide {
+                width: calc(100vw - 80px);
+                height: 500px;
+            }
+
+            .slide-text {
+                padding: 40px;
+            }
+
+            .slide-text h3 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .carousel-slide {
+                flex-direction: column;
+                height: auto;
+                min-height: 600px;
+            }
+
+            .slide-text {
+                flex: none;
+                padding: 30px;
+            }
+
+            .slide-image {
+                flex: none;
+                height: 300px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-logo">iPad Air</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Overview</a>
+                <a href="#" class="nav-link active">Tech Specs</a>
+                <a href="#" class="nav-link">Compare</a>
+                <a href="#" class="buy-btn">Buy</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主标题 -->
+    <h1 class="section-title">Get the highlights.</h1>
+
+    <!-- 轮播容器 -->
+    <div class="carousel-container">
+        <div class="carousel-track" id="carouselTrack">
+            <!-- Slide 1: iPadOS -->
+            <div class="carousel-slide slide-1 active" data-index="0">
+                <div class="slide-text">
+                    <h3>iPadOS and amazing apps let you get things done in magical, intuitive ways.</h3>
+                </div>
+                <div class="slide-image">
+                    <div class="ipad-devices">
+                        <div class="ipad-device ipad-1">
+                            <div class="ipad-screen" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        </div>
+                        <div class="ipad-device ipad-2">
+                            <div class="ipad-screen" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Sizes -->
+            <div class="carousel-slide slide-2" data-index="1">
+                <div class="slide-text">
+                    <h3>Available in 11-inch or 13-inch models with four beautiful colors. Both with a stunning Liquid Retina display.</h3>
+                </div>
+                <div class="slide-image">
+                    <div class="size-devices">
+                        <div class="size-ipad small"></div>
+                        <div class="size-ipad large"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Gaming -->
+            <div class="carousel-slide slide-3" data-index="2">
+                <div class="slide-text">
+                    <h3>M3 powers Apple Intelligence, incredible performance, and advanced graphics with hardware-accelerated ray tracing.</h3>
+                </div>
+                <div class="slide-image">
+                    <div class="game-showcase">
+                        <div class="game-screen">
+                            <div class="game-character"></div>
+                            <div class="game-controls">
+                                <div class="control-btn"></div>
+                                <div class="control-btn"></div>
+                                <div class="control-btn"></div>
+                                <div class="control-btn"></div>
+                                <div class="control-btn"></div>
+                                <div class="control-btn"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Accessories -->
+            <div class="carousel-slide slide-4" data-index="3">
+                <div class="slide-text">
+                    <h3>Apple Pencil Pro for next-level creativity. Magic Keyboard now with a 14-key function row and a larger trackpad.</h3>
+                </div>
+                <div class="slide-image">
+                    <div class="accessories-showcase">
+                        <div class="keyboard-device">
+                            <div class="keyboard-stand"></div>
+                        </div>
+                        <div class="pencil-device"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: M3 Chip -->
+            <div class="carousel-slide slide-5" data-index="4">
+                <div class="slide-text">
+                    <h3>The new iPad Air. Featuring the powerful Apple M3 chip. Up for anything. Built for Apple Intelligence.</h3>
+                </div>
+                <div class="slide-image">
+                    <div class="m3-showcase">
+                        <div class="m3-ipad">
+                            <div class="ai-badge">✦</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 控制栏 -->
+        <div class="controls">
+            <div class="progress-indicator">
+                <div class="dot active" data-index="0"></div>
+                <div class="dot" data-index="1"></div>
+                <div class="dot" data-index="2"></div>
+                <div class="dot" data-index="3"></div>
+                <div class="dot" data-index="4"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <button class="pause-btn" id="pauseBtn">
+                <svg viewBox="0 0 24 24" id="pauseIcon">
+                    <rect x="6" y="4" width="4" height="16"/>
+                    <rect x="14" y="4" width="4" height="16"/>
+                </svg>
+                <svg viewBox="0 0 24 24" id="playIcon" style="display: none;">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 轮播状态
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.dot');
+        const track = document.getElementById('carouselTrack');
+        const progressFill = document.getElementById('progressFill');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const pauseIcon = document.getElementById('pauseIcon');
+        const playIcon = document.getElementById('playIcon');
+
+        const totalSlides = slides.length;
+        let isPlaying = true;
+        let autoplayInterval;
+        let progressInterval;
+        let slideDuration = 5000; // 5秒每页
+        let progress = 0;
+
+        // 初始化
+        function init() {
+            updateCarousel();
+            startAutoplay();
+            bindEvents();
+        }
+
+        // 更新轮播
+        function updateCarousel() {
+            // 计算偏移量
+            const slideWidth = slides[0].offsetWidth + 20; // 包含gap
+            const offset = -currentSlide * slideWidth;
+            track.style.transform = `translateX(${offset}px)`;
+
+            // 更新slide状态
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // 更新dots
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // 重置进度
+            progress = 0;
+            progressFill.style.width = '0%';
+        }
+
+        // 下一张
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        // 跳转到指定slide
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+            if (isPlaying) {
+                resetAutoplay();
+            }
+        }
+
+        // 开始自动播放
+        function startAutoplay() {
+            if (autoplayInterval) clearInterval(autoplayInterval);
+            if (progressInterval) clearInterval(progressInterval);
+
+            // 进度条动画
+            progressInterval = setInterval(() => {
+                if (isPlaying) {
+                    progress += 100 / (slideDuration / 100);
+                    if (progress >= 100) {
+                        progress = 0;
+                    }
+                    progressFill.style.width = `${progress}%`;
+                }
+            }, 100);
+
+            // 幻灯片切换
+            autoplayInterval = setInterval(() => {
+                if (isPlaying) {
+                    nextSlide();
+                }
+            }, slideDuration);
+        }
+
+        // 重置自动播放
+        function resetAutoplay() {
+            clearInterval(autoplayInterval);
+            clearInterval(progressInterval);
+            startAutoplay();
+        }
+
+        // 暂停/播放
+        function togglePause() {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                pauseIcon.style.display = 'block';
+                playIcon.style.display = 'none';
+                startAutoplay();
+            } else {
+                pauseIcon.style.display = 'none';
+                playIcon.style.display = 'block';
+            }
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 点击dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => goToSlide(index));
+            });
+
+            // 暂停按钮
+            pauseBtn.addEventListener('click', togglePause);
+
+            // 触摸滑动支持
+            let touchStartX = 0;
+            let touchEndX = 0;
+
+            track.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            track.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // 向左滑，下一张
+                        currentSlide = (currentSlide + 1) % totalSlides;
+                    } else {
+                        // 向右滑，上一张
+                        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                    }
+                    updateCarousel();
+                    if (isPlaying) resetAutoplay();
+                }
+            }
+
+            // 鼠标拖拽支持
+            let isDragging = false;
+            let startX = 0;
+            let currentX = 0;
+
+            track.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.pageX;
+                track.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                currentX = e.pageX;
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                track.style.cursor = 'grab';
+
+                const diff = startX - currentX;
+                if (Math.abs(diff) > 50) {
+                    if (diff > 0) {
+                        currentSlide = (currentSlide + 1) % totalSlides;
+                    } else {
+                        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                    }
+                    updateCarousel();
+                    if (isPlaying) resetAutoplay();
+                }
+            });
+        }
+
+        // 启动
+        init();
+
+        // 窗口大小改变时更新
+        window.addEventListener('resize', () => {
+            updateCarousel();
+        });
+    </script>
+</body>
+</html>

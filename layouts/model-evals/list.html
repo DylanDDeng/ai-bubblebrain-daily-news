@@ -376,12 +376,25 @@
         badges.appendChild(diffBadge);
       }
 
+      // 如果题目包含视频，显示视频标签
+      if (typeof q.question === 'object' && q.question !== null && q.question.videoUrl) {
+        const videoBadge = document.createElement("span");
+        videoBadge.className = "badge badge--video";
+        videoBadge.textContent = "📹 含视频";
+        badges.appendChild(videoBadge);
+      }
+
       header.appendChild(title);
       header.appendChild(badges);
 
       const questionText = document.createElement("p");
       questionText.className = "question-item__text";
-      questionText.textContent = q.question;
+      // 支持 question 是字符串或对象（含视频）
+      if (typeof q.question === 'object' && q.question !== null) {
+        questionText.textContent = q.question.text || '';
+      } else {
+        questionText.textContent = q.question;
+      }
 
       const viewBtn = document.createElement("button");
       viewBtn.className = "eval-btn eval-btn--sm";
@@ -436,31 +449,82 @@
     answerModel.textContent = model?.name || currentModelId;
     answerCategory.textContent = question.category;
     answerTitle.textContent = question.title;
-    answerQuestionText.textContent = question.question;
+    // 支持 question 是字符串或对象（含视频）
+    let questionText = '';
+    let questionVideo = null;
+    if (typeof question.question === 'object' && question.question !== null) {
+      questionText = question.question.text || '';
+      questionVideo = question.question.videoUrl || null;
+    } else {
+      questionText = question.question;
+    }
+    answerQuestionText.textContent = questionText;
 
     answerContent.innerHTML = "";
+
+    // 如果题目包含视频，先显示视频
+    if (questionVideo) {
+      const videoContainer = document.createElement("div");
+      videoContainer.className = "answer-video-container";
+      
+      const videoLabel = document.createElement("p");
+      videoLabel.className = "answer-video-label";
+      videoLabel.textContent = "📹 参考视频：";
+      
+      const video = document.createElement("video");
+      video.className = "answer-video";
+      video.src = questionVideo;
+      video.controls = true;
+      video.preload = "metadata";
+      if (question.question.videoPoster) {
+        video.poster = question.question.videoPoster;
+      }
+      
+      videoContainer.appendChild(videoLabel);
+      videoContainer.appendChild(video);
+      answerContent.appendChild(videoContainer);
+      
+      const divider = document.createElement("hr");
+      divider.className = "answer-divider";
+      answerContent.appendChild(divider);
+    }
 
     // 更新 URL hash 用于分享
     const hash = `#${currentModelId}/${question.id}`;
     history.replaceState(null, "", window.location.pathname + hash);
 
+    // 创建答案容器（用于存放模型回答）
+    const answerContainer = document.createElement("div");
+    answerContainer.className = "model-answer-container";
+    
+    // 添加答案标签
+    const answerLabel = document.createElement("p");
+    answerLabel.className = "answer-video-label";
+    answerLabel.textContent = "🤖 模型输出：";
+    answerLabel.style.marginBottom = "0.75rem";
+    answerContainer.appendChild(answerLabel);
+
     if (answer.type === "html") {
-      answerContent.innerHTML = answer.content;
+      const iframeContainer = document.createElement("div");
+      iframeContainer.innerHTML = answer.content;
+      answerContainer.appendChild(iframeContainer);
       answerToolbar.style.display = "flex";
     } else if (answer.type === "image") {
       const img = document.createElement("img");
       img.src = answer.content;
       img.alt = answer.alt || I18N.generatedImageAlt;
       img.className = "answer-image";
-      answerContent.appendChild(img);
+      answerContainer.appendChild(img);
       answerToolbar.style.display = "none";
     } else {
       const pre = document.createElement("pre");
       pre.className = "answer-text";
       pre.textContent = answer.content;
-      answerContent.appendChild(pre);
+      answerContainer.appendChild(pre);
       answerToolbar.style.display = "none";
     }
+    
+    answerContent.appendChild(answerContainer);
 
     updateNavIndicator();
 
@@ -1199,6 +1263,41 @@
   .answer-nav__btn span {
     display: none;
   }
+}
+
+/* 视频题目相关样式 */
+.answer-video-container {
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+}
+
+.answer-video-label {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.answer-video {
+  width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  background: #000;
+}
+
+.answer-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+
+/* 含视频标签 */
+.question-item__badges .badge--video {
+  background: #e74c3c;
+  color: #fff;
 }
 </style>
 {{ end }}

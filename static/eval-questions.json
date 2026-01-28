@@ -484,8 +484,39 @@
     }
   }
 }
+,
 
+{
+  "id": "q018",
+  "title": "iPad Air 官网复刻",
+  "category": "代码能力",
+  "difficulty": "困难",
+  "question": {
+    "text": "你是一名前端工程师，请参照视频中的动效，使用 HTML/CSS/JS 在网页中复现相同的动画效果。",
+    "videoUrl": "/eval-videos/apple-ipad-air.mp4"
+  },
+  "answers": {
+    "Kimi-K2.5": {
+      "type": "html",
+      "content": "<iframe src='/eval-demos/kimi-k2.5-ipad-air-animation.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }
+  }
+}, 
 
-
-
+{
+  "id": "q019",
+  "title": "ipad Air 宣传动画",
+  "category": "代码能力",
+  "difficulty": "困难",
+  "question": {
+    "text": "你是一名前端工程师，请参照视频中的人物模型，使用 HTML/CSS/JS 在网页中复现相同的 3D 模型。",
+    "videoUrl": "/eval-videos/apple-ipad-air-animation.mp4"
+  },
+  "answers": {
+    "Kimi-K2.5": {
+      "type": "html",
+      "content": "<iframe src='/eval-demos/kimi-k2.5-ipad-air-highlights.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }
+  }
+}
 ]

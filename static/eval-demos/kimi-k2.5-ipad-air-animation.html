@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPad Air - Flight Speed</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f7;
+            overflow-x: hidden;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 44px;
+            background: rgba(251, 251, 253, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            max-width: 1024px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-logo {
+            font-size: 18px;
+            color: #1d1d1f;
+        }
+
+        .nav-link {
+            font-size: 12px;
+            color: #1d1d1f;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        /* 购买提示条 */
+        .buy-bar {
+            position: fixed;
+            top: 44px;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #1d1d1f;
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        .buy-bar a {
+            color: #0066cc;
+            text-decoration: none;
+            margin-left: 4px;
+        }
+
+        .buy-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* 主要内容区 */
+        .hero-section {
+            height: 200vh;
+            position: relative;
+        }
+
+        .hero-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(180deg, #f5f5f7 0%, #e8f4f8 100%);
+        }
+
+        /* iPad air 标题 */
+        .ipad-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 56px;
+            font-weight: 600;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .ipad-title .ipad {
+            color: #1d1d1f;
+        }
+
+        .ipad-title .air {
+            background: linear-gradient(135deg, #0071e3 0%, #42a5f5 50%, #64b5f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-style: italic;
+        }
+
+        /* Flight speed 大标题 */
+        .flight-speed {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 120px;
+            font-weight: 600;
+            color: #0071e3;
+            opacity: 0;
+            z-index: 5;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        /* iPad air 小标题（滚动后出现） */
+        .ipad-title-small {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            font-weight: 500;
+            opacity: 0;
+            z-index: 10;
+        }
+
+        .ipad-title-small .ipad {
+            color: #1d1d1f;
+        }
+
+        .ipad-title-small .air {
+            background: linear-gradient(135deg, #0071e3 0%, #42a5f5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-style: italic;
+        }
+
+        /* Apple Intelligence 文字 */
+        .apple-intelligence {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 21px;
+            font-weight: 400;
+            opacity: 0;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .apple-intelligence .built {
+            color: #0071e3;
+        }
+
+        .apple-intelligence .apple-text {
+            background: linear-gradient(90deg, #0071e3 0%, #ff6b6b 50%, #ffa500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        /* Buy 按钮 */
+        .buy-button {
+            position: absolute;
+            bottom: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0071e3;
+            color: white;
+            padding: 12px 32px;
+            border-radius: 24px;
+            font-size: 17px;
+            font-weight: 400;
+            cursor: pointer;
+            opacity: 0;
+            border: none;
+            z-index: 10;
+            transition: background 0.3s;
+        }
+
+        .buy-button:hover {
+            background: #0077ed;
+        }
+
+        /* iPad 容器 */
+        .ipad-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-style: preserve-3d;
+            perspective: 1500px;
+            z-index: 20;
+        }
+
+        /* iPad 设备 */
+        .ipad-device {
+            position: absolute;
+            width: 500px;
+            height: 700px;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .ipad-device.ipad-1 {
+            z-index: 2;
+        }
+
+        .ipad-device.ipad-2 {
+            z-index: 1;
+        }
+
+        /* iPad 外观 */
+        .ipad-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #e0e0e0 0%, #f5f5f5 50%, #d0d0d0 100%);
+            border-radius: 40px;
+            padding: 15px;
+            box-shadow: 
+                0 50px 100px rgba(0, 0, 0, 0.25),
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                inset 0 2px 4px rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ipad-body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.05) 100%);
+            border-radius: 40px;
+            pointer-events: none;
+        }
+
+        .ipad-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 30%, #90caf9 60%, #64b5f6 100%);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 抽象艺术图案 */
+        .abstract-art {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(255,255,255,0.8) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 80% at 80% 60%, rgba(100,181,246,0.6) 0%, transparent 40%),
+                radial-gradient(ellipse 100% 60% at 50% 80%, rgba(144,202,249,0.4) 0%, transparent 50%);
+            filter: blur(40px);
+        }
+
+        .fluid-line {
+            position: absolute;
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.6);
+            stroke-width: 3;
+            stroke-linecap: round;
+            filter: blur(1px);
+        }
+
+        /* 滚动提示 */
+        .scroll-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: #86868b;
+            opacity: 0.8;
+            z-index: 100;
+        }
+
+        .scroll-hint::after {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 40px;
+            background: #86868b;
+            margin: 10px auto 0;
+            animation: scrollLine 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollLine {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.5); opacity: 0.5; }
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .flight-speed {
+                font-size: 60px;
+            }
+            
+            .ipad-title {
+                font-size: 36px;
+            }
+            
+            .ipad-device {
+                width: 300px;
+                height: 420px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-links">
+                <a href="#" class="nav-logo"></a>
+                <a href="#" class="nav-link">Store</a>
+                <a href="#" class="nav-link">Mac</a>
+                <a href="#" class="nav-link">iPad</a>
+                <a href="#" class="nav-link">iPhone</a>
+                <a href="#" class="nav-link">Watch</a>
+                <a href="#" class="nav-link">Vision</a>
+                <a href="#" class="nav-link">AirPods</a>
+                <a href="#" class="nav-link">TV & Home</a>
+                <a href="#" class="nav-link">Entertainment</a>
+                <a href="#" class="nav-link">Accessories</a>
+                <a href="#" class="nav-link">Support</a>
+            </div>
+            <div class="nav-icons">
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/>
+                </svg>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 购买提示条 -->
+    <div class="buy-bar">
+        Buy iPad Air starting at $549 with education savings.<a href="#">Shop ></a>
+    </div>
+
+    <!-- 主要内容 -->
+    <section class="hero-section">
+        <div class="hero-sticky">
+            <!-- iPad air 标题 -->
+            <h1 class="ipad-title">
+                <span class="ipad">iPad</span><span class="air">air</span>
+            </h1>
+
+            <!-- Flight speed 大标题 -->
+            <h2 class="flight-speed">Flight speed</h2>
+
+            <!-- iPad air 小标题 -->
+            <div class="ipad-title-small">
+                <span class="ipad">iPad</span><span class="air">air</span>
+            </div>
+
+            <!-- Apple Intelligence -->
+            <div class="apple-intelligence">
+                <span class="built">Built for </span><span class="apple-text">Apple Intelligence.</span>
+            </div>
+
+            <!-- Buy 按钮 -->
+            <button class="buy-button">Buy</button>
+
+            <!-- iPad 设备容器 -->
+            <div class="ipad-container">
+                <!-- 第一个 iPad -->
+                <div class="ipad-device ipad-1">
+                    <div class="ipad-body">
+                        <div class="ipad-screen">
+                            <div class="abstract-art"></div>
+                            <svg class="fluid-line" viewBox="0 0 400 600" style="width: 80%; height: 80%;">
+                                <path d="M50,100 Q150,50 200,150 T350,200 Q300,300 250,400 T150,500 Q100,450 50,550" />
+                                <path d="M80,200 Q180,150 250,250 T350,300 Q320,400 280,480" opacity="0.6"/>
+                                <path d="M100,400 Q200,350 300,450" opacity="0.4"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 第二个 iPad -->
+                <div class="ipad-device ipad-2">
+                    <div class="ipad-body" style="background: linear-gradient(145deg, #c5e1e8 0%, #d4e8ed 50%, #b8d4dc 100%);">
+                        <div class="ipad-screen" style="background: linear-gradient(135deg, #b3e0f7 0%, #87ceeb 100%);">
+                            <div class="abstract-art" style="opacity: 0.7;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 滚动提示 -->
+    <div class="scroll-hint">Scroll down</div>
+
+    <script>
+        // 注册 GSAP 插件
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 创建主时间线
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1,
+                pin: false,
+            }
+        });
+
+        // 设置初始状态
+        gsap.set(".ipad-title", { opacity: 0, scale: 0.9 });
+        gsap.set(".ipad-1", { y: "100vh", rotateZ: -15, rotateX: 30, opacity: 0 });
+        gsap.set(".ipad-2", { y: "120vh", rotateZ: -25, rotateX: 40, opacity: 0 });
+        gsap.set(".flight-speed", { opacity: 0, y: 50, scale: 0.9 });
+        gsap.set(".ipad-title-small", { opacity: 0, y: -20 });
+        gsap.set(".apple-intelligence", { opacity: 0, y: 30 });
+        gsap.set(".buy-button", { opacity: 0, y: 20 });
+        gsap.set(".buy-bar", { opacity: 0, y: -10 });
+
+        // 动画序列
+        // 0-10%: iPad air 标题淡入
+        tl.to(".ipad-title", {
+            opacity: 1,
+            scale: 1,
+            duration: 0.1,
+            ease: "power2.out"
+        }, 0);
+
+        // 5-25%: 第一个 iPad 滑入
+        tl.to(".ipad-1", {
+            y: 0,
+            rotateZ: -10,
+            rotateX: 10,
+            opacity: 1,
+            duration: 0.2,
+            ease: "power3.out"
+        }, 0.05);
+
+        // 10%: 显示购买提示条
+        tl.to(".buy-bar", {
+            opacity: 1,
+            y: 0,
+            duration: 0.05,
+            ease: "power2.out"
+        }, 0.1);
+
+        // 15-30%: 第二个 iPad 从后方滑入
+        tl.to(".ipad-2", {
+            y: -30,
+            x: -60,
+            rotateZ: -20,
+            rotateX: 15,
+            opacity: 1,
+            duration: 0.15,
+            ease: "power3.out"
+        }, 0.15);
+
+        // 25-40%: Flight speed 标题淡入
+        tl.to(".flight-speed", {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.15,
+            ease: "power2.out"
+        }, 0.25);
+
+        // 30-50%: 背景渐变，iPad 旋转到最终位置
+        tl.to(".hero-sticky", {
+            background: "linear-gradient(180deg, #d4e9f0 0%, #b8dce8 50%, #a5d0e0 100%)",
+            duration: 0.2
+        }, 0.3);
+
+        tl.to(".ipad-1", {
+            rotateZ: -5,
+            rotateX: 0,
+            scale: 1.05,
+            duration: 0.2,
+            ease: "power2.inOut"
+        }, 0.3);
+
+        tl.to(".ipad-2", {
+            rotateZ: -15,
+            rotateX: 5,
+            x: -80,
+            y: -50,
+            duration: 0.2,
+            ease: "power2.inOut"
+        }, 0.3);
+
+        // 40-55%: iPad air 大标题淡出，小标题淡入
+        tl.to(".ipad-title", {
+            opacity: 0,
+            scale: 0.8,
+            duration: 0.1
+        }, 0.4);
+
+        tl.to(".ipad-title-small", {
+            opacity: 1,
+            y: 0,
+            duration: 0.1,
+            ease: "power2.out"
+        }, 0.45);
+
+        // 50-65%: Apple Intelligence 文字淡入
+        tl.to(".apple-intelligence", {
+            opacity: 1,
+            y: 0,
+            duration: 0.15,
+            ease: "power2.out"
+        }, 0.5);
+
+        // 60-75%: Buy 按钮淡入
+        tl.to(".buy-button", {
+            opacity: 1,
+            y: 0,
+            duration: 0.15,
+            ease: "power2.out"
+        }, 0.6);
+
+        // 70-100%: 保持最终状态，添加微调动画
+        tl.to(".ipad-1", {
+            y: -20,
+            rotateZ: 0,
+            duration: 0.3,
+            ease: "power1.inOut"
+        }, 0.7);
+
+        tl.to(".ipad-2", {
+            y: -60,
+            x: -100,
+            rotateZ: -10,
+            duration: 0.3,
+            ease: "power1.inOut"
+        }, 0.7);
+
+        // 滚动提示消失
+        ScrollTrigger.create({
+            trigger: ".hero-section",
+            start: "5% top",
+            onEnter: () => gsap.to(".scroll-hint", { opacity: 0, duration: 0.5 }),
+            onLeaveBack: () => gsap.to(".scroll-hint", { opacity: 0.8, duration: 0.5 })
+        });
+
+        // 添加平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Buy 按钮点击效果
+        document.querySelector('.buy-button').addEventListener('click', () => {
+            alert('Buy iPad Air - Coming soon!');
+        });
+    </script>
+</body>
+</html>
