@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kimi Universe</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 300vh; /* Allow for scrolling */
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        .bokeh {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(15px);
+            opacity: 0.7;
+            animation: float 15s infinite ease-in-out;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(5%, -5%) scale(1.05); }
+            50% { transform: translate(0, -10%) scale(0.95); }
+            75% { transform: translate(-5%, -5%) scale(1.05); }
+        }
+
+        .header {
+            text-align: center;
+            padding: 4rem 1.5rem 2rem;
+            position: relative;
+            z-index: 10;
+            max-width: 100%;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3.5rem, 8vw, 8rem);
+            font-weight: 900;
+            letter-spacing: 3px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #e6b8ff, #80bfff, #ffccff, #b3ffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: inline-block;
+        }
+
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #b380ff, transparent);
+            border-radius: 2px;
+        }
+
+        .subtitle-container {
+            position: relative;
+            height: 3rem;
+            margin-top: 1.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .subtitle {
+            position: absolute;
+            left: 0;
+            right: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            font-weight: 300;
+            opacity: 0;
+            color: #e0e0ff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.3s ease;
+        }
+
+        .cards-container {
+            position: relative;
+            width: min(90vw, 1200px);
+            height: min(90vw, 1200px);
+            max-width: 100%;
+            max-height: 100%;
+            margin: 4rem auto 10rem;
+            aspect-ratio: 1/1;
+        }
+
+        .card {
+            position: absolute;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #1e1e2e, #252535);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6),
+                        inset 0 0 20px rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            backface-visibility: hidden;
+            transform-origin: center center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            margin-bottom: 0.75rem;
+            background: linear-gradient(45deg, #d48cff, #8cb4ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .card p {
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7),
+                        inset 0 0 30px rgba(255, 255, 255, 0.15);
+            z-index: 100;
+        }
+
+        .scroll-indicator {
+            text-align: center;
+            margin-top: 2rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: #aaa;
+            opacity: 0.7;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .content-section {
+            padding: 6rem 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .content-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 2rem;
+            background: linear-gradient(45deg, #b380ff, #80bfff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .content-section p {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            margin-bottom: 1.5rem;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 3rem 1.5rem 1.5rem;
+            }
+            
+            .cards-container {
+                width: 95vw;
+                height: 95vw;
+                margin: 3rem auto 8rem;
+            }
+            
+            .content-section {
+                padding: 4rem 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: clamp(2.8rem, 9vw, 5rem);
+                letter-spacing: 2px;
+            }
+            
+            .subtitle {
+                font-size: clamp(1.3rem, 4vw, 1.8rem);
+            }
+            
+            .card h3 {
+                font-size: clamp(1rem, 3vw, 1.4rem);
+            }
+            
+            .card p {
+                font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    
+    <header class="header">
+        <h1 class="title">Kimi Universe</h1>
+        <div class="subtitle-container">
+            <span class="subtitle subtitle-0">Explore the Infinite</span>
+            <span class="subtitle subtitle-1">Journey Through Dimensions</span>
+            <span class="subtitle subtitle-2">Infinite Possibilities</span>
+        </div>
+    </header>
+    
+    <div class="cards-container">
+        <!-- Cards will be generated by JavaScript -->
+    </div>
+    
+    <div class="scroll-indicator">Scroll to Explore</div>
+    
+    <section class="content-section">
+        <h2>Where Art Meets Infinity</h2>
+        <p>Kimi Universe is a digital gallery showcasing extraordinary artworks from dimensions beyond our own. Each piece tells a story of cosmic creation, quantum possibilities, and the infinite beauty of existence.</p>
+        <p>As you navigate through our collections, you'll discover portals to other realities, each with its own unique aesthetic and emotional resonance. Our artists harness the power of quantum algorithms and cosmic inspiration to create visuals that transcend conventional boundaries.</p>
+        <p>Join us on this journey through the multiverse of art, where every scroll reveals new wonders and every click opens a gateway to the extraordinary.</p>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Create bokeh circles
+            const background = document.querySelector('.background');
+            const bokehCount = Math.floor(window.innerWidth / 50); // Responsive count
+            
+            for (let i = 0; i < bokehCount; i++) {
+                const bokeh = document.createElement('div');
+                bokeh.classList.add('bokeh');
+                
+                // Random properties
+                const size = Math.random() * 120 + 40;
+                const hue = (Math.random() * 60) + 300; // Purple to pink range
+                const saturation = Math.random() * 30 + 70;
+                const lightness = Math.random() * 20 + 60;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 10 + 15;
+                
+                bokeh.style.width = `${size}px`;
+                bokeh.style.height = `${size}px`;
+                bokeh.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                bokeh.style.left = `${posX}%`;
+                bokeh.style.top = `${posY}%`;
+                bokeh.style.animationDelay = `${delay}s`;
+                bokeh.style.animationDuration = `${duration}s`;
+                bokeh.style.opacity = `${Math.random() * 0.4 + 0.2}`;
+                
+                background.appendChild(bokeh);
+            }
+            
+            // Create cards with content
+            const cardsContainer = document.querySelector('.cards-container');
+            const cardContents = [
+                { title: "Quantum Dreams", desc: "Where particles dance in cosmic harmony" },
+                { title: "Nebula Whispers", desc: "Echoes from the birth of stars" },
+                { title: "Celestial Gardens", desc: "Flora that blooms in zero gravity" },
+                { title: "Chrono Fragments", desc: "Moments frozen between seconds" },
+                { title: "Astral Tides", desc: "The pull of distant cosmic bodies" },
+                { title: "Void Symphony", desc: "Music visualized from deep space" },
+                { title: "Dimensional Gates", desc: "Portals to unexplored realities" },
+                { title: "Stellar Echoes", desc: "Light that traveled millennia to reach us" },
+                { title: "Infinity Bloom", desc: "Patterns that repeat beyond comprehension" }
+            ];
+            
+            cardContents.forEach((content, index) => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `
+                    <div class="card-content">
+                        <h3>${content.title}</h3>
+                        <p>${content.desc}</p>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+            
+            // Set up subtitle animation
+            const subtitles = [
+                document.querySelector('.subtitle-0'),
+                document.querySelector('.subtitle-1'),
+                document.querySelector('.subtitle-2')
+            ];
+            
+            // Set initial subtitle visible
+            gsap.set(subtitles[0], { opacity: 1 });
+            
+            // Create subtitle timeline
+            const subtitleTL = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".header",
+                    start: "top center",
+                    end: "bottom center",
+                    scrub: 1
+                }
+            });
+            
+            subtitleTL
+                .to(subtitles[0], { opacity: 0 }, 0.3)
+                .to(subtitles[1], { opacity: 1 }, 0.3)
+                .to(subtitles[1], { opacity: 0 }, 0.65)
+                .to(subtitles[2], { opacity: 1 }, 0.65);
+            
+            // Set up card explosion animation
+            const cards = document.querySelectorAll('.card');
+            const containerRect = cardsContainer.getBoundingClientRect();
+            const containerWidth = containerRect.width;
+            const containerHeight = containerRect.height;
+            const gap = 25; // Gap between cards in pixels
+            const cardWidth = (containerWidth - (gap * 2)) / 3;
+            const cardHeight = (containerHeight - (gap * 2)) / 3;
+            
+            // Set card dimensions
+            cards.forEach(card => {
+                card.style.width = `${cardWidth}px`;
+                card.style.height = `${cardHeight}px`;
+            });
+            
+            // Calculate center position
+            const centerX = containerWidth / 2 - cardWidth / 2;
+            const centerY = containerHeight / 2 - cardHeight / 2;
+            
+            // Set initial random positions and rotations
+            gsap.set(cards, {
+                x: () => centerX + (Math.random() - 0.5) * 40,
+                y: () => centerY + (Math.random() - 0.5) * 40,
+                rotation: () => Math.random() * 90 - 45,
+                scale: 0.85,
+                zIndex: (i) => 100 - i // Ensure consistent stacking
+            });
+            
+            // Calculate final positions for grid
+            const finalPositions = [];
+            cards.forEach((card, i) => {
+                const row = Math.floor(i / 3);
+                const col = i % 3;
+                const finalX = col * (cardWidth + gap) + gap;
+                const finalY = row * (cardHeight + gap) + gap;
+                finalPositions.push({ x: finalX, y: finalY });
+            });
+            
+            // Create explosion timeline
+            const explosionTL = gsap.timeline({
+                scrollTrigger: {
+                    trigger: ".cards-container",
+                    start: "top center",
+                    end: "bottom center",
+                    scrub: true,
+                    markers: false
+                }
+            });
+            
+            // Animate each card to its final position
+            cards.forEach((card, i) => {
+                explosionTL.to(card, {
+                    x: finalPositions[i].x,
+                    y: finalPositions[i].y,
+                    rotation: 0,
+                    scale: 1,
+                    ease: "power2.out"
+                }, 0);
+            });
+            
+            // Handle window resize
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    // Recalculate dimensions
+                    const newContainerRect = cardsContainer.getBoundingClientRect();
+                    const newContainerWidth = newContainerRect.width;
+                    const newContainerHeight = newContainerRect.height;
+                    const newCardWidth = (newContainerWidth - (gap * 2)) / 3;
+                    const newCardHeight = (newContainerHeight - (gap * 2)) / 3;
+                    
+                    // Update card dimensions
+                    cards.forEach(card => {
+                        card.style.width = `${newCardWidth}px`;
+                        card.style.height = `${newCardHeight}px`;
+                    });
+                    
+                    // Recalculate positions
+                    const newCenterX = newContainerWidth / 2 - newCardWidth / 2;
+                    const newCenterY = newContainerHeight / 2 - newCardHeight / 2;
+                    
+                    // Update initial positions
+                    gsap.set(cards, {
+                        x: () => newCenterX + (Math.random() - 0.5) * 40,
+                        y: () => newCenterY + (Math.random() - 0.5) * 40
+                    });
+                    
+                    // Recalculate final positions
+                    const newFinalPositions = [];
+                    cards.forEach((card, i) => {
+                        const row = Math.floor(i / 3);
+                        const col = i % 3;
+                        const finalX = col * (newCardWidth + gap) + gap;
+                        const finalY = row * (newCardHeight + gap) + gap;
+                        newFinalPositions.push({ x: finalX, y: finalY });
+                    });
+                    
+                    // Update the animation
+                    explosionTL.progress(0).clear();
+                    cards.forEach((card, i) => {
+                        explosionTL.to(card, {
+                            x: newFinalPositions[i].x,
+                            y: newFinalPositions[i].y,
+                            rotation: 0,
+                            scale: 1,
+                            ease: "power2.out"
+                        }, 0);
+                    });
+                    
+                    // Refresh ScrollTrigger
+                    ScrollTrigger.refresh();
+                }, 250);
+            });
+            
+            // Add subtle floating animation to cards on load
+            cards.forEach((card, i) => {
+                gsap.to(card, {
+                    y: `+=${Math.random() * 20 - 10}`,
+                    x: `+=${Math.random() * 20 - 10}`,
+                    rotation: `+=${Math.random() * 2 - 1}`,
+                    repeat: -1,
+                    duration: Math.random() * 4 + 3,
+                    ease: "sine.inOut",
+                    yoyo: true,
+                    delay: i * 0.1
+                });
+            });
+        });
+    </script>
+</body>
+</html>

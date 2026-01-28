@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kimi Universe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1a1a;
+            overflow-x: hidden;
+        }
+        
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Bokeh background animation */
+        .bokeh-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .bokeh {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(20px, 10px) scale(1.05); }
+        }
+        
+        .scroll-container {
+            height: 300vh;
+            position: relative;
+        }
+        
+        .sticky-wrapper {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .title-section {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+            width: 90%;
+        }
+        
+        .subtitle-container {
+            position: relative;
+            height: 2rem;
+            margin-top: 0.5rem;
+        }
+        
+        .subtitle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .subtitle.active {
+            opacity: 1;
+        }
+        
+        .cards-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+        }
+        
+        .art-card {
+            position: absolute;
+            width: 100px;
+            height: 140px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transform-origin: center center;
+            cursor: pointer;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .art-card:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            z-index: 100 !important;
+        }
+        
+        .art-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .art-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .cards-container {
+                width: 260px;
+                height: 260px;
+            }
+            
+            .art-card {
+                width: 80px;
+                height: 112px;
+            }
+            
+            .title-section h1 {
+                font-size: 2.5rem !important;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cards-container {
+                width: 210px;
+                height: 210px;
+            }
+            
+            .art-card {
+                width: 65px;
+                height: 91px;
+            }
+            
+            .title-section h1 {
+                font-size: 2rem !important;
+            }
+        }
+        
+        /* Scroll hint */
+        .scroll-hint {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.875rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+        
+        .scroll-hint svg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <!-- Bokeh Background -->
+    <div class="bokeh-container" id="bokehContainer"></div>
+    
+    <!-- Main Scroll Container -->
+    <div class="scroll-container" id="scrollContainer">
+        <div class="sticky-wrapper">
+            <!-- Title Section -->
+            <div class="title-section">
+                <h1 class="serif-title text-5xl md:text-6xl lg:text-7xl text-white font-semibold tracking-tight">
+                    Kimi Universe
+                </h1>
+                <div class="subtitle-container">
+                    <p class="subtitle text-gray-400 text-lg md:text-xl font-light active" data-index="0">
+                        Explore the Infinite
+                    </p>
+                    <p class="subtitle text-gray-400 text-lg md:text-xl font-light" data-index="1">
+                        Journey Through Dimensions
+                    </p>
+                    <p class="subtitle text-gray-400 text-lg md:text-xl font-light" data-index="2">
+                        Infinite Possibilities
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Cards Container -->
+            <div class="cards-container" id="cardsContainer">
+                <!-- Cards will be generated by JavaScript -->
+            </div>
+            
+            <!-- Scroll Hint -->
+            <div class="scroll-hint" id="scrollHint">
+                <span>Scroll to explore</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Content Section After Animation -->
+    <section class="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="serif-title text-4xl md:text-5xl text-white mb-6">Welcome to the Universe</h2>
+            <p class="text-gray-400 text-lg max-w-2xl mx-auto leading-relaxed">
+                Discover a world where creativity knows no bounds. Our curated collection of artistic 
+                expressions spans across dimensions, styles, and perspectives.
+            </p>
+        </div>
+    </section>
+
+    <script>
+        // Register GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Art card images (using Picsum Photos - reliable placeholder service)
+        const cardImages = [
+            'https://picsum.photos/seed/art1/400/560',
+            'https://picsum.photos/seed/art2/400/560',
+            'https://picsum.photos/seed/art3/400/560',
+            'https://picsum.photos/seed/art4/400/560',
+            'https://picsum.photos/seed/art5/400/560',
+            'https://picsum.photos/seed/art6/400/560',
+            'https://picsum.photos/seed/art7/400/560',
+            'https://picsum.photos/seed/art8/400/560',
+            'https://picsum.photos/seed/art9/400/560'
+        ];
+        
+        // Generate random bokeh circles
+        function generateBokeh() {
+            const container = document.getElementById('bokehContainer');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#fd79a8', '#a29bfe'];
+            const bokehCount = window.innerWidth < 768 ? 12 : 20;
+            
+            for (let i = 0; i < bokehCount; i++) {
+                const bokeh = document.createElement('div');
+                bokeh.className = 'bokeh';
+                const size = Math.random() * 150 + 50;
+                bokeh.style.width = `${size}px`;
+                bokeh.style.height = `${size}px`;
+                bokeh.style.left = `${Math.random() * 100}%`;
+                bokeh.style.top = `${Math.random() * 100}%`;
+                bokeh.style.background = colors[Math.floor(Math.random() * colors.length)];
+                bokeh.style.animationDelay = `${Math.random() * 20}s`;
+                bokeh.style.animationDuration = `${15 + Math.random() * 15}s`;
+                container.appendChild(bokeh);
+            }
+        }
+        
+        // Generate art cards
+        function generateCards() {
+            const container = document.getElementById('cardsContainer');
+            const isMobile = window.innerWidth < 768;
+            const isSmallMobile = window.innerWidth < 480;
+            
+            // Card dimensions based on screen size
+            const cardWidth = isSmallMobile ? 65 : (isMobile ? 80 : 100);
+            const cardHeight = isSmallMobile ? 91 : (isMobile ? 112 : 140);
+            const containerSize = isSmallMobile ? 210 : (isMobile ? 260 : 320);
+            
+            // Grid positions for 3x3 (relative to center)
+            const gap = isSmallMobile ? 8 : (isMobile ? 10 : 16);
+            const gridPositions = [
+                { x: -cardWidth - gap, y: -cardHeight - gap },     // Top-left
+                { x: 0, y: -cardHeight - gap },                     // Top-center
+                { x: cardWidth + gap, y: -cardHeight - gap },      // Top-right
+                { x: -cardWidth - gap, y: 0 },                      // Middle-left
+                { x: 0, y: 0 },                                      // Center
+                { x: cardWidth + gap, y: 0 },                       // Middle-right
+                { x: -cardWidth - gap, y: cardHeight + gap },      // Bottom-left
+                { x: 0, y: cardHeight + gap },                      // Bottom-center
+                { x: cardWidth + gap, y: cardHeight + gap }        // Bottom-right
+            ];
+            
+            // Random initial rotations and positions (clustered)
+            const randomRotations = cardImages.map(() => Math.random() * 360 - 180);
+            const randomOffsets = cardImages.map(() => ({
+                x: (Math.random() - 0.5) * 40,
+                y: (Math.random() - 0.5) * 40
+            }));
+            
+            cardImages.forEach((img, index) => {
+                const card = document.createElement('div');
+                card.className = 'art-card';
+                card.style.zIndex = 10 + index;
+                
+                // Initial clustered position (center with small random offset)
+                const initialX = (containerSize - cardWidth) / 2 + randomOffsets[index].x;
+                const initialY = (containerSize - cardHeight) / 2 + randomOffsets[index].y;
+                
+                card.style.left = `${initialX}px`;
+                card.style.top = `${initialY}px`;
+                card.style.transform = `rotate(${randomRotations[index]}deg)`;
+                
+                // Store target positions for animation
+                card.dataset.targetX = (containerSize - cardWidth) / 2 + gridPositions[index].x;
+                card.dataset.targetY = (containerSize - cardHeight) / 2 + gridPositions[index].y;
+                card.dataset.initialRotation = randomRotations[index];
+                
+                const image = document.createElement('img');
+                image.src = img;
+                image.alt = `Art piece ${index + 1}`;
+                image.loading = 'lazy';
+                
+                card.appendChild(image);
+                container.appendChild(card);
+            });
+            
+            return { randomRotations, gridPositions, cardWidth, cardHeight, containerSize };
+        }
+        
+        // Initialize
+        generateBokeh();
+        const cardData = generateCards();
+        
+        // Get cards for animation
+        const cards = document.querySelectorAll('.art-card');
+        const subtitles = document.querySelectorAll('.subtitle');
+        const scrollHint = document.getElementById('scrollHint');
+        
+        // Create GSAP timeline with ScrollTrigger
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: '#scrollContainer',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 1,
+                onUpdate: (self) => {
+                    const progress = self.progress;
+                    
+                    // Update subtitles based on scroll progress
+                    subtitles.forEach((sub, index) => {
+                        const threshold1 = 0.25;
+                        const threshold2 = 0.65;
+                        
+                        let shouldBeActive = false;
+                        if (index === 0) {
+                            shouldBeActive = progress < threshold1;
+                        } else if (index === 1) {
+                            shouldBeActive = progress >= threshold1 && progress < threshold2;
+                        } else {
+                            shouldBeActive = progress >= threshold2;
+                        }
+                        
+                        if (shouldBeActive) {
+                            sub.classList.add('active');
+                        } else {
+                            sub.classList.remove('active');
+                        }
+                    });
+                    
+                    // Hide scroll hint as user starts scrolling
+                    if (progress > 0.05) {
+                        scrollHint.style.opacity = 1 - (progress * 10);
+                        scrollHint.style.pointerEvents = 'none';
+                    } else {
+                        scrollHint.style.opacity = 1;
+                        scrollHint.style.pointerEvents = 'auto';
+                    }
+                }
+            }
+        });
+        
+        // Animate each card from cluster to grid
+        cards.forEach((card, index) => {
+            const targetX = parseFloat(card.dataset.targetX);
+            const targetY = parseFloat(card.dataset.targetY);
+            const initialRotation = parseFloat(card.dataset.initialRotation);
+            
+            // Calculate starting position (centered cluster)
+            const startX = parseFloat(card.style.left);
+            const startY = parseFloat(card.style.top);
+            
+            tl.to(card, {
+                left: targetX,
+                top: targetY,
+                rotation: 0,
+                duration: 1,
+                ease: 'power2.out'
+            }, 0);
+        });
+        
+        // Add subtle parallax to bokeh
+        const bokehElements = document.querySelectorAll('.bokeh');
+        bokehElements.forEach((bokeh, index) => {
+            const speed = 0.5 + (index % 3) * 0.3;
+            gsap.to(bokeh, {
+                y: `${100 * speed}`,
+                scrollTrigger: {
+                    trigger: '#scrollContainer',
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 2
+                }
+            });
+        });
+        
+        // Handle resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Refresh ScrollTrigger on resize
+                ScrollTrigger.refresh();
+            }, 250);
+        }, { passive: true });
+        
+        // Add hover effects with GSAP
+        cards.forEach((card) => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, {
+                    scale: 1.1,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+        });
+        
+        // Preload images
+        cardImages.forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+    </script>
+</body>
+</html>

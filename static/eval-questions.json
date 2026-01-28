@@ -518,5 +518,24 @@
       "content": "<iframe src='/eval-demos/kimi-k2.5-ipad-air-highlights.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
     }
   }
+},
+
+{
+  "id":"q020", 
+  "title":"Universe",
+  "category":"代码能力", 
+  "difficulty":"困难",  
+  "question":"Create an HTML landing page using vanilla JavaScript and GSAP ScrollTrigger where a central cluster of nine overlapping, randomly rotated art cards explodes outward into a perfectly aligned 3x3 grid as the user scrolls. The UI should feature a deep charcoal background with floating, colorful bokeh circles and a large serif Kimi Universe title that remains centered while the subtitle dynamically cross-fades between Explore the Infinite, Journey Through Dimensions, and Infinite Possibilities based on scroll progress. Ensure the animation is smooth and scrubbable, with cards transitioning from their initial random rotations to 0° as they lock into the grid, maintaining full responsiveness for mobile devices.", 
+  "answers":{
+    "Kimi-K2.5":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/kimi-k2.5-universe-landing.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }, 
+    "Qwen3-Max-Thinking":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/Qwen3-Max-Thinking-universe-landing.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }
+  }
+
 }
 ]
