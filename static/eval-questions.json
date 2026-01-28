@@ -159,6 +159,10 @@
       "Qwen3-Max-Thinking": {
         "type": "html",
         "content": "<iframe src='/eval-demos/Qwen3-Max-Thinking-hexagon-ball.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+      "Kimi-K2.5": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/kimi-k2.5-bouncing_balls_hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -436,6 +440,42 @@
     "MiniMax-M2.1":{
       "type": "html",
       "content": "<iframe src='/eval-demos/MiniMax-M2.1-rubiks-cube.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }
+  }
+}, 
+
+{
+  "id":"q016", 
+  "title": "Switch SVG",
+  "category": "代码能力",
+  "difficulty": "中等",
+  "question": "SVG Animation of nintendo switch playing pokemon in one html",
+  "answers": {
+    "Kimi-K2.5":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/kimi-k2.5-nintendo_switch_pokemon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }, 
+    "Qwen3-Max-Thinking":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/Qwen3-Max-Thinking-nintendo_switch_pokemon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }
+  }
+}, 
+
+{
+  "id":"q017", 
+  "title": "交通灯",
+  "category": "代码能力",
+  "difficulty": "中等",
+  "question": "用HTML、CSS和JavaScript写一个交通灯可视化程序，模拟单行道上的交通灯工作原理，车辆以随机速率进入道路。写进同一个HTML文件里",
+  "answers": {
+    "Kimi-K2.5":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/kimi-k2.5-traffic-simulator.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    },
+    "Qwen3-Max-Thinking":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/Qwen3-Max-Thinking-traffic-simulator.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
     }
   }
 }

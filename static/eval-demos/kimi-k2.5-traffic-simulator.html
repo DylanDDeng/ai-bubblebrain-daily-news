@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交通灯模拟器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* 控制面板 */
+        .control-panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-group label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .control-group input[type="range"] {
+            width: 150px;
+            cursor: pointer;
+        }
+        
+        .control-group span {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            background: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+        }
+        
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76,175,80,0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.danger {
+            background: #f44336;
+            box-shadow: 0 4px 15px rgba(244,67,54,0.3);
+        }
+        
+        button.danger:hover {
+            background: #da190b;
+            box-shadow: 0 6px 20px rgba(244,67,54,0.4);
+        }
+        
+        /* 道路容器 */
+        .road-container {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            height: 200px;
+            background: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        
+        /* 道路标线 */
+        .road {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #2a2a2a 0%, #333 50%, #2a2a2a 100%);
+        }
+        
+        .lane-marker {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                to right,
+                transparent 0px,
+                transparent 30px,
+                rgba(255,255,255,0.4) 30px,
+                rgba(255,255,255,0.4) 60px
+            );
+            transform: translateY(-50%);
+        }
+        
+        /* 停车线 */
+        .stop-line {
+            position: absolute;
+            left: 180px;
+            top: 20px;
+            bottom: 20px;
+            width: 6px;
+            background: rgba(255,255,255,0.6);
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+        
+        /* 交通灯 */
+        .traffic-light {
+            position: absolute;
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 160px;
+            background: linear-gradient(145deg, #222, #111);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.5),
+                inset 0 2px 5px rgba(255,255,255,0.1);
+            border: 2px solid #444;
+        }
+        
+        .light {
+            flex: 1;
+            border-radius: 50%;
+            background: #333;
+            transition: all 0.3s;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .light::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 30%;
+            height: 30%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .light.red.active {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c92a2a);
+            box-shadow: 
+                0 0 30px rgba(201,42,42,0.8),
+                inset 0 3px 8px rgba(0,0,0,0.3);
+        }
+        
+        .light.yellow.active {
+            background: radial-gradient(circle at 30% 30%, #ffd43b, #f59f00);
+            box-shadow: 
+                0 0 30px rgba(245,159,0,0.8),
+                inset 0 3px 8px rgba(0,0,0,0.3);
+        }
+        
+        .light.green.active {
+            background: radial-gradient(circle at 30% 30%, #69db7c, #2f9e44);
+            box-shadow: 
+                0 0 30px rgba(47,158,68,0.8),
+                inset 0 3px 8px rgba(0,0,0,0.3);
+        }
+        
+        /* 车辆 */
+        .car {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 6px;
+            transition: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .car::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+        
+        .car::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 8px;
+            width: 10px;
+            height: 6px;
+            background: #111;
+            border-radius: 2px;
+            box-shadow: 34px 0 0 #111;
+        }
+        
+        /* 车辆颜色 */
+        .car.blue { background: linear-gradient(135deg, #74c0fc, #339af0); }
+        .car.red { background: linear-gradient(135deg, #ff8787, #fa5252); }
+        .car.green { background: linear-gradient(135deg, #69db7c, #40c057); }
+        .car.yellow { background: linear-gradient(135deg, #ffd43b, #fcc419); }
+        .car.purple { background: linear-gradient(135deg, #da77f2, #be4bdb); }
+        .car.orange { background: linear-gradient(135deg, #ffa94d, #ff922b); }
+        
+        /* 刹车灯 */
+        .car.braking::before {
+            background: rgba(255,50,50,0.6);
+            box-shadow: 0 0 10px rgba(255,0,0,0.8);
+        }
+        
+        /* 统计信息 */
+        .stats {
+            margin-top: 20px;
+            display: flex;
+            gap: 30px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4dabf7;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        
+        /* 状态指示器 */
+        .status-indicator {
+            margin-top: 10px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        
+        .status-indicator.green { background: rgba(47,158,68,0.3); color: #69db7c; }
+        .status-indicator.yellow { background: rgba(245,159,0,0.3); color: #ffd43b; }
+        .status-indicator.red { background: rgba(201,42,42,0.3); color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <h1>🚦 单行道交通灯模拟器</h1>
+    
+    <!-- 控制面板 -->
+    <div class="control-panel">
+        <div class="control-group">
+            <label>绿灯时长</label>
+            <input type="range" id="greenTime" min="3" max="10" value="5">
+            <span id="greenTimeVal">5秒</span>
+        </div>
+        <div class="control-group">
+            <label>黄灯时长</label>
+            <input type="range" id="yellowTime" min="2" max="5" value="3">
+            <span id="yellowTimeVal">3秒</span>
+        </div>
+        <div class="control-group">
+            <label>红灯时长</label>
+            <input type="range" id="redTime" min="3" max="10" value="5">
+            <span id="redTimeVal">5秒</span>
+        </div>
+        <div class="control-group">
+            <label>车辆生成率</label>
+            <input type="range" id="spawnRate" min="1" max="10" value="5">
+            <span id="spawnRateVal">中等</span>
+        </div>
+        <button id="toggleBtn" onclick="toggleSimulation()">⏸️ 暂停</button>
+        <button class="danger" onclick="resetSimulation()">🔄 重置</button>
+    </div>
+    
+    <!-- 状态指示 -->
+    <div class="status-indicator green" id="statusIndicator">🟢 通行中</div>
+    
+    <!-- 道路 -->
+    <div class="road-container" id="roadContainer">
+        <div class="road">
+            <div class="lane-marker"></div>
+            <div class="stop-line"></div>
+        </div>
+        <div class="traffic-light">
+            <div class="light red" id="redLight"></div>
+            <div class="light yellow" id="yellowLight"></div>
+            <div class="light green active" id="greenLight"></div>
+        </div>
+        <!-- 车辆将通过JS动态添加到这里 -->
+    </div>
+    
+    <!-- 统计 -->
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-value" id="carCount">0</div>
+            <div class="stat-label">当前车辆</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="passedCount">0</div>
+            <div class="stat-label">已通过</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="avgWait">0s</div>
+            <div class="stat-label">平均等待</div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 配置 ====================
+        const CONFIG = {
+            roadLength: 1000,      // 道路长度（像素）
+            carWidth: 60,          // 车宽
+            carHeight: 30,         // 车高
+            laneY: 100,            // 车道Y位置（道路中心）
+            stopLineX: 180,        // 停车线位置
+            lightPosition: 90,     // 交通灯位置
+            maxSpeed: 3,           // 最大速度
+            acceleration: 0.1,     // 加速度
+            deceleration: 0.15,    // 减速度
+            safeDistance: 80,      // 安全距离
+        };
+        
+        // ==================== 状态 ====================
+        let state = {
+            light: 'green',        // 当前灯色: green, yellow, red
+            cars: [],              // 车辆数组
+            isRunning: true,       // 是否运行中
+            lastSpawnTime: 0,      // 上次生成时间
+            spawnInterval: 2000,   // 生成间隔（动态）
+            passedCars: 0,         // 已通过车辆数
+            totalWaitTime: 0,      // 总等待时间
+            lightTimer: null,      // 灯定时器
+            lightTimeLeft: 0,      // 当前灯剩余时间
+        };
+        
+        // 灯的时间配置
+        let lightDurations = {
+            green: 5000,
+            yellow: 3000,
+            red: 5000
+        };
+        
+        // ==================== DOM 元素 ====================
+        const roadContainer = document.getElementById('roadContainer');
+        const lights = {
+            red: document.getElementById('redLight'),
+            yellow: document.getElementById('yellowLight'),
+            green: document.getElementById('greenLight')
+        };
+        const statusIndicator = document.getElementById('statusIndicator');
+        
+        // ==================== 车辆类 ====================
+        class Car {
+            constructor(id) {
+                this.id = id;
+                this.x = CONFIG.roadLength;  // 从右侧进入
+                this.y = CONFIG.laneY;
+                this.speed = CONFIG.maxSpeed + Math.random() * 2;  // 随机速度
+                this.maxSpeed = this.speed;
+                this.color = this.getRandomColor();
+                this.state = 'moving';  // moving, stopping, stopped
+                this.waitTime = 0;
+                this.element = this.createElement();
+            }
+            
+            getRandomColor() {
+                const colors = ['blue', 'red', 'green', 'yellow', 'purple', 'orange'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            createElement() {
+                const car = document.createElement('div');
+                car.className = `car ${this.color}`;
+                car.style.left = this.x + 'px';
+                car.style.top = '50%';
+                roadContainer.appendChild(car);
+                return car;
+            }
+            
+            update(deltaTime, carsAhead, lightState) {
+                // 寻找前方最近的车辆
+                let nearestCar = null;
+                let minDistance = Infinity;
+                
+                for (let car of carsAhead) {
+                    if (car.x > this.x) continue;  // 只考虑前方的车（左侧的车）
+                    let distance = this.x - car.x - CONFIG.carWidth;
+                    if (distance < minDistance && distance >= 0) {
+                        minDistance = distance;
+                        nearestCar = car;
+                    }
+                }
+                
+                // 计算目标停止位置
+                let stopPosition = null;
+                
+                // 检查交通灯
+                if (lightState !== 'green' && this.x > CONFIG.stopLineX + 20) {
+                    // 如果还没到停车线，且灯不是绿色
+                    let distanceToStopLine = this.x - CONFIG.stopLineX;
+                    if (distanceToStopLine < 150 && distanceToStopLine > 0) {
+                        stopPosition = CONFIG.stopLineX + CONFIG.carWidth/2;
+                    }
+                }
+                
+                // 检查前方车辆
+                if (nearestCar && minDistance < CONFIG.safeDistance + 50) {
+                    let targetPos = nearestCar.x + CONFIG.carWidth + CONFIG.safeDistance/2;
+                    if (stopPosition === null || targetPos > stopPosition) {
+                        stopPosition = targetPos;
+                    }
+                }
+                
+                // 根据目标位置调整速度
+                if (stopPosition !== null) {
+                    let distance = this.x - stopPosition;
+                    if (distance < 10) {
+                        // 完全停止
+                        this.speed = 0;
+                        this.state = 'stopped';
+                    } else {
+                        // 减速
+                        let targetSpeed = Math.min(
+                            this.maxSpeed,
+                            Math.max(0, distance * 0.05)
+                        );
+                        if (this.speed > targetSpeed) {
+                            this.speed -= CONFIG.deceleration;
+                            this.state = 'stopping';
+                        }
+                    }
+                } else {
+                    // 加速到最大速度
+                    this.state = 'moving';
+                    if (this.speed < this.maxSpeed) {
+                        this.speed += CONFIG.acceleration;
+                    }
+                }
+                
+                // 更新位置
+                this.x -= this.speed;
+                
+                // 更新等待时间
+                if (this.state === 'stopped') {
+                    this.waitTime += deltaTime;
+                }
+                
+                // 更新视觉
+                this.render();
+                
+                // 检查是否通过
+                return this.x < -CONFIG.carWidth;
+            }
+            
+            render() {
+                this.element.style.left = this.x + 'px';
+                // 根据状态显示刹车灯
+                if (this.state === 'stopping' || this.state === 'stopped') {
+                    this.element.classList.add('braking');
+                } else {
+                    this.element.classList.remove('braking');
+                }
+            }
+            
+            destroy() {
+                this.element.remove();
+            }
+        }
+        
+        // ==================== 交通灯控制 ====================
+        function switchLight(toColor) {
+            // 移除所有active类
+            Object.values(lights).forEach(light => light.classList.remove('active'));
+            
+            // 设置新灯
+            lights[toColor].classList.add('active');
+            state.light = toColor;
+            
+            // 更新状态指示器
+            const indicators = {
+                green: { text: '🟢 通行中', class: 'green' },
+                yellow: { text: '🟡 准备停车', class: 'yellow' },
+                red: { text: '🔴 停止', class: 'red' }
+            };
+            statusIndicator.textContent = indicators[toColor].text;
+            statusIndicator.className = `status-indicator ${indicators[toColor].class}`;
+        }
+        
+        function nextLight() {
+            const sequence = ['green', 'yellow', 'red'];
+            const currentIndex = sequence.indexOf(state.light);
+            const nextIndex = (currentIndex + 1) % sequence.length;
+            const nextColor = sequence[nextIndex];
+            
+            switchLight(nextColor);
+            
+            // 设置下一个定时器
+            state.lightTimeLeft = lightDurations[nextColor];
+            state.lightTimer = setTimeout(nextLight, lightDurations[nextColor]);
+        }
+        
+        function startLightCycle() {
+            if (state.lightTimer) clearTimeout(state.lightTimer);
+            state.lightTimer = setTimeout(nextLight, lightDurations[state.light]);
+        }
+        
+        // ==================== 车辆生成 ====================
+        function spawnCar() {
+            const now = Date.now();
+            if (now - state.lastSpawnTime > state.spawnInterval) {
+                // 检查是否在入口位置有车（避免重叠生成）
+                const canSpawn = !state.cars.some(car => 
+                    car.x > CONFIG.roadLength - CONFIG.carWidth - 20
+                );
+                
+                if (canSpawn) {
+                    const car = new Car(Date.now());
+                    state.cars.push(car);
+                    state.lastSpawnTime = now;
+                    
+                    // 随机下一次生成时间（1-4秒）
+                    const rate = parseInt(document.getElementById('spawnRate').value);
+                    const minInterval = 1100 - rate * 100;
+                    const maxInterval = 4000 - rate * 300;
+                    state.spawnInterval = minInterval + Math.random() * (maxInterval - minInterval);
+                }
+            }
+        }
+        
+        // ==================== 主循环 ====================
+        let lastTime = 0;
+        
+        function gameLoop(timestamp) {
+            if (!state.isRunning) {
+                lastTime = timestamp;
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // 生成新车辆
+            spawnCar();
+            
+            // 更新所有车辆
+            const carsToRemove = [];
+            for (let i = 0; i < state.cars.length; i++) {
+                const car = state.cars[i];
+                const carsAhead = state.cars.slice(0, i);  // 当前车辆前面的车
+                const passed = car.update(deltaTime, carsAhead, state.light);
+                
+                if (passed) {
+                    carsToRemove.push(i);
+                    state.passedCars++;
+                    state.totalWaitTime += car.waitTime;
+                }
+            }
+            
+            // 移除已通过的车辆
+            for (let i = carsToRemove.length - 1; i >= 0; i--) {
+                const index = carsToRemove[i];
+                state.cars[index].destroy();
+                state.cars.splice(index, 1);
+            }
+            
+            // 更新统计
+            updateStats();
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function updateStats() {
+            document.getElementById('carCount').textContent = state.cars.length;
+            document.getElementById('passedCount').textContent = state.passedCars;
+            
+            const avgWait = state.passedCars > 0 
+                ? (state.totalWaitTime / state.passedCars / 1000).toFixed(1)
+                : '0.0';
+            document.getElementById('avgWait').textContent = avgWait + 's';
+        }
+        
+        // ==================== 控制功能 ====================
+        function toggleSimulation() {
+            state.isRunning = !state.isRunning;
+            const btn = document.getElementById('toggleBtn');
+            btn.textContent = state.isRunning ? '⏸️ 暂停' : '▶️ 继续';
+        }
+        
+        function resetSimulation() {
+            // 清除所有车辆
+            state.cars.forEach(car => car.destroy());
+            state.cars = [];
+            state.passedCars = 0;
+            state.totalWaitTime = 0;
+            state.lastSpawnTime = 0;
+            
+            // 重置交通灯
+            if (state.lightTimer) clearTimeout(state.lightTimer);
+            switchLight('green');
+            startLightCycle();
+            
+            updateStats();
+        }
+        
+        // ==================== 事件监听 ====================
+        // 滑块事件
+        document.getElementById('greenTime').addEventListener('input', function() {
+            lightDurations.green = this.value * 1000;
+            document.getElementById('greenTimeVal').textContent = this.value + '秒';
+        });
+        
+        document.getElementById('yellowTime').addEventListener('input', function() {
+            lightDurations.yellow = this.value * 1000;
+            document.getElementById('yellowTimeVal').textContent = this.value + '秒';
+        });
+        
+        document.getElementById('redTime').addEventListener('input', function() {
+            lightDurations.red = this.value * 1000;
+            document.getElementById('redTimeVal').textContent = this.value + '秒';
+        });
+        
+        document.getElementById('spawnRate').addEventListener('input', function() {
+            const labels = ['很低', '低', '较低', '中等', '中上', '较高', '高', '很高', '极高', '密集'];
+            document.getElementById('spawnRateVal').textContent = labels[this.value - 1];
+        });
+        
+        // ==================== 启动 ====================
+        startLightCycle();
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>

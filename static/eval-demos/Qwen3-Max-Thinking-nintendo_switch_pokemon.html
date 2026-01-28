@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo Switch Playing Pokémon</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #4a235a);
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            position: relative;
+            padding: 20px;
+            border-radius: 20px;
+            background: rgba(0, 0, 30, 0.7);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8),
+                        inset 0 0 20px rgba(100, 150, 255, 0.3);
+            max-width: 95%;
+            margin: 20px;
+        }
+        
+        h1 {
+            color: #ffd700;
+            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #ff6b6b, 0 0 20px #4da6ff;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #ffd700, #ff6b6b, #4da6ff, #ffd700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 3s linear infinite;
+        }
+        
+        .subtitle {
+            color: #a0a0ff;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+        
+        svg {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.9));
+            transform-origin: center;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0.5deg); }
+            50% { transform: translateY(-10px) rotate(-0.5deg); }
+        }
+        
+        @keyframes shine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        @keyframes vibrate {
+            0%, 100% { transform: translate(0, 0) rotate(0); }
+            25% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+            50% { transform: translate(1px, -1px) rotate(0.5deg); }
+            75% { transform: translate(-1px, -1px) rotate(-0.25deg); }
+        }
+        
+        .joycon-left {
+            animation: vibrate 2s infinite;
+            animation-delay: 0.5s;
+        }
+        
+        .joycon-right {
+            animation: vibrate 2.5s infinite;
+            animation-delay: 0.2s;
+        }
+        
+        .pikachu {
+            animation: walk 4s steps(8) infinite;
+        }
+        
+        @keyframes walk {
+            0%, 100% { transform: translateX(0) scaleX(1); }
+            50% { transform: translateX(100px) scaleX(1); }
+            51% { transform: translateX(100px) scaleX(-1); }
+            100% { transform: translateX(0) scaleX(-1); }
+        }
+        
+        .pikachu-eye {
+            animation: blink 4s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 90%, 100% { ry: 2; }
+            95% { ry: 0.1; }
+        }
+        
+        .screen-glow {
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+        
+        .pokeball {
+            animation: bounce 1.5s ease-in-out infinite;
+            transform-origin: center;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.1); }
+        }
+        
+        .sparkle {
+            animation: sparkle 2s infinite;
+            transform-origin: center;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        footer {
+            color: #aaa;
+            font-family: 'Segoe UI', sans-serif;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            max-width: 600px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            svg {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NINTENDO SWITCH</h1>
+        <div class="subtitle">Playing Pokémon Brilliant Diamond & Shining Pearl</div>
+        
+        <svg viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background elements -->
+            <defs>
+                <radialGradient id="screenGlow" cx="50%" cy="50%" r="60%" fx="50%" fy="50%">
+                    <stop offset="0%" stop-color="#4da6ff" stop-opacity="0.4" />
+                    <stop offset="100%" stop-color="#003366" stop-opacity="0" />
+                </radialGradient>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feFlood flood-color="#4da6ff" flood-opacity="0.6" result="glowColor" />
+                    <feComposite in="glowColor" in2="blur" operator="in" result="softGlow" />
+                    <feBlend in="SourceGraphic" in2="softGlow" mode="screen" />
+                </filter>
+            </defs>
+            
+            <!-- Nintendo Switch Stand -->
+            <rect x="285" y="260" width="30" height="45" rx="3" fill="#555" stroke="#333" stroke-width="2" />
+            <rect x="280" y="300" width="40" height="15" rx="2" fill="#444" stroke="#333" stroke-width="2" />
+            
+            <!-- Nintendo Switch Base (Gray) -->
+            <rect x="150" y="150" width="300" height="110" rx="15" fill="#4a4a4a" stroke="#333" stroke-width="3" />
+            <rect x="155" y="155" width="290" height="100" rx="12" fill="#5a5a5a" />
+            <rect x="160" y="160" width="280" height="90" rx="10" fill="#6a6a6a" />
+            
+            <!-- Screen Border -->
+            <rect x="200" y="175" width="200" height="130" rx="8" fill="#222" stroke="#111" stroke-width="3" />
+            <rect x="205" y="180" width="190" height="120" rx="5" fill="#111" stroke="#333" stroke-width="1" />
+            
+            <!-- Screen Glow Effect -->
+            <rect x="205" y="180" width="190" height="120" rx="5" fill="url(#screenGlow)" class="screen-glow" opacity="0.8" />
+            
+            <!-- Screen Content - Pokémon Game Scene -->
+            <g transform="translate(210, 185)">
+                <!-- Sky Background -->
+                <rect x="0" y="0" width="180" height="60" fill="#87CEFA" />
+                
+                <!-- Clouds -->
+                <ellipse cx="30" cy="20" rx="15" ry="10" fill="#e0e0e0" opacity="0.9" />
+                <ellipse cx="60" cy="15" rx="12" ry="8" fill="#e0e0e0" opacity="0.85" />
+                <ellipse cx="150" cy="25" rx="18" ry="12" fill="#e0e0e0" opacity="0.8" />
+                
+                <!-- Mountains -->
+                <polygon points="0,60 40,25 80,60" fill="#7a5230" />
+                <polygon points="60,60 100,30 140,60" fill="#8b6338" />
+                <polygon points="120,60 160,20 180,60" fill="#6d4a2a" />
+                
+                <!-- Ground -->
+                <rect x="0" y="60" width="180" height="60" fill="#4CAF50" />
+                
+                <!-- Trees -->
+                <g fill="#2E7D32">
+                    <polygon points="20,60 15,40 25,40" />
+                    <polygon points="20,45 10,30 30,30" />
+                    <polygon points="20,35 12,20 28,20" />
+                </g>
+                <g fill="#2E7D32" transform="translate(130, 0)">
+                    <polygon points="20,60 15,40 25,40" />
+                    <polygon points="20,45 10,30 30,30" />
+                    <polygon points="20,35 12,20 28,20" />
+                </g>
+                
+                <!-- Pokéball bouncing -->
+                <g class="pokeball" transform="translate(140, 70)">
+                    <circle cx="0" cy="0" r="12" fill="white" stroke="#333" stroke-width="0.5" />
+                    <circle cx="0" cy="0" r="8" fill="#e74c3c" />
+                    <circle cx="0" cy="0" r="4" fill="white" stroke="#333" stroke-width="0.5" />
+                    <circle cx="0" cy="0" r="1.5" fill="#333" />
+                </g>
+                
+                <!-- Pikachu Character -->
+                <g class="pikachu" transform="translate(30, 75)">
+                    <!-- Body -->
+                    <ellipse cx="25" cy="20" rx="18" ry="15" fill="#FFD700" />
+                    <ellipse cx="25" cy="20" rx="18" ry="15" fill="none" stroke="#e6b400" stroke-width="0.5" />
+                    
+                    <!-- Tail -->
+                    <path d="M 10 25 Q 5 15 2 10 Q -5 0 0 25 Z" fill="#FFD700" stroke="#e6b400" stroke-width="0.5" transform="scale(0.9) translate(-3, 3)" />
+                    
+                    <!-- Ears -->
+                    <ellipse cx="15" cy="8" rx="5" ry="8" fill="#FFD700" transform="rotate(-20 15 8)" />
+                    <ellipse cx="35" cy="8" rx="5" ry="8" fill="#FFD700" transform="rotate(20 35 8)" />
+                    <ellipse cx="15" cy="10" rx="2" ry="5" fill="#333" transform="rotate(-20 15 8)" />
+                    <ellipse cx="35" cy="10" rx="2" ry="5" fill="#333" transform="rotate(20 35 8)" />
+                    
+                    <!-- Head -->
+                    <circle cx="25" cy="15" r="12" fill="#FFD700" stroke="#e6b400" stroke-width="0.5" />
+                    
+                    <!-- Eyes -->
+                    <ellipse cx="20" cy="14" rx="3" ry="2" fill="#333" class="pikachu-eye" />
+                    <ellipse cx="30" cy="14" rx="3" ry="2" fill="#333" class="pikachu-eye" />
+                    
+                    <!-- Cheek Circles -->
+                    <circle cx="18" cy="22" r="4" fill="#e74c3c" />
+                    <circle cx="32" cy="22" r="4" fill="#e74c3c" />
+                    
+                    <!-- Mouth -->
+                    <path d="M 22 26 Q 25 29 28 26" fill="none" stroke="#333" stroke-width="1" stroke-linecap="round" />
+                    
+                    <!-- Arms -->
+                    <ellipse cx="12" cy="25" rx="4" ry="3" fill="#FFD700" transform="rotate(-15 12 25)" />
+                    <ellipse cx="38" cy="25" rx="4" ry="3" fill="#FFD700" transform="rotate(15 38 25)" />
+                    
+                    <!-- Legs -->
+                    <ellipse cx="20" cy="35" rx="5" ry="3" fill="#333" />
+                    <ellipse cx="30" cy="35" rx="5" ry="3" fill="#333" />
+                    
+                    <!-- Sparkles -->
+                    <g class="sparkle" fill="#fff" opacity="0.8">
+                        <polygon points="45,10 47,15 52,15 48,18 49,23 45,20 41,23 42,18 38,15 43,15" transform="scale(0.4) translate(10, 10)" />
+                        <polygon points="45,10 47,15 52,15 48,18 49,23 45,20 41,23 42,18 38,15 43,15" transform="scale(0.3) translate(120, 20)" />
+                        <polygon points="45,10 47,15 52,15 48,18 49,23 45,20 41,23 42,18 38,15 43,15" transform="scale(0.35) translate(70, 5)" />
+                    </g>
+                </g>
+                
+                <!-- Game UI Elements -->
+                <rect x="10" y="100" width="160" height="15" rx="3" fill="rgba(0,0,0,0.6)" stroke="#333" stroke-width="0.5" />
+                <text x="90" y="112" font-family="Arial" font-size="10" fill="#ffd700" text-anchor="middle">PIKACHU Lv.42</text>
+                
+                <rect x="10" y="80" width="40" height="15" rx="3" fill="rgba(231, 76, 60, 0.8)" stroke="#333" stroke-width="0.5" />
+                <text x="30" y="91" font-family="Arial" font-size="8" fill="white" text-anchor="middle">FIGHT</text>
+                
+                <rect x="55" y="80" width="40" height="15" rx="3" fill="rgba(52, 152, 219, 0.8)" stroke="#333" stroke-width="0.5" />
+                <text x="75" y="91" font-family="Arial" font-size="8" fill="white" text-anchor="middle">BAG</text>
+                
+                <rect x="100" y="80" width="40" height="15" rx="3" fill="rgba(46, 204, 113, 0.8)" stroke="#333" stroke-width="0.5" />
+                <text x="120" y="91" font-family="Arial" font-size="8" fill="white" text-anchor="middle">POKé</text>
+                
+                <rect x="145" y="80" width="25" height="15" rx="3" fill="rgba(155, 89, 182, 0.8)" stroke="#333" stroke-width="0.5" />
+                <text x="157" y="91" font-family="Arial" font-size="8" fill="white" text-anchor="middle">RUN</text>
+            </g>
+            
+            <!-- Left Joy-Con (Neon Blue) -->
+            <g class="joycon-left">
+                <rect x="110" y="165" width="35" height="90" rx="8" fill="#2980b9" stroke="#1a5276" stroke-width="2" />
+                <rect x="115" y="170" width="25" height="80" rx="5" fill="#3498db" />
+                
+                <!-- Joy-Con Details -->
+                <circle cx="127.5" cy="195" r="6" fill="#2c3e50" stroke="#1a5276" stroke-width="1" />
+                <circle cx="127.5" cy="195" r="3" fill="#3498db" />
+                <circle cx="127.5" cy="220" r="3" fill="#2c3e50" />
+                <circle cx="127.5" cy="230" r="3" fill="#2c3e50" />
+                <circle cx="127.5" cy="240" r="3" fill="#2c3e50" />
+                
+                <rect x="122.5" y="255" width="10" height="10" rx="2" fill="#2c3e50" />
+                <rect x="122.5" y="255" width="10" height="5" rx="2" fill="#e74c3c" />
+                
+                <circle cx="127.5" cy="280" r="4" fill="#f1c40f" />
+                <circle cx="127.5" cy="280" r="1.5" fill="#2c3e50" />
+            </g>
+            
+            <!-- Right Joy-Con (Neon Red) -->
+            <g class="joycon-right">
+                <rect x="455" y="165" width="35" height="90" rx="8" fill="#c0392b" stroke="#922b21" stroke-width="2" />
+                <rect x="460" y="170" width="25" height="80" rx="5" fill="#e74c3c" />
+                
+                <!-- Joy-Con Details -->
+                <circle cx="472.5" cy="195" r="6" fill="#2c3e50" stroke="#922b21" stroke-width="1" />
+                <circle cx="472.5" cy="195" r="3" fill="#e74c3c" />
+                
+                <rect x="467.5" y="220" width="4" height="4" rx="1" fill="#2c3e50" />
+                <rect x="475.5" y="220" width="4" height="4" rx="1" fill="#2c3e50" />
+                <rect x="467.5" y="228" width="4" height="4" rx="1" fill="#2c3e50" />
+                <rect x="475.5" y="228" width="4" height="4" rx="1" fill="#2c3e50" />
+                
+                <rect x="467.5" y="245" width="10" height="15" rx="2" fill="#2c3e50" />
+                <rect x="467.5" y="245" width="10" height="8" rx="2" fill="#f1c40f" />
+                
+                <circle cx="472.5" cy="280" r="4" fill="#3498db" />
+                <circle cx="472.5" cy="280" r="1.5" fill="#2c3e50" />
+            </g>
+            
+            <!-- Nintendo Logo on Switch -->
+            <text x="300" y="225" font-family="Arial" font-weight="bold" font-size="8" fill="#ddd" text-anchor="middle">NINTENDO</text>
+            
+            <!-- Screen Reflection -->
+            <path d="M 205 180 L 395 180 Q 400 180 400 185 L 400 220 Q 400 225 395 225 L 205 225 Q 200 225 200 220 L 200 185 Q 200 180 205 180" fill="white" opacity="0.1" />
+        </svg>
+        
+        <footer>
+            <p>🎮 An SVG animation tribute to Nintendo Switch and Pokémon games 🎮</p>
+            <p>Pikachu is walking back and forth while a Poké Ball bounces nearby. The Joy-Cons vibrate slightly with game action!</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple interaction: make the Pokéball jump on click
+        document.addEventListener('DOMContentLoaded', () => {
+            const svg = document.querySelector('svg');
+            const pokeball = document.querySelector('.pokeball');
+            
+            svg.addEventListener('click', (e) => {
+                if (e.target.closest('svg')) {
+                    // Create a temporary animation
+                    pokeball.style.animation = 'none';
+                    setTimeout(() => {
+                        pokeball.style.animation = 'bounce 0.5s ease-in-out';
+                    }, 10);
+                    
+                    // Create sparkles at click position
+                    const rect = svg.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    if (x > 210 && x < 390 && y > 185 && y < 305) {
+                        createSparkle(x, y);
+                    }
+                }
+            });
+            
+            function createSparkle(x, y) {
+                const sparkle = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                sparkle.setAttribute('points', '45,10 47,15 52,15 48,18 49,23 45,20 41,23 42,18 38,15 43,15');
+                sparkle.setAttribute('fill', '#fff');
+                sparkle.setAttribute('opacity', '0.9');
+                sparkle.setAttribute('transform', `scale(0.5) translate(${x/0.5}, ${y/0.5})`);
+                sparkle.classList.add('sparkle');
+                
+                const screenGroup = document.querySelector('svg g');
+                screenGroup.appendChild(sparkle);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

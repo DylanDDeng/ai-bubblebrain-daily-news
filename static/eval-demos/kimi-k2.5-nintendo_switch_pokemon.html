@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo Switch - Pokemon Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+        }
+        .container {
+            width: 90vw;
+            max-width: 1000px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <!-- Gradients -->
+                <linearGradient id="joyconLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00c3ff"/>
+                    <stop offset="100%" stop-color="#0084ff"/>
+                </linearGradient>
+                <linearGradient id="joyconRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff4d4d"/>
+                    <stop offset="100%" stop-color="#ff0066"/>
+                </linearGradient>
+                <linearGradient id="screenBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#87CEEB"/>
+                    <stop offset="100%" stop-color="#E0F6FF"/>
+                </linearGradient>
+                <linearGradient id="ground" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#90EE90"/>
+                    <stop offset="100%" stop-color="#228B22"/>
+                </linearGradient>
+                <radialGradient id="pikachuBody">
+                    <stop offset="0%" stop-color="#FFE55C"/>
+                    <stop offset="100%" stop-color="#FFD700"/>
+                </radialGradient>
+                <radialGradient id="charmanderBody">
+                    <stop offset="0%" stop-color="#FFB347"/>
+                    <stop offset="100%" stop-color="#FF8C00"/>
+                </radialGradient>
+                <radialGradient id="screenGlow" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+                    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                </radialGradient>
+                <filter id="shadow">
+                    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity="0.4"/>
+                </filter>
+            </defs>
+
+            <!-- Console Shadow -->
+            <ellipse cx="400" cy="420" rx="380" ry="40" fill="#000" opacity="0.3"/>
+
+            <!-- Left Joy-Con -->
+            <g id="leftJoycon">
+                <rect x="50" y="100" width="100" height="280" rx="8" fill="url(#joyconLeft)" filter="url(#shadow)"/>
+                <!-- Analog Stick -->
+                <circle cx="100" cy="160" r="28" fill="#333">
+                    <animate attributeName="cy" values="160;165;160;155;160" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="100" cy="160" r="22" fill="#1a1a1a">
+                    <animate attributeName="cy" values="160;165;160;155;160" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <!-- Directional Buttons -->
+                <g opacity="0.8">
+                    <rect x="92" y="220" width="16" height="14" rx="2" fill="#1a1a1a"/>
+                    <rect x="85" y="227" width="14" height="16" rx="2" fill="#1a1a1a"/>
+                    <rect x="99" y="227" width="14" height="16" rx="2" fill="#1a1a1a"/>
+                    <rect x="92" y="241" width="16" height="14" rx="2" fill="#1a1a1a"/>
+                </g>
+                <!-- Minus Button -->
+                <rect x="120" y="120" width="12" height="4" rx="2" fill="#1a1a1a"/>
+                <!-- Capture Button -->
+                <circle cx="115" cy="310" r="6" fill="#1a1a1a"/>
+                <!-- SL/SR Buttons -->
+                <rect x="45" y="150" width="8" height="20" rx="2" fill="#444"/>
+                <rect x="45" y="200" width="8" height="20" rx="2" fill="#444"/>
+            </g>
+
+            <!-- Right Joy-Con -->
+            <g id="rightJoycon">
+                <rect x="650" y="100" width="100" height="280" rx="8" fill="url(#joyconRight)" filter="url(#shadow)"/>
+                <!-- ABXY Buttons -->
+                <g opacity="0.8">
+                    <circle cx="700" cy="230" r="7" fill="#1a1a1a"/>
+                    <circle cx="685" cy="245" r="7" fill="#1a1a1a"/>
+                    <circle cx="715" cy="245" r="7" fill="#1a1a1a"/>
+                    <circle cx="700" cy="260" r="7" fill="#1a1a1a"/>
+                </g>
+                <!-- Analog Stick -->
+                <circle cx="700" cy="300" r="28" fill="#333">
+                    <animate attributeName="cy" values="300;295;300;305;300" dur="1.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="700" cy="300" r="22" fill="#1a1a1a">
+                    <animate attributeName="cy" values="300;295;300;305;300" dur="1.5s" repeatCount="indefinite"/>
+                </circle>
+                <!-- Plus Button -->
+                <g transform="translate(675, 118)">
+                    <rect x="4" y="0" width="12" height="4" rx="2" fill="#1a1a1a"/>
+                    <rect x="8" y="-4" width="4" height="12" rx="2" fill="#1a1a1a"/>
+                </g>
+                <!-- Home Button -->
+                <circle cx="685" cy="340" r="7" fill="#1a1a1a"/>
+                <path d="M682 338 L685 335 L688 338 M682 338 L682 343 L688 343 L688 338" stroke="#666" stroke-width="1.5" fill="none"/>
+                <!-- SL/SR Buttons -->
+                <rect x="747" y="150" width="8" height="20" rx="2" fill="#444"/>
+                <rect x="747" y="200" width="8" height="20" rx="2" fill="#444"/>
+            </g>
+
+            <!-- Console Body -->
+            <g id="consoleBody">
+                <rect x="140" y="90" width="520" height="300" rx="15" fill="#1a1a1a" filter="url(#shadow)"/>
+                <!-- Screen Bezel -->
+                <rect x="155" y="105" width="490" height="270" rx="5" fill="#000"/>
+                <!-- Screen -->
+                <rect x="165" y="115" width="470" height="250" rx="3" fill="url(#screenBg)"/>
+                
+                <!-- Game Scene on Screen -->
+                <g clip-path="url(#screenClip)">
+                    <defs>
+                        <clipPath id="screenClip">
+                            <rect x="165" y="115" width="470" height="250"/>
+                        </clipPath>
+                    </defs>
+                    
+                    <!-- Sky -->
+                    <rect x="165" y="115" width="470" height="150" fill="url(#screenBg)"/>
+                    
+                    <!-- Animated Clouds -->
+                    <g opacity="0.7">
+                        <ellipse cx="250" cy="150" rx="30" ry="15" fill="#FFF">
+                            <animate attributeName="cx" values="250;280;250" dur="8s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="270" cy="155" rx="25" ry="12" fill="#FFF">
+                            <animate attributeName="cx" values="270;300;270" dur="8s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="450" cy="140" rx="35" ry="18" fill="#FFF">
+                            <animate attributeName="cx" values="450;420;450" dur="10s" repeatCount="indefinite"/>
+                        </ellipse>
+                        <ellipse cx="480" cy="145" rx="28" ry="14" fill="#FFF">
+                            <animate attributeName="cx" values="480;450;480" dur="10s" repeatCount="indefinite"/>
+                        </ellipse>
+                    </g>
+                    
+                    <!-- Ground -->
+                    <rect x="165" y="265" width="470" height="100" fill="url(#ground)"/>
+                    
+                    <!-- Battle Platform Left -->
+                    <ellipse cx="280" cy="285" rx="70" ry="20" fill="#8B7355"/>
+                    <ellipse cx="280" cy="280" rx="65" ry="18" fill="#A0826D"/>
+                    
+                    <!-- Battle Platform Right -->
+                    <ellipse cx="520" cy="285" rx="70" ry="20" fill="#8B7355"/>
+                    <ellipse cx="520" cy="280" rx="65" ry="18" fill="#A0826D"/>
+                    
+                    <!-- Pikachu -->
+                    <g transform="translate(280, 245)">
+                        <!-- Tail -->
+                        <path d="M-25 10 L-35 0 L-25 -5 L-30 -15 L-15 -10 L-10 -20" 
+                              stroke="#8B4513" stroke-width="4" fill="none" stroke-linejoin="round">
+                            <animateTransform attributeName="transform" type="rotate" 
+                                values="0;-10;0;10;0" dur="0.5s" repeatCount="indefinite"/>
+                        </path>
+                        <!-- Body -->
+                        <ellipse cx="0" cy="15" rx="25" ry="22" fill="url(#pikachuBody)"/>
+                        <!-- Head -->
+                        <circle cx="0" cy="-5" r="22" fill="url(#pikachuBody)"/>
+                        <!-- Ears -->
+                        <ellipse cx="-15" cy="-20" rx="6" ry="18" fill="#FFD700" transform="rotate(-30 -15 -20)"/>
+                        <ellipse cx="15" cy="-20" rx="6" ry="18" fill="#FFD700" transform="rotate(30 15 -20)"/>
+                        <ellipse cx="-18" cy="-30" rx="4" ry="10" fill="#000" transform="rotate(-30 -18 -30)"/>
+                        <ellipse cx="18" cy="-30" rx="4" ry="10" fill="#000" transform="rotate(30 18 -30)"/>
+                        <!-- Face -->
+                        <circle cx="-8" cy="-5" r="3" fill="#000"/>
+                        <circle cx="8" cy="-5" r="3" fill="#000"/>
+                        <circle cx="-9" cy="-6" r="1" fill="#FFF"/>
+                        <circle cx="7" cy="-6" r="1" fill="#FFF"/>
+                        <circle cx="-16" cy="2" r="5" fill="#FF6B6B" opacity="0.8"/>
+                        <circle cx="16" cy="2" r="5" fill="#FF6B6B" opacity="0.8"/>
+                        <path d="M-3 2 Q0 4 3 2" stroke="#000" stroke-width="1.5" fill="none"/>
+                        <!-- Arms -->
+                        <ellipse cx="-12" cy="10" rx="6" ry="12" fill="#FFD700" transform="rotate(20 -12 10)"/>
+                        <ellipse cx="12" cy="10" rx="6" ry="12" fill="#FFD700" transform="rotate(-20 12 10)"/>
+                        <!-- Feet -->
+                        <ellipse cx="-10" cy="32" rx="6" ry="4" fill="#FFD700"/>
+                        <ellipse cx="10" cy="32" rx="6" ry="4" fill="#FFD700"/>
+                        
+                        <!-- Animation -->
+                        <animateTransform attributeName="transform" type="translate" 
+                            values="280,245;280,240;280,245" dur="0.6s" repeatCount="indefinite"/>
+                    </g>
+                    
+                    <!-- Charmander -->
+                    <g transform="translate(520, 235)">
+                        <!-- Tail with Flame -->
+                        <path d="M20 15 Q35 10 40 0" stroke="#FF8C00" stroke-width="8" fill="none" stroke-linecap="round"/>
+                        <!-- Flame Animation -->
+                        <g transform="translate(42, -5)">
+                            <ellipse cx="0" cy="0" rx="12" ry="20" fill="#FF4500" opacity="0.8">
+                                <animate attributeName="ry" values="20;25;20" dur="0.3s" repeatCount="indefinite"/>
+                                <animate attributeName="rx" values="12;14;12" dur="0.3s" repeatCount="indefinite"/>
+                            </ellipse>
+                            <ellipse cx="0" cy="0" rx="7" ry="14" fill="#FFD700">
+                                <animate attributeName="ry" values="14;17;14" dur="0.3s" repeatCount="indefinite"/>
+                            </ellipse>
+                            <ellipse cx="0" cy="5" rx="4" ry="8" fill="#FFF" opacity="0.6">
+                                <animate attributeName="ry" values="8;10;8" dur="0.3s" repeatCount="indefinite"/>
+                            </ellipse>
+                        </g>
+                        <!-- Body -->
+                        <ellipse cx="0" cy="20" rx="22" ry="25" fill="url(#charmanderBody)"/>
+                        <!-- Head -->
+                        <circle cx="0" cy="-8" r="20" fill="url(#charmanderBody)"/>
+                        <!-- Eyes -->
+                        <ellipse cx="-8" cy="-10" rx="4" ry="5" fill="#000"/>
+                        <ellipse cx="8" cy="-10" rx="4" ry="5" fill="#000"/>
+                        <circle cx="-7" cy="-12" r="1.5" fill="#FFF"/>
+                        <circle cx="9" cy="-12" r="1.5" fill="#FFF"/>
+                        <!-- Snout -->
+                        <ellipse cx="0" cy="-2" rx="5" ry="3" fill="#FFB347"/>
+                        <circle cx="-2" cy="-2" r="1" fill="#000" opacity="0.5"/>
+                        <circle cx="2" cy="-2" r="1" fill="#000" opacity="0.5"/>
+                        <!-- Mouth -->
+                        <path d="M-6 4 Q0 8 6 4" stroke="#8B0000" stroke-width="1.5" fill="none"/>
+                        <!-- Belly -->
+                        <ellipse cx="0" cy="22" rx="14" ry="18" fill="#FFE4B5"/>
+                        <!-- Arms -->
+                        <ellipse cx="-15" cy="12" rx="5" ry="10" fill="#FF8C00" transform="rotate(30 -15 12)"/>
+                        <ellipse cx="15" cy="12" rx="5" ry="10" fill="#FF8C00" transform="rotate(-30 15 12)"/>
+                        <!-- Feet -->
+                        <ellipse cx="-10" cy="40" rx="6" ry="4" fill="#FF8C00"/>
+                        <ellipse cx="10" cy="40" rx="6" ry="4" fill="#FF8C00"/>
+                        
+                        <!-- Animation -->
+                        <animateTransform attributeName="transform" type="translate" 
+                            values="520,235;520,240;520,235" dur="0.8s" repeatCount="indefinite"/>
+                    </g>
+                    
+                    <!-- Battle Effects -->
+                    <g id="battleEffects">
+                        <!-- Electric sparks from Pikachu -->
+                        <g transform="translate(330, 230)">
+                            <path d="M0 0 L10 -5 L5 0 L15 5" stroke="#FFFF00" stroke-width="2" fill="none" opacity="0">
+                                <animate attributeName="opacity" values="0;1;0" dur="0.3s" repeatCount="indefinite"/>
+                                <animate attributeName="d" values="M0 0 L10 -5 L5 0 L15 5;M0 -5 L15 0 L5 5 L10 10;M0 0 L10 -5 L5 0 L15 5" dur="0.3s" repeatCount="indefinite"/>
+                            </path>
+                        </g>
+                        
+                        <!-- Fire from Charmander -->
+                        <g transform="translate(470, 230)">
+                            <ellipse cx="0" cy="0" rx="15" ry="8" fill="#FF6347" opacity="0">
+                                <animate attributeName="opacity" values="0;0.6;0" dur="0.5s" repeatCount="indefinite"/>
+                                <animate attributeName="rx" values="15;25;15" dur="0.5s" repeatCount="indefinite"/>
+                            </ellipse>
+                        </g>
+                    </g>
+                    
+                    <!-- UI Elements -->
+                    <rect x="180" y="130" width="100" height="40" rx="5" fill="rgba(0,0,0,0.6)"/>
+                    <text x="190" y="145" fill="#FFF" font-family="Arial" font-size="10" font-weight="bold">PIKACHU</text>
+                    <text x="190" y="158" fill="#FFF" font-family="Arial" font-size="8">Lv. 25</text>
+                    <rect x="245" y="150" width="30" height="12" rx="3" fill="#333"/>
+                    <rect x="247" y="152" width="24" height="8" rx="2" fill="#32CD32">
+                        <animate attributeName="width" values="24;20;24" dur="2s" repeatCount="indefinite"/>
+                    </rect>
+                    
+                    <rect x="520" y="130" width="100" height="40" rx="5" fill="rgba(0,0,0,0.6)"/>
+                    <text x="530" y="145" fill="#FFF" font-family="Arial" font-size="10" font-weight="bold">CHARMANDER</text>
+                    <text x="530" y="158" fill="#FFF" font-family="Arial" font-size="8">Lv. 23</text>
+                    <rect x="585" y="150" width="30" height="12" rx="3" fill="#333"/>
+                    <rect x="587" y="152" width="22" height="8" rx="2" fill="#32CD32">
+                        <animate attributeName="width" values="22;18;22" dur="2.5s" repeatCount="indefinite"/>
+                    </rect>
+                    
+                    <!-- Battle Menu -->
+                    <rect x="360" y="320" width="260" height="40" rx="5" fill="rgba(0,0,100,0.8)" stroke="#FFF" stroke-width="2"/>
+                    <text x="380" y="345" fill="#FFF" font-family="Arial" font-size="12">FIGHT</text>
+                    <text x="450" y="345" fill="#FFF" font-family="Arial" font-size="12">BAG</text>
+                    <text x="510" y="345" fill="#FFF" font-family="Arial" font-size="12">POKéMON</text>
+                    <text x="590" y="345" fill="#FFF" font-family="Arial" font-size="12">RUN</text>
+                    
+                    <!-- Selection Arrow -->
+                    <polygon points="372,340 380,345 372,350" fill="#FFFF00">
+                        <animate attributeName="opacity" values="1;0;1" dur="0.5s" repeatCount="indefinite"/>
+                    </polygon>
+                </g>
+                
+                <!-- Screen Reflection -->
+                <rect x="165" y="115" width="470" height="125" fill="url(#screenGlow)" opacity="0.3"/>
+            </g>
+
+            <!-- Nintendo Logo -->
+            <text x="400" y="395" text-anchor="middle" fill="#888" font-family="Arial" font-size="12" font-weight="bold" letter-spacing="2">NINTENDO</text>
+            <text x="400" y="410" text-anchor="middle" fill="#888" font-family="Arial" font-size="10" font-weight="bold" letter-spacing="1">SWITCH</text>
+
+            <!-- Speaker Grills -->
+            <g fill="#333">
+                <circle cx="180" cy="385" r="2"/>
+                <circle cx="190" cy="385" r="2"/>
+                <circle cx="200" cy="385" r="2"/>
+                <circle cx="600" cy="385" r="2"/>
+                <circle cx="610" cy="385" r="2"/>
+                <circle cx="620" cy="385" r="2"/>
+            </g>
+
+            <!-- Power Button -->
+            <circle cx="630" y="110" r="5" fill="#333"/>
+            <path d="M630 107 L630 113 M627 110 L633 110" stroke="#666" stroke-width="1"/>
+
+            <!-- Volume Buttons -->
+            <rect x="165" y="95" width="12" height="4" rx="1" fill="#444"/>
+            <rect x="182" y="95" width="12" height="4" rx="1" fill="#444"/>
+            <text x="171" y="98" fill="#888" font-family="Arial" font-size="6" text-anchor="middle">+</text>
+            <text x="188" y="97" fill="#888" font-family="Arial" font-size="6" text-anchor="middle">−</text>
+
+            <!-- Game Card Slot -->
+            <rect x="395" y="85" width="30" height="8" rx="2" fill="#333"/>
+
+            <!-- LED Indicators -->
+            <circle cx="580" cy="385" r="3" fill="#32CD32">
+                <animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite"/>
+            </circle>
+
+        </svg>
+    </div>
+</body>
+</html>

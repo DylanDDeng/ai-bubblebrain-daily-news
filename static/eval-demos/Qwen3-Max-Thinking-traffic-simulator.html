@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交通灯可视化模拟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 800px;
+            padding: 20px;
+            background: rgba(0, 30, 60, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 10px;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #ff8a00, #da1b60, #00c9ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0d2ff;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            background: rgba(15, 25, 45, 0.92);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(0, 100, 255, 0.15) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, rgba(255, 100, 0, 0.15) 0%, transparent 25%);
+            z-index: -1;
+        }
+        
+        .stats-panel {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-bottom: 20px;
+            background: rgba(25, 40, 70, 0.85);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 8px 15px;
+            border-radius: 10px;
+            min-width: 100px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a0d2ff;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        .road-container {
+            width: 100%;
+            height: 180px;
+            position: relative;
+            margin: 20px 0;
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+            border: 2px solid #3a5075;
+        }
+        
+        .road {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: #3a3a3a;
+            border-top: 3px dashed #f8f8f8;
+            border-bottom: 3px dashed #f8f8f8;
+            overflow: hidden;
+        }
+        
+        .road::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to right,
+                transparent,
+                transparent 25px,
+                rgba(255, 255, 255, 0.2) 25px,
+                rgba(255, 255, 255, 0.2) 30px
+            );
+        }
+        
+        .stop-line {
+            position: absolute;
+            bottom: 30px;
+            left: 65%;
+            width: 5px;
+            height: 80px;
+            background: linear-gradient(to bottom, #ff3333, #cc0000);
+            box-shadow: 0 0 10px #ff1a1a;
+            z-index: 10;
+        }
+        
+        .traffic-light {
+            position: absolute;
+            right: 5%;
+            bottom: 110px;
+            width: 80px;
+            background: #2c2c3a;
+            border-radius: 12px;
+            padding: 15px 10px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), 
+                        0 0 40px rgba(60, 60, 120, 0.7),
+                        inset 0 0 15px rgba(30, 30, 60, 0.9);
+            border: 3px solid #4a4a6a;
+            z-index: 20;
+        }
+        
+        .traffic-light::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 25px;
+            background: #4a4a6a;
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        .traffic-light::after {
+            content: "";
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 15px;
+            background: #3a3a50;
+            border-radius: 8px 8px 0 0;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+        
+        .light {
+            width: 50px;
+            height: 50px;
+            margin: 8px auto;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 
+                0 0 15px rgba(0, 0, 0, 0.8),
+                inset 0 0 25px rgba(0, 0, 0, 0.9);
+            border: 3px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .light::after {
+            content: "";
+            position: absolute;
+            width: 85%;
+            height: 85%;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        .red { background: #330000; }
+        .yellow { background: #333300; }
+        .green { background: #003300; }
+        
+        .red.active { 
+            background: radial-gradient(circle, #ff3333 40%, #cc0000 80%, #660000 100%);
+            box-shadow: 
+                0 0 15px rgba(0, 0, 0, 0.8),
+                0 0 35px #ff1a1a,
+                inset 0 0 25px rgba(255, 50, 50, 0.7);
+        }
+        
+        .yellow.active { 
+            background: radial-gradient(circle, #ffcc00 40%, #cc9900 80%, #664d00 100%);
+            box-shadow: 
+                0 0 15px rgba(0, 0, 0, 0.8),
+                0 0 35px #ffcc00,
+                inset 0 0 25px rgba(255, 204, 0, 0.7);
+        }
+        
+        .green.active { 
+            background: radial-gradient(circle, #33cc33 40%, #009900 80%, #004d00 100%);
+            box-shadow: 
+                0 0 15px rgba(0, 0, 0, 0.8),
+                0 0 35px #33cc33,
+                inset 0 0 25px rgba(51, 204, 51, 0.7);
+        }
+        
+        .car {
+            position: absolute;
+            bottom: 55px;
+            width: 40px;
+            height: 20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+            z-index: 5;
+            transition: transform 0.3s ease;
+        }
+        
+        .car::before {
+            content: "";
+            position: absolute;
+            top: 3px;
+            width: 60%;
+            height: 60%;
+            background: rgba(30, 30, 50, 0.85);
+            border-radius: 5px;
+        }
+        
+        .car::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            width: 8px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            box-shadow: 0 0 5px #111;
+        }
+        
+        .car:nth-child(4n+1) { background: #3498db; }
+        .car:nth-child(4n+2) { background: #e74c3c; }
+        .car:nth-child(4n+3) { background: #2ecc71; }
+        .car:nth-child(4n+4) { background: #f39c12; }
+        
+        .car.waiting {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(255, 255, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #4a6fa5, #2c3e50);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            min-width: 140px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to bottom, #5a7fa5, #3c4e60);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        button.reset {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+        }
+        
+        button.reset:hover {
+            background: linear-gradient(to bottom, #ec5e50, #d0493d);
+        }
+        
+        button.pause {
+            background: linear-gradient(to bottom, #f39c12, #d35400);
+        }
+        
+        button.pause:hover {
+            background: linear-gradient(to bottom, #f5b041, #e67e22);
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+            background: rgba(25, 40, 70, 0.7);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .instructions {
+            margin-top: 25px;
+            text-align: center;
+            max-width: 700px;
+            line-height: 1.6;
+            color: #a0d2ff;
+            font-size: 1.05rem;
+            padding: 15px;
+            background: rgba(30, 50, 90, 0.6);
+            border-radius: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .stats-panel {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .traffic-light {
+                right: 10%;
+                bottom: 100px;
+                width: 70px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚦 交通灯可视化模拟系统</h1>
+        <p class="subtitle">模拟单行道交通灯工作原理，车辆以随机速率进入道路。红灯停、绿灯行、黄灯警示，真实还原交通场景。</p>
+    </header>
+    
+    <div class="container">
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div class="stat-label">当前状态</div>
+                <div class="stat-value" id="currentState">红灯</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">等待车辆</div>
+                <div class="stat-value" id="waitingCars">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">通过车辆</div>
+                <div class="stat-value" id="passedCars">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">总车辆数</div>
+                <div class="stat-value" id="totalCars">0</div>
+            </div>
+        </div>
+        
+        <div class="road-container">
+            <div class="road"></div>
+            <div class="stop-line"></div>
+            <div class="traffic-light">
+                <div class="light red active"></div>
+                <div class="light yellow"></div>
+                <div class="light green"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="pauseBtn" class="pause">⏸️ 暂停模拟</button>
+            <button id="resetBtn" class="reset">↺ 重置模拟</button>
+            <button id="addCarBtn">🚗 手动添加车辆</button>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background:#3498db;"></div>
+                <span>私家车</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#e74c3c;"></div>
+                <span>出租车</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#2ecc71;"></div>
+                <span>公交车</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background:#f39c12;"></div>
+                <span>货车</span>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p>💡 <strong>模拟说明：</strong> 红灯时车辆在停止线前排队等待；绿灯时车辆匀速通过；黄灯时已接近停止线的车辆继续通过，远处的车辆开始减速准备停止。车辆以随机间隔(1.5-4秒)自动生成，也可手动添加。</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM元素
+            const roadContainer = document.querySelector('.road-container');
+            const stopLine = document.querySelector('.stop-line');
+            const redLight = document.querySelector('.red');
+            const yellowLight = document.querySelector('.yellow');
+            const greenLight = document.querySelector('.green');
+            const currentStateEl = document.getElementById('currentState');
+            const waitingCarsEl = document.getElementById('waitingCars');
+            const passedCarsEl = document.getElementById('passedCars');
+            const totalCarsEl = document.getElementById('totalCars');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const addCarBtn = document.getElementById('addCarBtn');
+            
+            // 常量
+            const ROAD_WIDTH = roadContainer.offsetWidth;
+            const STOP_LINE_POSITION = stopLine.offsetLeft; // 停止线位置
+            const CAR_WIDTH = 40;
+            const CAR_HEIGHT = 20;
+            const MIN_CAR_INTERVAL = 1500; // 最小生成间隔 (ms)
+            const MAX_CAR_INTERVAL = 4000; // 最大生成间隔 (ms)
+            const CAR_SPEED = 1.8; // 像素/帧
+            const SAFE_DISTANCE = 60; // 车辆间安全距离 (px)
+            
+            // 状态变量
+            let trafficState = 'red'; // 'red', 'green', 'yellow'
+            let cars = []; // 存储所有车辆
+            let waitingCarsCount = 0;
+            let passedCarsCount = 0;
+            let totalCarsCount = 0;
+            let lastCarTime = 0;
+            let nextCarInterval = getRandomInt(MIN_CAR_INTERVAL, MAX_CAR_INTERVAL);
+            let isPaused = false;
+            let animationFrameId = null;
+            let stateTimer = 0;
+            const STATE_DURATIONS = {
+                red: 5000,    // 红灯5秒
+                green: 5000,  // 绿灯5秒
+                yellow: 2000  // 黄灯2秒
+            };
+            
+            // 初始化
+            updateStats();
+            startTrafficLightCycle();
+            generateCars();
+            animate();
+            
+            // 事件监听
+            pauseBtn.addEventListener('click', togglePause);
+            resetBtn.addEventListener('click', resetSimulation);
+            addCarBtn.addEventListener('click', addCar);
+            
+            // 交通灯状态循环
+            function startTrafficLightCycle() {
+                setInterval(() => {
+                    if (isPaused) return;
+                    
+                    switch(trafficState) {
+                        case 'red':
+                            setTrafficLight('green');
+                            break;
+                        case 'green':
+                            setTrafficLight('yellow');
+                            break;
+                        case 'yellow':
+                            setTrafficLight('red');
+                            break;
+                    }
+                }, STATE_DURATIONS[trafficState]);
+            }
+            
+            // 设置交通灯状态
+            function setTrafficLight(state) {
+                // 重置所有灯
+                redLight.classList.remove('active');
+                yellowLight.classList.remove('active');
+                greenLight.classList.remove('active');
+                
+                // 激活当前灯
+                trafficState = state;
+                if (state === 'red') redLight.classList.add('active');
+                if (state === 'yellow') yellowLight.classList.add('active');
+                if (state === 'green') greenLight.classList.add('active');
+                
+                // 更新状态显示
+                currentStateEl.textContent = 
+                    state === 'red' ? '红灯' : 
+                    state === 'yellow' ? '黄灯' : '绿灯';
+                
+                // 更新车辆行为
+                if (state === 'green') {
+                    // 绿灯时，所有等待车辆开始移动
+                    cars.forEach(car => {
+                        if (car.waiting) {
+                            car.waiting = false;
+                            car.element.classList.remove('waiting');
+                        }
+                    });
+                }
+            }
+            
+            // 生成车辆
+            function generateCars() {
+                const now = Date.now();
+                if (!lastCarTime) lastCarTime = now;
+                
+                if (now - lastCarTime >= nextCarInterval && !isPaused) {
+                    addCar();
+                    lastCarTime = now;
+                    nextCarInterval = getRandomInt(MIN_CAR_INTERVAL, MAX_CAR_INTERVAL);
+                }
+                
+                if (!isPaused) {
+                    requestAnimationFrame(generateCars);
+                }
+            }
+            
+            // 添加一辆车
+            function addCar() {
+                // 创建车辆元素
+                const carElement = document.createElement('div');
+                carElement.className = 'car';
+                
+                // 随机位置（稍微错开避免完全重叠）
+                const randomOffset = getRandomInt(-5, 5);
+                carElement.style.bottom = `${55 + randomOffset}px`;
+                
+                // 添加到道路
+                roadContainer.appendChild(carElement);
+                
+                // 创建车辆对象
+                const newCar = {
+                    element: carElement,
+                    x: -CAR_WIDTH, // 从道路左侧外开始
+                    speed: CAR_SPEED * (0.8 + Math.random() * 0.4), // 随机速度
+                    waiting: false,
+                    passedStopLine: false
+                };
+                
+                cars.push(newCar);
+                totalCarsCount++;
+                updateStats();
+            }
+            
+            // 动画主循环
+            function animate() {
+                if (!isPaused) {
+                    updateCars();
+                }
+                animationFrameId = requestAnimationFrame(animate);
+            }
+            
+            // 更新所有车辆位置
+            function updateCars() {
+                // 按x坐标排序（从右到左），便于处理跟车逻辑
+                cars.sort((a, b) => b.x - a.x);
+                
+                // 计算等待车辆数量
+                waitingCarsCount = 0;
+                
+                // 更新每辆车
+                for (let i = 0; i < cars.length; i++) {
+                    const car = cars[i];
+                    
+                    // 检查是否已通过停止线
+                    if (!car.passedStopLine && car.x > STOP_LINE_POSITION) {
+                        car.passedStopLine = true;
+                        passedCarsCount++;
+                        updateStats();
+                    }
+                    
+                    // 红灯或黄灯时的停车逻辑
+                    if (trafficState === 'red' || (trafficState === 'yellow' && car.x < STOP_LINE_POSITION - 150)) {
+                        // 检查是否需要在停止线前停车
+                        if (car.x < STOP_LINE_POSITION - CAR_WIDTH) {
+                            // 计算排队位置（基于在它前面等待的车辆数量）
+                            let carsAhead = 0;
+                            for (let j = 0; j < i; j++) {
+                                if (cars[j].x < STOP_LINE_POSITION && cars[j].waiting) {
+                                    carsAhead++;
+                                }
+                            }
+                            
+                            const targetPosition = STOP_LINE_POSITION - (carsAhead + 1) * (CAR_WIDTH + 20);
+                            
+                            // 如果还没到达目标位置，继续移动
+                            if (car.x < targetPosition - 5) {
+                                car.x += car.speed;
+                            } else {
+                                // 到达排队位置，停车等待
+                                car.x = targetPosition;
+                                if (!car.waiting) {
+                                    car.waiting = true;
+                                    car.element.classList.add('waiting');
+                                }
+                            }
+                            
+                            waitingCarsCount++;
+                            continue;
+                        }
+                    }
+                    
+                    // 绿灯或已通过停止线的车辆正常行驶
+                    if (!car.waiting || car.x > STOP_LINE_POSITION) {
+                        car.x += car.speed;
+                        if (car.waiting) {
+                            car.waiting = false;
+                            car.element.classList.remove('waiting');
+                        }
+                    }
+                    
+                    // 更新车辆位置
+                    car.element.style.left = `${car.x}px`;
+                    car.element.style.transform = `translateX(-50%)`;
+                    
+                    // 移除离开道路的车辆
+                    if (car.x > ROAD_WIDTH + CAR_WIDTH) {
+                        roadContainer.removeChild(car.element);
+                        cars.splice(i, 1);
+                        i--;
+                    }
+                }
+                
+                updateStats();
+            }
+            
+            // 更新统计信息
+            function updateStats() {
+                waitingCarsEl.textContent = waitingCarsCount;
+                passedCarsEl.textContent = passedCarsCount;
+                totalCarsEl.textContent = totalCarsCount;
+            }
+            
+            // 暂停/继续模拟
+            function togglePause() {
+                isPaused = !isPaused;
+                pauseBtn.textContent = isPaused ? '▶️ 继续模拟' : '⏸️ 暂停模拟';
+                pauseBtn.classList.toggle('pause');
+                
+                if (!isPaused) {
+                    lastCarTime = Date.now();
+                    animate();
+                } else {
+                    cancelAnimationFrame(animationFrameId);
+                }
+            }
+            
+            // 重置模拟
+            function resetSimulation() {
+                // 清除所有车辆
+                cars.forEach(car => {
+                    if (car.element && roadContainer.contains(car.element)) {
+                        roadContainer.removeChild(car.element);
+                    }
+                });
+                
+                // 重置状态
+                cars = [];
+                waitingCarsCount = 0;
+                passedCarsCount = 0;
+                totalCarsCount = 0;
+                lastCarTime = Date.now();
+                nextCarInterval = getRandomInt(MIN_CAR_INTERVAL, MAX_CAR_INTERVAL);
+                isPaused = false;
+                pauseBtn.textContent = '⏸️ 暂停模拟';
+                pauseBtn.classList.add('pause');
+                
+                // 重置交通灯为红灯
+                setTrafficLight('red');
+                
+                // 重置统计
+                updateStats();
+                
+                // 重新开始动画
+                cancelAnimationFrame(animationFrameId);
+                animate();
+            }
+            
+            // 工具函数：生成随机整数
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+        });
+    </script>
+</body>
+</html>
