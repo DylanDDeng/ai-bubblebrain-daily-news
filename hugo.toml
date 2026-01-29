@@ -101,7 +101,7 @@ disableKinds = ['taxonomy', 'term']
         identifier = 'ai-creative'
         weight = 26
         [[languages.zh-CN.menu.main]]
-          name = 'AI生图'
+          name = 'AI图像'
           pageRef = '/ai-gallery'
           parent = 'ai-creative'
           weight = 1
