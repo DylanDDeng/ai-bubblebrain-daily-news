@@ -105,7 +105,8 @@
     noQuestions: "{{ i18n "eval_no_questions" }}",
     viewAnswer: "{{ i18n "eval_view_answer" }}",
     generatedImageAlt: "{{ i18n "eval_generated_image_alt" }}",
-    questionsCount: "{{ i18n "eval_questions_count" | default "{count} 道题目" }}"
+    questionsCount: "{{ i18n "eval_questions_count" | default "{count} 道题目" }}",
+    iframeLoading: "{{ i18n "eval_iframe_loading" | default "Loading..." }}"
   };
 
   const grid = document.getElementById("model-grid");
@@ -505,9 +506,37 @@
     answerContainer.appendChild(answerLabel);
 
     if (answer.type === "html") {
-      const iframeContainer = document.createElement("div");
-      iframeContainer.innerHTML = answer.content;
-      answerContainer.appendChild(iframeContainer);
+      const iframeWrap = document.createElement("div");
+      iframeWrap.className = "answer-iframe-wrap";
+
+      const loader = document.createElement("div");
+      loader.className = "answer-iframe-loader";
+      loader.innerHTML = `<div class="answer-iframe-spinner" aria-hidden="true"></div><p class="answer-iframe-loading-text">${I18N.iframeLoading}</p>`;
+      iframeWrap.appendChild(loader);
+
+      iframeWrap.insertAdjacentHTML("beforeend", answer.content);
+
+      const iframe = iframeWrap.querySelector("iframe");
+      if (iframe) {
+        iframe.classList.add("answer-iframe");
+        iframe.setAttribute("title", `${model?.name || currentModelId} · ${question.title}`);
+        iframe.addEventListener("load", () => {
+          iframe.classList.add("loaded");
+          loader.remove();
+        }, { once: true });
+
+        // 极端情况下（例如 iframe 内阻塞/加载极慢）避免 loader 永久遮挡
+        window.setTimeout(() => {
+          if (iframeWrap.contains(loader)) {
+            loader.remove();
+            iframe.classList.add("loaded");
+          }
+        }, 15000);
+      } else {
+        loader.remove();
+      }
+
+      answerContainer.appendChild(iframeWrap);
       answerToolbar.style.display = "flex";
     } else if (answer.type === "image") {
       const img = document.createElement("img");
@@ -597,6 +626,10 @@
   function closeModal(modal) {
     modal.classList.remove("open");
     modal.setAttribute("aria-hidden", "true");
+    if (modal === answerModal) {
+      answerContent.innerHTML = "";
+      answerToolbar.style.display = "none";
+    }
     if (!questionsModal.classList.contains("open") && !answerModal.classList.contains("open")) {
       document.body.style.overflow = "";
       // 清除 hash
@@ -910,6 +943,54 @@
 .eval-modal__dialog--wide .answer-content iframe {
   height: 70vh !important;
   min-height: 500px;
+}
+
+.answer-iframe-wrap {
+  position: relative;
+}
+
+.answer-iframe-loader {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 0.5rem;
+  background: var(--surface-highlight);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  z-index: 2;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.answer-iframe-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  border-top-color: var(--accent);
+  animation: iframeSpin 0.9s linear infinite;
+}
+
+.answer-iframe-loading-text {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.answer-iframe {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: block;
+}
+
+.answer-iframe.loaded {
+  opacity: 1;
+}
+
+@keyframes iframeSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .eval-modal__header {
