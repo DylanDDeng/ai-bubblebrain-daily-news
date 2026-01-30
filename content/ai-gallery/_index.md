@@ -1,5 +1,5 @@
 ---
-title: "Banana Image 🍌"
+title: "AI Image"
 description: "收藏了一些好用的生图Prompt"
 ---
 
