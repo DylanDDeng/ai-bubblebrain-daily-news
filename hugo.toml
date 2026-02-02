@@ -129,6 +129,11 @@ disableKinds = ['taxonomy', 'term']
           pageRef = '/ai-tools/image-compress'
           parent = 'ai-tools'
           weight = 2
+        [[languages.zh-CN.menu.main]]
+          name = 'AI信息图'
+          pageRef = '/ai-tools/ai-infographics'
+          parent = 'ai-tools'
+          weight = 3
       [[languages.zh-CN.menu.main]]
         name = 'Prompt收录'
         pageRef = '/prompts'
@@ -217,6 +222,11 @@ disableKinds = ['taxonomy', 'term']
           pageRef = '/ai-tools/image-compress'
           parent = 'ai-tools'
           weight = 2
+        [[languages.en.menu.main]]
+          name = 'AI Infographics'
+          pageRef = '/ai-tools/ai-infographics'
+          parent = 'ai-tools'
+          weight = 3
       [[languages.en.menu.main]]
         name = 'Prompt Library'
         pageRef = '/prompts'

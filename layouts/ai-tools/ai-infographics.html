@@ -1,0 +1,756 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-narrow page-surface aig-shell" id="aig-root">
+    <header class="page-header">
+      <p class="page-eyebrow">{{ i18n "aig_eyebrow" | default "AI Tools" }}</p>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}
+        <p class="page-desc">{{ . }}</p>
+      {{ end }}
+    </header>
+
+    <div class="aig-panel">
+      <!-- 模型配置区 -->
+      <div class="aig-config">
+        <div class="aig-config-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          <span>{{ i18n "aig_config_title" | default "模型配置" }}</span>
+        </div>
+        <div class="aig-config-grid">
+          <div class="aig-config-item">
+            <label class="aig-label">{{ i18n "aig_provider" | default "供应商" }}</label>
+            <div class="aig-provider-badge">
+              <span class="aig-provider-dot" style="background: #8B5CF6;"></span>
+              <span>Moonshot AI</span>
+            </div>
+          </div>
+          <div class="aig-config-item">
+            <label class="aig-label">{{ i18n "aig_model" | default "模型" }}</label>
+            <div class="aig-model-badge">kimi-k2.5</div>
+          </div>
+          <div class="aig-config-item aig-config-item--wide">
+            <label class="aig-label" for="aig-api-key">{{ i18n "aig_api_key" | default "API Key" }}</label>
+            <div class="aig-input-wrap">
+              <input type="password" id="aig-api-key" class="aig-input" placeholder="{{ i18n "aig_api_key_placeholder" | default "输入你的 Moonshot API Key" }}">
+              <button type="button" class="aig-input-btn" id="aig-toggle-key" title="{{ i18n "aig_toggle_visibility" | default "切换可见性" }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <p class="aig-hint">{{ i18n "aig_api_key_hint" | default "API Key 仅存储在本地浏览器中，不会发送到我们的服务器" }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 内容输入区 -->
+      <div class="aig-input-section">
+        <label class="aig-label" for="aig-content">{{ i18n "aig_content_label" | default "输入内容" }}</label>
+        <textarea id="aig-content" class="aig-textarea" rows="12" placeholder="{{ i18n "aig_content_placeholder" | default "在这里粘贴你想要转换为信息图的长文本内容..." }}"></textarea>
+        <div class="aig-input-meta">
+          <span id="aig-char-count">0 {{ i18n "aig_chars" | default "字符" }}</span>
+          <span class="aig-hint">{{ i18n "aig_content_hint" | default "支持新闻、报告、故事等多种内容类型" }}</span>
+        </div>
+      </div>
+
+      <!-- 生成按钮 -->
+      <button type="button" class="aig-generate-btn" id="aig-generate-btn">
+        <span class="aig-btn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </span>
+        <span class="aig-btn-text">{{ i18n "aig_generate" | default "生成信息图" }}</span>
+        <span class="aig-btn-loading" hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20">
+              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </span>
+      </button>
+
+      <!-- 错误提示 -->
+      <div class="aig-error" id="aig-error" hidden></div>
+
+      <!-- 结果展示区 -->
+      <div class="aig-result" id="aig-result" hidden>
+        <div class="aig-result-header">
+          <h3>{{ i18n "aig_result_title" | default "生成结果" }}</h3>
+          <div class="aig-result-actions">
+            <button type="button" class="aig-action-btn" id="aig-copy-html">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>{{ i18n "aig_copy_html" | default "复制 HTML" }}</span>
+            </button>
+            <button type="button" class="aig-action-btn aig-action-btn--primary" id="aig-download-html">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>{{ i18n "aig_download_html" | default "下载 HTML" }}</span>
+            </button>
+          </div>
+        </div>
+        <div class="aig-preview-wrap">
+          <iframe id="aig-preview" sandbox="allow-scripts allow-same-origin"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- 使用说明 -->
+    <div class="aig-tips">
+      <h4>{{ i18n "aig_tips_title" | default "使用说明" }}</h4>
+      <ul>
+        <li>{{ i18n "aig_tip_1" | default "获取 Moonshot API Key：访问" }} <a href="https://platform.moonshot.cn/" target="_blank" rel="noopener">platform.moonshot.cn</a></li>
+        <li>{{ i18n "aig_tip_2" | default "生成的信息图为 9:16 竖屏比例，适合微信公众号、小红书等平台" }}</li>
+        <li>{{ i18n "aig_tip_3" | default "设计采用克莱因蓝与极简白交替的瑞士平面设计风格" }}</li>
+        <li>{{ i18n "aig_tip_4" | default "下载的 HTML 文件可直接在浏览器中打开或进一步编辑" }}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const SYSTEM_PROMPT = `你是一位顶尖的信息视觉设计师与内容策划专家。任务：将用户提供的长文本内容，重构为一张**9:16 竖屏长图信息图**（单文件 HTML），用于微信公众号插入。
+
+## 1. 核心视觉风格
+
+**主色调**：
+- 克莱因蓝 (IKB, #002FA7) 与 极简白 (#F5F5F7) **严格交替**使用，形成视觉节奏
+- 背景：奇数区块用克莱因蓝，偶数区块用极简白（自上而下）
+
+**文字配色**：
+- 蓝底：纯白 (#FFFFFF) 正文，电光银 (#E0E0E0) 用于高亮强调
+- 白底：深黑 (#111111) 正文，警示橙 (#FF4500) 用于高亮强调与分割线
+
+**设计语言**：瑞士平面设计风格 (Swiss Style / International Typographic Style)
+- 强调网格系统、无衬线字体、几何留白
+- 无多余装饰，追求极致的清晰与冲击力
+
+## 2. 页面架构（自上而下）
+
+**A. 头部 Hero 区**（克莱因蓝底）
+- 大标题：\`Bubble's AI News\`（或用户指定品牌名）+ 中文副标题
+- 斜向半透明装饰线（15°/-15°交叉）
+- 底部 6px 粗橙色 (#FF4500) 分割线
+
+**B. 内容区块循环**（每个故事一个区块）
+每个区块包含：
+1. **背景色**：蓝白交替，满屏宽度
+2. **网格纹理**：40px 半透明网格线叠加（蓝底用白色 3% 透明度，白底用蓝色 2%）
+3. **区块编号**：右上角大号半透明数字水印（01、02...，120px，5% 透明度）
+4. **几何装饰**：
+   - 克莱因圆：半透明大圆形，位置偏移（左上或右下）
+   - 垂直装饰线：2px 宽，15% 透明度，用于打破平面
+5. **Tag 标签**：左上角，13px 大写，加粗，1px 边框（白底时可用黑底白字反色）
+6. **主标题**：20px，加粗 800，行高 1.4，双行标题用 \`<br>\` 换行
+7. **内容列表**：
+   - 左边框强调：3px 实线（与文字同色或强调色）
+   - 16px 正文，行高 1.7，字重 600
+   - **大数字强调**：关键数据使用 56px 超粗体（蓝底用白色，白底用克莱因蓝）
+   - 高亮文本：使用对应强调色（银/橙）
+8. **总结框**：底部边框分隔（3px 实线），15px 字重 700，与正文区隔开 48px 间距
+
+**C. 区块分隔线**
+- 4px 高橙色横线，宽度 60% 居中
+- 两端各有一个 12px 橙色圆点（仿机械连接件设计）
+
+**D. 结尾封底**
+- 纯黑 (#111) 背景，白色文字
+- 顶部橙色菱形符号 (◆) 装饰
+- 文字：\`END OF BRIEFING\` 或类似，大写，0.2em 字间距
+
+## 3. 排版规范（关键）
+
+- **字体栈**：\`Inter, Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif\`
+- **字号**：
+  - 头部主标题：32px，字重 800
+  - 区块标题：20px，字重 800
+  - 正文/列表项：16px，字重 600，行高 1.7
+  - Tag/日期：13px，字重 800，大写
+  - 数据强调：56px，字重 800，行高 1
+- **间距**：
+  - 区块内边距：60px 40px（上下 左右）
+  - 元素间距：标题与内容间 48px，列表项间 32px
+
+## 4. 技术实现要求
+
+- 单文件 HTML，内嵌 CSS
+- 使用 \`aspect-ratio\` 或 \`min-height\` 确保竖屏比例
+- 所有装饰使用 CSS 绘制（\`linear-gradient\`、\`border-radius\`、\`opacity\`），**禁止图片素材**
+- 响应式：max-width: 480px 居中，移动端自适应
+
+## 5. 内容处理原则
+
+- **不要**直接复制粘贴原文，必须进行核心信息提炼
+- 每个事实点前加**概括标签**（如"起源｜"、"神化｜"），使用高亮色
+- 保留故事间的逻辑递进感（起源→发展→高潮→反思）
+- 结尾必须有**价值升华句**（summary-box 部分）
+
+---
+
+请基于以上要求，将用户提供的文本内容转换为精美的信息图 HTML 代码。只输出 HTML 代码，不要包含任何解释文字。`;
+
+  const API_BASE_URL = 'https://api.moonshot.cn/v1';
+  const MODEL = 'kimi-k2.5';
+
+  const elements = {
+    apiKey: document.getElementById('aig-api-key'),
+    toggleKey: document.getElementById('aig-toggle-key'),
+    content: document.getElementById('aig-content'),
+    charCount: document.getElementById('aig-char-count'),
+    generateBtn: document.getElementById('aig-generate-btn'),
+    btnText: document.querySelector('.aig-btn-text'),
+    btnLoading: document.querySelector('.aig-btn-loading'),
+    error: document.getElementById('aig-error'),
+    result: document.getElementById('aig-result'),
+    preview: document.getElementById('aig-preview'),
+    copyHtml: document.getElementById('aig-copy-html'),
+    downloadHtml: document.getElementById('aig-download-html'),
+  };
+
+  let generatedHtml = '';
+
+  // 从 localStorage 恢复 API Key
+  const savedApiKey = localStorage.getItem('aig_api_key');
+  if (savedApiKey && elements.apiKey) {
+    elements.apiKey.value = savedApiKey;
+  }
+
+  // API Key 可见性切换
+  elements.toggleKey?.addEventListener('click', () => {
+    const type = elements.apiKey.type === 'password' ? 'text' : 'password';
+    elements.apiKey.type = type;
+  });
+
+  // 保存 API Key 到 localStorage
+  elements.apiKey?.addEventListener('change', () => {
+    localStorage.setItem('aig_api_key', elements.apiKey.value);
+  });
+
+  // 字符计数
+  elements.content?.addEventListener('input', () => {
+    const count = elements.content.value.length;
+    elements.charCount.textContent = `${count} ${count === 1 ? 'character' : 'characters'}`;
+  });
+
+  // 显示错误
+  function showError(message) {
+    elements.error.textContent = message;
+    elements.error.hidden = false;
+  }
+
+  // 隐藏错误
+  function hideError() {
+    elements.error.hidden = true;
+  }
+
+  // 设置加载状态
+  function setLoading(loading) {
+    elements.generateBtn.disabled = loading;
+    elements.btnText.hidden = loading;
+    elements.btnLoading.hidden = !loading;
+  }
+
+  // 调用 Moonshot API
+  async function generateInfographic(content, apiKey) {
+    const response = await fetch(`${API_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: `请将以下内容转换为信息图：\n\n${content}` }
+        ],
+        temperature: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error?.message || `API 错误: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || '';
+  }
+
+  // 提取 HTML 代码
+  function extractHtml(response) {
+    // 尝试提取代码块
+    const codeBlockMatch = response.match(/```(?:html)?\s*([\s\S]*?)```/);
+    if (codeBlockMatch) {
+      return codeBlockMatch[1].trim();
+    }
+    // 如果没有代码块标记，尝试直接返回
+    if (response.includes('<!DOCTYPE html>') || response.includes('<html')) {
+      return response.trim();
+    }
+    // 包裹成完整 HTML
+    return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Infographic</title>
+</head>
+<body>
+${response}
+</body>
+</html>`;
+  }
+
+  // 生成按钮点击
+  elements.generateBtn?.addEventListener('click', async () => {
+    hideError();
+    
+    const apiKey = elements.apiKey.value.trim();
+    const content = elements.content.value.trim();
+
+    if (!apiKey) {
+      showError('请输入 API Key');
+      elements.apiKey.focus();
+      return;
+    }
+
+    if (!content) {
+      showError('请输入内容');
+      elements.content.focus();
+      return;
+    }
+
+    if (content.length < 50) {
+      showError('内容太短，请输入至少 50 个字符');
+      elements.content.focus();
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await generateInfographic(content, apiKey);
+      generatedHtml = extractHtml(response);
+      
+      // 在 iframe 中预览
+      const blob = new Blob([generatedHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      elements.preview.src = url;
+      
+      elements.result.hidden = false;
+      elements.result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      showError(err.message || '生成失败，请检查 API Key 和网络连接');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  // 复制 HTML
+  elements.copyHtml?.addEventListener('click', async () => {
+    if (!generatedHtml) return;
+    try {
+      await navigator.clipboard.writeText(generatedHtml);
+      const btn = elements.copyHtml;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg><span>已复制</span>`;
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+      }, 2000);
+    } catch (err) {
+      showError('复制失败，请手动复制');
+    }
+  });
+
+  // 下载 HTML
+  elements.downloadHtml?.addEventListener('click', () => {
+    if (!generatedHtml) return;
+    const blob = new Blob([generatedHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `infographic-${Date.now()}.html`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+})();
+</script>
+
+<style>
+.aig-shell {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.aig-panel {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* 配置区 */
+.aig-config {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  background: var(--surface-highlight);
+}
+
+.aig-config-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.aig-config-header svg {
+  color: var(--accent);
+}
+
+.aig-config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.aig-config-item--wide {
+  grid-column: span 2;
+}
+
+.aig-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.aig-provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.15);
+  color: #8B5CF6;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.aig-provider-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.aig-model-badge {
+  display: inline-block;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: monospace;
+}
+
+.aig-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.aig-input {
+  width: 100%;
+  padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aig-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+.aig-input-btn {
+  position: absolute;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.aig-input-btn:hover {
+  color: var(--text-main);
+}
+
+.aig-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.375rem;
+}
+
+/* 输入区 */
+.aig-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.aig-textarea {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-highlight);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: vertical;
+  min-height: 200px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aig-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+.aig-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.aig-input-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 生成按钮 */
+.aig-generate-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #002FA7 0%, #1a4bc4 100%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.aig-generate-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 47, 167, 0.4);
+}
+
+.aig-generate-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.aig-btn-icon {
+  display: flex;
+  align-items: center;
+}
+
+.aig-btn-loading {
+  display: flex;
+  align-items: center;
+}
+
+.aig-btn-loading[hidden] {
+  display: none;
+}
+
+/* 错误提示 */
+.aig-error {
+  padding: 1rem;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+/* 结果区 */
+.aig-result {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface-highlight);
+}
+
+.aig-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.aig-result-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.aig-result-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aig-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.aig-action-btn:hover {
+  border-color: var(--accent);
+  background: var(--surface-highlight);
+}
+
+.aig-action-btn--primary {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+
+.aig-action-btn--primary:hover {
+  background: #c4a43b;
+}
+
+.aig-preview-wrap {
+  padding: 1.25rem;
+  background: #f0f0f0;
+}
+
+.aig-preview-wrap iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+  border-radius: 8px;
+  background: white;
+}
+
+/* 使用说明 */
+.aig-tips {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.aig-tips h4 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.aig-tips ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--text-muted);
+}
+
+.aig-tips li {
+  margin-bottom: 0.5rem;
+}
+
+.aig-tips li:last-child {
+  margin-bottom: 0;
+}
+
+.aig-tips a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.aig-tips a:hover {
+  text-decoration: underline;
+}
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .aig-shell {
+    padding: 1rem;
+  }
+
+  .aig-panel {
+    padding: 1rem;
+  }
+
+  .aig-config-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .aig-config-item--wide {
+    grid-column: span 1;
+  }
+
+  .aig-result-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .aig-preview-wrap iframe {
+    height: 400px;
+  }
+}
+</style>
+{{ end }}
