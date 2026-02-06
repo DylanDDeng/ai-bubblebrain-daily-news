@@ -9,79 +9,142 @@
       {{ end }}
     </header>
 
-    <div class="aig-panel">
-      <!-- 模型配置区 -->
-      <div class="aig-config">
-        <div class="aig-config-header">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-            <path d="M2 17l10 5 10-5"></path>
-            <path d="M2 12l10 5 10-5"></path>
-          </svg>
-          <span>{{ i18n "aig_config_title" | default "模型配置" }}</span>
+    <!-- 主工作区：左右分栏 -->
+    <div class="aig-workspace">
+      <!-- 左侧：配置和输入 -->
+      <div class="aig-left-panel">
+        <!-- 模型配置区 -->
+        <div class="aig-config">
+          <div class="aig-config-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+            <span>{{ i18n "aig_config_title" | default "模型配置" }}</span>
+          </div>
+          <div class="aig-config-grid">
+            <div class="aig-config-item">
+              <label class="aig-label">{{ i18n "aig_provider" | default "供应商" }}</label>
+              <div class="aig-provider-badge">
+                <span class="aig-provider-dot" style="background: #8B5CF6;"></span>
+                <span>Moonshot AI</span>
+              </div>
+            </div>
+            <div class="aig-config-item">
+              <label class="aig-label">{{ i18n "aig_model" | default "模型" }}</label>
+              <div class="aig-model-badge">kimi-k2.5</div>
+            </div>
+            <div class="aig-config-item aig-config-item--wide">
+              <label class="aig-label" for="aig-api-key">{{ i18n "aig_api_key" | default "API Key" }}</label>
+              <div class="aig-input-wrap">
+                <input type="password" id="aig-api-key" class="aig-input" placeholder="{{ i18n "aig_api_key_placeholder" | default "输入你的 Moonshot API Key" }}">
+                <button type="button" class="aig-input-btn" id="aig-toggle-key" title="{{ i18n "aig_toggle_visibility" | default "切换可见性" }}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+              <p class="aig-hint">{{ i18n "aig_api_key_hint" | default "API Key 仅存储在本地浏览器中" }}</p>
+            </div>
+          </div>
         </div>
-        <div class="aig-config-grid">
-          <div class="aig-config-item">
-            <label class="aig-label">{{ i18n "aig_provider" | default "供应商" }}</label>
-            <div class="aig-provider-badge">
-              <span class="aig-provider-dot" style="background: #8B5CF6;"></span>
-              <span>Moonshot AI</span>
-            </div>
+
+        <!-- 内容输入区 -->
+        <div class="aig-input-section">
+          <div class="aig-section-header">
+            <label class="aig-label" for="aig-content">{{ i18n "aig_content_label" | default "输入内容" }}</label>
+            <span id="aig-char-count">0 {{ i18n "aig_chars" | default "字符" }}</span>
           </div>
-          <div class="aig-config-item">
-            <label class="aig-label">{{ i18n "aig_model" | default "模型" }}</label>
-            <div class="aig-model-badge">kimi-k2.5</div>
-          </div>
-          <div class="aig-config-item aig-config-item--wide">
-            <label class="aig-label" for="aig-api-key">{{ i18n "aig_api_key" | default "API Key" }}</label>
-            <div class="aig-input-wrap">
-              <input type="password" id="aig-api-key" class="aig-input" placeholder="{{ i18n "aig_api_key_placeholder" | default "输入你的 Moonshot API Key" }}">
-              <button type="button" class="aig-input-btn" id="aig-toggle-key" title="{{ i18n "aig_toggle_visibility" | default "切换可见性" }}">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-            <p class="aig-hint">{{ i18n "aig_api_key_hint" | default "API Key 仅存储在本地浏览器中，不会发送到我们的服务器" }}</p>
-          </div>
+          <textarea id="aig-content" class="aig-textarea" rows="14" placeholder="{{ i18n "aig_content_placeholder" | default "在这里粘贴你想要转换为信息图的长文本内容..." }}"></textarea>
+          <p class="aig-hint">{{ i18n "aig_content_hint" | default "支持新闻、报告、故事等多种内容类型" }}</p>
+        </div>
+
+        <!-- 生成按钮 -->
+        <button type="button" class="aig-generate-btn" id="aig-generate-btn">
+          <span class="aig-btn-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </span>
+          <span class="aig-btn-text">{{ i18n "aig_generate" | default "生成信息图" }}</span>
+          <span class="aig-btn-loading" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20">
+                <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+          </span>
+        </button>
+
+        <!-- 错误提示 -->
+        <div class="aig-error" id="aig-error" hidden></div>
+
+        <!-- 使用说明 -->
+        <div class="aig-tips">
+          <h4>{{ i18n "aig_tips_title" | default "使用说明" }}</h4>
+          <ul>
+            <li>{{ i18n "aig_tip_1" | default "获取 Moonshot API Key：访问" }} <a href="https://platform.moonshot.cn/" target="_blank" rel="noopener">platform.moonshot.cn</a></li>
+            <li>{{ i18n "aig_tip_2" | default "生成的信息图为 9:16 竖屏比例，适合微信公众号、小红书等平台" }}</li>
+            <li>{{ i18n "aig_tip_3" | default "设计采用克莱因蓝与极简白交替的瑞士平面设计风格" }}</li>
+            <li>{{ i18n "aig_tip_4" | default "下载的 HTML 文件可直接在浏览器中打开或进一步编辑" }}</li>
+          </ul>
         </div>
       </div>
 
-      <!-- 内容输入区 -->
-      <div class="aig-input-section">
-        <label class="aig-label" for="aig-content">{{ i18n "aig_content_label" | default "输入内容" }}</label>
-        <textarea id="aig-content" class="aig-textarea" rows="12" placeholder="{{ i18n "aig_content_placeholder" | default "在这里粘贴你想要转换为信息图的长文本内容..." }}"></textarea>
-        <div class="aig-input-meta">
-          <span id="aig-char-count">0 {{ i18n "aig_chars" | default "字符" }}</span>
-          <span class="aig-hint">{{ i18n "aig_content_hint" | default "支持新闻、报告、故事等多种内容类型" }}</span>
+      <!-- 右侧：生成结果 -->
+      <div class="aig-right-panel" id="aig-result" hidden>
+        <!-- 顶部工具栏 -->
+        <div class="aig-result-topbar">
+          <div class="aig-result-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span>{{ i18n "aig_result_title" | default "生成结果" }}</span>
+          </div>
+          <div class="aig-zoom-controls">
+            <button type="button" class="aig-zoom-btn" id="aig-zoom-out" title="{{ i18n "aig_zoom_out" | default "缩小" }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+            <span class="aig-zoom-level" id="aig-zoom-level">100%</span>
+            <button type="button" class="aig-zoom-btn" id="aig-zoom-in" title="{{ i18n "aig_zoom_in" | default "放大" }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+            <button type="button" class="aig-zoom-btn" id="aig-fullscreen" title="{{ i18n "aig_fullscreen" | default "全屏预览" }}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- 生成按钮 -->
-      <button type="button" class="aig-generate-btn" id="aig-generate-btn">
-        <span class="aig-btn-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-        </span>
-        <span class="aig-btn-text">{{ i18n "aig_generate" | default "生成信息图" }}</span>
-        <span class="aig-btn-loading" hidden>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20">
-              <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
-            </circle>
-          </svg>
-        </span>
-      </button>
+        <!-- 预览区 -->
+        <div class="aig-preview-container">
+          <div class="aig-preview-scroll">
+            <div class="aig-preview-content" id="aig-preview-wrapper">
+              <iframe id="aig-preview" sandbox="allow-scripts allow-same-origin"></iframe>
+            </div>
+          </div>
+        </div>
 
-      <!-- 错误提示 -->
-      <div class="aig-error" id="aig-error" hidden></div>
-
-      <!-- 结果展示区 -->
-      <div class="aig-result" id="aig-result" hidden>
-        <div class="aig-result-header">
-          <h3>{{ i18n "aig_result_title" | default "生成结果" }}</h3>
+        <!-- 底部操作栏 -->
+        <div class="aig-result-footer">
+          <div class="aig-result-info">
+            <span class="aig-info-tag">9:16 竖屏</span>
+            <span class="aig-info-tag">瑞士平面设计</span>
+          </div>
           <div class="aig-result-actions">
             <button type="button" class="aig-action-btn" id="aig-copy-html">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -98,23 +161,91 @@
               </svg>
               <span>{{ i18n "aig_download_html" | default "下载 HTML" }}</span>
             </button>
+            <button type="button" class="aig-action-btn" id="aig-download-image">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+              <span>{{ i18n "aig_download_image" | default "下载图片" }}</span>
+            </button>
+            <button type="button" class="aig-action-btn" id="aig-new">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+              <span>{{ i18n "aig_new" | default "重新生成" }}</span>
+            </button>
           </div>
         </div>
-        <div class="aig-preview-wrap">
-          <iframe id="aig-preview" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+
+      <!-- 右侧空状态（未生成时显示） -->
+      <div class="aig-right-panel aig-right-panel--empty" id="aig-empty-state">
+        <div class="aig-empty-content">
+          <div class="aig-empty-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </div>
+          <h3>{{ i18n "aig_empty_title" | default "准备生成信息图" }}</h3>
+          <p>{{ i18n "aig_empty_desc" | default "在左侧配置模型并输入内容，然后点击生成按钮" }}</p>
         </div>
       </div>
     </div>
+            <div class="aig-sidebar-inner">
+              <div class="aig-info-card">
+                <h4>{{ i18n "aig_info_title" | default "信息图详情" }}</h4>
+                <div class="aig-info-item">
+                  <span class="aig-info-label">{{ i18n "aig_info_format" | default "格式" }}</span>
+                  <span class="aig-info-value">9:16 竖屏</span>
+                </div>
+                <div class="aig-info-item">
+                  <span class="aig-info-label">{{ i18n "aig_info_style" | default "风格" }}</span>
+                  <span class="aig-info-value">瑞士平面设计</span>
+                </div>
+              </div>
 
-    <!-- 使用说明 -->
-    <div class="aig-tips">
-      <h4>{{ i18n "aig_tips_title" | default "使用说明" }}</h4>
-      <ul>
-        <li>{{ i18n "aig_tip_1" | default "获取 Moonshot API Key：访问" }} <a href="https://platform.moonshot.cn/" target="_blank" rel="noopener">platform.moonshot.cn</a></li>
-        <li>{{ i18n "aig_tip_2" | default "生成的信息图为 9:16 竖屏比例，适合微信公众号、小红书等平台" }}</li>
-        <li>{{ i18n "aig_tip_3" | default "设计采用克莱因蓝与极简白交替的瑞士平面设计风格" }}</li>
-        <li>{{ i18n "aig_tip_4" | default "下载的 HTML 文件可直接在浏览器中打开或进一步编辑" }}</li>
-      </ul>
+              <div class="aig-action-group">
+                <h4>{{ i18n "aig_actions_title" | default "操作" }}</h4>
+                <button type="button" class="aig-action-btn aig-action-btn--primary aig-action-btn--large" id="aig-download-html">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>{{ i18n "aig_download_html" | default "下载 HTML" }}</span>
+                </button>
+                <button type="button" class="aig-action-btn aig-action-btn--large" id="aig-copy-html">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  <span>{{ i18n "aig_copy_html" | default "复制 HTML 代码" }}</span>
+                </button>
+                <button type="button" class="aig-action-btn aig-action-btn--large" id="aig-new">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                  <span>{{ i18n "aig_new" | default "生成新的" }}</span>
+                </button>
+              </div>
+
+              <div class="aig-hint-card">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <p>{{ i18n "aig_result_hint" | default "下载后可直接在浏览器打开，或使用截图工具保存为图片" }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -214,9 +345,17 @@
     btnLoading: document.querySelector('.aig-btn-loading'),
     error: document.getElementById('aig-error'),
     result: document.getElementById('aig-result'),
+    emptyState: document.getElementById('aig-empty-state'),
+    previewWrapper: document.getElementById('aig-preview-wrapper'),
     preview: document.getElementById('aig-preview'),
     copyHtml: document.getElementById('aig-copy-html'),
     downloadHtml: document.getElementById('aig-download-html'),
+    downloadImage: document.getElementById('aig-download-image'),
+    newBtn: document.getElementById('aig-new'),
+    zoomIn: document.getElementById('aig-zoom-in'),
+    zoomOut: document.getElementById('aig-zoom-out'),
+    zoomLevel: document.getElementById('aig-zoom-level'),
+    fullscreen: document.getElementById('aig-fullscreen'),
   };
 
   let generatedHtml = '';
@@ -351,7 +490,7 @@ ${response}
       elements.preview.src = url;
       
       elements.result.hidden = false;
-      elements.result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (elements.emptyState) elements.emptyState.hidden = true;
     } catch (err) {
       showError(err.message || '生成失败，请检查 API Key 和网络连接');
     } finally {
@@ -388,41 +527,239 @@ ${response}
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
+
+  // 生成新的 - 重置表单
+  elements.newBtn?.addEventListener('click', () => {
+    elements.content.value = '';
+    elements.charCount.textContent = `0 characters`;
+    elements.result.hidden = true;
+    if (elements.emptyState) elements.emptyState.hidden = false;
+    generatedHtml = '';
+    elements.preview.src = '';
+    zoomScale = 1;
+    updateZoom();
+    elements.content.focus();
+  });
+
+  // 缩放功能
+  let zoomScale = 1;
+  const zoomMin = 0.5;
+  const zoomMax = 1.5;
+  const zoomStep = 0.1;
+
+  function updateZoom() {
+    if (elements.previewWrapper) {
+      elements.previewWrapper.style.transform = `scale(${zoomScale})`;
+    }
+    if (elements.zoomLevel) {
+      elements.zoomLevel.textContent = `${Math.round(zoomScale * 100)}%`;
+    }
+  }
+
+  elements.zoomIn?.addEventListener('click', () => {
+    if (zoomScale < zoomMax) {
+      zoomScale = Math.min(zoomMax, zoomScale + zoomStep);
+      updateZoom();
+    }
+  });
+
+  elements.zoomOut?.addEventListener('click', () => {
+    if (zoomScale > zoomMin) {
+      zoomScale = Math.max(zoomMin, zoomScale - zoomStep);
+      updateZoom();
+    }
+  });
+
+  // 全屏功能
+  elements.fullscreen?.addEventListener('click', () => {
+    if (!elements.result) return;
+    
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      elements.result.requestFullscreen?.().catch(() => {
+        // 浏览器不支持全屏 API，使用类名模拟
+        elements.result.classList.toggle('is-fullscreen');
+      });
+    }
+  });
+
+  // 监听全屏变化
+  document.addEventListener('fullscreenchange', () => {
+    if (!elements.result) return;
+    if (document.fullscreenElement) {
+      elements.result.classList.add('is-fullscreen');
+    } else {
+      elements.result.classList.remove('is-fullscreen');
+    }
+  });
+
+  // ESC 退出全屏（类名模式）
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && elements.result?.classList.contains('is-fullscreen')) {
+      elements.result.classList.remove('is-fullscreen');
+    }
+  });
+
+  // 下载为图片
+  elements.downloadImage?.addEventListener('click', async () => {
+    if (!generatedHtml || !elements.preview) return;
+
+    const btn = elements.downloadImage;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg><span>生成中...</span>`;
+    btn.disabled = true;
+
+    try {
+      // 加载 html2canvas
+      if (!window.html2canvas) {
+        await loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
+      }
+
+      // 获取 iframe 的 document
+      const iframeDoc = elements.preview.contentDocument || elements.preview.contentWindow?.document;
+      if (!iframeDoc) {
+        throw new Error('无法访问预览内容');
+      }
+
+      // 获取 iframe 中的 body 元素
+      const target = iframeDoc.body;
+      if (!target) {
+        throw new Error('预览内容为空');
+      }
+
+      // 使用 html2canvas 截图
+      const canvas = await window.html2canvas(target, {
+        scale: 2, // 2倍分辨率，更清晰
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        logging: false,
+        width: target.scrollWidth,
+        height: target.scrollHeight,
+        windowWidth: target.scrollWidth,
+        windowHeight: target.scrollHeight,
+      });
+
+      // 导出为 PNG
+      const link = document.createElement('a');
+      link.download = `infographic-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+    } catch (err) {
+      showError('图片生成失败：' + (err.message || '未知错误'));
+    } finally {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  });
+
+  // 加载外部脚本的辅助函数
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Failed to load: ' + src));
+      document.head.appendChild(script);
+    });
+  }
 })();
 </script>
 
 <style>
 .aig-shell {
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
 
-.aig-panel {
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 1.5rem;
-  background: var(--surface);
-  display: flex;
-  flex-direction: column;
+/* 主工作区：左右分栏 */
+.aig-workspace {
+  display: grid;
+  grid-template-columns: 420px 1fr;
   gap: 1.5rem;
   margin-top: 1.5rem;
+  min-height: calc(100vh - 250px);
 }
 
-/* 配置区 */
-.aig-config {
+/* 左侧面板 */
+.aig-left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: fit-content;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  position: sticky;
+  top: 1rem;
+}
+
+/* 右侧面板 */
+.aig-right-panel {
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 1.25rem;
+  background: var(--surface);
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.aig-right-panel[hidden] {
+  display: none;
+}
+
+/* 右侧空状态 */
+.aig-right-panel--empty {
+  align-items: center;
+  justify-content: center;
   background: var(--surface-highlight);
 }
 
+.aig-empty-content {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.aig-empty-icon {
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.aig-empty-content h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.aig-empty-content p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* 左侧面板内的卡片 */
+.aig-left-panel .aig-config,
+.aig-left-panel .aig-input-section {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  background: var(--surface);
+}
+
+/* 配置区 */
 .aig-config-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.875rem;
   font-weight: 600;
+  font-size: 0.95rem;
   color: var(--text-main);
 }
 
@@ -432,8 +769,8 @@ ${response}
 
 .aig-config-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
 }
 
 .aig-config-item--wide {
@@ -528,23 +865,29 @@ ${response}
 }
 
 /* 输入区 */
-.aig-input-section {
+.aig-section-header {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.aig-section-header #aig-char-count {
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 .aig-textarea {
   width: 100%;
-  padding: 1rem;
-  border-radius: 12px;
+  padding: 0.875rem;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface-highlight);
   color: var(--text-main);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.6;
   resize: vertical;
-  min-height: 200px;
+  min-height: 180px;
   font-family: inherit;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -557,12 +900,6 @@ ${response}
 
 .aig-textarea::placeholder {
   color: var(--text-muted);
-}
-
-.aig-input-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 /* 生成按钮 */
@@ -615,47 +952,130 @@ ${response}
   color: #ef4444;
 }
 
-/* 结果区 */
-.aig-result {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--surface-highlight);
-}
+/* 结果区 - 右侧布局 */
 
-.aig-result-header {
+/* 顶部工具栏 */
+.aig-result-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--surface-highlight);
+  flex-shrink: 0;
 }
 
-.aig-result-header h3 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.aig-result-actions {
+.aig-result-title {
   display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.aig-result-title svg {
+  color: var(--accent);
+}
+
+.aig-zoom-controls {
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
 }
 
+.aig-zoom-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.aig-zoom-btn:hover {
+  border-color: var(--accent);
+  background: var(--surface-highlight);
+}
+
+.aig-zoom-level {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  min-width: 45px;
+  text-align: center;
+}
+
+/* 预览区 */
+.aig-preview-container {
+  flex: 1;
+  min-height: 0;
+  background: #e5e5e5;
+  position: relative;
+  overflow: hidden;
+}
+
+.aig-preview-scroll {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.aig-preview-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  transform-origin: top center;
+}
+
+.aig-preview-content iframe {
+  width: 400px;
+  height: 711px;
+  border: none;
+  display: block;
+}
+
+/* 全屏模式 */
+.aig-right-panel.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  border-radius: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+}
+
+.aig-right-panel.is-fullscreen .aig-preview-content iframe {
+  width: 480px;
+  height: calc(100vh - 120px);
+}
+
+/* 操作按钮 */
 .aig-action-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-main);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .aig-action-btn:hover {
@@ -664,51 +1084,73 @@ ${response}
 }
 
 .aig-action-btn--primary {
-  background: var(--accent);
-  color: #000;
-  border-color: var(--accent);
+  background: linear-gradient(135deg, #002FA7 0%, #1a4bc4 100%);
+  color: white;
+  border-color: transparent;
 }
 
 .aig-action-btn--primary:hover {
-  background: #c4a43b;
+  background: linear-gradient(135deg, #0035c0 0%, #1d52d6 100%);
+  box-shadow: 0 4px 12px rgba(0, 47, 167, 0.35);
 }
 
-.aig-preview-wrap {
-  padding: 1.25rem;
-  background: #f0f0f0;
+/* 底部操作栏 */
+.aig-result-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface-highlight);
+  gap: 1rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
-.aig-preview-wrap iframe {
-  width: 100%;
-  height: 600px;
-  border: none;
-  border-radius: 8px;
-  background: white;
+.aig-result-info {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.aig-info-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--surface);
+  padding: 0.25rem 0.625rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.aig-result-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 /* 使用说明 */
 .aig-tips {
-  margin-top: 2rem;
-  padding: 1.25rem;
+  padding: 1rem;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.05);
+  margin-top: auto;
 }
 
 .aig-tips h4 {
-  margin: 0 0 1rem;
-  font-size: 1rem;
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
+  color: var(--text-main);
 }
 
 .aig-tips ul {
   margin: 0;
-  padding-left: 1.25rem;
+  padding-left: 1.125rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
 .aig-tips li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.375rem;
 }
 
 .aig-tips li:last-child {
@@ -724,13 +1166,49 @@ ${response}
   text-decoration: underline;
 }
 
-/* 响应式 */
+/* 响应式 - 平板 */
+@media (max-width: 1024px) {
+  .aig-workspace {
+    grid-template-columns: 360px 1fr;
+  }
+
+  .aig-preview-content iframe {
+    width: 340px;
+    height: 604px;
+  }
+}
+
+/* 响应式 - 小屏幕平板 */
+@media (max-width: 900px) {
+  .aig-workspace {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .aig-left-panel {
+    position: static;
+    max-height: none;
+    height: auto;
+  }
+
+  .aig-right-panel {
+    min-height: 400px;
+  }
+
+  .aig-preview-content iframe {
+    width: 400px;
+    height: 711px;
+  }
+}
+
+/* 响应式 - 移动端 */
 @media (max-width: 640px) {
   .aig-shell {
     padding: 1rem;
   }
 
-  .aig-panel {
+  .aig-left-panel .aig-config,
+  .aig-left-panel .aig-input-section {
     padding: 1rem;
   }
 
@@ -742,14 +1220,27 @@ ${response}
     grid-column: span 1;
   }
 
-  .aig-result-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
+  .aig-result-topbar {
+    padding: 0.625rem 0.875rem;
   }
 
-  .aig-preview-wrap iframe {
-    height: 400px;
+  .aig-preview-scroll {
+    padding: 1rem;
+  }
+
+  .aig-preview-content iframe {
+    width: 300px;
+    height: 533px;
+  }
+
+  .aig-result-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .aig-result-actions {
+    justify-content: center;
   }
 }
 </style>
