@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>p5.js 旋转六边形内彩球弹跳</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b1020;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #dfe8ff;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hud {
+      position: fixed;
+      top: 12px;
+      left: 14px;
+      z-index: 10;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(8, 12, 24, 0.55);
+      backdrop-filter: blur(4px);
+      font-size: 12px;
+      line-height: 1.45;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="hud">
+    10 个彩色球 · 旋转六边形 · 重力 / 弹性 / 摩擦 / 碰撞<br />
+    拖动窗口可自适应；六边形持续旋转
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script>
+    const BALL_COUNT = 10;
+    const SUB_STEPS = 3;
+
+    const GRAVITY = 980;          // px/s^2
+    const AIR_DRAG = 0.16;        // linear drag
+    const ANGULAR_SPEED = 0.58;   // rad/s
+
+    const WALL_RESTITUTION = 0.86;
+    const WALL_FRICTION = 0.14;
+    const BALL_RESTITUTION = 0.92;
+    const BALL_FRICTION = 0.18;
+
+    let balls = [];
+    let hexAngle = 0;
+    let hexRadius = 230;
+
+    class Ball {
+      constructor(x, y, r, hue) {
+        this.pos = createVector(x, y);
+        this.vel = p5.Vector.random2D().mult(random(40, 160));
+        this.r = r;
+        this.hue = hue;
+        this.mass = r * r * 0.08;
+      }
+
+      draw() {
+        const x = this.pos.x;
+        const y = this.pos.y;
+        const r = this.r;
+        const c = drawingContext;
+
+        c.save();
+        const grad = c.createRadialGradient(
+          x - r * 0.35, y - r * 0.35, r * 0.15,
+          x, y, r * 1.15
+        );
+        grad.addColorStop(0, `hsla(${this.hue}, 96%, 80%, 0.98)`);
+        grad.addColorStop(0.45, `hsla(${this.hue}, 88%, 62%, 0.96)`);
+        grad.addColorStop(1, `hsla(${this.hue}, 84%, 34%, 0.98)`);
+        c.fillStyle = grad;
+
+        c.beginPath();
+        c.arc(x, y, r, 0, Math.PI * 2);
+        c.fill();
+
+        c.strokeStyle = "rgba(255,255,255,0.25)";
+        c.lineWidth = 1.2;
+        c.stroke();
+
+        c.fillStyle = "rgba(255,255,255,0.34)";
+        c.beginPath();
+        c.ellipse(x - r * 0.33, y - r * 0.3, r * 0.35, r * 0.24, -0.35, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
+    }
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      pixelDensity(min(2, window.devicePixelRatio || 1));
+      initWorld();
+      noStroke();
+    }
+
+    function initWorld() {
+      balls = [];
+      hexRadius = min(width, height) * 0.33;
+      hexAngle = 0;
+
+      const center = createVector(width * 0.5, height * 0.5);
+      const hues = [5, 32, 58, 88, 124, 168, 204, 238, 284, 330];
+
+      for (let i = 0; i < BALL_COUNT; i++) {
+        const r = random(14, 22);
+        let candidate = null;
+        let ok = false;
+
+        for (let tries = 0; tries < 5000; tries++) {
+          const p = p5.Vector.random2D().mult(random(0, hexRadius * 0.43));
+          p.add(center);
+          ok = true;
+          for (const b of balls) {
+            if (p5.Vector.dist(p, b.pos) < r + b.r + 4) {
+              ok = false;
+              break;
+            }
+          }
+          if (ok) {
+            candidate = p;
+            break;
+          }
+        }
+
+        if (!candidate) {
+          candidate = center.copy().add(random(-40, 40), random(-40, 40));
+        }
+
+        balls.push(new Ball(candidate.x, candidate.y, r, hues[i % hues.length]));
+      }
+    }
+
+    function draw() {
+      drawBackground();
+
+      const dt = min(deltaTime / 1000, 0.033);
+      const subDt = dt / SUB_STEPS;
+
+      for (let s = 0; s < SUB_STEPS; s++) {
+        simulate(subDt);
+      }
+
+      drawHexagon();
+      for (const b of balls) b.draw();
+    }
+
+    function simulate(dt) {
+      hexAngle += ANGULAR_SPEED * dt;
+
+      for (const b of balls) {
+        b.vel.y += GRAVITY * dt;
+        b.vel.mult(1 / (1 + AIR_DRAG * dt));
+        b.pos.add(p5.Vector.mult(b.vel, dt));
+      }
+
+      // 多次迭代提升接触稳定性
+      for (let i = 0; i < 2; i++) {
+        resolveBallBallCollisions();
+        resolveBallWallCollisions();
+      }
+    }
+
+    function resolveBallBallCollisions() {
+      for (let i = 0; i < balls.length; i++) {
+        for (let j = i + 1; j < balls.length; j++) {
+          const a = balls[i];
+          const b = balls[j];
+          const delta = p5.Vector.sub(b.pos, a.pos);
+          let dist = delta.mag();
+          const minDist = a.r + b.r;
+
+          if (dist === 0) {
+            delta.set(1e-4, 0);
+            dist = delta.mag();
+          }
+
+          if (dist >= minDist) continue;
+
+          const n = delta.copy().div(dist);
+          const penetration = minDist - dist;
+          const correction = n.copy().mult((penetration + 0.01) * 0.5);
+          a.pos.sub(correction);
+          b.pos.add(correction);
+
+          const rv = p5.Vector.sub(b.vel, a.vel);
+          const velAlongNormal = rv.dot(n);
+          if (velAlongNormal > 0) continue;
+
+          const invMassA = 1 / a.mass;
+          const invMassB = 1 / b.mass;
+
+          const impulseN = -(1 + BALL_RESTITUTION) * velAlongNormal / (invMassA + invMassB);
+          const impulse = n.copy().mult(impulseN);
+          a.vel.sub(impulse.copy().mult(invMassA));
+          b.vel.add(impulse.copy().mult(invMassB));
+
+          const rvAfter = p5.Vector.sub(b.vel, a.vel);
+          const tangent = rvAfter.copy().sub(n.copy().mult(rvAfter.dot(n)));
+          if (tangent.magSq() > 1e-8) {
+            tangent.normalize();
+            let jt = -rvAfter.dot(tangent) / (invMassA + invMassB);
+            const maxJt = impulseN * BALL_FRICTION;
+            jt = constrain(jt, -maxJt, maxJt);
+            const fricImpulse = tangent.mult(jt);
+            a.vel.sub(fricImpulse.copy().mult(invMassA));
+            b.vel.add(fricImpulse.copy().mult(invMassB));
+          }
+        }
+      }
+    }
+
+    function resolveBallWallCollisions() {
+      const center = createVector(width * 0.5, height * 0.5);
+      const verts = getHexVertices(center, hexRadius, hexAngle);
+
+      for (const b of balls) {
+        for (let i = 0; i < 6; i++) {
+          const v1 = verts[i];
+          const v2 = verts[(i + 1) % 6];
+          const edge = p5.Vector.sub(v2, v1);
+
+          let nA = createVector(edge.y, -edge.x);
+          let nB = createVector(-edge.y, edge.x);
+          nA.normalize();
+          nB.normalize();
+
+          const toCenter = p5.Vector.sub(center, v1);
+          const n = nA.dot(toCenter) > nB.dot(toCenter) ? nA : nB; // inward normal
+
+          const dist = p5.Vector.sub(b.pos, v1).dot(n);
+          if (dist >= b.r) continue;
+
+          const penetration = b.r - dist;
+          b.pos.add(n.copy().mult(penetration + 0.01));
+
+          const contact = b.pos.copy().sub(n.copy().mult(b.r));
+          const r = p5.Vector.sub(contact, center);
+          const wallVel = createVector(-ANGULAR_SPEED * r.y, ANGULAR_SPEED * r.x);
+
+          let relVel = p5.Vector.sub(b.vel, wallVel);
+          const vn = relVel.dot(n);
+
+          if (vn < 0) {
+            relVel.sub(n.copy().mult((1 + WALL_RESTITUTION) * vn));
+
+            const tangent = relVel.copy().sub(n.copy().mult(relVel.dot(n)));
+            relVel.sub(tangent.mult(WALL_FRICTION));
+
+            b.vel = relVel.add(wallVel);
+          }
+        }
+      }
+    }
+
+    function getHexVertices(center, radius, angle) {
+      const verts = [];
+      for (let i = 0; i < 6; i++) {
+        const a = angle + i * TWO_PI / 6;
+        verts.push(createVector(
+          center.x + cos(a) * radius,
+          center.y + sin(a) * radius
+        ));
+      }
+      return verts;
+    }
+
+    function drawHexagon() {
+      const center = createVector(width * 0.5, height * 0.5);
+      const verts = getHexVertices(center, hexRadius, hexAngle);
+
+      const c = drawingContext;
+      c.save();
+      const g = c.createRadialGradient(center.x, center.y, 20, center.x, center.y, hexRadius * 1.05);
+      g.addColorStop(0, "rgba(52, 86, 170, 0.18)");
+      g.addColorStop(1, "rgba(23, 33, 63, 0.08)");
+      c.fillStyle = g;
+      c.beginPath();
+      c.moveTo(verts[0].x, verts[0].y);
+      for (let i = 1; i < verts.length; i++) c.lineTo(verts[i].x, verts[i].y);
+      c.closePath();
+      c.fill();
+
+      c.strokeStyle = "rgba(157, 194, 255, 0.95)";
+      c.lineWidth = 4;
+      c.shadowColor = "rgba(100, 165, 255, 0.55)";
+      c.shadowBlur = 16;
+      c.beginPath();
+      c.moveTo(verts[0].x, verts[0].y);
+      for (let i = 1; i < verts.length; i++) c.lineTo(verts[i].x, verts[i].y);
+      c.closePath();
+      c.stroke();
+      c.restore();
+    }
+
+    function drawBackground() {
+      const c = drawingContext;
+      const bg = c.createLinearGradient(0, 0, 0, height);
+      bg.addColorStop(0, "#141d39");
+      bg.addColorStop(0.45, "#0e1730");
+      bg.addColorStop(1, "#0a1024");
+      c.fillStyle = bg;
+      c.fillRect(0, 0, width, height);
+
+      c.save();
+      c.globalAlpha = 0.15;
+      for (let i = 0; i < 14; i++) {
+        const y = (i + 1) * height / 15;
+        c.strokeStyle = "rgba(180, 210, 255, 0.1)";
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(0, y);
+        c.lineTo(width, y);
+        c.stroke();
+      }
+      c.restore();
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      initWorld();
+    }
+  </script>
+</body>
+</html>

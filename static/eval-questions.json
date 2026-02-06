@@ -163,6 +163,10 @@
       "Kimi-K2.5": {
         "type": "html",
         "content": "<iframe src='/eval-demos/kimi-k2.5-bouncing_balls_hexagon.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+      "gpt-5.3-codex-xhigh": {
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.3-codex-xhigh-p5_rotating_hexagon_balls.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   },
@@ -403,6 +407,14 @@
       "MiniMax-M2.1":{
         "type": "html",
         "content": "<iframe src='/eval-demos/MiniMax-M2.1-chinatown.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+      "gpt-5.3-codex-xhigh":{
+        "type": "html",
+        "content": "<iframe src='/eval-demos/gpt-5.3-codex-xhigh-chinatown-paifang-voxel.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      }, 
+      "claude-opus-4.6":{
+        "type": "html",
+        "content": "<iframe src='/eval-demos/claude-opus-4.6-paifang.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }, 
@@ -445,6 +457,11 @@
     "Kimi-K2.5":{
       "type": "html",
       "content": "<iframe src='/eval-demos/kimi-k2.5-rubiks-cube.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }, 
+
+    "gpt-5.3-codex-xhigh":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/gpt-5.3-codex-xhigh-rubiks_cube_threejs.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
     }
   }
 }, 
@@ -481,6 +498,10 @@
     "Qwen3-Max-Thinking":{
       "type": "html",
       "content": "<iframe src='/eval-demos/Qwen3-Max-Thinking-traffic-simulator.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+    }, 
+    "gpt-5.3-codex-xhigh":{
+      "type": "html",
+      "content": "<iframe src='/eval-demos/gpt-5.3-codex-xhigh-traffic_light_simulation.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
     }
   }
 }

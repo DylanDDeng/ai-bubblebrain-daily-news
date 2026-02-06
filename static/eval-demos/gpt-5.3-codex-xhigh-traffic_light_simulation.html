@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>单行道交通灯可视化模拟</title>
+  <style>
+    :root {
+      --bg1: #1e293b;
+      --bg2: #334155;
+      --card: #0f172a;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --road: #2b3440;
+      --marking: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 20% 20%, var(--bg2), var(--bg1));
+      color: var(--text);
+      font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+      padding: 20px;
+    }
+
+    .panel {
+      width: min(1040px, 100%);
+      background: color-mix(in oklab, var(--card) 90%, black 10%);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 24px 60px rgba(2, 6, 23, 0.45);
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(20px, 2.6vw, 30px);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .light-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+    }
+
+    .lights {
+      width: 58px;
+      padding: 8px;
+      border-radius: 10px;
+      background: #0b1220;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      display: grid;
+      gap: 8px;
+    }
+
+    .lamp {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      opacity: 0.2;
+      transition: opacity 180ms, box-shadow 180ms, filter 180ms;
+      border: 1px solid rgba(226, 232, 240, 0.2);
+    }
+
+    .lamp.red {
+      background: #ef4444;
+    }
+
+    .lamp.yellow {
+      background: #f59e0b;
+    }
+
+    .lamp.green {
+      background: #22c55e;
+    }
+
+    .lamp.on {
+      opacity: 1;
+      filter: saturate(1.2);
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .state {
+      min-width: 140px;
+      font-weight: 600;
+    }
+
+    .state .sub {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .stats {
+      flex: 1;
+      min-width: 260px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .stat {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      white-space: nowrap;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      background: linear-gradient(180deg, #93c5fd 0%, #bae6fd 45%, #dcfce7 100%);
+    }
+
+    .hint {
+      margin: 10px 2px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <main class="panel">
+    <h1>单行道交通灯可视化程序</h1>
+    <div class="top">
+      <div class="light-box">
+        <div class="lights">
+          <div class="lamp red" id="lamp-red"></div>
+          <div class="lamp yellow" id="lamp-yellow"></div>
+          <div class="lamp green" id="lamp-green"></div>
+        </div>
+        <div class="state">
+          <div id="light-state">绿灯</div>
+          <div class="sub">剩余 <span id="light-time">0.0</span> s</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">道路车辆: <span id="cars-on-road">0</span></div>
+        <div class="stat">排队车辆: <span id="queue-size">0</span></div>
+        <div class="stat">已通过: <span id="passed-count">0</span></div>
+        <div class="stat">平均速度: <span id="avg-speed">0</span> px/s</div>
+      </div>
+    </div>
+
+    <canvas id="simCanvas" width="1000" height="360"></canvas>
+    <p class="hint">
+      规则：车辆从左侧按随机间隔进入；红灯停车、黄灯减速、绿灯放行；车辆会保持跟车距离，防止碰撞。
+    </p>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("simCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const lamps = {
+      red: document.getElementById("lamp-red"),
+      yellow: document.getElementById("lamp-yellow"),
+      green: document.getElementById("lamp-green")
+    };
+
+    const elState = document.getElementById("light-state");
+    const elTime = document.getElementById("light-time");
+    const elCars = document.getElementById("cars-on-road");
+    const elQueue = document.getElementById("queue-size");
+    const elPassed = document.getElementById("passed-count");
+    const elAvgSpeed = document.getElementById("avg-speed");
+
+    const road = {
+      top: 200,
+      height: 92,
+      laneY: 246,
+      stopLineX: 760
+    };
+
+    const lightCycle = [
+      { state: "green", duration: 10 },
+      { state: "yellow", duration: 3 },
+      { state: "red", duration: 8 }
+    ];
+
+    let cycleIndex = 0;
+    let lightState = lightCycle[cycleIndex].state;
+    let lightTimer = lightCycle[cycleIndex].duration;
+
+    let cars = [];
+    let carId = 1;
+    let passedCount = 0;
+    let spawnTimer = randomSpawnGap();
+
+    let lastTime = performance.now();
+
+    function randomSpawnGap() {
+      const base = 0.7 + Math.random() * 1.8;
+      return Math.random() < 0.22 ? base * 0.55 : base;
+    }
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    function nextLightState() {
+      cycleIndex = (cycleIndex + 1) % lightCycle.length;
+      lightState = lightCycle[cycleIndex].state;
+      lightTimer = lightCycle[cycleIndex].duration;
+      updateLightDisplay();
+    }
+
+    function updateLightDisplay() {
+      lamps.red.classList.toggle("on", lightState === "red");
+      lamps.yellow.classList.toggle("on", lightState === "yellow");
+      lamps.green.classList.toggle("on", lightState === "green");
+
+      const map = {
+        red: "红灯",
+        yellow: "黄灯",
+        green: "绿灯"
+      };
+      elState.textContent = map[lightState];
+    }
+
+    function spawnCar() {
+      const nearest = cars.reduce((m, c) => Math.min(m, c.x), Infinity);
+      if (nearest < 70) return false;
+
+      const length = rand(34, 52);
+      const car = {
+        id: carId++,
+        x: -length - 8,
+        y: road.laneY,
+        length,
+        width: rand(20, 26),
+        speed: 0,
+        cruise: rand(90, 150),
+        color: `hsl(${Math.floor(rand(0, 360))} 82% 62%)`,
+        braking: false
+      };
+      cars.push(car);
+      return true;
+    }
+
+    function updateTrafficLight(dt) {
+      lightTimer -= dt;
+      while (lightTimer <= 0) {
+        const overflow = -lightTimer;
+        nextLightState();
+        lightTimer -= overflow;
+      }
+      elTime.textContent = lightTimer.toFixed(1);
+    }
+
+    function updateCars(dt) {
+      cars.sort((a, b) => b.x - a.x);
+
+      for (let i = 0; i < cars.length; i++) {
+        const car = cars[i];
+        const leader = i === 0 ? null : cars[i - 1];
+
+        const maxAcc = 95;
+        const maxBrake = 230;
+        const reaction = 0.55;
+        const minGap = 10;
+
+        let obstacleDist = Infinity;
+        let obstacleV = car.cruise;
+
+        if (leader) {
+          const gap = leader.x - (car.x + car.length);
+          obstacleDist = gap;
+          obstacleV = leader.speed;
+        }
+
+        const distanceToLine = road.stopLineX - (car.x + car.length);
+        const mustStopForLight = lightState !== "green" && distanceToLine >= -1;
+        if (mustStopForLight && distanceToLine < obstacleDist) {
+          obstacleDist = distanceToLine;
+          obstacleV = 0;
+        }
+
+        let desiredSpeed = car.cruise;
+        if (lightState === "yellow" && distanceToLine > 0 && distanceToLine < 180) {
+          desiredSpeed = Math.min(desiredSpeed, 55);
+        }
+
+        let acc = maxAcc * (1 - car.speed / Math.max(desiredSpeed, 1));
+
+        if (Number.isFinite(obstacleDist)) {
+          const closingV = car.speed - obstacleV;
+          const desiredGap =
+            minGap +
+            car.speed * reaction +
+            Math.max(0, (car.speed * closingV) / (2 * Math.sqrt(maxAcc * maxBrake)));
+          const ratio = desiredGap / Math.max(obstacleDist, 1);
+          acc -= maxAcc * ratio * ratio;
+        }
+
+        acc -= 0.016 * car.speed;
+
+        car.braking = acc < -35;
+        car.speed = Math.max(0, Math.min(190, car.speed + acc * dt));
+        car.x += car.speed * dt;
+
+        if (leader) {
+          const hardGap = 6;
+          const maxFront = leader.x - hardGap;
+          if (car.x + car.length > maxFront) {
+            car.x = maxFront - car.length;
+            car.speed = Math.min(car.speed, leader.speed);
+          }
+        }
+      }
+
+      const active = [];
+      for (const car of cars) {
+        if (car.x - car.length <= canvas.width + 60) {
+          active.push(car);
+        } else {
+          passedCount += 1;
+        }
+      }
+      cars = active;
+    }
+
+    function drawRoad() {
+      ctx.fillStyle = "#4b5563";
+      ctx.fillRect(0, road.top - 8, canvas.width, road.height + 16);
+
+      ctx.fillStyle = getComputedStyle(document.documentElement)
+        .getPropertyValue("--road")
+        .trim() || "#2b3440";
+      ctx.fillRect(0, road.top, canvas.width, road.height);
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.12)";
+      ctx.fillRect(0, road.top, canvas.width, 6);
+      ctx.fillRect(0, road.top + road.height - 6, canvas.width, 6);
+
+      ctx.strokeStyle = getComputedStyle(document.documentElement)
+        .getPropertyValue("--marking")
+        .trim() || "#f8fafc";
+      ctx.lineWidth = 4;
+      ctx.setLineDash([22, 18]);
+      ctx.beginPath();
+      ctx.moveTo(10, road.laneY);
+      ctx.lineTo(canvas.width - 10, road.laneY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.fillRect(road.stopLineX, road.top + 6, 6, road.height - 12);
+
+      ctx.fillStyle = "rgba(16, 185, 129, 0.12)";
+      ctx.fillRect(road.stopLineX + 8, road.top, canvas.width - road.stopLineX - 8, road.height);
+
+      const arrowY = road.laneY;
+      for (let x = 120; x < road.stopLineX - 70; x += 210) {
+        ctx.fillStyle = "rgba(248, 250, 252, 0.6)";
+        ctx.beginPath();
+        ctx.moveTo(x, arrowY - 10);
+        ctx.lineTo(x + 28, arrowY - 10);
+        ctx.lineTo(x + 28, arrowY - 18);
+        ctx.lineTo(x + 48, arrowY);
+        ctx.lineTo(x + 28, arrowY + 18);
+        ctx.lineTo(x + 28, arrowY + 10);
+        ctx.lineTo(x, arrowY + 10);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.fillStyle = "#334155";
+      ctx.fillRect(road.stopLineX + 20, 88, 10, road.top - 88);
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(road.stopLineX + 6, 70, 38, 102);
+    }
+
+    function roundRect(x, y, w, h, r) {
+      const rr = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + rr, y);
+      ctx.lineTo(x + w - rr, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
+      ctx.lineTo(x + w, y + h - rr);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+      ctx.lineTo(x + rr, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
+      ctx.lineTo(x, y + rr);
+      ctx.quadraticCurveTo(x, y, x + rr, y);
+      ctx.closePath();
+    }
+
+    function drawCars() {
+      cars.sort((a, b) => a.x - b.x);
+      for (const car of cars) {
+        const bodyY = road.laneY - car.width / 2;
+
+        roundRect(car.x, bodyY, car.length, car.width, 8);
+        ctx.fillStyle = car.color;
+        ctx.fill();
+
+        roundRect(car.x + car.length * 0.2, bodyY + 3, car.length * 0.45, car.width * 0.42, 5);
+        ctx.fillStyle = "rgba(219, 234, 254, 0.8)";
+        ctx.fill();
+
+        ctx.fillStyle = "#111827";
+        ctx.fillRect(car.x + 6, bodyY - 2, 9, 4);
+        ctx.fillRect(car.x + 6, bodyY + car.width - 2, 9, 4);
+        ctx.fillRect(car.x + car.length - 15, bodyY - 2, 9, 4);
+        ctx.fillRect(car.x + car.length - 15, bodyY + car.width - 2, 9, 4);
+
+        ctx.fillStyle = car.braking ? "#ef4444" : "#fca5a5";
+        ctx.fillRect(car.x + 1, bodyY + 4, 3, 5);
+        ctx.fillRect(car.x + 1, bodyY + car.width - 9, 3, 5);
+
+        ctx.fillStyle = "#fef08a";
+        ctx.fillRect(car.x + car.length - 4, bodyY + 4, 3, 5);
+        ctx.fillRect(car.x + car.length - 4, bodyY + car.width - 9, 3, 5);
+      }
+    }
+
+    function updateStats() {
+      const queueSize = cars.filter(
+        (c) => c.x + c.length < road.stopLineX + 1 && c.speed < 6
+      ).length;
+
+      const avgSpeed =
+        cars.length === 0
+          ? 0
+          : cars.reduce((sum, c) => sum + c.speed, 0) / cars.length;
+
+      elCars.textContent = String(cars.length);
+      elQueue.textContent = String(queueSize);
+      elPassed.textContent = String(passedCount);
+      elAvgSpeed.textContent = avgSpeed.toFixed(1);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawRoad();
+      drawCars();
+    }
+
+    function tick(now) {
+      let dt = (now - lastTime) / 1000;
+      lastTime = now;
+      dt = Math.min(dt, 0.05);
+
+      updateTrafficLight(dt);
+
+      spawnTimer -= dt;
+      if (spawnTimer <= 0) {
+        spawnCar();
+        spawnTimer = randomSpawnGap();
+      }
+
+      updateCars(dt);
+      updateStats();
+      draw();
+      requestAnimationFrame(tick);
+    }
+
+    updateLightDisplay();
+    requestAnimationFrame((t) => {
+      lastTime = t;
+      tick(t);
+    });
+  </script>
+</body>
+</html>

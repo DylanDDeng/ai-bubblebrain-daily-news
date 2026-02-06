@@ -17,6 +17,27 @@
     "releaseDate": "2026-01",
     "description": "Kimi 推出的 K2.5 模型",
     "tags": [ "代码", "推理","开源","Agent"]
+  }, 
+
+
+  { 
+    "id":"gpt-5.3-codex-xhigh", 
+    "name":"gpt-5.3-codex", 
+    "company": "OpenAI",
+    "logo": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251125193407310.png",
+    "releaseDate": "2026-02",
+    "description": "OpenAI最新推出的编码模型",
+    "tags": [ "代码", "Agent"]
+  }, 
+
+  {
+    "id":"claude-4.6-opus", 
+    "name":"claude-4.6-opus", 
+    "company": "Anthropic",
+    "logo": "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251125160145421.png",
+    "releaseDate": "2026-02",
+    "description": "Anthropic最新推出的编码模型",
+    "tags": [ "代码", "Agent"]
   }
 
 

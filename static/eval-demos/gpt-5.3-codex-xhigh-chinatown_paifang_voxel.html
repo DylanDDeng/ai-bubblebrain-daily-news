@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voxel Chinatown Paifang - Three.js</title>
+  <style>
+    :root {
+      --bg: #0d1622;
+      --panel: rgba(12, 20, 32, 0.78);
+      --panel-border: rgba(255, 255, 255, 0.16);
+      --text: #e8eef7;
+      --muted: #a9b7ca;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 15%, #1c2f49 0%, #0d1622 55%);
+      color: var(--text);
+      font-family: "Segoe UI", "PingFang SC", "Noto Sans SC", sans-serif;
+    }
+
+    #canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .info {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      z-index: 3;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      max-width: min(520px, calc(100vw - 32px));
+      backdrop-filter: blur(6px);
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .info b {
+      color: #f9d673;
+      letter-spacing: 0.2px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="info">
+    <div><b>Voxel Chinatown Paifang</b></div>
+    <div>Traditional red pillars, triple golden roofs, dragons, clouds, lanterns, and stone lions.</div>
+    <div class="muted">Drag to orbit (limited front view) | Mouse wheel to zoom</div>
+    <div class="muted" id="status">Loading...</div>
+  </div>
+  <canvas id="canvas"></canvas>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+    const statusEl = document.getElementById("status");
+    window.addEventListener("error", (e) => {
+      statusEl.textContent = `Load error: ${e.message}`;
+    });
+    window.addEventListener("unhandledrejection", () => {
+      statusEl.textContent = "Module load failed. Check network/CDN availability.";
+    });
+
+    const canvas = document.getElementById("canvas");
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d1622);
+    scene.fog = new THREE.Fog(0x122238, 52, 135);
+
+    const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 260);
+    camera.position.set(0, 15, 46);
+    camera.lookAt(0, 9, 0);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 9, 0);
+    controls.enablePan = false;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.07;
+    controls.minDistance = 30;
+    controls.maxDistance = 72;
+    controls.minAzimuthAngle = -0.42;
+    controls.maxAzimuthAngle = 0.42;
+    controls.minPolarAngle = 0.92;
+    controls.maxPolarAngle = 1.57;
+    controls.update();
+
+    const hemi = new THREE.HemisphereLight(0xb7d8ff, 0x3f2f1f, 0.45);
+    scene.add(hemi);
+
+    const keyLight = new THREE.DirectionalLight(0xfff1d0, 1.12);
+    keyLight.position.set(22, 32, 26);
+    scene.add(keyLight);
+
+    const fillLight = new THREE.DirectionalLight(0x9ec5ff, 0.58);
+    fillLight.position.set(-24, 16, -12);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.PointLight(0xf9b96a, 0.65, 140);
+    rimLight.position.set(0, 22, 18);
+    scene.add(rimLight);
+
+    const VOXEL = 0.5;
+    const voxelGeo = new THREE.BoxGeometry(VOXEL, VOXEL, VOXEL);
+
+    const palette = {
+      pillarRed: { color: 0xb21d2a, roughness: 0.42, metalness: 0.08 },
+      roofGold: { color: 0xe5b83f, roughness: 0.34, metalness: 0.28 },
+      roofGoldDeep: { color: 0xc58b22, roughness: 0.3, metalness: 0.34 },
+      white: { color: 0xf0ece3, roughness: 0.4, metalness: 0.08 },
+      jade: { color: 0x2a9169, roughness: 0.45, metalness: 0.05 },
+      cloudBlue: { color: 0x6da5f5, roughness: 0.45, metalness: 0.1 },
+      darkWood: { color: 0x2a1b15, roughness: 0.63, metalness: 0.02 },
+      lanternRed: { color: 0xcf2f2f, roughness: 0.3, metalness: 0.1 },
+      stone: { color: 0xa7abb0, roughness: 0.78, metalness: 0.02 },
+      stoneLight: { color: 0xc8cbd1, roughness: 0.82, metalness: 0.02 },
+      street: { color: 0x2e3b4d, roughness: 0.9, metalness: 0.02 },
+      building1: { color: 0x4d5f7a, roughness: 0.85, metalness: 0.05 },
+      building2: { color: 0x5c4f46, roughness: 0.84, metalness: 0.03 },
+      building3: { color: 0x44556b, roughness: 0.87, metalness: 0.04 },
+      window: { color: 0xefd38b, roughness: 0.25, metalness: 0.2, emissive: 0x8a6424, emissiveIntensity: 0.62 }
+    };
+
+    const materialCache = new Map();
+    function getMat(name) {
+      if (!materialCache.has(name)) {
+        materialCache.set(name, new THREE.MeshStandardMaterial(palette[name]));
+      }
+      return materialCache.get(name);
+    }
+
+    function addVoxel(group, x, y, z, matName) {
+      const mesh = new THREE.Mesh(voxelGeo, getMat(matName));
+      mesh.position.set(x * VOXEL, y * VOXEL, z * VOXEL);
+      group.add(mesh);
+      return mesh;
+    }
+
+    function fillBox(group, x0, x1, y0, y1, z0, z1, matName) {
+      const minX = Math.min(x0, x1);
+      const maxX = Math.max(x0, x1);
+      const minY = Math.min(y0, y1);
+      const maxY = Math.max(y0, y1);
+      const minZ = Math.min(z0, z1);
+      const maxZ = Math.max(z0, z1);
+      for (let x = minX; x <= maxX; x++) {
+        for (let y = minY; y <= maxY; y++) {
+          for (let z = minZ; z <= maxZ; z++) {
+            addVoxel(group, x, y, z, matName);
+          }
+        }
+      }
+    }
+
+    function stampPatternXY(group, pattern, startX, startY, z, keyMap, mirror = false) {
+      const height = pattern.length;
+      const width = pattern[0].length;
+      for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
+          const sourceCol = mirror ? width - 1 - col : col;
+          const ch = pattern[row][sourceCol];
+          if (ch === ".") continue;
+          const matName = keyMap[ch];
+          if (!matName) continue;
+          const y = startY + (height - 1 - row);
+          const x = startX + col;
+          addVoxel(group, x, y, z, matName);
+        }
+      }
+    }
+
+    function makeSignTextMesh(text) {
+      const c = document.createElement("canvas");
+      c.width = 1024;
+      c.height = 256;
+      const ctx = c.getContext("2d");
+
+      ctx.fillStyle = "#24160f";
+      ctx.fillRect(0, 0, c.width, c.height);
+
+      ctx.strokeStyle = "#c79931";
+      ctx.lineWidth = 22;
+      ctx.strokeRect(18, 18, c.width - 36, c.height - 36);
+
+      ctx.fillStyle = "#f4ca66";
+      ctx.font = "bold 168px 'Noto Serif SC', 'STSong', serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, c.width / 2, c.height / 2 + 6);
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.needsUpdate = true;
+
+      const plane = new THREE.Mesh(
+        new THREE.PlaneGeometry(10.2, 2.65),
+        new THREE.MeshBasicMaterial({ map: tex })
+      );
+      plane.position.set(0, 9.6, 1.78);
+      return plane;
+    }
+
+    const world = new THREE.Group();
+    scene.add(world);
+
+    const gate = new THREE.Group();
+    world.add(gate);
+
+    function buildPillarsAndBeams() {
+      const pillarXs = [-18, -6, 6, 18];
+      for (const x of pillarXs) {
+        fillBox(gate, x - 1, x + 1, 0, 24, -1, 1, "pillarRed");
+        fillBox(gate, x - 2, x + 2, -1, 0, -2, 2, "stone");
+        fillBox(gate, x - 2, x + 2, 24, 25, -2, 2, "roofGoldDeep");
+        fillBox(gate, x - 1, x + 1, 3, 4, -1, 1, "roofGold");
+        fillBox(gate, x - 1, x + 1, 19, 20, -1, 1, "roofGold");
+      }
+
+      fillBox(gate, -21, 21, 12, 14, -2, 2, "pillarRed");
+      fillBox(gate, -21, 21, 15, 15, -2, 2, "roofGold");
+
+      fillBox(gate, -10, 10, 16, 18, -2, 2, "pillarRed");
+      fillBox(gate, -10, 10, 19, 19, -2, 2, "roofGold");
+
+      fillBox(gate, -22, 22, 23, 24, -2, 2, "pillarRed");
+      fillBox(gate, -22, 22, 25, 25, -2, 2, "roofGold");
+
+      fillBox(gate, -2, 2, 24, 34, -1, 1, "pillarRed");
+      fillBox(gate, -3, 3, 29, 30, -1, 1, "roofGold");
+    }
+
+    function addRoofTier(y, halfWidth, halfDepth) {
+      for (let layer = 0; layer < 4; layer++) {
+        const w = halfWidth - layer * 2;
+        const d = halfDepth - Math.floor(layer * 0.7);
+        if (w < 2 || d < 1) break;
+        const mat = layer < 2 ? "roofGold" : "roofGoldDeep";
+        fillBox(gate, -w, w, y + layer, y + layer, -d, d, mat);
+      }
+
+      for (let step = 1; step <= 4; step++) {
+        const yEdge = y + step - 1;
+        const xSpan = Math.max(2, halfWidth - step + 1);
+        const zEdge = halfDepth + step;
+        fillBox(gate, -xSpan, xSpan, yEdge, yEdge, zEdge, zEdge, "roofGold");
+        fillBox(gate, -xSpan, xSpan, yEdge, yEdge, -zEdge, -zEdge, "roofGold");
+      }
+
+      for (let step = 1; step <= 3; step++) {
+        const yEdge = y + step;
+        const zSpan = Math.max(1, halfDepth - step + 2);
+        const xEdge = halfWidth + step;
+        fillBox(gate, xEdge, xEdge, yEdge, yEdge, -zSpan, zSpan, "roofGold");
+        fillBox(gate, -xEdge, -xEdge, yEdge, yEdge, -zSpan, zSpan, "roofGold");
+      }
+
+      for (let s = 0; s < 4; s++) {
+        const yy = y + 2 + s;
+        const xx = halfWidth + 2 + s;
+        const zz = halfDepth + 2 + s;
+        fillBox(gate, xx, xx, yy, yy, zz - 1, zz, "roofGoldDeep");
+        fillBox(gate, -xx, -xx, yy, yy, zz - 1, zz, "roofGoldDeep");
+        fillBox(gate, xx, xx, yy, yy, -zz, -(zz - 1), "roofGoldDeep");
+        fillBox(gate, -xx, -xx, yy, yy, -zz, -(zz - 1), "roofGoldDeep");
+      }
+
+      fillBox(gate, -halfWidth + 6, halfWidth - 6, y + 4, y + 4, 0, 0, "white");
+      for (const x of [-halfWidth + 6, halfWidth - 6]) {
+        fillBox(gate, x - 1, x + 1, y + 5, y + 6, -1, 1, "white");
+      }
+    }
+
+    function buildSignboardAndPatterns() {
+      fillBox(gate, -11, 11, 16, 22, 2, 3, "darkWood");
+      fillBox(gate, -11, 11, 22, 22, 2, 3, "roofGold");
+      fillBox(gate, -11, 11, 16, 16, 2, 3, "roofGold");
+      fillBox(gate, -11, -11, 16, 22, 2, 3, "roofGold");
+      fillBox(gate, 11, 11, 16, 22, 2, 3, "roofGold");
+      gate.add(makeSignTextMesh("唐人街"));
+
+      const cloudPattern = [
+        "..ww..ww..",
+        ".wwggggww.",
+        "wwggwwggww",
+        ".ggwwwwgg.",
+        "..ww..ww.."
+      ];
+      for (const x of [-20, -9, 2, 13]) {
+        stampPatternXY(gate, cloudPattern, x, 13, 3, { w: "white", g: "roofGold" });
+      }
+
+      fillBox(gate, -19, -8, 6, 13, 3, 3, "darkWood");
+      fillBox(gate, 8, 19, 6, 13, 3, 3, "darkWood");
+
+      const dragonPattern = [
+        "...gg......",
+        "..gjjg.....",
+        ".gjwwjg....",
+        "gjjjjjg....",
+        ".gwwjjjgg..",
+        "..gjjjwwjg.",
+        "...gggggg.."
+      ];
+
+      stampPatternXY(
+        gate,
+        dragonPattern,
+        -18,
+        7,
+        4,
+        { g: "roofGold", j: "jade", w: "white" },
+        false
+      );
+      stampPatternXY(
+        gate,
+        dragonPattern,
+        8,
+        7,
+        4,
+        { g: "roofGold", j: "jade", w: "white" },
+        true
+      );
+    }
+
+    const lanterns = [];
+    function createLantern() {
+      const g = new THREE.Group();
+      const radiusLayers = [1, 2, 3, 3, 2, 1];
+      let ly = 0;
+      for (const radius of radiusLayers) {
+        for (let x = -radius; x <= radius; x++) {
+          for (let z = -radius; z <= radius; z++) {
+            if (Math.abs(x) + Math.abs(z) <= radius + 1) {
+              addVoxel(g, x, ly, z, "lanternRed");
+            }
+          }
+        }
+        ly--;
+      }
+      fillBox(g, -1, 1, 1, 1, -1, 1, "roofGold");
+      fillBox(g, -1, 1, -6, -6, -1, 1, "roofGold");
+      fillBox(g, 0, 0, -7, -9, 0, 0, "roofGold");
+      return g;
+    }
+
+    function addLanternSet() {
+      const xList = [-16, -9, 9, 16];
+      xList.forEach((x, i) => {
+        fillBox(gate, x, x, 13, 11, 3, 3, "roofGold");
+        const lantern = createLantern();
+        lantern.position.set(x * VOXEL, 10 * VOXEL, 3 * VOXEL);
+        lantern.userData.phase = i * 1.3;
+        gate.add(lantern);
+        lanterns.push(lantern);
+      });
+    }
+
+    function createLionStatue() {
+      const lion = new THREE.Group();
+
+      fillBox(lion, -4, 4, 0, 1, -3, 3, "stoneLight");
+      fillBox(lion, -2, 2, 2, 4, -1, 2, "stone");
+      fillBox(lion, -3, -2, 2, 3, 1, 2, "stone");
+      fillBox(lion, 2, 3, 2, 3, 1, 2, "stone");
+      fillBox(lion, -1, 1, 5, 7, 1, 4, "stoneLight");
+      fillBox(lion, -2, -1, 8, 8, 2, 3, "stone");
+      fillBox(lion, 1, 2, 8, 8, 2, 3, "stone");
+      fillBox(lion, -1, 1, 6, 6, 5, 5, "stone");
+      fillBox(lion, -1, 1, 3, 3, -2, -1, "stone");
+      fillBox(lion, 1, 2, 2, 3, 3, 4, "roofGold");
+
+      return lion;
+    }
+
+    function addStoneLions() {
+      const lionL = createLionStatue();
+      lionL.position.set(-11 * VOXEL, 0, 8 * VOXEL);
+      gate.add(lionL);
+
+      const lionR = createLionStatue();
+      lionR.position.set(11 * VOXEL, 0, 8 * VOXEL);
+      lionR.scale.x = -1;
+      gate.add(lionR);
+    }
+
+    function addStreetAndBuildings() {
+      const ground = new THREE.Mesh(
+        new THREE.BoxGeometry(130, 1, 90),
+        getMat("street")
+      );
+      ground.position.set(0, -0.75, -8);
+      scene.add(ground);
+
+      const road = new THREE.Mesh(
+        new THREE.BoxGeometry(24, 0.35, 90),
+        new THREE.MeshStandardMaterial({ color: 0x2a2f35, roughness: 0.95, metalness: 0.02 })
+      );
+      road.position.set(0, -0.1, -8);
+      scene.add(road);
+
+      const stripeMat = new THREE.MeshStandardMaterial({ color: 0xe3d8a5, roughness: 0.78, metalness: 0.02 });
+      for (let i = -6; i <= 6; i++) {
+        if (i % 2 !== 0) continue;
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.04, 4), stripeMat);
+        stripe.position.set(0, 0.1, i * 6);
+        scene.add(stripe);
+      }
+
+      function addBuilding(x, width, height, depth, style) {
+        const b = new THREE.Group();
+        const halfW = Math.floor(width / 2);
+        const halfD = Math.floor(depth / 2);
+        fillBox(b, -halfW, halfW, 0, height, -halfD, halfD, style);
+
+        for (let yy = 3; yy <= height - 3; yy += 4) {
+          for (let xx = -halfW + 2; xx <= halfW - 2; xx += 3) {
+            addVoxel(b, xx, yy, halfD + 1, "window");
+          }
+        }
+
+        fillBox(b, -halfW - 1, halfW + 1, height + 1, height + 1, -halfD - 1, halfD + 1, "darkWood");
+        b.position.set(x * VOXEL, 0, -44 * VOXEL);
+        scene.add(b);
+      }
+
+      addBuilding(-36, 12, 28, 10, "building1");
+      addBuilding(-26, 10, 22, 8, "building2");
+      addBuilding(-16, 10, 26, 9, "building3");
+      addBuilding(-7, 8, 18, 7, "building2");
+      addBuilding(7, 8, 18, 7, "building2");
+      addBuilding(16, 10, 26, 9, "building3");
+      addBuilding(26, 10, 22, 8, "building2");
+      addBuilding(36, 12, 28, 10, "building1");
+
+      const haze = new THREE.Mesh(
+        new THREE.PlaneGeometry(130, 42),
+        new THREE.MeshBasicMaterial({ color: 0x6d89af, transparent: true, opacity: 0.08 })
+      );
+      haze.position.set(0, 14, -30);
+      scene.add(haze);
+    }
+
+    function buildPaifang() {
+      buildPillarsAndBeams();
+      addRoofTier(24, 22, 6);
+      addRoofTier(29, 16, 5);
+      addRoofTier(33, 10, 4);
+      buildSignboardAndPatterns();
+      addLanternSet();
+      addStoneLions();
+
+      fillBox(gate, -24, 24, -2, -1, -4, 6, "stone");
+      fillBox(gate, -24, 24, -2, -2, -5, -5, "stoneLight");
+      fillBox(gate, -24, 24, -2, -2, 7, 7, "stoneLight");
+    }
+
+    buildPaifang();
+    addStreetAndBuildings();
+
+    statusEl.textContent = "Loaded: 4 pillars, 3-tier roofs, signboard, dragons/clouds, lanterns, lions, street backdrop.";
+
+    function onResize() {
+      renderer.setSize(window.innerWidth, window.innerHeight, false);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener("resize", onResize);
+
+    function animate(timeMs) {
+      requestAnimationFrame(animate);
+      const t = timeMs * 0.001;
+
+      lanterns.forEach((lantern) => {
+        lantern.rotation.z = Math.sin(t * 1.5 + lantern.userData.phase) * 0.08;
+      });
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate(0);
+  </script>
+</body>
+</html>

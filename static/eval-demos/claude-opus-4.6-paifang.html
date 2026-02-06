@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chinatown Paifang - Voxel Art</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#000}
+#info{position:fixed;top:16px;left:50%;transform:translateX(-50%);text-align:center;z-index:10;pointer-events:none;font-family:Georgia,serif}
+#info h1{font-size:26px;color:#FFD700;text-shadow:0 2px 10px rgba(0,0,0,.7)}
+#info p{font-size:12px;color:rgba(255,255,255,.45);margin-top:4px}
+#tip{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.25);font-size:11px;z-index:10;pointer-events:none;font-family:system-ui}
+</style>
+</head>
+<body>
+<div id="info">
+  <h1>🏮 唐人街牌坊 🏮</h1>
+  <p>Chinatown Paifang &middot; Voxel Art &middot; Three.js</p>
+</div>
+<div id="tip">Drag to rotate &middot; Scroll to zoom &middot; Right-click to pan</div>
+
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ═══════════════ SCENE ═══════════════
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x70b8d8);
+scene.fog = new THREE.FogExp2(0x70b8d8, 0.006);
+
+const camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 300);
+camera.position.set(6, 24, -44);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.25;
+document.body.appendChild(renderer.domElement);
+
+const orbit = new OrbitControls(camera, renderer.domElement);
+orbit.target.set(0, 16, 3);
+orbit.enableDamping = true;
+orbit.dampingFactor = 0.06;
+orbit.minDistance = 18;
+orbit.maxDistance = 80;
+
+// ═══════════════ LIGHTS ═══════════════
+scene.add(new THREE.AmbientLight(0xfff5e6, 0.85));
+const sun = new THREE.DirectionalLight(0xfff5e6, 1.8);
+sun.position.set(25, 50, -30);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.camera.left = -45; sun.shadow.camera.right = 45;
+sun.shadow.camera.top = 55; sun.shadow.camera.bottom = -5;
+sun.shadow.camera.near = 1; sun.shadow.camera.far = 120;
+scene.add(sun);
+scene.add(new THREE.DirectionalLight(0x8899cc, 0.35).translateX(-15).translateY(10).translateZ(20));
+scene.add(new THREE.HemisphereLight(0x87ceeb, 0x444422, 0.3));
+
+// ═══════════════ VOXEL SYSTEM ═══════════════
+const VM = {};  // position -> color (last write wins)
+function v(x, y, z, c) { VM[x + ',' + y + ',' + z] = c; }
+function bx(x1, y1, z1, x2, y2, z2, c) {
+  const [a, b] = [Math.min, Math.max];
+  for (let x = a(x1,x2); x <= b(x1,x2); x++)
+    for (let y = a(y1,y2); y <= b(y1,y2); y++)
+      for (let z = a(z1,z2); z <= b(z1,z2); z++) v(x, y, z, c);
+}
+
+// ═══════════════ PALETTE ═══════════════
+const RED = 0xCC2222, DRED = 0x8B1A1A, BRED = 0xE53935;
+const GOLD = 0xDAA520, DGOLD = 0xB8860B, BGOLD = 0xFFD700;
+const GRN = 0x2E7D32, TEAL = 0x00796B;
+const WHT = 0xF0F0F0, STN = 0x9E9E9E, DSTN = 0x6E6E6E;
+const BRN = 0x6D4C41, DBRN = 0x3E2723, BLK = 0x1A1A1A;
+const CRM = 0xFFF0D0;
+const PZ = 3; // center Z of gate
+
+// ═══════════════ FOUNDATION ═══════════════
+bx(-26, 0, -1, 26, 0, 7, DSTN);
+bx(-25, 1, 0, 25, 1, 6, STN);
+
+// ═══════════════ PILLARS ═══════════════
+const PX = [-18, -6, 6, 18];
+for (const px of PX) {
+  // Stone pedestal
+  bx(px-2, 1, PZ-2, px+2, 3, PZ+2, STN);
+  bx(px-2, 2, PZ-2, px+2, 2, PZ+2, DSTN);
+  // Main shaft
+  bx(px-1, 3, PZ-1, px+1, 21, PZ+1, RED);
+  // Base band & top cap
+  bx(px-1, 3, PZ-1, px+1, 4, PZ+1, DRED);
+  bx(px-2, 21, PZ-1, px+2, 22, PZ+1, DRED);
+}
+
+// ═══════════════ BEAMS 额枋 ═══════════════
+// Upper beams
+bx(-17, 19, PZ-1, -7, 20, PZ+1, BRN);
+bx(-5, 19, PZ-1, 5, 20, PZ+1, BRN);
+bx(7, 19, PZ-1, 17, 20, PZ+1, BRN);
+// Upper beam gold trim
+bx(-17, 20, PZ-1, -7, 20, PZ+1, DGOLD);
+bx(-5, 20, PZ-1, 5, 20, PZ+1, DGOLD);
+bx(7, 20, PZ-1, 17, 20, PZ+1, DGOLD);
+// Lower beams
+bx(-17, 12, PZ-1, -7, 13, PZ+1, BRN);
+bx(-5, 12, PZ-1, 5, 13, PZ+1, BRN);
+bx(7, 12, PZ-1, 17, 13, PZ+1, BRN);
+
+// Decorative panels between beams (花板)
+for (const [x1, x2] of [[-17, -7], [-5, 5], [7, 17]]) {
+  bx(x1, 14, PZ-1, x2, 18, PZ-1, DRED);
+  bx(x1, 14, PZ+1, x2, 18, PZ+1, DRED);
+  // Gold pattern lines
+  for (let y = 14; y <= 18; y += 2) {
+    bx(x1+1, y, PZ-1, x2-1, y, PZ-1, BGOLD);
+  }
+}
+
+// 斗拱 Brackets at pillar tops
+for (const px of PX) {
+  bx(px-2, 21, PZ-2, px+2, 22, PZ+2, BRN);
+  bx(px-3, 22, PZ-1, px+3, 22, PZ+1, DBRN);
+  // Stepped bracket
+  v(px-3, 22, PZ, BGOLD); v(px+3, 22, PZ, BGOLD);
+}
+
+// ═══════════════ ROOF BUILDER ═══════════════
+function buildRoof(baseY, hw, dz) {
+  // Red underside
+  bx(-hw-2, baseY, PZ-dz, hw+2, baseY, PZ+dz, DRED);
+
+  // Gold layers (bottom=widest to top=narrowest)
+  const N = 5;
+  for (let i = 0; i < N; i++) {
+    const w = hw + 3 - i;
+    const d = dz + 1 - Math.floor(i * 0.4);
+    const c = i < 2 ? GOLD : i < 4 ? DGOLD : GOLD;
+    bx(-w, baseY + 1 + i, PZ - d, w, baseY + 1 + i, PZ + d, c);
+  }
+
+  // Green/teal ridge
+  const ry = baseY + N + 1;
+  bx(-hw + 3, ry, PZ - 1, hw - 3, ry, PZ + 1, GRN);
+  bx(-hw + 3, ry + 1, PZ, hw - 3, ry + 1, PZ, TEAL);
+
+  // Ridge-end ornaments (鸱吻)
+  for (const sx of [-1, 1]) {
+    const ex = sx * (hw - 2);
+    v(ex, ry + 1, PZ, BGOLD);
+    v(ex, ry + 2, PZ, BGOLD);
+    v(ex + sx, ry + 2, PZ, BGOLD);
+  }
+
+  // ══ EAVE TIPS 飞檐翘角 ══
+  const ew = hw + 3; // eave edge X
+
+  // Left & right X-axis eave tips
+  for (let z = PZ - dz; z <= PZ + dz; z++) {
+    v(-ew - 1, baseY + 2, z, BGOLD);
+    v(-ew - 2, baseY + 3, z, BGOLD);
+    v(ew + 1, baseY + 2, z, BGOLD);
+    v(ew + 2, baseY + 3, z, BGOLD);
+  }
+
+  // Front & back Z-axis eave tips
+  const fz = PZ - dz - 1;
+  const bz = PZ + dz + 1;
+  for (let x = -ew + 3; x <= ew - 3; x++) {
+    v(x, baseY + 2, fz, BGOLD);
+    v(x, baseY + 2, bz, BGOLD);
+  }
+
+  // Corner tips (most dramatic upward curl)
+  for (const sx of [-1, 1]) {
+    for (const sz of [-1, 1]) {
+      const cx = sx * (ew + 1), cz = PZ + sz * (dz + 1);
+      v(cx, baseY + 2, cz, BGOLD);
+      v(cx + sx, baseY + 3, cz, BGOLD);
+      v(cx + sx * 2, baseY + 4, cz + sz, BGOLD);
+      v(cx + sx, baseY + 3, cz + sz, BGOLD);
+    }
+  }
+
+  return ry + 2;
+}
+
+// ═══════════════ THREE ROOF TIERS ═══════════════
+const t1 = buildRoof(22, 23, 4);
+
+// Short columns between tier 1 and 2
+bx(-6, t1, PZ-1, -4, t1 + 2, PZ+1, RED);
+bx(4, t1, PZ-1, 6, t1 + 2, PZ+1, RED);
+bx(-3, t1, PZ, 3, t1 + 1, PZ, DRED);
+
+const t2 = buildRoof(t1 + 2, 13, 3);
+
+// Short columns between tier 2 and 3
+bx(-3, t2, PZ-1, -1, t2 + 2, PZ+1, RED);
+bx(1, t2, PZ-1, 3, t2 + 2, PZ+1, RED);
+
+const t3 = buildRoof(t2 + 2, 8, 3);
+
+// Top finial 宝顶
+v(0, t3, PZ, BGOLD);
+v(0, t3 + 1, PZ, BGOLD);
+v(0, t3 + 2, PZ, BGOLD);
+v(-1, t3 + 1, PZ, BGOLD);
+v(1, t3 + 1, PZ, BGOLD);
+v(0, t3 + 3, PZ, BGOLD);
+
+// ═══════════════ SIGNBOARD 匾额 ═══════════════
+// Dark background frame (voxel)
+bx(-5, 14, PZ - 2, 5, 18, PZ - 2, BLK);
+// Gold border
+bx(-5, 14, PZ - 2, 5, 14, PZ - 2, BGOLD);
+bx(-5, 18, PZ - 2, 5, 18, PZ - 2, BGOLD);
+bx(-5, 14, PZ - 2, -5, 18, PZ - 2, BGOLD);
+bx(5, 14, PZ - 2, 5, 18, PZ - 2, BGOLD);
+// Corner accents
+for (const [x, y] of [[-5,14],[-5,18],[5,14],[5,18]]) v(x, y, PZ-2, CRM);
+
+// ═══════════════ LANTERNS 灯笼 ═══════════════
+function lantern(cx, cy, cz) {
+  // Cord
+  v(cx, cy + 3, cz, BLK); v(cx, cy + 2, cz, BLK);
+  // Gold top cap
+  bx(cx-1, cy+1, cz, cx+1, cy+1, cz, BGOLD);
+  v(cx, cy+1, cz-1, BGOLD); v(cx, cy+1, cz+1, BGOLD);
+  // Red body (diamond in XZ, 3 tall)
+  for (let dy = -1; dy <= 1; dy++) {
+    v(cx, cy+dy, cz, BRED); v(cx-1, cy+dy, cz, BRED); v(cx+1, cy+dy, cz, BRED);
+    v(cx, cy+dy, cz-1, BRED); v(cx, cy+dy, cz+1, BRED);
+  }
+  // Wider middle ring
+  v(cx-1, cy, cz-1, BRED); v(cx-1, cy, cz+1, BRED);
+  v(cx+1, cy, cz-1, BRED); v(cx+1, cy, cz+1, BRED);
+  // Gold bottom cap
+  bx(cx-1, cy-2, cz, cx+1, cy-2, cz, BGOLD);
+  v(cx, cy-2, cz-1, BGOLD); v(cx, cy-2, cz+1, BGOLD);
+  // Tassel
+  v(cx, cy-3, cz, BGOLD); v(cx, cy-4, cz, RED);
+}
+
+lantern(-14, 19, PZ - 4);
+lantern(-9, 19, PZ - 4);
+lantern(9, 19, PZ - 4);
+lantern(14, 19, PZ - 4);
+lantern(-14, 19, PZ + 4);
+lantern(14, 19, PZ + 4);
+
+// ═══════════════ STONE LIONS 石狮 ═══════════════
+function lion(cx, cz, faceDir) {
+  const d = faceDir; // -1 = face camera (-z), 1 = face away
+  const y0 = 2;
+  // Pedestal
+  bx(cx-2, y0, cz-2, cx+2, y0+1, cz+2, DSTN);
+  // Body
+  bx(cx-1, y0+2, cz-1, cx+1, y0+4, cz+1, STN);
+  // Head (forward)
+  bx(cx-1, y0+5, cz+d*(-2), cx+1, y0+7, cz, STN);
+  // Mane (wider)
+  bx(cx-2, y0+5, cz-1, cx-2, y0+7, cz+1, DSTN);
+  bx(cx+2, y0+5, cz-1, cx+2, y0+7, cz+1, DSTN);
+  bx(cx-1, y0+7, cz-1, cx+1, y0+7, cz+1, DSTN);
+  // Eyes
+  v(cx-1, y0+6, cz+d*(-2), BLK);
+  v(cx+1, y0+6, cz+d*(-2), BLK);
+  // Mouth
+  v(cx, y0+5, cz+d*(-2), DRED);
+  // Front paws
+  v(cx-1, y0+2, cz+d*(-2), STN);
+  v(cx+1, y0+2, cz+d*(-2), STN);
+  // Tail
+  v(cx, y0+4, cz+d*2, DSTN);
+  v(cx, y0+5, cz+d*2, DSTN);
+}
+
+lion(-23, PZ, -1);
+lion(23, PZ, -1);
+
+// ═══════════════ DRAGON MOTIFS 龙纹 ═══════════════
+function dragonSpiral(cx, cy, cz, dir) {
+  const d = dir;
+  // Serpentine body along X
+  const pts = [
+    [0,0],[d,0],[d*2,1],[d*3,1],[d*4,0],[d*5,0],[d*6,1],[d*7,2],[d*7,3],
+    [d*6,3],[d*5,2],[d*4,1]
+  ];
+  for (const [dx, dy] of pts) v(cx+dx, cy+dy, cz, BGOLD);
+  // Head
+  v(cx - d, cy, cz, BGOLD);
+  v(cx - d, cy + 1, cz, RED); // horn
+  v(cx - d*2, cy, cz, BGOLD);
+}
+
+// Dragons on tier 1 ridge
+dragonSpiral(-14, t1 - 4, PZ - 2, 1);
+dragonSpiral(14, t1 - 4, PZ - 2, -1);
+
+// ═══════════════ CLOUD PATTERNS 云纹 ═══════════════
+function cloud(cx, cy, cz) {
+  v(cx, cy, cz, WHT); v(cx-1, cy, cz, WHT); v(cx+1, cy, cz, WHT);
+  v(cx-2, cy, cz, WHT); v(cx+2, cy, cz, WHT);
+  v(cx-1, cy+1, cz, WHT); v(cx+1, cy+1, cz, WHT);
+  v(cx, cy+1, cz, WHT);
+  v(cx, cy-1, cz, WHT);
+}
+
+cloud(-12, 16, PZ - 2);
+cloud(12, 16, PZ - 2);
+cloud(0, 17, PZ - 2);
+
+// ═══════════════ BUILD INSTANCED MESHES ═══════════════
+const grouped = {};
+for (const [key, color] of Object.entries(VM)) {
+  const h = color.toString(16).padStart(6, '0');
+  if (!grouped[h]) grouped[h] = [];
+  const [x, y, z] = key.split(',');
+  grouped[h].push(+x, +y, +z);
+}
+
+const vGeo = new THREE.BoxGeometry(0.95, 0.95, 0.95);
+for (const [hex, arr] of Object.entries(grouped)) {
+  const mat = new THREE.MeshStandardMaterial({
+    color: parseInt(hex, 16), roughness: 0.65, metalness: 0.05,
+  });
+  const count = arr.length / 3;
+  const mesh = new THREE.InstancedMesh(vGeo, mat, count);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  const m4 = new THREE.Matrix4();
+  for (let i = 0; i < count; i++) {
+    m4.setPosition(arr[i*3], arr[i*3+1], arr[i*3+2]);
+    mesh.setMatrixAt(i, m4);
+  }
+  scene.add(mesh);
+}
+
+// ═══════════════ SIGNBOARD TEXT (Canvas Texture) ═══════════════
+const sc = document.createElement('canvas');
+sc.width = 512; sc.height = 256;
+const sx = sc.getContext('2d');
+// Background
+sx.fillStyle = '#1a0505';
+sx.fillRect(0, 0, 512, 256);
+// Ornate border
+sx.strokeStyle = '#DAA520'; sx.lineWidth = 8;
+sx.strokeRect(12, 12, 488, 232);
+sx.strokeStyle = '#B8860B'; sx.lineWidth = 3;
+sx.strokeRect(22, 22, 468, 212);
+// Main text
+sx.fillStyle = '#FFD700';
+sx.font = 'bold 96px "KaiTi", "STKaiti", "SimSun", serif';
+sx.textAlign = 'center'; sx.textBaseline = 'middle';
+sx.fillText('唐人街', 256, 115);
+// Subtitle
+sx.fillStyle = '#DAA520';
+sx.font = '24px Georgia, serif';
+sx.fillText('CHINATOWN', 256, 195);
+// Corner ornaments
+sx.fillStyle = '#FFD700';
+for (const [cx, cy] of [[30,30],[482,30],[30,226],[482,226]]) {
+  sx.beginPath(); sx.arc(cx, cy, 6, 0, Math.PI*2); sx.fill();
+}
+
+const signMesh = new THREE.Mesh(
+  new THREE.PlaneGeometry(10, 4),
+  new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(sc), roughness: 0.4, metalness: 0.1 })
+);
+signMesh.position.set(0, 16, PZ - 2.5);
+signMesh.rotation.y = Math.PI;
+scene.add(signMesh);
+
+// ═══════════════ GROUND & ROAD ═══════════════
+const gnd = new THREE.Mesh(
+  new THREE.PlaneGeometry(200, 200),
+  new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.92 })
+);
+gnd.rotation.x = -Math.PI / 2;
+gnd.receiveShadow = true;
+scene.add(gnd);
+
+// Stone sidewalk
+const sw = new THREE.Mesh(
+  new THREE.PlaneGeometry(60, 24),
+  new THREE.MeshStandardMaterial({ color: 0x888888, roughness: 0.85 })
+);
+sw.rotation.x = -Math.PI / 2;
+sw.position.set(0, 0.02, PZ);
+sw.receiveShadow = true;
+scene.add(sw);
+
+// Road lane markings
+for (const zz of [-8, 14]) {
+  const lane = new THREE.Mesh(
+    new THREE.PlaneGeometry(80, 0.4),
+    new THREE.MeshStandardMaterial({ color: 0xdddddd })
+  );
+  lane.rotation.x = -Math.PI / 2;
+  lane.position.set(0, 0.03, zz);
+  scene.add(lane);
+}
+
+// Dashed center line
+for (let x = -40; x < 40; x += 5) {
+  const dash = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.5, 0.25),
+    new THREE.MeshStandardMaterial({ color: 0xeeee55 })
+  );
+  dash.rotation.x = -Math.PI / 2;
+  dash.position.set(x, 0.03, PZ);
+  scene.add(dash);
+}
+
+// ═══════════════ BACKGROUND BUILDINGS ═══════════════
+function building(x, z, w, h, d, color) {
+  const g = new THREE.BoxGeometry(w, h, d);
+  const m = new THREE.MeshStandardMaterial({ color, roughness: 0.85 });
+  const mesh = new THREE.Mesh(g, m);
+  mesh.position.set(x, h / 2, z);
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  // Windows
+  const winMat = new THREE.MeshStandardMaterial({ color: 0xffffcc, emissive: 0x443300, emissiveIntensity: 0.3 });
+  for (let wy = 3; wy < h - 2; wy += 4) {
+    for (let wx = -w/2 + 2; wx < w/2 - 1; wx += 3) {
+      const win = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.2, 1.8),
+        winMat
+      );
+      win.position.set(x + wx, wy, z - d/2 - 0.01);
+      scene.add(win);
+    }
+  }
+}
+
+building(-35, 22, 16, 28, 14, 0x5D4037);
+building(-18, 28, 10, 20, 12, 0x795548);
+building(18, 28, 10, 22, 12, 0x455A64);
+building(35, 22, 16, 32, 14, 0x37474F);
+building(-50, 30, 12, 18, 10, 0x4E342E);
+building(50, 30, 12, 22, 10, 0x3E2723);
+building(0, 38, 22, 14, 16, 0x546E7A);
+
+// ═══════════════ LANTERN GLOW LIGHTS ═══════════════
+const lanternLights = [];
+for (const [lx, lz] of [[-14, PZ-4], [-9, PZ-4], [9, PZ-4], [14, PZ-4], [-14, PZ+4], [14, PZ+4]]) {
+  const pl = new THREE.PointLight(0xff4422, 0.6, 12);
+  pl.position.set(lx, 19, lz);
+  scene.add(pl);
+  lanternLights.push(pl);
+}
+
+// ═══════════════ CHERRY BLOSSOM PARTICLES ═══════════════
+const PCOUNT = 300;
+const pGeo = new THREE.BufferGeometry();
+const pPos = new Float32Array(PCOUNT * 3);
+const pVel = new Float32Array(PCOUNT * 3);
+for (let i = 0; i < PCOUNT; i++) {
+  pPos[i*3]   = (Math.random() - 0.5) * 100;
+  pPos[i*3+1] = Math.random() * 50;
+  pPos[i*3+2] = (Math.random() - 0.5) * 60;
+  pVel[i*3]   = (Math.random() - 0.5) * 0.02;
+  pVel[i*3+1] = -0.01 - Math.random() * 0.02;
+  pVel[i*3+2] = (Math.random() - 0.5) * 0.01;
+}
+pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+const particles = new THREE.Points(pGeo, new THREE.PointsMaterial({
+  color: 0xffb7c5, size: 0.4, transparent: true, opacity: 0.6, depthWrite: false,
+}));
+scene.add(particles);
+
+// ═══════════════ TREES (simple voxel-style) ═══════════════
+function tree(tx, tz) {
+  // Trunk
+  const tg = new THREE.BoxGeometry(1, 6, 1);
+  const tm = new THREE.Mesh(tg, new THREE.MeshStandardMaterial({ color: 0x5D4037 }));
+  tm.position.set(tx, 3, tz);
+  tm.castShadow = true;
+  scene.add(tm);
+  // Canopy (sphere-ish)
+  const cg = new THREE.SphereGeometry(3, 6, 4);
+  const cm = new THREE.Mesh(cg, new THREE.MeshStandardMaterial({ color: 0x2E7D32, roughness: 0.9 }));
+  cm.position.set(tx, 8, tz);
+  cm.castShadow = true;
+  scene.add(cm);
+}
+
+tree(-32, -5); tree(32, -5);
+tree(-28, 12); tree(28, 12);
+
+// ═══════════════ ANIMATION ═══════════════
+function animate() {
+  requestAnimationFrame(animate);
+  const t = performance.now() * 0.001;
+
+  // Lantern glow pulse
+  lanternLights.forEach((l, i) => {
+    l.intensity = 0.5 + 0.25 * Math.sin(t * 2.5 + i * 1.2);
+  });
+
+  // Particles drift
+  const pos = particles.geometry.attributes.position;
+  for (let i = 0; i < PCOUNT; i++) {
+    pos.array[i*3]   += pVel[i*3]   + Math.sin(t + i) * 0.005;
+    pos.array[i*3+1] += pVel[i*3+1];
+    pos.array[i*3+2] += pVel[i*3+2];
+    if (pos.array[i*3+1] < 0) {
+      pos.array[i*3+1] = 45 + Math.random() * 10;
+      pos.array[i*3]   = (Math.random() - 0.5) * 100;
+    }
+  }
+  pos.needsUpdate = true;
+
+  orbit.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// ═══════════════ RESIZE ═══════════════
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+</script>
+</body>
+</html>
