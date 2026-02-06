@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旋转六边形弹球</title>
+<style>*{margin:0;padding:0}body{background:#000;overflow:hidden}canvas{display:block}</style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+<script>
+// ═══════════════ CONFIG ═══════════════
+const N = 10;
+const GRAVITY    = 0.32;
+const BOUNCE     = 0.72;   // restitution
+const WALL_FRIC  = 0.12;   // wall tangential friction
+const AIR_DRAG   = 0.9992;
+const OMEGA      = 0.009;  // hex rotation speed rad/frame
+const SUB_STEPS  = 4;
+
+// ═══════════════ STATE ═══════════════
+let balls = [], sparks = [];
+let hexAng = 0, hexR, cx, cy;
+
+// ═══════════════ SETUP ═══════════════
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  colorMode(HSB, 360, 100, 100, 100);
+  cx = width / 2;
+  cy = height / 2;
+  hexR = min(width, height) * 0.39;
+  initBalls();
+}
+
+function initBalls() {
+  balls = [];
+  for (let i = 0; i < N; i++) {
+    let r = random(13, 23);
+    balls.push({
+      x: cx + random(-60, 60),
+      y: cy - random(20, 120),
+      vx: random(-3, 3),
+      vy: random(-1, 2),
+      r,
+      m: r * r,                              // mass ∝ area
+      hue: (i * 36 + random(-15, 15) + 360) % 360,
+      flash: 0,                              // collision flash
+    });
+  }
+}
+
+// ═══════════════ HEX VERTICES ═══════════════
+function hexVerts() {
+  const v = [];
+  for (let i = 0; i < 6; i++) {
+    const a = hexAng + i * PI / 3;
+    v.push({ x: cx + hexR * cos(a), y: cy + hexR * sin(a) });
+  }
+  return v;
+}
+
+// ═══════════════ WALL COLLISION ═══════════════
+function wallCollide(b, A, B) {
+  const ex = B.x - A.x, ey = B.y - A.y;
+  const len = sqrt(ex * ex + ey * ey);
+  if (len < 0.001) return;
+
+  // Inward normal (ensure it points toward center)
+  let nx = -ey / len, ny = ex / len;
+  const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+  if (nx * (cx - mx) + ny * (cy - my) < 0) { nx = -nx; ny = -ny; }
+
+  // Signed distance: positive = inside
+  const d = (b.x - A.x) * nx + (b.y - A.y) * ny;
+  if (d >= b.r) return;
+
+  // Projection onto segment
+  const t = ((b.x - A.x) * ex + (b.y - A.y) * ey) / (len * len);
+  if (t < -0.08 || t > 1.08) return;
+
+  // Push inward
+  b.x += (b.r - d) * nx;
+  b.y += (b.r - d) * ny;
+
+  // Wall surface velocity (rotating frame)
+  const cpx = b.x - b.r * nx, cpy = b.y - b.r * ny;
+  const wvx = -OMEGA * (cpy - cy), wvy = OMEGA * (cpx - cx);
+
+  // Relative velocity
+  const rvn = (b.vx - wvx) * nx + (b.vy - wvy) * ny;
+  if (rvn >= 0) return; // separating
+
+  // Normal impulse (bounce)
+  b.vx -= (1 + BOUNCE) * rvn * nx;
+  b.vy -= (1 + BOUNCE) * rvn * ny;
+
+  // Tangential friction
+  const tx = -ny, ty = nx;
+  const rvt = (b.vx - wvx) * tx + (b.vy - wvy) * ty;
+  b.vx -= WALL_FRIC * rvt * tx;
+  b.vy -= WALL_FRIC * rvt * ty;
+
+  b.flash = 1;
+  spawnSparks(cpx, cpy, b.hue, 4);
+}
+
+// ═══════════════ BALL–BALL COLLISION ═══════════════
+function ballCollide(a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const dist = sqrt(dx * dx + dy * dy);
+  const minD = a.r + b.r;
+  if (dist >= minD || dist < 0.001) return;
+
+  const nx = dx / dist, ny = dy / dist;
+
+  // Separate (mass-weighted)
+  const overlap = minD - dist;
+  const total = a.m + b.m;
+  a.x -= overlap * (b.m / total) * nx;
+  a.y -= overlap * (b.m / total) * ny;
+  b.x += overlap * (a.m / total) * nx;
+  b.y += overlap * (a.m / total) * ny;
+
+  // Relative velocity along normal
+  const dvn = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+  if (dvn <= 0) return; // separating
+
+  const impulse = (1 + BOUNCE) * dvn / (1 / a.m + 1 / b.m);
+  a.vx -= (impulse / a.m) * nx;
+  a.vy -= (impulse / a.m) * ny;
+  b.vx += (impulse / b.m) * nx;
+  b.vy += (impulse / b.m) * ny;
+
+  a.flash = 1; b.flash = 1;
+  spawnSparks((a.x + b.x) / 2, (a.y + b.y) / 2, (a.hue + b.hue) / 2, 6);
+}
+
+// ═══════════════ SPARKS ═══════════════
+function spawnSparks(x, y, hue, n) {
+  for (let i = 0; i < n; i++) {
+    const a = random(TWO_PI), sp = random(1.5, 5);
+    sparks.push({ x, y, vx: cos(a)*sp, vy: sin(a)*sp, life: 1, hue, sz: random(2, 5) });
+  }
+}
+
+function updateSparks() {
+  for (let i = sparks.length - 1; i >= 0; i--) {
+    const s = sparks[i];
+    s.x += s.vx; s.y += s.vy;
+    s.vy += 0.06;
+    s.life -= 0.035;
+    s.sz *= 0.97;
+    if (s.life <= 0) sparks.splice(i, 1);
+  }
+}
+
+// ═══════════════ CONTAINMENT SAFETY ═══════════════
+function ensureInside(b, verts) {
+  for (let i = 0; i < 6; i++) {
+    const A = verts[i], B = verts[(i + 1) % 6];
+    const ex = B.x - A.x, ey = B.y - A.y;
+    const len = sqrt(ex * ex + ey * ey);
+    let nx = -ey / len, ny = ex / len;
+    const mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+    if (nx * (cx - mx) + ny * (cy - my) < 0) { nx = -nx; ny = -ny; }
+    const d = (b.x - A.x) * nx + (b.y - A.y) * ny;
+    if (d < b.r * 0.5) {
+      b.x += (b.r - d + 1) * nx;
+      b.y += (b.r - d + 1) * ny;
+      const vn = b.vx * nx + b.vy * ny;
+      if (vn < 0) { b.vx -= 1.5 * vn * nx; b.vy -= 1.5 * vn * ny; }
+    }
+  }
+}
+
+// ═══════════════ DRAW ═══════════════
+function draw() {
+  // ── Trail overlay ──
+  noStroke();
+  fill(240, 25, 5, 22);
+  rect(0, 0, width, height);
+
+  // ── Update hex ──
+  hexAng += OMEGA;
+  const verts = hexVerts();
+
+  // ── Sub-stepped physics ──
+  for (let s = 0; s < SUB_STEPS; s++) {
+    for (const b of balls) {
+      b.vy += GRAVITY / SUB_STEPS;
+      b.x += b.vx / SUB_STEPS;
+      b.y += b.vy / SUB_STEPS;
+    }
+    for (const b of balls)
+      for (let i = 0; i < 6; i++) wallCollide(b, verts[i], verts[(i + 1) % 6]);
+    for (let i = 0; i < N; i++)
+      for (let j = i + 1; j < N; j++) ballCollide(balls[i], balls[j]);
+  }
+
+  // Air drag & flash decay (once per frame)
+  for (const b of balls) {
+    b.vx *= AIR_DRAG;
+    b.vy *= AIR_DRAG;
+    b.flash *= 0.88;
+    ensureInside(b, verts);
+  }
+
+  updateSparks();
+
+  // ── Draw hexagon ──
+  drawHex(verts);
+
+  // ── Draw ball shadows ──
+  noStroke();
+  for (const b of balls) {
+    fill(0, 0, 0, 12);
+    ellipse(b.x + 3, b.y + 6, b.r * 2, b.r * 0.7);
+  }
+
+  // ── Draw balls ──
+  for (const b of balls) drawBall(b);
+
+  // ── Draw sparks ──
+  drawSparks();
+}
+
+// ═══════════════ HEX RENDERING ═══════════════
+function drawHex(v) {
+  noFill();
+  // Glow layers
+  const layers = [
+    { sw: 28, a: 5  },
+    { sw: 16, a: 10 },
+    { sw: 8,  a: 20 },
+    { sw: 4,  a: 40 },
+    { sw: 2,  a: 65 },
+  ];
+  for (const l of layers) {
+    stroke(190, 65, 95, l.a);
+    strokeWeight(l.sw);
+    beginShape();
+    for (const p of v) vertex(p.x, p.y);
+    endShape(CLOSE);
+  }
+
+  // Inner fill (very subtle)
+  noStroke();
+  fill(220, 15, 12, 8);
+  beginShape();
+  for (const p of v) vertex(p.x, p.y);
+  endShape(CLOSE);
+
+  // Vertex dots
+  for (const p of v) {
+    fill(190, 50, 100, 25);
+    circle(p.x, p.y, 14);
+    fill(190, 30, 100, 60);
+    circle(p.x, p.y, 5);
+  }
+
+  // Edge direction indicators (subtle moving dots)
+  stroke(190, 40, 100, 20);
+  strokeWeight(3);
+  for (let i = 0; i < 6; i++) {
+    const A = v[i], B = v[(i + 1) % 6];
+    const t = ((frameCount * 0.015 + i * 0.17) % 1);
+    const px = lerp(A.x, B.x, t), py = lerp(A.y, B.y, t);
+    point(px, py);
+  }
+}
+
+// ═══════════════ BALL RENDERING ═══════════════
+function drawBall(b) {
+  noStroke();
+
+  // Glow
+  const gAlpha = 10 + b.flash * 20;
+  fill(b.hue, 55, 85, gAlpha);
+  circle(b.x, b.y, b.r * 4);
+
+  // Main body
+  fill(b.hue, 72, 88);
+  circle(b.x, b.y, b.r * 2);
+
+  // Inner lighter
+  fill(b.hue, 48, 96, 65);
+  circle(b.x - b.r * 0.12, b.y - b.r * 0.13, b.r * 1.3);
+
+  // Highlight crescent
+  fill(b.hue, 15, 100, 50);
+  ellipse(b.x - b.r * 0.22, b.y - b.r * 0.26, b.r * 0.7, b.r * 0.5);
+
+  // Specular dot
+  fill(0, 0, 100, 42);
+  circle(b.x - b.r * 0.28, b.y - b.r * 0.3, b.r * 0.28);
+
+  // Flash overlay
+  if (b.flash > 0.05) {
+    fill(0, 0, 100, b.flash * 30);
+    circle(b.x, b.y, b.r * 2);
+  }
+}
+
+// ═══════════════ SPARK RENDERING ═══════════════
+function drawSparks() {
+  blendMode(ADD);
+  noStroke();
+  for (const s of sparks) {
+    fill(s.hue, 55, 100, s.life * 70);
+    circle(s.x, s.y, s.sz);
+    fill(0, 0, 100, s.life * 30);
+    circle(s.x, s.y, s.sz * 0.5);
+  }
+  blendMode(BLEND);
+}
+
+// ═══════════════ RESIZE ═══════════════
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  cx = width / 2;
+  cy = height / 2;
+  hexR = min(width, height) * 0.39;
+}
+</script>
+</body>
+</html>
