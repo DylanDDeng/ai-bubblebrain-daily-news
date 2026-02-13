@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旋转六边形内的彩色球 | Bouncing Balls in Rotating Hexagon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #0a0a0f;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script>
+        // ========== BOUNCING BALLS IN ROTATING HEXAGON ==========
+
+        const BALL_COUNT = 10;
+        const HEXAGON_RADIUS = 250;
+        const BALL_RADIUS = 20;
+
+        let balls = [];
+        let hexagonAngle = 0;
+        let hexagonRotationSpeed = 0.008;
+
+        // Physics constants
+        const GRAVITY = 0.25;
+        const AIR_FRICTION = 0.995;
+        const WALL_ELASTICITY = 0.75;
+        const BALL_ELASTICITY = 0.85;
+        const COLLISION_DAMPING = 0.9;
+
+        // Ball colors (vibrant palette)
+        const ballColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
+            '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
+            '#BB8FCE', '#85C1E9'
+        ];
+
+        class Ball {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = random(-3, 3);
+                this.vy = random(-2, 2);
+                this.radius = BALL_RADIUS;
+                this.color = color;
+                this.mass = 1;
+            }
+
+            update() {
+                // Apply gravity
+                this.vy += GRAVITY;
+
+                // Apply air friction
+                this.vx *= AIR_FRICTION;
+                this.vy *= AIR_FRICTION;
+
+                // Update position
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Apply wall elasticity and friction
+                this.handleWallCollision();
+            }
+
+            handleWallCollision() {
+                // Get current hexagon vertices
+                let vertices = getHexagonVertices();
+
+                // Check collision with each edge
+                for (let i = 0; i < 6; i++) {
+                    let v1 = vertices[i];
+                    let v2 = vertices[(i + 1) % 6];
+
+                    let collision = this.checkLineCollision(v1, v2);
+                    if (collision) {
+                        this.resolveCollision(collision.nx, collision.ny, v1, v2);
+                    }
+                }
+            }
+
+            checkLineCollision(v1, v2) {
+                // Line segment from v1 to v2
+                let dx = v2.x - v1.x;
+                let dy = v2.y - v1.y;
+                let len = sqrt(dx * dx + dy * dy);
+                dx /= len;
+                dy /= len;
+
+                // Vector from v1 to ball center
+                let px = this.x - v1.x;
+                let py = this.y - v1.y;
+
+                // Project onto line
+                let dot = px * dx + py * dy;
+                dot = constrain(dot, 0, len);
+
+                // Closest point on line
+                let closestX = v1.x + dx * dot;
+                let closestY = v1.y + dy * dot;
+
+                // Distance from ball to closest point
+                let distX = this.x - closestX;
+                let distY = this.y - closestY;
+                let dist = sqrt(distX * distX + distY * distY);
+
+                // Check if ball is colliding
+                if (dist < this.radius) {
+                    // Normal vector (pointing inward)
+                    let nx = distX / dist;
+                    let ny = distY / dist;
+
+                    // Determine which side of the line the ball is on
+                    // by checking the center of the hexagon
+                    let centerX = width / 2;
+                    let centerY = height / 2;
+                    let toCenterX = centerX - closestX;
+                    let toCenterY = centerY - closestY;
+                    let toCenterDot = toCenterX * nx + toCenterY * ny;
+
+                    if (toCenterDot < 0) {
+                        nx = -nx;
+                        ny = -ny;
+                    }
+
+                    return { nx, ny, closestX, closestY };
+                }
+
+                return null;
+            }
+
+            resolveCollision(nx, ny, v1, v2) {
+                // Push ball out of wall
+                let overlap = this.radius - sqrt(
+                    pow(this.x - v1.x, 2) + pow(this.y - v1.y, 2)
+                );
+
+                // More accurate: find closest point on segment
+                let dx = v2.x - v1.x;
+                let dy = v2.y - v1.y;
+                let len = sqrt(dx * dx + dy * dy);
+                dx /= len;
+                dy /= len;
+
+                let px = this.x - v1.x;
+                let py = this.y - v1.y;
+                let dot = constrain(px * dx + py * dy, 0, len);
+
+                let closestX = v1.x + dx * dot;
+                let closestY = v1.y + dy * dot;
+
+                let distX = this.x - closestX;
+                let distY = this.y - closestY;
+                let dist = sqrt(distX * distX + distY * distY);
+
+                if (dist < this.radius && dist > 0) {
+                    let overlap = this.radius - dist;
+                    this.x += (distX / dist) * overlap;
+                    this.y += (distY / dist) * overlap;
+
+                    // Reflect velocity
+                    let dotProduct = this.vx * nx + this.vy * ny;
+
+                    // Only reflect if moving toward the wall
+                    if (dotProduct < 0) {
+                        // Tangent direction (perpendicular to normal)
+                        let tx = -ny;
+                        let ty = nx;
+
+                        // Decompose velocity
+                        let vNormal = dotProduct;
+                        let vTangent = this.vx * tx + this.vy * ty;
+
+                        // Apply elasticity to normal component, friction to tangent
+                        this.vx = (nx * -vNormal * WALL_ELASTICITY + tx * vTangent * 0.95);
+                        this.vy = (ny * -vNormal * WALL_ELASTICITY + ty * vTangent * 0.95);
+
+                        // Add some rotational energy from the hexagon
+                        let centerX = width / 2;
+                        let centerY = height / 2;
+                        let toBallX = this.x - centerX;
+                        let toBallY = this.y - centerY;
+
+                        // Tangential velocity from rotation
+                        let tangentSpeed = hexagonRotationSpeed * 50;
+                        this.vx += -toBallY / dist * tangentSpeed * 0.3;
+                        this.vy += toBallX / dist * tangentSpeed * 0.3;
+                    }
+                }
+            }
+
+            draw() {
+                push();
+                // Main ball
+                noStroke();
+                fill(this.color);
+                ellipse(this.x, this.y, this.radius * 2);
+
+                // Highlight
+                fill(255, 255, 255, 80);
+                ellipse(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.8);
+
+                // Inner shadow
+                fill(0, 0, 0, 30);
+                arc(this.x, this.y, this.radius * 2, this.radius * 2, HALF_PI, PI + HALF_PI);
+
+                pop();
+            }
+        }
+
+        function getHexagonVertices() {
+            let vertices = [];
+            let centerX = width / 2;
+            let centerY = height / 2;
+
+            for (let i = 0; i < 6; i++) {
+                let angle = hexagonAngle + i * TWO_PI / 6;
+                vertices.push({
+                    x: centerX + cos(angle) * HEXAGON_RADIUS,
+                    y: centerY + sin(angle) * HEXAGON_RADIUS
+                });
+            }
+
+            return vertices;
+        }
+
+        function checkBallCollisions() {
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    let b1 = balls[i];
+                    let b2 = balls[j];
+
+                    let dx = b2.x - b1.x;
+                    let dy = b2.y - b1.y;
+                    let dist = sqrt(dx * dx + dy * dy);
+                    let minDist = b1.radius + b2.radius;
+
+                    if (dist < minDist && dist > 0) {
+                        // Collision detected!
+                        let nx = dx / dist;
+                        let ny = dy / dist;
+
+                        // Separate balls
+                        let overlap = minDist - dist;
+                        b1.x -= nx * overlap * 0.5;
+                        b1.y -= ny * overlap * 0.5;
+                        b2.x += nx * overlap * 0.5;
+                        b2.y += ny * overlap * 0.5;
+
+                        // Relative velocity
+                        let dvx = b1.vx - b2.vx;
+                        let dvy = b1.vy - b2.vy;
+
+                        // Relative velocity in collision normal direction
+                        let dvn = dvx * nx + dvy * ny;
+
+                        // Only resolve if balls are approaching
+                        if (dvn > 0) {
+                            // Impulse (assuming equal mass)
+                            let impulse = dvn * BALL_ELASTICITY;
+
+                            b1.vx -= impulse * nx * COLLISION_DAMPING;
+                            b1.vy -= impulse * ny * COLLISION_DAMPING;
+                            b2.vx += impulse * nx * COLLISION_DAMPING;
+                            b2.vy += impulse * ny * COLLISION_DAMPING;
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawHexagon() {
+            let vertices = getHexagonVertices();
+
+            // Hexagon glow
+            for (let i = 5; i >= 0; i--) {
+                let alpha = map(i, 0, 5, 100, 20);
+                stroke(255, 255, 255, alpha);
+                strokeWeight(8 - i);
+                noFill();
+                beginShape();
+                for (let v of vertices) {
+                    vertex(v.x, v.y);
+                }
+                endShape(CLOSE);
+            }
+
+            // Main hexagon
+            stroke(255);
+            strokeWeight(3);
+            noFill();
+            beginShape();
+            for (let v of vertices) {
+                vertex(v.x, v.y);
+            }
+            endShape(CLOSE);
+
+            // Inner hexagon (lighter)
+            stroke(255, 255, 255, 100);
+            strokeWeight(1);
+            beginShape();
+            for (let v of vertices) {
+                let cx = width / 2;
+                let cy = height / 2;
+                vertex(cx + (v.x - cx) * 0.85, cy + (v.y - cy) * 0.85);
+            }
+            endShape(CLOSE);
+        }
+
+        function setup() {
+            createCanvas(800, 700);
+            colorMode(RGB);
+
+            // Initialize balls at random positions inside hexagon
+            for (let i = 0; i < BALL_COUNT; i++) {
+                let angle = random(TWO_PI);
+                let r = random(HEXAGON_RADIUS * 0.5);
+                let x = width / 2 + cos(angle) * r;
+                let y = height / 2 + sin(angle) * r;
+                balls.push(new Ball(x, y, ballColors[i]));
+            }
+        }
+
+        function draw() {
+            background(10, 10, 15);
+
+            // Update hexagon rotation
+            hexagonAngle += hexagonRotationSpeed;
+
+            // Update balls
+            for (let ball of balls) {
+                ball.update();
+            }
+
+            // Check ball-to-ball collisions
+            checkBallCollisions();
+
+            // Draw hexagon
+            drawHexagon();
+
+            // Draw balls
+            for (let ball of balls) {
+                ball.draw();
+            }
+
+            // Info text
+            fill(255, 150);
+            noStroke();
+            textSize(12);
+            textAlign(LEFT, TOP);
+            text('重力: ' + GRAVITY + ' | 弹性: ' + WALL_ELASTICITY + ' | 摩擦: ' + AIR_FRICTION, 20, 20);
+            text('球数量: ' + BALL_COUNT + ' | 六边形半径: ' + HEXAGON_RADIUS, 20, 40);
+        }
+
+        function windowResized() {
+            // Keep the canvas centered
+        }
+    </script>
+</body>
+</html>
