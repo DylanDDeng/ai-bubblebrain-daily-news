@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>旋转六边形弹跳球</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            overflow: hidden;
+        }
+        canvas {
+            box-shadow: 0 0 50px rgba(100, 100, 255, 0.3);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // 物理参数
+        const GRAVITY = 0.3;        // 重力
+        const FRICTION = 0.995;     // 空气摩擦
+        const RESTITUTION = 0.8;    // 弹性系数
+        const ROTATION_SPEED = 0.005; // 六边形旋转速度
+
+        let hexagonAngle = 0;
+        let balls = [];
+        const NUM_BALLS = 10;
+        const HEX_RADIUS = 250;
+
+        // 彩色球类
+        class Ball {
+            constructor(x, y) {
+                this.pos = createVector(x, y);
+                this.vel = createVector(random(-3, 3), random(-3, 3));
+                this.radius = random(12, 25);
+                this.mass = this.radius * 0.5;
+
+                // 随机彩色
+                colorMode(HSB, 360, 100, 100);
+                this.hue = random(360);
+                this.color = color(this.hue, 80, 90);
+                this.glowColor = color(this.hue, 60, 100, 0.3);
+                colorMode(RGB);
+            }
+
+            update() {
+                // 应用重力
+                this.vel.y += GRAVITY;
+
+                // 应用空气摩擦
+                this.vel.mult(FRICTION);
+
+                // 更新位置
+                this.pos.add(this.vel);
+            }
+
+            display() {
+                push();
+                // 发光效果
+                noStroke();
+                for (let i = 3; i > 0; i--) {
+                    fill(this.hue % 360 < 180 ?
+                         color(100 + i * 30, 100 + i * 30, 255, 20) :
+                         color(255, 100 + i * 30, 100 + i * 30, 20));
+                    ellipse(this.pos.x, this.pos.y, this.radius * 2 + i * 8);
+                }
+
+                // 主球体
+                fill(this.color);
+                stroke(255, 150);
+                strokeWeight(2);
+                ellipse(this.pos.x, this.pos.y, this.radius * 2);
+
+                // 高光
+                fill(255, 100);
+                noStroke();
+                ellipse(this.pos.x - this.radius * 0.3, this.pos.y - this.radius * 0.3, this.radius * 0.5);
+                pop();
+            }
+        }
+
+        // 获取旋转六边形的顶点
+        function getHexagonVertices(angle) {
+            let vertices = [];
+            for (let i = 0; i < 6; i++) {
+                let a = angle + i * PI / 3;
+                let x = width / 2 + cos(a) * HEX_RADIUS;
+                let y = height / 2 + sin(a) * HEX_RADIUS;
+                vertices.push(createVector(x, y));
+            }
+            return vertices;
+        }
+
+        // 点到线段的最近点
+        function closestPointOnSegment(p, a, b) {
+            let ab = p5.Vector.sub(b, a);
+            let ap = p5.Vector.sub(p, a);
+            let t = constrain(ap.dot(ab) / ab.dot(ab), 0, 1);
+            return p5.Vector.add(a, p5.Vector.mult(ab, t));
+        }
+
+        // 检测球与六边形边的碰撞
+        function checkHexagonCollision(ball, vertices) {
+            for (let i = 0; i < 6; i++) {
+                let a = vertices[i];
+                let b = vertices[(i + 1) % 6];
+
+                // 找到最近点
+                let closest = closestPointOnSegment(ball.pos, a, b);
+                let distVec = p5.Vector.sub(ball.pos, closest);
+                let dist = distVec.mag();
+
+                // 碰撞检测
+                if (dist < ball.radius) {
+                    // 计算法线（指向六边形内部）
+                    let normal = distVec.copy().normalize();
+
+                    // 计算边的切线方向速度（用于旋转补偿）
+                    let edgeDir = p5.Vector.sub(b, a).normalize();
+                    let edgeLength = p5.Vector.dist(a, b);
+
+                    // 六边形旋转产生的边缘速度
+                    let center = createVector(width / 2, height / 2);
+                    let toPoint = p5.Vector.sub(closest, center);
+                    let rotationVel = createVector(-toPoint.y, toPoint.x).mult(ROTATION_SPEED);
+
+                    // 相对速度
+                    let relVel = p5.Vector.sub(ball.vel, rotationVel);
+
+                    // 法向速度分量
+                    let velNormal = p5.Vector.mult(normal, relVel.dot(normal));
+
+                    // 切向速度分量
+                    let velTangent = p5.Vector.sub(relVel, velNormal);
+
+                    // 应用摩擦和弹性
+                    velNormal.mult(-RESTITUTION);
+                    velTangent.mult(0.98); // 边缘摩擦
+
+                    // 新速度
+                    ball.vel = p5.Vector.add(velNormal, velTangent).add(rotationVel);
+
+                    // 位置修正（防止穿透）
+                    let overlap = ball.radius - dist;
+                    ball.pos.add(p5.Vector.mult(normal, overlap + 0.5));
+                }
+            }
+        }
+
+        // 球与球之间的碰撞
+        function checkBallCollision(ball1, ball2) {
+            let distVec = p5.Vector.sub(ball2.pos, ball1.pos);
+            let dist = distVec.mag();
+            let minDist = ball1.radius + ball2.radius;
+
+            if (dist < minDist && dist > 0) {
+                // 法线方向
+                let normal = distVec.copy().normalize();
+
+                // 相对速度
+                let relVel = p5.Vector.sub(ball1.vel, ball2.vel);
+                let velAlongNormal = relVel.dot(normal);
+
+                // 只处理接近的碰撞
+                if (velAlongNormal > 0) return;
+
+                // 计算冲量
+                let j = -(1 + RESTITUTION) * velAlongNormal;
+                j /= 1 / ball1.mass + 1 / ball2.mass;
+
+                // 应用冲量
+                let impulse = p5.Vector.mult(normal, j);
+                ball1.vel.add(p5.Vector.div(impulse, ball1.mass));
+                ball2.vel.sub(p5.Vector.div(impulse, ball2.mass));
+
+                // 分离球体
+                let overlap = minDist - dist;
+                let totalMass = ball1.mass + ball2.mass;
+                ball1.pos.sub(p5.Vector.mult(normal, overlap * ball2.mass / totalMass));
+                ball2.pos.add(p5.Vector.mult(normal, overlap * ball1.mass / totalMass));
+            }
+        }
+
+        function setup() {
+            createCanvas(700, 700);
+            colorMode(HSB, 360, 100, 100);
+
+            // 创建球
+            for (let i = 0; i < NUM_BALLS; i++) {
+                let angle = random(TWO_PI);
+                let r = random(50, 150);
+                let x = width / 2 + cos(angle) * r;
+                let y = height / 2 + sin(angle) * r;
+                balls.push(new Ball(x, y));
+            }
+        }
+
+        function draw() {
+            background(240, 30, 15);
+
+            // 更新六边形角度
+            hexagonAngle += ROTATION_SPEED;
+
+            // 获取当前六边形顶点
+            let vertices = getHexagonVertices(hexagonAngle);
+
+            // 绘制六边形
+            push();
+            stroke(200, 80, 100);
+            strokeWeight(4);
+            noFill();
+
+            // 六边形发光效果
+            for (let i = 0; i < 3; i++) {
+                stroke(200, 60, 100, 0.3 - i * 0.1);
+                strokeWeight(8 + i * 4);
+                beginShape();
+                for (let v of vertices) {
+                    vertex(v.x, v.y);
+                }
+                endShape(CLOSE);
+            }
+
+            // 主六边形
+            stroke(200, 80, 100);
+            strokeWeight(3);
+            beginShape();
+            for (let v of vertices) {
+                vertex(v.x, v.y);
+            }
+            endShape(CLOSE);
+
+            // 绘制顶点
+            fill(200, 80, 100);
+            noStroke();
+            for (let v of vertices) {
+                ellipse(v.x, v.y, 10);
+            }
+            pop();
+
+            // 更新和绘制球
+            for (let ball of balls) {
+                ball.update();
+                checkHexagonCollision(ball, vertices);
+            }
+
+            // 球与球碰撞检测
+            for (let i = 0; i < balls.length; i++) {
+                for (let j = i + 1; j < balls.length; j++) {
+                    checkBallCollision(balls[i], balls[j]);
+                }
+            }
+
+            // 绘制球
+            for (let ball of balls) {
+                ball.display();
+            }
+
+            // 显示信息
+            push();
+            fill(0, 0, 100);
+            noStroke();
+            textSize(14);
+            textAlign(LEFT, TOP);
+            text(`球数量: ${NUM_BALLS}`, 20, 20);
+            text(`旋转角度: ${(degrees(hexagonAngle) % 360).toFixed(1)}°`, 20, 40);
+            text(`重力: ${GRAVITY}`, 20, 60);
+            text(`弹性: ${RESTITUTION}`, 20, 80);
+            pop();
+        }
+
+        // 点击添加新球
+        function mousePressed() {
+            if (balls.length < 20) {
+                balls.push(new Ball(mouseX, mouseY));
+            }
+        }
+    </script>
+</body>
+</html>
