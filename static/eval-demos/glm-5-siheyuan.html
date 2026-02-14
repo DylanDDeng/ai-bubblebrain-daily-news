@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传统中国四合院 - 体素艺术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'STKaiti', 'KaiTi', serif;
+            overflow: hidden;
+        }
+
+        .title {
+            color: #d4af37;
+            font-size: 2.5rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+        }
+
+        .scene-container {
+            perspective: 1200px;
+            width: 600px;
+            height: 500px;
+        }
+
+        .scene {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotateX(-25deg) rotateY(0deg); }
+            to { transform: rotateX(-25deg) rotateY(360deg); }
+        }
+
+        .voxel {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            transform-style: preserve-3d;
+        }
+
+        .voxel .face {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            backface-visibility: hidden;
+        }
+
+        .voxel .top {
+            transform: rotateX(90deg) translateZ(5px);
+        }
+
+        .voxel .front {
+            transform: translateZ(5px);
+        }
+
+        .voxel .right {
+            transform: rotateY(90deg) translateZ(5px);
+        }
+
+        .voxel .left {
+            transform: rotateY(-90deg) translateZ(5px);
+        }
+
+        .voxel .back {
+            transform: rotateY(180deg) translateZ(5px);
+        }
+
+        .voxel .bottom {
+            transform: rotateX(-90deg) translateZ(5px);
+        }
+
+        /* 颜色定义 */
+        .wall-red .front, .wall-red .back { background: #8b0000; }
+        .wall-red .left, .wall-red .right { background: #6b0000; }
+        .wall-red .top { background: #ab2020; }
+
+        .wall-gray .front, .wall-gray .back { background: #8b8b8b; }
+        .wall-gray .left, .wall-gray .right { background: #6b6b6b; }
+        .wall-gray .top { background: #ababab; }
+
+        .roof-tile .front, .roof-tile .back { background: #2d2d2d; }
+        .roof-tile .left, .roof-tile .right { background: #1d1d1d; }
+        .roof-tile .top { background: #3d3d3d; }
+
+        .roof-edge .front, .roof-edge .back { background: #8b4513; }
+        .roof-edge .left, .roof-edge .right { background: #6b3510; }
+        .roof-edge .top { background: #a05520; }
+
+        .ground .top { background: #4a3c2c; }
+        .ground .front, .ground .back { background: #3a2c1c; }
+        .ground .left, .ground .right { background: #2a1c0c; }
+
+        .courtyard .top { background: #c9b896; }
+        .courtyard .front, .courtyard .back { background: #a99876; }
+
+        .door .front { background: #8b0000; }
+        .door .back { background: #5a0000; }
+        .door .left, .door .right { background: #4a0000; }
+        .door .top { background: #ab2020; }
+
+        .door-gold .front { background: #d4af37; }
+        .door-gold .back { background: #b49f27; }
+        .door-gold .left, .door-gold .right { background: #947f17; }
+        .door-gold .top { background: #e4bf47; }
+
+        .window .front { background: #1a1a1a; border: 1px solid #d4af37; }
+        .window .back { background: #0a0a0a; }
+
+        .pillar .front, .pillar .back { background: #8b0000; }
+        .pillar .left, .pillar .right { background: #6b0000; }
+        .pillar .top { background: #ab2020; }
+
+        .step .front, .step .back { background: #9b9b9b; }
+        .step .left, .step .right { background: #7b7b7b; }
+        .step .top { background: #bbbbbb; }
+
+        .tree-trunk .front, .tree-trunk .back { background: #5c4033; }
+        .tree-trunk .left, .tree-trunk .right { background: #3c2013; }
+        .tree-trunk .top { background: #6c5043; }
+
+        .tree-leaves .front, .tree-leaves .back { background: #228b22; }
+        .tree-leaves .left, .tree-leaves .right { background: #1a6b1a; }
+        .tree-leaves .top { background: #32ab32; }
+
+        .lantern .front, .lantern .back { background: #ff4444; }
+        .lantern .left, .lantern .right { background: #cc2222; }
+        .lantern .top { background: #ff6666; }
+        .lantern .bottom { background: #aa0000; }
+
+        .info {
+            position: fixed;
+            bottom: 20px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .controls button:hover {
+            background: rgba(212, 175, 55, 0.4);
+        }
+
+        .lantern-glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">四 合 院</h1>
+    <div class="scene-container">
+        <div class="scene" id="scene"></div>
+    </div>
+    <div class="info">中国传统民居 · 体素艺术</div>
+    <div class="controls">
+        <button onclick="toggleRotation()">暂停/继续旋转</button>
+        <button onclick="changeTime()">切换昼夜</button>
+    </div>
+
+    <script>
+        const scene = document.getElementById('scene');
+        const VOXEL_SIZE = 10;
+        let isRotating = true;
+
+        // 创建体素
+        function createVoxel(x, y, z, className, extraClass = '') {
+            const voxel = document.createElement('div');
+            voxel.className = `voxel ${className} ${extraClass}`;
+            voxel.style.transform = `translate3d(${x * VOXEL_SIZE}px, ${-y * VOXEL_SIZE}px, ${z * VOXEL_SIZE}px)`;
+
+            const faces = ['top', 'bottom', 'front', 'back', 'left', 'right'];
+            faces.forEach(face => {
+                const faceEl = document.createElement('div');
+                faceEl.className = `face ${face}`;
+                voxel.appendChild(faceEl);
+            });
+
+            scene.appendChild(voxel);
+        }
+
+        // 创建长方体体素块
+        function createBlock(startX, startY, startZ, width, height, depth, className, extraClass = '') {
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y++) {
+                    for (let z = 0; z < depth; z++) {
+                        createVoxel(startX + x, startY + y, startZ + z, className, extraClass);
+                    }
+                }
+            }
+        }
+
+        // 创建屋顶（坡形）
+        function createRoof(startX, startY, startZ, width, depth, isMainBuilding = false) {
+            const roofHeight = isMainBuilding ? 4 : 3;
+            const overhang = 2;
+
+            for (let layer = 0; layer < roofHeight; layer++) {
+                const currentWidth = width + overhang * 2 - layer * 2;
+                const currentDepth = depth + overhang * 2 - layer * 2;
+                const xOffset = layer - overhang;
+                const zOffset = layer - overhang;
+
+                for (let x = 0; x < currentWidth; x++) {
+                    for (let z = 0; z < currentDepth; z++) {
+                        createVoxel(
+                            startX + xOffset + x,
+                            startY + layer,
+                            startZ + zOffset + z,
+                            'roof-tile'
+                        );
+                    }
+                }
+
+                // 屋檐边缘
+                if (layer === 0) {
+                    for (let x = 0; x < currentWidth; x++) {
+                        createVoxel(startX + xOffset + x, startY, startZ + zOffset, 'roof-edge');
+                        createVoxel(startX + xOffset + x, startY, startZ + zOffset + currentDepth - 1, 'roof-edge');
+                    }
+                }
+            }
+        }
+
+        // 创建门
+        function createDoor(startX, startY, startZ) {
+            // 门框
+            createBlock(startX, startY, startZ, 1, 6, 1, 'door-gold');
+            createBlock(startX + 5, startY, startZ, 1, 6, 1, 'door-gold');
+            createBlock(startX, startY + 6, startZ, 6, 1, 1, 'door-gold');
+
+            // 门板
+            createBlock(startX + 1, startY, startZ, 2, 6, 1, 'door');
+            createBlock(startX + 3, startY, startZ, 2, 6, 1, 'door');
+
+            // 门环
+            createVoxel(startX + 1, startY + 3, startZ - 1, 'door-gold');
+            createVoxel(startX + 4, startY + 3, startZ - 1, 'door-gold');
+
+            // 台阶
+            createBlock(startX - 1, startY - 1, startZ - 1, 7, 1, 2, 'step');
+            createBlock(startX, startY - 2, startZ - 2, 5, 1, 1, 'step');
+        }
+
+        // 创建窗户
+        function createWindow(startX, startY, startZ, width, height) {
+            for (let x = 0; x < width; x++) {
+                for (let y = 0; y < height; y++) {
+                    createVoxel(startX + x, startY + y, startZ, 'window');
+                }
+            }
+        }
+
+        // 创建柱子
+        function createPillar(startX, startY, startZ, height) {
+            createBlock(startX, startY, startZ, 1, height, 1, 'pillar');
+        }
+
+        // 创建树
+        function createTree(startX, startY, startZ) {
+            // 树干
+            createBlock(startX, startY, startZ, 2, 4, 2, 'tree-trunk');
+
+            // 树冠
+            for (let y = 4; y < 8; y++) {
+                const size = y < 6 ? 4 : 3;
+                const offset = Math.floor((4 - size) / 2);
+                createBlock(startX - 1 + offset, startY + y, startZ - 1 + offset, size, 1, size, 'tree-leaves');
+            }
+        }
+
+        // 创建灯笼
+        function createLantern(startX, startY, startZ) {
+            createVoxel(startX, startY, startZ, 'lantern lantern-glow');
+            createVoxel(startX, startY + 1, startZ, 'lantern lantern-glow');
+            createVoxel(startX, startY - 1, startZ, 'door-gold'); // 吊绳
+        }
+
+        // 创建正房（北房）
+        function createMainBuilding() {
+            const baseX = -12;
+            const baseZ = -18;
+
+            // 地基
+            createBlock(baseX, 0, baseZ, 24, 1, 10, 'ground');
+
+            // 墙体
+            createBlock(baseX, 1, baseZ, 24, 7, 1, 'wall-gray'); // 后墙
+            createBlock(baseX, 1, baseZ + 9, 24, 7, 1, 'wall-gray'); // 前墙
+
+            // 左右墙
+            for (let z = 1; z < 9; z++) {
+                createBlock(baseX, 1, baseZ + z, 1, 7, 1, 'wall-gray');
+                createBlock(baseX + 23, 1, baseZ + z, 1, 7, 1, 'wall-gray');
+            }
+
+            // 窗户
+            createWindow(baseX + 3, 3, baseZ, 4, 3);
+            createWindow(baseX + 10, 3, baseZ, 4, 3);
+            createWindow(baseX + 17, 3, baseZ, 4, 3);
+
+            createWindow(baseX + 3, 3, baseZ + 9, 4, 3);
+            createWindow(baseX + 17, 3, baseZ + 9, 4, 3);
+
+            // 中间门
+            createBlock(baseX + 9, 1, baseZ + 9, 6, 2, 1, 'door-gold');
+            createWindow(baseX + 10, 4, baseZ + 9, 4, 3);
+
+            // 柱子
+            createPillar(baseX + 2, 1, baseZ + 9, 7);
+            createPillar(baseX + 21, 1, baseZ + 9, 7);
+            createPillar(baseX + 2, 1, baseZ, 7);
+            createPillar(baseX + 21, 1, baseZ, 7);
+
+            // 屋顶
+            createRoof(baseX, 8, baseZ - 1, 24, 11, true);
+
+            // 灯笼
+            createLantern(baseX + 3, 7, baseZ + 10);
+            createLantern(baseX + 20, 7, baseZ + 10);
+        }
+
+        // 创建东西厢房
+        function createSideBuilding(baseX, baseZ, isEast) {
+            // 地基
+            createBlock(baseX, 0, baseZ, 8, 1, 18, 'ground');
+
+            // 墙体
+            createBlock(baseX, 1, baseZ, 8, 5, 1, 'wall-gray');
+            createBlock(baseX, 1, baseZ + 17, 8, 5, 1, 'wall-gray');
+
+            if (isEast) {
+                createBlock(baseX, 1, baseZ, 1, 5, 18, 'wall-gray');
+            } else {
+                createBlock(baseX + 7, 1, baseZ, 1, 5, 18, 'wall-gray');
+            }
+
+            // 窗户
+            const windowZ = isEast ? baseX : baseX + 7;
+            createWindow(baseX + 1, 2, baseZ + 3, 6, 3);
+            createWindow(baseX + 1, 2, baseZ + 10, 6, 3);
+
+            // 柱子
+            createPillar(baseX, 1, baseZ + 2, 5);
+            createPillar(baseX, 1, baseZ + 15, 5);
+
+            // 屋顶
+            createRoof(baseX - 1, 6, baseZ - 1, 10, 20, false);
+        }
+
+        // 创建倒座房（南房）
+        function createSouthBuilding() {
+            const baseX = -12;
+            const baseZ = 12;
+
+            // 地基
+            createBlock(baseX, 0, baseZ, 24, 1, 8, 'ground');
+
+            // 墙体
+            createBlock(baseX, 1, baseZ, 24, 5, 1, 'wall-gray');
+            createBlock(baseX, 1, baseZ + 7, 24, 5, 1, 'wall-gray');
+
+            createBlock(baseX, 1, baseZ, 1, 5, 8, 'wall-gray');
+            createBlock(baseX + 23, 1, baseZ, 1, 5, 8, 'wall-gray');
+
+            // 大门（中间）
+            createDoor(baseX + 9, 1, baseZ);
+
+            // 窗户
+            createWindow(baseX + 2, 2, baseZ + 7, 5, 3);
+            createWindow(baseX + 17, 2, baseZ + 7, 5, 3);
+
+            // 柱子
+            createPillar(baseX + 1, 1, baseZ + 7, 5);
+            createPillar(baseX + 22, 1, baseZ + 7, 5);
+
+            // 屋顶
+            createRoof(baseX, 6, baseZ - 1, 24, 10, false);
+        }
+
+        // 创建院落
+        function createCourtyard() {
+            // 院落地面
+            for (let x = -11; x < 12; x++) {
+                for (let z = -7; z < 12; z++) {
+                    createVoxel(x, 0, z, 'courtyard');
+                }
+            }
+
+            // 石板路
+            for (let z = -7; z < 12; z++) {
+                createVoxel(0, 0, z, 'step');
+                createVoxel(-1, 0, z, 'step');
+                createVoxel(1, 0, z, 'step');
+            }
+
+            // 树木
+            createTree(-8, 0, 2);
+            createTree(7, 0, -3);
+
+            // 石墩
+            createBlock(-5, 0, 5, 2, 1, 2, 'step');
+            createBlock(4, 0, 5, 2, 1, 2, 'step');
+        }
+
+        // 创建影壁
+        function createScreenWall() {
+            const baseX = -4;
+            const baseZ = 10;
+
+            // 影壁底座
+            createBlock(baseX, 0, baseZ, 8, 1, 1, 'step');
+
+            // 影壁主体
+            createBlock(baseX, 1, baseZ, 8, 5, 1, 'wall-gray');
+
+            // 影壁装饰边
+            createBlock(baseX, 6, baseZ, 8, 1, 1, 'door-gold');
+            createBlock(baseX - 1, 1, baseZ, 1, 5, 1, 'door-gold');
+            createBlock(baseX + 8, 1, baseZ, 1, 5, 1, 'door-gold');
+
+            // 影壁顶
+            createBlock(baseX - 1, 7, baseZ, 10, 1, 2, 'roof-tile');
+        }
+
+        // 渲染场景
+        function render() {
+            scene.innerHTML = '';
+
+            // 地面
+            for (let x = -15; x < 15; x++) {
+                for (let z = -22; z < 22; z++) {
+                    createVoxel(x, -1, z, 'ground');
+                }
+            }
+
+            createMainBuilding();
+            createSideBuilding(-15, -12, false); // 西厢房
+            createSideBuilding(8, -12, true);    // 东厢房
+            createSouthBuilding();
+            createCourtyard();
+            createScreenWall();
+        }
+
+        // 切换旋转
+        function toggleRotation() {
+            isRotating = !isRotating;
+            scene.style.animationPlayState = isRotating ? 'running' : 'paused';
+        }
+
+        // 切换昼夜
+        let isNight = true;
+        function changeTime() {
+            isNight = !isNight;
+            if (isNight) {
+                document.body.style.background = 'linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
+            } else {
+                document.body.style.background = 'linear-gradient(180deg, #87CEEB 0%, #98D8C8 50%, #7CB342 100%)';
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
