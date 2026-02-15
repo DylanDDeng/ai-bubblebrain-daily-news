@@ -439,6 +439,10 @@
       "claude-4.6-opus":{
         "type": "html",
         "content": "<iframe src='/eval-demos/claude-opus-4.6-paifang.html' style='width:100%;height:500px;border:1px solid #333;border-radius:8px;'></iframe>"
+      },
+      "glm-5":{
+        "type":"html",
+        "content":"<iframe src='/eval-demos/glm-5-chinatoqn-paifang.html' style='width:100%;height:600px;border:1px solid #333;border-radius:8px;'></iframe>"
       }
     }
   }, 
