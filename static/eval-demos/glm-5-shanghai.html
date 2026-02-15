@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海天际线 - 体素艺术 | Shanghai Skyline Voxel Art</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #0a0a1a;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .title {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 2.2rem;
+            text-shadow: 0 0 30px rgba(255, 100, 150, 0.8), 0 0 60px rgba(100, 150, 255, 0.5);
+            letter-spacing: 12px;
+            z-index: 100;
+            pointer-events: none;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            letter-spacing: 8px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .controls button {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            border-radius: 30px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .controls button:hover {
+            background: rgba(255, 100, 150, 0.3);
+            border-color: rgba(255, 100, 150, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 100, 150, 0.3);
+        }
+
+        .stats {
+            position: fixed;
+            top: 110px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            z-index: 100;
+            background: rgba(0,0,0,0.4);
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.8;
+        }
+
+        .legend {
+            position: fixed;
+            top: 110px;
+            right: 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 11px;
+            z-index: 100;
+            background: rgba(0,0,0,0.4);
+            padding: 15px 18px;
+            border-radius: 12px;
+            line-height: 2;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .time-indicator {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            z-index: 100;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">上 海 天 际 线</h1>
+    <p class="subtitle">SHANGHAI SKYLINE · VOXEL ART</p>
+    <div class="stars" id="stars"></div>
+    <div id="canvas-container"></div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#ff3366"></div>东方明珠塔</div>
+        <div class="legend-item"><div class="legend-color" style="background:#4fc3f7"></div>上海中心大厦</div>
+        <div class="legend-item"><div class="legend-color" style="background:#81d4fa"></div>环球金融中心</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffd54f"></div>金茂大厦</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffccbc"></div>外滩建筑群</div>
+        <div class="legend-item"><div class="legend-color" style="background:#1a237e"></div>黄浦江</div>
+    </div>
+
+    <div class="stats" id="stats">加载中...</div>
+    <div class="time-indicator" id="timeIndicator">夜晚 22:00</div>
+
+    <div class="controls">
+        <button id="toggleRotation">暂停/继续旋转</button>
+        <button id="changeTime">切换昼夜</button>
+        <button id="toggleFireworks">烟花效果</button>
+        <button id="resetView">重置视角</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // ==================== 配置 ====================
+        const VOXEL_SIZE = 1;
+        let isAutoRotating = true;
+        let isNight = true;
+        let fireworksEnabled = false;
+        let timeHour = 22;
+
+        // ==================== Three.js 初始化 ====================
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a1a);
+        scene.fog = new THREE.FogExp2(0x0a0a1a, 0.003);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 80, 200);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // ==================== 颜色定义 ====================
+        const COLORS = {
+            // 东方明珠 - 粉红色系
+            pearlPink: 0xff3366,
+            pearlPurple: 0xcc2255,
+            pearlWhite: 0xffccdd,
+
+            // 上海中心 - 青蓝色系
+            towerBlue: 0x4fc3f7,
+            towerCyan: 0x00bcd4,
+            towerGlass: 0x81d4fa,
+
+            // 环球金融中心 - 天蓝色
+            swfcBlue: 0x81d4fa,
+            swfcGlass: 0xb3e5fc,
+            swfcSilver: 0xe0e0e0,
+
+            // 金茂大厦 - 金色
+            jinmaoGold: 0xffd54f,
+            jinmaoDark: 0xffb300,
+            jinmaoBronze: 0xd4a017,
+
+            // 外滩建筑 - 复古色
+            bundCream: 0xffccbc,
+            bundBrown: 0x8d6e63,
+            bundGold: 0xd4af37,
+            bundRed: 0xb71c1c,
+            bundGreen: 0x2e7d32,
+
+            // 黄浦江
+            riverBlue: 0x1a237e,
+            riverCyan: 0x283593,
+            riverReflect: 0x3949ab,
+
+            // 地面
+            groundGray: 0x37474f,
+            roadGray: 0x263238,
+
+            // 装饰
+            neonPink: 0xff1493,
+            neonBlue: 0x00bfff,
+            neonYellow: 0xffd700,
+            neonGreen: 0x00ff7f,
+
+            // 树木
+            treeGreen: 0x2e7d32,
+            treeDark: 0x1b5e20,
+
+            // 灯光
+            lightYellow: 0xffeb3b,
+            lightWhite: 0xffffff
+        };
+
+        // ==================== 材质缓存 ====================
+        const materialCache = {};
+        const geometry = new THREE.BoxGeometry(VOXEL_SIZE, VOXEL_SIZE, VOXEL_SIZE);
+
+        function getMaterial(color, emissive = false, emissiveColor = null) {
+            const key = `${color}_${emissive}_${emissiveColor}`;
+            if (!materialCache[key]) {
+                materialCache[key] = new THREE.MeshLambertMaterial({
+                    color: color,
+                    emissive: emissive ? (emissiveColor || color) : 0x000000,
+                    emissiveIntensity: emissive ? 0.4 : 0
+                });
+            }
+            return materialCache[key];
+        }
+
+        // ==================== 体素数据 ====================
+        const voxelData = {};
+
+        function addVoxel(x, y, z, color, emissive = false, emissiveColor = null) {
+            const key = `${color}_${emissive}_${emissiveColor || ''}`;
+            if (!voxelData[key]) {
+                voxelData[key] = { color, emissive, emissiveColor, positions: [] };
+            }
+            voxelData[key].positions.push({ x, y, z });
+        }
+
+        // ==================== 建筑构建函数 ====================
+
+        // 东方明珠塔
+        function createOrientalPearlTower(baseX, baseZ) {
+            // 主塔身
+            for (let y = 0; y < 120; y++) {
+                const radius = y < 30 ? 6 : (y < 70 ? 4 : (y < 100 ? 3 : 2));
+                for (let x = -radius; x <= radius; x++) {
+                    for (let z = -radius; z <= radius; z++) {
+                        if (x*x + z*z <= radius*radius) {
+                            const isEdge = x*x + z*z >= (radius-1)*(radius-1);
+                            addVoxel(baseX + x, y, baseZ + z,
+                                isEdge ? COLORS.pearlPink : COLORS.pearlPurple,
+                                isEdge && y % 5 === 0);
+                        }
+                    }
+                }
+            }
+
+            // 下球体
+            createSphere(baseX, 25, baseZ, 12, COLORS.pearlPink, true);
+            createSphere(baseX, 25, baseZ, 10, COLORS.pearlWhite, false);
+
+            // 中球体
+            createSphere(baseX, 65, baseZ, 10, COLORS.pearlPink, true);
+            createSphere(baseX, 65, baseZ, 8, COLORS.pearlWhite, false);
+
+            // 上球体（观光层）
+            createSphere(baseX, 95, baseZ, 8, COLORS.pearlPink, true);
+            createSphere(baseX, 95, baseZ, 6, COLORS.pearlWhite, false);
+
+            // 天线
+            for (let y = 105; y < 140; y++) {
+                addVoxel(baseX, y, baseZ, COLORS.pearlPurple, true);
+                if (y % 3 === 0) {
+                    addVoxel(baseX - 1, y, baseZ, COLORS.neonRed || COLORS.pearlPink, true);
+                    addVoxel(baseX + 1, y, baseZ, COLORS.pearlPink, true);
+                }
+            }
+
+            // 底部支撑腿
+            for (let angle = 0; angle < 3; angle++) {
+                const rad = (angle * 120) * Math.PI / 180;
+                for (let y = 0; y < 20; y++) {
+                    const x = Math.round(Math.cos(rad) * (10 - y * 0.3));
+                    const z = Math.round(Math.sin(rad) * (10 - y * 0.3));
+                    for (let dx = -1; dx <= 1; dx++) {
+                        for (let dz = -1; dz <= 1; dz++) {
+                            addVoxel(baseX + x + dx, y, baseZ + z + dz, COLORS.pearlPurple);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 球体
+        function createSphere(cx, cy, cz, radius, color, emissive = false) {
+            for (let x = -radius; x <= radius; x++) {
+                for (let y = -radius; y <= radius; y++) {
+                    for (let z = -radius; z <= radius; z++) {
+                        if (x*x + y*y + z*z <= radius*radius) {
+                            addVoxel(cx + x, cy + y, cz + z, color, emissive);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 上海中心大厦 - 螺旋形
+        function createShanghaiTower(baseX, baseZ) {
+            const height = 180;
+            const baseRadius = 14;
+
+            for (let y = 0; y < height; y++) {
+                const progress = y / height;
+                const radius = Math.max(3, baseRadius * (1 - progress * 0.7));
+                const twist = y * 0.03;
+
+                for (let angle = 0; angle < Math.PI * 2; angle += 0.15) {
+                    const x = Math.round(Math.cos(angle + twist) * radius);
+                    const z = Math.round(Math.sin(angle + twist) * radius);
+
+                    // 玻璃幕墙效果
+                    const stripe = Math.floor((angle + twist) * 3) % 2;
+                    const color = stripe === 0 ? COLORS.towerBlue : COLORS.towerCyan;
+                    addVoxel(baseX + x, y, baseZ + z, color, y % 20 === 0);
+                }
+
+                // 内部结构
+                if (y % 10 === 0) {
+                    for (let x = -radius/2; x <= radius/2; x++) {
+                        for (let z = -radius/2; z <= radius/2; z++) {
+                            if (Math.abs(x) + Math.abs(z) < radius/2) {
+                                addVoxel(baseX + x, y, baseZ + z, COLORS.towerGlass);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 顶部尖塔
+            for (let y = height; y < height + 30; y++) {
+                addVoxel(baseX, y, baseZ, COLORS.towerCyan, true);
+            }
+        }
+
+        // 环球金融中心 - 开瓶器造型
+        function createSWFC(baseX, baseZ) {
+            const height = 160;
+            const baseWidth = 12;
+            const baseDepth = 10;
+
+            for (let y = 0; y < height; y++) {
+                const progress = y / height;
+                const scale = 1 - progress * 0.3;
+                const width = Math.round(baseWidth * scale);
+                const depth = Math.round(baseDepth * scale);
+
+                for (let x = -width; x <= width; x++) {
+                    for (let z = -depth; z <= depth; z++) {
+                        // 外墙
+                        if (Math.abs(x) === width || Math.abs(z) === depth) {
+                            const stripe = (x + z + y) % 4;
+                            let color;
+                            if (stripe === 0) color = COLORS.swfcBlue;
+                            else if (stripe === 1) color = COLORS.swfcGlass;
+                            else color = COLORS.swfcSilver;
+                            addVoxel(baseX + x, y, baseZ + z, color, stripe === 0 && y % 15 === 0);
+                        }
+                    }
+                }
+            }
+
+            // 开口部分（梯形开口）
+            const openingStart = 100;
+            const openingEnd = 140;
+            for (let y = openingStart; y < openingEnd; y++) {
+                const progress = (y - openingStart) / (openingEnd - openingStart);
+                const openingWidth = Math.round(6 + progress * 4);
+                const openingDepth = Math.round(3 + progress * 2);
+
+                for (let x = -openingWidth; x <= openingWidth; x++) {
+                    for (let z = -openingDepth; z <= openingDepth; z++) {
+                        // 清除开口区域（不添加体素）
+                    }
+                }
+
+                // 开口边框
+                for (let x = -openingWidth - 1; x <= openingWidth + 1; x++) {
+                    addVoxel(baseX + x, y, baseZ - openingDepth - 1, COLORS.swfcBlue, true);
+                    addVoxel(baseX + x, y, baseZ + openingDepth + 1, COLORS.swfcBlue, true);
+                }
+            }
+        }
+
+        // 金茂大厦 - 宝塔式层叠
+        function createJinmaoTower(baseX, baseZ) {
+            const segments = 12;
+            let currentY = 0;
+
+            for (let seg = 0; seg < segments; seg++) {
+                const segmentHeight = 12 - seg * 0.5;
+                const width = 10 - seg;
+                const depth = 10 - seg;
+
+                for (let y = 0; y < segmentHeight; y++) {
+                    for (let x = -width; x <= width; x++) {
+                        for (let z = -depth; z <= depth; z++) {
+                            const isEdge = Math.abs(x) >= width - 1 || Math.abs(z) >= depth - 1;
+                            if (isEdge) {
+                                const stripe = (x + z) % 3;
+                                let color;
+                                if (stripe === 0) color = COLORS.jinmaoGold;
+                                else if (stripe === 1) color = COLORS.jinmaoDark;
+                                else color = COLORS.jinmaoBronze;
+                                addVoxel(baseX + x, currentY + y, baseZ + z, color,
+                                    y === 0 || y === segmentHeight - 1);
+                            }
+                        }
+                    }
+                }
+
+                // 屋顶装饰
+                for (let x = -width; x <= width; x++) {
+                    for (let z = -depth; z <= depth; z++) {
+                        addVoxel(baseX + x, currentY + segmentHeight, baseZ + z, COLORS.jinmaoGold, true);
+                    }
+                }
+
+                // 退台
+                currentY += segmentHeight + 1;
+            }
+
+            // 顶部尖塔
+            for (let y = 0; y < 20; y++) {
+                addVoxel(baseX, currentY + y, baseZ, COLORS.jinmaoGold, true);
+            }
+        }
+
+        // 外滩建筑群
+        function createBundBuildings(startX, startZ) {
+            // 和平饭店（绿色金字塔顶）
+            createBundBuilding(startX, startZ, 20, 45, COLORS.bundCream, COLORS.bundGreen, true);
+            // 汇丰银行大楼
+            createBundBuilding(startX + 30, startZ, 25, 50, COLORS.bundCream, COLORS.bundBrown, false, true);
+            // 海关大楼（钟楼）
+            createBundBuilding(startX + 65, startZ, 18, 60, COLORS.bundRed, COLORS.bundGold, true, false, true);
+            // 其他外滩建筑
+            createBundBuilding(startX + 95, startZ, 22, 40, COLORS.bundCream, COLORS.bundBrown);
+            createBundBuilding(startX + 125, startZ, 20, 35, COLORS.bundGold, COLORS.bundBrown);
+            createBundBuilding(startX + 155, startZ, 24, 45, COLORS.bundCream, COLORS.bundRed);
+        }
+
+        function createBundBuilding(x, z, width, height, wallColor, roofColor,
+                                      hasPyramid = false, hasDome = false, hasClock = false) {
+            // 主体
+            for (let y = 0; y < height; y++) {
+                for (let bx = 0; bx < width; bx++) {
+                    const isWindow = y > 5 && y % 5 < 3 && bx % 4 > 0 && bx % 4 < 3;
+
+                    // 正面
+                    addVoxel(x + bx, y, z, isWindow ? 0x2a2a3a : wallColor);
+
+                    // 背面
+                    addVoxel(x + bx, y, z + 12, wallColor);
+
+                    // 侧面
+                    if (bx === 0 || bx === width - 1) {
+                        for (let bz = 0; bz <= 12; bz++) {
+                            addVoxel(x + bx, y, z + bz, wallColor);
+                        }
+                    }
+                }
+            }
+
+            // 屋顶
+            for (let bx = 0; bx < width; bx++) {
+                for (let bz = 0; bz <= 12; bz++) {
+                    addVoxel(x + bx, height, z + bz, roofColor);
+                }
+            }
+
+            // 金字塔顶
+            if (hasPyramid) {
+                for (let py = 1; py <= 8; py++) {
+                    for (let bx = py; bx < width - py; bx++) {
+                        addVoxel(x + bx, height + py, z + 6, COLORS.bundGreen);
+                    }
+                }
+            }
+
+            // 圆顶
+            if (hasDome) {
+                for (let dy = 0; dy < 6; dy++) {
+                    const radius = 5 - dy;
+                    for (let dx = -radius; dx <= radius; dx++) {
+                        for (let dz = -radius; dz <= radius; dz++) {
+                            if (dx*dx + dz*dz <= radius*radius) {
+                                addVoxel(x + width/2 + dx, height + dy + 1, z + 6 + dz, COLORS.bundGold, true);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 钟楼
+            if (hasClock) {
+                for (let cy = height; cy < height + 15; cy++) {
+                    for (let cx = -3; cx <= 3; cx++) {
+                        for (let cz = -3; cz <= 3; cz++) {
+                            if (Math.abs(cx) === 3 || Math.abs(cz) === 3) {
+                                addVoxel(x + width/2 + cx, cy, z + 6 + cz, COLORS.bundCream);
+                            }
+                        }
+                    }
+                    // 钟面
+                    if (cy > height + 5 && cy < height + 12) {
+                        addVoxel(x + width/2, cy, z + 3, COLORS.lightYellow, true);
+                    }
+                }
+            }
+
+            // 灯光装饰
+            for (let bx = 0; bx < width; bx += 5) {
+                addVoxel(x + bx, height + 1, z, COLORS.lightYellow, true);
+            }
+        }
+
+        // 黄浦江
+        function createHuangpuRiver() {
+            for (let x = -150; x < 200; x++) {
+                for (let z = -30; z < 20; z++) {
+                    const wave = Math.sin(x * 0.1) * 2;
+                    const color = (x + z) % 10 < 5 ? COLORS.riverBlue : COLORS.riverCyan;
+                    addVoxel(x, -2 + Math.round(wave), z, color, false);
+
+                    // 江面反光
+                    if ((x + z) % 15 === 0 && isNight) {
+                        addVoxel(x, -1, z, COLORS.riverReflect, true);
+                    }
+                }
+            }
+
+            // 堤岸
+            for (let x = -150; x < 200; x++) {
+                for (let z = -31; z < -30; z++) {
+                    addVoxel(x, -2, z, COLORS.groundGray);
+                    addVoxel(x, -1, z, COLORS.groundGray);
+                }
+                for (let z = 19; z < 21; z++) {
+                    addVoxel(x, -2, z, COLORS.groundGray);
+                    addVoxel(x, -1, z, COLORS.groundGray);
+                }
+            }
+        }
+
+        // 地面和道路
+        function createGround() {
+            // 陆家嘴区域地面
+            for (let x = -80; x < 80; x++) {
+                for (let z = 25; z < 100; z++) {
+                    addVoxel(x, -3, z, COLORS.groundGray);
+                }
+            }
+
+            // 外滩区域地面
+            for (let x = -60; x < 200; x++) {
+                for (let z = -60; z < -32; z++) {
+                    addVoxel(x, -3, z, COLORS.groundGray);
+                }
+            }
+
+            // 道路
+            for (let x = -100; x < 200; x++) {
+                for (let z = 20; z < 25; z++) {
+                    addVoxel(x, -3, z, COLORS.roadGray);
+                    // 路灯
+                    if (x % 20 === 0) {
+                        addVoxel(x, -2, z, 0x404040);
+                        addVoxel(x, -1, z, 0x404040);
+                        addVoxel(x, 0, z, COLORS.lightYellow, true);
+                    }
+                }
+            }
+        }
+
+        // 装饰性树木
+        function createTrees() {
+            const treePositions = [
+                [-50, 30], [-40, 35], [50, 30], [60, 35],
+                [-70, 40], [70, 40], [-55, 50], [55, 50]
+            ];
+
+            treePositions.forEach(([tx, tz]) => {
+                // 树干
+                for (let y = -3; y < 0; y++) {
+                    addVoxel(tx, y, tz, 0x5d4037);
+                }
+                // 树冠
+                for (let dy = 0; dy < 5; dy++) {
+                    const radius = 3 - dy * 0.5;
+                    for (let dx = -radius; dx <= radius; dx++) {
+                        for (let dz = -radius; dz <= radius; dz++) {
+                            if (dx*dx + dz*dz <= radius*radius) {
+                                addVoxel(tx + dx, dy, tz + dz, COLORS.treeGreen);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 霓虹灯广告牌
+        function createNeonSigns() {
+            const signs = [
+                { x: -60, y: 50, z: 100, color: COLORS.neonPink },
+                { x: 80, y: 60, z: 100, color: COLORS.neonBlue },
+                { x: -70, y: 40, z: 90, color: COLORS.neonYellow },
+            ];
+
+            signs.forEach(sign => {
+                for (let i = 0; i < 10; i++) {
+                    addVoxel(sign.x + i, sign.y, sign.z, sign.color, true);
+                    addVoxel(sign.x + i, sign.y + 3, sign.z, sign.color, true);
+                }
+                for (let j = 0; j < 4; j++) {
+                    addVoxel(sign.x, sign.y + j, sign.z, sign.color, true);
+                    addVoxel(sign.x + 9, sign.y + j, sign.z, sign.color, true);
+                }
+            });
+        }
+
+        // ==================== 创建 InstancedMesh ====================
+        function createInstancedMeshes() {
+            let totalVoxels = 0;
+
+            for (const [key, data] of Object.entries(voxelData)) {
+                const count = data.positions.length;
+                totalVoxels += count;
+
+                const material = getMaterial(data.color, data.emissive, data.emissiveColor);
+                const mesh = new THREE.InstancedMesh(geometry, material, count);
+
+                const matrix = new THREE.Matrix4();
+                data.positions.forEach((pos, index) => {
+                    matrix.setPosition(pos.x * VOXEL_SIZE, pos.y * VOXEL_SIZE, pos.z * VOXEL_SIZE);
+                    mesh.setMatrixAt(index, matrix);
+                });
+
+                mesh.instanceMatrix.needsUpdate = true;
+                mesh.castShadow = true;
+                mesh.receiveShadow = true;
+                scene.add(mesh);
+            }
+
+            return totalVoxels;
+        }
+
+        // ==================== 光照 ====================
+        const ambientLight = new THREE.AmbientLight(0x404060, 0.3);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(100, 150, 50);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        scene.add(directionalLight);
+
+        // 城市灯光
+        const cityLights = [];
+        function createCityLights() {
+            const lightPositions = [
+                { x: 0, y: 50, z: 50, color: 0xff3366 },      // 东方明珠
+                { x: 30, y: 80, z: 55, color: 0x4fc3f7 },     // 上海中心
+                { x: -35, y: 70, z: 55, color: 0x81d4fa },    // 环球金融
+                { x: 50, y: 60, z: 55, color: 0xffd54f },     // 金茂
+            ];
+
+            lightPositions.forEach(pos => {
+                const light = new THREE.PointLight(pos.color, 0.8, 100);
+                light.position.set(pos.x, pos.y, pos.z);
+                scene.add(light);
+                cityLights.push(light);
+            });
+        }
+
+        // ==================== 烟花效果 ====================
+        const fireworks = [];
+
+        class Firework {
+            constructor() {
+                this.particles = [];
+                this.x = (Math.random() - 0.5) * 300;
+                this.z = (Math.random() - 0.5) * 100 + 50;
+                this.targetY = 80 + Math.random() * 60;
+                this.currentY = 0;
+                this.exploded = false;
+                this.color = [0xff1493, 0x00bfff, 0xffd700, 0x00ff7f, 0xff6347][Math.floor(Math.random() * 5)];
+                this.age = 0;
+
+                // 上升粒子
+                this.risingParticle = new THREE.Mesh(
+                    new THREE.BoxGeometry(1, 1, 1),
+                    new THREE.MeshBasicMaterial({ color: this.color })
+                );
+                this.risingParticle.position.set(this.x, 0, this.z);
+                scene.add(this.risingParticle);
+            }
+
+            update() {
+                this.age++;
+
+                if (!this.exploded) {
+                    this.currentY += 2;
+                    this.risingParticle.position.y = this.currentY;
+
+                    if (this.currentY >= this.targetY) {
+                        this.explode();
+                    }
+                } else {
+                    // 更新爆炸粒子
+                    this.particles.forEach(p => {
+                        p.mesh.position.add(p.velocity);
+                        p.velocity.y -= 0.05;
+                        p.mesh.material.opacity -= 0.02;
+                    });
+                }
+
+                return this.age < 150;
+            }
+
+            explode() {
+                this.exploded = true;
+                scene.remove(this.risingParticle);
+
+                // 创建爆炸粒子
+                for (let i = 0; i < 50; i++) {
+                    const particle = new THREE.Mesh(
+                        new THREE.BoxGeometry(0.8, 0.8, 0.8),
+                        new THREE.MeshBasicMaterial({
+                            color: this.color,
+                            transparent: true,
+                            opacity: 1
+                        })
+                    );
+
+                    particle.position.set(this.x, this.currentY, this.z);
+
+                    const velocity = new THREE.Vector3(
+                        (Math.random() - 0.5) * 2,
+                        (Math.random() - 0.5) * 2,
+                        (Math.random() - 0.5) * 2
+                    );
+
+                    scene.add(particle);
+                    this.particles.push({ mesh: particle, velocity });
+                }
+            }
+
+            dispose() {
+                if (this.risingParticle.parent) scene.remove(this.risingParticle);
+                this.particles.forEach(p => scene.remove(p.mesh));
+            }
+        }
+
+        // ==================== 星星背景 ====================
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 60 + '%';
+                star.style.width = (1 + Math.random() * 2) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // ==================== 相机控制 ====================
+        let cameraAngle = 0;
+        let cameraHeight = 80;
+        let cameraDistance = 200;
+        let isDragging = false;
+        let prevMouse = { x: 0, y: 0 };
+
+        function updateCamera() {
+            if (isAutoRotating) cameraAngle += 0.002;
+
+            camera.position.x = Math.sin(cameraAngle) * cameraDistance;
+            camera.position.z = Math.cos(cameraAngle) * cameraDistance;
+            camera.position.y = cameraHeight;
+            camera.lookAt(0, 40, 30);
+        }
+
+        renderer.domElement.addEventListener('mousedown', e => {
+            isDragging = true;
+            prevMouse = { x: e.clientX, y: e.clientY };
+        });
+
+        renderer.domElement.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            cameraAngle -= (e.clientX - prevMouse.x) * 0.005;
+            cameraHeight = Math.max(20, Math.min(200, cameraHeight - (e.clientY - prevMouse.y) * 0.5));
+            prevMouse = { x: e.clientX, y: e.clientY };
+        });
+
+        renderer.domElement.addEventListener('mouseup', () => isDragging = false);
+        renderer.domElement.addEventListener('mouseleave', () => isDragging = false);
+
+        renderer.domElement.addEventListener('wheel', e => {
+            cameraDistance = Math.max(80, Math.min(400, cameraDistance + e.deltaY * 0.2));
+        });
+
+        // 触摸支持
+        renderer.domElement.addEventListener('touchstart', e => {
+            isDragging = true;
+            prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        renderer.domElement.addEventListener('touchmove', e => {
+            if (!isDragging) return;
+            cameraAngle -= (e.touches[0].clientX - prevMouse.x) * 0.005;
+            cameraHeight = Math.max(20, Math.min(200, cameraHeight - (e.touches[0].clientY - prevMouse.y) * 0.5));
+            prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        renderer.domElement.addEventListener('touchend', () => isDragging = false);
+
+        // ==================== 昼夜切换 ====================
+        function setNightMode() {
+            scene.background = new THREE.Color(0x0a0a1a);
+            scene.fog = new THREE.FogExp2(0x0a0a1a, 0.003);
+            ambientLight.intensity = 0.3;
+            directionalLight.intensity = 0.3;
+            cityLights.forEach(l => l.intensity = 1);
+            document.getElementById('timeIndicator').textContent = '夜晚 22:00';
+            document.getElementById('stars').style.display = 'block';
+        }
+
+        function setDayMode() {
+            scene.background = new THREE.Color(0x87CEEB);
+            scene.fog = new THREE.FogExp2(0x87CEEB, 0.002);
+            ambientLight.intensity = 0.7;
+            directionalLight.intensity = 1;
+            cityLights.forEach(l => l.intensity = 0.2);
+            document.getElementById('timeIndicator').textContent = '白天 14:00';
+            document.getElementById('stars').style.display = 'none';
+        }
+
+        // ==================== 动画循环 ====================
+        let voxelCount = 0;
+        let frameCount = 0;
+        let lastFpsTime = performance.now();
+        let fps = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 烟花更新
+            if (fireworksEnabled && Math.random() < 0.02) {
+                fireworks.push(new Firework());
+            }
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                if (!fireworks[i].update()) {
+                    fireworks[i].dispose();
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            updateCamera();
+            renderer.render(scene, camera);
+
+            // FPS统计
+            frameCount++;
+            const now = performance.now();
+            if (now - lastFpsTime >= 1000) {
+                fps = frameCount;
+                frameCount = 0;
+                lastFpsTime = now;
+                document.getElementById('stats').innerHTML =
+                    `FPS: ${fps}<br>体素数量: ${voxelCount}<br>Draw Calls: ${renderer.info.render.calls}<br>烟花: ${fireworks.length}`;
+            }
+        }
+
+        // ==================== 控制按钮 ====================
+        document.getElementById('toggleRotation').addEventListener('click', () => {
+            isAutoRotating = !isAutoRotating;
+        });
+
+        document.getElementById('changeTime').addEventListener('click', () => {
+            isNight = !isNight;
+            isNight ? setNightMode() : setDayMode();
+        });
+
+        document.getElementById('toggleFireworks').addEventListener('click', () => {
+            fireworksEnabled = !fireworksEnabled;
+            if (!fireworksEnabled) {
+                fireworks.forEach(f => f.dispose());
+                fireworks.length = 0;
+            }
+        });
+
+        document.getElementById('resetView').addEventListener('click', () => {
+            cameraAngle = 0;
+            cameraHeight = 80;
+            cameraDistance = 200;
+        });
+
+        // ==================== 窗口调整 ====================
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ==================== 初始化 ====================
+        console.log('🏗️ 开始构建上海天际线...');
+
+        // 分步构建以避免阻塞
+        setTimeout(() => {
+            createOrientalPearlTower(0, 50);
+            console.log('✓ 东方明珠塔完成');
+        }, 0);
+
+        setTimeout(() => {
+            createShanghaiTower(30, 55);
+            console.log('✓ 上海中心大厦完成');
+        }, 100);
+
+        setTimeout(() => {
+            createSWFC(-35, 55);
+            console.log('✓ 环球金融中心完成');
+        }, 200);
+
+        setTimeout(() => {
+            createJinmaoTower(50, 55);
+            console.log('✓ 金茂大厦完成');
+        }, 300);
+
+        setTimeout(() => {
+            createBundBuildings(-60, -50);
+            console.log('✓ 外滩建筑群完成');
+        }, 400);
+
+        setTimeout(() => {
+            createHuangpuRiver();
+            console.log('✓ 黄浦江完成');
+        }, 500);
+
+        setTimeout(() => {
+            createGround();
+            createTrees();
+            createNeonSigns();
+            console.log('✓ 地面装饰完成');
+        }, 600);
+
+        setTimeout(() => {
+            voxelCount = createInstancedMeshes();
+            createCityLights();
+            createStars();
+            animate();
+
+            console.log(`🌃 上海天际线加载完成！
+- 体素数量: ${voxelCount}
+- 使用 InstancedMesh 批量渲染
+- WebGL GPU 加速
+
+操作说明:
+- 鼠标拖动: 旋转视角
+- 滚轮: 缩放
+- 切换昼夜: 改变光照
+- 烟花效果: 夜景更佳`);
+        }, 700);
+    </script>
+</body>
+</html>
