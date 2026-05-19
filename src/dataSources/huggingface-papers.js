@@ -1,6 +1,7 @@
 // src/dataSources/huggingface-papers.js
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, removeMarkdownCodeBlock, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { callChatAPI } from '../chatapi.js';
+import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
 
 const PapersDataSource = {
     fetch: async (env, foloCookie) => {
@@ -8,6 +9,7 @@ const PapersDataSource = {
         const fetchPages = parseInt(env.HGPAPERS_FETCH_PAGES || '3', 10);
         const allPapersItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
+        const foloDataApi = getFoloDataApi(env);
 
         if (!feedId) {
             console.error('HGPAPERS_FEED_ID is not set in environment variables.');
@@ -30,7 +32,7 @@ const PapersDataSource = {
                 'accept': 'application/json',
                 'accept-language': 'zh-CN,zh;q=0.9',
                 'baggage': 'sentry-environment=stable,sentry-release=5251fa921ef6cbb6df0ac4271c41c2b4a0ce7c50,sentry-public_key=e5bccf7428aa4e881ed5cb713fdff181,sentry-trace_id=2da50ca5ad944cb794670097d876ada8,sentry-sampled=true,sentry-sample_rand=0.06211835167903246,sentry-sample_rate=1',
-                'origin': 'https://app.follow.is',
+                'origin': 'https://app.folo.is',
                 'priority': 'u=1, i',
                 'sec-ch-ua': '"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"',
                 'sec-ch-ua-mobile': '?1',
@@ -59,14 +61,14 @@ const PapersDataSource = {
 
             try {
                 console.log(`Fetching Huggingface Papers data, page ${i + 1}...`);
-                const response = await fetch(env.FOLO_DATA_API, {
+                const response = await fetch(foloDataApi, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
                 });
 
                 if (!response.ok) {
-                    console.error(`Failed to fetch Huggingface Papers data, page ${i + 1}: ${response.statusText}`);
+                    console.error(`Failed to fetch Huggingface Papers data, page ${i + 1}: ${await getFoloErrorMessage(response)}`);
                     break;
                 }
                 const data = await response.json();
@@ -109,7 +111,7 @@ const PapersDataSource = {
             return papersData;
         }
 
-        if (!env.OPEN_TRANSLATE === "true") {
+        if (env.OPEN_TRANSLATE !== "true") {
             console.warn("Skipping hgpapers translations.");
             papersData.items = papersData.items.map(item => ({
                 ...item,

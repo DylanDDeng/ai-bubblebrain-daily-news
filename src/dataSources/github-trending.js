@@ -2,28 +2,147 @@
 import { fetchData, getISODate, removeMarkdownCodeBlock, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { callChatAPI } from '../chatapi.js';
 
+const GITHUB_TRENDING_URL = 'https://github.com/trending';
+
+function decodeHtmlEntities(value = '') {
+    const namedEntities = {
+        amp: '&',
+        lt: '<',
+        gt: '>',
+        quot: '"',
+        apos: "'",
+        nbsp: ' '
+    };
+
+    return String(value).replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (match, entity) => {
+        if (entity[0] === '#') {
+            const isHex = entity[1] && entity[1].toLowerCase() === 'x';
+            const codePoint = parseInt(entity.slice(isHex ? 2 : 1), isHex ? 16 : 10);
+            return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : match;
+        }
+        return Object.prototype.hasOwnProperty.call(namedEntities, entity) ? namedEntities[entity] : match;
+    });
+}
+
+function cleanHtmlText(value = '') {
+    return decodeHtmlEntities(value)
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function extractFirst(block, regex) {
+    const match = regex.exec(block);
+    return match ? cleanHtmlText(match[1]) : '';
+}
+
+function getTrendingSince(projectsApiUrl) {
+    try {
+        const url = new URL(projectsApiUrl || '');
+        const since = url.searchParams.get('since');
+        return since || 'daily';
+    } catch {
+        return 'daily';
+    }
+}
+
+function parseGithubTrendingHtml(html) {
+    const articleBlocks = html.match(/<article class="Box-row">[\s\S]*?<\/article>/g) || [];
+
+    return articleBlocks.map((block) => {
+        const repoMatch = /<h2[\s\S]*?<a[^>]+href="\/([^"?#]+)"[\s\S]*?<\/a>[\s\S]*?<\/h2>/i.exec(block);
+        if (!repoMatch) {
+            return null;
+        }
+
+        const repoPath = decodeHtmlEntities(repoMatch[1]).trim();
+        const [owner, name] = repoPath.split('/');
+        if (!owner || !name) {
+            return null;
+        }
+
+        const builtBy = Array.from(block.matchAll(/<img[^>]+class="[^"]*avatar[^"]*"[^>]+alt="@([^"]+)"/gi))
+            .map((match) => {
+                const username = decodeHtmlEntities(match[1]).trim();
+                return username ? { username, href: `https://github.com/${username}` } : null;
+            })
+            .filter(Boolean);
+
+        return {
+            owner,
+            name,
+            url: `https://github.com/${owner}/${name}`,
+            description: extractFirst(block, /<p class="[^"]*col-9[^"]*"[^>]*>([\s\S]*?)<\/p>/i),
+            language: extractFirst(block, /<span itemprop="programmingLanguage">([\s\S]*?)<\/span>/i),
+            languageColor: extractFirst(block, /<span class="repo-language-color"[^>]*style="background-color:\s*([^;"]+)/i),
+            totalStars: extractFirst(block, /href="\/[^"]+\/stargazers"[\s\S]*?<\/svg>\s*([\s\S]*?)<\/a>/i),
+            forks: extractFirst(block, /href="\/[^"]+\/forks"[\s\S]*?<\/svg>\s*([\s\S]*?)<\/a>/i),
+            starsToday: extractFirst(block, /([\d,]+)\s+stars?\s+today/i),
+            builtBy
+        };
+    }).filter(Boolean);
+}
+
+async function fetchGitHubTrendingProjects(projectsApiUrl) {
+    const since = getTrendingSince(projectsApiUrl);
+    const response = await fetch(`${GITHUB_TRENDING_URL}?since=${encodeURIComponent(since)}`, {
+        headers: {
+            'Accept': 'text/html',
+            'User-Agent': 'Mozilla/5.0 CloudFlare-AI-Insight-Daily'
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`GitHub Trending fallback failed: ${response.status} ${response.statusText}`);
+    }
+
+    const html = await response.text();
+    return parseGithubTrendingHtml(html);
+}
+
 const ProjectsDataSource = {
     fetch: async (env) => {
         console.log(`Fetching projects from: ${env.PROJECTS_API_URL}`);
-        let projects;
-        try {
-            projects = await fetchData(env.PROJECTS_API_URL);
-        } catch (error) {
-            console.error("Error fetching projects data:", error.message);
-            return { error: "Failed to fetch projects data", details: error.message, items: [] };
+        let projects = [];
+        let primaryError = null;
+
+        if (env.PROJECTS_API_URL) {
+            try {
+                projects = await fetchData(env.PROJECTS_API_URL);
+            } catch (error) {
+                primaryError = error;
+                console.error("Error fetching projects data:", error.message);
+            }
         }
 
         if (!Array.isArray(projects)) {
             console.error("Projects data is not an array:", projects);
-            return { error: "Invalid projects data format", received: projects, items: [] };
+            projects = [];
         }
-         if (projects.length === 0) {
+
+        if (projects.length === 0) {
+            try {
+                console.log("Fetching projects from GitHub Trending fallback...");
+                projects = await fetchGitHubTrendingProjects(env.PROJECTS_API_URL);
+                console.log(`Fetched ${projects.length} projects from GitHub Trending fallback.`);
+            } catch (fallbackError) {
+                console.error("Error fetching GitHub Trending fallback:", fallbackError.message);
+                return {
+                    error: "Failed to fetch projects data",
+                    details: primaryError ? primaryError.message : fallbackError.message,
+                    fallbackDetails: fallbackError.message,
+                    items: []
+                };
+            }
+        }
+
+        if (projects.length === 0) {
             console.log("No projects fetched from API.");
             return { items: [] };
         }
 
-        if (!env.OPEN_TRANSLATE === "true") {
-            console.warn("Skipping paper translations.");
+        if (env.OPEN_TRANSLATE !== "true") {
+            console.warn("Skipping project description translations.");
             return projects.map(p => ({ ...p, description_zh: p.description || "" }));
         }
 

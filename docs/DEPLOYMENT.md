@@ -95,7 +95,7 @@ DEFAULT_OPEN_MODEL = "deepseek-chat"
 # ========================
 # Folo 源
 FOLO_COOKIE_KV_KEY = "folo_auth_cookie"
-FOLO_DATA_API = "https://api.follow.is/entries"
+FOLO_DATA_API = "https://api.folo.is/entries"
 FOLO_FILTER_DAYS = "1"
 
 # 其他内容源 ID 和抓取页数...

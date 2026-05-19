@@ -1,5 +1,6 @@
 // src/dataSources/aibase.js
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
+import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
 
 const NewsDataSource = {
     fetch: async (env, foloCookie) => { // Add sourceType
@@ -7,6 +8,7 @@ const NewsDataSource = {
         const fetchPages = parseInt(env.AIBASE_FETCH_PAGES || '3', 10);
         const allAibaseItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
+        const foloDataApi = getFoloDataApi(env);
 
         if (!feedId) {
             console.error('AIBASE_FEED_ID is not set in environment variables.');
@@ -29,7 +31,7 @@ const NewsDataSource = {
                 'accept': 'application/json',
                 'accept-language': 'zh-CN,zh;q=0.9',
                 'baggage': 'sentry-environment=stable,sentry-release=5251fa921ef6cbb6df0ac4271c41c2b4a0ce7c50,sentry-public_key=e5bccf7428aa4e881ed5cb713fdff181,sentry-trace_id=2da50ca5ad944cb794670097d876ada8,sentry-sampled=true,sentry-sample_rand=0.06211835167903246,sentry-sample_rate=1',
-                'origin': 'https://app.follow.is',
+                'origin': 'https://app.folo.is',
                 'priority': 'u=1, i',
                 'sec-ch-ua': '"Google Chrome";v="135", "Not-A.Brand";v="8", "Chromium";v="135"',
                 'sec-ch-ua-mobile': '?1',
@@ -58,14 +60,14 @@ const NewsDataSource = {
 
             try {
                 console.log(`Fetching AI Base data, page ${i + 1}...`);
-                const response = await fetch(env.FOLO_DATA_API, {
+                const response = await fetch(foloDataApi, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
                 });
 
                 if (!response.ok) {
-                    console.error(`Failed to fetch AI Base data, page ${i + 1}: ${response.statusText}`);
+                    console.error(`Failed to fetch AI Base data, page ${i + 1}: ${await getFoloErrorMessage(response)}`);
                     break;
                 }
                 const data = await response.json();
