@@ -326,11 +326,8 @@ async function callOpenAIChatAPI(env, promptText, systemPromptText = null) {
     const payload = {
         model: modelName,
         messages: messages,
-        temperature: 1,
-        max_tokens: 2048,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
+        thinking: { type: "enabled" },
+        reasoning_effort: "high",
     };
 
     try {
@@ -403,11 +400,8 @@ async function* callOpenAIChatAPIStream(env, promptText, systemPromptText = null
     const payload = {
         model: modelName,
         messages: messages,
-        temperature: 1,
-        max_tokens: 2048,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
+        thinking: { type: "enabled" },
+        reasoning_effort: "high",
         stream: true,
     };
 

@@ -17,7 +17,7 @@ GEMINI_API_URL = "https://api-proxy.me/gemini" #网上公共的代理api
 DEFAULT_GEMINI_MODEL = "gemini-3-pro-preview"
 # OPENAI_API_KEY 在环境变量中设置
 OPENAI_API_URL = "https://api.deepseek.com" # Or your OpenAI compatible API URL
-DEFAULT_OPEN_MODEL = "deepseek-chat"
+DEFAULT_OPEN_MODEL = "deepseek-v4-pro"
 FOLO_COOKIE_KV_KEY = "folo_auth_cookie" 
 FOLO_DATA_API = "https://api.folo.is/entries"
 FOLO_FILTER_DAYS = 3
