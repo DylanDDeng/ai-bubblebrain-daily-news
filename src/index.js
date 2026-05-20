@@ -8,20 +8,28 @@ import { handleRss } from './handlers/getRss.js';
 import { handleWriteRssData } from './handlers/writeRssData.js'; 
 import { dataSources } from './dataFetchers.js';
 import { handleLogin, isAuthenticated, handleLogout } from './auth.js';
+import { handleAutoWorkflow, runAutoWorkflow } from './handlers/autoWorkflow.js';
 
 export default {
     async fetch(request, env) {
-        // Check essential environment variables
+        const platform = env.USE_MODEL_PLATFORM || 'GEMINI';
         const requiredEnvVars = [
-            'DATA_KV', 'GEMINI_API_KEY', 'GEMINI_API_URL', 'DEFAULT_GEMINI_MODEL', 'OPEN_TRANSLATE', 'USE_MODEL_PLATFORM',
+            'DATA_KV', 'OPEN_TRANSLATE', 'USE_MODEL_PLATFORM',
             'GITHUB_TOKEN', 'GITHUB_REPO_OWNER', 'GITHUB_REPO_NAME','GITHUB_BRANCH',
             'LOGIN_USERNAME', 'LOGIN_PASSWORD',
             'PODCAST_TITLE','PODCAST_BEGIN','PODCAST_END',
             'FOLO_COOKIE_KV_KEY','FOLO_DATA_API','FOLO_FILTER_DAYS',
             'AIBASE_FEED_ID', 'XIAOHU_FEED_ID', 'HGPAPERS_FEED_ID', 'TWITTER_LIST_ID',
             'AIBASE_FETCH_PAGES', 'XIAOHU_FETCH_PAGES', 'HGPAPERS_FETCH_PAGES', 'TWITTER_FETCH_PAGES',
-            //'AIBASE_API_URL', 'XIAOHU_API_URL','PROJECTS_API_URL','HGPAPERS_API_URL', 'TWITTER_API_URL', 'TWITTER_USERNAMES',
         ];
+
+        // Add platform specific keys
+        if (platform === 'GEMINI') {
+            requiredEnvVars.push('GEMINI_API_KEY', 'GEMINI_API_URL', 'DEFAULT_GEMINI_MODEL');
+        } else if (platform === 'OPEN') {
+            requiredEnvVars.push('OPENAI_API_KEY', 'OPENAI_API_URL', 'DEFAULT_OPEN_MODEL');
+        }
+
         const missingVars = requiredEnvVars.filter(varName => !env[varName]);
 
         if (missingVars.length > 0) {
@@ -49,6 +57,9 @@ export default {
             return await handleRss(request, env);
         } else if (path === '/writeRssData' && request.method === 'GET') {
             return await handleWriteRssData(request, env);
+        } else if (path === '/auto') {
+            // Optional: You might want to add some basic API key auth here if exposed
+            return await handleAutoWorkflow(request, env);
         }
 
         // Authentication check for all other paths
@@ -96,5 +107,10 @@ export default {
             response.headers.append('Set-Cookie', newCookie);
         }
         return response;
+    },
+
+    async scheduled(event, env, ctx) {
+        console.log(`Scheduled event triggered at: ${new Date(event.scheduledTime).toISOString()}`);
+        ctx.waitUntil(runAutoWorkflow(env));
     }
 };
