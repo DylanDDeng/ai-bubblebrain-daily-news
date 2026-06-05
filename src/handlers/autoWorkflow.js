@@ -1,10 +1,75 @@
 // src/handlers/autoWorkflow.js
 import { getISODate, stripHtml, removeMarkdownCodeBlock, formatDateToChinese, formatMarkdownText, formatDateToGMT12WithTime } from '../helpers.js';
+
+/**
+ * 清洗 project 描述中的热度数字，避免 LLM 在筛选阶段被星数等量化指标吸引。
+ * 仅用于筛选输入构建，不影响 Step 3 的内容生成（那里会正确显示 totalStars）。
+ */
+function cleanProjectDescription(desc) {
+    if (!desc) return '';
+    return desc
+        .replace(/\b\d{1,3}(,\d{3})*\+?\s*(stars?|⭐|stargazers?|star_count)\b/gi, '')
+        .replace(/\b\d{1,3}(,\d{3})*\+?\s*(forks?|forked)\b/gi, '')
+        .replace(/\b\d{1,3}(,\d{3})*\+?\s*(下载|安装|使用|引用|cite|downloads?|installs?)\b/gi, '')
+        .replace(/\b(\d+\.?\d*[kKmM]?)\s*(stars?|⭐|star)\b/gi, '')
+        .replace(/\b(over|超过|超过)\s*\d{2,}[kKmM]?\s*(stars?|⭐|star|下载|安装)\b/gi, '')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/^[,\s]+/g, '')
+        .trim();
+}
+
+/**
+ * 构建自动筛选阶段给 LLM 阅读的正文。
+ * 以前这里只取前 200 字，导致 AI 只能凭标题和极短摘要排序；
+ * 现在尽量提供数据源里可用的全文，同时保留一个较高上限避免候选池过大时超出模型上下文。
+ */
+function buildFilterContent(item, type, maxLength = 6000) {
+    const rawContent = item.details?.content_html || item.description || item.summary || '';
+    let content = stripHtml(rawContent)
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    if (type === 'project') {
+        content = cleanProjectDescription(content);
+    }
+
+    if (content.length > maxLength) {
+        return content.slice(0, maxLength) + '……';
+    }
+
+    return content;
+}
+
+/**
+ * 统计各类别选中数量并输出日志。
+ */
+function logFilterResults(selectedIds, label) {
+    const counts = { news: 0, socialMedia: 0, project: 0, paper: 0, unknown: 0 };
+    for (const sel of selectedIds) {
+        const type = sel.split(':')[0];
+        if (counts.hasOwnProperty(type)) {
+            counts[type]++;
+        } else {
+            counts.unknown++;
+        }
+    }
+    const total = selectedIds.length;
+    const mainPct = total > 0 ? ((counts.news + counts.socialMedia) / total * 100).toFixed(0) : 0;
+    const auxCount = counts.project + counts.paper;
+    console.log(`[AutoWorkflow] ${label}: total=${total}, news=${counts.news}, socialMedia=${counts.socialMedia}, project=${counts.project}, paper=${counts.paper}, unknown=${counts.unknown}, mainPct=${mainPct}%`);
+    if (auxCount > 3) {
+        console.warn(`[AutoWorkflow] ⚠️  WARNING: project+paper count (${auxCount}) exceeds recommended maximum 3!`);
+    }
+    if (counts.news + counts.socialMedia < 5) {
+        console.warn(`[AutoWorkflow] ⚠️  WARNING: news+socialMedia count (${counts.news + counts.socialMedia}) is low!`);
+    }
+    return counts;
+}
 import { fetchAllData, dataSources } from '../dataFetchers.js';
 import { storeInKV, getFromKV } from '../kv.js';
 import { getFoloCookie } from '../folo.js';
 import { callChatAPIStream } from '../chatapi.js';
-import { getSystemPromptAutoFilter } from '../prompt/autoFilterPrompt.js';
+import { getSystemPromptAutoFilter, getSystemPromptPrimaryFilter, getSystemPromptSecondaryFilter } from '../prompt/autoFilterPrompt.js';
 import { getSystemPromptSummarizationStepOne } from "../prompt/summarizationPromptStepOne";
 import { getSystemPromptSummarizationStepTwo } from "../prompt/summarizationPromptStepTwo";
 import { getSystemPromptSummarizationStepThree } from "../prompt/summarizationPromptStepThree";
@@ -39,15 +104,16 @@ export async function runAutoWorkflow(env, dateStr) {
         await storeInKV(env.DATA_KV, `${dateStr}-${sourceType}`, allUnifiedData[sourceType]);
     }
     
-    // 2. AI Auto-Filter
+    // 2. AI Auto-Filter — 分桶筛选：主资讯桶 (news+socialMedia) + 补充桶 (project+paper)
     const itemsForFilter = [];
     for (const type in allUnifiedData) {
         allUnifiedData[type].forEach(item => {
+            const content = buildFilterContent(item, type);
             itemsForFilter.push({
                 id: `${type}:${item.id}`,
                 type: type,
                 title: item.title,
-                summary: stripHtml(item.description || item.details?.content_html || "").substring(0, 200)
+                content: content
             });
         });
     }
@@ -55,17 +121,100 @@ export async function runAutoWorkflow(env, dateStr) {
     if (itemsForFilter.length === 0) {
         return { success: false, message: "No items fetched to filter." };
     }
-    
-    const filterInput = itemsForFilter.map(item => `[ID]: ${item.id}\n[Type]: ${item.type}\n[Title]: ${item.title}\n[Summary]: ${item.summary}`).join('\n\n---\n\n');
-    const filterSystemPrompt = getSystemPromptAutoFilter();
-    
-    let filterResponse = "";
-    for await (const chunk of callChatAPIStream(env, filterInput, filterSystemPrompt)) {
-        filterResponse += chunk;
+
+    // 输出候选池统计
+    const poolCounts = {};
+    itemsForFilter.forEach(i => { poolCounts[i.type] = (poolCounts[i.type] || 0) + 1; });
+    console.log(`[AutoWorkflow] Filter candidate pool: ${JSON.stringify(poolCounts)}`);
+
+    // 2a. 分桶
+    const primaryItems = itemsForFilter.filter(i => i.type === 'news' || i.type === 'socialMedia');
+    const secondaryItems = itemsForFilter.filter(i => i.type === 'project' || i.type === 'paper');
+    console.log(`[AutoWorkflow] Buckets: primary(news+socialMedia)=${primaryItems.length}, secondary(project+paper)=${secondaryItems.length}`);
+
+    if (primaryItems.length === 0) {
+        return { success: false, message: "No news or socialMedia items to filter." };
     }
-    
-    const selectedIds = filterResponse.split(',').map(s => s.trim()).filter(s => s);
-    console.log(`[AutoWorkflow] AI selected ${selectedIds.length} items.`);
+
+    // 通用的 ID 格式化 + 校验 + 去重
+    const validIdPattern = /^(news|socialMedia|project|paper):.+$/;
+    function parseAndValidateIds(rawResponse, label) {
+        const rawIds = rawResponse.split(',').map(s => s.trim()).filter(s => s);
+        const seen = new Set();
+        const valid = [];
+        for (const id of rawIds) {
+            if (!validIdPattern.test(id)) {
+                console.warn(`[AutoWorkflow] ⚠️  [${label}] Skipping invalid ID: "${id}"`);
+                continue;
+            }
+            if (seen.has(id)) {
+                console.warn(`[AutoWorkflow] ⚠️  [${label}] Skipping duplicate ID: "${id}"`);
+                continue;
+            }
+            seen.add(id);
+            valid.push(id);
+        }
+        return valid;
+    }
+
+    function buildFilterInput(items) {
+        return items.map(item =>
+            `[ID]: ${item.id}\n[Type]: ${item.type}\n[Title]: ${item.title}\n[Content]: ${item.content}`
+        ).join('\n\n---\n\n');
+    }
+
+    // 2b. 主资讯桶：AI 排序
+    const primaryFilterInput = buildFilterInput(primaryItems);
+    let primaryResponse = "";
+    for await (const chunk of callChatAPIStream(env, primaryFilterInput, getSystemPromptPrimaryFilter())) {
+        primaryResponse += chunk;
+    }
+    const primaryRankedIds = parseAndValidateIds(primaryResponse, 'Primary');
+    console.log(`[AutoWorkflow] Primary bucket ranked ${primaryRankedIds.length}/${primaryItems.length} IDs`);
+
+    if (primaryRankedIds.length === 0) {
+        return { success: false, message: "AI ranked no primary items." };
+    }
+
+    // 2c. 补充桶：AI 排序（仅当有候选项时）
+    let secondaryRankedIds = [];
+    if (secondaryItems.length > 0) {
+        const secondaryFilterInput = buildFilterInput(secondaryItems);
+        let secondaryResponse = "";
+        for await (const chunk of callChatAPIStream(env, secondaryFilterInput, getSystemPromptSecondaryFilter())) {
+            secondaryResponse += chunk;
+        }
+        secondaryRankedIds = parseAndValidateIds(secondaryResponse, 'Secondary');
+        console.log(`[AutoWorkflow] Secondary bucket ranked ${secondaryRankedIds.length}/${secondaryItems.length} IDs`);
+    }
+
+    // 2d. 代码配额组装
+    const PRIMARY_MIN = 7;
+    const PRIMARY_MAX = 9;
+    const SECONDARY_MAX = 3;
+    const TOTAL_MAX = 12;
+
+    // 主资讯：至少取 min(PRIMARY_MIN, available)，至多取 PRIMARY_MAX
+    const primaryTake = Math.min(primaryRankedIds.length, PRIMARY_MAX);
+    const secondaryTake = Math.min(secondaryRankedIds.length, SECONDARY_MAX);
+
+    // 如果主资讯不足 PRIMARY_MIN，允许总量低于 8
+    let selectedIds = [
+        ...primaryRankedIds.slice(0, primaryTake),
+        ...secondaryRankedIds.slice(0, secondaryTake)
+    ];
+
+    if (selectedIds.length > TOTAL_MAX) {
+        selectedIds = selectedIds.slice(0, TOTAL_MAX);
+    }
+
+    const primaryCount = selectedIds.filter(id => id.startsWith('news:') || id.startsWith('socialMedia:')).length;
+    if (primaryCount < PRIMARY_MIN) {
+        console.warn(`[AutoWorkflow] ⚠️  Primary count (${primaryCount}) below minimum (${PRIMARY_MIN}) — pool may be insufficient today.`);
+    }
+
+    logFilterResults(selectedIds, 'Bucket filter results');
+    console.log(`[AutoWorkflow] Final selection: ${selectedIds.length} items (primary=${primaryCount}, secondary=${selectedIds.length - primaryCount})`);
     
     if (selectedIds.length === 0) {
         return { success: false, message: "AI selected no items." };

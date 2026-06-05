@@ -8,7 +8,8 @@ import { handleRss } from './handlers/getRss.js';
 import { handleWriteRssData } from './handlers/writeRssData.js'; 
 import { dataSources } from './dataFetchers.js';
 import { handleLogin, isAuthenticated, handleLogout } from './auth.js';
-import { handleAutoWorkflow, runAutoWorkflow } from './handlers/autoWorkflow.js';
+import { handleAutoWorkflow } from './handlers/autoWorkflow.js';
+import { handleIncrementalDailyWorkflow, runIncrementalDailyWorkflow } from './handlers/incrementalDailyWorkflow.js';
 
 export default {
     async fetch(request, env) {
@@ -60,6 +61,9 @@ export default {
         } else if (path === '/auto') {
             // Optional: You might want to add some basic API key auth here if exposed
             return await handleAutoWorkflow(request, env);
+        } else if (path === '/incrementalDaily') {
+            // Optional: You might want to add some basic API key auth here if exposed
+            return await handleIncrementalDailyWorkflow(request, env);
         }
 
         // Authentication check for all other paths
@@ -111,6 +115,6 @@ export default {
 
     async scheduled(event, env, ctx) {
         console.log(`Scheduled event triggered at: ${new Date(event.scheduledTime).toISOString()}`);
-        ctx.waitUntil(runAutoWorkflow(env));
+        ctx.waitUntil(runIncrementalDailyWorkflow(env));
     }
 };

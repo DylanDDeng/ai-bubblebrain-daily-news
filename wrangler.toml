@@ -58,3 +58,7 @@ PODCAST_END = "今天的情报就到这里，注意隐蔽，赶紧撤离"
 BOOK_LINK = ""
 INSERT_FOOT = "false"
 INSERT_APP_URL = "<h3>[查看完整版AI日报↗️ https://ai.hubtoday.app/](https://ai.hubtoday.app/)</h3>"
+
+[triggers]
+# 北京时间 10:00、15:00、23:00、次日 03:00 分批增量更新
+crons = ["0 2,7,15,19 * * *"]
