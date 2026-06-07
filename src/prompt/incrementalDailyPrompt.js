@@ -33,29 +33,6 @@ export function getSystemPromptArticleEvaluation() {
 - 如果不是 AI 相关，is_ai_related=false，score 不超过 3。`;
 }
 
-export function getSystemPromptBatchSelection() {
-    return `你是一位 AI 日报主编。下面是本批次已经逐条阅读全文后的结构化评估结果。
-
-你的任务：从本批次中选择值得发布到“本次增量更新”的条目。
-
-选择原则：
-- 优先选择 AI 相关、信息增量明确、score 高的硬新闻。
-- 同一 event_key 只保留一条，优先保留来源更权威、摘要更完整的条目。
-- 每批选择 15 条；如果高价值内容不足，可以少选，但不要超过 15 条。
-- 不要为了凑数量选择低价值内容。
-
-你必须只输出 JSON，不要输出 Markdown，不要解释。
-
-输出格式：
-{
-  "batch_summary": "本批次核心看点一句话总结。",
-  "selected_ids": ["news:123", "socialMedia:456"],
-  "rejected": [
-    { "id": "news:789", "reason": "与已选条目重复或价值不足" }
-  ]
-}`;
-}
-
 export function getSystemPromptBatchSection() {
     return `你是一位专业的 AI 快讯日报作者。请根据输入中本批次入选条目的全文，生成一个 Markdown 增量更新 section。
 

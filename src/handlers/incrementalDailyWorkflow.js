@@ -7,13 +7,11 @@ import { callChatAPIStream } from '../chatapi.js';
 import { callGitHubApi, createOrUpdateGitHubFile, getGitHubFileSha } from '../github.js';
 import {
     getSystemPromptArticleEvaluation,
-    getSystemPromptBatchSelection,
     getSystemPromptBatchSection,
     getSystemPromptDailyOverview
 } from '../prompt/incrementalDailyPrompt.js';
 
 const KV_TTL = 86400 * 14;
-const DEFAULT_EVAL_MAX_PER_BATCH = 80;
 const DEFAULT_ARTICLE_MAX_CHARS = 20000;
 
 function getBeijingParts(date = new Date()) {
@@ -175,29 +173,35 @@ async function evaluateItem(env, item) {
     return { ...item, evaluation, evaluated_at: new Date().toISOString() };
 }
 
-async function selectBatchItems(env, evaluatedNewItems, publishedEvents) {
-    const candidates = evaluatedNewItems.map(item => ({
-        id: item.id,
-        title: item.title,
-        source: item.source,
-        url: item.url,
-        score: item.evaluation?.score || 0,
-        is_ai_related: item.evaluation?.is_ai_related,
-        is_publish_worthy: item.evaluation?.is_publish_worthy,
-        category: item.evaluation?.category,
-        event_key: item.evaluation?.event_key,
-        flash_summary: item.evaluation?.flash_summary,
-        reason: item.evaluation?.reason,
-        already_published: Boolean(publishedEvents[item.evaluation?.event_key])
-    }));
+function selectBatchItems(evaluatedNewItems, publishedEvents) {
+    const selectedIds = [];
+    const rejected = [];
 
-    const prompt = JSON.stringify(candidates, null, 2);
-    const raw = await streamChat(env, prompt, getSystemPromptBatchSelection());
-    const selection = parseJsonLoose(raw, { batch_summary: '', selected_ids: [], rejected: [] });
+    for (const item of evaluatedNewItems) {
+        const evaluation = item.evaluation || {};
+        const isQualified = evaluation.is_ai_related === true && evaluation.is_publish_worthy === true;
+
+        if (isQualified) {
+            selectedIds.push(item.id);
+            continue;
+        }
+
+        rejected.push({
+            id: item.id,
+            reason: evaluation.reason || (evaluation.is_ai_related === false ? '非 AI 相关内容' : 'AI 评估认为不适合发布')
+        });
+    }
+
+    const duplicateCount = selectedIds.filter(id => {
+        const item = evaluatedNewItems.find(i => i.id === id);
+        const eventKey = item?.evaluation?.event_key || item?.dedupe_key;
+        return Boolean(eventKey && publishedEvents[eventKey]);
+    }).length;
+
     return {
-        batch_summary: selection.batch_summary || '',
-        selected_ids: Array.isArray(selection.selected_ids) ? selection.selected_ids : [],
-        rejected: Array.isArray(selection.rejected) ? selection.rejected : []
+        batch_summary: `本批评估 ${evaluatedNewItems.length} 条新内容，符合 AI 相关且值得发布条件的 ${selectedIds.length} 条${duplicateCount > 0 ? `，其中 ${duplicateCount} 条为已发布事件的相关来源` : ''}。`,
+        selected_ids: selectedIds,
+        rejected
     };
 }
 
@@ -344,8 +348,8 @@ export async function runIncrementalDailyWorkflow(env, options = {}) {
     const { merged: mergedRaw, fresh } = mergeRawItems(existingRaw, incoming);
     await storeInKV(env.DATA_KV, rawKey, mergedRaw, KV_TTL);
 
-    const evalLimit = Number(env.INCREMENTAL_EVAL_MAX_PER_BATCH || DEFAULT_EVAL_MAX_PER_BATCH);
-    const freshToEvaluate = fresh.slice(0, evalLimit);
+    const evalLimit = env.INCREMENTAL_EVAL_MAX_PER_BATCH ? Number(env.INCREMENTAL_EVAL_MAX_PER_BATCH) : null;
+    const freshToEvaluate = Number.isFinite(evalLimit) && evalLimit > 0 ? fresh.slice(0, evalLimit) : fresh;
     const existingEvaluated = await getFromKV(env.DATA_KV, evaluatedKey) || [];
     const evaluatedNew = [];
 
@@ -363,7 +367,7 @@ export async function runIncrementalDailyWorkflow(env, options = {}) {
     await storeInKV(env.DATA_KV, evaluatedKey, allEvaluated, KV_TTL);
 
     const publishedEvents = await getFromKV(env.DATA_KV, publishedKey) || {};
-    const selection = evaluatedNew.length > 0 ? await selectBatchItems(env, evaluatedNew, publishedEvents) : { batch_summary: '', selected_ids: [], rejected: [] };
+    const selection = evaluatedNew.length > 0 ? selectBatchItems(evaluatedNew, publishedEvents) : { batch_summary: '', selected_ids: [], rejected: [] };
 
     const selected = [];
     for (const id of selection.selected_ids) {
