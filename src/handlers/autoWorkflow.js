@@ -67,7 +67,7 @@ function logFilterResults(selectedIds, label) {
 }
 import { fetchAllData, dataSources } from '../dataFetchers.js';
 import { storeInKV, getFromKV } from '../kv.js';
-import { getFoloCookie } from '../folo.js';
+import { resolveFoloCookie } from '../folo.js';
 import { callChatAPIStream } from '../chatapi.js';
 import { getSystemPromptAutoFilter, getSystemPromptPrimaryFilter, getSystemPromptSecondaryFilter } from '../prompt/autoFilterPrompt.js';
 import { getSystemPromptSummarizationStepOne } from "../prompt/summarizationPromptStepOne";
@@ -96,7 +96,7 @@ export async function runAutoWorkflow(env, dateStr) {
     console.log(`[AutoWorkflow] Starting for date: ${dateStr}`);
     
     // 1. Fetch Data
-    const foloCookie = getFoloCookie(env);
+    const foloCookie = await resolveFoloCookie(env);
     const allUnifiedData = await fetchAllData(env, foloCookie);
     
     // Store in KV first (consistent with manual workflow)

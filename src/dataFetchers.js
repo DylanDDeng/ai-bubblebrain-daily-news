@@ -66,18 +66,14 @@ export async function fetchAndTransformDataForType(sourceType, env, foloCookie) 
  */
 export async function fetchAllData(env, foloCookie) {
     const allUnifiedData = {};
-    const fetchPromises = [];
 
+    // Folo 对多源并发请求较敏感；顺序抓取更接近后台手动测试路径，避免并发限流导致只剩 GitHub Trending。
     for (const sourceType in dataSources) {
         if (Object.hasOwnProperty.call(dataSources, sourceType)) {
-            fetchPromises.push(
-                fetchAndTransformDataForType(sourceType, env, foloCookie).then(data => {
-                    allUnifiedData[sourceType] = data;
-                })
-            );
+            allUnifiedData[sourceType] = await fetchAndTransformDataForType(sourceType, env, foloCookie);
         }
     }
-    await Promise.allSettled(fetchPromises); // Use allSettled to ensure all promises complete
+
     return allUnifiedData;
 }
 

@@ -2,7 +2,7 @@
 import { getISODate, getFetchDate } from '../helpers.js';
 import { fetchAllData, fetchDataByCategory, dataSources } from '../dataFetchers.js'; // 导入 fetchDataByCategory 和 dataSources
 import { storeInKV } from '../kv.js';
-import { getFoloCookie } from '../folo.js';
+import { resolveFoloCookie, storeFoloCookieToKV } from '../folo.js';
 
 export async function handleWriteData(request, env) {
     const dateParam = getFetchDate();
@@ -19,7 +19,11 @@ export async function handleWriteData(request, env) {
             foloCookie = requestBody.foloCookie; // 获取 foloCookie
         }
 
-        foloCookie = getFoloCookie(env, foloCookie);
+        const requestFoloCookie = foloCookie;
+        foloCookie = await resolveFoloCookie(env, requestFoloCookie);
+        if (requestFoloCookie && foloCookie) {
+            await storeFoloCookieToKV(env, foloCookie);
+        }
         console.log(`Starting /writeData process for category: ${category || 'all'} with foloCookie presence: ${!!foloCookie}`);
 
         let dataToStore = {};

@@ -119,7 +119,7 @@ export function generateContentSelectionPageHtml(env, dateStr, allData, dataCate
                         <label for="foloCookie" style="font-weight: bold; margin-right: 0.5rem;">Folo Cookie:</label>
                         <input type="text" id="foloCookie" placeholder="在此输入 Folo Cookie" style="flex-grow: 1; padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px; width: 300px; max-width: 70%;">
                         <button type="button" class="submit-button" onclick="saveFoloCookie(this)" style="margin-left: 0.5rem; padding: 0.4rem 0.8rem; font-size: 0.85rem;">保存 Cookie</button>
-                        <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">此 Cookie 将保存在您的浏览器本地存储中，以便下次使用。</p>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">此 Cookie 将保存在浏览器本地，并同步到 Worker KV，供定时增量日报使用。</p>
                     </div>
                     <div class="tab-navigation">
                         ${tabButtonsHtml}
@@ -172,11 +172,20 @@ export function generateContentSelectionPageHtml(env, dateStr, allData, dataCate
                     button.disabled = true;
 
                     try {
-                        localStorage.setItem('${env.FOLO_COOKIE_KV_KEY}', cookieValue); // 直接保存到 localStorage
-                        alert('Folo Cookie 已成功保存在本地存储！');
+                        localStorage.setItem('${env.FOLO_COOKIE_KV_KEY}', cookieValue);
+                        const response = await fetch('/updateFoloCookie', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ cookie: cookieValue })
+                        });
+                        const result = await response.json();
+                        if (!response.ok || !result.success) {
+                            throw new Error(result.error || result.message || '同步到 Worker KV 失败');
+                        }
+                        alert('Folo Cookie 已保存到本地，并同步到 Worker KV！');
                     } catch (error) {
-                        console.error('Error saving Folo Cookie to localStorage:', error);
-                        alert(\`保存 Folo Cookie 到本地存储时发生错误: \${error.message}\`);
+                        console.error('Error saving Folo Cookie:', error);
+                        alert(\`保存 Folo Cookie 时发生错误: \${error.message}\`);
                     } finally {
                         button.textContent = originalButtonText;
                         button.disabled = false;
@@ -204,6 +213,14 @@ export function generateContentSelectionPageHtml(env, dateStr, allData, dataCate
                     const foloCookie = localStorage.getItem('${env.FOLO_COOKIE_KV_KEY}'); // 从 localStorage 获取 foloCookie
 
                     try {
+                        if (foloCookie) {
+                            await fetch('/updateFoloCookie', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ cookie: foloCookie })
+                            });
+                        }
+
                         const response = await fetch('/writeData', {
                             method: 'POST',
                             headers: {

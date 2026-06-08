@@ -1,6 +1,6 @@
 // src/handlers/incrementalDailyWorkflow.js
 import { fetchAllData } from '../dataFetchers.js';
-import { getFoloCookie } from '../folo.js';
+import { resolveFoloCookie } from '../folo.js';
 import { getFromKV, storeInKV } from '../kv.js';
 import { stripHtml, removeMarkdownCodeBlock, formatDateToChinese, formatMarkdownText } from '../helpers.js';
 import { callChatAPIStream } from '../chatapi.js';
@@ -13,6 +13,7 @@ import {
 
 const KV_TTL = 86400 * 14;
 const DEFAULT_ARTICLE_MAX_CHARS = 20000;
+const DEFAULT_EVAL_MAX_PER_RUN = 12;
 
 function getBeijingParts(date = new Date()) {
     const parts = new Intl.DateTimeFormat('en-CA', {
@@ -94,6 +95,12 @@ function stableItemKey(type, item) {
     if (url) return `url:${url}`;
     if (item.id !== undefined && item.id !== null) return `${type}:${item.id}`;
     return `title:${normalizeTitle(item.title)}`;
+}
+
+function countFetchedByType(allUnifiedData) {
+    const counts = {};
+    for (const type in allUnifiedData) counts[type] = (allUnifiedData[type] || []).length;
+    return counts;
 }
 
 function flattenFetchedData(allUnifiedData) {
@@ -212,32 +219,19 @@ function sourceLink(item) {
 async function generateBatchSection(env, reportDate, batch, selectedItems) {
     const label = batchLabel(batch);
     if (selectedItems.length === 0) {
-        return `### ${label}\n\n本批暂无足够高价值的 AI 资讯更新。\n`;
+        return `### ${label}\n\n本批暂无抓取到新的资讯。\n`;
     }
 
-    const payload = selectedItems.map(item => ({
-        id: item.id,
-        title: item.evaluation?.suggested_title || item.title,
-        source_title: item.title,
-        source: item.source,
-        url: item.url,
-        published_date: item.published_date,
-        category: item.evaluation?.category,
-        score: item.evaluation?.score,
-        reason: item.evaluation?.reason,
-        flash_summary: item.evaluation?.flash_summary,
-        full_text: truncateText(item.content_text || stripHtml(item.content_html), Number(env.INCREMENTAL_ARTICLE_MAX_CHARS || DEFAULT_ARTICLE_MAX_CHARS))
-    }));
-    const prompt = `批次标题：${label}\n日报日期：${reportDate}\n\n入选条目：\n${JSON.stringify(payload, null, 2)}`;
-    let section = await streamChat(env, prompt, getSystemPromptBatchSection());
+    const lines = selectedItems.map((item, index) => {
+        const title = item.title || '未命名资讯';
+        const source = item.source || item.type || '未知来源';
+        const date = item.published_date ? ` · ${item.published_date}` : '';
+        const description = truncateText(item.description || item.content_text || stripHtml(item.content_html), 220);
+        const descriptionLine = description ? `\n   - 摘要：${description}` : '';
+        return `${index + 1}. **${title}** — ${source}${date}\n   - 链接：${sourceLink(item)}${descriptionLine}`;
+    });
 
-    // 兜底：确保链接存在，避免模型漏掉来源链接。
-    for (const item of selectedItems) {
-        if (item.url && !section.includes(item.url)) {
-            section += `\n\n- 补充来源：${sourceLink(item)}`;
-        }
-    }
-    return section.trim() + '\n';
+    return `### ${label}\n\n本批共抓取 ${selectedItems.length} 条资讯，以下全部推送：\n\n${lines.join('\n\n')}\n`;
 }
 
 function createInitialMarkdown(reportDate) {
@@ -335,54 +329,25 @@ export async function runIncrementalDailyWorkflow(env, options = {}) {
     const { reportDate, batch } = resolveBatch(options.date ? new Date(`${options.date}T12:00:00+08:00`) : new Date(), options.batch, options.date);
     console.log(`[IncrementalDaily] Start reportDate=${reportDate}, batch=${batch}`);
 
-    const foloCookie = getFoloCookie(env);
+    const foloCookie = await resolveFoloCookie(env);
+
     const fetched = await fetchAllData(env, foloCookie);
+    const sourceCounts = countFetchedByType(fetched);
     const incoming = flattenFetchedData(fetched);
 
     const rawKey = `incremental:raw:${reportDate}`;
-    const evaluatedKey = `incremental:evaluated:${reportDate}`;
-    const publishedKey = `incremental:published-events:${reportDate}`;
     const batchKey = `incremental:batch:${reportDate}:${batch}`;
 
     const existingRaw = await getFromKV(env.DATA_KV, rawKey) || [];
-    const { merged: mergedRaw, fresh } = mergeRawItems(existingRaw, incoming);
+    const mergedRaw = existingRaw.concat(incoming);
     await storeInKV(env.DATA_KV, rawKey, mergedRaw, KV_TTL);
 
-    const evalLimit = env.INCREMENTAL_EVAL_MAX_PER_BATCH ? Number(env.INCREMENTAL_EVAL_MAX_PER_BATCH) : null;
-    const freshToEvaluate = Number.isFinite(evalLimit) && evalLimit > 0 ? fresh.slice(0, evalLimit) : fresh;
-    const existingEvaluated = await getFromKV(env.DATA_KV, evaluatedKey) || [];
-    const evaluatedNew = [];
-
-    for (const item of freshToEvaluate) {
-        try {
-            evaluatedNew.push(await evaluateItem(env, item));
-        } catch (error) {
-            console.error(`[IncrementalDaily] Failed to evaluate item ${item.id}:`, error);
-        }
-    }
-
-    const evaluatedById = new Map(existingEvaluated.map(item => [item.id, item]));
-    for (const item of evaluatedNew) evaluatedById.set(item.id, item);
-    const allEvaluated = Array.from(evaluatedById.values());
-    await storeInKV(env.DATA_KV, evaluatedKey, allEvaluated, KV_TTL);
-
-    const publishedEvents = await getFromKV(env.DATA_KV, publishedKey) || {};
-    const selection = evaluatedNew.length > 0 ? selectBatchItems(evaluatedNew, publishedEvents) : { batch_summary: '', selected_ids: [], rejected: [] };
-
-    const selected = [];
-    for (const id of selection.selected_ids) {
-        const item = evaluatedNew.find(i => i.id === id);
-        if (!item) continue;
-        const eventKey = item.evaluation?.event_key || item.dedupe_key;
-        if (publishedEvents[eventKey]) {
-            publishedEvents[eventKey].related_sources = publishedEvents[eventKey].related_sources || [];
-            publishedEvents[eventKey].related_sources.push({ title: item.title, url: item.url, source: item.source });
-            continue;
-        }
-        selected.push(item);
-        publishedEvents[eventKey] = { primary_item_id: item.id, title: item.title, url: item.url, source: item.source, batch };
-    }
-    await storeInKV(env.DATA_KV, publishedKey, publishedEvents, KV_TTL);
+    const selected = incoming;
+    const selection = {
+        batch_summary: `本批抓取 ${incoming.length} 条资讯，未评估、未去重，全部推送。`,
+        selected_ids: selected.map(i => i.id),
+        rejected: []
+    };
 
     const section = await generateBatchSection(env, reportDate, batch, selected);
     await storeInKV(env.DATA_KV, batchKey, { reportDate, batch, label: batchLabel(batch), selected_ids: selected.map(i => i.id), section, selection, updated_at: new Date().toISOString() }, KV_TTL);
@@ -395,7 +360,7 @@ export async function runIncrementalDailyWorkflow(env, options = {}) {
     markdown = upsertOverview(markdown, overview);
 
     const commits = await commitDailyFiles(env, reportDate, markdown, batch);
-    console.log(`[IncrementalDaily] Completed reportDate=${reportDate}, batch=${batch}, fresh=${fresh.length}, evaluated=${evaluatedNew.length}, selected=${selected.length}`);
+    console.log(`[IncrementalDaily] Completed reportDate=${reportDate}, batch=${batch}, fetched=${incoming.length}, selected=${selected.length}`);
 
     return {
         success: true,
@@ -403,8 +368,10 @@ export async function runIncrementalDailyWorkflow(env, options = {}) {
         batch,
         batchOrder: batchOrder(batch),
         fetchedCount: incoming.length,
-        freshCount: fresh.length,
-        evaluatedCount: evaluatedNew.length,
+        sourceCounts,
+        freshCount: incoming.length,
+        pendingCount: 0,
+        evaluatedCount: 0,
         selectedCount: selected.length,
         commits
     };

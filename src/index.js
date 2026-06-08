@@ -10,6 +10,7 @@ import { dataSources } from './dataFetchers.js';
 import { handleLogin, isAuthenticated, handleLogout } from './auth.js';
 import { handleAutoWorkflow } from './handlers/autoWorkflow.js';
 import { handleIncrementalDailyWorkflow, runIncrementalDailyWorkflow } from './handlers/incrementalDailyWorkflow.js';
+import { debugFoloCookie, storeFoloCookieToKV } from './folo.js';
 
 export default {
     async fetch(request, env) {
@@ -64,6 +65,23 @@ export default {
         } else if (path === '/incrementalDaily') {
             // Optional: You might want to add some basic API key auth here if exposed
             return await handleIncrementalDailyWorkflow(request, env);
+        } else if (path === '/updateFoloCookie' && request.method === 'POST') {
+            try {
+                const body = await request.json();
+                const success = await storeFoloCookieToKV(env, body.cookie);
+                return new Response(JSON.stringify({ success, message: success ? 'Cookie 已更新' : 'Cookie 为空' }), {
+                    headers: { 'Content-Type': 'application/json; charset=utf-8' }
+                });
+            } catch (e) {
+                return new Response(JSON.stringify({ success: false, error: e.message }), {
+                    status: 400, headers: { 'Content-Type': 'application/json; charset=utf-8' }
+                });
+            }
+        } else if (path === '/debugFoloCookie') {
+            const result = await debugFoloCookie(env);
+            return new Response(JSON.stringify(result, null, 2), {
+                headers: { 'Content-Type': 'application/json; charset=utf-8' }
+            });
         }
 
         // Authentication check for all other paths
