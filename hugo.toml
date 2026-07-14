@@ -12,6 +12,10 @@ enableGitInfo = true
 buildFuture = true
 disableKinds = ['taxonomy', 'term']
 
+# AI creative showcase pages are retained in the repository for possible reuse,
+# but excluded from the knowledge-base site and search index.
+ignoreFiles = ['content/(ai-gallery|ai-video|ai-rewrite|favorites)/.*']
+
 # Permalinks configuration
 [permalinks]
   daily = '/daily/:year/:month/:contentbasename/'
@@ -97,25 +101,6 @@ disableKinds = ['taxonomy', 'term']
         pageRef = '/my-publish'
         weight = 24
       [[languages.zh-CN.menu.main]]
-        name = 'AI创意'
-        identifier = 'ai-creative'
-        weight = 26
-        [[languages.zh-CN.menu.main]]
-          name = 'AI图像'
-          pageRef = '/ai-gallery'
-          parent = 'ai-creative'
-          weight = 1
-        [[languages.zh-CN.menu.main]]
-          name = 'AI视频'
-          pageRef = '/ai-video'
-          parent = 'ai-creative'
-          weight = 2
-        [[languages.zh-CN.menu.main]]
-          name = 'AI写作'
-          pageRef = '/ai-rewrite'
-          parent = 'ai-creative'
-          weight = 3
-      [[languages.zh-CN.menu.main]]
         name = 'AI 工具'
         identifier = 'ai-tools'
         weight = 28
@@ -189,25 +174,6 @@ disableKinds = ['taxonomy', 'term']
         name = 'My Posts'
         pageRef = '/my-publish'
         weight = 24
-      [[languages.en.menu.main]]
-        name = 'AI Creativity'
-        identifier = 'ai-creative'
-        weight = 26
-        [[languages.en.menu.main]]
-          name = 'AI Images'
-          pageRef = '/ai-gallery'
-          parent = 'ai-creative'
-          weight = 1
-        [[languages.en.menu.main]]
-          name = 'AI Videos'
-          pageRef = '/ai-video'
-          parent = 'ai-creative'
-          weight = 2
-        [[languages.en.menu.main]]
-          name = 'AI Writing'
-          pageRef = '/ai-rewrite'
-          parent = 'ai-creative'
-          weight = 3
       [[languages.en.menu.main]]
         name = 'AI Tools'
         identifier = 'ai-tools'
