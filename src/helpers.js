@@ -113,6 +113,42 @@ export function stripHtml(html) {
 }
 
 /**
+ * Extracts a readable summary snippet from HTML or pre-stripped text.
+ * Strips image/video placeholders (without URLs), WeChat header metadata, then truncates.
+ * @param {string} input - Raw HTML, or text from stripHtml().
+ * @param {number} [maxChars=220] - Max length before appending an ellipsis.
+ * @returns {string} Clean summary text.
+ */
+export function extractSummaryText(input, maxChars = 220) {
+    if (!input) return '';
+
+    let text = String(input);
+
+    if (/<[a-z][\s\S]*>/i.test(text)) {
+        let processedHtml = text.replace(/<img[^>]*>/gi, ' ');
+        processedHtml = processedHtml.replace(/<video[^>]*>[\s\S]*?<\/video>/gi, ' ');
+        text = processedHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    text = text
+        .replace(/\[图片:[^\]]*\]/g, ' ')
+        .replace(/\[视频:[^\]]*\]/g, ' ')
+        .replace(/\[图片\]/g, ' ')
+        .replace(/\[视频\]/g, ' ');
+
+    // WeChat RSS headers: optional 原创 + account tagline + date + time + location
+    text = text.replace(/^(?:原创\s+)?[^\d]{0,24}?\d{4}-\d{2}-\d{2}\s+\d{1,2}:\d{2}\s+\S{1,12}\s*/u, '');
+    text = text.replace(/^(?:原创\s+)/u, '');
+
+    text = text.replace(/\s+/g, ' ').trim();
+
+    if (maxChars > 0 && text.length > maxChars) {
+        return text.slice(0, maxChars) + '……';
+    }
+    return text;
+}
+
+/**
  * Checks if a given date string is within the last specified number of days (inclusive of today).
  * @param {string} dateString - The date string to check (YYYY-MM-DD).
  * @param {number} days - The number of days to look back (e.g., 3 for today and the past 2 days).

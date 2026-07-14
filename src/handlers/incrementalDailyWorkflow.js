@@ -2,7 +2,7 @@
 import { fetchAllData } from '../dataFetchers.js';
 import { resolveFoloCookie } from '../folo.js';
 import { getFromKV, storeInKV } from '../kv.js';
-import { stripHtml, removeMarkdownCodeBlock, formatDateToChinese, formatMarkdownText } from '../helpers.js';
+import { stripHtml, extractSummaryText, removeMarkdownCodeBlock, formatDateToChinese, formatMarkdownText } from '../helpers.js';
 import { callChatAPIStream } from '../chatapi.js';
 import { callGitHubApi, createOrUpdateGitHubFile, getGitHubFileSha } from '../github.js';
 import {
@@ -226,7 +226,10 @@ async function generateBatchSection(env, reportDate, batch, selectedItems) {
         const title = item.title || '未命名资讯';
         const source = item.source || item.type || '未知来源';
         const date = item.published_date ? ` · ${item.published_date}` : '';
-        const description = truncateText(item.description || item.content_text || stripHtml(item.content_html), 220);
+        const description = extractSummaryText(
+            item.description || item.content_text || item.details?.content_html || item.content_html,
+            220
+        );
         const descriptionLine = description ? `\n   - 摘要：${description}` : '';
         return `${index + 1}. **${title}** — ${source}${date}\n   - 链接：${sourceLink(item)}${descriptionLine}`;
     });

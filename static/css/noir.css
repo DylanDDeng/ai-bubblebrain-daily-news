@@ -1449,6 +1449,8 @@ b {
   line-height: 1.85;
   font-size: 1.05rem;
   color: var(--text-main);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .article-content h2 {
