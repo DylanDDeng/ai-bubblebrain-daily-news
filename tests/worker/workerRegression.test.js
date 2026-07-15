@@ -52,9 +52,27 @@ describe('worker regression guards', () => {
     it('preserves the production cron and GitHub main branch configuration', async () => {
         const config = await readFile(new URL('../../wrangler.toml', import.meta.url), 'utf8');
         expect(config).toContain('GITHUB_BRANCH = "main"');
+        expect(config).toContain('GITHUB_PUBLISH_STRATEGY = "pull_request"');
+        expect(config).toContain('GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"');
         expect(config).toContain('crons = ["0 2,7,15,19 * * *"]');
         expect(config).toContain('DAILY_PUBLISH_MODE = "legacy"');
         expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');
+    });
+
+    it('promotes automation publication pull requests only after both required checks', async () => {
+        const workflow = await readFile(
+            new URL('../../.github/workflows/worker-ci.yml', import.meta.url),
+            'utf8',
+        );
+        expect(workflow).toContain('promote-publication:');
+        expect(workflow).toContain('needs: [worker-security, renderer-parity]');
+        expect(workflow).toContain("startsWith(github.head_ref, 'automation/daily/')");
+        expect(workflow).toContain('github.event.pull_request.head.repo.full_name == github.repository');
+        expect(workflow).toContain('ref: ${{ github.event.pull_request.base.sha }}');
+        expect(workflow).toContain('node scripts/verify-publication-pr.mjs');
+        expect(workflow).toContain('--match-head-commit "$PR_HEAD_SHA"');
+        expect(workflow).toContain('actions: write');
+        expect(workflow).toContain('gh workflow run build-and-deploy.yml --ref main');
     });
 
     it('keeps staging isolated from production resources and triggers', async () => {
@@ -71,6 +89,7 @@ describe('worker regression guards', () => {
         expect(stagingKv).not.toBe(productionKv);
         expect(staging).toContain('GITHUB_BRANCH = "codex/worker-staging"');
         expect(staging).not.toContain('GITHUB_BRANCH = "main"');
+        expect(staging).toContain('GITHUB_PUBLISH_STRATEGY = "direct"');
         expect(staging).toContain('EXTERNAL_WRITES_ENABLED = "false"');
         expect(staging).toContain('DAILY_PUBLISH_MODE = "legacy"');
         expect(staging).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');

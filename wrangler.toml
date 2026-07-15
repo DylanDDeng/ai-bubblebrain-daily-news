@@ -58,6 +58,8 @@ PROJECTS_API_URL = "https://git-trending.justlikemaki.vip/topone/?since=daily"
 GITHUB_REPO_OWNER = "DylanDDeng"  # 请替换为你的 GitHub 用户名
 GITHUB_REPO_NAME = "ai-bubblebrain-daily-news"  # 请替换为你的仓库名
 GITHUB_BRANCH = "main"
+GITHUB_PUBLISH_STRATEGY = "pull_request"
+GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"
 EXTERNAL_WRITES_ENABLED = "true"
 DAILY_PUBLISH_MODE = "legacy"
 DAILY_STRUCTURED_WRITES_ENABLED = "false"

@@ -38,6 +38,8 @@ function dependencies(overrides = {}) {
         releaseLease: vi.fn(async () => true),
         readMarker: vi.fn(async () => null),
         storeMarker: vi.fn(async () => true),
+        resolveAlias: vi.fn(async () => null),
+        resolveBaseSnapshot: vi.fn(async () => snapshotA),
         resolveSnapshot: vi.fn(async () => snapshotA),
         createReader: vi.fn(() => reader),
         getFoloCookie: vi.fn(async () => 'cookie'),
@@ -61,6 +63,12 @@ describe('structured publication workflow', () => {
             [{ ...env, DAILY_PUBLISH_MODE: 'shadow' }, 'DAILY_PUBLISH_MODE'],
             [{ ...env, DAILY_STRUCTURED_WRITES_ENABLED: 'false' }, 'Structured writes'],
             [{ ...env, DAILY_STRUCTURED_START_DATE: undefined }, 'DAILY_STRUCTURED_START_DATE'],
+            [{ ...env, DAILY_STRUCTURED_RESUME_DATE: '2026-07-15' }, 'DAILY_STRUCTURED_RESUME_DATE'],
+            [{
+                ...env,
+                DAILY_STRUCTURED_START_DATE: '2026-07-10',
+                DAILY_STRUCTURED_RESUME_DATE: '2026-07-09',
+            }, 'DAILY_STRUCTURED_RESUME_DATE'],
         ];
         for (const [candidate, message] of variants) {
             const deps = dependencies();
@@ -98,6 +106,34 @@ describe('structured publication workflow', () => {
 
         expect(result).toMatchObject({ success: true, noOp: true, commit_sha: snapshotA.headSha });
         expect(deps.verifyHead).toHaveBeenCalledWith(env, snapshotA, { api: deps.api });
+        expect(deps.commit).not.toHaveBeenCalled();
+    });
+
+    it('keeps a no-op on an in-flight queue snapshot pending on the same pull request', async () => {
+        const artifactFiles = files();
+        const pendingSnapshot = {
+            ...snapshotA,
+            branch: 'automation/daily/2026-07-14-morning-structured/aaaaaaaaaaaa',
+            baseBranch: 'main',
+            publicationPullNumber: 42,
+            publicationPull: { number: 42, url: 'https://example.test/pr/42' },
+        };
+        const deps = dependencies({
+            resolveSnapshot: vi.fn(async () => pendingSnapshot),
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async path => artifactFiles.find(file => file.path === path)?.content ?? null),
+            })),
+            build: vi.fn(async () => ({ files: artifactFiles, noOp: true, metrics: {} })),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(result).toMatchObject({
+            noOp: true,
+            pending: true,
+            publication_status: 'pending',
+            pull_request: { number: 42 },
+        });
         expect(deps.commit).not.toHaveBeenCalled();
     });
 
@@ -196,13 +232,23 @@ describe('structured publication workflow', () => {
     });
 
     it('suppresses only the same trigger after Git ancestry confirmation', async () => {
-        const marker = { commit_sha: sha('e'), reportDate: '2026-07-14', batch: 'morning' };
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+        };
         const deps = dependencies({ readMarker: vi.fn(async () => marker) });
         const result = await runStructuredDailyWorkflow(env, {
             ...runInput,
             triggerId: 'scheduled:1',
         }, deps);
-        expect(result).toEqual({ ...marker, idempotent: true });
+        expect(result).toEqual({
+            ...marker,
+            pending: false,
+            publication_status: 'published',
+            idempotent: true,
+        });
         expect(deps.commitIncluded).toHaveBeenCalledOnce();
         expect(deps.fetchData).not.toHaveBeenCalled();
 
@@ -217,10 +263,158 @@ describe('structured publication workflow', () => {
         expect(mismatchedDeps.fetchData).toHaveBeenCalledOnce();
         expect(mismatchedDeps.commit).toHaveBeenCalledOnce();
 
+        const legacyMarkerDeps = dependencies({
+            readMarker: vi.fn(async () => ({ ...marker, mode: 'legacy' })),
+        });
+        await runStructuredDailyWorkflow(env, {
+            ...runInput,
+            triggerId: 'scheduled:1',
+        }, legacyMarkerDeps);
+        expect(legacyMarkerDeps.commitIncluded).not.toHaveBeenCalled();
+        expect(legacyMarkerDeps.fetchData).toHaveBeenCalledOnce();
+        expect(legacyMarkerDeps.commit).toHaveBeenCalledOnce();
+
         const manualDeps = dependencies();
         await runStructuredDailyWorkflow(env, runInput, manualDeps);
         expect(manualDeps.readMarker).not.toHaveBeenCalled();
         expect(manualDeps.fetchData).toHaveBeenCalledOnce();
         expect(manualDeps.build).toHaveBeenCalledOnce();
+    });
+
+    it('treats an open publication pull request as a pending idempotent trigger', async () => {
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            pending: true,
+            publication_status: 'pending',
+            pull_request: { number: 42, url: 'https://example.test/pr/42' },
+        };
+        const deps = dependencies({
+            readMarker: vi.fn(async () => marker),
+            api: vi.fn(async (_env, path) => {
+                if (path === '/pulls/42') return { state: 'open', merged_at: null };
+                throw new Error(`unexpected ${path}`);
+            }),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, {
+            ...runInput,
+            triggerId: 'scheduled:1',
+        }, deps);
+
+        expect(result).toEqual({ ...marker, idempotent: true });
+        expect(deps.fetchData).not.toHaveBeenCalled();
+        expect(deps.resolveBaseSnapshot).not.toHaveBeenCalled();
+        expect(deps.resolveSnapshot).not.toHaveBeenCalled();
+    });
+
+    it('returns pull request publication metadata and stores it in the trigger marker', async () => {
+        const deps = dependencies({
+            commit: vi.fn(async () => ({
+                commitSha: sha('e'),
+                reconciled: false,
+                pending: true,
+                branch: 'automation/daily/candidate',
+                pullRequest: { number: 42, url: 'https://example.test/pr/42' },
+            })),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, {
+            ...runInput,
+            triggerId: 'scheduled:1',
+        }, deps);
+
+        expect(result).toMatchObject({
+            success: true,
+            pending: true,
+            publication_status: 'pending',
+            publication_branch: 'automation/daily/candidate',
+            pull_request: { number: 42 },
+        });
+        expect(deps.storeMarker).toHaveBeenCalledWith(env.DATA_KV, 'scheduled:1', expect.objectContaining({
+            pending: true,
+            pull_request: { number: 42, url: 'https://example.test/pr/42' },
+        }));
+    });
+
+    it('confirms a superseded closed candidate only after it is an ancestor of main', async () => {
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            pending: true,
+            pull_request: { number: 42, url: 'https://example.test/pr/42' },
+        };
+        const deps = dependencies({
+            readMarker: vi.fn(async () => marker),
+            api: vi.fn(async (_env, path) => {
+                if (path === '/pulls/42') return { state: 'closed', merged_at: null };
+                throw new Error(`unexpected ${path}`);
+            }),
+            commitIncluded: vi.fn(async () => true),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, {
+            ...runInput,
+            triggerId: 'scheduled:1',
+        }, deps);
+
+        expect(result).toMatchObject({ pending: false, idempotent: true });
+        expect(deps.resolveBaseSnapshot).toHaveBeenCalledOnce();
+        expect(deps.resolveSnapshot).not.toHaveBeenCalled();
+    });
+
+    it('follows a replay alias instead of regenerating an old structured trigger', async () => {
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            pending: true,
+            pull_request: { number: 42, url: 'old' },
+        };
+        const deps = dependencies({
+            readMarker: vi.fn(async () => marker),
+            api: vi.fn(async (_env, path) => {
+                if (path === '/pulls/42') return { state: 'closed', merged_at: null };
+                throw new Error(`unexpected ${path}`);
+            }),
+            resolveAlias: vi.fn(async () => ({
+                commitSha: sha('f'),
+                pull: { number: 43, url: 'new', state: 'open', mergedAt: null },
+            })),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, {
+            ...runInput,
+            triggerId: 'scheduled:1',
+        }, deps);
+
+        expect(result).toMatchObject({
+            commit_sha: sha('f'),
+            pending: true,
+            idempotent: true,
+            pull_request: { number: 43, url: 'new' },
+        });
+        expect(deps.resolveBaseSnapshot).not.toHaveBeenCalled();
+        expect(deps.build).not.toHaveBeenCalled();
+    });
+
+    it('starts an explicit recovery epoch without requiring pre-resume history', async () => {
+        const deps = dependencies();
+        const result = await runStructuredDailyWorkflow({
+            ...env,
+            DAILY_STRUCTURED_START_DATE: '2026-07-01',
+            DAILY_STRUCTURED_RESUME_DATE: '2026-07-14',
+        }, runInput, deps);
+
+        expect(result.history_epoch_start_date).toBe('2026-07-14');
+        expect(deps.build).toHaveBeenCalledWith(expect.objectContaining({
+            structuredStartDate: '2026-07-14',
+            recentReports: [],
+        }));
     });
 });

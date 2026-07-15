@@ -2,10 +2,12 @@ import { buildDailyArtifacts } from './buildArtifacts.js';
 import { fetchProviderPreservingData } from './structuredFetch.js';
 import {
     AtomicGitConflictError,
-    commitFilesAtomically,
     createSnapshotReader,
     isCommitIncluded,
+    publishFilesAtomically,
     resolveBranchSnapshot,
+    resolvePublicationAlias,
+    resolvePublicationSnapshot,
     verifySnapshotHead,
 } from './gitAtomic.js';
 import {
@@ -35,6 +37,19 @@ function parseReport(text, path) {
     } catch {
         throw new Error(`Invalid structured report JSON: ${path}`);
     }
+}
+
+export function resolveHistoryEpochStartDate(env, reportDate) {
+    const configured = env.DAILY_STRUCTURED_START_DATE;
+    if (!isRealDate(configured) || configured > reportDate) {
+        throw new Error('Invalid DAILY_STRUCTURED_START_DATE');
+    }
+    const resume = env.DAILY_STRUCTURED_RESUME_DATE;
+    if (resume === undefined || resume === null || resume === '') return configured;
+    if (!isRealDate(resume) || resume < configured || resume > reportDate) {
+        throw new Error('Invalid DAILY_STRUCTURED_RESUME_DATE');
+    }
+    return resume;
 }
 
 async function loadReports(env, snapshot, reportDate, structuredStartDate, deps) {
@@ -88,14 +103,52 @@ async function confirmedTriggerResult(env, triggerId, reportDate, batch, deps) {
         return null;
     }
     if (!marker?.commit_sha
+        || marker.mode !== 'structured'
         || marker.reportDate !== reportDate
         || marker.batch !== batch) return null;
     try {
-        const snapshot = await deps.resolveSnapshot(env, { api: deps.api });
-        if (!await deps.commitIncluded(env, marker.commit_sha, snapshot.headSha, { api: deps.api })) {
+        let confirmedSha = marker.commit_sha;
+        let successor = null;
+        if (marker.pending === true && Number.isInteger(marker?.pull_request?.number)) {
+            const pull = await deps.api(env, `/pulls/${marker.pull_request.number}`);
+            if (pull?.state === 'open') return { ...marker, idempotent: true };
+            if (pull?.state === 'closed' && !pull?.merged_at) {
+                successor = await deps.resolveAlias(
+                    env,
+                    marker.commit_sha,
+                    env.GITHUB_BRANCH || 'main',
+                    { api: deps.api },
+                );
+                if (successor) {
+                    confirmedSha = successor.commitSha;
+                    if (successor.pull.state === 'open') {
+                        return {
+                            ...marker,
+                            commit_sha: confirmedSha,
+                            pull_request: {
+                                number: successor.pull.number,
+                                url: successor.pull.url,
+                            },
+                            idempotent: true,
+                        };
+                    }
+                }
+            }
+        }
+        const snapshot = await deps.resolveBaseSnapshot(env, { api: deps.api });
+        if (!await deps.commitIncluded(env, confirmedSha, snapshot.headSha, { api: deps.api })) {
             return null;
         }
-        return { ...marker, idempotent: true };
+        return {
+            ...marker,
+            commit_sha: confirmedSha,
+            ...(successor ? {
+                pull_request: { number: successor.pull.number, url: successor.pull.url },
+            } : {}),
+            pending: false,
+            publication_status: 'published',
+            idempotent: true,
+        };
     } catch (error) {
         console.warn('[StructuredDaily] trigger marker could not be confirmed', {
             errorType: error?.name || 'Error',
@@ -113,13 +166,17 @@ export async function runStructuredDailyWorkflow(env, {
     const deps = {
         api: dependencies.api || callGitHubApi,
         build: dependencies.build || buildDailyArtifacts,
-        commit: dependencies.commit || commitFilesAtomically,
+        commit: dependencies.commit || publishFilesAtomically,
         commitIncluded: dependencies.commitIncluded || isCommitIncluded,
         createReader: dependencies.createReader || createSnapshotReader,
         fetchData: dependencies.fetchData || fetchProviderPreservingData,
         getFoloCookie: dependencies.getFoloCookie || resolveFoloCookie,
         readMarker: dependencies.readMarker || readTriggerMarker,
-        resolveSnapshot: dependencies.resolveSnapshot || resolveBranchSnapshot,
+        resolveAlias: dependencies.resolveAlias || resolvePublicationAlias,
+        resolveBaseSnapshot: dependencies.resolveBaseSnapshot || resolveBranchSnapshot,
+        resolveSnapshot: dependencies.resolveSnapshot || ((targetEnv, options) => (
+            resolvePublicationSnapshot(targetEnv, { ...options, expectedMode: 'structured' })
+        )),
         storeMarker: dependencies.storeMarker || storeTriggerMarker,
         verifyHead: dependencies.verifyHead || verifySnapshotHead,
         acquireLease: dependencies.acquireLease || acquireAdvisoryLease,
@@ -135,14 +192,11 @@ export async function runStructuredDailyWorkflow(env, {
         throw new Error('Structured writes are disabled');
     }
     if (!env.DATA_KV) throw new Error('Structured DATA_KV is required');
-    const structuredStartDate = env.DAILY_STRUCTURED_START_DATE;
+    const structuredStartDate = resolveHistoryEpochStartDate(env, reportDate);
     const producerVersion = env.DAILY_PRODUCER_VERSION;
     if (!isRealDate(reportDate)) throw new Error('Invalid report date');
     if (!BATCH_ORDER.includes(batch)) throw new Error('Invalid batch');
     if (!isExplicitInstant(runAt)) throw new Error('runAt must include an explicit timezone');
-    if (!isRealDate(structuredStartDate) || structuredStartDate > reportDate) {
-        throw new Error('Invalid DAILY_STRUCTURED_START_DATE');
-    }
     if (!producerVersion) throw new Error('DAILY_PRODUCER_VERSION is required');
 
     const lease = await deps.acquireLease(env.DATA_KV, { reportDate, batch, now: runAt });
@@ -193,8 +247,15 @@ export async function runStructuredDailyWorkflow(env, {
                         mode: 'structured',
                         reportDate,
                         batch,
+                        history_epoch_start_date: structuredStartDate,
                         noOp: true,
                         commit_sha: snapshot.headSha,
+                        pending: Boolean(snapshot.publicationPull),
+                        publication_status: snapshot.publicationPull ? 'pending' : 'published',
+                        ...(snapshot.publicationPull ? {
+                            publication_branch: snapshot.branch,
+                            pull_request: snapshot.publicationPull,
+                        } : {}),
                         metrics: result.metrics,
                     };
                     await storeConfirmedMarker(env, triggerId, {
@@ -211,15 +272,23 @@ export async function runStructuredDailyWorkflow(env, {
                     files: result.files,
                     message: `Structured daily ${reportDate} ${batch}`,
                     committedAt: runAt,
+                    reportDate,
+                    batch,
+                    mode: 'structured',
                 }, { api: deps.api });
                 const response = {
                     success: true,
                     mode: 'structured',
                     reportDate,
                     batch,
+                    history_epoch_start_date: structuredStartDate,
                     noOp: false,
                     commit_sha: published.commitSha,
                     reconciled: published.reconciled,
+                    pending: published.pending === true,
+                    publication_status: published.pending === true ? 'pending' : 'published',
+                    ...(published.branch ? { publication_branch: published.branch } : {}),
+                    ...(published.pullRequest ? { pull_request: published.pullRequest } : {}),
                     metrics: result.metrics,
                 };
                 await storeConfirmedMarker(env, triggerId, {

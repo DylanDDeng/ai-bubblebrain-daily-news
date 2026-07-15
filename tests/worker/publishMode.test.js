@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { runIncrementalDailyWorkflow } from '../../src/handlers/incrementalDailyWorkflow.js';
+import {
+    runIncrementalDailyWorkflow,
+    runLegacyIncrementalDailyWorkflow,
+} from '../../src/handlers/incrementalDailyWorkflow.js';
 
 const baseEnv = {
     EXTERNAL_WRITES_ENABLED: 'true',
@@ -117,6 +120,32 @@ describe('daily publication mode resolver', () => {
         expect(result).toEqual({ success: true, mode: 'shadow', shadow: { status: 'passed' } });
     });
 
+    it('uses the explicit recovery epoch for shadow canary history', async () => {
+        const runShadow = vi.fn(async () => ({ status: 'passed' }));
+        const env = {
+            ...baseEnv,
+            DAILY_PUBLISH_MODE: 'shadow',
+            DAILY_STRUCTURED_RESUME_DATE: '2026-07-14',
+        };
+
+        const result = await runIncrementalDailyWorkflow(env, options, {
+            getFoloCookie: vi.fn(async () => 'cookie'),
+            fetchStructured: vi.fn(async () => ({
+                grouped: {},
+                structuredItems: [],
+                errors: [],
+            })),
+            runLegacy: vi.fn(async () => ({ success: true })),
+            runShadow,
+        });
+
+        expect(result.shadow).toEqual({ status: 'passed' });
+        expect(runShadow).toHaveBeenCalledWith(env, expect.objectContaining({
+            reportDate: '2026-07-14',
+            structuredStartDate: '2026-07-14',
+        }));
+    });
+
     it('never starts shadow after legacy failure and never turns shadow failure into legacy failure', async () => {
         const env = { ...baseEnv, DAILY_PUBLISH_MODE: 'shadow' };
         const fetched = { grouped: {}, structuredItems: [], errors: [] };
@@ -180,5 +209,141 @@ describe('daily publication mode resolver', () => {
         });
         expect(runLegacy).toHaveBeenCalledTimes(2);
         expect(runShadow).not.toHaveBeenCalled();
+    });
+
+    it('suppresses a repeated legacy trigger while its publication pull request is open', async () => {
+        const marker = {
+            success: true,
+            mode: 'legacy',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            commit_sha: 'e'.repeat(40),
+            pending: true,
+            publication_status: 'pending',
+            pull_request: { number: 42, url: 'https://example.test/pr/42' },
+        };
+        const dependencies = {
+            readMarker: vi.fn(async () => marker),
+            api: vi.fn(async (_env, path) => {
+                if (path === '/pulls/42') return { state: 'open', merged_at: null };
+                throw new Error(`unexpected ${path}`);
+            }),
+            resolveSnapshot: vi.fn(),
+        };
+
+        const result = await runLegacyIncrementalDailyWorkflow({ DATA_KV: {} }, {
+            ...options,
+            triggerId: 'scheduled:1',
+        }, dependencies);
+
+        expect(result).toEqual({ ...marker, idempotent: true });
+        expect(dependencies.resolveSnapshot).not.toHaveBeenCalled();
+    });
+
+    it('confirms a merged legacy candidate through main ancestry before suppressing replay', async () => {
+        const marker = {
+            success: true,
+            mode: 'legacy',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            commit_sha: 'e'.repeat(40),
+            pending: true,
+            pull_request: { number: 42, url: 'https://example.test/pr/42' },
+        };
+        const dependencies = {
+            readMarker: vi.fn(async () => marker),
+            api: vi.fn(async (_env, path) => {
+                if (path === '/pulls/42') {
+                    return { state: 'closed', merged_at: '2026-07-14T02:01:00Z' };
+                }
+                throw new Error(`unexpected ${path}`);
+            }),
+            resolveBaseSnapshot: vi.fn(async () => ({
+                branch: 'main',
+                headSha: 'f'.repeat(40),
+                treeSha: 'a'.repeat(40),
+            })),
+            commitIncluded: vi.fn(async () => true),
+        };
+
+        const result = await runLegacyIncrementalDailyWorkflow({ DATA_KV: {} }, {
+            ...options,
+            triggerId: 'scheduled:1',
+        }, dependencies);
+
+        expect(result).toMatchObject({
+            pending: false,
+            publication_status: 'published',
+            idempotent: true,
+        });
+        expect(dependencies.commitIncluded).toHaveBeenCalledOnce();
+    });
+
+    it('confirms a superseded closed legacy candidate through main ancestry', async () => {
+        const marker = {
+            success: true,
+            mode: 'legacy',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            commit_sha: 'e'.repeat(40),
+            pending: true,
+            pull_request: { number: 42, url: 'https://example.test/pr/42' },
+        };
+        const dependencies = {
+            readMarker: vi.fn(async () => marker),
+            api: vi.fn(async () => ({ state: 'closed', merged_at: null })),
+            resolveAlias: vi.fn(async () => null),
+            resolveBaseSnapshot: vi.fn(async () => ({
+                branch: 'main',
+                headSha: 'f'.repeat(40),
+                treeSha: 'a'.repeat(40),
+            })),
+            commitIncluded: vi.fn(async () => true),
+        };
+
+        const result = await runLegacyIncrementalDailyWorkflow({ DATA_KV: {} }, {
+            ...options,
+            triggerId: 'scheduled:1',
+        }, dependencies);
+
+        expect(result).toMatchObject({ pending: false, idempotent: true });
+        expect(dependencies.resolveBaseSnapshot).toHaveBeenCalledOnce();
+    });
+
+    it('follows a replay alias instead of regenerating an old legacy trigger', async () => {
+        const marker = {
+            success: true,
+            mode: 'legacy',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            commit_sha: 'e'.repeat(40),
+            pending: true,
+            pull_request: { number: 42, url: 'old' },
+        };
+        const dependencies = {
+            readMarker: vi.fn(async () => marker),
+            api: vi.fn(async (_env, path) => {
+                if (path === '/pulls/42') return { state: 'closed', merged_at: null };
+                throw new Error(`unexpected ${path}`);
+            }),
+            resolveAlias: vi.fn(async () => ({
+                commitSha: 'f'.repeat(40),
+                pull: { number: 43, url: 'new', state: 'open', mergedAt: null },
+            })),
+            resolveSnapshot: vi.fn(),
+        };
+
+        const result = await runLegacyIncrementalDailyWorkflow({ DATA_KV: {} }, {
+            ...options,
+            triggerId: 'scheduled:1',
+        }, dependencies);
+
+        expect(result).toMatchObject({
+            commit_sha: 'f'.repeat(40),
+            pending: true,
+            idempotent: true,
+            pull_request: { number: 43, url: 'new' },
+        });
+        expect(dependencies.resolveSnapshot).not.toHaveBeenCalled();
     });
 });

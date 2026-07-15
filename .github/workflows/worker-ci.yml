@@ -72,3 +72,45 @@ jobs:
 
       - name: Verify Hugo and Astro daily parity
         run: npm run verify:renderers
+
+  promote-publication:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.head_ref, 'automation/daily/')
+    needs: [worker-security, renderer-parity]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout publication candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+
+      - name: Verify publication promotion policy
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_HEAD_REF: ${{ github.head_ref }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          git fetch origin "$PR_HEAD_SHA" --no-tags
+          node scripts/verify-publication-pr.mjs
+
+      - name: Merge verified daily publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: gh pr merge "$PR_URL" --merge --delete-branch --match-head-commit "$PR_HEAD_SHA"
+
+      - name: Dispatch GitHub Pages build for merged main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run build-and-deploy.yml --ref main

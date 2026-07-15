@@ -4,11 +4,22 @@ import { resolveFoloCookie } from '../folo.js';
 import { getFromKV, storeInKV } from '../kv.js';
 import { stripHtml, extractSummaryText, removeMarkdownCodeBlock, formatDateToChinese, formatMarkdownText } from '../helpers.js';
 import { callChatAPIStream } from '../chatapi.js';
-import { callGitHubApi, createOrUpdateGitHubFile, getGitHubFileSha } from '../github.js';
-import { runStructuredDailyWorkflow } from '../daily/structuredWorkflow.js';
+import { callGitHubApi } from '../github.js';
+import {
+    createSnapshotReader,
+    isCommitIncluded,
+    publishFilesAtomically,
+    resolveBranchSnapshot,
+    resolvePublicationAlias,
+    resolvePublicationSnapshot,
+} from '../daily/gitAtomic.js';
+import { readTriggerMarker, storeTriggerMarker } from '../daily/runState.js';
+import {
+    resolveHistoryEpochStartDate,
+    runStructuredDailyWorkflow,
+} from '../daily/structuredWorkflow.js';
 import { runStructuredShadow } from '../daily/shadowWorkflow.js';
 import { fetchProviderPreservingData } from '../daily/structuredFetch.js';
-import { isRealDate } from '../daily/time.js';
 import {
     getSystemPromptArticleEvaluation,
     getSystemPromptBatchSection,
@@ -241,11 +252,11 @@ async function generateBatchSection(env, reportDate, batch, selectedItems) {
     return `### ${label}\n\n本批共抓取 ${selectedItems.length} 条资讯，以下全部推送：\n\n${lines.join('\n\n')}\n`;
 }
 
-function createInitialMarkdown(reportDate) {
+function createInitialMarkdown(reportDate, updatedAt) {
     return `---
 title: "Bubble's Brain - ${reportDate}"
 date: ${reportDate}T10:00:00+08:00
-lastmod: ${new Date().toISOString()}
+lastmod: ${updatedAt}
 description: "Bubble's Brain - ${new Date(reportDate).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })} AI 增量日报"
 categories:
   - 日报
@@ -269,8 +280,7 @@ draft: false
 `;
 }
 
-function updateFrontMatterLastmod(markdown) {
-    const now = new Date().toISOString();
+function updateFrontMatterLastmod(markdown, now) {
     if (/^---[\s\S]*?\nlastmod:/m.test(markdown)) {
         return markdown.replace(/(\nlastmod:\s*).*/, `$1${now}`);
     }
@@ -305,39 +315,127 @@ function upsertOverview(markdown, overview) {
     return markdown.replace(/> AI 日报 · 分时段增量更新\n/, `> AI 日报 · 分时段增量更新\n\n${block}\n`);
 }
 
-async function getGitHubTextFile(env, path) {
-    try {
-        const branch = env.GITHUB_BRANCH || 'main';
-        const data = await callGitHubApi(env, `/contents/${path}?ref=${branch}`);
-        if (!data?.content) return null;
-        return decodeURIComponent(atob(data.content.replace(/\n/g, '')).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-    } catch (error) {
-        if (error.message.includes('404') || error.message.toLowerCase().includes('not found')) return null;
-        throw error;
-    }
-}
-
-async function commitDailyFiles(env, reportDate, markdown, batch) {
+async function commitDailyFiles(env, snapshot, reportDate, markdown, batch, committedAt, api) {
     const formatted = formatMarkdownText(markdown);
     const files = [
         { path: `daily/${reportDate}.md`, content: formatted },
         { path: `content/daily/${reportDate}.md`, content: formatted }
     ];
-    const results = [];
-    for (const file of files) {
-        const sha = await getGitHubFileSha(env, file.path);
-        await createOrUpdateGitHubFile(env, file.path, file.content, `Incremental daily ${reportDate} ${batch}`, sha);
-        results.push({ path: file.path, success: true });
-    }
-    return results;
+    const publication = await publishFilesAtomically(env, {
+        snapshot,
+        files,
+        message: `Incremental daily ${reportDate} ${batch}`,
+        committedAt,
+        reportDate,
+        batch,
+        mode: 'legacy',
+    }, { api });
+    return {
+        ...publication,
+        files: files.map(file => ({ path: file.path, success: true })),
+    };
 }
 
-export async function runLegacyIncrementalDailyWorkflow(env, options = {}) {
+async function confirmedLegacyTriggerResult(env, triggerId, reportDate, batch, deps) {
+    if (!triggerId) return null;
+    let marker;
+    try {
+        marker = await deps.readMarker(env.DATA_KV, triggerId);
+    } catch (error) {
+        console.warn('[IncrementalDaily] legacy trigger marker read failed', {
+            errorType: error?.name || 'Error',
+        });
+        return null;
+    }
+    if (!marker?.commit_sha
+        || marker.mode !== 'legacy'
+        || marker.reportDate !== reportDate
+        || marker.batch !== batch) return null;
+    try {
+        let confirmedSha = marker.commit_sha;
+        let successor = null;
+        if (marker.pending === true && Number.isInteger(marker?.pull_request?.number)) {
+            const pull = await deps.api(env, `/pulls/${marker.pull_request.number}`);
+            if (pull?.state === 'open') return { ...marker, idempotent: true };
+            if (pull?.state === 'closed' && !pull?.merged_at) {
+                successor = await deps.resolveAlias(
+                    env,
+                    marker.commit_sha,
+                    env.GITHUB_BRANCH || 'main',
+                    { api: deps.api },
+                );
+                if (successor) {
+                    confirmedSha = successor.commitSha;
+                    if (successor.pull.state === 'open') {
+                        return {
+                            ...marker,
+                            commit_sha: confirmedSha,
+                            pull_request: {
+                                number: successor.pull.number,
+                                url: successor.pull.url,
+                            },
+                            idempotent: true,
+                        };
+                    }
+                }
+            }
+        }
+        const snapshot = await deps.resolveBaseSnapshot(env, { api: deps.api });
+        if (!await deps.commitIncluded(env, confirmedSha, snapshot.headSha, {
+            api: deps.api,
+        })) return null;
+        return {
+            ...marker,
+            commit_sha: confirmedSha,
+            ...(successor ? {
+                pull_request: { number: successor.pull.number, url: successor.pull.url },
+            } : {}),
+            pending: false,
+            publication_status: 'published',
+            idempotent: true,
+        };
+    } catch (error) {
+        console.warn('[IncrementalDaily] legacy trigger marker could not be confirmed', {
+            errorType: error?.name || 'Error',
+        });
+        return null;
+    }
+}
+
+async function storeLegacyMarker(env, triggerId, response, storeMarker) {
+    if (!triggerId) return;
+    try {
+        await storeMarker(env.DATA_KV, triggerId, response);
+    } catch (error) {
+        console.warn('[IncrementalDaily] legacy trigger marker write failed', {
+            errorType: error?.name || 'Error',
+        });
+    }
+}
+
+export async function runLegacyIncrementalDailyWorkflow(env, options = {}, dependencies = {}) {
+    const deps = {
+        api: dependencies.api || callGitHubApi,
+        commitIncluded: dependencies.commitIncluded || isCommitIncluded,
+        readMarker: dependencies.readMarker || readTriggerMarker,
+        resolveAlias: dependencies.resolveAlias || resolvePublicationAlias,
+        resolveBaseSnapshot: dependencies.resolveBaseSnapshot || resolveBranchSnapshot,
+        resolveSnapshot: dependencies.resolveSnapshot || ((targetEnv, resolveOptions) => (
+            resolvePublicationSnapshot(targetEnv, { ...resolveOptions, expectedMode: 'legacy' })
+        )),
+        storeMarker: dependencies.storeMarker || storeTriggerMarker,
+    };
+    const runAt = options.runAt || new Date().toISOString();
     const targetClock = options.date
         ? new Date(`${options.date}T12:00:00+08:00`)
         : options.runAt ? new Date(options.runAt) : new Date();
     const { reportDate, batch } = resolveBatch(targetClock, options.batch, options.date);
     console.log(`[IncrementalDaily] Start reportDate=${reportDate}, batch=${batch}`);
+
+    const confirmed = await confirmedLegacyTriggerResult(
+        env, options.triggerId || null, reportDate, batch, deps,
+    );
+    if (confirmed) return confirmed;
 
     let fetched = options.fetchedOverride;
     if (!fetched) {
@@ -364,18 +462,23 @@ export async function runLegacyIncrementalDailyWorkflow(env, options = {}) {
     const section = await generateBatchSection(env, reportDate, batch, selected);
     await storeInKV(env.DATA_KV, batchKey, { reportDate, batch, label: batchLabel(batch), selected_ids: selected.map(i => i.id), section, selection, updated_at: new Date().toISOString() }, KV_TTL);
 
+    const snapshot = await deps.resolveSnapshot(env, { api: deps.api });
+    const reader = createSnapshotReader(env, snapshot, { api: deps.api });
     const contentPath = `content/daily/${reportDate}.md`;
-    let markdown = await getGitHubTextFile(env, contentPath) || createInitialMarkdown(reportDate);
-    markdown = updateFrontMatterLastmod(markdown);
+    let markdown = await reader.readText(contentPath) || createInitialMarkdown(reportDate, runAt);
+    markdown = updateFrontMatterLastmod(markdown, runAt);
     markdown = upsertBatchSection(markdown, batch, section);
     const overview = await generateOverview(env, markdown);
     markdown = upsertOverview(markdown, overview);
 
-    const commits = await commitDailyFiles(env, reportDate, markdown, batch);
+    const publication = await commitDailyFiles(
+        env, snapshot, reportDate, markdown, batch, runAt, deps.api,
+    );
     console.log(`[IncrementalDaily] Completed reportDate=${reportDate}, batch=${batch}, fetched=${incoming.length}, selected=${selected.length}`);
 
-    return {
+    const response = {
         success: true,
+        mode: 'legacy',
         reportDate,
         batch,
         batchOrder: batchOrder(batch),
@@ -385,20 +488,21 @@ export async function runLegacyIncrementalDailyWorkflow(env, options = {}) {
         pendingCount: 0,
         evaluatedCount: 0,
         selectedCount: selected.length,
-        commits
+        commits: publication.files,
+        commit_sha: publication.commitSha,
+        pending: publication.pending === true,
+        publication_status: publication.pending === true ? 'pending' : 'published',
+        ...(publication.branch ? { publication_branch: publication.branch } : {}),
+        ...(publication.pullRequest ? { pull_request: publication.pullRequest } : {}),
     };
+    await storeLegacyMarker(env, options.triggerId || null, response, deps.storeMarker);
+    return response;
 }
 
 function assertExternalWritesEnabled(env) {
     if (String(env.EXTERNAL_WRITES_ENABLED).toLowerCase() !== 'true') {
         throw new Error('External writes are disabled');
     }
-}
-
-function resolveStructuredStartDate(env) {
-    const value = env.DAILY_STRUCTURED_START_DATE;
-    if (!isRealDate(value)) throw new Error('DAILY_STRUCTURED_START_DATE must be a real date');
-    return value;
 }
 
 export async function runIncrementalDailyWorkflow(env, options = {}, dependencies = {}) {
@@ -418,7 +522,7 @@ export async function runIncrementalDailyWorkflow(env, options = {}, dependencie
     const { reportDate, batch } = resolveBatch(targetClock, options.batch, options.date);
 
     if (mode === 'structured') {
-        resolveStructuredStartDate(env);
+        resolveHistoryEpochStartDate(env, reportDate);
         if (String(env.DAILY_STRUCTURED_WRITES_ENABLED).toLowerCase() !== 'true') {
             throw new Error('Structured writes are disabled');
         }
@@ -441,7 +545,7 @@ export async function runIncrementalDailyWorkflow(env, options = {}, dependencie
     });
 
     try {
-        const structuredStartDate = resolveStructuredStartDate(env);
+        const structuredStartDate = resolveHistoryEpochStartDate(env, reportDate);
         if (fetched.errors.length > 0) {
             const error = new Error('One or more shadow providers failed');
             error.name = 'StructuredShadowSourceError';
