@@ -12,6 +12,10 @@
     "worker:check": "wrangler deploy --dry-run --outdir .wrangler-dry-run",
     "worker:check:staging": "wrangler deploy --dry-run --config wrangler.staging.toml --outdir .wrangler-dry-run-staging"
   },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
   "devDependencies": {
     "vitest": "^3.2.7",
     "wrangler": "^4.110.0"

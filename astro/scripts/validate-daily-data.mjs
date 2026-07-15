@@ -4,6 +4,11 @@ import { fileURLToPath } from 'node:url';
 
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
+import {
+	validateDailyReportIdentities,
+	validateDailyReportSemantics,
+	validateReportFilename,
+} from '../../src/daily/semanticValidate.js';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, '../..');
@@ -26,24 +31,31 @@ let failed = false;
 for (const file of files) {
 	const report = JSON.parse(await readFile(file, 'utf8'));
 	const schemaValid = validate(report);
-	const itemIds = new Set(report.items.map((item) => item.id));
-	const duplicateItemIds = report.items.length !== itemIds.size;
-	const unknownBatchItemIds = report.batches
-		.flatMap((batch) => batch.item_ids)
-		.filter((id) => !itemIds.has(id));
 	const productionFile = file.startsWith(productionDataDir);
-	const expectedDate = productionFile ? file.match(/(\d{4}-\d{2}-\d{2})\.json$/)?.[1] : report.date;
-	const filenameMatchesDate = expectedDate === report.date;
+	let semanticError = null;
+	let filenameError = null;
+	if (schemaValid) {
+		try {
+			validateDailyReportSemantics(report, { enforcePhase1: true });
+			await validateDailyReportIdentities(report);
+		} catch (error) {
+			semanticError = error;
+		}
+		if (productionFile) {
+			try {
+				validateReportFilename(report, file);
+			} catch (error) {
+				filenameError = error;
+			}
+		}
+	}
 
-	if (!schemaValid || duplicateItemIds || unknownBatchItemIds.length > 0 || !filenameMatchesDate) {
+	if (!schemaValid || semanticError || filenameError) {
 		failed = true;
 		console.error(`Invalid daily report: ${file}`);
 		if (!schemaValid) console.error(validate.errors);
-		if (duplicateItemIds) console.error('Duplicate item ids detected.');
-		if (unknownBatchItemIds.length > 0) {
-			console.error(`Unknown batch item ids: ${unknownBatchItemIds.join(', ')}`);
-		}
-		if (!filenameMatchesDate) console.error('Report date does not match its filename.');
+		if (semanticError) console.error(semanticError.message);
+		if (filenameError) console.error(filenameError.message);
 	} else {
 		console.log(`Valid daily report: ${file}`);
 	}
