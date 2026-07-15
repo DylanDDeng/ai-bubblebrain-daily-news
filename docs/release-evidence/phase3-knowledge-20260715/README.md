@@ -6,14 +6,15 @@ Branch: `codex/astro-phase-3`
 
 Base: `origin/main@8ed05acde833ee01e7fbec85fd4e7e8ebc762d28`
 
-Candidate SHA: pending the final Phase 3 review commit
+Implementation SHA: `978e04dccf7763eb61313a3f88a7baacf6420e39`
 
 This evidence covers non-production implementation and validation only. No Supabase production
 migration, structured production publication, Pages cutover, or PR #9 merge occurred.
 
 ## Current decision
 
-- Phase 3 implementation: pending final independent review.
+- Phase 3 non-production implementation: **GO** after independent re-review with implementation
+  P0=0 and P1=0.
 - Production promotion: **NO-GO**.
 - Blocking P0: a credential recovered from historical Worker version metadata still authenticated
   to GitHub with HTTP 200 on the non-echo probe. It must be revoked and re-probed as 401/403.
