@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bubblenews.today/schemas/daily-report.schema.json",
+  "title": "Bubble's Brain daily report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "date",
+    "timezone",
+    "generated_at",
+    "batches",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "timezone": {
+      "const": "Asia/Shanghai"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "batches": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/batch"
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "batchId": {
+      "type": "string",
+      "enum": ["morning", "afternoon", "night", "lateNight"]
+    },
+    "batch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "label", "generated_at", "item_ids"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/batchId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "item_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": ["string", "null"]
+        },
+        "homepage": {
+          "type": ["string", "null"],
+          "format": "uri"
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "event_id",
+        "source_type",
+        "source_id",
+        "title",
+        "url",
+        "canonical_url",
+        "source",
+        "published_at",
+        "ingested_at",
+        "time_precision",
+        "batch",
+        "summary",
+        "category",
+        "topics",
+        "featured",
+        "score",
+        "reason",
+        "related_source_ids"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "event_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_id": {
+          "type": ["string", "number", "null"]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "published_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "ingested_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "time_precision": {
+          "type": "string",
+          "enum": ["exact", "date_only", "inferred"]
+        },
+        "batch": {
+          "$ref": "#/$defs/batchId"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "models",
+            "agents",
+            "research",
+            "products",
+            "business",
+            "policy",
+            "open_source",
+            "other"
+          ]
+        },
+        "topics": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "featured": {
+          "type": "boolean"
+        },
+        "score": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 10
+        },
+        "reason": {
+          "type": ["string", "null"]
+        },
+        "related_source_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

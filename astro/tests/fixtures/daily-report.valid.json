@@ -1,0 +1,41 @@
+{
+	"schema_version": 1,
+	"date": "2026-07-14",
+	"timezone": "Asia/Shanghai",
+	"generated_at": "2026-07-14T15:00:00+08:00",
+	"batches": [
+		{
+			"id": "afternoon",
+			"label": "15:00 更新",
+			"generated_at": "2026-07-14T15:00:00+08:00",
+			"item_ids": ["url:https://example.com/ai-news"]
+		}
+	],
+	"items": [
+		{
+			"id": "url:https://example.com/ai-news",
+			"event_id": "example-ai-news",
+			"source_type": "example",
+			"source_id": "news-1",
+			"title": "示例 AI 资讯",
+			"url": "https://example.com/ai-news?utm_source=feed",
+			"canonical_url": "https://example.com/ai-news",
+			"source": {
+				"name": "Example News",
+				"id": "example",
+				"homepage": "https://example.com/"
+			},
+			"published_at": "2026-07-14T14:20:00+08:00",
+			"ingested_at": "2026-07-14T15:00:00+08:00",
+			"time_precision": "exact",
+			"batch": "afternoon",
+			"summary": "用于验证 Astro 迁移数据契约的示例资讯。",
+			"category": "products",
+			"topics": ["Astro", "AI"],
+			"featured": false,
+			"score": null,
+			"reason": null,
+			"related_source_ids": []
+		}
+	]
+}

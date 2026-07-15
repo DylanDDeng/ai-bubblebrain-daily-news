@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title="Bubble's Brain · Astro migration"
+	description="Bubble's Brain Astro migration preview"
+>
+	<section class="page-shell">
+		<header class="page-heading">
+			<p class="eyebrow">ASTRO MIGRATION · DAY 0</p>
+			<h1>知识内容不动，展示层开始解耦。</h1>
+			<p>
+				当前 Astro 站点与 Hugo 并行存在，读取同一批日报 Markdown，并为结构化时间轴数据保留独立入口。
+				生产环境仍由 Hugo 构建。
+			</p>
+		</header>
+		<p><a href="/daily/">查看 Astro 日报兼容归档 →</a></p>
+	</section>
+</BaseLayout>

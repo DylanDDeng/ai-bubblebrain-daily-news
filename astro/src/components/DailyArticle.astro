@@ -1,0 +1,44 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDailyDate, type DailyLocale } from '../lib/daily';
+
+interface Props {
+	entry: CollectionEntry<'daily'>;
+	locale: DailyLocale;
+}
+
+const { entry, locale } = Astro.props;
+const { Content } = await render(entry);
+const archiveHref = locale === 'en' ? '/en/daily/' : '/daily/';
+---
+
+<BaseLayout
+	title={`${entry.data.title} · Bubble's Brain`}
+	description={entry.data.description}
+	lang={locale}
+>
+	<article class="article-shell">
+		<p class="migration-notice">
+			{
+				locale === 'en'
+					? 'Compatibility rendering from the existing Hugo Markdown. Structured timeline rendering lands after the data contract is connected.'
+					: '当前由 Astro 兼容渲染现有 Hugo Markdown；结构化时间轴将在数据契约接通后启用。'
+			}
+		</p>
+		<header class="article-header">
+			<p class="eyebrow">{locale === 'en' ? 'DAILY BRIEF' : '资讯日报'}</p>
+			<h1>{entry.data.title}</h1>
+			<p class="article-meta">
+				<time datetime={entry.data.date.toISOString()}>
+					{formatDailyDate(entry.data.date, locale)}
+				</time>
+			</p>
+		</header>
+		<div class="legacy-content">
+			<Content />
+		</div>
+		<p><a href={archiveHref}>{locale === 'en' ? '← Back to archive' : '← 返回日报归档'}</a></p>
+	</article>
+</BaseLayout>

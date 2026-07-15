@@ -1,0 +1,47 @@
+---
+import '../styles/migration.css';
+
+interface Props {
+	title: string;
+	description?: string;
+	lang?: 'zh-CN' | 'en';
+}
+
+const {
+	title,
+	description = "Bubble's Brain personal knowledge base",
+	lang = 'zh-CN',
+} = Astro.props;
+
+const homeHref = lang === 'en' ? '/en/' : '/';
+const dailyHref = lang === 'en' ? '/en/daily/' : '/daily/';
+const alternateHref = lang === 'en' ? '/' : '/en/';
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<link rel="icon" href="/favicon.ico" />
+		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<header class="site-header">
+			<a class="site-brand" href={homeHref}>Bubble's Brain</a>
+			<nav aria-label={lang === 'en' ? 'Primary navigation' : '主导航'}>
+				<a href={dailyHref}>{lang === 'en' ? 'Daily Brief' : '资讯日报'}</a>
+				<a href={alternateHref}>{lang === 'en' ? '中文' : 'EN'}</a>
+			</nav>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer class="site-footer">
+			<p>Astro migration preview · Day 0</p>
+		</footer>
+	</body>
+</html>

@@ -1,0 +1,34 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import DailyArticle from '../../../../../components/DailyArticle.astro';
+import { filterDailyEntries, parseDailyEntryId } from '../../../../../lib/daily';
+
+export async function getStaticPaths() {
+	const entries = filterDailyEntries(await getCollection('daily'), 'en');
+
+	return entries.flatMap((entry) => {
+		const identity = parseDailyEntryId(entry.id);
+		if (!identity) return [];
+
+		return [
+			{
+				params: {
+					year: identity.year,
+					month: identity.month,
+					slug: identity.dateKey,
+				},
+				props: { entry },
+			},
+		];
+	});
+}
+
+interface Props {
+	entry: CollectionEntry<'daily'>;
+}
+
+const { entry } = Astro.props;
+---
+
+<DailyArticle entry={entry} locale="en" />
