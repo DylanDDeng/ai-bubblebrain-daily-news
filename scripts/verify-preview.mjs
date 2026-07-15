@@ -86,6 +86,7 @@ function expectedMediaType(contentType) {
 async function fetchManual(route) {
   return fetch(new URL(route, base), {
     redirect: "manual",
+    signal: AbortSignal.timeout(20_000),
     headers: { "user-agent": "bubble-preview-verifier/1.0" },
   });
 }
@@ -178,6 +179,19 @@ async function verifyRecord(record) {
       response.headers.get("x-content-type-options") === "nosniff",
       `${record.route}: nosniff header missing`,
     );
+
+    if (
+      [
+        "application/octet-stream",
+        "image/png",
+        "image/vnd.microsoft.icon",
+        "video/mp4",
+      ].includes(record.content_type)
+    ) {
+      await response.body?.cancel();
+      return;
+    }
+
     const body = await response.text();
 
     if (record.content_type === "application/json") JSON.parse(body);
