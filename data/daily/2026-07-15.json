@@ -149,11 +149,14 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-15T05:00:55.000Z",
       "id": "afternoon",
-      "item_ids": [],
+      "item_ids": [
+        "n_c31965edbb8a7cd884553907e6658bcc32ade1d295768b86b2f50cd5c850dcb6",
+        "n_713085b54ecabd599dbe7b63729e28600e90a832090247635c3f8a6d26748f3c"
+      ],
       "label": "15:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -172,7 +175,7 @@
   ],
   "date": "2026-07-15",
   "dedupe_version": 1,
-  "generated_at": "2026-07-15T04:55:55.000Z",
+  "generated_at": "2026-07-15T05:00:55.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4794,6 +4797,72 @@
       "title": "Clypra",
       "topics": [],
       "url": "https://github.com/AIEraDev/Clypra"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.11111",
+      "category": "other",
+      "content_type": "paper",
+      "event_id": "e_c31965edbb8a7cd884553907e6658bcc32ade1d295768b86b2f50cd5c850dcb6",
+      "featured": false,
+      "id": "n_c31965edbb8a7cd884553907e6658bcc32ade1d295768b86b2f50cd5c850dcb6",
+      "identity_claims": [
+        "c_705d9b915161a41bb19c11716768490c196268031d044f36be5eb73f8725bfe5",
+        "c_c31965edbb8a7cd884553907e6658bcc32ade1d295768b86b2f50cd5c850dcb6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-15T05:00:55.000Z",
+      "published_at": "2026-07-12T20:00:00.076Z",
+      "published_date": "2026-07-13",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1200322557325066241",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1200322557325066241",
+      "source_type": "huggingface_papers",
+      "summary": "LLM-based coding agents have significantly advanced automated software issue resolution, yet they remain highly prone to factual errors caused by insufficient repository understanding. Recent methods attempt to mitigate this limitation through pre-repair repository exploration; however, their fix-driven strategies explore repositories without identifying the agent's knowledge gaps, often yielding imprecise context that fails to bridge the underlying understanding deficit. In this paper, we propose ACQUIRE, a QA-driven framework for software issue resolution. Mirroring how experienced developers first comprehend unfamiliar code before attempting a fix, ACQUIRE explicitly acquires repository knowledge prior to repair. The framework decouples knowledge acquisition from patch generation through two stages: in the first stage, a Questioner and an Answerer collaborate to acquire structured repository knowledge, where the Questioner poses targeted questions and the Answerer produces evidence-grounded answers through autonomous exploration; in the second stage, the Resolver leverages the resulting QA knowledge to generate informed patches. By transforming implicit knowledge gaps into explicit, factually reliable understanding, ACQUIRE accelerates knowledge-intensive repair stages and enables more accurate resolution. Experiments on SWE-bench Verified demonstrate that ACQUIRE consistently outperforms representative pre-repair methods, raising Pass@1 by up to 4.4 percentage points with modest additional cost and time.",
+      "time_precision": "exact",
+      "title": "Know Before Fix: QA-Driven Repository Knowledge Acquisition for Software Issue Resolution",
+      "topics": [],
+      "url": "https://arxiv.org/abs/2607.11111"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.11886",
+      "category": "other",
+      "content_type": "paper",
+      "event_id": "e_713085b54ecabd599dbe7b63729e28600e90a832090247635c3f8a6d26748f3c",
+      "featured": false,
+      "id": "n_713085b54ecabd599dbe7b63729e28600e90a832090247635c3f8a6d26748f3c",
+      "identity_claims": [
+        "c_2017090673b91611cd9df44a84fcc36472f3ecabd55f16802e1a431c5bccc2f0",
+        "c_713085b54ecabd599dbe7b63729e28600e90a832090247635c3f8a6d26748f3c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-15T05:00:55.000Z",
+      "published_at": "2026-07-12T20:00:00.836Z",
+      "published_date": "2026-07-13",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1200322557325066240",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1200322557325066240",
+      "source_type": "huggingface_papers",
+      "summary": "In this paper, we propose SpectraReward, a training-free reward function that turns pretrained MLLMs into off-the-shelf reward models for image-generation reinforcement learning. Instead of asking the MLLM to judge a generated image or answer decomposed verification questions, SpectraReward measures how well the original prompt can be recovered from the generated image through a single image-conditioned, teacher-forced forward pass. We use the average image-conditioned prompt log-likelihood as the reward, directly reusing the MLLM's pretrained image-text alignment ability without preference labels, reward-model fine-tuning. We further introduce Self-SpectraReward, a special case for unified multimodal models where the policy's own understanding branch serves as the reward model for its generation branch, forming a closed-loop self-improving framework without external reward models or external knowledge. Extensive experiments validate SpectraReward through a broad image-generation RL study covering two diffusion models, three RL algorithms, nine reward MLLM backbones from four MLLM families spanning 4B to 235B parameters, and five out-of-distribution text-to-image benchmarks. Results show that both SpectraReward and Self-SpectraReward significantly and consistently improve generation performance and outperform prior MLLM-derived reward training methods. Further analysis reveals that larger reward MLLMs are not always better, while Self-SpectraReward can match or surpass much larger external reward models, suggesting that reward-policy alignment is a key factor for effective image-generation RL. Project Page: https://huangrh99.github.io/SpectraReward/",
+      "time_precision": "exact",
+      "title": "Read It Back: Pretrained MLLMs Are Zero-Shot Reward Models for Text-to-Image Generation",
+      "topics": [],
+      "url": "https://arxiv.org/abs/2607.11886"
     }
   ],
   "overview": {
