@@ -380,15 +380,9 @@ export async function runIncrementalDailyWorkflow(env, options = {}) {
     };
 }
 
-export async function handleIncrementalDailyWorkflow(request, env) {
-    const url = new URL(request.url);
-    const date = url.searchParams.get('date');
-    const batch = url.searchParams.get('batch');
-    try {
-        const result = await runIncrementalDailyWorkflow(env, { date, batch });
-        return new Response(JSON.stringify(result, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
-    } catch (error) {
-        console.error('[IncrementalDaily] Failed:', error);
-        return new Response(JSON.stringify({ success: false, error: error.message }, null, 2), { status: 500, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
-    }
+export async function handleIncrementalDailyWorkflow({ date, batch }, env) {
+    const result = await runIncrementalDailyWorkflow(env, { date, batch });
+    return new Response(JSON.stringify(result, null, 2), {
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    });
 }

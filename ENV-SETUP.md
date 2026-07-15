@@ -23,7 +23,9 @@
    ```env
    GEMINI_API_KEY=your_actual_gemini_api_key
    GITHUB_TOKEN=ghp_your_actual_github_token
-   LOGIN_PASSWORD=your_secure_password
+   ADMIN_API_TOKEN=your_long_random_admin_token
+   LOGIN_USERNAME_SECRET=your_admin_username
+   LOGIN_PASSWORD_SECRET=your_secure_password
    ```
 
 4. **启动开发服务器**
@@ -43,18 +45,19 @@
 2. **添加环境变量**
    - 点击 **Settings** → **Variables**
    - 点击 **Add variable**
-   - 添加以下变量：
+   - 下列敏感项必须选择 **Secret** 类型，不要使用明文 Text 变量：
 
    | 变量名 | 说明 | 示例值 |
    |--------|------|--------|
    | `GEMINI_API_KEY` | Google Gemini API 密钥 | `AIza...` |
    | `GITHUB_TOKEN` | GitHub Personal Access Token | `ghp_...` |
-   | `LOGIN_USERNAME` | 管理界面用户名 | `admin` |
-   | `LOGIN_PASSWORD` | 管理界面密码 | `secure_password` |
+   | `ADMIN_API_TOKEN` | 管理 API Bearer token | 长随机字符串 |
+   | `LOGIN_USERNAME_SECRET` | 管理界面用户名 | `admin` |
+   | `LOGIN_PASSWORD_SECRET` | 管理界面密码 | 强随机密码 |
 
 3. **保存并部署**
    - 点击 **Save and deploy**
-   - 变量会加密存储
+   - 确认所有敏感项显示为 Secret 后再部署
 
 ### 3️⃣ 使用 Wrangler CLI 设置（可选）
 
@@ -65,7 +68,9 @@ wrangler secret put GEMINI_API_KEY
 
 # 批量设置
 wrangler secret put GITHUB_TOKEN
-wrangler secret put LOGIN_PASSWORD
+wrangler secret put ADMIN_API_TOKEN
+wrangler secret put LOGIN_USERNAME_SECRET
+wrangler secret put LOGIN_PASSWORD_SECRET
 ```
 
 ## 🔍 验证配置
@@ -88,12 +93,13 @@ open http://localhost:8787/getContentHtml
 ### 必需变量
 - `GEMINI_API_KEY` - AI 内容生成
 - `GITHUB_TOKEN` - 推送到 GitHub
-- `LOGIN_PASSWORD` - 管理界面密码
+- `ADMIN_API_TOKEN` - 管理 API Bearer token
+- `LOGIN_USERNAME_SECRET` - 管理界面用户名
+- `LOGIN_PASSWORD_SECRET` - 管理界面密码
 
 ### 可选变量
 - `OPENAI_API_KEY` - 如果使用 OpenAI/DeepSeek
 - `FOLO_COOKIE` - 如果使用 Folo 数据源
-- `LOGIN_USERNAME` - 默认为 "root"
 
 ## 🚨 安全提醒
 
@@ -122,7 +128,9 @@ open http://localhost:8787/getContentHtml
 - [ ] 创建 `.dev.vars` 文件（本地）
 - [ ] 设置 `GEMINI_API_KEY`
 - [ ] 设置 `GITHUB_TOKEN`
-- [ ] 设置 `LOGIN_PASSWORD`
+- [ ] 设置 `ADMIN_API_TOKEN`
+- [ ] 设置 `LOGIN_USERNAME_SECRET`
+- [ ] 设置 `LOGIN_PASSWORD_SECRET`
 - [ ] 在 Cloudflare Dashboard 配置生产环境变量
 - [ ] 测试本地开发环境
 - [ ] 测试生产环境

@@ -1,138 +1,176 @@
-// src/index.js
 import { handleWriteData } from './handlers/writeData.js';
 import { handleGetContent } from './handlers/getContent.js';
 import { handleGetContentHtml } from './handlers/getContentHtml.js';
-import { handleGenAIContent, handleGenAIPodcastScript, handleGenAIDailyAnalysis } from './handlers/genAIContent.js'; // Import handleGenAIPodcastScript and handleGenAIDailyAnalysis
+import { handleGenAIContent, handleGenAIPodcastScript, handleGenAIDailyAnalysis } from './handlers/genAIContent.js';
 import { handleCommitToGitHub } from './handlers/commitToGitHub.js';
 import { handleRss } from './handlers/getRss.js';
-import { handleWriteRssData } from './handlers/writeRssData.js'; 
+import { handleWriteRssData } from './handlers/writeRssData.js';
 import { dataSources } from './dataFetchers.js';
 import { handleLogin, isAuthenticated, handleLogout } from './auth.js';
 import { handleAutoWorkflow } from './handlers/autoWorkflow.js';
 import { handleIncrementalDailyWorkflow, runIncrementalDailyWorkflow } from './handlers/incrementalDailyWorkflow.js';
 import { debugFoloCookie, storeFoloCookieToKV } from './folo.js';
+import { handleAdminRoute, isAdminRoute } from './routes/adminRoutes.js';
+import { logMissingConfig } from './logging.js';
 
-export default {
-    async fetch(request, env) {
-        const platform = env.USE_MODEL_PLATFORM || 'GEMINI';
-        const requiredEnvVars = [
-            'DATA_KV', 'OPEN_TRANSLATE', 'USE_MODEL_PLATFORM',
-            'GITHUB_TOKEN', 'GITHUB_REPO_OWNER', 'GITHUB_REPO_NAME','GITHUB_BRANCH',
-            'LOGIN_USERNAME', 'LOGIN_PASSWORD',
-            'PODCAST_TITLE','PODCAST_BEGIN','PODCAST_END',
-            'FOLO_COOKIE_KV_KEY','FOLO_DATA_API','FOLO_FILTER_DAYS',
-            'AIBASE_FEED_ID', 'XIAOHU_FEED_ID', 'HGPAPERS_FEED_ID', 'TWITTER_LIST_ID',
-            'AIBASE_FETCH_PAGES', 'XIAOHU_FETCH_PAGES', 'HGPAPERS_FETCH_PAGES', 'TWITTER_FETCH_PAGES',
-        ];
+function jsonResponse(value, init = {}) {
+    const headers = new Headers(init.headers);
+    headers.set('Content-Type', 'application/json; charset=utf-8');
+    return new Response(JSON.stringify(value), { ...init, headers });
+}
 
-        // Add platform specific keys
-        if (platform === 'GEMINI') {
-            requiredEnvVars.push('GEMINI_API_KEY', 'GEMINI_API_URL', 'DEFAULT_GEMINI_MODEL');
-        } else if (platform === 'OPEN') {
-            requiredEnvVars.push('OPENAI_API_KEY', 'OPENAI_API_URL', 'DEFAULT_OPEN_MODEL');
-        }
-
-        const missingVars = requiredEnvVars.filter(varName => !env[varName]);
-
-        if (missingVars.length > 0) {
-            console.error(`CRITICAL: Missing environment variables/bindings: ${missingVars.join(', ')}`);
-            const errorPage = `
-                <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Configuration Error</title></head>
-                <body style="font-family: sans-serif; padding: 20px;"><h1>Server Configuration Error</h1>
-                <p>Essential environment variables or bindings are missing: ${missingVars.join(', ')}. The service cannot operate.</p>
-                <p>Please contact the administrator.</p></body></html>`;
-            return new Response(errorPage, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } });
-        }
-        
-        const url = new URL(request.url);
-        const path = url.pathname;
-        console.log(`Request received: ${request.method} ${path}`);
-
-        // Handle login path specifically
-        if (path === '/login') {
-            return await handleLogin(request, env);
-        } else if (path === '/logout') { // Handle logout path
-            return await handleLogout(request, env);
-        } else if (path === '/getContent' && request.method === 'GET') {
-            return await handleGetContent(request, env);
-        } else if (path.startsWith('/rss') && request.method === 'GET') {
-            return await handleRss(request, env);
-        } else if (path === '/writeRssData' && request.method === 'GET') {
-            return await handleWriteRssData(request, env);
-        } else if (path === '/auto') {
-            // Optional: You might want to add some basic API key auth here if exposed
-            return await handleAutoWorkflow(request, env);
-        } else if (path === '/incrementalDaily') {
-            // Optional: You might want to add some basic API key auth here if exposed
-            return await handleIncrementalDailyWorkflow(request, env);
-        } else if (path === '/updateFoloCookie' && request.method === 'POST') {
-            try {
-                const body = await request.json();
-                const success = await storeFoloCookieToKV(env, body.cookie);
-                return new Response(JSON.stringify({ success, message: success ? 'Cookie 已更新' : 'Cookie 为空' }), {
-                    headers: { 'Content-Type': 'application/json; charset=utf-8' }
-                });
-            } catch (e) {
-                return new Response(JSON.stringify({ success: false, error: e.message }), {
-                    status: 400, headers: { 'Content-Type': 'application/json; charset=utf-8' }
-                });
-            }
-        } else if (path === '/debugFoloCookie') {
-            const result = await debugFoloCookie(env);
-            return new Response(JSON.stringify(result, null, 2), {
-                headers: { 'Content-Type': 'application/json; charset=utf-8' }
-            });
-        }
-
-        // Authentication check for all other paths
-        const { authenticated, cookie: newCookie } = await isAuthenticated(request, env);
-        if (!authenticated) {
-            // Redirect to login page, passing the original URL as a redirect parameter
-            const loginUrl = new URL('/login', url.origin);
-            loginUrl.searchParams.set('redirect', url.pathname + url.search);
-            return Response.redirect(loginUrl.toString(), 302);
-        }
-
-        // Original routing logic for authenticated requests
-        let response;
-        try {
-            if (path === '/' && request.method === 'GET') {
-                // Redirect root path to main content page
-                return Response.redirect(new URL('/getContentHtml', url.origin).toString(), 302);
-            } else if (path === '/writeData' && request.method === 'POST') {
-                response = await handleWriteData(request, env);
-            } else if (path === '/getContentHtml' && request.method === 'GET') {
-                // Prepare dataCategories for the HTML generation
-                const dataCategories = Object.keys(dataSources).map(key => ({
-                    id: key,
-                    name: dataSources[key].name
-                }));
-                response = await handleGetContentHtml(request, env, dataCategories);
-            } else if (path === '/genAIContent' && request.method === 'POST') {
-                response = await handleGenAIContent(request, env);
-            } else if (path === '/genAIPodcastScript' && request.method === 'POST') { // New route for podcast script
-                response = await handleGenAIPodcastScript(request, env);
-            } else if (path === '/genAIDailyAnalysis' && request.method === 'POST') { // New route for AI Daily Analysis
-                response = await handleGenAIDailyAnalysis(request, env);
-            } else if (path === '/commitToGitHub' && request.method === 'POST') {
-                response = await handleCommitToGitHub(request, env);
-            } else {
-                return new Response(null, { status: 404, headers: {'Content-Type': 'text/plain; charset=utf-8'} });
-            }
-        } catch (e) {
-            console.error("Unhandled error in fetch handler:", e);
-            return new Response(`Internal Server Error: ${e.message}`, { status: 500 });
-        }
-
-        // Renew cookie for authenticated requests
-        if (newCookie) {
-            response.headers.append('Set-Cookie', newCookie);
-        }
-        return response;
+const defaultAdminHandlers = {
+    auto: (input, env) => handleAutoWorkflow(input, env),
+    incrementalDaily: (input, env) => handleIncrementalDailyWorkflow(input, env),
+    writeRssData: (input, env) => handleWriteRssData(input, env),
+    async updateFoloCookie({ cookie }, env) {
+        const success = await storeFoloCookieToKV(env, cookie);
+        return jsonResponse({
+            success,
+            message: success ? 'Cookie 已更新' : 'Cookie 为空',
+        }, { status: success ? 200 : 400 });
     },
-
-    async scheduled(event, env, ctx) {
-        console.log(`Scheduled event triggered at: ${new Date(event.scheduledTime).toISOString()}`);
-        ctx.waitUntil(runIncrementalDailyWorkflow(env));
-    }
+    async debugFoloCookie(_input, env) {
+        const result = await debugFoloCookie(env);
+        return jsonResponse({
+            ...result,
+            error: result.error ? 'Probe failed' : null,
+        });
+    },
 };
+
+function missingRuntimeConfig(env) {
+    const platform = env.USE_MODEL_PLATFORM || 'GEMINI';
+    const requiredEnvVars = [
+        'DATA_KV', 'OPEN_TRANSLATE', 'USE_MODEL_PLATFORM',
+        'GITHUB_TOKEN', 'GITHUB_REPO_OWNER', 'GITHUB_REPO_NAME', 'GITHUB_BRANCH',
+        'PODCAST_TITLE', 'PODCAST_BEGIN', 'PODCAST_END',
+        'FOLO_COOKIE_KV_KEY', 'FOLO_DATA_API', 'FOLO_FILTER_DAYS',
+        'AIBASE_FEED_ID', 'XIAOHU_FEED_ID', 'HGPAPERS_FEED_ID', 'TWITTER_LIST_ID',
+        'AIBASE_FETCH_PAGES', 'XIAOHU_FETCH_PAGES', 'HGPAPERS_FETCH_PAGES', 'TWITTER_FETCH_PAGES',
+    ];
+
+    if (platform === 'GEMINI') {
+        requiredEnvVars.push('GEMINI_API_KEY', 'GEMINI_API_URL', 'DEFAULT_GEMINI_MODEL');
+    } else if (platform === 'OPEN') {
+        requiredEnvVars.push('OPENAI_API_KEY', 'OPENAI_API_URL', 'DEFAULT_OPEN_MODEL');
+    }
+
+    if (!(env.LOGIN_USERNAME_SECRET || env.LOGIN_USERNAME)) requiredEnvVars.push('LOGIN_USERNAME_SECRET');
+    if (!(env.LOGIN_PASSWORD_SECRET || env.LOGIN_PASSWORD)) requiredEnvVars.push('LOGIN_PASSWORD_SECRET');
+    if (!env.LOGIN_RATE_LIMITER) requiredEnvVars.push('LOGIN_RATE_LIMITER');
+
+    return requiredEnvVars.filter(variable => !env[variable]);
+}
+
+function configurationErrorResponse() {
+    return new Response(`
+        <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Service Unavailable</title></head>
+        <body style="font-family: sans-serif; padding: 20px;"><h1>Service Unavailable</h1>
+        <p>The service is temporarily unavailable. Please contact the administrator.</p></body></html>`, {
+        status: 503,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
+}
+
+function appendSessionCookie(response, cookie) {
+    if (!cookie) return response;
+    const headers = new Headers(response.headers);
+    headers.append('Set-Cookie', cookie);
+    return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+    });
+}
+
+export function createWorker({
+    adminHandlers = defaultAdminHandlers,
+    scheduledWorkflow = runIncrementalDailyWorkflow,
+} = {}) {
+    return {
+        async fetch(request, env) {
+            const url = new URL(request.url);
+            const path = url.pathname;
+            console.log(`Request received: ${request.method} ${path}`);
+
+            if (isAdminRoute(path)) {
+                return handleAdminRoute(request, env, adminHandlers);
+            }
+
+            const missingVars = missingRuntimeConfig(env);
+            if (missingVars.length > 0) {
+                logMissingConfig(missingVars);
+                return configurationErrorResponse();
+            }
+
+            try {
+                if (path === '/login') {
+                    return await handleLogin(request, env);
+                }
+                if (path === '/logout') {
+                    return await handleLogout(request, env);
+                }
+                if (path === '/getContent' && request.method === 'GET') {
+                    return await handleGetContent(request, env);
+                }
+                if (path.startsWith('/rss') && request.method === 'GET') {
+                    return await handleRss(request, env);
+                }
+
+                const { authenticated, cookie: newCookie } = await isAuthenticated(request, env);
+                if (!authenticated) {
+                    const loginUrl = new URL('/login', url.origin);
+                    loginUrl.searchParams.set('redirect', url.pathname + url.search);
+                    return Response.redirect(loginUrl.toString(), 302);
+                }
+
+                let response;
+                if (path === '/' && request.method === 'GET') {
+                    return Response.redirect(new URL('/getContentHtml', url.origin).toString(), 302);
+                }
+                if (path === '/writeData' && request.method === 'POST') {
+                    response = await handleWriteData(request, env);
+                } else if (path === '/getContentHtml' && request.method === 'GET') {
+                    const dataCategories = Object.keys(dataSources).map(key => ({
+                        id: key,
+                        name: dataSources[key].name,
+                    }));
+                    response = await handleGetContentHtml(request, env, dataCategories);
+                } else if (path === '/genAIContent' && request.method === 'POST') {
+                    response = await handleGenAIContent(request, env);
+                } else if (path === '/genAIPodcastScript' && request.method === 'POST') {
+                    response = await handleGenAIPodcastScript(request, env);
+                } else if (path === '/genAIDailyAnalysis' && request.method === 'POST') {
+                    response = await handleGenAIDailyAnalysis(request, env);
+                } else if (path === '/commitToGitHub' && request.method === 'POST') {
+                    response = await handleCommitToGitHub(request, env);
+                } else {
+                    return new Response(null, {
+                        status: 404,
+                        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+                    });
+                }
+
+                return appendSessionCookie(response, newCookie);
+            } catch (error) {
+                console.error('[WorkerFetch] unhandled request error', {
+                    path,
+                    errorType: error?.name || 'Error',
+                });
+                return new Response('Internal Server Error', { status: 500 });
+            }
+        },
+
+        async scheduled(event, env, ctx) {
+            console.log(`Scheduled event triggered at: ${new Date(event.scheduledTime).toISOString()}`);
+            if (String(env.EXTERNAL_WRITES_ENABLED).toLowerCase() !== 'true') {
+                console.warn('[Scheduled] external writes are disabled; workflow skipped');
+                return;
+            }
+            ctx.waitUntil(scheduledWorkflow(env));
+        },
+    };
+}
+
+export default createWorker();

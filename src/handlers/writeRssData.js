@@ -5,9 +5,7 @@ import { marked } from '../marked.esm.js';
 import { callChatAPI } from '../chatapi.js'; // 导入 callChatAPI
 import { getSummarizationSimplifyPrompt } from "../prompt/summarizationSimplifyPrompt";
 
-export async function handleWriteRssData(request, env) {
-    const url = new URL(request.url);
-    const dateStr = url.searchParams.get('date');
+export async function handleWriteRssData({ date: dateStr }, env) {
     console.log(`[writeRssData] Received request for date: ${dateStr}`);
 
     if (!dateStr) {
@@ -40,7 +38,7 @@ export async function handleWriteRssData(request, env) {
         report.content_html = marked.parse(formatMarkdownText(replaceImageProxy(env, content)));
         
         const kvKey = `${dateStr}-report`;
-        console.log(`[writeRssData] Preparing to store report in KV. Key: ${kvKey}, Report object:`, JSON.stringify(report).substring(0, 200) + '...'); // Log first 200 chars
+        console.log(`[writeRssData] Preparing to store report in KV. Key: ${kvKey}, contentLength=${report.content_html.length}`);
         await storeInKV(env.DATA_KV, kvKey, report);
         console.log(`[writeRssData] Successfully stored report in KV with key: ${kvKey}`);
 
@@ -49,8 +47,8 @@ export async function handleWriteRssData(request, env) {
             status: 200
         });
     } catch (error) {
-        console.error('[writeRssData] Error handling daily report:', error.message, error.stack);
-        return new Response(`Error handling daily report: ${error.message}`, { status: 500 });
+        console.error('[writeRssData] request failed', { errorType: error?.name || 'Error' });
+        throw error;
     }
 }
 

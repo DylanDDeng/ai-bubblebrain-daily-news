@@ -172,7 +172,6 @@ export function generateContentSelectionPageHtml(env, dateStr, allData, dataCate
                     button.disabled = true;
 
                     try {
-                        localStorage.setItem('${env.FOLO_COOKIE_KV_KEY}', cookieValue);
                         const response = await fetch('/updateFoloCookie', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -182,7 +181,9 @@ export function generateContentSelectionPageHtml(env, dateStr, allData, dataCate
                         if (!response.ok || !result.success) {
                             throw new Error(result.error || result.message || '同步到 Worker KV 失败');
                         }
-                        alert('Folo Cookie 已保存到本地，并同步到 Worker KV！');
+                        localStorage.removeItem('${env.FOLO_COOKIE_KV_KEY}');
+                        cookieInput.value = '';
+                        alert('Folo Cookie 已安全同步到 Worker KV！');
                     } catch (error) {
                         console.error('Error saving Folo Cookie:', error);
                         alert(\`保存 Folo Cookie 时发生错误: \${error.message}\`);
@@ -193,10 +194,7 @@ export function generateContentSelectionPageHtml(env, dateStr, allData, dataCate
                 }
 
                 document.addEventListener('DOMContentLoaded', function() {
-                    const savedCookie = localStorage.getItem('${env.FOLO_COOKIE_KV_KEY}');
-                    if (savedCookie) {
-                        document.getElementById('foloCookie').value = savedCookie;
-                    }
+                    localStorage.removeItem('${env.FOLO_COOKIE_KV_KEY}');
                 });
 
                 function confirmFetchAndWriteData(button) {
@@ -210,17 +208,9 @@ export function generateContentSelectionPageHtml(env, dateStr, allData, dataCate
                     button.textContent = '正在抓取和写入...';
                     button.disabled = true;
 
-                    const foloCookie = localStorage.getItem('${env.FOLO_COOKIE_KV_KEY}'); // 从 localStorage 获取 foloCookie
+                    const foloCookie = null; // Cookie 只保存在 Worker KV，不进入浏览器持久存储
 
                     try {
-                        if (foloCookie) {
-                            await fetch('/updateFoloCookie', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ cookie: foloCookie })
-                            });
-                        }
-
                         const response = await fetch('/writeData', {
                             method: 'POST',
                             headers: {

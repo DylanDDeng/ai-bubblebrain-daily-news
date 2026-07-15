@@ -1,0 +1,24 @@
+name = "ai-daily-staging"
+main = "src/index.js"
+compatibility_date = "2025-05-20"
+workers_dev = true
+
+[[kv_namespaces]]
+binding = "DATA_KV"
+id = "ba40d28eb83f4045951f60b714e4b4e2"
+
+[[ratelimits]]
+name = "ADMIN_RATE_LIMITER"
+namespace_id = "2001001"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "LOGIN_RATE_LIMITER"
+namespace_id = "2001002"
+simple = { limit = 5, period = 60 }
+
+[vars]
+EXTERNAL_WRITES_ENABLED = "false"
+GITHUB_REPO_OWNER = "DylanDDeng"
+GITHUB_REPO_NAME = "ai-bubblebrain-daily-news"
+GITHUB_BRANCH = "codex/worker-staging"
