@@ -134,7 +134,9 @@ try {
 
 	copied.sort((a, b) => a.path.localeCompare(b.path));
 	skippedRedirects.sort();
-	const manifestDirectory = resolve(distRoot, '.well-known');
+	// Cloudflare Pages omits dot-directories from the deployed artifact, so release
+	// evidence must live at a normal public path that survives the upload step.
+	const manifestDirectory = resolve(distRoot, 'release-manifests');
 	await mkdir(manifestDirectory, { recursive: true });
 	await writeFile(
 		resolve(manifestDirectory, 'legacy-compat-manifest.json'),

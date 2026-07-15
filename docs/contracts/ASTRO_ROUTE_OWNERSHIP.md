@@ -15,9 +15,12 @@ builds Astro first, generates Cloudflare redirects, builds Hugo 0.147.9 in an is
 directory, and copies only declared compatibility HTML and bundled MP4 resources into `astro/dist`.
 RSS, sitemap, JSON, robots, redirects, and custom 404 output remain Astro-owned. The merge fails if
 Hugo would overwrite an existing Astro file. It records every copied file and SHA-256 digest in
-`.well-known/legacy-compat-manifest.json`, then deletes the temporary Hugo output.
+`release-manifests/legacy-compat-manifest.json`, then deletes the temporary Hugo output. The
+non-hidden directory is intentional because Cloudflare Pages does not publish dot-directories from
+the uploaded artifact.
 
-The build also emits `.well-known/site-route-manifest.json`, a complete route/status/owner/content
+The build also emits `release-manifests/site-route-manifest.json`, a complete
+route/status/owner/content
 type/indexability contract. `npm run verify:site` checks that manifest against the built files,
 redirect targets, canonical and hreflang metadata, all 27 XML endpoints, internal links, Hugo route
 parity, and representative behavior markers for image compression, model evaluations, and

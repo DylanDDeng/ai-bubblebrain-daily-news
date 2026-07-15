@@ -14,7 +14,8 @@ if (!baseArgument) {
 }
 
 const localManifestPath =
-  manifestPathArgument ?? "astro/dist/.well-known/site-route-manifest.json";
+  manifestPathArgument ??
+  "astro/dist/release-manifests/site-route-manifest.json";
 const localManifestText = await readFile(localManifestPath, "utf8");
 const localManifest = JSON.parse(localManifestText);
 const expectedSha = (
@@ -103,7 +104,7 @@ invariant(
 );
 
 const manifestResponse = await fetchManual(
-  "/.well-known/site-route-manifest.json",
+  "/release-manifests/site-route-manifest.json",
 );
 invariant(
   manifestResponse.status === 200,

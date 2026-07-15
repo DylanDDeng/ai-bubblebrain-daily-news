@@ -5,10 +5,10 @@ import { relative, resolve } from 'node:path';
 
 const astroRoot = process.cwd();
 const distRoot = resolve(astroRoot, 'dist');
-const manifestRelativePath = '.well-known/site-route-manifest.json';
+const manifestRelativePath = 'release-manifests/site-route-manifest.json';
 const ownership = JSON.parse(await readFile(resolve(astroRoot, 'route-ownership.json'), 'utf8'));
 const legacyManifest = JSON.parse(
-	await readFile(resolve(distRoot, '.well-known', 'legacy-compat-manifest.json'), 'utf8'),
+	await readFile(resolve(distRoot, 'release-manifests', 'legacy-compat-manifest.json'), 'utf8'),
 );
 
 async function walk(directory) {
@@ -112,7 +112,7 @@ const legacyPaths = new Set(legacyManifest.copied.map((entry) => entry.path));
 const records = [];
 for (const file of await walk(distRoot)) {
 	const path = relative(distRoot, file).replaceAll('\\', '/');
-	if (path.startsWith('.well-known/')) continue;
+	if (path.startsWith('release-manifests/')) continue;
 	if (path === '_headers' || path === '_redirects') continue;
 	const fileRoute = routeFromPath(path);
 	let owner;
@@ -149,7 +149,7 @@ for (const file of await walk(distRoot)) {
 	}
 }
 
-for (const path of ['.well-known/legacy-compat-manifest.json', manifestRelativePath]) {
+for (const path of ['release-manifests/legacy-compat-manifest.json', manifestRelativePath]) {
 	records.push({
 		route: `/${path}`,
 		status: 200,

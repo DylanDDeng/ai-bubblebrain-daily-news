@@ -87,7 +87,6 @@ function relevantOutput(path) {
 
 function releaseOutput(path) {
   return (
-    !path.startsWith(".well-known/") &&
     ![".DS_Store", "_headers", "_redirects"].includes(path) &&
     !path.endsWith("/.DS_Store")
   );
@@ -182,11 +181,11 @@ const ownershipBytes = await readFile(
 const rawPolicy = JSON.parse(
   await readFile(resolve(astroRoot, "raw-html-policy.json"), "utf8"),
 );
-const contractRelativePath = ".well-known/site-route-manifest.json";
+const contractRelativePath = "release-manifests/site-route-manifest.json";
 const contractPath = resolve(distRoot, contractRelativePath);
 const legacyManifestPath = resolve(
   distRoot,
-  ".well-known",
+  "release-manifests",
   "legacy-compat-manifest.json",
 );
 invariant(
