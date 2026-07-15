@@ -2,7 +2,7 @@ name: Worker CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, 'codex/phase1d-protection-drill-*']
   push:
     branches: [main]
   workflow_dispatch:
@@ -111,6 +111,7 @@ jobs:
         run: gh pr merge "$PR_URL" --merge --delete-branch --match-head-commit "$PR_HEAD_SHA"
 
       - name: Dispatch GitHub Pages build for merged main
+        if: github.event.pull_request.base.ref == 'main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run build-and-deploy.yml --ref main
