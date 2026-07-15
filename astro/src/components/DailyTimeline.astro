@@ -1,0 +1,229 @@
+---
+import type { DailyLocale } from '../lib/daily';
+import {
+	cleanTimelineSummary,
+	formatTimelineTime,
+	type DailyContentType,
+	type StructuredDailyReport,
+} from '../lib/structuredDaily';
+
+interface Props {
+	report: StructuredDailyReport;
+	locale: DailyLocale;
+	newerHref?: string | null;
+	olderHref?: string | null;
+}
+
+const { report, locale, newerHref = null, olderHref = null } = Astro.props;
+const isEnglish = locale === 'en';
+const itemById = new Map(report.items.map((item) => [item.id, item]));
+const typeLabels: Record<'all' | DailyContentType, string> = isEnglish
+	? { all: 'All', news: 'News', project: 'Projects', paper: 'Papers', socialMedia: 'Social' }
+	: { all: '全部', news: '资讯', project: '项目', paper: '论文', socialMedia: '社交' };
+const typeOrder: Array<'all' | DailyContentType> = [
+	'all',
+	'news',
+	'project',
+	'paper',
+	'socialMedia',
+];
+const overview = cleanTimelineSummary(report.overview.text);
+---
+
+<link rel="stylesheet" href="/css/daily-timeline.css" />
+
+<article
+	class="daily-timeline"
+	data-daily-timeline
+	data-report-date={report.date}
+	data-expand-label={isEnglish ? 'Expand summary' : '展开摘要'}
+	data-collapse-label={isEnglish ? 'Collapse summary' : '收起摘要'}
+>
+	<header class="timeline-header">
+		<div>
+			<p class="timeline-kicker">
+				{isEnglish ? 'DAILY INTELLIGENCE LEDGER' : 'DAILY INTELLIGENCE LEDGER · 资讯日报'}
+			</p>
+			<h1><time datetime={report.date}>{report.date}</time></h1>
+			{overview && <p class="timeline-overview">{overview}</p>}
+		</div>
+		<div class="timeline-date-nav" aria-label={isEnglish ? 'Daily navigation' : '日报日期导航'}>
+			{
+				newerHref ? (
+					<a href={newerHref}>← {isEnglish ? 'Newer' : '较新'}</a>
+				) : (
+					<span aria-hidden="true">← {isEnglish ? 'Newer' : '较新'}</span>
+				)
+			}
+			<a href={isEnglish ? '/en/daily/' : '/daily/'}>{isEnglish ? 'Archive' : '归档'}</a>
+			{
+				olderHref ? (
+					<a href={olderHref}>{isEnglish ? 'Older' : '较早'} →</a>
+				) : (
+					<span aria-hidden="true">{isEnglish ? 'Older' : '较早'} →</span>
+				)
+			}
+		</div>
+	</header>
+
+	<div class="timeline-toolbar" aria-label={isEnglish ? 'Timeline filters' : '时间轴筛选'}>
+		<div
+			class="timeline-filter-group"
+			role="group"
+			aria-label={isEnglish ? 'Content type' : '内容类型'}
+		>
+			{
+				typeOrder.map((type) => (
+					<button
+						type="button"
+						data-filter-type={type}
+						aria-pressed={type === 'all' ? 'true' : 'false'}
+					>
+						{typeLabels[type]}
+					</button>
+				))
+			}
+		</div>
+		<form class="timeline-search" data-timeline-search role="search">
+			<label for={`timeline-search-${report.date}`}
+				>{isEnglish ? 'Search this day' : '搜索当日'}</label
+			>
+			<div>
+				<input
+					id={`timeline-search-${report.date}`}
+					name="q"
+					type="search"
+					autocomplete="off"
+					placeholder={isEnglish ? 'Title, source, summary' : '标题、来源或摘要'}
+				/>
+				<button type="submit">{isEnglish ? 'Search' : '搜索'}</button>
+			</div>
+		</form>
+	</div>
+
+	<div class="timeline-status" aria-live="polite">
+		<span data-result-count>{report.items.length}</span>
+		<span>{isEnglish ? 'items' : '条资讯'}</span>
+		<noscript>
+			· {
+				isEnglish
+					? 'Filters require JavaScript; all items remain visible.'
+					: '筛选需要 JavaScript；当前已展示全部内容。'
+			}</noscript
+		>
+	</div>
+
+	<div class="timeline-batches">
+		{
+			report.batches.map((batch) => {
+				// The producer stores each batch in ascending chronology for deterministic artifacts.
+				// The reading UI reverses that stable order so the newest item is encountered first.
+				const items = batch.item_ids
+					.map((id) => itemById.get(id))
+					.filter((item) => item !== undefined)
+					.reverse();
+				const batchLabel = cleanTimelineSummary(batch.label);
+				return (
+					<section
+						class="timeline-batch"
+						data-timeline-batch={batch.id}
+						data-batch-status={batch.status}
+					>
+						<header class="timeline-batch-header">
+							<div>
+								<p>{batchLabel}</p>
+								<h2>
+									{batch.status === 'completed'
+										? isEnglish
+											? 'Published batch'
+											: '已发布批次'
+										: isEnglish
+											? 'Pending'
+											: '等待更新'}
+								</h2>
+							</div>
+							<span data-batch-count>{items.length}</span>
+						</header>
+						<div class="timeline-items">
+							{items.map((item, index) => {
+								const summary = cleanTimelineSummary(item.summary);
+								const sourceName = cleanTimelineSummary(item.source.name) || item.source_type;
+								const title =
+									cleanTimelineSummary(item.title) ||
+									(isEnglish ? 'Open original source' : '查看原文');
+								const topics = item.topics.map(cleanTimelineSummary).filter(Boolean);
+								const reason = item.reason ? cleanTimelineSummary(item.reason) : '';
+								const searchText = [title, sourceName, summary, item.category, ...topics]
+									.join(' ')
+									.toLocaleLowerCase(locale);
+								return (
+									<article
+										class="timeline-item"
+										data-timeline-item
+										data-item-id={item.id}
+										data-content-type={item.content_type}
+										data-search={searchText}
+										style={`--timeline-index: ${Math.min(index, 10)}`}
+									>
+										<time datetime={item.published_at ?? item.published_date ?? undefined}>
+											{formatTimelineTime(item, locale, report.date)}
+										</time>
+										<span class="timeline-node" aria-hidden="true" />
+										<div class="timeline-item-body">
+											<p class="timeline-item-meta">
+												<span>{sourceName}</span>
+												<span>{typeLabels[item.content_type]}</span>
+												{item.featured && <strong>{isEnglish ? 'Selected' : '精选'}</strong>}
+											</p>
+											<h3>
+												{item.canonical_url ? (
+													<a href={item.canonical_url} target="_blank" rel="noopener noreferrer">
+														{title}
+														<span aria-hidden="true"> ↗</span>
+													</a>
+												) : (
+													title
+												)}
+											</h3>
+											{summary && <p class="timeline-summary">{summary}</p>}
+											{topics.length > 0 && (
+												<ul class="timeline-topics" aria-label={isEnglish ? 'Topics' : '主题'}>
+													{topics.map((topic) => (
+														<li>{topic}</li>
+													))}
+												</ul>
+											)}
+											{reason && (
+												<p class="timeline-reason">
+													<span>{isEnglish ? 'Why it matters' : '推荐理由'}</span>
+													{reason}
+												</p>
+											)}
+										</div>
+									</article>
+								);
+							})}
+							{items.length === 0 && (
+								<p class="timeline-batch-empty">
+									{batch.status === 'completed'
+										? isEnglish
+											? 'No new items in this batch.'
+											: '本批次没有新增资讯。'
+										: isEnglish
+											? 'Not published yet.'
+											: '尚未发布。'}
+								</p>
+							)}
+						</div>
+					</section>
+				);
+			})
+		}
+	</div>
+	<p class="timeline-no-results" data-no-results hidden>
+		<span>{isEnglish ? 'No items match these filters.' : '没有符合当前条件的资讯。'}</span>
+		<button type="button" data-clear-filters>{isEnglish ? 'Clear filters' : '清除筛选'}</button>
+	</p>
+</article>
+
+<script is:inline type="module" src="/js/daily-timeline.js"></script>

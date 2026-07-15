@@ -8,6 +8,16 @@ kv_namespaces = [
   { binding = "DATA_KV", id = "4cacd7ba71aa4c4c92447012c28345af" }
 ]
 
+[[ratelimits]]
+name = "ADMIN_RATE_LIMITER"
+namespace_id = "1001001"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "LOGIN_RATE_LIMITER"
+namespace_id = "1001002"
+simple = { limit = 5, period = 60 }
+
 [vars]
 IMG_PROXY = ""  #图片代理链接，用于处理图片不显示
 OPEN_TRANSLATE = "true"
@@ -48,8 +58,12 @@ PROJECTS_API_URL = "https://git-trending.justlikemaki.vip/topone/?since=daily"
 GITHUB_REPO_OWNER = "DylanDDeng"  # 请替换为你的 GitHub 用户名
 GITHUB_REPO_NAME = "ai-bubblebrain-daily-news"  # 请替换为你的仓库名
 GITHUB_BRANCH = "main"
-LOGIN_USERNAME = "root"
-LOGIN_PASSWORD = "toor"
+GITHUB_PUBLISH_STRATEGY = "pull_request"
+GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"
+EXTERNAL_WRITES_ENABLED = "true"
+DAILY_PUBLISH_MODE = "legacy"
+DAILY_STRUCTURED_WRITES_ENABLED = "false"
+DAILY_PRODUCER_VERSION = "phase1c"
 DAILY_TITLE = "AI资讯"
 DAILY_TITLE_MIN = " `AI 日报` "
 PODCAST_TITLE = "来生小酒馆"

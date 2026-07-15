@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+
+import DailyArchive from '../../../components/DailyArchive.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { filterDailyEntries } from '../../../lib/daily';
+
+const entries = filterDailyEntries(await getCollection('daily'), 'en');
+---
+
+<BaseLayout
+	title="Daily Brief · Bubble's Brain"
+	description="Bubble's Brain daily brief archive"
+	lang="en"
+>
+	<DailyArchive entries={entries} locale="en" />
+</BaseLayout>

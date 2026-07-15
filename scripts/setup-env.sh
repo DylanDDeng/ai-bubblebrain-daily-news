@@ -35,11 +35,20 @@ if [ ! -z "$GITHUB_TOKEN" ]; then
 fi
 
 # 登录密码
+read -p "管理界面用户名: " LOGIN_USER
+if [ ! -z "$LOGIN_USER" ]; then
+    sed -i.bak "s/LOGIN_USERNAME_SECRET=.*/LOGIN_USERNAME_SECRET=$LOGIN_USER/" .dev.vars
+fi
+
 read -s -p "管理界面密码: " LOGIN_PASS
 echo ""
 if [ ! -z "$LOGIN_PASS" ]; then
-    sed -i.bak "s/LOGIN_PASSWORD=.*/LOGIN_PASSWORD=$LOGIN_PASS/" .dev.vars
+    sed -i.bak "s/LOGIN_PASSWORD_SECRET=.*/LOGIN_PASSWORD_SECRET=$LOGIN_PASS/" .dev.vars
 fi
+
+# 管理 API Token
+ADMIN_TOKEN=$(openssl rand -hex 32)
+sed -i.bak "s/ADMIN_API_TOKEN=.*/ADMIN_API_TOKEN=$ADMIN_TOKEN/" .dev.vars
 
 # 清理备份文件
 rm -f .dev.vars.bak

@@ -78,17 +78,12 @@ import { getSystemPromptDailyAnalysis } from '../prompt/dailyAnalysisPrompt.js';
 import { createOrUpdateGitHubFile, getGitHubFileSha } from '../github.js';
 import { marked } from '../marked.esm.js';
 
-export async function handleAutoWorkflow(request, env) {
-    const url = new URL(request.url);
-    const dateStr = url.searchParams.get('date') || getISODate();
-    
-    try {
-        const result = await runAutoWorkflow(env, dateStr);
-        return new Response(JSON.stringify(result), { headers: { 'Content-Type': 'application/json; charset=utf-8' } });
-    } catch (error) {
-        console.error("Auto Workflow failed:", error);
-        return new Response(JSON.stringify({ success: false, error: error.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    }
+export async function handleAutoWorkflow({ date }, env) {
+    const dateStr = date || getISODate();
+    const result = await runAutoWorkflow(env, dateStr);
+    return new Response(JSON.stringify(result), {
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    });
 }
 
 export async function runAutoWorkflow(env, dateStr) {

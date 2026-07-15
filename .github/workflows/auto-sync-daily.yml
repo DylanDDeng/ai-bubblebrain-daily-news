@@ -2,9 +2,14 @@ name: Auto Sync Daily to Hugo
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'daily/*.md'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   sync-daily:
@@ -17,46 +22,7 @@ jobs:
         fetch-depth: 0
 
     - name: Sync daily content to Hugo
-      run: |
-        echo "🔄 同步每日内容到 Hugo..."
-        
-        # 确保目录存在
-        mkdir -p content/daily
-        
-        # 同步所有 daily/*.md 文件
-        for file in daily/*.md; do
-          if [ -f "$file" ] && [ "$(basename "$file")" != "SUMMARY.md" ]; then
-            filename=$(basename "$file")
-            date_str="${filename%.md}"
-            
-            # 检查 content/daily 中是否已存在
-            if [ ! -f "content/daily/$filename" ]; then
-              echo "📄 处理: $filename"
-              
-              # 生成 Hugo front matter
-              cat > "content/daily/$filename" <<EOF
----
-title: "Bubble's Brain 阅读手册 - $date_str"
-date: ${date_str}T09:00:00+08:00
-description: "Bubble's Brain 阅读手册 - $(date -d "$date_str" '+%Y年%m月%d日' 2>/dev/null || echo "$date_str")"
-categories:
-  - 日报
-tags:
-  - AI
-  - 人工智能
-  - 行业动态
-draft: false
----
-
-EOF
-              # 添加原始内容
-              cat "$file" >> "content/daily/$filename"
-              echo "✅ 已同步: $filename"
-            else
-              echo "⏭️  跳过已存在: $filename"
-            fi
-          fi
-        done
+      run: bash scripts/sync-daily-to-hugo.sh
 
     - name: Commit and push changes
       run: |

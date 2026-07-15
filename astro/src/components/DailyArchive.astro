@@ -1,0 +1,46 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+import { dailyPermalink, formatDailyDate, type DailyLocale } from '../lib/daily';
+
+interface Props {
+	entries: CollectionEntry<'daily'>[];
+	locale: DailyLocale;
+}
+
+const { entries, locale } = Astro.props;
+const heading = locale === 'en' ? 'Daily Brief' : '资讯日报';
+const description =
+	locale === 'en'
+		? 'The Astro compatibility archive currently reads the same Markdown as Hugo.'
+		: 'Astro 兼容层当前直接读取 Hugo 使用的同一批 Markdown。';
+---
+
+<section class="page-shell">
+	<header class="page-heading">
+		<p class="eyebrow">ASTRO MIGRATION · DAY 0</p>
+		<h1>{heading}</h1>
+		<p>{description}</p>
+	</header>
+
+	<div class="archive-list">
+		{
+			entries.map((entry) => {
+				const href = dailyPermalink(entry.id);
+				if (!href) return null;
+
+				return (
+					<article class="archive-card">
+						<time datetime={entry.data.date.toISOString()}>
+							{formatDailyDate(entry.data.date, locale)}
+						</time>
+						<h2>
+							<a href={href}>{entry.data.title}</a>
+						</h2>
+						{entry.data.description && <p>{entry.data.description}</p>}
+					</article>
+				);
+			})
+		}
+	</div>
+</section>

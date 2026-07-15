@@ -4,6 +4,51 @@ import { storeInKV, getFromKV} from './kv.js';
 const SESSION_COOKIE_NAME = 'session_id_89757';
 const SESSION_EXPIRATION_SECONDS = 60 * 60; // 1 hour
 
+function sanitizeRedirect(value, fallback = '/getContentHtml') {
+    if (typeof value !== 'string' || !value.startsWith('/') || value.startsWith('//') || value.includes('\\')) {
+        return fallback;
+    }
+
+    try {
+        const base = new URL('https://worker.invalid');
+        const parsed = new URL(value, base);
+        if (parsed.origin !== base.origin) return fallback;
+        return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+    } catch {
+        return fallback;
+    }
+}
+
+function escapeHtmlAttribute(value) {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+}
+
+async function checkLoginRateLimit(request, env) {
+    if (!env.LOGIN_RATE_LIMITER || typeof env.LOGIN_RATE_LIMITER.limit !== 'function') {
+        return new Response('Service unavailable', { status: 503 });
+    }
+
+    const client = request.headers.get('CF-Connecting-IP') || 'unknown';
+    try {
+        const result = await env.LOGIN_RATE_LIMITER.limit({ key: client });
+        if (!result.success) {
+            return new Response('Too many requests', {
+                status: 429,
+                headers: { 'Retry-After': '60' },
+            });
+        }
+    } catch {
+        return new Response('Service unavailable', { status: 503 });
+    }
+
+    return null;
+}
+
 // Function to generate the login page HTML
 function generateLoginPage(redirectUrl) {
     return `
@@ -37,7 +82,7 @@ function generateLoginPage(redirectUrl) {
                         <label for="password">Password:</label>
                         <input type="password" id="password" name="password" required>
                     </div>
-                    <input type="hidden" name="redirect" value="${redirectUrl}">
+                    <input type="hidden" name="redirect" value="${escapeHtmlAttribute(redirectUrl)}">
                     <button type="submit">Login</button>
                     <p id="errorMessage" class="error-message"></p>
                 </form>
@@ -83,17 +128,22 @@ function setSessionCookie(sessionId) {
 async function handleLogin(request, env) {
     if (request.method === 'GET') {
         const url = new URL(request.url);
-        const redirectUrl = url.searchParams.get('redirect') || '/getContentHtml';
+        const redirectUrl = sanitizeRedirect(url.searchParams.get('redirect'));
         return new Response(generateLoginPage(redirectUrl), {
             headers: { 'Content-Type': 'text/html; charset=utf-8' },
         });
     } else if (request.method === 'POST') {
+        const rateLimitResponse = await checkLoginRateLimit(request, env);
+        if (rateLimitResponse) return rateLimitResponse;
+
         const formData = await request.formData();
         const username = formData.get('username');
         const password = formData.get('password');
-        const redirect = formData.get('redirect') || '/';
+        const redirect = sanitizeRedirect(formData.get('redirect'), '/');
 
-        if (username === env.LOGIN_USERNAME && password === env.LOGIN_PASSWORD) {
+        const configuredUsername = env.LOGIN_USERNAME_SECRET || env.LOGIN_USERNAME;
+        const configuredPassword = env.LOGIN_PASSWORD_SECRET || env.LOGIN_PASSWORD;
+        if (username === configuredUsername && password === configuredPassword) {
             const sessionId = crypto.randomUUID(); // Generate a simple session ID
             
             // Store sessionId in KV store for persistent sessions
@@ -161,7 +211,7 @@ async function handleLogout(request, env) {
     const cookie = `${SESSION_COOKIE_NAME}=; Path=/; Expires=${expiredDate.toUTCString()}; HttpOnly; Secure; SameSite=Lax`;
 
     const url = new URL(request.url);
-    const redirectUrl = url.searchParams.get('redirect') || '/login'; // Redirect to login page by default
+    const redirectUrl = sanitizeRedirect(url.searchParams.get('redirect'), '/login');
 
     return new Response('Logged out', {
         status: 302,
@@ -178,4 +228,5 @@ export {
     handleLogout,
     SESSION_COOKIE_NAME,
     SESSION_EXPIRATION_SECONDS,
+    sanitizeRedirect,
 };

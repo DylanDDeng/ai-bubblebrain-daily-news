@@ -12,6 +12,8 @@ yarn-error.log*
 
 # Wrangler
 .wrangler/
+.wrangler-dry-run/
+.wrangler-dry-run-staging/
 .dev.vars
 
 # Environment

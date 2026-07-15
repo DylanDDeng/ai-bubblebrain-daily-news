@@ -6,6 +6,9 @@
 
 我们的目标是成为您在瞬息万变的 AI 浪潮中保持领先的得力助手，让您高效获取最有价值的信息。
 
+> [!IMPORTANT]
+> Astro 展示层迁移已从 Day 0 开始，代码位于 [`astro/`](astro/README.md)。迁移期间 Hugo 仍是生产构建，详见 [`docs/ASTRO_MIGRATION.md`](docs/ASTRO_MIGRATION.md)。
+
 > [!NOTE]
 > 日报前端项目已发布2.0： [Hextra-AI-Insight-Daily](https://github.com/justlovemaki/Hextra-AI-Insight-Daily) ，基于 Hugo 加 Hextra主题 构建。
 ---

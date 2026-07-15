@@ -1,0 +1,88 @@
+{
+	"schema_version": 1,
+	"identity_version": 1,
+	"dedupe_version": 1,
+	"date": "2026-07-14",
+	"timezone": "Asia/Shanghai",
+	"generated_at": "2026-07-14T07:00:00.000Z",
+	"overview": {
+		"text": "今日 AI 增量日报正在更新中。",
+		"kind": "pending",
+		"provenance": {
+			"method": "template",
+			"model": null,
+			"prompt_version": null
+		}
+	},
+	"producer": {
+		"name": "bubble-brain-worker",
+		"version": "phase1b-fixture",
+		"commit_sha": null,
+		"dedupe_lookback_days": 7
+	},
+	"batches": [
+		{
+			"id": "morning",
+			"label": "10:00 更新",
+			"status": "pending",
+			"generated_at": null,
+			"item_ids": []
+		},
+		{
+			"id": "afternoon",
+			"label": "15:00 更新",
+			"status": "completed",
+			"generated_at": "2026-07-14T07:00:00.000Z",
+			"item_ids": ["n_b867a48fce8fda8c20e1b2ad40db953a366afcc0f3c9d0141c9742a2a155a7fe"]
+		},
+		{
+			"id": "night",
+			"label": "23:00 更新",
+			"status": "pending",
+			"generated_at": null,
+			"item_ids": []
+		},
+		{
+			"id": "lateNight",
+			"label": "次日 03:00 补充更新",
+			"status": "pending",
+			"generated_at": null,
+			"item_ids": []
+		}
+	],
+	"items": [
+		{
+			"id": "n_b867a48fce8fda8c20e1b2ad40db953a366afcc0f3c9d0141c9742a2a155a7fe",
+			"event_id": "e_b867a48fce8fda8c20e1b2ad40db953a366afcc0f3c9d0141c9742a2a155a7fe",
+			"identity_version": 1,
+			"identity_strategy": "source_id",
+			"identity_claims": [
+				"c_b867a48fce8fda8c20e1b2ad40db953a366afcc0f3c9d0141c9742a2a155a7fe",
+				"c_fef2c734c92ef32f0e2f8b2e931fba9132f38e6c4b1596cf68b476555856e9d8"
+			],
+			"source_type": "aibase",
+			"content_type": "news",
+			"source_id": "news-1",
+			"title": "示例 AI 资讯",
+			"url": "https://example.com/ai-news",
+			"canonical_url": "https://example.com/ai-news",
+			"source": {
+				"name": "Example News",
+				"id": "news-1",
+				"homepage": "https://example.com/"
+			},
+			"published_at": "2026-07-14T06:20:00.000Z",
+			"published_date": "2026-07-14",
+			"ingested_at": "2026-07-14T07:00:00.000Z",
+			"time_precision": "exact",
+			"batch": "afternoon",
+			"summary": "用于验证 Astro 迁移数据契约的示例资讯。",
+			"category": "other",
+			"topics": [],
+			"featured": false,
+			"score": null,
+			"reason": null,
+			"related_source_ids": []
+		}
+	]
+}

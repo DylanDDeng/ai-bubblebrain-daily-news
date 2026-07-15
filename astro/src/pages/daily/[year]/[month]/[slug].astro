@@ -1,0 +1,40 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+import DailyArticle from '../../../../components/DailyArticle.astro';
+import { dailyPermalink, filterDailyEntries, parseDailyEntryId } from '../../../../lib/daily';
+
+export async function getStaticPaths() {
+	const entries = filterDailyEntries(await getCollection('daily'), 'zh-CN');
+
+	return entries.flatMap((entry, index) => {
+		const identity = parseDailyEntryId(entry.id);
+		if (!identity) return [];
+
+		return [
+			{
+				params: {
+					year: identity.year,
+					month: identity.month,
+					slug: identity.dateKey,
+				},
+				props: {
+					entry,
+					newerHref: index > 0 ? dailyPermalink(entries[index - 1].id) : null,
+					olderHref: index < entries.length - 1 ? dailyPermalink(entries[index + 1].id) : null,
+				},
+			},
+		];
+	});
+}
+
+interface Props {
+	entry: CollectionEntry<'daily'>;
+	newerHref: string | null;
+	olderHref: string | null;
+}
+
+const { entry, newerHref, olderHref } = Astro.props;
+---
+
+<DailyArticle entry={entry} locale="zh-CN" newerHref={newerHref} olderHref={olderHref} />
