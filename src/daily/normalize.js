@@ -2,6 +2,7 @@ import { canonicalizeUrl, createIdentity } from './identity.js';
 import { getSourcePolicy } from './sourceRegistry.js';
 import { sanitizeSummaryText } from './summary.js';
 import { isExplicitInstant, isRealDate } from './time.js';
+import { classifyKnowledgeItem } from '../knowledge/taxonomy.js';
 
 const BATCHES = new Set(['morning', 'afternoon', 'night', 'lateNight']);
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/;
@@ -99,6 +100,16 @@ export async function normalizeSourceItem(raw, { provider, batch, runAt } = {}) 
     const sourceName = cleanText(sourceNameInput || provider, 200) || provider;
     const normalizedHomepage = canonicalizeUrl(raw.source?.homepage || raw.source_homepage);
     const homepage = normalizedHomepage?.length <= 8192 ? normalizedHomepage : null;
+    const summary = sanitizeSummaryText(cleanText(
+        raw.summary || raw.description || raw.content_text || raw.content_html || raw.details?.content_html,
+        5000,
+    ));
+    const classification = classifyKnowledgeItem(raw, {
+        provider,
+        title,
+        summary,
+        sourceName,
+    });
 
     return {
         accepted: true,
@@ -124,12 +135,10 @@ export async function normalizeSourceItem(raw, { provider, batch, runAt } = {}) 
             ingested_at: ingested.toISOString(),
             time_precision: precision,
             batch,
-            summary: sanitizeSummaryText(cleanText(
-                raw.summary || raw.description || raw.content_text || raw.content_html || raw.details?.content_html,
-                5000,
-            )),
-            category: 'other',
-            topics: [],
+            summary,
+            category: classification.category,
+            topic_ids: classification.topicIds,
+            entity_ids: classification.entityIds,
             featured: false,
             score: null,
             reason: null,

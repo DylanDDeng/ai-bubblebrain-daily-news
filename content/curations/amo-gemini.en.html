@@ -275,15 +275,23 @@ layout: "amo-gemini"
                 -webkit-print-color-adjust: exact;
             }
         }
+        .skip-link {
+            position: fixed; top: 1rem; left: 1rem; z-index: 1000;
+            transform: translateY(-200%); padding: .75rem 1rem;
+            background: #fff; color: #111; border: 2px solid currentColor;
+        }
+        .skip-link:focus { transform: translateY(0); }
     </style>
 </head>
 <body>
+
+    <a class="skip-link" href="#main-content">Skip to content</a>
 
     <header>
         <div class="logo">BubbleBrain</div>
     </header>
 
-    <div class="container">
+    <main class="container" id="main-content" tabindex="-1">
 
         <h1 class="main-title">End of saturation: AMO-Bench</h1>
         <p class="subtitle">A new olympiad level math benchmark that reveals the reasoning limits of top large language models.</p>
@@ -406,7 +414,7 @@ layout: "amo-gemini"
             </div>
         </div>
 
-    </div>
+    </main>
 
     <footer>
         Content based on arXiv:2510.26768v1 cs.CL 30 Oct 2025.
@@ -414,4 +422,3 @@ layout: "amo-gemini"
 
 </body>
 </html>
-

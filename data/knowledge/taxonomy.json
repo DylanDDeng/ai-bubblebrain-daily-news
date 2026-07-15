@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "classifier_version": 1,
+  "topics": [
+    { "id": "topic_models", "slug": "models", "slug_aliases": ["foundation-models"], "labels": { "zh": "模型", "en": "Models" }, "aliases": ["大模型", "foundation model"], "keywords": ["model", "模型", "llm", "gpt", "claude", "gemini"], "status": "active", "redirect_to_id": null, "category": "models" },
+    { "id": "topic_agents", "slug": "agents", "slug_aliases": ["ai-agents"], "labels": { "zh": "智能体", "en": "Agents" }, "aliases": ["agent", "智能体", "代理"], "keywords": ["agent", "agentic", "智能体", "multi-agent", "多智能体"], "status": "active", "redirect_to_id": null, "category": "agents" },
+    { "id": "topic_research", "slug": "research", "slug_aliases": [], "labels": { "zh": "研究", "en": "Research" }, "aliases": ["论文", "paper", "benchmark"], "keywords": ["research", "paper", "benchmark", "论文", "研究", "评测"], "status": "active", "redirect_to_id": null, "category": "research" },
+    { "id": "topic_products", "slug": "products", "slug_aliases": ["product"], "labels": { "zh": "产品", "en": "Products" }, "aliases": ["应用", "工具", "launch"], "keywords": ["product", "launch", "app", "产品", "发布", "工具"], "status": "active", "redirect_to_id": null, "category": "products" },
+    { "id": "topic_business", "slug": "business", "slug_aliases": ["industry"], "labels": { "zh": "商业", "en": "Business" }, "aliases": ["融资", "收购", "industry"], "keywords": ["funding", "acquisition", "revenue", "融资", "收购", "商业", "估值"], "status": "active", "redirect_to_id": null, "category": "business" },
+    { "id": "topic_policy", "slug": "policy", "slug_aliases": ["governance"], "labels": { "zh": "政策与治理", "en": "Policy" }, "aliases": ["监管", "治理", "safety"], "keywords": ["policy", "regulation", "safety", "政策", "监管", "治理", "合规"], "status": "active", "redirect_to_id": null, "category": "policy" },
+    { "id": "topic_open_source", "slug": "open-source", "slug_aliases": ["opensource"], "labels": { "zh": "开源", "en": "Open source" }, "aliases": ["open source", "github"], "keywords": ["open source", "open-source", "github", "开源"], "status": "active", "redirect_to_id": null, "category": "open_source" },
+    { "id": "topic_other", "slug": "other", "slug_aliases": [], "labels": { "zh": "其他", "en": "Other" }, "aliases": [], "keywords": [], "status": "active", "redirect_to_id": null, "category": "other" }
+  ],
+  "entities": [
+    { "id": "entity_openai", "entity_type": "organization", "slug": "openai", "slug_aliases": [], "labels": { "zh": "OpenAI", "en": "OpenAI" }, "aliases": ["Open AI"], "keywords": ["openai", "open ai", "chatgpt"], "status": "active", "redirect_to_id": null },
+    { "id": "entity_anthropic", "entity_type": "organization", "slug": "anthropic", "slug_aliases": [], "labels": { "zh": "Anthropic", "en": "Anthropic" }, "aliases": ["Claude"], "keywords": ["anthropic", "claude"], "status": "active", "redirect_to_id": null },
+    { "id": "entity_google_deepmind", "entity_type": "organization", "slug": "google-deepmind", "slug_aliases": ["deepmind"], "labels": { "zh": "Google DeepMind", "en": "Google DeepMind" }, "aliases": ["DeepMind", "Google AI"], "keywords": ["google deepmind", "deepmind", "gemini"], "status": "active", "redirect_to_id": null },
+    { "id": "entity_meta_ai", "entity_type": "organization", "slug": "meta-ai", "slug_aliases": [], "labels": { "zh": "Meta AI", "en": "Meta AI" }, "aliases": ["Meta"], "keywords": ["meta ai", "llama"], "status": "active", "redirect_to_id": null },
+    { "id": "entity_microsoft", "entity_type": "organization", "slug": "microsoft", "slug_aliases": [], "labels": { "zh": "微软", "en": "Microsoft" }, "aliases": ["Microsoft AI", "微软"], "keywords": ["microsoft", "微软", "copilot"], "status": "active", "redirect_to_id": null },
+    { "id": "entity_xai", "entity_type": "organization", "slug": "xai", "slug_aliases": ["x-ai"], "labels": { "zh": "xAI", "en": "xAI" }, "aliases": ["Grok"], "keywords": ["xai", "x.ai", "grok"], "status": "active", "redirect_to_id": null },
+    { "id": "entity_deepseek", "entity_type": "organization", "slug": "deepseek", "slug_aliases": [], "labels": { "zh": "DeepSeek", "en": "DeepSeek" }, "aliases": ["深度求索"], "keywords": ["deepseek", "深度求索"], "status": "active", "redirect_to_id": null },
+    { "id": "entity_qwen", "entity_type": "model", "slug": "qwen", "slug_aliases": ["tongyi-qianwen"], "labels": { "zh": "通义千问", "en": "Qwen" }, "aliases": ["Qwen", "通义千问"], "keywords": ["qwen", "通义千问", "千问"], "status": "active", "redirect_to_id": null }
+  ],
+  "provider_mappings": {
+    "aibase": { "topics": { "agent": ["topic_agents"], "agents": ["topic_agents"], "model": ["topic_models"], "models": ["topic_models"], "research": ["topic_research"], "open source": ["topic_open_source"] }, "entities": {} },
+    "huggingface_papers": { "topics": { "paper": ["topic_research"], "research": ["topic_research"] }, "entities": {} },
+    "jiqizhixin": { "topics": { "研究": ["topic_research"], "产品": ["topic_products"], "模型": ["topic_models"] }, "entities": {} },
+    "openai_newsroom": { "topics": { "product": ["topic_products"], "research": ["topic_research"], "safety": ["topic_policy"] }, "entities": { "openai": ["entity_openai"] } },
+    "github_trending": { "topics": { "github": ["topic_open_source"], "open source": ["topic_open_source"] }, "entities": {} },
+    "qbit": { "topics": { "模型": ["topic_models"], "产品": ["topic_products"] }, "entities": {} },
+    "reddit": { "topics": {}, "entities": {} },
+    "twitter": { "topics": {}, "entities": {} },
+    "twitter_extra": { "topics": {}, "entities": {} },
+    "xiaohu": { "topics": { "model": ["topic_models"], "agent": ["topic_agents"] }, "entities": {} },
+    "xinzhiyuan": { "topics": { "模型": ["topic_models"], "研究": ["topic_research"] }, "entities": {} }
+  }
+}

@@ -2,6 +2,7 @@ import { BATCH_ORDER } from './dedupe.js';
 import { canonicalizeUrl, createIdentity } from './identity.js';
 import { getSourcePolicy } from './sourceRegistry.js';
 import { isRealDate } from './time.js';
+import { validateKnowledgeReport } from '../knowledge/taxonomy.js';
 
 export function validateDailyReportSemantics(report, { enforcePhase1 = false } = {}) {
     const errors = [];
@@ -105,6 +106,7 @@ export function validateDailyReportSemantics(report, { enforcePhase1 = false } =
     }
 
     if (errors.length > 0) throw new Error(`Invalid daily report semantics: ${errors.join(', ')}`);
+    validateKnowledgeReport(report);
     return true;
 }
 

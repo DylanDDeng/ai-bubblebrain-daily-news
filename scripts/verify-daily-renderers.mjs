@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import { execFileSync } from "node:child_process";
 import {
+  copyFile,
   mkdtemp,
   mkdir,
   readFile,
@@ -39,9 +40,14 @@ function dailyRoutes(files) {
 }
 
 function attributeValues(html, attribute) {
-  return [...html.matchAll(new RegExp(`${attribute}="([^"]+)"`, "g"))].map(
-    (match) => match[1],
-  );
+  return [
+    ...html.matchAll(
+      new RegExp(
+        `${attribute}\\s*=\\s*(?:"([^"]+)"|'([^']+)'|([^\\s>]+))`,
+        "gi",
+      ),
+    ),
+  ].map((match) => match[1] ?? match[2] ?? match[3]);
 }
 
 function timelineNavHrefs(html) {
@@ -58,13 +64,96 @@ function timelineTimeLabels(html) {
   ].map((match) => match[1].trim());
 }
 
+function assertSafeLegacyDaily(html, renderer, route) {
+  assert.doesNotMatch(
+    html,
+    /\[(?:图片|image|视频|video)\s*:/iu,
+    `${renderer} retained media transport metadata for ${route}`,
+  );
+  assert.doesNotMatch(
+    html,
+    /https?:\/\/[^\s<"']*(?:…|%E2%80%A6|&hellip;|\.{3,})[^\s<"']*/iu,
+    `${renderer} retained a bare truncated URL for ${route}`,
+  );
+  const visibleText = html
+    .replace(/<[^>]+>/gu, " ")
+    .replaceAll("&hellip;", "…");
+  assert.doesNotMatch(
+    visibleText,
+    /https?:\/\/\S*(?:…|%E2%80%A6)\S*/iu,
+    `${renderer} retained a visually truncated URL for ${route}`,
+  );
+  assert.doesNotMatch(
+    visibleText,
+    /https?:\/\/\S*(?:%5D|\])\(https?:\/\/\S+/iu,
+    `${renderer} retained a duplicated Markdown URL for ${route}`,
+  );
+  for (const href of attributeValues(html, "href")) {
+    assert.doesNotMatch(
+      href,
+      /…|%E2%80%A6/iu,
+      `${renderer} retained a truncated URL for ${route}: ${href}`,
+    );
+  }
+}
+
+function legacyContentSemantics(html, label) {
+  const match = html.match(
+    /<div\b[^>]*class="[^"]*\b(?:article-content|legacy-content)\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+  );
+  assert.ok(match, `${label} legacy daily content block is missing`);
+  const block = match[1];
+  const text = block
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replace(/&(?:quot|ldquo|rdquo);/g, '"')
+    .replace(/&(?:apos|lsquo|rsquo);|&#39;/g, "'")
+    .replaceAll("&hellip;", "…")
+    .replaceAll("&mdash;", "—")
+    .replaceAll("&ndash;", "–")
+    .replaceAll("&nbsp;", " ")
+    .replace(/&#(\d+);/g, (_match, value) =>
+      String.fromCodePoint(Number(value)),
+    )
+    .replace(/&#x([\da-f]+);/gi, (_match, value) =>
+      String.fromCodePoint(Number.parseInt(value, 16)),
+    )
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/https?:\/\/\S+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text;
+}
+
+function legacyBlockCounts(html) {
+  return Object.fromEntries(
+    ["li", "h2", "h3", "blockquote"].map((tag) => [
+      tag,
+      (html.match(new RegExp(`<${tag}\\b`, "gi")) ?? []).length,
+    ]),
+  );
+}
+
 const temporaryRoot = await mkdtemp(join(tmpdir(), "bubble-renderer-parity-"));
 const dataRoot = join(temporaryRoot, "data");
 const dailyData = join(dataRoot, "daily");
+const knowledgeData = join(dataRoot, "knowledge");
 const hugoOutput = join(temporaryRoot, "hugo");
+const hugoSanitizerRoot = join(temporaryRoot, "hugo-sanitizer");
+const hugoSanitizerOutput = join(hugoSanitizerRoot, "public");
 
 try {
   await mkdir(dailyData, { recursive: true });
+  await mkdir(knowledgeData, { recursive: true });
+  await copyFile(
+    join(repoRoot, "data", "knowledge", "taxonomy.json"),
+    join(knowledgeData, "taxonomy.json"),
+  );
   const fixture = JSON.parse(await readFile(fixturePath, "utf8"));
   fixture.items[0].summary =
     "前文 [图片: https://proxy.example/very-long?x=1&y=2] https://raw.example/a，后文 " +
@@ -80,6 +169,85 @@ try {
     join(dailyData, "2026-01-08.json"),
     `${JSON.stringify(bilingualFixture, null, 2)}\n`,
   );
+
+  await mkdir(join(hugoSanitizerRoot, "content"), { recursive: true });
+  await mkdir(join(hugoSanitizerRoot, "layouts", "partials"), {
+    recursive: true,
+  });
+  await copyFile(
+    join(repoRoot, "layouts", "partials", "legacy-daily-content.html"),
+    join(hugoSanitizerRoot, "layouts", "partials", "legacy-daily-content.html"),
+  );
+  await writeFile(
+    join(hugoSanitizerRoot, "hugo.toml"),
+    "[markup.goldmark.renderer]\nunsafe = true\n",
+  );
+  await writeFile(
+    join(hugoSanitizerRoot, "layouts", "index.html"),
+    '{{ partial "legacy-daily-content.html" . }}\n',
+  );
+  await writeFile(
+    join(hugoSanitizerRoot, "content", "_index.md"),
+    `---
+title: sanitizer fixture
+---
+<p>before ([ https://first.example/story](https://second.example/target) ) after</p>
+<p>multi https://one.example/a](https://two.example/a) middle https://three.example/b](https://four.example/b) done</p>
+<p>anchor before ([ <a href="https://first.example/story%5D(https://second.example/target)">https://first.example/story](https://second.example/target)</a> ) anchor after</p>
+<p>ordinary before ( <a href="https://ordinary.example/story%5D(https://different.example/target)">https://ordinary.example/story](https://different.example/target)</a> ) ordinary after</p>
+<p>bare ordinary before ( https://bare.example/story](https://different.example/target) ) bare ordinary after</p>
+<p><a href="https://example.com/redirect?value=%5D(https://other.example)">legitimate query</a></p>
+<div data-link="https://attr.example/a%5D(https://attr.example/b)">attribute sentinel</div>
+<p>truncated before <a href="https://short.example/pa">https://short.example/pa</a>... truncated after</p>
+<p>ordinary before <a href="https://ordinary.example/story">ordinary label</a>... ordinary after</p>
+<p>prose before <a href="https://zenodo.example/record%EF%BC%8C%E8%80%8C%E6%AD%A3%E6%96%87">https://zenodo.example/record，而正文</a> prose after</p>
+<p>combined before <a href="https://example.com/path%E3%80%82%E6%AD%A3%E6%96%87">https://example.com/path。正文</a>… combined after</p>
+	`,
+  );
+  execFileSync(
+    "hugo",
+    ["--source", hugoSanitizerRoot, "--destination", hugoSanitizerOutput],
+    { stdio: "inherit" },
+  );
+  const sanitizerHtml = await readFile(
+    join(hugoSanitizerOutput, "index.html"),
+    "utf8",
+  );
+  assert.match(sanitizerHtml, /<p>before\s+after<\/p>/u);
+  assert.match(sanitizerHtml, /<p>multi\s+middle\s+done<\/p>/u);
+  assert.match(sanitizerHtml, /<p>anchor before\s+anchor after<\/p>/u);
+  assert.match(
+    sanitizerHtml,
+    /<p>ordinary before \(\s+\) ordinary after<\/p>/u,
+  );
+  assert.match(
+    sanitizerHtml,
+    /<p>bare ordinary before \(\s+\) bare ordinary after<\/p>/u,
+  );
+  assert.match(
+    sanitizerHtml,
+    /<a href="https:\/\/example\.com\/redirect\?value=%5D\(https:\/\/other\.example\)">legitimate query<\/a>/u,
+  );
+  assert.match(
+    sanitizerHtml,
+    /data-link="https:\/\/attr\.example\/a%5D\(https:\/\/attr\.example\/b\)"/u,
+  );
+	assert.doesNotMatch(sanitizerHtml, /first\.example\/story/iu);
+	assert.match(sanitizerHtml, /<p>truncated before\s+truncated after<\/p>/u);
+	assert.match(
+		sanitizerHtml,
+		/<p>ordinary before <a href="https:\/\/ordinary\.example\/story">ordinary label<\/a> ordinary after<\/p>/u,
+	);
+	assert.match(
+		sanitizerHtml,
+		/<p>prose before https:\/\/zenodo\.example\/record，而正文 prose after<\/p>/u,
+	);
+	assert.doesNotMatch(sanitizerHtml, /href="https:\/\/zenodo\.example/iu);
+	assert.match(
+		sanitizerHtml,
+		/<p>combined before https:\/\/example\.com\/path。正文 combined after<\/p>/u,
+	);
+	assert.doesNotMatch(sanitizerHtml, /href="https:\/\/example\.com\/path%E3%80%82/iu);
 
   execFileSync("hugo", ["--destination", hugoOutput, "--cleanDestinationDir"], {
     cwd: repoRoot,
@@ -97,12 +265,6 @@ try {
     filesBelow(hugoOutput),
     filesBelow(astroOutput),
   ]);
-  assert.deepEqual(
-    dailyRoutes(astroFiles),
-    dailyRoutes(hugoFiles),
-    "Hugo and Astro daily route sets differ",
-  );
-
   const legacyRedirectPath = join(
     "en",
     "daily",
@@ -111,16 +273,26 @@ try {
     "202-22",
     "index.html",
   );
-  for (const html of await Promise.all([
+  assert.deepEqual(
+    dailyRoutes(astroFiles),
+    dailyRoutes(hugoFiles).filter((path) => path !== legacyRedirectPath),
+    "Hugo and Astro daily route sets differ",
+  );
+
+  const [hugoLegacyRedirect, astroRedirects] = await Promise.all([
     readFile(join(hugoOutput, legacyRedirectPath), "utf8"),
-    readFile(join(astroOutput, legacyRedirectPath), "utf8"),
-  ])) {
-    assert.match(
-      html,
-      /\/en\/daily\/2025\/12\/2025-12-22\//,
-      "legacy daily redirect target differs",
-    );
-  }
+    readFile(join(astroOutput, "_redirects"), "utf8"),
+  ]);
+  assert.match(
+    hugoLegacyRedirect,
+    /\/en\/daily\/2025\/12\/2025-12-22\//,
+    "legacy Hugo daily redirect target differs",
+  );
+  assert.match(
+    astroRedirects,
+    /^\/en\/daily\/2025\/12\/202-22\/ \/en\/daily\/2025\/12\/2025-12-22\/ 301$/m,
+    "Astro must replace the malformed legacy page with a real permanent redirect",
+  );
 
   const structuredPath = join(
     "daily",
@@ -186,6 +358,56 @@ try {
     assert.match(astroHtml, /data-legacy-daily/);
     assert.doesNotMatch(hugoHtml, /data-daily-timeline/);
     assert.doesNotMatch(astroHtml, /data-daily-timeline/);
+  }
+
+  for (const path of dailyRoutes(astroFiles)) {
+    if (path === legacyRedirectPath || path === structuredPath) continue;
+    const [hugoHtml, astroHtml] = await Promise.all([
+      readFile(join(hugoOutput, path), "utf8"),
+      readFile(join(astroOutput, path), "utf8"),
+    ]);
+    if (
+      /data-daily-timeline/.test(astroHtml) ||
+      /data-daily-timeline/.test(hugoHtml)
+    ) {
+      assert.match(
+        astroHtml,
+        /data-daily-timeline/,
+        `Astro structured route drifted for ${path}`,
+      );
+      assert.match(
+        hugoHtml,
+        /data-daily-timeline/,
+        `Hugo structured route drifted for ${path}`,
+      );
+      continue;
+    }
+    assertSafeLegacyDaily(hugoHtml, "Hugo", path);
+    assertSafeLegacyDaily(astroHtml, "Astro", path);
+    const astroText = legacyContentSemantics(astroHtml, `Astro ${path}`);
+    const hugoText = legacyContentSemantics(hugoHtml, `Hugo ${path}`);
+    const longestText = Math.max(astroText.length, hugoText.length, 1);
+    assert.ok(
+      Math.abs(astroText.length - hugoText.length) / longestText < 0.02,
+      `legacy daily visible text length drifted by more than 2% for ${path}`,
+    );
+    assert.deepEqual(
+      legacyBlockCounts(astroHtml),
+      legacyBlockCounts(hugoHtml),
+      `legacy daily block structure differs for ${path}`,
+    );
+    if (path === "daily/2026/06/2026-06-11/index.html") {
+      for (const [renderer, text] of [
+        ["Hugo", hugoText],
+        ["Astro", astroText],
+      ]) {
+        assert.match(
+          text,
+          /as in the titl/u,
+          `${renderer} removed prose after a nested image marker`,
+        );
+      }
+    }
   }
 
   for (const asset of ["css/daily-timeline.css", "js/daily-timeline.js"]) {
