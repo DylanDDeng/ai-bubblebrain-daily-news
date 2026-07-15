@@ -21,9 +21,12 @@ simple = { limit = 5, period = 60 }
 EXTERNAL_WRITES_ENABLED = "false"
 DAILY_PUBLISH_MODE = "legacy"
 DAILY_STRUCTURED_WRITES_ENABLED = "false"
-DAILY_PRODUCER_VERSION = "phase1c"
+DAILY_PRODUCER_VERSION = "phase1d-staging"
 DAILY_STRUCTURED_START_DATE = "2026-07-15"
 OPEN_TRANSLATE = "true"
+USE_MODEL_PLATFORM = "OPEN"
+OPENAI_API_URL = "https://api.deepseek.com"
+DEFAULT_OPEN_MODEL = "deepseek-v4-pro"
 FOLO_COOKIE_KV_KEY = "folo_auth_cookie"
 FOLO_DATA_API = "https://api.folo.is/entries"
 FOLO_FILTER_DAYS = 3

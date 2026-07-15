@@ -1,0 +1,23 @@
+{
+  "http_status": 200,
+  "success": true,
+  "mode": "structured",
+  "reportDate": "2026-07-17",
+  "batch": "lateNight",
+  "history_epoch_start_date": "2026-07-17",
+  "noOp": false,
+  "commit_sha": "8888f11f5a9aaeac9a1c5543c73bb3648589d96d",
+  "reconciled": false,
+  "pending": false,
+  "publication_status": "published",
+  "metrics": {
+    "raw_count": 162,
+    "accepted_count": 162,
+    "rejected_count": 0,
+    "same_day_duplicate_count": 162,
+    "cross_day_duplicate_count": 0,
+    "fresh_count": 0,
+    "history_days_loaded": 0,
+    "cold_start": true
+  }
+}
