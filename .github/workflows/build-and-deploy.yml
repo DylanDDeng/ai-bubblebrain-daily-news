@@ -55,6 +55,7 @@ jobs:
         fi
 
     - name: Build with mdBook
+      if: ${{ hashFiles('src/SUMMARY.md') != '' }}
       run: |
         # Build mdBook for backward compatibility
         mdbook build
