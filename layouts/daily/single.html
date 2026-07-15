@@ -37,7 +37,7 @@
     </header>
     
     <div class="article-content">
-      {{ .Content }}
+      {{ partial "legacy-daily-content.html" . }}
     </div>
     {{ partial "comments.html" . }}
   </article>

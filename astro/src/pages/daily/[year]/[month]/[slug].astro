@@ -5,7 +5,13 @@ import DailyArticle from '../../../../components/DailyArticle.astro';
 import { dailyPermalink, filterDailyEntries, parseDailyEntryId } from '../../../../lib/daily';
 
 export async function getStaticPaths() {
-	const entries = filterDailyEntries(await getCollection('daily'), 'zh-CN');
+	const allEntries = await getCollection('daily');
+	const entries = filterDailyEntries(allEntries, 'zh-CN');
+	const englishDates = new Set(
+		filterDailyEntries(allEntries, 'en')
+			.map((entry) => parseDailyEntryId(entry.id)?.dateKey)
+			.filter((date): date is string => date !== undefined),
+	);
 
 	return entries.flatMap((entry, index) => {
 		const identity = parseDailyEntryId(entry.id);
@@ -22,6 +28,9 @@ export async function getStaticPaths() {
 					entry,
 					newerHref: index > 0 ? dailyPermalink(entries[index - 1].id) : null,
 					olderHref: index < entries.length - 1 ? dailyPermalink(entries[index + 1].id) : null,
+					alternateHref: englishDates.has(identity.dateKey)
+						? `/en/daily/${identity.year}/${identity.month}/${identity.dateKey}/`
+						: null,
 				},
 			},
 		];
@@ -32,9 +41,16 @@ interface Props {
 	entry: CollectionEntry<'daily'>;
 	newerHref: string | null;
 	olderHref: string | null;
+	alternateHref: string | null;
 }
 
-const { entry, newerHref, olderHref } = Astro.props;
+const { entry, newerHref, olderHref, alternateHref } = Astro.props;
 ---
 
-<DailyArticle entry={entry} locale="zh-CN" newerHref={newerHref} olderHref={olderHref} />
+<DailyArticle
+	entry={entry}
+	locale="zh-CN"
+	newerHref={newerHref}
+	olderHref={olderHref}
+	alternateHref={alternateHref}
+/>

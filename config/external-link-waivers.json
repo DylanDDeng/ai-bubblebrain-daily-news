@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "url_waivers": [
+    {
+      "url": "https://github.com/Flowseal/zapret-discord-youtube",
+      "outcomes": ["confirmed-dead"],
+      "reason": "Historical GitHub Trending source was deleted upstream after publication; the archived daily item remains part of the record.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-10-15"
+    }
+  ],
+  "origin_waivers": [
+    {
+      "origin": "http://x.com",
+      "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
+      "max_urls": 106,
+      "reason": "X blocks the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-08-15"
+    },
+    {
+      "origin": "https://github.com",
+      "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
+      "max_urls": 233,
+      "reason": "GitHub intermittently blocks the pinned release-audit network path after a full pass; exact current candidate cardinality is capped pending a different egress probe.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-08-15"
+    },
+    {
+      "origin": "https://huggingface.co",
+      "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
+      "max_urls": 9,
+      "reason": "Hugging Face resets the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-08-15"
+    },
+    {
+      "origin": "https://reddit.com",
+      "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
+      "max_urls": 4,
+      "reason": "Reddit resets the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-08-15"
+    },
+    {
+      "origin": "https://www.reddit.com",
+      "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
+      "max_urls": 1143,
+      "reason": "Reddit blocks the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-08-15"
+    },
+    {
+      "origin": "https://www.youtube.com",
+      "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
+      "max_urls": 7,
+      "reason": "YouTube blocks the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-08-15"
+    },
+    {
+      "origin": "https://x.com",
+      "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
+      "max_urls": 1491,
+      "reason": "X blocks the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "owner": "DylanDDeng",
+      "expires_on": "2026-08-15"
+    }
+  ]
+}

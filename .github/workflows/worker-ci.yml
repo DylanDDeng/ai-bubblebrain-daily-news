@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js 22.17
         uses: actions/setup-node@v4
@@ -73,12 +75,28 @@ jobs:
       - name: Verify Hugo and Astro daily parity
         run: npm run verify:renderers
 
+  database-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.109.1
+
+      - name: Verify migrations, idempotency, and RLS
+        run: bash scripts/test-supabase-local.sh
+
   promote-publication:
     if: >-
       github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       startsWith(github.head_ref, 'automation/daily/')
-    needs: [worker-security, renderer-parity]
+    needs: [worker-security, renderer-parity, database-security]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -109,9 +127,3 @@ jobs:
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: gh pr merge "$PR_URL" --merge --delete-branch --match-head-commit "$PR_HEAD_SHA"
-
-      - name: Dispatch GitHub Pages build for merged main
-        if: github.event.pull_request.base.ref == 'main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run build-and-deploy.yml --ref main

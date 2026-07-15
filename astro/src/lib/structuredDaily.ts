@@ -27,7 +27,8 @@ export interface StructuredDailyItem {
 	batch: DailyBatchId;
 	summary: string;
 	category: string;
-	topics: string[];
+	topic_ids: string[];
+	entity_ids: string[];
 	featured: boolean;
 	score: number | null;
 	reason: string | null;
@@ -46,6 +47,11 @@ export interface StructuredDailyBatch {
 }
 
 export interface StructuredDailyReport {
+	schema_version: 1;
+	identity_version: 1;
+	dedupe_version: 1;
+	taxonomy_version: 1;
+	classifier_version: 1;
 	date: string;
 	timezone: 'Asia/Shanghai';
 	generated_at: string;
@@ -57,14 +63,18 @@ export interface StructuredDailyReport {
 const reportCache = new Map<string, Promise<StructuredDailyReport | null>>();
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
 
-function dailyDataDirectory(): string {
+function dailyDataDirectory(directory?: string): string {
+	if (directory) return resolve(directory);
 	if (process.env.DAILY_DATA_DIR) return resolve(process.env.DAILY_DATA_DIR);
 	return fileURLToPath(new URL('../../../data/daily/', import.meta.url));
 }
 
-async function readStructuredReport(dateKey: string): Promise<StructuredDailyReport | null> {
+async function readStructuredReport(
+	dateKey: string,
+	directory?: string,
+): Promise<StructuredDailyReport | null> {
 	if (!dateKeyPattern.test(dateKey)) throw new Error(`Invalid structured daily date: ${dateKey}`);
-	const path = resolve(dailyDataDirectory(), `${dateKey}.json`);
+	const path = resolve(dailyDataDirectory(directory), `${dateKey}.json`);
 	let source: string;
 	try {
 		source = await readFile(path, 'utf8');
@@ -81,9 +91,15 @@ async function readStructuredReport(dateKey: string): Promise<StructuredDailyRep
 	return report as StructuredDailyReport;
 }
 
-export function loadStructuredDailyReport(dateKey: string): Promise<StructuredDailyReport | null> {
-	const cacheKey = `${dailyDataDirectory()}\0${dateKey}`;
-	if (!reportCache.has(cacheKey)) reportCache.set(cacheKey, readStructuredReport(dateKey));
+export function loadStructuredDailyReport(
+	dateKey: string,
+	options: { directory?: string } = {},
+): Promise<StructuredDailyReport | null> {
+	const directory = dailyDataDirectory(options.directory);
+	const cacheKey = `${directory}\0${dateKey}`;
+	if (!reportCache.has(cacheKey)) {
+		reportCache.set(cacheKey, readStructuredReport(dateKey, directory));
+	}
 	return reportCache.get(cacheKey)!;
 }
 

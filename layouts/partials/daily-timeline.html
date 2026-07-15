@@ -2,8 +2,16 @@
 {{- $report := .report -}}
 {{- $isEnglish := eq $page.Language.Lang "en" -}}
 {{- $itemByID := newScratch -}}
+{{- $topicByID := newScratch -}}
+{{- $entityByID := newScratch -}}
 {{- range $report.items -}}
   {{- $itemByID.SetInMap "items" .id . -}}
+{{- end -}}
+{{- range site.Data.knowledge.taxonomy.topics -}}
+  {{- $topicByID.SetInMap "topics" .id . -}}
+{{- end -}}
+{{- range site.Data.knowledge.taxonomy.entities -}}
+  {{- $entityByID.SetInMap "entities" .id . -}}
 {{- end -}}
 {{- $typeLabels := cond $isEnglish
   (dict "all" "All" "news" "News" "project" "Projects" "paper" "Papers" "socialMedia" "Social")
@@ -89,11 +97,28 @@
             {{- $title := partial "timeline-clean-text.html" $item.title | default (cond $isEnglish "Open original source" "查看原文") -}}
             {{- $reason := partial "timeline-clean-text.html" $item.reason -}}
             {{- $topics := slice -}}
-            {{- range $item.topics -}}
-              {{- with partial "timeline-clean-text.html" . -}}{{- $topics = $topics | append . -}}{{- end -}}
+            {{- range $item.topic_ids -}}
+              {{- with index ($topicByID.Get "topics") . -}}
+                {{- $label := cond $isEnglish .labels.en .labels.zh -}}
+                {{- $topics = $topics | append (dict "label" $label "slug" .slug "aliases" .aliases) -}}
+              {{- end -}}
+            {{- end -}}
+            {{- $entities := slice -}}
+            {{- range $item.entity_ids -}}
+              {{- with index ($entityByID.Get "entities") . -}}
+                {{- $label := cond $isEnglish .labels.en .labels.zh -}}
+                {{- $entities = $entities | append (dict "label" $label "slug" .slug "aliases" .aliases) -}}
+              {{- end -}}
             {{- end -}}
             {{- $searchParts := slice $title $sourceName $summary $item.category -}}
-            {{- range $topics -}}{{- $searchParts = $searchParts | append . -}}{{- end -}}
+            {{- range $topics -}}
+              {{- $searchParts = $searchParts | append .label -}}
+              {{- range .aliases -}}{{- $searchParts = $searchParts | append . -}}{{- end -}}
+            {{- end -}}
+            {{- range $entities -}}
+              {{- $searchParts = $searchParts | append .label -}}
+              {{- range .aliases -}}{{- $searchParts = $searchParts | append . -}}{{- end -}}
+            {{- end -}}
             {{- $datetime := $item.published_date -}}
             {{- $timeLabel := "—" -}}
             {{- with $item.published_at -}}
@@ -109,6 +134,7 @@
               {{- end -}}
             {{- end -}}
             <article
+              id="news-{{ $item.id }}"
               class="timeline-item"
               data-timeline-item
               data-item-id="{{ $item.id }}"
@@ -134,7 +160,12 @@
                 {{ with $summary }}<p class="timeline-summary">{{ . }}</p>{{ end }}
                 {{ if gt (len $topics) 0 }}
                   <ul class="timeline-topics" aria-label="{{ if $isEnglish }}Topics{{ else }}主题{{ end }}">
-                    {{ range $topics }}<li>{{ . }}</li>{{ end }}
+                    {{ range $topics }}<li><a href="/topics/{{ .slug }}/">{{ .label }}</a></li>{{ end }}
+                  </ul>
+                {{ end }}
+                {{ if gt (len $entities) 0 }}
+                  <ul class="timeline-topics" aria-label="{{ if $isEnglish }}Entities{{ else }}相关实体{{ end }}">
+                    {{ range $entities }}<li><a href="/entities/{{ .slug }}/">{{ .label }}</a></li>{{ end }}
                   </ul>
                 {{ end }}
                 {{ with $reason }}<p class="timeline-reason"><span>{{ if $isEnglish }}Why it matters{{ else }}推荐理由{{ end }}</span>{{ . }}</p>{{ end }}

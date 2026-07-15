@@ -4,6 +4,7 @@ import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DailyTimeline from './DailyTimeline.astro';
 import { formatDailyDate, parseDailyEntryId, type DailyLocale } from '../lib/daily';
+import { sanitizeLegacyDailyHtml } from '../lib/legacyDailyHtml';
 import { loadStructuredDailyReport } from '../lib/structuredDaily';
 
 interface Props {
@@ -11,31 +12,29 @@ interface Props {
 	locale: DailyLocale;
 	newerHref?: string | null;
 	olderHref?: string | null;
+	alternateHref?: string | null;
 }
 
-const { entry, locale, newerHref = null, olderHref = null } = Astro.props;
+const { entry, locale, newerHref = null, olderHref = null, alternateHref = null } = Astro.props;
 const { Content } = await render(entry);
 const archiveHref = locale === 'en' ? '/en/daily/' : '/daily/';
 const identity = parseDailyEntryId(entry.id);
 const report =
 	locale === 'zh-CN' && identity ? await loadStructuredDailyReport(identity.dateKey) : null;
+const legacyHtml = entry.rendered?.html ? sanitizeLegacyDailyHtml(entry.rendered.html) : null;
 ---
 
 <BaseLayout
 	title={`${entry.data.title} · Bubble's Brain`}
 	description={entry.data.description}
 	lang={locale}
+	alternateHref={alternateHref}
 >
 	{
 		report ? (
 			<DailyTimeline report={report} locale={locale} newerHref={newerHref} olderHref={olderHref} />
 		) : (
 			<article class="article-shell" data-legacy-daily>
-				<p class="migration-notice">
-					{locale === 'en'
-						? 'Compatibility rendering from the existing Hugo Markdown. Structured timeline rendering lands after the data contract is connected.'
-						: '当前由 Astro 兼容渲染现有 Hugo Markdown；结构化时间轴将在数据契约接通后启用。'}
-				</p>
 				<header class="article-header">
 					<p class="eyebrow">{locale === 'en' ? 'DAILY BRIEF' : '资讯日报'}</p>
 					<h1>{entry.data.title}</h1>
@@ -46,7 +45,7 @@ const report =
 					</p>
 				</header>
 				<div class="legacy-content">
-					<Content />
+					{legacyHtml === null ? <Content /> : <Fragment set:html={legacyHtml} />}
 				</div>
 				<p>
 					<a href={archiveHref}>{locale === 'en' ? '← Back to archive' : '← 返回日报归档'}</a>

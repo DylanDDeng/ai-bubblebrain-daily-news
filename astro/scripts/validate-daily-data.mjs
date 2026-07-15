@@ -9,17 +9,21 @@ import {
 	validateDailyReportSemantics,
 	validateReportFilename,
 } from '../../src/daily/semanticValidate.js';
+import { taxonomy, validateTaxonomyRegistry } from '../../src/knowledge/taxonomy.js';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, '../..');
 const schemaPath = resolve(repoRoot, 'schemas/daily-report.schema.json');
+const taxonomySchemaPath = resolve(repoRoot, 'schemas/knowledge-taxonomy.schema.json');
 const productionDataDir = resolve(repoRoot, 'data/daily');
 const fixturePath = resolve(scriptDir, '../tests/fixtures/daily-report.valid.json');
 
 const schema = JSON.parse(await readFile(schemaPath, 'utf8'));
+const taxonomySchema = JSON.parse(await readFile(taxonomySchemaPath, 'utf8'));
 const ajv = new Ajv2020({ allErrors: true, strict: true, allowUnionTypes: true });
 addFormats(ajv);
 const validate = ajv.compile(schema);
+const validateTaxonomySchema = ajv.compile(taxonomySchema);
 
 const productionFiles = (await readdir(productionDataDir))
 	.filter((name) => name.endsWith('.json'))
@@ -27,6 +31,20 @@ const productionFiles = (await readdir(productionDataDir))
 const files = [fixturePath, ...productionFiles];
 
 let failed = false;
+
+if (!validateTaxonomySchema(taxonomy)) {
+	failed = true;
+	console.error('Invalid knowledge taxonomy schema');
+	console.error(validateTaxonomySchema.errors);
+} else {
+	try {
+		validateTaxonomyRegistry();
+		console.log('Valid knowledge taxonomy registry.');
+	} catch (error) {
+		failed = true;
+		console.error(`Invalid knowledge taxonomy registry: ${error.message}`);
+	}
+}
 
 for (const file of files) {
 	const report = JSON.parse(await readFile(file, 'utf8'));

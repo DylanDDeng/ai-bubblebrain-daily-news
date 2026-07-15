@@ -22,6 +22,7 @@ export async function getStaticPaths() {
 					entry,
 					newerHref: index > 0 ? dailyPermalink(entries[index - 1].id) : null,
 					olderHref: index < entries.length - 1 ? dailyPermalink(entries[index + 1].id) : null,
+					alternateHref: `/daily/${identity.year}/${identity.month}/${identity.dateKey}/`,
 				},
 			},
 		];
@@ -32,9 +33,16 @@ interface Props {
 	entry: CollectionEntry<'daily'>;
 	newerHref: string | null;
 	olderHref: string | null;
+	alternateHref: string;
 }
 
-const { entry, newerHref, olderHref } = Astro.props;
+const { entry, newerHref, olderHref, alternateHref } = Astro.props;
 ---
 
-<DailyArticle entry={entry} locale="en" newerHref={newerHref} olderHref={olderHref} />
+<DailyArticle
+	entry={entry}
+	locale="en"
+	newerHref={newerHref}
+	olderHref={olderHref}
+	alternateHref={alternateHref}
+/>

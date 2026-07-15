@@ -4,6 +4,7 @@ import { createDailyReportArtifacts } from './serialize.js';
 import { validateDailyReportIdentities, validateDailyReportSemantics } from './semanticValidate.js';
 import { validateDailyReportSchema } from './schemaValidate.js';
 import { isExplicitInstant, isRealDate, previousReportDates } from './time.js';
+import { taxonomy } from '../knowledge/taxonomy.js';
 
 const BATCH_LABELS = {
     morning: '10:00 更新',
@@ -115,6 +116,8 @@ export async function buildDailyArtifacts({
         schema_version: 1,
         identity_version: 1,
         dedupe_version: 1,
+        taxonomy_version: taxonomy.schema_version,
+        classifier_version: taxonomy.classifier_version,
         date: reportDate,
         timezone: 'Asia/Shanghai',
         generated_at: generatedAt,

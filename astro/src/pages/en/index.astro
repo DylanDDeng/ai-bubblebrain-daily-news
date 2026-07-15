@@ -1,21 +1,55 @@
 ---
+import { getCollection } from 'astro:content';
+
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { dailyPermalink, filterDailyEntries } from '../../lib/daily';
+
+const latest = filterDailyEntries(await getCollection('daily'), 'en')[0];
+const latestHref = latest ? dailyPermalink(latest.id) : '/en/daily/';
+const destinations = [
+	{
+		href: '/en/daily/',
+		label: 'Daily brief',
+		description: 'Browse dated AI briefings with sources and summaries.',
+	},
+	{
+		href: '/en/highlights/',
+		label: 'Highlights',
+		description: 'Keep the material worth returning to.',
+	},
+	{
+		href: '/en/my-publish/',
+		label: 'My writing',
+		description: 'Personal notes, experiments, and longer-form observations.',
+	},
+];
 ---
 
 <BaseLayout
-	title="Bubble's Brain · Astro migration"
-	description="Bubble's Brain Astro migration preview"
+	title="Bubble's Brain · Personal AI knowledge base"
+	description="A personal archive that turns daily AI updates into searchable, connected knowledge."
 	lang="en"
+	alternateHref="/"
 >
-	<section class="page-shell">
-		<header class="page-heading">
-			<p class="eyebrow">ASTRO MIGRATION · DAY 0</p>
-			<h1>The content stays. The rendering layer starts to move.</h1>
-			<p>
-				This Astro site runs alongside Hugo, reads the same daily Markdown, and reserves a clean
-				boundary for structured timeline data. Hugo remains the production renderer.
-			</p>
+	<section class="page-shell home-shell">
+		<header class="page-heading home-hero">
+			<p class="eyebrow">PERSONAL AI KNOWLEDGE BASE</p>
+			<h1>Turn the daily AI noise into knowledge you can revisit.</h1>
+			<p>This archive brings together daily briefings, selected material, and personal writing.</p>
+			<div class="home-actions">
+				<a class="primary-action" href={latestHref}>Read the latest brief</a>
+				<a href="/en/daily/">Browse the archive</a>
+			</div>
 		</header>
-		<p><a href="/en/daily/">Open the Astro daily archive →</a></p>
+		<div class="destination-grid">
+			{
+				destinations.map((item) => (
+					<a class="destination-card" href={item.href}>
+						<span>{item.label}</span>
+						<p>{item.description}</p>
+					</a>
+				))
+			}
+		</div>
 	</section>
 </BaseLayout>
