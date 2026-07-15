@@ -38,15 +38,47 @@ describe('legacy daily HTML sanitization', () => {
 		expect(sanitizeLegacyDailyHtml(html)).toBe('<p>前文   后文</p>');
 	});
 
-	it('removes a truncation tail left outside an auto-linked URL', () => {
+	it('removes a raw URL anchor when its truncation marker was left outside the anchor', () => {
 		const html =
-			'<p>前文 <a href="https://x.com/example/status/123">https://x.com/example/status/123</a>?… 后文 <a href="https://ggemu">https://ggemu</a>…</p>';
+			'<p><a href="https://source.example/story">来源</a> 前文 <a href="https://x.com/example/status/123">https://x.com/example/status/123</a>?… 后文 <a href="https://ggemu">https://ggemu</a>…</p>';
 		const result = sanitizeLegacyDailyHtml(html);
-		expect(result).toContain(
-			'<a href="https://x.com/example/status/123">https://x.com/example/status/123</a>',
-		);
+		expect(result).toContain('https://source.example/story');
+		expect(result).not.toContain('https://x.com/example/status/123');
 		expect(result).not.toContain('?…');
 		expect(result).not.toContain('https://ggemu');
+	});
+
+	it('keeps an ordinary anchor while removing a stray truncation marker after it', () => {
+		const html =
+			'<p><a href="https://example.com/story">阅读全文</a>… 后文</p>';
+		expect(sanitizeLegacyDailyHtml(html)).toBe(
+			'<p><a href="https://example.com/story">阅读全文</a> 后文</p>',
+		);
+	});
+
+	it.each([
+		[
+			'http://z.ai%EF%BC%89%E7%82%B9%E8%B5%9E%EF%BC%81',
+			'http://z.ai）点赞！',
+		],
+		[
+			'https://zenodo.org/records/20668567%EF%BC%8C%E8%80%8CWikiMoth',
+			'https://zenodo.org/records/20668567，而WikiMoth',
+		],
+	])('unwraps an auto-link that swallowed adjacent prose: %s', (href, label) => {
+		const html = `<p>前文 <a href="${href}">${label}</a> 后文</p>`;
+		const result = sanitizeLegacyDailyHtml(html);
+		expect(result).toBe(`<p>前文 ${label} 后文</p>`);
+		expect(result).not.toContain('href=');
+	});
+
+	it('preserves swallowed prose when its malformed auto-link also has a truncation tail', () => {
+		const label = 'https://example.com/path。正文';
+		const html =
+			`<p>前文 <a href="https://example.com/path%E3%80%82%E6%AD%A3%E6%96%87">${label}</a>… 后文</p>`;
+		const result = sanitizeLegacyDailyHtml(html);
+		expect(result).toBe(`<p>前文 ${label} 后文</p>`);
+		expect(result).not.toContain('href=');
 	});
 
 	it('unwraps invalid links outside image metadata and preserves valid links', () => {

@@ -4,7 +4,9 @@ const ANCHOR =
 const TRUNCATION_MARKER = /…|%e2%80%a6|&hellip;|\.{3,}/iu;
 const BARE_TRUNCATED_URL = /https?:\/\/[^\s<]*(?:…|%e2%80%a6|&hellip;|\.{3,})[^\s<]*/giu;
 const TRUNCATED_ANCHOR_TAIL =
-	/(<a\b[^>]*>[\s\S]*?<\/a>)(?:\?|&amp;)?(?:…|%e2%80%a6|&hellip;|\.{3,})/giu;
+	/(<a\b[^>]*>[^<]*<\/a>)(?:\?|&amp;)?(?:…|%e2%80%a6|&hellip;|\.{3,})/giu;
+const RAW_URL_LABEL = /^\s*https?:\/\//iu;
+const PROSE_DELIMITER = /[，。；！？）】》、]/u;
 const REPEATED_MARKDOWN_URL = /^(https?:\/\/[^\s\]]+?)(?:%5d|\])\((https?:\/\/[^\s)]+)\)$/iu;
 const REPEATED_MARKDOWN_LABEL = /^(https?:\/\/[^\s\]]+?)\]\((https?:\/\/[^\s)]+)\)$/iu;
 const EMPTY_REPEATED_LINK_WRAPPER = /\(\s*\[\s*\)/gu;
@@ -21,6 +23,39 @@ function isMalformedRepeatedMarkdownAnchor(href: string, labelHtml: string): boo
 	return Boolean(
 		hrefMatch && labelMatch && hrefMatch[1] === labelMatch[1] && hrefMatch[2] === labelMatch[2],
 	);
+}
+
+function isRawUrlLabel(labelHtml: string): boolean {
+	return RAW_URL_LABEL.test(labelHtml.replace(/<[^>]+>/gu, ''));
+}
+
+function isAutoLinkWithEmbeddedProse(href: string, labelHtml: string): boolean {
+	if (/<[^>]+>/u.test(labelHtml)) return false;
+	const label = decodeUrlAttribute(labelHtml.trim());
+	if (!RAW_URL_LABEL.test(label) || !PROSE_DELIMITER.test(label)) return false;
+
+	try {
+		return new URL(decodeUrlAttribute(href.trim())).href === new URL(label).href;
+	} catch {
+		return false;
+	}
+}
+
+function stripTruncatedAnchorTail(_match: string, anchor: string): string {
+	ANCHOR.lastIndex = 0;
+	const anchorMatch = ANCHOR.exec(anchor);
+	if (!anchorMatch) return anchor;
+	const label = anchorMatch[6] ?? '';
+	return isRawUrlLabel(label) ? ' ' : anchor;
+}
+
+function preserveEmbeddedProseBeforeTruncation(match: string, anchor: string): string {
+	ANCHOR.lastIndex = 0;
+	const anchorMatch = ANCHOR.exec(anchor);
+	if (!anchorMatch) return match;
+	const href = anchorMatch[2] ?? anchorMatch[3] ?? anchorMatch[4] ?? '';
+	const label = anchorMatch[6] ?? '';
+	return isAutoLinkWithEmbeddedProse(href, label) ? label : match;
 }
 
 export function isSafeLegacyHref(value: string): boolean {
@@ -126,7 +161,8 @@ function stripBareTruncatedUrls(html: string): string {
  */
 export function sanitizeLegacyDailyHtml(html: string): string {
 	const withoutMedia = stripMediaPlaceholders(html)
-		.replace(TRUNCATED_ANCHOR_TAIL, '$1')
+		.replace(TRUNCATED_ANCHOR_TAIL, preserveEmbeddedProseBeforeTruncation)
+		.replace(TRUNCATED_ANCHOR_TAIL, stripTruncatedAnchorTail)
 		.replace(
 			ANCHOR,
 			(
@@ -140,6 +176,7 @@ export function sanitizeLegacyDailyHtml(html: string): string {
 			) => {
 				const href = doubleHref ?? singleHref ?? bareHref ?? '';
 				if (isMalformedRepeatedMarkdownAnchor(href, label)) return '';
+				if (isAutoLinkWithEmbeddedProse(href, label)) return label;
 				if (isSafeLegacyHref(href)) return fullMatch;
 				return /^\s*https?:\/\//iu.test(label.replace(/<[^>]+>/gu, '')) ? '' : label;
 			},

@@ -1,15 +1,33 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import {
+  applyExternalLinkWaivers,
+  auditExternalLinks,
+  closeExternalLinkDispatchers,
+  DEFAULT_EXTERNAL_LINK_BUDGETS,
+  evaluateExternalLinkAudit,
+  probeExternalUrl,
+} from "./external-link-audit.mjs";
 
 const argumentsList = process.argv.slice(2);
 const checkExternal = argumentsList.includes("--check-external");
+const externalReportArgument = argumentsList.find((argument) =>
+  argument.startsWith("--external-report="),
+);
+const externalWaiversArgument = argumentsList.find((argument) =>
+  argument.startsWith("--external-waivers="),
+);
 const positional = argumentsList.filter(
-  (argument) => argument !== "--check-external",
+  (argument) =>
+    argument !== "--check-external" &&
+    !argument.startsWith("--external-report=") &&
+    !argument.startsWith("--external-waivers="),
 );
 const [baseArgument, expectedShaArgument, manifestPathArgument] = positional;
 if (!baseArgument) {
   throw new Error(
-    "Usage: node scripts/verify-preview.mjs <preview-origin> [expected-40-char-sha] [local-manifest] [--check-external]",
+    "Usage: node scripts/verify-preview.mjs <preview-origin> [expected-40-char-sha] [local-manifest] [--check-external] [--external-waivers=path] [--external-report=path]",
   );
 }
 
@@ -23,6 +41,14 @@ const expectedSha = (
   localManifest.build?.source_sha ??
   ""
 ).toLowerCase();
+const externalReportPath = resolve(
+  externalReportArgument?.slice("--external-report=".length) ||
+    `output/external-link-audit-${expectedSha.slice(0, 12)}.json`,
+);
+const externalWaiversPath = resolve(
+  externalWaiversArgument?.slice("--external-waivers=".length) ||
+    "config/external-link-waivers.json",
+);
 
 const base = new URL(baseArgument);
 if (!/^https?:$/.test(base.protocol))
@@ -37,6 +63,13 @@ function invariant(condition, message) {
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+async function writeJsonAtomic(path, value) {
+  await mkdir(dirname(path), { recursive: true });
+  const temporaryPath = `${path}.${process.pid}.tmp`;
+  await writeFile(temporaryPath, `${JSON.stringify(value, null, 2)}\n`);
+  await rename(temporaryPath, path);
 }
 
 function tagAttribute(tag, name) {
@@ -83,12 +116,31 @@ function expectedMediaType(contentType) {
   }[contentType];
 }
 
-async function fetchManual(route) {
-  return fetch(new URL(route, base), {
-    redirect: "manual",
-    signal: AbortSignal.timeout(20_000),
-    headers: { "user-agent": "bubble-preview-verifier/1.0" },
-  });
+async function fetchManual(route, attempts = 3) {
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      const response = await fetch(new URL(route, base), {
+        redirect: "manual",
+        signal: AbortSignal.timeout(20_000),
+        headers: { "user-agent": "bubble-preview-verifier/1.0" },
+      });
+      if (
+        response.status !== 429 &&
+        response.status < 500
+      )
+        return response;
+      if (attempt === attempts - 1) return response;
+      await response.body?.cancel();
+    } catch (error) {
+      lastError = error;
+      if (attempt === attempts - 1) throw error;
+    }
+    await new Promise((resolve) =>
+      setTimeout(resolve, 250 * 2 ** attempt + Math.floor(Math.random() * 100)),
+    );
+  }
+  throw lastError;
 }
 
 invariant(
@@ -287,53 +339,123 @@ invariant(
   "Demo no-referrer policy is missing",
 );
 
-async function checkExternalUrl(url) {
-  const options = {
-    redirect: "follow",
-    signal: AbortSignal.timeout(10_000),
-    headers: { "user-agent": "bubble-external-link-verifier/1.0" },
-  };
-  let response = await fetch(url, { ...options, method: "HEAD" });
-  if (response.status === 405 || response.status === 501) {
-    response = await fetch(url, {
-      ...options,
-      method: "GET",
-      headers: { ...options.headers, range: "bytes=0-0" },
-    });
-  }
-  if (
-    response.status === 404 ||
-    response.status === 410 ||
-    response.status >= 500
-  ) {
-    throw new Error(`HTTP ${response.status}`);
-  }
-}
-
+let externalEvaluation = null;
 if (checkExternal) {
   const urls = [...externalUrls].sort();
-  let externalCursor = 0;
-  const externalFailures = [];
-  async function externalWorker() {
-    while (true) {
-      const index = externalCursor++;
-      if (index >= urls.length) return;
-      try {
-        await checkExternalUrl(urls[index]);
-      } catch (error) {
-        externalFailures.push(
-          `${urls[index]}: ${error instanceof Error ? error.message : String(error)}`,
-        );
-      }
+  const startedAt = new Date().toISOString();
+  const waiverPolicyText = await readFile(externalWaiversPath, "utf8");
+  const waiverPolicy = JSON.parse(waiverPolicyText);
+  const dnsCache = new Map();
+  const dispatcherCache = new Map();
+  let audit;
+  let evaluation;
+  let fatalError = null;
+  try {
+    try {
+      audit = await auditExternalLinks(urls, {
+        probe: (url) => probeExternalUrl(url, { dnsCache, dispatcherCache }),
+      });
+    } finally {
+      await closeExternalLinkDispatchers(dispatcherCache);
     }
+  } catch (error) {
+    fatalError = error instanceof Error ? error.message : String(error);
+    audit = {
+      results: urls.map((url) => ({
+        url,
+        final_url: null,
+        outcome: "incomplete",
+        reason: "audit_crashed",
+        status: null,
+        attempts: 0,
+        duration_ms: 0,
+        directly_probed: false,
+      })),
+      circuits: [],
+    };
   }
-  await Promise.all(
-    Array.from({ length: Math.min(12, urls.length) }, () => externalWorker()),
+  const initialResults = audit.results;
+  const resultsByUrl = new Map(
+    initialResults.map((result) => [result.url, result]),
   );
-  invariant(
-    externalFailures.length === 0,
-    `External link failures (${externalFailures.length}):\n${externalFailures.slice(0, 40).join("\n")}`,
+  const unexpectedUrls = [...resultsByUrl.keys()].filter(
+    (url) => !externalUrls.has(url),
   );
+  const cardinalityDrift =
+    initialResults.length !== urls.length ||
+    resultsByUrl.size !== urls.length ||
+    unexpectedUrls.length > 0;
+  audit.results = urls.map(
+    (url) =>
+      resultsByUrl.get(url) ?? {
+        url,
+        final_url: null,
+        outcome: "incomplete",
+        reason: "missing_audit_result",
+        status: null,
+        attempts: 0,
+        duration_ms: 0,
+        directly_probed: false,
+      },
+  );
+  audit = applyExternalLinkWaivers(audit, waiverPolicy);
+  evaluation = evaluateExternalLinkAudit(audit, DEFAULT_EXTERNAL_LINK_BUDGETS);
+  if (fatalError) evaluation.violations.unshift(`Audit crashed: ${fatalError}`);
+  if (cardinalityDrift)
+    evaluation.violations.unshift(
+      `Audit result cardinality drifted (${initialResults.length} results for ${urls.length} URLs)`,
+    );
+  if ((fatalError || cardinalityDrift) && evaluation.gate !== "FAIL")
+    evaluation.gate = "INCONCLUSIVE";
+  externalEvaluation = evaluation;
+  const report = {
+    schema_version: 1,
+    preview_origin: base.origin,
+    source_sha: expectedSha,
+    started_at: startedAt,
+    finished_at: new Date().toISOString(),
+    policy: {
+      hard_failures: [
+        "GET-confirmed HTTP 404 or 410 without an active exact-URL waiver",
+        "deterministic DNS or TLS failure",
+        "non-public or unsupported redirect target",
+      ],
+      accepted_but_budgeted: [
+        "reachable-restricted",
+        "transient-upstream",
+        "transport-unknown",
+      ],
+      inconclusive: ["circuit-open", "global deadline", "budget exceeded"],
+      budgets: DEFAULT_EXTERNAL_LINK_BUDGETS,
+      waiver_policy_path: externalWaiversPath,
+      waiver_policy_sha256: sha256(waiverPolicyText),
+    },
+    configuration: {
+      request_timeout_ms: 10_000,
+      request_attempts: 2,
+      maximum_redirects: 8,
+      global_deadline_ms: 15 * 60_000,
+      origin_concurrency: 6,
+      per_origin_concurrency: 4,
+      circuit_failure_threshold: 3,
+    },
+    evaluation,
+    waiver_policy: waiverPolicy,
+    waiver_summary: audit.waiver_summary,
+    waiver_violations: audit.waiver_violations,
+    circuits: audit.circuits,
+    results: audit.results,
+    fatal_error: fatalError,
+  };
+  await writeJsonAtomic(externalReportPath, report);
+  console.log(
+    `External link audit ${evaluation.gate}: ${evaluation.total} URLs, ${evaluation.waived} waived, ${evaluation.directly_probed} directly probed in the evaluated set, ${evaluation.evaluated_counts.success ?? 0} successful, report ${externalReportPath}`,
+  );
+  if (evaluation.violations.length > 0)
+    console.error(`External link gate: ${evaluation.violations.join("; ")}`);
+  if (evaluation.gate === "FAIL") process.exitCode = 1;
+  if (evaluation.gate === "INCONCLUSIVE" && process.exitCode !== 1)
+    process.exitCode = 2;
 }
 
 invariant(
@@ -341,5 +463,9 @@ invariant(
   `Preview contract failures (${failures.length}):\n${failures.slice(0, 40).join("\n")}`,
 );
 console.log(
-  `Verified deployed preview ${base.origin} at ${expectedSha}: ${manifest.records.length} routes, redirects, headers, metadata, custom 404, and ${externalUrls.size} parsed external links${checkExternal ? " checked" : " (not requested)"}.`,
+  !checkExternal ||
+    externalEvaluation?.gate === "PASS" ||
+    externalEvaluation?.gate === "PASS_WITH_WARNINGS"
+    ? `Verified deployed preview ${base.origin} at ${expectedSha}: ${manifest.records.length} routes, redirects, headers, metadata, custom 404, and ${externalUrls.size} parsed external links${checkExternal ? ` (${externalEvaluation.gate})` : " (not requested)"}.`
+    : `Preview route contract passed, but external link audit is ${externalEvaluation?.gate ?? "INCONCLUSIVE"}: ${base.origin} at ${expectedSha}.`,
 );

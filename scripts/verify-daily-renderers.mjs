@@ -198,7 +198,11 @@ title: sanitizer fixture
 <p>bare ordinary before ( https://bare.example/story](https://different.example/target) ) bare ordinary after</p>
 <p><a href="https://example.com/redirect?value=%5D(https://other.example)">legitimate query</a></p>
 <div data-link="https://attr.example/a%5D(https://attr.example/b)">attribute sentinel</div>
-`,
+<p>truncated before <a href="https://short.example/pa">https://short.example/pa</a>... truncated after</p>
+<p>ordinary before <a href="https://ordinary.example/story">ordinary label</a>... ordinary after</p>
+<p>prose before <a href="https://zenodo.example/record%EF%BC%8C%E8%80%8C%E6%AD%A3%E6%96%87">https://zenodo.example/record，而正文</a> prose after</p>
+<p>combined before <a href="https://example.com/path%E3%80%82%E6%AD%A3%E6%96%87">https://example.com/path。正文</a>… combined after</p>
+	`,
   );
   execFileSync(
     "hugo",
@@ -228,7 +232,22 @@ title: sanitizer fixture
     sanitizerHtml,
     /data-link="https:\/\/attr\.example\/a%5D\(https:\/\/attr\.example\/b\)"/u,
   );
-  assert.doesNotMatch(sanitizerHtml, /first\.example\/story/iu);
+	assert.doesNotMatch(sanitizerHtml, /first\.example\/story/iu);
+	assert.match(sanitizerHtml, /<p>truncated before\s+truncated after<\/p>/u);
+	assert.match(
+		sanitizerHtml,
+		/<p>ordinary before <a href="https:\/\/ordinary\.example\/story">ordinary label<\/a> ordinary after<\/p>/u,
+	);
+	assert.match(
+		sanitizerHtml,
+		/<p>prose before https:\/\/zenodo\.example\/record，而正文 prose after<\/p>/u,
+	);
+	assert.doesNotMatch(sanitizerHtml, /href="https:\/\/zenodo\.example/iu);
+	assert.match(
+		sanitizerHtml,
+		/<p>combined before https:\/\/example\.com\/path。正文 combined after<\/p>/u,
+	);
+	assert.doesNotMatch(sanitizerHtml, /href="https:\/\/example\.com\/path%E3%80%82/iu);
 
   execFileSync("hugo", ["--destination", hugoOutput, "--cleanDestinationDir"], {
     cwd: repoRoot,

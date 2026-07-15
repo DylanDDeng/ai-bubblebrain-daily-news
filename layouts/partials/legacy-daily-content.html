@@ -1,7 +1,12 @@
 {{- $content := .Content -}}
 {{- $content = replaceRE `(?is)\\?\[(?:图片|image|视频|video)\s*:(?:[^\[\]]|\[[^\[\]]*\])*\]` " " $content -}}
 {{- $content = replaceRE `(?is)\\?\[(?:图片|image|视频|video)\s*:.*?(</(?:li|p|div|blockquote|section|article|td|th)>)` " $1" $content -}}
-{{- $content = replaceRE `(?is)(<a\b[^>]*>.*?</a>)(?:\?|&amp;)?(?:…|%E2%80%A6|&hellip;|\.{3,})` "$1" $content -}}
+{{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*"https?://[^\"]*%(?:EF%BC%8C|E3%80%82|EF%BC%9B|EF%BC%81|EF%BC%9F|EF%BC%89|E3%80%91|E3%80%8B|E3%80%81)[^\"]*"([^>]*)>(\s*https?://[^<]*[，。；！？）】》、][^<]*)</a>(?:\?|&amp;)?(?:…|%E2%80%A6|&hellip;|\.{3,})` "$3" $content -}}
+{{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*'https?://[^']*%(?:EF%BC%8C|E3%80%82|EF%BC%9B|EF%BC%81|EF%BC%9F|EF%BC%89|E3%80%91|E3%80%8B|E3%80%81)[^']*'([^>]*)>(\s*https?://[^<]*[，。；！？）】》、][^<]*)</a>(?:\?|&amp;)?(?:…|%E2%80%A6|&hellip;|\.{3,})` "$3" $content -}}
+{{- $content = replaceRE `(?is)<a\b[^>]*>\s*https?://[^<]*</a>(?:\?|&amp;)?(?:…|%E2%80%A6|&hellip;|\.{3,})` " " $content -}}
+{{- $content = replaceRE `(?is)(<a\b[^>]*>[^<]*</a>)(?:\?|&amp;)?(?:…|%E2%80%A6|&hellip;|\.{3,})` "$1" $content -}}
+{{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*"https?://[^\"]*%(?:EF%BC%8C|E3%80%82|EF%BC%9B|EF%BC%81|EF%BC%9F|EF%BC%89|E3%80%91|E3%80%8B|E3%80%81)[^\"]*"([^>]*)>(\s*https?://[^<]*[，。；！？）】》、][^<]*)</a>` "$3" $content -}}
+{{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*'https?://[^']*%(?:EF%BC%8C|E3%80%82|EF%BC%9B|EF%BC%81|EF%BC%9F|EF%BC%89|E3%80%91|E3%80%8B|E3%80%81)[^']*'([^>]*)>(\s*https?://[^<]*[，。；！？）】》、][^<]*)</a>` "$3" $content -}}
 {{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*"[^"]*(?:…|%E2%80%A6|&hellip;|\.{3,})[^"]*"([^>]*)>(.*?)</a>` "$3" $content -}}
 {{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*'[^']*(?:…|%E2%80%A6|&hellip;|\.{3,})[^']*'([^>]*)>(.*?)</a>` "$3" $content -}}
 {{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*[^\s>]*(?:…|%E2%80%A6|&hellip;|\.{3,})[^\s>]*([^>]*)>(.*?)</a>` "$3" $content -}}
