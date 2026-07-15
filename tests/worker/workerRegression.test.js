@@ -59,13 +59,15 @@ describe('worker regression guards', () => {
         expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');
     });
 
-    it('promotes automation publication pull requests only after both required checks', async () => {
+    it('promotes automation publication pull requests only after all required checks', async () => {
         const workflow = await readFile(
             new URL('../../.github/workflows/worker-ci.yml', import.meta.url),
             'utf8',
         );
         expect(workflow).toContain('promote-publication:');
-        expect(workflow).toContain('needs: [worker-security, renderer-parity]');
+        expect(workflow).toContain(
+            'needs: [worker-security, renderer-parity, database-security]',
+        );
         expect(workflow).toContain("startsWith(github.head_ref, 'automation/daily/')");
         expect(workflow).toContain('github.event.pull_request.head.repo.full_name == github.repository');
         expect(workflow).toContain('ref: ${{ github.event.pull_request.base.sha }}');
