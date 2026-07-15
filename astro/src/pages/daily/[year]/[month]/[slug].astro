@@ -2,12 +2,12 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 import DailyArticle from '../../../../components/DailyArticle.astro';
-import { filterDailyEntries, parseDailyEntryId } from '../../../../lib/daily';
+import { dailyPermalink, filterDailyEntries, parseDailyEntryId } from '../../../../lib/daily';
 
 export async function getStaticPaths() {
 	const entries = filterDailyEntries(await getCollection('daily'), 'zh-CN');
 
-	return entries.flatMap((entry) => {
+	return entries.flatMap((entry, index) => {
 		const identity = parseDailyEntryId(entry.id);
 		if (!identity) return [];
 
@@ -18,7 +18,11 @@ export async function getStaticPaths() {
 					month: identity.month,
 					slug: identity.dateKey,
 				},
-				props: { entry },
+				props: {
+					entry,
+					newerHref: index > 0 ? dailyPermalink(entries[index - 1].id) : null,
+					olderHref: index < entries.length - 1 ? dailyPermalink(entries[index + 1].id) : null,
+				},
 			},
 		];
 	});
@@ -26,9 +30,11 @@ export async function getStaticPaths() {
 
 interface Props {
 	entry: CollectionEntry<'daily'>;
+	newerHref: string | null;
+	olderHref: string | null;
 }
 
-const { entry } = Astro.props;
+const { entry, newerHref, olderHref } = Astro.props;
 ---
 
-<DailyArticle entry={entry} locale="zh-CN" />
+<DailyArticle entry={entry} locale="zh-CN" newerHref={newerHref} olderHref={olderHref} />

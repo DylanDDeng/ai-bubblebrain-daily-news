@@ -1,0 +1,9 @@
+{{- $value := printf "%v" (. | default "") -}}
+{{- $value = replaceRE `(?i)!\[[^\]]*\]\(\s*https?://[^\s)]+(?:\s+"[^"]*")?\s*\)` " " $value -}}
+{{- $value = replaceRE `(?i)\\+\[(图片|image)\s*:[^\]]*\]` " " $value -}}
+{{- $value = replaceRE `(?i)\[(图片|image)\s*:[^\]]*\]` " " $value -}}
+{{- $value = replaceRE `(?i)\[([^\]]+)\]\(\s*https?://[^\s)]+(?:\s+"[^"]*")?\s*\)` "$1" $value -}}
+{{- $value = replaceRE `(?i)https?://[^\s<>\[\]）】，。！？；：、“”‘’《》]+` " " $value -}}
+{{- $value = replaceRE `\s+([，。！？；：,.!?;:])` "$1" $value -}}
+{{- $value = replaceRE `\s+` " " $value -}}
+{{- return (strings.TrimSpace $value) -}}

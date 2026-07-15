@@ -1,5 +1,6 @@
 import { canonicalizeUrl, createIdentity } from './identity.js';
 import { getSourcePolicy } from './sourceRegistry.js';
+import { sanitizeSummaryText } from './summary.js';
 import { isExplicitInstant, isRealDate } from './time.js';
 
 const BATCHES = new Set(['morning', 'afternoon', 'night', 'lateNight']);
@@ -123,10 +124,10 @@ export async function normalizeSourceItem(raw, { provider, batch, runAt } = {}) 
             ingested_at: ingested.toISOString(),
             time_precision: precision,
             batch,
-            summary: cleanText(
+            summary: sanitizeSummaryText(cleanText(
                 raw.summary || raw.description || raw.content_text || raw.content_html || raw.details?.content_html,
                 5000,
-            ),
+            )),
             category: 'other',
             topics: [],
             featured: false,

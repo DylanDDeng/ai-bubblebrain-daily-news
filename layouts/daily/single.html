@@ -1,6 +1,25 @@
+{{ define "head" }}
+  <link rel="stylesheet" href="{{ "css/daily-timeline.css" | relURL }}">
+{{ end }}
+
 {{ define "main" }}
+{{ $dateKey := .File.ContentBaseName }}
+{{ $structuredReport := false }}
+{{ if eq .Site.Language.LanguageCode "zh-CN" }}
+  {{ with .Site.Data.daily }}
+    {{ if isset . $dateKey }}{{ $structuredReport = index . $dateKey }}{{ end }}
+  {{ end }}
+{{ end }}
+
+{{ if $structuredReport }}
+  {{ partial "daily-timeline.html" (dict "page" . "report" $structuredReport) }}
+  <section class="section section-article">
+    <div class="section-narrow">{{ partial "comments.html" . }}</div>
+  </section>
+  <script type="module" src="{{ "js/daily-timeline.js" | relURL }}"></script>
+{{ else }}
 <section class="section section-article">
-  <article class="section-narrow page-surface daily-article">
+  <article class="section-narrow page-surface daily-article" data-legacy-daily>
     <header class="article-header">
       <h1>{{ .Title }}</h1>
       <div class="article-meta">
@@ -81,5 +100,6 @@
   }
 }
 </style>
+{{ end }}
 
 {{ end }}

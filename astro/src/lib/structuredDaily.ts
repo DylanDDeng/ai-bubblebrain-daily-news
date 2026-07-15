@@ -1,0 +1,113 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { sanitizeSummaryText } from '../../../src/daily/summary.js';
+import {
+	validateDailyReportIdentities,
+	validateDailyReportSemantics,
+	validateReportFilename,
+} from '../../../src/daily/semanticValidate.js';
+import { validateDailyReportSchemaForAstro } from './dailySchema';
+
+export type DailyBatchId = 'morning' | 'afternoon' | 'night' | 'lateNight';
+export type DailyContentType = 'news' | 'project' | 'paper' | 'socialMedia';
+
+export interface StructuredDailyItem {
+	id: string;
+	event_id: string;
+	source_type: string;
+	content_type: DailyContentType;
+	title: string;
+	canonical_url: string | null;
+	published_at: string | null;
+	published_date: string | null;
+	ingested_at: string;
+	time_precision: 'exact' | 'date_only' | 'inferred';
+	batch: DailyBatchId;
+	summary: string;
+	category: string;
+	topics: string[];
+	featured: boolean;
+	score: number | null;
+	reason: string | null;
+	source: {
+		name: string;
+		homepage: string | null;
+	};
+}
+
+export interface StructuredDailyBatch {
+	id: DailyBatchId;
+	label: string;
+	status: 'pending' | 'completed';
+	generated_at: string | null;
+	item_ids: string[];
+}
+
+export interface StructuredDailyReport {
+	date: string;
+	timezone: 'Asia/Shanghai';
+	generated_at: string;
+	overview: { text: string; kind: string };
+	batches: StructuredDailyBatch[];
+	items: StructuredDailyItem[];
+}
+
+const reportCache = new Map<string, Promise<StructuredDailyReport | null>>();
+const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
+
+function dailyDataDirectory(): string {
+	if (process.env.DAILY_DATA_DIR) return resolve(process.env.DAILY_DATA_DIR);
+	return fileURLToPath(new URL('../../../data/daily/', import.meta.url));
+}
+
+async function readStructuredReport(dateKey: string): Promise<StructuredDailyReport | null> {
+	if (!dateKeyPattern.test(dateKey)) throw new Error(`Invalid structured daily date: ${dateKey}`);
+	const path = resolve(dailyDataDirectory(), `${dateKey}.json`);
+	let source: string;
+	try {
+		source = await readFile(path, 'utf8');
+	} catch (error) {
+		if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+		throw error;
+	}
+
+	const report: unknown = JSON.parse(source);
+	await validateDailyReportSchemaForAstro(report);
+	validateDailyReportSemantics(report, { enforcePhase1: true });
+	await validateDailyReportIdentities(report);
+	validateReportFilename(report, path);
+	return report as StructuredDailyReport;
+}
+
+export function loadStructuredDailyReport(dateKey: string): Promise<StructuredDailyReport | null> {
+	const cacheKey = `${dailyDataDirectory()}\0${dateKey}`;
+	if (!reportCache.has(cacheKey)) reportCache.set(cacheKey, readStructuredReport(dateKey));
+	return reportCache.get(cacheKey)!;
+}
+
+export function cleanTimelineSummary(value: string): string {
+	return sanitizeSummaryText(value);
+}
+
+export function formatTimelineTime(
+	item: StructuredDailyItem,
+	locale: 'zh-CN' | 'en',
+	reportDate: string,
+): string {
+	if (!item.published_at) {
+		return item.time_precision === 'date_only' && item.published_date
+			? item.published_date.slice(5)
+			: '—';
+	}
+	const time = new Intl.DateTimeFormat(locale, {
+		timeZone: 'Asia/Shanghai',
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false,
+	}).format(new Date(item.published_at));
+	return item.published_date && item.published_date !== reportDate
+		? `${item.published_date.slice(5)} ${time}`
+		: time;
+}

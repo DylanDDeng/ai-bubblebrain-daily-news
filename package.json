@@ -11,6 +11,7 @@
     "test": "npm run check:validator && vitest run",
     "test:worker": "npm run check:validator && vitest run tests/worker",
     "test:worker:watch": "vitest tests/worker",
+    "verify:renderers": "node scripts/verify-daily-renderers.mjs",
     "worker:check": "wrangler deploy --dry-run --outdir .wrangler-dry-run",
     "worker:check:staging": "wrangler deploy --dry-run --config wrangler.staging.toml --outdir .wrangler-dry-run-staging"
   },

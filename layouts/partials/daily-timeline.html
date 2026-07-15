@@ -1,0 +1,155 @@
+{{- $page := .page -}}
+{{- $report := .report -}}
+{{- $isEnglish := eq $page.Language.Lang "en" -}}
+{{- $itemByID := newScratch -}}
+{{- range $report.items -}}
+  {{- $itemByID.SetInMap "items" .id . -}}
+{{- end -}}
+{{- $typeLabels := cond $isEnglish
+  (dict "all" "All" "news" "News" "project" "Projects" "paper" "Papers" "socialMedia" "Social")
+  (dict "all" "全部" "news" "资讯" "project" "项目" "paper" "论文" "socialMedia" "社交")
+-}}
+{{- $typeOrder := slice "all" "news" "project" "paper" "socialMedia" -}}
+{{- $overview := partial "timeline-clean-text.html" $report.overview.text -}}
+
+<article
+  class="daily-timeline"
+  data-daily-timeline
+  data-report-date="{{ $report.date }}"
+  data-expand-label="{{ if $isEnglish }}Expand summary{{ else }}展开摘要{{ end }}"
+  data-collapse-label="{{ if $isEnglish }}Collapse summary{{ else }}收起摘要{{ end }}"
+>
+  <header class="timeline-header">
+    <div>
+      <p class="timeline-kicker">DAILY INTELLIGENCE LEDGER{{ if not $isEnglish }} · 资讯日报{{ end }}</p>
+      <h1><time datetime="{{ $report.date }}">{{ $report.date }}</time></h1>
+      {{ with $overview }}<p class="timeline-overview">{{ . }}</p>{{ end }}
+    </div>
+    <div class="timeline-date-nav" aria-label="{{ if $isEnglish }}Daily navigation{{ else }}日报日期导航{{ end }}">
+      {{ with $page.NextInSection }}
+        <a href="{{ .RelPermalink }}">← {{ if $isEnglish }}Newer{{ else }}较新{{ end }}</a>
+      {{ else }}
+        <span aria-hidden="true">← {{ if $isEnglish }}Newer{{ else }}较新{{ end }}</span>
+      {{ end }}
+      <a href="{{ "/daily/" | relLangURL }}">{{ if $isEnglish }}Archive{{ else }}归档{{ end }}</a>
+      {{ with $page.PrevInSection }}
+        <a href="{{ .RelPermalink }}">{{ if $isEnglish }}Older{{ else }}较早{{ end }} →</a>
+      {{ else }}
+        <span aria-hidden="true">{{ if $isEnglish }}Older{{ else }}较早{{ end }} →</span>
+      {{ end }}
+    </div>
+  </header>
+
+  <div class="timeline-toolbar" aria-label="{{ if $isEnglish }}Timeline filters{{ else }}时间轴筛选{{ end }}">
+    <div class="timeline-filter-group" role="group" aria-label="{{ if $isEnglish }}Content type{{ else }}内容类型{{ end }}">
+      {{ range $typeOrder }}
+        <button type="button" data-filter-type="{{ . }}" aria-pressed="{{ if eq . "all" }}true{{ else }}false{{ end }}">
+          {{ index $typeLabels . }}
+        </button>
+      {{ end }}
+    </div>
+    <form class="timeline-search" data-timeline-search role="search">
+      <label for="timeline-search-{{ $report.date }}">{{ if $isEnglish }}Search this day{{ else }}搜索当日{{ end }}</label>
+      <div>
+        <input id="timeline-search-{{ $report.date }}" name="q" type="search" autocomplete="off" placeholder="{{ if $isEnglish }}Title, source, summary{{ else }}标题、来源或摘要{{ end }}">
+        <button type="submit">{{ if $isEnglish }}Search{{ else }}搜索{{ end }}</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="timeline-status" aria-live="polite">
+    <span data-result-count>{{ len $report.items }}</span>
+    <span>{{ if $isEnglish }}items{{ else }}条资讯{{ end }}</span>
+    <noscript> · {{ if $isEnglish }}Filters require JavaScript; all items remain visible.{{ else }}筛选需要 JavaScript；当前已展示全部内容。{{ end }}</noscript>
+  </div>
+
+  <div class="timeline-batches">
+    {{ range $report.batches }}
+      {{- $batch := . -}}
+      {{- $batchItems := slice -}}
+      {{- range $batch.item_ids -}}
+        {{- with index ($itemByID.Get "items") . -}}
+          {{- $batchItems = $batchItems | append . -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $batchItems = collections.Reverse $batchItems -}}
+      {{- $batchLabel := partial "timeline-clean-text.html" $batch.label -}}
+      <section class="timeline-batch" data-timeline-batch="{{ $batch.id }}" data-batch-status="{{ $batch.status }}">
+        <header class="timeline-batch-header">
+          <div>
+            <p>{{ $batchLabel }}</p>
+            <h2>{{ if eq $batch.status "completed" }}{{ if $isEnglish }}Published batch{{ else }}已发布批次{{ end }}{{ else }}{{ if $isEnglish }}Pending{{ else }}等待更新{{ end }}{{ end }}</h2>
+          </div>
+          <span data-batch-count>{{ len $batchItems }}</span>
+        </header>
+        <div class="timeline-items">
+          {{ range $index, $item := $batchItems }}
+            {{- $summary := partial "timeline-clean-text.html" $item.summary -}}
+            {{- $sourceName := partial "timeline-clean-text.html" $item.source.name | default $item.source_type -}}
+            {{- $title := partial "timeline-clean-text.html" $item.title | default (cond $isEnglish "Open original source" "查看原文") -}}
+            {{- $reason := partial "timeline-clean-text.html" $item.reason -}}
+            {{- $topics := slice -}}
+            {{- range $item.topics -}}
+              {{- with partial "timeline-clean-text.html" . -}}{{- $topics = $topics | append . -}}{{- end -}}
+            {{- end -}}
+            {{- $searchParts := slice $title $sourceName $summary $item.category -}}
+            {{- range $topics -}}{{- $searchParts = $searchParts | append . -}}{{- end -}}
+            {{- $datetime := $item.published_date -}}
+            {{- $timeLabel := "—" -}}
+            {{- with $item.published_at -}}
+              {{- $datetime = . -}}
+              {{- $publishedTime := time.In "Asia/Shanghai" (time.AsTime .) -}}
+              {{- $timeLabel = $publishedTime.Format "15:04" -}}
+              {{- if and $item.published_date (ne $item.published_date $report.date) -}}
+                {{- $timeLabel = printf "%s %s" (strings.TrimPrefix (printf "%s-" (substr $item.published_date 0 4)) $item.published_date) $timeLabel -}}
+              {{- end -}}
+            {{- else -}}
+              {{- if and (eq $item.time_precision "date_only") $item.published_date -}}
+                {{- $timeLabel = strings.TrimPrefix (printf "%s-" (substr $item.published_date 0 4)) $item.published_date -}}
+              {{- end -}}
+            {{- end -}}
+            <article
+              class="timeline-item"
+              data-timeline-item
+              data-item-id="{{ $item.id }}"
+              data-content-type="{{ $item.content_type }}"
+              data-search="{{ lower (delimit $searchParts " ") }}"
+              style="--timeline-index: {{ math.Min $index 10 }}"
+            >
+              <time{{ with $datetime }} datetime="{{ . }}"{{ end }}>{{ $timeLabel }}</time>
+              <span class="timeline-node" aria-hidden="true"></span>
+              <div class="timeline-item-body">
+                <p class="timeline-item-meta">
+                  <span>{{ $sourceName }}</span>
+                  <span>{{ index $typeLabels $item.content_type }}</span>
+                  {{ if $item.featured }}<strong>{{ if $isEnglish }}Selected{{ else }}精选{{ end }}</strong>{{ end }}
+                </p>
+                <h3>
+                  {{ with $item.canonical_url }}
+                    <a href="{{ . | safeURL }}" target="_blank" rel="noopener noreferrer">{{ $title }}<span aria-hidden="true"> ↗</span></a>
+                  {{ else }}
+                    {{ $title }}
+                  {{ end }}
+                </h3>
+                {{ with $summary }}<p class="timeline-summary">{{ . }}</p>{{ end }}
+                {{ if gt (len $topics) 0 }}
+                  <ul class="timeline-topics" aria-label="{{ if $isEnglish }}Topics{{ else }}主题{{ end }}">
+                    {{ range $topics }}<li>{{ . }}</li>{{ end }}
+                  </ul>
+                {{ end }}
+                {{ with $reason }}<p class="timeline-reason"><span>{{ if $isEnglish }}Why it matters{{ else }}推荐理由{{ end }}</span>{{ . }}</p>{{ end }}
+              </div>
+            </article>
+          {{ end }}
+          {{ if eq (len $batchItems) 0 }}
+            <p class="timeline-batch-empty">{{ if eq $batch.status "completed" }}{{ if $isEnglish }}No new items in this batch.{{ else }}本批次没有新增资讯。{{ end }}{{ else }}{{ if $isEnglish }}Not published yet.{{ else }}尚未发布。{{ end }}{{ end }}</p>
+          {{ end }}
+        </div>
+      </section>
+    {{ end }}
+  </div>
+  <p class="timeline-no-results" data-no-results hidden>
+    <span>{{ if $isEnglish }}No items match these filters.{{ else }}没有符合当前条件的资讯。{{ end }}</span>
+    <button type="button" data-clear-filters>{{ if $isEnglish }}Clear filters{{ else }}清除筛选{{ end }}</button>
+  </p>
+</article>

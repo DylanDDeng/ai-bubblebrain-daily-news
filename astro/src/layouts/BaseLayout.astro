@@ -22,7 +22,7 @@ const alternateHref = lang === 'en' ? '/' : '/en/';
 <html lang={lang}>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
 		<link rel="icon" href="/favicon.ico" />
@@ -30,6 +30,7 @@ const alternateHref = lang === 'en' ? '/' : '/en/';
 		<title>{title}</title>
 	</head>
 	<body>
+		<a class="skip-link" href="#main-content">{lang === 'en' ? 'Skip to content' : '跳到正文'}</a>
 		<header class="site-header">
 			<a class="site-brand" href={homeHref}>Bubble's Brain</a>
 			<nav aria-label={lang === 'en' ? 'Primary navigation' : '主导航'}>
@@ -37,7 +38,7 @@ const alternateHref = lang === 'en' ? '/' : '/en/';
 				<a href={alternateHref}>{lang === 'en' ? '中文' : 'EN'}</a>
 			</nav>
 		</header>
-		<main>
+		<main id="main-content">
 			<slot />
 		</main>
 		<footer class="site-footer">

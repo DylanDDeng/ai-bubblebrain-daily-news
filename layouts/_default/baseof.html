@@ -59,6 +59,7 @@
 
     <!-- Noir Luxury 样式 -->
     <link rel="stylesheet" href="{{ "css/noir.css" | relURL }}">
+    {{ block "head" . }}{{ end }}
     
     <!-- RSS -->
     {{ range .AlternativeOutputFormats -}}

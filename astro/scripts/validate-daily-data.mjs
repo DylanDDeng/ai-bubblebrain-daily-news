@@ -1,4 +1,4 @@
-import { readFile, readdir } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -34,6 +34,7 @@ for (const file of files) {
 	const productionFile = file.startsWith(productionDataDir);
 	let semanticError = null;
 	let filenameError = null;
+	let compatibilityError = null;
 	if (schemaValid) {
 		try {
 			validateDailyReportSemantics(report, { enforcePhase1: true });
@@ -47,15 +48,29 @@ for (const file of files) {
 			} catch (error) {
 				filenameError = error;
 			}
+			for (const markdownPath of [
+				resolve(repoRoot, 'content/daily', `${report.date}.md`),
+				resolve(repoRoot, 'daily', `${report.date}.md`),
+			]) {
+				try {
+					await access(markdownPath);
+				} catch {
+					compatibilityError = new Error(
+						`Structured report is missing compatibility Markdown: ${markdownPath}`,
+					);
+					break;
+				}
+			}
 		}
 	}
 
-	if (!schemaValid || semanticError || filenameError) {
+	if (!schemaValid || semanticError || filenameError || compatibilityError) {
 		failed = true;
 		console.error(`Invalid daily report: ${file}`);
 		if (!schemaValid) console.error(validate.errors);
 		if (semanticError) console.error(semanticError.message);
 		if (filenameError) console.error(filenameError.message);
+		if (compatibilityError) console.error(compatibilityError.message);
 	} else {
 		console.log(`Valid daily report: ${file}`);
 	}

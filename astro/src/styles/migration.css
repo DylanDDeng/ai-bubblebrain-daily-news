@@ -1,7 +1,10 @@
 :root {
 	color-scheme: dark;
 	font-family:
-		Inter,
+		'Avenir Next',
+		'Source Sans 3',
+		'PingFang SC',
+		'Noto Sans CJK SC',
 		ui-sans-serif,
 		system-ui,
 		-apple-system,
@@ -15,6 +18,21 @@
 	--border: #302f29;
 	--muted: #aaa79c;
 	--accent: #d9ff55;
+}
+
+.skip-link {
+	position: fixed;
+	top: 12px;
+	left: 12px;
+	z-index: 1000;
+	padding: 10px 14px;
+	border: 2px solid var(--accent);
+	background: var(--surface-raised);
+	transform: translateY(-160%);
+}
+
+.skip-link:focus {
+	transform: translateY(0);
 }
 
 * {
