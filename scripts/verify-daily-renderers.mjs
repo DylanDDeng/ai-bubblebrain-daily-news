@@ -83,6 +83,11 @@ function assertSafeLegacyDaily(html, renderer, route) {
     /https?:\/\/\S*(?:…|%E2%80%A6)\S*/iu,
     `${renderer} retained a visually truncated URL for ${route}`,
   );
+  assert.doesNotMatch(
+    visibleText,
+    /https?:\/\/\S*(?:%5D|\])\(https?:\/\/\S+/iu,
+    `${renderer} retained a duplicated Markdown URL for ${route}`,
+  );
   for (const href of attributeValues(html, "href")) {
     assert.doesNotMatch(
       href,
@@ -139,6 +144,8 @@ const dataRoot = join(temporaryRoot, "data");
 const dailyData = join(dataRoot, "daily");
 const knowledgeData = join(dataRoot, "knowledge");
 const hugoOutput = join(temporaryRoot, "hugo");
+const hugoSanitizerRoot = join(temporaryRoot, "hugo-sanitizer");
+const hugoSanitizerOutput = join(hugoSanitizerRoot, "public");
 
 try {
   await mkdir(dailyData, { recursive: true });
@@ -162,6 +169,66 @@ try {
     join(dailyData, "2026-01-08.json"),
     `${JSON.stringify(bilingualFixture, null, 2)}\n`,
   );
+
+  await mkdir(join(hugoSanitizerRoot, "content"), { recursive: true });
+  await mkdir(join(hugoSanitizerRoot, "layouts", "partials"), {
+    recursive: true,
+  });
+  await copyFile(
+    join(repoRoot, "layouts", "partials", "legacy-daily-content.html"),
+    join(hugoSanitizerRoot, "layouts", "partials", "legacy-daily-content.html"),
+  );
+  await writeFile(
+    join(hugoSanitizerRoot, "hugo.toml"),
+    "[markup.goldmark.renderer]\nunsafe = true\n",
+  );
+  await writeFile(
+    join(hugoSanitizerRoot, "layouts", "index.html"),
+    '{{ partial "legacy-daily-content.html" . }}\n',
+  );
+  await writeFile(
+    join(hugoSanitizerRoot, "content", "_index.md"),
+    `---
+title: sanitizer fixture
+---
+<p>before ([ https://first.example/story](https://second.example/target) ) after</p>
+<p>multi https://one.example/a](https://two.example/a) middle https://three.example/b](https://four.example/b) done</p>
+<p>anchor before ([ <a href="https://first.example/story%5D(https://second.example/target)">https://first.example/story](https://second.example/target)</a> ) anchor after</p>
+<p>ordinary before ( <a href="https://ordinary.example/story%5D(https://different.example/target)">https://ordinary.example/story](https://different.example/target)</a> ) ordinary after</p>
+<p>bare ordinary before ( https://bare.example/story](https://different.example/target) ) bare ordinary after</p>
+<p><a href="https://example.com/redirect?value=%5D(https://other.example)">legitimate query</a></p>
+<div data-link="https://attr.example/a%5D(https://attr.example/b)">attribute sentinel</div>
+`,
+  );
+  execFileSync(
+    "hugo",
+    ["--source", hugoSanitizerRoot, "--destination", hugoSanitizerOutput],
+    { stdio: "inherit" },
+  );
+  const sanitizerHtml = await readFile(
+    join(hugoSanitizerOutput, "index.html"),
+    "utf8",
+  );
+  assert.match(sanitizerHtml, /<p>before\s+after<\/p>/u);
+  assert.match(sanitizerHtml, /<p>multi\s+middle\s+done<\/p>/u);
+  assert.match(sanitizerHtml, /<p>anchor before\s+anchor after<\/p>/u);
+  assert.match(
+    sanitizerHtml,
+    /<p>ordinary before \(\s+\) ordinary after<\/p>/u,
+  );
+  assert.match(
+    sanitizerHtml,
+    /<p>bare ordinary before \(\s+\) bare ordinary after<\/p>/u,
+  );
+  assert.match(
+    sanitizerHtml,
+    /<a href="https:\/\/example\.com\/redirect\?value=%5D\(https:\/\/other\.example\)">legitimate query<\/a>/u,
+  );
+  assert.match(
+    sanitizerHtml,
+    /data-link="https:\/\/attr\.example\/a%5D\(https:\/\/attr\.example\/b\)"/u,
+  );
+  assert.doesNotMatch(sanitizerHtml, /first\.example\/story/iu);
 
   execFileSync("hugo", ["--destination", hugoOutput, "--cleanDestinationDir"], {
     cwd: repoRoot,

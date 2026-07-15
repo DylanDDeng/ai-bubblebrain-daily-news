@@ -5,10 +5,22 @@ const TRUNCATION_MARKER = /…|%e2%80%a6|&hellip;|\.{3,}/iu;
 const BARE_TRUNCATED_URL = /https?:\/\/[^\s<]*(?:…|%e2%80%a6|&hellip;|\.{3,})[^\s<]*/giu;
 const TRUNCATED_ANCHOR_TAIL =
 	/(<a\b[^>]*>[\s\S]*?<\/a>)(?:\?|&amp;)?(?:…|%e2%80%a6|&hellip;|\.{3,})/giu;
+const REPEATED_MARKDOWN_URL = /^(https?:\/\/[^\s\]]+?)(?:%5d|\])\((https?:\/\/[^\s)]+)\)$/iu;
+const REPEATED_MARKDOWN_LABEL = /^(https?:\/\/[^\s\]]+?)\]\((https?:\/\/[^\s)]+)\)$/iu;
+const EMPTY_REPEATED_LINK_WRAPPER = /\(\s*\[\s*\)/gu;
 const BLOCK_END = /^<\/(?:p|li|div|blockquote|section|article|td|th)\b/iu;
 
 function decodeUrlAttribute(value: string): string {
 	return value.replaceAll('&amp;', '&').replaceAll('&#38;', '&').replaceAll('&#x26;', '&');
+}
+
+function isMalformedRepeatedMarkdownAnchor(href: string, labelHtml: string): boolean {
+	const hrefMatch = REPEATED_MARKDOWN_URL.exec(decodeUrlAttribute(href.trim()));
+	const label = decodeUrlAttribute(labelHtml.replace(/<[^>]+>/gu, '').trim());
+	const labelMatch = REPEATED_MARKDOWN_LABEL.exec(label);
+	return Boolean(
+		hrefMatch && labelMatch && hrefMatch[1] === labelMatch[1] && hrefMatch[2] === labelMatch[2],
+	);
 }
 
 export function isSafeLegacyHref(value: string): boolean {
@@ -126,9 +138,12 @@ export function sanitizeLegacyDailyHtml(html: string): string {
 				_after: string,
 				label: string,
 			) => {
-				if (isSafeLegacyHref(doubleHref ?? singleHref ?? bareHref ?? '')) return fullMatch;
+				const href = doubleHref ?? singleHref ?? bareHref ?? '';
+				if (isMalformedRepeatedMarkdownAnchor(href, label)) return '';
+				if (isSafeLegacyHref(href)) return fullMatch;
 				return /^\s*https?:\/\//iu.test(label.replace(/<[^>]+>/gu, '')) ? '' : label;
 			},
-		);
+		)
+		.replace(EMPTY_REPEATED_LINK_WRAPPER, ' ');
 	return stripBareTruncatedUrls(withoutMedia);
 }

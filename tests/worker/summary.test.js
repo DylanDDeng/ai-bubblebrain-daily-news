@@ -20,8 +20,17 @@ describe("timeline summary sanitization", () => {
       "前文 中段 后文",
     ],
     ["前文 [原文](https://example.com/a?q=1) 后文", "前文 原文 后文"],
+    [
+      "前文 ([ https://example.com/story\\](https://example.com/story) ) 后文",
+      "前文 后文",
+    ],
     ["前文 ![图](https://example.com/a.png) 后文", "前文 后文"],
     ["前文 https://example.com/a_(b) 后文", "前文 后文"],
+    [
+      "context (see [https://a.example](https://b.example)) after",
+      "context (see ) after",
+    ],
+    ["调用 foo() 返回 []", "调用 foo() 返回 []"],
   ])("cleans display-only URL payloads from %s", (input, expected) => {
     expect(sanitizeSummaryText(input)).toBe(expected);
   });

@@ -70,6 +70,30 @@ describe('legacy daily HTML sanitization', () => {
 		expect(result).toContain('<a href=../daily/>相对链接</a>');
 	});
 
+	it('removes an upstream URL duplicated as an escaped Markdown link', () => {
+		const html =
+			'<p>前文 ([ <a href="https://example.com/story%5D(https://example.com/story)">https://example.com/story](https://example.com/story)</a> ) 后文</p>';
+		expect(sanitizeLegacyDailyHtml(html)).toBe('<p>前文   后文</p>');
+	});
+
+	it('removes mismatched duplicated Markdown URLs instead of choosing a target', () => {
+		const html =
+			'<p><a href="https://first.example/story%5D(https://second.example/target)">https://first.example/story](https://second.example/target)</a></p>';
+		expect(sanitizeLegacyDailyHtml(html)).toBe('<p></p>');
+	});
+
+	it('removes a malformed repeated Markdown anchor whose first URL has a query', () => {
+		const html =
+			'<p><a href="https://first.example/story?x=1%5D(https://second.example/target)">https://first.example/story?x=1](https://second.example/target)</a></p>';
+		expect(sanitizeLegacyDailyHtml(html)).toBe('<p></p>');
+	});
+
+	it('preserves a legitimate encoded query when the anchor label is ordinary text', () => {
+		const html =
+			'<p><a href="https://example.com/redirect?value=%5D(https://other.example)">合法跳转</a></p>';
+		expect(sanitizeLegacyDailyHtml(html)).toBe(html);
+	});
+
 	it.each([
 		['https://example.com/story', true],
 		['https://ggemu', false],
@@ -79,6 +103,8 @@ describe('legacy daily HTML sanitization', () => {
 		['javascript:alert(1)', false],
 		['https://upload.chinaz……', false],
 		['https://%E2%80%A6%E2%80%A6', false],
+		['https://example.com/story%5D(https://example.com/story)', true],
+		['https://example.com/redirect?value=%5D(https://other.example)', true],
 		['not a URL', false],
 	])('classifies %s', (href, expected) => {
 		expect(isSafeLegacyHref(href)).toBe(expected);

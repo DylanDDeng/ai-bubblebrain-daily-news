@@ -8,5 +8,10 @@
 {{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*"(?:javascript|data|vbscript):[^"]*"([^>]*)>(.*?)</a>` "$3" $content -}}
 {{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*'(?:javascript|data|vbscript):[^']*'([^>]*)>(.*?)</a>` "$3" $content -}}
 {{- $content = replaceRE `(?is)<a([^>]*?)href\s*=\s*(?:javascript|data|vbscript):[^\s>]*([^>]*)>(.*?)</a>` "$3" $content -}}
+{{- $content = replaceRE `(?is)<a\b[^>]*href\s*=\s*"[^"]*%5D\(https?://[^"]+"[^>]*>\s*https?://[^<\]]+\]\(https?://[^<)]+\)\s*</a>` " " $content -}}
+{{- range seq 4 -}}
+  {{- $content = replaceRE `(?is)(^|>)([^<]*?)\(\s*\[\s*\)([^<]*)(<|$)` "$1$2 $3$4" $content -}}
+  {{- $content = replaceRE `(?is)(^|>)([^<]*?)https?://[^\s<\]]+?\]\(https?://[^\s<)]+\)([^<]*)(<|$)` "$1$2 $3$4" $content -}}
+{{- end -}}
 {{- $content = replaceRE `(?i)https?://[^\s<>"']*(?:…|%E2%80%A6|&hellip;|\.{3,})[^\s<>"']*` " " $content -}}
 {{- $content | safeHTML -}}

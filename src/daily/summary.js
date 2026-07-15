@@ -1,8 +1,12 @@
 const MEDIA_PLACEHOLDER_START = /(?:\\+)?\[(?:图片|image|视频|video)\s*:/giu;
 const MARKDOWN_IMAGE =
-  /!\[[^\]]*\]\(\s*https?:\/\/[^\s)]+(?:\s+"[^"]*")?\s*\)/giu;
+  /!\[[^\]]*\\*\]\(\s*https?:\/\/[^\s)]+(?:\s+"[^"]*")?\s*\)/giu;
+const WRAPPED_URL_AS_MARKDOWN_LINK =
+  /\(\s*\[\s*https?:\/\/[^\s\]]+?\\*\]\(\s*https?:\/\/[^\s)]+(?:\s+"[^"]*")?\s*\)\s*\)/giu;
+const URL_AS_MARKDOWN_LINK =
+  /\[\s*https?:\/\/[^\s\]]+?\\*\]\(\s*https?:\/\/[^\s)]+(?:\s+"[^"]*")?\s*\)/giu;
 const MARKDOWN_LINK =
-  /\[([^\]]+)\]\(\s*https?:\/\/[^\s)]+(?:\s+"[^"]*")?\s*\)/giu;
+  /\[([^\]]+?)\\*\]\(\s*https?:\/\/[^\s)]+(?:\s+"[^"]*")?\s*\)/giu;
 const RAW_URL = /https?:\/\/[^\s<>\[\]）】，。！？；：、“”‘’《》]+/giu;
 
 /**
@@ -47,6 +51,8 @@ export function stripMediaPlaceholders(value) {
 export function sanitizeSummaryText(value) {
   return stripMediaPlaceholders(value)
     .replace(MARKDOWN_IMAGE, " ")
+    .replace(WRAPPED_URL_AS_MARKDOWN_LINK, " ")
+    .replace(URL_AS_MARKDOWN_LINK, " ")
     .replace(MARKDOWN_LINK, "$1")
     .replace(RAW_URL, " ")
     .replace(/\s+([，。！？；：,.!?;:])/gu, "$1")
