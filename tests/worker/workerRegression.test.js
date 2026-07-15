@@ -13,7 +13,10 @@ describe('worker regression guards', () => {
         await worker.scheduled({ scheduledTime: Date.UTC(2026, 6, 14) }, env, { waitUntil });
 
         expect(scheduledWorkflow).toHaveBeenCalledOnce();
-        expect(scheduledWorkflow).toHaveBeenCalledWith(env);
+        expect(scheduledWorkflow).toHaveBeenCalledWith(env, {
+            triggerId: `scheduled:${Date.UTC(2026, 6, 14)}`,
+            runAt: '2026-07-14T00:00:00.000Z',
+        });
         expect(waitUntil).toHaveBeenCalledWith(workflowPromise);
     });
 
@@ -50,6 +53,8 @@ describe('worker regression guards', () => {
         const config = await readFile(new URL('../../wrangler.toml', import.meta.url), 'utf8');
         expect(config).toContain('GITHUB_BRANCH = "main"');
         expect(config).toContain('crons = ["0 2,7,15,19 * * *"]');
+        expect(config).toContain('DAILY_PUBLISH_MODE = "legacy"');
+        expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');
     });
 
     it('keeps staging isolated from production resources and triggers', async () => {
@@ -67,6 +72,8 @@ describe('worker regression guards', () => {
         expect(staging).toContain('GITHUB_BRANCH = "codex/worker-staging"');
         expect(staging).not.toContain('GITHUB_BRANCH = "main"');
         expect(staging).toContain('EXTERNAL_WRITES_ENABLED = "false"');
+        expect(staging).toContain('DAILY_PUBLISH_MODE = "legacy"');
+        expect(staging).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');
         expect(staging).not.toMatch(/^\s*\[triggers\]/m);
         expect(staging).not.toMatch(/^\s*crons\s*=/m);
         expect(staging).not.toMatch(/^\s*routes?\s*=/m);

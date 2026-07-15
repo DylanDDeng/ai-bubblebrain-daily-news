@@ -3,7 +3,7 @@ import { normalizeSourceItem } from './normalize.js';
 import { createDailyReportArtifacts } from './serialize.js';
 import { validateDailyReportIdentities, validateDailyReportSemantics } from './semanticValidate.js';
 import { validateDailyReportSchema } from './schemaValidate.js';
-import { isExplicitInstant, isRealDate } from './time.js';
+import { isExplicitInstant, isRealDate, previousReportDates } from './time.js';
 
 const BATCH_LABELS = {
     morning: '10:00 更新',
@@ -11,15 +11,6 @@ const BATCH_LABELS = {
     night: '23:00 更新',
     lateNight: '次日 03:00 补充更新',
 };
-
-function previousReportDates(reportDate, days = 7) {
-    const anchor = new Date(`${reportDate}T00:00:00Z`);
-    return Array.from({ length: days }, (_, index) => {
-        const date = new Date(anchor);
-        date.setUTCDate(date.getUTCDate() - index - 1);
-        return date.toISOString().slice(0, 10);
-    });
-}
 
 function assertHistoryCompleteness(recentReports, reportDate, structuredStartDate) {
     if (!structuredStartDate) return;

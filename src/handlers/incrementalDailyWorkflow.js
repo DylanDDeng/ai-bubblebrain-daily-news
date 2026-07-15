@@ -5,6 +5,10 @@ import { getFromKV, storeInKV } from '../kv.js';
 import { stripHtml, extractSummaryText, removeMarkdownCodeBlock, formatDateToChinese, formatMarkdownText } from '../helpers.js';
 import { callChatAPIStream } from '../chatapi.js';
 import { callGitHubApi, createOrUpdateGitHubFile, getGitHubFileSha } from '../github.js';
+import { runStructuredDailyWorkflow } from '../daily/structuredWorkflow.js';
+import { runStructuredShadow } from '../daily/shadowWorkflow.js';
+import { fetchProviderPreservingData } from '../daily/structuredFetch.js';
+import { isRealDate } from '../daily/time.js';
 import {
     getSystemPromptArticleEvaluation,
     getSystemPromptBatchSection,
@@ -328,13 +332,18 @@ async function commitDailyFiles(env, reportDate, markdown, batch) {
     return results;
 }
 
-export async function runIncrementalDailyWorkflow(env, options = {}) {
-    const { reportDate, batch } = resolveBatch(options.date ? new Date(`${options.date}T12:00:00+08:00`) : new Date(), options.batch, options.date);
+export async function runLegacyIncrementalDailyWorkflow(env, options = {}) {
+    const targetClock = options.date
+        ? new Date(`${options.date}T12:00:00+08:00`)
+        : options.runAt ? new Date(options.runAt) : new Date();
+    const { reportDate, batch } = resolveBatch(targetClock, options.batch, options.date);
     console.log(`[IncrementalDaily] Start reportDate=${reportDate}, batch=${batch}`);
 
-    const foloCookie = await resolveFoloCookie(env);
-
-    const fetched = await fetchAllData(env, foloCookie);
+    let fetched = options.fetchedOverride;
+    if (!fetched) {
+        const foloCookie = await resolveFoloCookie(env);
+        fetched = await fetchAllData(env, foloCookie);
+    }
     const sourceCounts = countFetchedByType(fetched);
     const incoming = flattenFetchedData(fetched);
 
@@ -378,6 +387,94 @@ export async function runIncrementalDailyWorkflow(env, options = {}) {
         selectedCount: selected.length,
         commits
     };
+}
+
+function assertExternalWritesEnabled(env) {
+    if (String(env.EXTERNAL_WRITES_ENABLED).toLowerCase() !== 'true') {
+        throw new Error('External writes are disabled');
+    }
+}
+
+function resolveStructuredStartDate(env) {
+    const value = env.DAILY_STRUCTURED_START_DATE;
+    if (!isRealDate(value)) throw new Error('DAILY_STRUCTURED_START_DATE must be a real date');
+    return value;
+}
+
+export async function runIncrementalDailyWorkflow(env, options = {}, dependencies = {}) {
+    assertExternalWritesEnabled(env);
+    const mode = env.DAILY_PUBLISH_MODE;
+    if (!['legacy', 'shadow', 'structured'].includes(mode)) {
+        throw new Error('DAILY_PUBLISH_MODE must be legacy, shadow, or structured');
+    }
+
+    const runLegacy = dependencies.runLegacy || runLegacyIncrementalDailyWorkflow;
+    if (mode === 'legacy') return runLegacy(env, options);
+
+    const runAt = options.runAt || new Date().toISOString();
+    const targetClock = options.date
+        ? new Date(`${options.date}T12:00:00+08:00`)
+        : new Date(runAt);
+    const { reportDate, batch } = resolveBatch(targetClock, options.batch, options.date);
+
+    if (mode === 'structured') {
+        resolveStructuredStartDate(env);
+        if (String(env.DAILY_STRUCTURED_WRITES_ENABLED).toLowerCase() !== 'true') {
+            throw new Error('Structured writes are disabled');
+        }
+        const runStructured = dependencies.runStructured || runStructuredDailyWorkflow;
+        return runStructured(env, {
+            reportDate,
+            batch,
+            triggerId: options.triggerId || null,
+            runAt,
+        });
+    }
+
+    const getFoloCookie = dependencies.getFoloCookie || resolveFoloCookie;
+    const fetchStructured = dependencies.fetchStructured || fetchProviderPreservingData;
+    const foloCookie = await getFoloCookie(env);
+    const fetched = await fetchStructured(env, foloCookie);
+    const legacyResult = await runLegacy(env, {
+        ...options,
+        fetchedOverride: fetched.grouped,
+    });
+
+    try {
+        const structuredStartDate = resolveStructuredStartDate(env);
+        if (fetched.errors.length > 0) {
+            const error = new Error('One or more shadow providers failed');
+            error.name = 'StructuredShadowSourceError';
+            error.sourceErrors = fetched.errors;
+            throw error;
+        }
+        const runShadow = dependencies.runShadow || runStructuredShadow;
+        const shadow = await runShadow(env, {
+            reportDate,
+            batch,
+            runAt,
+            rawItems: fetched.structuredItems,
+            structuredStartDate,
+            producer: {
+                version: env.DAILY_PRODUCER_VERSION,
+                commitSha: env.DAILY_PRODUCER_COMMIT_SHA || null,
+            },
+        });
+        return { ...legacyResult, mode: 'shadow', shadow };
+    } catch (error) {
+        console.warn('[IncrementalDaily] structured shadow failed', {
+            errorType: error?.name || 'Error',
+        });
+        return {
+            ...legacyResult,
+            mode: 'shadow',
+            shadow: {
+                status: 'failed',
+                error_type: error?.name || 'Error',
+                ...(error?.sourceErrors ? { source_errors: error.sourceErrors } : {}),
+            },
+        };
+    }
 }
 
 export async function handleIncrementalDailyWorkflow({ date, batch }, env) {

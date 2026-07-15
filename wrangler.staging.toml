@@ -19,6 +19,9 @@ simple = { limit = 5, period = 60 }
 
 [vars]
 EXTERNAL_WRITES_ENABLED = "false"
+DAILY_PUBLISH_MODE = "legacy"
+DAILY_STRUCTURED_WRITES_ENABLED = "false"
+DAILY_PRODUCER_VERSION = "phase1c"
 GITHUB_REPO_OWNER = "DylanDDeng"
 GITHUB_REPO_NAME = "ai-bubblebrain-daily-news"
 GITHUB_BRANCH = "codex/worker-staging"

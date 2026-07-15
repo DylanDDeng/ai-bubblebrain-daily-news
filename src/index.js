@@ -168,7 +168,10 @@ export function createWorker({
                 console.warn('[Scheduled] external writes are disabled; workflow skipped');
                 return;
             }
-            ctx.waitUntil(scheduledWorkflow(env));
+            ctx.waitUntil(scheduledWorkflow(env, {
+                triggerId: `scheduled:${event.scheduledTime}`,
+                runAt: new Date(event.scheduledTime).toISOString(),
+            }));
         },
     };
 }

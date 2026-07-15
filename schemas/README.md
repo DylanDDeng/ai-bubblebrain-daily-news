@@ -82,6 +82,25 @@ files. JSON object keys use canonical code-point ordering, independent of insert
 locale. An exact rerun with a later clock is a byte-identical no-op. Golden checksums protect JSON
 and Markdown ordering, whitespace, and final newlines.
 
-Phase 1B does not import these modules from the legacy scheduled or manual publishing path and does
-not publish structured JSON. Wiring is deferred to Phase 1C, where structured mode must remain
-fail-closed until its atomic publication Gate passes.
+## Phase 1C publication safety
+
+The Worker has three explicit modes: `legacy`, `shadow`, and `structured`. A missing or unknown mode
+fails closed. `structured` additionally requires external writes, the structured-write switch, and
+a valid structured start date. Production and staging initially remain `legacy` with structured
+writes disabled; staging is enabled only for an isolated Gate exercise.
+
+Structured reads the current report and its required seven-day history from one immutable Git
+head/tree snapshot. It creates the JSON and both Markdown compatibility artifacts in one Git commit
+whose only parent is that snapshot head, then advances the branch with `force: false`. A ref conflict
+causes a fresh snapshot read and rebuild. If the ref-update response is lost, success is accepted only
+after the candidate commit is confirmed as the current head or its ancestor. KV leases and trigger
+markers are advisory and never establish publication correctness.
+
+A no-op is valid only when all three generated artifact bytes match that same snapshot and the branch
+head has not moved. Missing or drifted compatibility Markdown is repaired with another atomic
+three-file commit. Shadow stores complete report state for current plus seven-day comparisons in its
+isolated KV namespace; shadow failures never convert a completed legacy publication into failure.
+
+The target publication branch must disallow force pushes and require the Worker/CI checks used by the
+migration Gate. Do not enable structured production writes until branch protection, staging conflict
+tests, rollback rehearsal, and independent review all pass.

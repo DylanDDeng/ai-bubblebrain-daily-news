@@ -24,3 +24,12 @@ export function isExplicitInstant(value) {
     }
     return !Number.isNaN(new Date(value).getTime());
 }
+
+export function previousReportDates(reportDate, days = 7) {
+    const anchor = new Date(`${reportDate}T00:00:00Z`);
+    return Array.from({ length: days }, (_, index) => {
+        const date = new Date(anchor);
+        date.setUTCDate(date.getUTCDate() - index - 1);
+        return date.toISOString().slice(0, 10);
+    });
+}
