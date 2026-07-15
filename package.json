@@ -13,6 +13,8 @@
     "test:worker": "npm run check:validator && npm run check:taxonomy && vitest run tests/worker",
     "test:worker:watch": "vitest tests/worker",
     "verify:renderers": "node scripts/verify-daily-renderers.mjs",
+    "verify:site": "node scripts/verify-site.mjs",
+    "verify:preview": "node scripts/verify-preview.mjs",
     "worker:check": "wrangler deploy --dry-run --outdir .wrangler-dry-run",
     "worker:check:staging": "wrangler deploy --dry-run --config wrangler.staging.toml --outdir .wrangler-dry-run-staging"
   },
@@ -21,6 +23,7 @@
     "ajv-formats": "^3.0.1"
   },
   "devDependencies": {
+    "fast-xml-parser": "^5.10.0",
     "vitest": "^3.2.7",
     "wrangler": "^4.110.0"
   }

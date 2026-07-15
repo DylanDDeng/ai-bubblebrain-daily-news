@@ -8,6 +8,10 @@ import { filterDailyEntries } from '../../lib/daily';
 const entries = filterDailyEntries(await getCollection('daily'), 'zh-CN');
 ---
 
-<BaseLayout title="资讯日报 · Bubble's Brain" description="Bubble's Brain 资讯日报归档">
+<BaseLayout
+	title="资讯日报 · Bubble's Brain"
+	description="Bubble's Brain 资讯日报归档"
+	alternateHref="/en/daily/"
+>
 	<DailyArchive entries={entries} locale="zh-CN" />
 </BaseLayout>

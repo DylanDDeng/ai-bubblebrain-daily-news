@@ -40,9 +40,14 @@ function dailyRoutes(files) {
 }
 
 function attributeValues(html, attribute) {
-  return [...html.matchAll(new RegExp(`${attribute}="([^"]+)"`, "g"))].map(
-    (match) => match[1],
-  );
+  return [
+    ...html.matchAll(
+      new RegExp(
+        `${attribute}\\s*=\\s*(?:"([^"]+)"|'([^']+)'|([^\\s>]+))`,
+        "gi",
+      ),
+    ),
+  ].map((match) => match[1] ?? match[2] ?? match[3]);
 }
 
 function timelineNavHrefs(html) {
@@ -57,6 +62,76 @@ function timelineTimeLabels(html) {
       /<article\b[^>]*class="[^"]*\btimeline-item\b[^"]*"[^>]*>[\s\S]*?<time(?: [^>]*)?>([^<]*)<\/time>/g,
     ),
   ].map((match) => match[1].trim());
+}
+
+function assertSafeLegacyDaily(html, renderer, route) {
+  assert.doesNotMatch(
+    html,
+    /\[(?:图片|image|视频|video)\s*:/iu,
+    `${renderer} retained media transport metadata for ${route}`,
+  );
+  assert.doesNotMatch(
+    html,
+    /https?:\/\/[^\s<"']*(?:…|%E2%80%A6|&hellip;|\.{3,})[^\s<"']*/iu,
+    `${renderer} retained a bare truncated URL for ${route}`,
+  );
+  const visibleText = html
+    .replace(/<[^>]+>/gu, " ")
+    .replaceAll("&hellip;", "…");
+  assert.doesNotMatch(
+    visibleText,
+    /https?:\/\/\S*(?:…|%E2%80%A6)\S*/iu,
+    `${renderer} retained a visually truncated URL for ${route}`,
+  );
+  for (const href of attributeValues(html, "href")) {
+    assert.doesNotMatch(
+      href,
+      /…|%E2%80%A6/iu,
+      `${renderer} retained a truncated URL for ${route}: ${href}`,
+    );
+  }
+}
+
+function legacyContentSemantics(html, label) {
+  const match = html.match(
+    /<div\b[^>]*class="[^"]*\b(?:article-content|legacy-content)\b[^"]*"[^>]*>([\s\S]*?)<\/div>/i,
+  );
+  assert.ok(match, `${label} legacy daily content block is missing`);
+  const block = match[1];
+  const text = block
+    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replace(/&(?:quot|ldquo|rdquo);/g, '"')
+    .replace(/&(?:apos|lsquo|rsquo);|&#39;/g, "'")
+    .replaceAll("&hellip;", "…")
+    .replaceAll("&mdash;", "—")
+    .replaceAll("&ndash;", "–")
+    .replaceAll("&nbsp;", " ")
+    .replace(/&#(\d+);/g, (_match, value) =>
+      String.fromCodePoint(Number(value)),
+    )
+    .replace(/&#x([\da-f]+);/gi, (_match, value) =>
+      String.fromCodePoint(Number.parseInt(value, 16)),
+    )
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/https?:\/\/\S+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text;
+}
+
+function legacyBlockCounts(html) {
+  return Object.fromEntries(
+    ["li", "h2", "h3", "blockquote"].map((tag) => [
+      tag,
+      (html.match(new RegExp(`<${tag}\\b`, "gi")) ?? []).length,
+    ]),
+  );
 }
 
 const temporaryRoot = await mkdtemp(join(tmpdir(), "bubble-renderer-parity-"));
@@ -104,12 +179,6 @@ try {
     filesBelow(hugoOutput),
     filesBelow(astroOutput),
   ]);
-  assert.deepEqual(
-    dailyRoutes(astroFiles),
-    dailyRoutes(hugoFiles),
-    "Hugo and Astro daily route sets differ",
-  );
-
   const legacyRedirectPath = join(
     "en",
     "daily",
@@ -118,16 +187,26 @@ try {
     "202-22",
     "index.html",
   );
-  for (const html of await Promise.all([
+  assert.deepEqual(
+    dailyRoutes(astroFiles),
+    dailyRoutes(hugoFiles).filter((path) => path !== legacyRedirectPath),
+    "Hugo and Astro daily route sets differ",
+  );
+
+  const [hugoLegacyRedirect, astroRedirects] = await Promise.all([
     readFile(join(hugoOutput, legacyRedirectPath), "utf8"),
-    readFile(join(astroOutput, legacyRedirectPath), "utf8"),
-  ])) {
-    assert.match(
-      html,
-      /\/en\/daily\/2025\/12\/2025-12-22\//,
-      "legacy daily redirect target differs",
-    );
-  }
+    readFile(join(astroOutput, "_redirects"), "utf8"),
+  ]);
+  assert.match(
+    hugoLegacyRedirect,
+    /\/en\/daily\/2025\/12\/2025-12-22\//,
+    "legacy Hugo daily redirect target differs",
+  );
+  assert.match(
+    astroRedirects,
+    /^\/en\/daily\/2025\/12\/202-22\/ \/en\/daily\/2025\/12\/2025-12-22\/ 301$/m,
+    "Astro must replace the malformed legacy page with a real permanent redirect",
+  );
 
   const structuredPath = join(
     "daily",
@@ -193,6 +272,56 @@ try {
     assert.match(astroHtml, /data-legacy-daily/);
     assert.doesNotMatch(hugoHtml, /data-daily-timeline/);
     assert.doesNotMatch(astroHtml, /data-daily-timeline/);
+  }
+
+  for (const path of dailyRoutes(astroFiles)) {
+    if (path === legacyRedirectPath || path === structuredPath) continue;
+    const [hugoHtml, astroHtml] = await Promise.all([
+      readFile(join(hugoOutput, path), "utf8"),
+      readFile(join(astroOutput, path), "utf8"),
+    ]);
+    if (
+      /data-daily-timeline/.test(astroHtml) ||
+      /data-daily-timeline/.test(hugoHtml)
+    ) {
+      assert.match(
+        astroHtml,
+        /data-daily-timeline/,
+        `Astro structured route drifted for ${path}`,
+      );
+      assert.match(
+        hugoHtml,
+        /data-daily-timeline/,
+        `Hugo structured route drifted for ${path}`,
+      );
+      continue;
+    }
+    assertSafeLegacyDaily(hugoHtml, "Hugo", path);
+    assertSafeLegacyDaily(astroHtml, "Astro", path);
+    const astroText = legacyContentSemantics(astroHtml, `Astro ${path}`);
+    const hugoText = legacyContentSemantics(hugoHtml, `Hugo ${path}`);
+    const longestText = Math.max(astroText.length, hugoText.length, 1);
+    assert.ok(
+      Math.abs(astroText.length - hugoText.length) / longestText < 0.02,
+      `legacy daily visible text length drifted by more than 2% for ${path}`,
+    );
+    assert.deepEqual(
+      legacyBlockCounts(astroHtml),
+      legacyBlockCounts(hugoHtml),
+      `legacy daily block structure differs for ${path}`,
+    );
+    if (path === "daily/2026/06/2026-06-11/index.html") {
+      for (const [renderer, text] of [
+        ["Hugo", hugoText],
+        ["Astro", astroText],
+      ]) {
+        assert.match(
+          text,
+          /as in the titl/u,
+          `${renderer} removed prose after a nested image marker`,
+        );
+      }
+    }
   }
 
   for (const asset of ["css/daily-timeline.css", "js/daily-timeline.js"]) {

@@ -12,6 +12,7 @@ const entries = filterDailyEntries(await getCollection('daily'), 'en');
 	title="Daily Brief · Bubble's Brain"
 	description="Bubble's Brain daily brief archive"
 	lang="en"
+	alternateHref="/daily/"
 >
 	<DailyArchive entries={entries} locale="en" />
 </BaseLayout>

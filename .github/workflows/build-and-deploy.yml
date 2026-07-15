@@ -1,85 +1,60 @@
-name: Build and Deploy
+name: Build and Verify Site
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
-  schedule:
-    # Run daily at 2 AM UTC (10 AM Beijing Time)
-    - cron: '0 2 * * *'
+
+permissions:
+  contents: read
 
 jobs:
   build-and-deploy:
+    name: build-and-deploy
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 20
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        submodules: true  # Fetch Hugo themes
-        fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup Hugo
-      uses: peaceiris/actions-hugo@v3
-      with:
-        hugo-version: '0.147.9'
-        extended: true
+      - name: Setup Node.js 22.17
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            astro/package-lock.json
 
-    - name: Setup mdBook
-      uses: peaceiris/actions-mdbook@v2
-      with:
-        mdbook-version: 'latest'
+      - name: Setup Hugo 0.147.9
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.147.9"
+          extended: true
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '22.17.0'
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix astro
 
-    - name: Validate structured daily data
-      run: |
-        npm ci --prefix astro
-        npm run validate:data --prefix astro
+      - name: Verify Worker and data contracts
+        run: npm test
 
-    - name: Sync daily content to Hugo
-      run: |
-        # Create daily directory if it doesn't exist
-        mkdir -p daily
-        
-        # Run sync script if daily files exist
-        if [ "$(ls -A daily/*.md 2>/dev/null | grep -v SUMMARY.md)" ]; then
-          bash scripts/sync-daily-to-hugo.sh
-        else
-          echo "No daily files to sync"
-        fi
+      - name: Verify Hugo and Astro daily parity
+        run: npm run verify:renderers
 
-    - name: Build with mdBook
-      if: ${{ hashFiles('src/SUMMARY.md') != '' }}
-      run: |
-        # Build mdBook for backward compatibility
-        mdbook build
-        # Move mdBook output to a subdirectory
-        mkdir -p public/mdbook
-        mv book/* public/mdbook/ || true
+      - name: Build and verify the final Astro release artifact
+        run: npm run verify --prefix astro
 
-    - name: Build with Hugo
-      run: |
-        # Build Hugo site
-        hugo --minify
-        # Hugo output is already in public/ directory
-
-    - name: Generate RSS feed
-      run: |
-        # If there's a custom RSS generation script, run it
-        if [ -f "scripts/generate-rss.sh" ]; then
-          bash scripts/generate-rss.sh
-        fi
-
-    - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
-        # cname: ai-insights.yourdomain.com  # 域名会从 static/CNAME 文件读取
+      - name: Upload immutable Astro artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: astro-dist-${{ github.sha }}
+          path: astro/dist
+          if-no-files-found: error
+          retention-days: 14

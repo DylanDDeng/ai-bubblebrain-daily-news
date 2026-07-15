@@ -60,10 +60,13 @@ describe('worker regression guards', () => {
     });
 
     it('promotes automation publication pull requests only after all required checks', async () => {
-        const workflow = await readFile(
-            new URL('../../.github/workflows/worker-ci.yml', import.meta.url),
-            'utf8',
-        );
+        const [workflow, siteWorkflow] = await Promise.all([
+            readFile(new URL('../../.github/workflows/worker-ci.yml', import.meta.url), 'utf8'),
+            readFile(
+                new URL('../../.github/workflows/build-and-deploy.yml', import.meta.url),
+                'utf8',
+            ),
+        ]);
         expect(workflow).toContain('promote-publication:');
         expect(workflow).toContain(
             'needs: [worker-security, renderer-parity, database-security]',
@@ -74,7 +77,16 @@ describe('worker regression guards', () => {
         expect(workflow).toContain('node scripts/verify-publication-pr.mjs');
         expect(workflow).toContain('--match-head-commit "$PR_HEAD_SHA"');
         expect(workflow).toContain('actions: write');
-        expect(workflow).toContain('gh workflow run build-and-deploy.yml --ref main');
+        expect(workflow).not.toContain('gh workflow run build-and-deploy.yml');
+        expect(siteWorkflow).toContain('npm run verify --prefix astro');
+        expect(siteWorkflow).toContain('path: astro/dist');
+        expect(siteWorkflow).not.toContain('actions/deploy-pages');
+        const parityIndex = siteWorkflow.indexOf('run: npm run verify:renderers');
+        const finalBuildIndex = siteWorkflow.indexOf('run: npm run verify --prefix astro');
+        const uploadIndex = siteWorkflow.indexOf('uses: actions/upload-artifact');
+        expect(parityIndex).toBeGreaterThan(-1);
+        expect(parityIndex).toBeLessThan(finalBuildIndex);
+        expect(finalBuildIndex).toBeLessThan(uploadIndex);
     });
 
     it('keeps staging isolated from production resources and triggers', async () => {

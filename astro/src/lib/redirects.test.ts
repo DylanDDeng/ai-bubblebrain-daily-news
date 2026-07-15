@@ -2,10 +2,7 @@ import { readFile } from 'node:fs/promises';
 
 import { describe, expect, it } from 'vitest';
 
-import {
-	renderCloudflareRedirects,
-	taxonomyRedirectLines,
-} from '../../scripts/generate-redirects.mjs';
+import { renderCloudflareRedirects, taxonomyRedirectLines } from './redirectManifest';
 
 const taxonomy = JSON.parse(
 	await readFile(new URL('../../../data/knowledge/taxonomy.json', import.meta.url), 'utf8'),
@@ -34,5 +31,12 @@ describe('Cloudflare taxonomy redirects', () => {
 			]),
 		);
 		expect(renderCloudflareRedirects(evolved)).toMatch(/^# Generated/m);
+	});
+
+	it('keeps legacy feed and malformed daily URLs as permanent redirects', () => {
+		const redirects = renderCloudflareRedirects(taxonomy);
+		expect(redirects).toContain('/index.xml /rss.xml 301');
+		expect(redirects).toContain('/en/index.xml /en/rss.xml 301');
+		expect(redirects).toContain('/en/daily/2025/12/202-22/ /en/daily/2025/12/2025-12-22/ 301');
 	});
 });

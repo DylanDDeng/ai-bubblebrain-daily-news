@@ -1,2 +1,10 @@
-{{/* Standalone layout to render the bespoke AMO-Bench HTML page without the global chrome */}}
-{{- printf "%s" .RawContent | safeHTML -}}
+{{/* Standalone layout to render the bespoke AMO-Bench HTML page without the global chrome. */}}
+{{- $xDefault := .Permalink -}}
+{{- $seo := printf `<link rel="canonical" href="%s"><link rel="alternate" hreflang="%s" href="%s">` .Permalink .Site.LanguageCode .Permalink -}}
+{{- range .Translations -}}
+  {{- $seo = printf `%s<link rel="alternate" hreflang="%s" href="%s">` $seo .Language.LanguageCode .Permalink -}}
+  {{- if eq .Language.LanguageCode "zh-CN" }}{{ $xDefault = .Permalink }}{{ end -}}
+{{- end -}}
+{{- $seo = printf `%s<link rel="alternate" hreflang="x-default" href="%s">` $seo $xDefault -}}
+{{- $html := replace .RawContent "</head>" (printf "%s</head>" $seo) -}}
+{{- printf "%s" $html | safeHTML -}}

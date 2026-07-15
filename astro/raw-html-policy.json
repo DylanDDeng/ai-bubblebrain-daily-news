@@ -1,0 +1,16 @@
+{
+	"schema_version": 2,
+	"route_prefix": "/eval-demos/",
+	"source_directory": "static/eval-demos",
+	"expected_html_files": 99,
+	"aggregate_sha256": "91a296b63f5c065d798bd062fd5ca56fc5e9315d47cabfa895aa4ec1dbff8f6a",
+	"indexable": false,
+	"same_origin_access": false,
+	"required_headers": {
+		"Content-Security-Policy": "sandbox allow-scripts allow-downloads allow-pointer-lock; default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' https:; style-src 'unsafe-inline' https:; img-src data: blob: https:; font-src data: https:; connect-src https:; media-src data: blob: https:; worker-src blob:; child-src blob:; object-src 'none'; base-uri 'none'; form-action 'none'",
+		"X-Robots-Tag": "noindex, nofollow",
+		"Referrer-Policy": "no-referrer",
+		"Cross-Origin-Resource-Policy": "same-origin",
+		"Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+	}
+}

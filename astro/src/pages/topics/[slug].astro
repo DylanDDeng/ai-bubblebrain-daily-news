@@ -17,19 +17,20 @@ interface Props {
 
 export async function getStaticPaths() {
 	const index = await buildKnowledgeSearchIndex();
-	return taxonomyRoutes(knowledgeTaxonomy.topics, topicsById).map((route) => ({
-		params: { slug: route.slug },
-		props: {
-			route,
-			items: route.redirect
-				? []
-				: index.items.filter((item) => item.topic_ids.includes(route.record.id)),
-		},
-	}));
+	return taxonomyRoutes(knowledgeTaxonomy.topics, topicsById)
+		.filter((route) => !route.redirect)
+		.map((route) => ({
+			params: { slug: route.slug },
+			props: {
+				route,
+				items: route.redirect
+					? []
+					: index.items.filter((item) => item.topic_ids.includes(route.record.id)),
+			},
+		}));
 }
 
 const { route, items } = Astro.props;
-if (route.redirect) return Astro.redirect(`/topics/${route.canonical.slug}/`, 301);
 ---
 
 <TaxonomyDetailPage kind="topic" record={route.record} items={items} />

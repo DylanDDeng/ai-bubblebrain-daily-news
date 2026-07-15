@@ -1,23 +1,15 @@
-# Cloudflare Pages 配置文件
+# Cloudflare Pages release contract
 
-# 构建配置
 [build]
-  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify --buildFuture"
-  publish = "public"
+  command = "npm ci && npm ci --prefix astro && npm run build --prefix astro && npm run verify:site"
+  publish = "astro/dist"
 
-# 构建环境变量
 [build.environment]
   HUGO_VERSION = "0.147.9"
-  NODE_VERSION = "18"
+  NODE_VERSION = "22.17.0"
 
-# 预览部署配置（用于 Pull Request）
 [context.preview]
-  command = "hugo --minify --buildFuture -b $CF_PAGES_URL"
+  command = "npm ci && npm ci --prefix astro && npm run build --prefix astro && npm run verify:site"
 
-# 生产部署配置
 [context.production]
-  command = "bash scripts/sync-daily-to-hugo.sh && hugo --minify --buildFuture -b https://bubblenews.today/"
-  
-# 环境变量示例（如果需要）
-[env]
-  # 可以在这里添加任何需要的环境变量
+  command = "npm ci && npm ci --prefix astro && npm run build --prefix astro && npm run verify:site"

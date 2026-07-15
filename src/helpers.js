@@ -1,5 +1,7 @@
 // src/helpers.js
 
+import { sanitizeSummaryText } from './daily/summary.js';
+
 /**
  * 全域參數，用於指定資料抓取的日期。
  * 預設為當前日期，格式為 YYYY-MM-DD。
@@ -114,7 +116,8 @@ export function stripHtml(html) {
 
 /**
  * Extracts a readable summary snippet from HTML or pre-stripped text.
- * Strips image/video placeholders (without URLs), WeChat header metadata, then truncates.
+ * Strips complete or upstream-truncated media placeholders, raw URL payloads,
+ * and WeChat header metadata before truncating.
  * @param {string} input - Raw HTML, or text from stripHtml().
  * @param {number} [maxChars=220] - Max length before appending an ellipsis.
  * @returns {string} Clean summary text.
@@ -130,11 +133,7 @@ export function extractSummaryText(input, maxChars = 220) {
         text = processedHtml.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
-    text = text
-        .replace(/\[图片:[^\]]*\]/g, ' ')
-        .replace(/\[视频:[^\]]*\]/g, ' ')
-        .replace(/\[图片\]/g, ' ')
-        .replace(/\[视频\]/g, ' ');
+    text = sanitizeSummaryText(text);
 
     // WeChat RSS headers: optional 原创 + account tagline + date + time + location
     text = text.replace(/^(?:原创\s+)?[^\d]{0,24}?\d{4}-\d{2}-\d{2}\s+\d{1,2}:\d{2}\s+\S{1,12}\s*/u, '');
