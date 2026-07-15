@@ -171,11 +171,17 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-15T08:08:33.502Z",
       "id": "afternoon",
-      "item_ids": [],
+      "item_ids": [
+        "n_16ae24df3353a94fc280fa72b177e3f0600652466ff1970ae4d5a8a3ca61815e",
+        "n_e2e77ac65bad78317c848e46bb3ad65074824723c4a4fb90b452d936df4526cf",
+        "n_8bcf97a9db03e23eab39c3e57723d644f5436129a8591a11da804216dffec42c",
+        "n_702966a375c77e4dc44fb5f8a07b26e67ad4cbd4eaacf83d1758eb8d1e5f0d63",
+        "n_502483878c657b11d1532931cfc84bd51a2f04a12dadacc008061dacacc65376"
+      ],
       "label": "15:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -194,7 +200,7 @@
   ],
   "date": "2026-07-17",
   "dedupe_version": 1,
-  "generated_at": "2026-07-15T07:45:33.684Z",
+  "generated_at": "2026-07-15T08:08:33.502Z",
   "identity_version": 1,
   "items": [
     {
@@ -5542,6 +5548,171 @@
       "title": "Clypra",
       "topics": [],
       "url": "https://github.com/AIEraDev/Clypra"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2077229336332296263",
+      "category": "other",
+      "content_type": "socialMedia",
+      "event_id": "e_16ae24df3353a94fc280fa72b177e3f0600652466ff1970ae4d5a8a3ca61815e",
+      "featured": false,
+      "id": "n_16ae24df3353a94fc280fa72b177e3f0600652466ff1970ae4d5a8a3ca61815e",
+      "identity_claims": [
+        "c_16ae24df3353a94fc280fa72b177e3f0600652466ff1970ae4d5a8a3ca61815e",
+        "c_4c7fd977c2f84346efe9b252d6111cfb9ae54cbebd4f49f76c584b2dc27c864f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-15T08:08:33.502Z",
+      "published_at": "2026-07-14T15:01:06.901Z",
+      "published_date": "2026-07-14",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1200497346639597572",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1200497346639597572",
+      "source_type": "twitter_extra",
+      "summary": "RT elvis Highly-recommended overview of metacognition in LLMs. (bookmark it) Interesting behaviors in LLMs like confidence calibration, self-verification, knowing when to stop, and knowing what you do not know have mostly been studied in isolation. This survey argues they are facets of one thing, metacognition, and proposes a comprehensive map of it. The authors taxonomize methods and benchmarks for measuring and evaluating metacognitive abilities in LLMs, then connect those abilities to capability, reliability, and transparency. As agents take on longer horizons, the ability to monitor and regulate their own reasoning becomes an important way to measure reliability. Paper: Learn to build effective AI agents in our academy:",
+      "time_precision": "exact",
+      "title": "RT elvis: Highly-recommended overview of metacognition in LLMs. (bookmark it) Interesting behaviors in LLMs like confidence calibration, self-verifica...",
+      "topics": [],
+      "url": "https://x.com/omarsar0/status/2077229336332296263"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2077227416615796763",
+      "category": "other",
+      "content_type": "socialMedia",
+      "event_id": "e_e2e77ac65bad78317c848e46bb3ad65074824723c4a4fb90b452d936df4526cf",
+      "featured": false,
+      "id": "n_e2e77ac65bad78317c848e46bb3ad65074824723c4a4fb90b452d936df4526cf",
+      "identity_claims": [
+        "c_72f8526b53fbccc3a6dafd2ad5fe7932fc6cb8c80b756527dbba16ad48939e85",
+        "c_e2e77ac65bad78317c848e46bb3ad65074824723c4a4fb90b452d936df4526cf"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-15T08:08:33.502Z",
+      "published_at": "2026-07-14T15:14:02.384Z",
+      "published_date": "2026-07-14",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1200497346639597571",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1200497346639597571",
+      "source_type": "twitter_extra",
+      "summary": "RT DAIR.AI New research from Google DeepMind on effective model routing. LLM routers get judged on accuracy and cost. Both can look great while the router is meaningless. If every model in your society responds the same way, routing is vacuous, you get the same answers no matter where queries land. And if paraphrases of one query get sent to different experts, the router is unstable, so its assignments carry no real signal. The argument is that two properties decide whether routing means anything. Namely, behavioural differentiation of the actors and stability under surface-form rewrites. And they both are orthogonal to task accuracy. What's the practical take here? If you use mixture-of-agents or model routing, your overall accuracy can hide a router that operates over a redundant society or assigns queries inconsistently. These two checks catch the routers that look good and do nothing. Paper: Learn to build effective AI agents in our academy:",
+      "time_precision": "exact",
+      "title": "RT DAIR.AI: New research from Google DeepMind on effective model routing. LLM routers get judged on accuracy and cost. Both can look great while the r...",
+      "topics": [],
+      "url": "https://x.com/omarsar0/status/2077227416615796763"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2077052984731619773",
+      "category": "other",
+      "content_type": "socialMedia",
+      "event_id": "e_8bcf97a9db03e23eab39c3e57723d644f5436129a8591a11da804216dffec42c",
+      "featured": false,
+      "id": "n_8bcf97a9db03e23eab39c3e57723d644f5436129a8591a11da804216dffec42c",
+      "identity_claims": [
+        "c_2741eac0b0691a219e8ba80fbc97df3bf2903e3997bd7c63fe1eb4f619287a40",
+        "c_8bcf97a9db03e23eab39c3e57723d644f5436129a8591a11da804216dffec42c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-15T08:08:33.502Z",
+      "published_at": "2026-07-14T15:29:55.679Z",
+      "published_date": "2026-07-14",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1200497346639597570",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1200497346639597570",
+      "source_type": "twitter_extra",
+      "summary": "Great paper from DeepMind on effective model routing strategies. DAIR.AI: New research from Google DeepMind on effective model routing. LLM routers get judged on accuracy and cost. Both can look great while the router is meaningless. If every model in your society responds the same way, routing is vacuous, you get the same answers no matter where",
+      "time_precision": "exact",
+      "title": "Great paper from DeepMind on effective model routing strategies.",
+      "topics": [],
+      "url": "https://x.com/omarsar0/status/2077052984731619773"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2077115671075250681",
+      "category": "other",
+      "content_type": "socialMedia",
+      "event_id": "e_702966a375c77e4dc44fb5f8a07b26e67ad4cbd4eaacf83d1758eb8d1e5f0d63",
+      "featured": false,
+      "id": "n_702966a375c77e4dc44fb5f8a07b26e67ad4cbd4eaacf83d1758eb8d1e5f0d63",
+      "identity_claims": [
+        "c_702966a375c77e4dc44fb5f8a07b26e67ad4cbd4eaacf83d1758eb8d1e5f0d63",
+        "c_b2783722e378352eae07c97919a41ecd90dd03b46df7537ba7ffe9a9a21518d2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-15T08:08:33.502Z",
+      "published_at": "2026-07-14T19:39:01.756Z",
+      "published_date": "2026-07-15",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1200497346639597569",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1200497346639597569",
+      "source_type": "twitter_extra",
+      "summary": "Huge if true! We are talking about a 27B multimodal model that runs locally on a phone. That's wild! Bonsai 27B reaches up to 163 tok/s in 1-bit and 134 tok/s in Ternary on an NVIDIA GeForce RTX 5090. On an M5 Max, it reaches up to 87 tok/s in 1-bit and 58 tok/s in Ternary. PrismML: Today, we’re announcing Bonsai 27B: the first 27B-class model to run on a phone. Bonsai 27B is the new multimodal flagship of the Bonsai family. Based on Qwen3.6 27B, it brings a new capability tier to local AI: multi-step reasoning, structured tool use, long-context workflows,",
+      "time_precision": "exact",
+      "title": "Huge if true! We are talking about a 27B multimodal model that runs locally on a phone. That's wild! Bonsai 27B reaches up to 163 tok/s in 1-bit and 1...",
+      "topics": [],
+      "url": "https://x.com/omarsar0/status/2077115671075250681"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2077132773031088571",
+      "category": "other",
+      "content_type": "socialMedia",
+      "event_id": "e_502483878c657b11d1532931cfc84bd51a2f04a12dadacc008061dacacc65376",
+      "featured": false,
+      "id": "n_502483878c657b11d1532931cfc84bd51a2f04a12dadacc008061dacacc65376",
+      "identity_claims": [
+        "c_502483878c657b11d1532931cfc84bd51a2f04a12dadacc008061dacacc65376",
+        "c_5c88b9312c0ba6a344090198b7800df596c7237cb68ce6c7f98f8066754f59e5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-15T08:08:33.502Z",
+      "published_at": "2026-07-14T20:46:59.250Z",
+      "published_date": "2026-07-15",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1200497346639597568",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1200497346639597568",
+      "source_type": "twitter_extra",
+      "summary": "You can now use Claude inside After Effects. Higgsfield's new MCP connector lets Claude work inside your actual AE project. It can build compositions, set keyframes, write expressions, and run the repetitive ExtendScript work for you, and everything it makes becomes an editable AE scene. More creative tools should work this way: an assistant that does the routine work while you keep full manual control. Try it here: [视频: ] Higgsfield AI 🧩: Higgsfield MCP/Plugin for After Effects just got upgraded. Powered by Fable 5. 1. Build your own AE plugins 2. Drop in your reference and it decomposes into editable vector layers you can animate 3. AI assistant that answers or does it for you 4. Localize a project seamlessly [视频: ]",
+      "time_precision": "exact",
+      "title": "You can now use Claude inside After Effects. Higgsfield's new MCP connector lets Claude work inside your actual AE project. It can build compositions,...",
+      "topics": [],
+      "url": "https://x.com/omarsar0/status/2077132773031088571"
     }
   ],
   "overview": {
