@@ -104,3 +104,8 @@ isolated KV namespace; shadow failures never convert a completed legacy publicat
 The target publication branch must disallow force pushes and require the Worker/CI checks used by the
 migration Gate. Do not enable structured production writes until branch protection, staging conflict
 tests, rollback rehearsal, and independent review all pass.
+
+Cloudflare Workers prohibit runtime code generation. The JSON Schema validator is therefore generated
+ahead of time by `npm run generate:validator` and committed as a static module. `npm test` and
+`npm run test:worker` first run an exact regeneration check, so schema, Ajv configuration, dependency,
+or generated-output drift fails CI. Worker runtime code must never instantiate or compile Ajv.

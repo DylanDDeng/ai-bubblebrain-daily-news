@@ -74,6 +74,7 @@ describe('worker regression guards', () => {
         expect(staging).toContain('EXTERNAL_WRITES_ENABLED = "false"');
         expect(staging).toContain('DAILY_PUBLISH_MODE = "legacy"');
         expect(staging).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');
+        expect(staging).toContain('DAILY_STRUCTURED_START_DATE = "2026-07-15"');
         expect(staging).not.toMatch(/^\s*\[triggers\]/m);
         expect(staging).not.toMatch(/^\s*crons\s*=/m);
         expect(staging).not.toMatch(/^\s*routes?\s*=/m);
