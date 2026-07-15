@@ -73,7 +73,9 @@ a {
 
 .site-header nav {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 20px;
+	justify-content: flex-end;
 }
 
 .site-header nav a {
@@ -85,6 +87,12 @@ a {
 .site-header nav a:hover,
 .archive-card a:hover {
 	color: var(--accent);
+}
+
+.site-header nav a[aria-current='page'] {
+	color: var(--accent);
+	text-decoration-color: currentColor;
+	text-underline-offset: 0.35rem;
 }
 
 .page-shell,
@@ -115,6 +123,67 @@ h1 {
 .article-lede,
 .archive-card p,
 .article-meta {
+	color: var(--muted);
+	line-height: 1.7;
+}
+
+.home-hero {
+	max-width: 920px;
+}
+
+.home-actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 18px;
+	margin-top: 30px;
+}
+
+.home-actions a {
+	color: var(--accent);
+	font-weight: 700;
+	text-underline-offset: 0.3rem;
+}
+
+.home-actions .primary-action {
+	padding: 12px 18px;
+	border-radius: 999px;
+	color: #0a0a0a;
+	background: var(--accent);
+	text-decoration: none;
+}
+
+.destination-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+	gap: 16px;
+}
+
+.destination-card {
+	min-height: 170px;
+	padding: 24px;
+	border: 1px solid var(--border);
+	border-radius: 18px;
+	background: var(--surface);
+	text-decoration: none;
+	transition:
+		border-color 160ms ease,
+		transform 160ms ease;
+}
+
+.destination-card:hover,
+.destination-card:focus-visible {
+	border-color: var(--accent);
+	transform: translateY(-2px);
+}
+
+.destination-card span {
+	font-size: 1.2rem;
+	font-weight: 700;
+}
+
+.destination-card p {
+	margin: 18px 0 0;
 	color: var(--muted);
 	line-height: 1.7;
 }
@@ -167,6 +236,12 @@ h1 {
 	overflow-wrap: anywhere;
 }
 
+.error-page nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 20px;
+}
+
 .legacy-content img,
 .legacy-content video,
 .legacy-content iframe {
@@ -200,6 +275,12 @@ h1 {
 }
 
 @media (max-width: 640px) {
+	h1 {
+		font-size: clamp(2.15rem, 10vw, 3.2rem);
+		line-height: 1.02;
+		letter-spacing: -0.045em;
+	}
+
 	.site-header,
 	.site-footer,
 	.page-shell,
@@ -210,5 +291,15 @@ h1 {
 	.page-shell,
 	.article-shell {
 		padding-block: 48px 72px;
+	}
+
+	.site-header {
+		align-items: flex-start;
+		gap: 16px;
+		padding-block: 16px;
+	}
+
+	.site-header nav {
+		gap: 12px 16px;
 	}
 }

@@ -61,6 +61,8 @@ describe('daily report v1 deterministic boundary', () => {
             schema_version: 1,
             identity_version: 1,
             dedupe_version: 1,
+            taxonomy_version: 1,
+            classifier_version: 1,
             timezone: 'Asia/Shanghai',
             producer: {
                 name: 'bubble-brain-worker',
@@ -73,8 +75,9 @@ describe('daily report v1 deterministic boundary', () => {
             source_type: 'aibase',
             content_type: 'news',
             source_id: 'source-1',
-            category: 'other',
-            topics: [],
+            category: 'products',
+            topic_ids: ['topic_products'],
+            entity_ids: [],
             featured: false,
             score: null,
             reason: null,
@@ -398,7 +401,7 @@ describe('daily report v1 deterministic boundary', () => {
         expect(validateSchema(oversizedTitle)).toBe(false);
 
         const oversizedTopics = structuredClone(result.report);
-        oversizedTopics.items[0].topics = Array.from({ length: 33 }, (_, index) => `topic-${index}`);
+        oversizedTopics.items[0].topic_ids = Array.from({ length: 33 }, (_, index) => `topic_${index}`);
         expect(validateSchema(oversizedTopics)).toBe(false);
 
         const unsafeScore = structuredClone(result.report);
@@ -424,7 +427,7 @@ describe('daily report v1 deterministic boundary', () => {
     it('locks JSON and Markdown bytes with golden SHA-256 checksums', async () => {
         const result = await build();
         const digest = value => createHash('sha256').update(value).digest('hex');
-        expect(digest(result.json)).toBe('6c345186b8860515ca7f0e21683d04ef43a978ac3f4cb176fec2027b8435c41e');
+        expect(digest(result.json)).toBe('32fe9efc6b4ea941a811be5afb3edbc08342ad16a61839ecc811b0e715882cfc');
         expect(digest(result.markdown)).toBe('b16d1f684594f328127c79ed42bc1ebc1dfb3fac1a84f06f03eb0352327fcdd4');
     });
 

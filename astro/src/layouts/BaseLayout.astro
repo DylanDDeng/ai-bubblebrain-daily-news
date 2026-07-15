@@ -5,17 +5,38 @@ interface Props {
 	title: string;
 	description?: string;
 	lang?: 'zh-CN' | 'en';
+	alternateHref?: string | null;
+	canonicalPath?: string;
+	noindex?: boolean;
 }
 
 const {
 	title,
 	description = "Bubble's Brain personal knowledge base",
 	lang = 'zh-CN',
+	alternateHref = null,
+	canonicalPath = Astro.url.pathname,
+	noindex = false,
 } = Astro.props;
 
 const homeHref = lang === 'en' ? '/en/' : '/';
 const dailyHref = lang === 'en' ? '/en/daily/' : '/daily/';
-const alternateHref = lang === 'en' ? '/' : '/en/';
+const languageHref = alternateHref ?? (lang === 'en' ? '/' : '/en/');
+const canonicalUrl = new URL(canonicalPath, Astro.site);
+const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
+const knowledgeLinks =
+	lang === 'en'
+		? [
+				{ href: '/en/highlights/', label: 'Highlights' },
+				{ href: '/en/my-publish/', label: 'My Posts' },
+			]
+		: [
+				{ href: '/search/', label: '搜索' },
+				{ href: '/topics/', label: '主题' },
+				{ href: '/entities/', label: '实体' },
+				{ href: '/highlights/', label: '精选' },
+				{ href: '/my-publish/', label: '我的文章' },
+			];
 ---
 
 <!doctype html>
@@ -25,8 +46,25 @@ const alternateHref = lang === 'en' ? '/' : '/en/';
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta name="twitter:card" content="summary" />
 		<link rel="icon" href="/favicon.ico" />
-		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+		<link rel="canonical" href={canonicalUrl} />
+		<link rel="alternate" hreflang={lang} href={canonicalUrl} />
+		{
+			alternateUrl && (
+				<link rel="alternate" hreflang={lang === 'en' ? 'zh-CN' : 'en'} href={alternateUrl} />
+			)
+		}
+		<link
+			rel="alternate"
+			hreflang="x-default"
+			href={lang === 'en' && alternateUrl ? alternateUrl : canonicalUrl}
+		/>
 		<title>{title}</title>
 	</head>
 	<body>
@@ -34,15 +72,29 @@ const alternateHref = lang === 'en' ? '/' : '/en/';
 		<header class="site-header">
 			<a class="site-brand" href={homeHref}>Bubble's Brain</a>
 			<nav aria-label={lang === 'en' ? 'Primary navigation' : '主导航'}>
-				<a href={dailyHref}>{lang === 'en' ? 'Daily Brief' : '资讯日报'}</a>
-				<a href={alternateHref}>{lang === 'en' ? '中文' : 'EN'}</a>
+				<a
+					href={dailyHref}
+					aria-current={Astro.url.pathname.startsWith(dailyHref) ? 'page' : undefined}
+					>{lang === 'en' ? 'Daily Brief' : '资讯日报'}</a
+				>
+				{
+					knowledgeLinks.map((link) => (
+						<a
+							href={link.href}
+							aria-current={Astro.url.pathname.startsWith(link.href) ? 'page' : undefined}
+						>
+							{link.label}
+						</a>
+					))
+				}
+				<a href={languageHref}>{lang === 'en' ? '中文' : 'EN'}</a>
 			</nav>
 		</header>
-		<main id="main-content">
+		<main id="main-content" tabindex="-1">
 			<slot />
 		</main>
 		<footer class="site-footer">
-			<p>Astro migration preview · Day 0</p>
+			<p>Bubble's Brain · Personal knowledge archive</p>
 		</footer>
 	</body>
 </html>

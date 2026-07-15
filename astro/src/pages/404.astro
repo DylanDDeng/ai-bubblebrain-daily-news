@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title="页面未找到 · Bubble's Brain"
+	description="请求的页面不存在或已经移动。"
+	canonicalPath="/404"
+	alternateHref="/en/404"
+	noindex={true}
+>
+	<section class="page-shell error-page">
+		<header class="page-heading">
+			<p class="eyebrow">404 · NOT FOUND</p>
+			<h1>这条知识路径暂时不存在。</h1>
+			<p>你可以返回首页、查看资讯日报，或从知识搜索重新开始。</p>
+		</header>
+		<nav aria-label="404 导航">
+			<a href="/">返回首页</a>
+			<a href="/daily/">资讯日报</a>
+			<a href="/search/">知识搜索</a>
+		</nav>
+	</section>
+</BaseLayout>

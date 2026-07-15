@@ -1,0 +1,88 @@
+---
+import KnowledgeResults from '../../components/KnowledgeResults.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { activeTaxonomyRecords, knowledgeTaxonomy, taxonomyLabel } from '../../lib/knowledge';
+import { buildKnowledgeSearchIndex } from '../../lib/searchIndex';
+import '../../styles/knowledge.css';
+
+const index = await buildKnowledgeSearchIndex();
+const topics = activeTaxonomyRecords(knowledgeTaxonomy.topics);
+const entities = activeTaxonomyRecords(knowledgeTaxonomy.entities);
+---
+
+<BaseLayout title="搜索 · Bubble's Brain" description="按新闻条目搜索资讯日报">
+	<section class="knowledge-shell knowledge-search" data-knowledge-search>
+		<header class="knowledge-heading knowledge-search-heading">
+			<div>
+				<p class="knowledge-kicker">SEARCH THE LEDGER · 新闻级索引</p>
+				<h1>从日报里，找到那一条。</h1>
+				<p>搜索标题、摘要与来源；主题和实体使用永久 ID，分享链接不会因改名失效。</p>
+			</div>
+			<p class="knowledge-index-state">
+				<strong>{index.item_count}</strong>
+				<span>{index.report_dates.length} 期日报</span>
+			</p>
+		</header>
+
+		<form class="knowledge-search-form" data-knowledge-search-form method="get" role="search">
+			<div class="knowledge-query-field">
+				<label for="knowledge-query">搜索词</label>
+				<input
+					id="knowledge-query"
+					name="q"
+					type="search"
+					autocomplete="off"
+					placeholder="标题、摘要或来源"
+				/>
+			</div>
+			<div class="knowledge-filter-field">
+				<label for="knowledge-type">内容类型</label>
+				<select id="knowledge-type" name="type">
+					<option value="all">全部类型</option>
+					<option value="news">资讯</option>
+					<option value="project">项目</option>
+					<option value="paper">论文</option>
+					<option value="socialMedia">社交</option>
+				</select>
+			</div>
+			<div class="knowledge-filter-field">
+				<label for="knowledge-topic">主题</label>
+				<select id="knowledge-topic" name="topic">
+					<option value="">全部主题</option>
+					{topics.map((topic) => <option value={topic.id}>{taxonomyLabel(topic, 'zh-CN')}</option>)}
+				</select>
+			</div>
+			<div class="knowledge-filter-field">
+				<label for="knowledge-entity">实体</label>
+				<select id="knowledge-entity" name="entity">
+					<option value="">全部实体</option>
+					{
+						entities.map((entity) => (
+							<option value={entity.id}>{taxonomyLabel(entity, 'zh-CN')}</option>
+						))
+					}
+				</select>
+			</div>
+			<button type="submit">应用筛选</button>
+		</form>
+
+		<div class="knowledge-search-status" aria-live="polite">
+			<span><strong data-search-result-count>{index.item_count}</strong> 条结果</span>
+			<noscript>JavaScript 关闭时展示完整索引；搜索参数仍可复制分享。</noscript>
+		</div>
+
+		<KnowledgeResults items={index.items} filterable />
+		<div class="knowledge-empty" data-search-empty hidden={index.item_count !== 0}>
+			<p>{index.item_count === 0 ? '尚无结构化日报可供索引。' : '没有符合当前条件的资讯。'}</p>
+			{
+				index.item_count > 0 && (
+					<button type="button" data-clear-search>
+						清除筛选
+					</button>
+				)
+			}
+		</div>
+	</section>
+</BaseLayout>
+
+<script is:inline type="module" src="/js/knowledge-search.js"></script>

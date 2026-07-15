@@ -1,0 +1,36 @@
+---
+import TaxonomyDetailPage from '../../components/TaxonomyDetailPage.astro';
+import {
+	entitiesById,
+	knowledgeTaxonomy,
+	taxonomyRoutes,
+	type EntityRecord,
+	type TaxonomyRoute,
+} from '../../lib/knowledge';
+import { buildKnowledgeSearchIndex, type KnowledgeSearchItem } from '../../lib/searchIndex';
+import '../../styles/knowledge.css';
+
+interface Props {
+	route: TaxonomyRoute<EntityRecord>;
+	items: KnowledgeSearchItem[];
+}
+
+export async function getStaticPaths() {
+	const index = await buildKnowledgeSearchIndex();
+	return taxonomyRoutes(knowledgeTaxonomy.entities, entitiesById)
+		.filter((route) => !route.redirect)
+		.map((route) => ({
+			params: { slug: route.slug },
+			props: {
+				route,
+				items: route.redirect
+					? []
+					: index.items.filter((item) => item.entity_ids.includes(route.record.id)),
+			},
+		}));
+}
+
+const { route, items } = Astro.props;
+---
+
+<TaxonomyDetailPage kind="entity" record={route.record} items={items} />

@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { TaxonomyKind, TaxonomyRecord } from '../lib/knowledge';
+import { taxonomyLabel } from '../lib/knowledge';
+import type { KnowledgeSearchItem } from '../lib/searchIndex';
+import KnowledgeResults from './KnowledgeResults.astro';
+
+interface Props {
+	kind: TaxonomyKind;
+	record: TaxonomyRecord;
+	items: KnowledgeSearchItem[];
+}
+
+const { kind, record, items } = Astro.props;
+const kindLabel = kind === 'topic' ? '主题' : '实体';
+const directoryHref = kind === 'topic' ? '/topics/' : '/entities/';
+const aliases = [...record.aliases, ...record.slug_aliases];
+---
+
+<BaseLayout
+	title={`${taxonomyLabel(record, 'zh-CN')} · ${kindLabel} · Bubble's Brain`}
+	description={`${taxonomyLabel(record, 'zh-CN')}相关资讯归档`}
+>
+	<article class="knowledge-shell taxonomy-detail">
+		<header class="knowledge-heading taxonomy-detail-heading">
+			<div>
+				<p class="knowledge-kicker">KNOWLEDGE INDEX · {kindLabel}</p>
+				<h1>{taxonomyLabel(record, 'zh-CN')}</h1>
+				<p class="taxonomy-english-label">{record.labels.en}</p>
+			</div>
+			<p class="taxonomy-item-count"><strong>{items.length}</strong><span>条关联资讯</span></p>
+		</header>
+
+		{
+			record.status === 'deprecated' && (
+				<p class="taxonomy-tombstone">
+					此{kindLabel}已停止使用，页面作为永久标识保留，不再接收新的分类结果。
+				</p>
+			)
+		}
+
+		{
+			aliases.length > 0 && (
+				<p class="taxonomy-aliases">
+					<span>也可检索</span>
+					{aliases.join(' · ')}
+				</p>
+			)
+		}
+
+		<section class="knowledge-section" aria-labelledby="related-heading">
+			<header class="knowledge-section-heading">
+				<div>
+					<p>CHRONOLOGICAL RECORD</p>
+					<h2 id="related-heading">按时间查看</h2>
+				</div>
+				<a href={directoryHref}>返回{kindLabel}索引</a>
+			</header>
+			{
+				items.length > 0 ? (
+					<KnowledgeResults items={items} />
+				) : (
+					<p class="knowledge-empty">结构化日报接通后，关联内容会按时间出现在这里。</p>
+				)
+			}
+		</section>
+	</article>
+</BaseLayout>

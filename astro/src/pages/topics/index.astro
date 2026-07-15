@@ -1,0 +1,27 @@
+---
+import TaxonomyDirectory from '../../components/TaxonomyDirectory.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { activeTaxonomyRecords, knowledgeTaxonomy } from '../../lib/knowledge';
+import { buildKnowledgeSearchIndex } from '../../lib/searchIndex';
+import '../../styles/knowledge.css';
+
+const index = await buildKnowledgeSearchIndex();
+const records = activeTaxonomyRecords(knowledgeTaxonomy.topics);
+const counts = new Map(records.map((record) => [record.id, 0]));
+for (const item of index.items) {
+	for (const id of item.topic_ids) counts.set(id, (counts.get(id) ?? 0) + 1);
+}
+---
+
+<BaseLayout title="主题 · Bubble's Brain" description="资讯日报的稳定主题索引">
+	<section class="knowledge-shell">
+		<header class="knowledge-heading">
+			<div>
+				<p class="knowledge-kicker">KNOWLEDGE INDEX · 主题</p>
+				<h1>沿着主题，重读每一天。</h1>
+				<p>主题名称可以优化，永久 ID 不会改变；历史链接与个人标记因此保持稳定。</p>
+			</div>
+		</header>
+		<TaxonomyDirectory kind="topic" records={records} counts={counts} />
+	</section>
+</BaseLayout>

@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
     <meta name="description" content="{{ .Description | default .Site.Params.description }}">
+    <link rel="canonical" href="{{ .Permalink }}">
+    <link rel="alternate" hreflang="{{ .Site.LanguageCode }}" href="{{ .Permalink }}">
+    {{ $xDefault := .Permalink }}
+    {{ if eq .Site.LanguageCode "zh-CN" }}{{ $xDefault = .Permalink }}{{ end }}
+    {{ range .Translations }}
+      <link rel="alternate" hreflang="{{ .Language.LanguageCode }}" href="{{ .Permalink }}">
+      {{ if eq .Language.LanguageCode "zh-CN" }}{{ $xDefault = .Permalink }}{{ end }}
+    {{ end }}
+    <link rel="alternate" hreflang="x-default" href="{{ $xDefault }}">
 
     <link rel="icon" href="{{ "favicon.ico" | relURL }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ "favicon-32x32.png" | relURL }}">
@@ -67,6 +76,7 @@
     {{ end -}}
 </head>
 <body>
+    <a class="skip-link" href="#main-content">{{ if eq .Site.LanguageCode "en" }}Skip to content{{ else }}跳到正文{{ end }}</a>
     <div class="noise-overlay"></div>
 
     <header class="nav-bar">
@@ -139,7 +149,7 @@
         </div>
     </header>
 
-    <main class="page-shell">
+    <main class="page-shell" id="main-content" tabindex="-1">
         {{ block "main" . }}{{ end }}
     </main>
 

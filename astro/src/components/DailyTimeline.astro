@@ -6,6 +6,7 @@ import {
 	type DailyContentType,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
+import { entitiesById, taxonomyLabel, topicsById } from '../lib/knowledge';
 
 interface Props {
 	report: StructuredDailyReport;
@@ -151,13 +152,29 @@ const overview = cleanTimelineSummary(report.overview.text);
 								const title =
 									cleanTimelineSummary(item.title) ||
 									(isEnglish ? 'Open original source' : '查看原文');
-								const topics = item.topics.map(cleanTimelineSummary).filter(Boolean);
+								const topics = item.topic_ids
+									.map((id) => topicsById.get(id))
+									.filter((topic) => topic !== undefined);
+								const entities = item.entity_ids
+									.map((id) => entitiesById.get(id))
+									.filter((entity) => entity !== undefined);
 								const reason = item.reason ? cleanTimelineSummary(item.reason) : '';
-								const searchText = [title, sourceName, summary, item.category, ...topics]
+								const searchText = [
+									title,
+									sourceName,
+									summary,
+									item.category,
+									...topics.flatMap((topic) => [taxonomyLabel(topic, locale), ...topic.aliases]),
+									...entities.flatMap((entity) => [
+										taxonomyLabel(entity, locale),
+										...entity.aliases,
+									]),
+								]
 									.join(' ')
 									.toLocaleLowerCase(locale);
 								return (
 									<article
+										id={`news-${item.id}`}
 										class="timeline-item"
 										data-timeline-item
 										data-item-id={item.id}
@@ -189,7 +206,23 @@ const overview = cleanTimelineSummary(report.overview.text);
 											{topics.length > 0 && (
 												<ul class="timeline-topics" aria-label={isEnglish ? 'Topics' : '主题'}>
 													{topics.map((topic) => (
-														<li>{topic}</li>
+														<li>
+															<a href={`/topics/${topic.slug}/`}>{taxonomyLabel(topic, locale)}</a>
+														</li>
+													))}
+												</ul>
+											)}
+											{entities.length > 0 && (
+												<ul
+													class="timeline-topics"
+													aria-label={isEnglish ? 'Entities' : '相关实体'}
+												>
+													{entities.map((entity) => (
+														<li>
+															<a href={`/entities/${entity.slug}/`}>
+																{taxonomyLabel(entity, locale)}
+															</a>
+														</li>
 													))}
 												</ul>
 											)}

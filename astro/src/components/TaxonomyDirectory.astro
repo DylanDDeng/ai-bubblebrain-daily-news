@@ -1,0 +1,29 @@
+---
+import type { TaxonomyKind, TaxonomyRecord } from '../lib/knowledge';
+import { taxonomyLabel, taxonomyRoutePath } from '../lib/knowledge';
+
+interface Props {
+	kind: TaxonomyKind;
+	records: TaxonomyRecord[];
+	counts: Map<string, number>;
+}
+
+const { kind, records, counts } = Astro.props;
+---
+
+<ol class="taxonomy-directory">
+	{
+		records.map((record, index) => (
+			<li>
+				<span class="taxonomy-directory-index">{String(index + 1).padStart(2, '0')}</span>
+				<div>
+					<h2>
+						<a href={taxonomyRoutePath(kind, record.slug)}>{taxonomyLabel(record, 'zh-CN')}</a>
+					</h2>
+					<p>{record.labels.en}</p>
+				</div>
+				<span class="taxonomy-directory-count">{counts.get(record.id) ?? 0} 条</span>
+			</li>
+		))
+	}
+</ol>
