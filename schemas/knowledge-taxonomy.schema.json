@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bubblenews.today/schemas/knowledge-taxonomy-v1.schema.json",
+  "title": "Bubble's Brain knowledge taxonomy v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "classifier_version", "topics", "entities", "provider_mappings"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "classifier_version": { "const": 1 },
+    "topics": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/topic" }
+    },
+    "entities": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": { "$ref": "#/$defs/entity" }
+    },
+    "provider_mappings": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9_-]{1,63}$" },
+      "additionalProperties": { "$ref": "#/$defs/providerMapping" }
+    }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$", "maxLength": 80 },
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["zh", "en"],
+      "properties": {
+        "zh": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "en": { "type": "string", "minLength": 1, "maxLength": 100 }
+      }
+    },
+    "aliases": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+    },
+    "slugAliases": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/slug" }
+    },
+    "keywords": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 2, "maxLength": 100 }
+    },
+    "topicId": { "type": "string", "pattern": "^topic_[a-z0-9_]{2,63}$" },
+    "entityId": { "type": "string", "pattern": "^entity_[a-z0-9_]{2,63}$" },
+    "lifecycle": {
+      "type": "object",
+      "required": ["status", "redirect_to_id"],
+      "properties": {
+        "status": { "type": "string", "enum": ["active", "deprecated", "merged"] },
+        "redirect_to_id": { "type": ["string", "null"] }
+      }
+    },
+    "topic": {
+      "allOf": [
+        { "$ref": "#/$defs/lifecycle" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "slug", "slug_aliases", "labels", "aliases", "keywords", "status", "redirect_to_id", "category"],
+          "properties": {
+            "id": { "$ref": "#/$defs/topicId" },
+            "slug": { "$ref": "#/$defs/slug" },
+            "slug_aliases": { "$ref": "#/$defs/slugAliases" },
+            "labels": { "$ref": "#/$defs/labels" },
+            "aliases": { "$ref": "#/$defs/aliases" },
+            "keywords": { "$ref": "#/$defs/keywords" },
+            "status": { "type": "string", "enum": ["active", "deprecated", "merged"] },
+            "redirect_to_id": { "anyOf": [{ "$ref": "#/$defs/topicId" }, { "type": "null" }] },
+            "category": {
+              "type": "string",
+              "enum": ["models", "agents", "research", "products", "business", "policy", "open_source", "other"]
+            }
+          }
+        }
+      ]
+    },
+    "entity": {
+      "allOf": [
+        { "$ref": "#/$defs/lifecycle" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "entity_type", "slug", "slug_aliases", "labels", "aliases", "keywords", "status", "redirect_to_id"],
+          "properties": {
+            "id": { "$ref": "#/$defs/entityId" },
+            "entity_type": { "type": "string", "enum": ["organization", "person", "product", "model", "project"] },
+            "slug": { "$ref": "#/$defs/slug" },
+            "slug_aliases": { "$ref": "#/$defs/slugAliases" },
+            "labels": { "$ref": "#/$defs/labels" },
+            "aliases": { "$ref": "#/$defs/aliases" },
+            "keywords": { "$ref": "#/$defs/keywords" },
+            "status": { "type": "string", "enum": ["active", "deprecated", "merged"] },
+            "redirect_to_id": { "anyOf": [{ "$ref": "#/$defs/entityId" }, { "type": "null" }] }
+          }
+        }
+      ]
+    },
+    "mappedValues": {
+      "type": "object",
+      "propertyNames": { "type": "string", "minLength": 1, "maxLength": 100 },
+      "additionalProperties": {
+        "type": "array",
+        "maxItems": 16,
+        "uniqueItems": true,
+        "items": { "type": "string" }
+      }
+    },
+    "providerMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["topics", "entities"],
+      "properties": {
+        "topics": { "$ref": "#/$defs/mappedValues" },
+        "entities": { "$ref": "#/$defs/mappedValues" }
+      }
+    }
+  }
+}

@@ -73,7 +73,9 @@ a {
 
 .site-header nav {
 	display: flex;
+	flex-wrap: wrap;
 	gap: 20px;
+	justify-content: flex-end;
 }
 
 .site-header nav a {
@@ -85,6 +87,12 @@ a {
 .site-header nav a:hover,
 .archive-card a:hover {
 	color: var(--accent);
+}
+
+.site-header nav a[aria-current='page'] {
+	color: var(--accent);
+	text-decoration-color: currentColor;
+	text-underline-offset: 0.35rem;
 }
 
 .page-shell,
@@ -210,5 +218,15 @@ h1 {
 	.page-shell,
 	.article-shell {
 		padding-block: 48px 72px;
+	}
+
+	.site-header {
+		align-items: flex-start;
+		gap: 16px;
+		padding-block: 16px;
+	}
+
+	.site-header nav {
+		gap: 12px 16px;
 	}
 }

@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js 22.17
         uses: actions/setup-node@v4
@@ -72,6 +74,22 @@ jobs:
 
       - name: Verify Hugo and Astro daily parity
         run: npm run verify:renderers
+
+  database-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.109.1
+
+      - name: Verify migrations, idempotency, and RLS
+        run: bash scripts/test-supabase-local.sh
 
   promote-publication:
     if: >-

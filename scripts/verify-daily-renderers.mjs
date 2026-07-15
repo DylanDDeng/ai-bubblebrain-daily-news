@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import { execFileSync } from "node:child_process";
 import {
+  copyFile,
   mkdtemp,
   mkdir,
   readFile,
@@ -61,10 +62,16 @@ function timelineTimeLabels(html) {
 const temporaryRoot = await mkdtemp(join(tmpdir(), "bubble-renderer-parity-"));
 const dataRoot = join(temporaryRoot, "data");
 const dailyData = join(dataRoot, "daily");
+const knowledgeData = join(dataRoot, "knowledge");
 const hugoOutput = join(temporaryRoot, "hugo");
 
 try {
   await mkdir(dailyData, { recursive: true });
+  await mkdir(knowledgeData, { recursive: true });
+  await copyFile(
+    join(repoRoot, "data", "knowledge", "taxonomy.json"),
+    join(knowledgeData, "taxonomy.json"),
+  );
   const fixture = JSON.parse(await readFile(fixturePath, "utf8"));
   fixture.items[0].summary =
     "前文 [图片: https://proxy.example/very-long?x=1&y=2] https://raw.example/a，后文 " +

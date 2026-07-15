@@ -1,0 +1,27 @@
+---
+import TaxonomyDirectory from '../../components/TaxonomyDirectory.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { activeTaxonomyRecords, knowledgeTaxonomy } from '../../lib/knowledge';
+import { buildKnowledgeSearchIndex } from '../../lib/searchIndex';
+import '../../styles/knowledge.css';
+
+const index = await buildKnowledgeSearchIndex();
+const records = activeTaxonomyRecords(knowledgeTaxonomy.entities);
+const counts = new Map(records.map((record) => [record.id, 0]));
+for (const item of index.items) {
+	for (const id of item.entity_ids) counts.set(id, (counts.get(id) ?? 0) + 1);
+}
+---
+
+<BaseLayout title="实体 · Bubble's Brain" description="资讯日报的人物、组织、模型与项目索引">
+	<section class="knowledge-shell">
+		<header class="knowledge-heading">
+			<div>
+				<p class="knowledge-kicker">KNOWLEDGE INDEX · 实体</p>
+				<h1>谁在推动变化，线索都在这里。</h1>
+				<p>按组织、模型与项目聚合新闻条目，回到对应日报中的稳定锚点。</p>
+			</div>
+		</header>
+		<TaxonomyDirectory kind="entity" records={records} counts={counts} />
+	</section>
+</BaseLayout>

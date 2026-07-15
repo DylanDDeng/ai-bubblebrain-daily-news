@@ -16,6 +16,14 @@ const {
 const homeHref = lang === 'en' ? '/en/' : '/';
 const dailyHref = lang === 'en' ? '/en/daily/' : '/daily/';
 const alternateHref = lang === 'en' ? '/' : '/en/';
+const knowledgeLinks =
+	lang === 'en'
+		? []
+		: [
+				{ href: '/search/', label: '搜索' },
+				{ href: '/topics/', label: '主题' },
+				{ href: '/entities/', label: '实体' },
+			];
 ---
 
 <!doctype html>
@@ -34,7 +42,21 @@ const alternateHref = lang === 'en' ? '/' : '/en/';
 		<header class="site-header">
 			<a class="site-brand" href={homeHref}>Bubble's Brain</a>
 			<nav aria-label={lang === 'en' ? 'Primary navigation' : '主导航'}>
-				<a href={dailyHref}>{lang === 'en' ? 'Daily Brief' : '资讯日报'}</a>
+				<a
+					href={dailyHref}
+					aria-current={Astro.url.pathname.startsWith(dailyHref) ? 'page' : undefined}
+					>{lang === 'en' ? 'Daily Brief' : '资讯日报'}</a
+				>
+				{
+					knowledgeLinks.map((link) => (
+						<a
+							href={link.href}
+							aria-current={Astro.url.pathname.startsWith(link.href) ? 'page' : undefined}
+						>
+							{link.label}
+						</a>
+					))
+				}
 				<a href={alternateHref}>{lang === 'en' ? '中文' : 'EN'}</a>
 			</nav>
 		</header>
