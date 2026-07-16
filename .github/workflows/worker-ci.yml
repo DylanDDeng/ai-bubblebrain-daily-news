@@ -33,11 +33,19 @@ jobs:
       - name: Run Worker security tests
         run: npm run test:worker
 
+      - name: Run community boundary tests
+        run: npm run test:community
+
       - name: Bundle production Worker
         run: npm run worker:check
 
       - name: Bundle isolated staging Worker
         run: npm run worker:check:staging
+
+      - name: Bundle Community API and Access admin Workers
+        run: |
+          npm run community:check
+          npm run admin:check
 
   renderer-parity:
     runs-on: ubuntu-latest

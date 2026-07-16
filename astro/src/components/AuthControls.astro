@@ -1,0 +1,44 @@
+---
+interface Props {
+	locale: 'zh-CN' | 'en';
+	compact?: boolean;
+}
+
+const { locale, compact = false } = Astro.props;
+const id = `auth-${compact ? 'compact' : 'rail'}-${locale.toLowerCase()}`;
+---
+
+<div
+	class:list={['auth-controls', { 'auth-controls--compact': compact }]}
+	data-auth-controls
+	data-locale={locale}
+>
+	<button
+		type="button"
+		class="auth-trigger"
+		data-auth-trigger
+		aria-expanded="false"
+		aria-controls={`${id}-panel`}
+		aria-busy="true"
+		disabled
+	>
+		<span class="auth-avatar" data-auth-avatar aria-hidden="true">·</span>
+		<span data-auth-label>{locale === 'en' ? 'Account' : '账户'}</span>
+	</button>
+	<div class="auth-panel" id={`${id}-panel`} data-auth-panel hidden>
+		<p data-auth-detail>{locale === 'en' ? 'Checking session…' : '正在检查登录状态…'}</p>
+		<div class="auth-actions">
+			<button type="button" data-auth-login hidden
+				>{locale === 'en' ? 'Continue with Google' : '使用 Google 登录'}</button
+			>
+			<button type="button" data-auth-signout hidden
+				>{locale === 'en' ? 'Sign out' : '退出登录'}</button
+			>
+			<button type="button" data-auth-retry hidden>{locale === 'en' ? 'Retry' : '重试'}</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	import '../scripts/authControls';
+</script>

@@ -1,0 +1,16 @@
+name = "bubble-community-admin"
+main = "workers/admin/src/index.ts"
+compatibility_date = "2026-07-16"
+workers_dev = false
+
+routes = [
+  { pattern = "admin.bubblenews.today", custom_domain = true }
+]
+
+[vars]
+SUPABASE_URL = "https://znurdobjryrhshzkalup.supabase.co"
+ADMIN_ORIGIN = "https://admin.bubblenews.today"
+
+# Set SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAILS, CF_ACCESS_TEAM_DOMAIN, and
+# CF_ACCESS_AUD as Worker secrets. The Worker verifies the Access JWT against
+# the configured team JWKS and fails closed when either Access value is absent.
