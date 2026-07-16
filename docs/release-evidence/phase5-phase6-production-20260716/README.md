@@ -21,6 +21,10 @@ This document must not be interpreted as permission to skip the complete-day obs
 
 ## Cutover manifest
 
+The machine-readable snapshot is
+[`cutover-manifest.json`](cutover-manifest.json). It intentionally records Phase 6 as `no-go` while
+the observation day is incomplete.
+
 | Component | Production target | Rollback target |
 | --- | --- | --- |
 | Git | `main@3765b785bcf411fe7630416bde4fb88204898d74` | Component-specific targets below |
