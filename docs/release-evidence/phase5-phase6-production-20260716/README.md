@@ -2,7 +2,7 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 00:49 UTC
+Evidence updated: 2026-07-16 02:16 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -35,7 +35,7 @@ unless it exposes a regression in those earlier Gates.
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO**; the historical credential blocker recorded during implementation was resolved before production promotion |
 | Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `d3e9094`; immutable Astro previews; 594-route deployed verifier; external audit `PASS_WITH_WARNINGS` with zero confirmed-dead links and bounded expiring waivers; desktop/mobile Lighthouse performance, accessibility and best-practices scores of 1.00 | **GO** |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **GO** |
-| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning PR #15, current production and recovery evidence below | **NO-GO**; defer only afternoon/night/lateNight observation, then run the final re-verification, review and handoff |
+| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, current production and recovery evidence below | **NO-GO**; defer only afternoon/night/lateNight observation, then run the final re-verification, review and handoff |
 
 The deferred work is therefore time-gated rather than implementation-gated. While the scheduled
 checks are pending, the evidence branch may continue to improve documentation and prepare the final
@@ -49,16 +49,18 @@ the observation day is incomplete.
 
 | Component | Production target | Rollback target |
 | --- | --- | --- |
-| Git | `main@3765b785bcf411fe7630416bde4fb88204898d74` | Component-specific targets below |
-| Pages | `b12e9087-78fb-4cf9-b925-897272e4c88c` | Hugo `b3c338c3-3342-40bf-965d-7e2e5b5545fa` |
+| Git | `main@116c23c75fd7d49316586da4bb1549be97629594` | Component-specific targets below |
+| Pages | `52c8e180-733e-43ec-9973-1e9ceea7ac49` | Hugo `b3c338c3-3342-40bf-965d-7e2e5b5545fa` |
 | Worker | `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a` | Hardened legacy `3538c9be-f09e-4482-b626-9d359ea1b30b` |
 | Supabase | `20260715000100`, `20260715000200` | Additive forward-fix; retain legacy tables and fields |
 
 Production Pages:
 
-- Immutable origin: `https://b12e9087.ai-bubblebrain-daily-news.pages.dev`
+- Immutable origin: `https://52c8e180.ai-bubblebrain-daily-news.pages.dev`
 - Custom domain: `https://bubblenews.today`
-- Build source SHA: `3765b785bcf411fe7630416bde4fb88204898d74`
+- Build source SHA: `116c23c75fd7d49316586da4bb1549be97629594`
+- Cutover baseline deployment: `b12e9087-78fb-4cf9-b925-897272e4c88c` at
+  `3765b785bcf411fe7630416bde4fb88204898d74`
 - PR #17: `https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/17`
 - PR #17 required checks: site build, Worker security, renderer parity, database security, and
   Cloudflare Pages all passed before merge.
@@ -82,22 +84,22 @@ Secret values were neither printed nor archived in this evidence.
 
 ## Pages production verification
 
-The immutable deployment and custom domain both passed `scripts/verify-preview.mjs` against source
-SHA `3765b785bcf411fe7630416bde4fb88204898d74`:
+The latest immutable production deployment and custom domain both passed `scripts/verify-preview.mjs`
+against source SHA `116c23c75fd7d49316586da4bb1549be97629594` after scheduled morning PR #19:
 
 - 594 declared routes
 - redirects and response headers
 - metadata and canonical URLs
 - custom 404 behavior
-- 4,479 parsed external links; external network validation was not requested for this Gate
+- 4,491 parsed external links; external network validation was not requested for this Gate
 
 The canonical `2026-07-16` report passed additional semantic smoke checks on both origins:
 
 - Source and deployed JSON SHA-256:
-  `e0e30a5e7218eaaca3f2e609488519c460e225ee023a86faa313ba56adca9d66`
-- 145 report items
-- 145 search-index items with exact canonical keys and hrefs
-- 145 `news-<id>` HTML anchors
+  `65194c5c84720b4b1f90c3806289fc2b88eb0e83900257cee4b98675cb4c9e6f`
+- 157 report items
+- 157 search-index items with exact canonical keys and hrefs
+- 157 `news-<id>` HTML anchors
 - `/topics/`, `/entities/`, and `/search/`: HTTP 200
 
 ## Pages rollback and restoration drill
@@ -117,7 +119,7 @@ existing daily route remained HTTP 200. During edge propagation, the root had al
 Hugo while the previous release-manifest response was still observable. This confirms that
 Cloudflare's control-plane state alone is not a sufficient restoration Gate.
 
-The current Astro deployment `b12e9087-78fb-4cf9-b925-897272e4c88c` was immediately promoted again.
+The then-current Astro deployment `b12e9087-78fb-4cf9-b925-897272e4c88c` was immediately promoted again.
 By 2026-07-16 00:48:39 UTC, the custom domain simultaneously reported:
 
 - Astro shell marker present and Hugo marker absent
@@ -191,9 +193,9 @@ baseline count.
 
 ## Observation-day publication status
 
-| Batch | Publication PR | Status | Items added | CI and Pages |
+| Batch | Publication PR | Status | Final batch items | CI and Pages |
 | --- | --- | --- | ---: | --- |
-| morning | [#15](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/15) | completed | 145 | passed |
+| morning | canary [#15](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/15), scheduled [#19](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/19) | completed | 157 | passed |
 | afternoon | pending | pending | 0 | pending |
 | night | pending | pending | 0 | pending |
 | lateNight | pending | pending | 0 | pending |
@@ -204,6 +206,16 @@ integration defect: Astro's bundled `import.meta.url` could not locate canonical
 search empty and rendering Markdown fallback. PR #16 preserved canonical JSON bytes in the Astro
 artifact, and PR #17 fixed build-time data resolution and added fail-closed item/search/anchor Gates.
 All post-fix preview and production checks passed before this observation continued.
+
+The scheduled 10:00 Asia/Shanghai morning run then published PR #19 at
+`e2dbb1fb2f27381a66890f38b0aa734596e2cb26`, merged as
+`116c23c75fd7d49316586da4bb1549be97629594`. This was the expected scheduled continuation of the
+manual canary, not a duplicate cron: it preserved all 145 prior items byte-for-byte and added 12
+new identities. Schema semantics and identity derivation passed; the canonical JSON and both
+Markdown outputs regenerated byte-identically. All publication checks, protected promotion, and
+Pages passed. Production deployment `52c8e180-733e-43ec-9973-1e9ceea7ac49`, its immutable origin,
+and the custom domain passed the complete 594-route verifier after one transient `/gallery.json`
+timeout was retried successfully.
 
 ## Final Phase 6 completion checklist
 

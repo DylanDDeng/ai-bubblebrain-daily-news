@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T00:53:57Z",
+  "recorded_at": "2026-07-16T02:16:13Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -14,18 +14,26 @@
     "owner": "DylanDDeng",
     "name": "ai-bubblebrain-daily-news",
     "branch": "main",
-    "release_sha": "3765b785bcf411fe7630416bde4fb88204898d74",
+    "release_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+    "cutover_release_sha": "3765b785bcf411fe7630416bde4fb88204898d74",
     "release_pr": 17,
-    "structured_morning_pr": 15,
-    "structured_morning_sha": "62b3049b0ed566b5fec2b2fd7fafbeed85ba8553",
-    "structured_morning_merge_sha": "3bdabac567a52b03c4f7a254913d0d86d7de8c7f"
+    "structured_morning_canary_pr": 15,
+    "structured_morning_canary_sha": "62b3049b0ed566b5fec2b2fd7fafbeed85ba8553",
+    "structured_morning_canary_merge_sha": "3bdabac567a52b03c4f7a254913d0d86d7de8c7f",
+    "structured_morning_scheduled_pr": 19,
+    "structured_morning_scheduled_sha": "e2dbb1fb2f27381a66890f38b0aa734596e2cb26",
+    "structured_morning_scheduled_merge_sha": "116c23c75fd7d49316586da4bb1549be97629594"
   },
   "pages": {
     "project": "ai-bubblebrain-daily-news",
     "custom_domain": "https://bubblenews.today",
-    "production_deployment_id": "b12e9087-78fb-4cf9-b925-897272e4c88c",
-    "production_origin": "https://b12e9087.ai-bubblebrain-daily-news.pages.dev",
-    "source_sha": "3765b785bcf411fe7630416bde4fb88204898d74",
+    "production_deployment_id": "52c8e180-733e-43ec-9973-1e9ceea7ac49",
+    "production_origin": "https://52c8e180.ai-bubblebrain-daily-news.pages.dev",
+    "source_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+    "cutover_baseline": {
+      "deployment_id": "b12e9087-78fb-4cf9-b925-897272e4c88c",
+      "source_sha": "3765b785bcf411fe7630416bde4fb88204898d74"
+    },
     "rollback": {
       "deployment_id": "b3c338c3-3342-40bf-965d-7e2e5b5545fa",
       "source_sha": "8ed05acde833ee01e7fbec85fd4e7e8ebc762d28",
@@ -102,10 +110,10 @@
     "renderer_parity_daily_routes": 208,
     "astro_tests": 46,
     "root_tests": 258,
-    "daily_json_sha256": "e0e30a5e7218eaaca3f2e609488519c460e225ee023a86faa313ba56adca9d66",
-    "report_items": 145,
-    "search_items": 145,
-    "html_anchors": 145,
+    "daily_json_sha256": "65194c5c84720b4b1f90c3806289fc2b88eb0e83900257cee4b98675cb4c9e6f",
+    "report_items": 157,
+    "search_items": 157,
+    "html_anchors": 157,
     "knowledge_routes": {
       "/topics/": 200,
       "/entities/": 200,
@@ -116,8 +124,16 @@
     {
       "id": "morning",
       "status": "completed",
-      "items": 145,
-      "publication_pr": 15,
+      "items": 157,
+      "publication_pr": 19,
+      "publication_prs": [
+        15,
+        19
+      ],
+      "canary_head_sha": "62b3049b0ed566b5fec2b2fd7fafbeed85ba8553",
+      "canary_merge_sha": "3bdabac567a52b03c4f7a254913d0d86d7de8c7f",
+      "scheduled_head_sha": "e2dbb1fb2f27381a66890f38b0aa734596e2cb26",
+      "scheduled_merge_sha": "116c23c75fd7d49316586da4bb1549be97629594",
       "ci": "passed"
     },
     {
