@@ -33,12 +33,19 @@ Secrets never enter Astro, GitHub artifacts, Worker variables, or logs.
    rows, `comments` returns 401 to anon, and Gallery/Video thread IDs are rejected by the RPC.
 4. Deploy the Community API with `COMMENTS_WRITE_ENABLED="false"`. Confirm `/health` and a 503 write
    response from the production hostname.
-5. Deploy Astro login and read-only discussion. Confirm callback is noindex and the legacy page shows
-   exactly two comments.
+5. Build and deploy Astro login and read-only discussion with
+   `PUBLIC_COMMENTS_WRITE_UI_ENABLED=false` (the fail-closed default). Confirm callback is noindex,
+   the legacy page shows exactly two comments, and an authenticated user sees the read-only message
+   instead of the composer.
 6. Configure a real Turnstile widget for `bubblenews.today`. Never use Cloudflare test keys while a
    public production write path is enabled.
-7. Run a controlled write Canary. The Worker environment and database setting must both be enabled;
-   disable both immediately after the test until the release review is complete.
+7. Run a controlled write Canary. Set `PUBLIC_COMMENTS_WRITE_UI_ENABLED=true` in the immutable Astro
+   build, and enable both the Worker environment and database setting. The UI flag is presentation
+   gating only; the Worker and database remain the security boundaries. Disable both security
+   switches immediately after the test until the release review is complete. Then reset the GitHub
+   and Pages build variable to `false`, rebuild the same exact source, redeploy the read-only
+   artifact, and verify an authenticated user has no composer, reply, or delete controls. Do not
+   leave a Canary artifact with its UI capability enabled while either security switch is off.
 8. Attach Cloudflare Access + MFA to `admin.bubblenews.today`, disable `workers.dev`, then deploy the
    admin Worker. Test unauthenticated 401, non-allowlisted 401, same-origin moderation, and the kill
    switch.
@@ -61,5 +68,6 @@ Secrets never enter Astro, GitHub artifacts, Worker variables, or logs.
 
 - The database kill switch defaults to off.
 - The Community Worker deploys with writes off.
-- Astro hides the composer when the environment has no matching real Turnstile site key.
+- Astro hides the composer unless `PUBLIC_COMMENTS_WRITE_UI_ENABLED` is exactly `true` and the
+  environment has a matching real Turnstile site key.
 - Gallery/Video comments and favorites remain stored but are not publicly routed.

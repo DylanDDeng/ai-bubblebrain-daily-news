@@ -9,6 +9,11 @@ export interface BrowserCommunityConfig {
 	supabaseAnonKey: string;
 	communityApiUrl: string;
 	turnstileSiteKey: string;
+	commentsWriteUiEnabled: boolean;
+}
+
+export function publicCapabilityEnabled(value: string | undefined): boolean {
+	return value === 'true';
 }
 
 function normalizedUrl(value: string | undefined, allowedProtocols: string[]): string | null {
@@ -48,6 +53,9 @@ export function browserCommunityConfig(): BrowserCommunityConfig | null {
 			supabaseAnonKey: stagingKey,
 			communityApiUrl: stagingApi,
 			turnstileSiteKey: import.meta.env.PUBLIC_TURNSTILE_STAGING_SITE_KEY ?? '',
+			commentsWriteUiEnabled: publicCapabilityEnabled(
+				import.meta.env.PUBLIC_COMMENTS_WRITE_UI_ENABLED,
+			),
 		};
 	}
 
@@ -65,6 +73,9 @@ export function browserCommunityConfig(): BrowserCommunityConfig | null {
 			supabaseAnonKey: localKey,
 			communityApiUrl: localApi,
 			turnstileSiteKey: import.meta.env.PUBLIC_TURNSTILE_LOCAL_SITE_KEY ?? '',
+			commentsWriteUiEnabled: publicCapabilityEnabled(
+				import.meta.env.PUBLIC_COMMENTS_WRITE_UI_ENABLED,
+			),
 		};
 	}
 
@@ -80,5 +91,8 @@ export function browserCommunityConfig(): BrowserCommunityConfig | null {
 		supabaseAnonKey: PRODUCTION_SUPABASE_ANON_KEY,
 		communityApiUrl: productionApi,
 		turnstileSiteKey: import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? PRODUCTION_TURNSTILE_SITE_KEY,
+		commentsWriteUiEnabled: publicCapabilityEnabled(
+			import.meta.env.PUBLIC_COMMENTS_WRITE_UI_ENABLED,
+		),
 	};
 }

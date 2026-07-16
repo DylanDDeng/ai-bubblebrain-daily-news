@@ -18,7 +18,7 @@
 - Supabase migrations and second-run idempotency: passed
 - pgTAP: 106 tests passed in both the initial migration run and the idempotency rerun
 - Root Worker and community tests: 363 tests passed
-- Astro unit tests: 61 tests passed
+- Astro unit tests: 63 tests passed
 - Astro typecheck and lint: passed
 - Complete Astro artifact: 621 routes verified
 - Hugo/Astro renderer parity: 208 daily routes passed
@@ -51,6 +51,8 @@
 - Browser mobile: account entry visible without opening navigation
 - Browser discussion: one root plus one reply, total count 2
 - Browser composer: hidden while anonymous; production build contains the real hostname-bound site key
+- Read-only capability Gate: composer remains hidden for authenticated users unless the immutable
+  build explicitly sets `PUBLIC_COMMENTS_WRITE_UI_ENABLED=true`
 
 ## Remaining production Gates
 

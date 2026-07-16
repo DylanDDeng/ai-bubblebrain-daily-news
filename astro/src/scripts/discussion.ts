@@ -176,7 +176,7 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 			setState('mutation_error', labels.authError, true);
 			return;
 		}
-		if (!config?.turnstileSiteKey) {
+		if (!config?.commentsWriteUiEnabled || !config.turnstileSiteKey) {
 			setState('mutation_error', labels.unavailable, true);
 			return;
 		}
@@ -186,6 +186,10 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 	function render(): void {
 		if (!list) return;
 		list.replaceChildren();
+		const config = browserCommunityConfig();
+		const mutationsAvailable = Boolean(
+			config?.commentsWriteUiEnabled && config.turnstileSiteKey,
+		);
 		const roots = comments
 			.filter((item) => !item.parent_id)
 			.sort((a, b) => b.created_at.localeCompare(a.created_at));
@@ -235,24 +239,27 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 			header.append(identity, time);
 			const content = document.createElement('p');
 			content.textContent = comment.content;
-			const actions = document.createElement('div');
-			actions.className = 'discussion-actions';
-			const reply = document.createElement('button');
-			reply.type = 'button';
-			reply.textContent = labels.reply;
-			reply.addEventListener('click', () => void beginReply(comment));
-			actions.append(reply);
-			if (
-				authSnapshot().user?.id === comment.user_id &&
-				!comments.some((child) => child.parent_id === comment.id)
-			) {
-				const remove = document.createElement('button');
-				remove.type = 'button';
-				remove.textContent = labels.remove;
-				remove.addEventListener('click', () => void removeComment(comment, remove));
-				actions.append(remove);
+			article.append(header, content);
+			if (mutationsAvailable) {
+				const actions = document.createElement('div');
+				actions.className = 'discussion-actions';
+				const reply = document.createElement('button');
+				reply.type = 'button';
+				reply.textContent = labels.reply;
+				reply.addEventListener('click', () => void beginReply(comment));
+				actions.append(reply);
+				if (
+					authSnapshot().user?.id === comment.user_id &&
+					!comments.some((child) => child.parent_id === comment.id)
+				) {
+					const remove = document.createElement('button');
+					remove.type = 'button';
+					remove.textContent = labels.remove;
+					remove.addEventListener('click', () => void removeComment(comment, remove));
+					actions.append(remove);
+				}
+				article.append(actions);
 			}
-			article.append(header, content, actions);
 			const replies = comments
 				.filter((child) => child.parent_id === comment.id)
 				.sort((a, b) => a.created_at.localeCompare(b.created_at));
@@ -277,7 +284,7 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 					const childContent = document.createElement('p');
 					childContent.textContent = child.content;
 					childArticle.append(childHeader, childContent);
-					if (authSnapshot().user?.id === child.user_id) {
+					if (mutationsAvailable && authSnapshot().user?.id === child.user_id) {
 						const childActions = document.createElement('div');
 						childActions.className = 'discussion-actions';
 						const remove = document.createElement('button');
@@ -327,7 +334,13 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 	function setupTurnstile(): Promise<void> {
 		const config = browserCommunityConfig();
 		const container = root.querySelector<HTMLElement>('[data-turnstile]');
-		if (!config?.turnstileSiteKey || !container || turnstileWidget) return Promise.resolve();
+		if (
+			!config?.commentsWriteUiEnabled ||
+			!config.turnstileSiteKey ||
+			!container ||
+			turnstileWidget
+		)
+			return Promise.resolve();
 		if (turnstileSetupPromise) return turnstileSetupPromise;
 		turnstileSetupPromise = (async () => {
 			try {
@@ -379,7 +392,11 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 			);
 			authNote.append(button);
 			form.hidden = true;
-		} else if (state.status === 'ready' && config?.turnstileSiteKey) {
+		} else if (
+			state.status === 'ready' &&
+			config?.commentsWriteUiEnabled &&
+			config.turnstileSiteKey
+		) {
 			form.hidden = false;
 			void setupTurnstile();
 		} else if (state.status === 'ready') {
@@ -393,6 +410,10 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 	}
 
 	async function removeComment(comment: PageComment, button: HTMLButtonElement): Promise<void> {
+		if (!browserCommunityConfig()?.commentsWriteUiEnabled) {
+			setState('mutation_error', labels.unavailable, true);
+			return;
+		}
 		if (!turnstileToken) {
 			setState(
 				'mutation_error',
@@ -426,6 +447,10 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-discussion]')) 
 
 	form?.addEventListener('submit', async (event) => {
 		event.preventDefault();
+		if (!browserCommunityConfig()?.commentsWriteUiEnabled) {
+			setState('mutation_error', labels.unavailable, true);
+			return;
+		}
 		const content = textarea?.value.trim() ?? '';
 		if (!content || !turnstileToken || !typeSelect) {
 			setState(
