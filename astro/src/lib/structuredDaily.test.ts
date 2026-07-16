@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
+	dailyDataDirectory,
 	formatTimelineTime,
 	loadStructuredDailyReport,
 	type StructuredDailyItem,
@@ -34,6 +35,10 @@ afterEach(async () => {
 });
 
 describe('structured daily report loader', () => {
+	it('resolves the canonical repository data directory independently of module bundling', () => {
+		expect(dailyDataDirectory()).toBe(resolve(process.cwd(), '..', 'data', 'daily'));
+	});
+
 	it('loads a valid report and returns null when the date is absent', async () => {
 		const directory = await dataDirectory();
 		await writeFile(join(directory, '2026-07-14.json'), JSON.stringify(await fixture()));

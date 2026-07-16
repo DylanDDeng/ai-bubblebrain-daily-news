@@ -316,6 +316,13 @@ invariant(
   publishedDailyRecords.length === dailyDataNames.length,
   `Structured daily route count drifted (${publishedDailyRecords.length} routes for ${dailyDataNames.length} source files)`,
 );
+const searchIndex = JSON.parse(
+  await readFile(resolve(distRoot, "search", "index.json"), "utf8"),
+);
+const expectedSearchDates = dailyDataNames.map((name) =>
+  name.slice(0, -".json".length),
+);
+let expectedSearchItemCount = 0;
 for (const name of dailyDataNames) {
   const route = `/data/daily/${name}`;
   const record = byRoute.get(route);
@@ -332,7 +339,59 @@ for (const name of dailyDataNames) {
     source.equals(output),
     `Published structured daily JSON differs from its canonical source: ${route}`,
   );
+  const report = JSON.parse(source.toString("utf8"));
+  const date = name.slice(0, -".json".length);
+  expectedSearchItemCount += report.items.length;
+  const searchItems = searchIndex.items.filter((item) => item.date === date);
+  const expectedSearchItems = new Map(
+    report.items.map((item) => [
+      `${date}:${item.id}`,
+      `/daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/#news-${item.id}`,
+    ]),
+  );
+  invariant(
+    searchIndex.report_dates.includes(date) &&
+      searchItems.length === report.items.length &&
+      expectedSearchItems.size === report.items.length,
+    `Structured daily search coverage drifted: ${date}`,
+  );
+  const seenSearchKeys = new Set();
+  for (const item of searchItems) {
+    invariant(
+      !seenSearchKeys.has(item.key) &&
+        expectedSearchItems.get(item.key) === item.href,
+      `Structured daily search item drifted: ${item.key}`,
+    );
+    seenSearchKeys.add(item.key);
+  }
+  invariant(
+    seenSearchKeys.size === expectedSearchItems.size &&
+      [...expectedSearchItems.keys()].every((key) => seenSearchKeys.has(key)),
+    `Structured daily search keys drifted: ${date}`,
+  );
+  const [year, month] = date.split("-");
+  const dailyHtml = await readFile(
+    resolve(distRoot, "daily", year, month, date, "index.html"),
+    "utf8",
+  );
+  for (const item of report.items) {
+    invariant(
+      dailyHtml.includes(`id="news-${item.id}"`),
+      `Structured daily item is missing from rendered HTML: ${date}:${item.id}`,
+    );
+  }
 }
+invariant(
+  new Set(searchIndex.report_dates).size === searchIndex.report_dates.length &&
+    searchIndex.report_dates.length === expectedSearchDates.length &&
+    expectedSearchDates.every((date) => searchIndex.report_dates.includes(date)),
+  "Structured daily search report dates drifted",
+);
+invariant(
+  searchIndex.item_count === expectedSearchItemCount &&
+    searchIndex.items.length === expectedSearchItemCount,
+  `Structured daily search item count drifted (${searchIndex.items.length} items for ${expectedSearchItemCount} canonical items)`,
+);
 
 for (const [source, target] of [
   ["/index.xml", "/rss.xml"],

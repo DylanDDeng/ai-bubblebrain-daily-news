@@ -1,6 +1,4 @@
 import { readdir } from 'node:fs/promises';
-import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import {
 	canonicalTaxonomyRecord,
@@ -12,7 +10,11 @@ import {
 	type KnowledgeLocale,
 	type TaxonomyRecord,
 } from './knowledge';
-import { loadStructuredDailyReport, type StructuredDailyItem } from './structuredDaily';
+import {
+	dailyDataDirectory,
+	loadStructuredDailyReport,
+	type StructuredDailyItem,
+} from './structuredDaily';
 
 export interface KnowledgeSearchItem {
 	key: string;
@@ -38,10 +40,6 @@ export interface KnowledgeSearchIndex {
 	item_count: number;
 	report_dates: string[];
 	items: KnowledgeSearchItem[];
-}
-
-function defaultDailyDataDirectory(): string {
-	return fileURLToPath(new URL('../../../data/daily/', import.meta.url));
 }
 
 function itemHref(date: string, id: string): string {
@@ -102,7 +100,7 @@ export async function buildKnowledgeSearchIndex(
 		locale?: KnowledgeLocale;
 	} = {},
 ): Promise<KnowledgeSearchIndex> {
-	const directory = resolve(options.directory ?? defaultDailyDataDirectory());
+	const directory = dailyDataDirectory(options.directory);
 	const locale = options.locale ?? 'zh-CN';
 	let names: string[];
 	try {

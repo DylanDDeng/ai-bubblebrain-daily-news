@@ -1,6 +1,5 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import { sanitizeSummaryText } from '../../../src/daily/summary.js';
 import {
@@ -63,10 +62,10 @@ export interface StructuredDailyReport {
 const reportCache = new Map<string, Promise<StructuredDailyReport | null>>();
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
 
-function dailyDataDirectory(directory?: string): string {
+export function dailyDataDirectory(directory?: string): string {
 	if (directory) return resolve(directory);
 	if (process.env.DAILY_DATA_DIR) return resolve(process.env.DAILY_DATA_DIR);
-	return fileURLToPath(new URL('../../../data/daily/', import.meta.url));
+	return resolve(process.cwd(), '..', 'data', 'daily');
 }
 
 async function readStructuredReport(
