@@ -6,6 +6,10 @@ Status: **PENDING**
 
 Cleanup authorized: **NO**
 
+Release note: the release owner explicitly waived the four-batch observation only as a pre-release
+blocker in [`production-observation-waiver.json`](production-observation-waiver.json). This handoff
+remains `PENDING`; the waiver neither accepts this handoff nor authorizes cleanup.
+
 This record defines the exact responsibility being handed to the rollback owner. It is not an
 acceptance record until every prerequisite is complete and the acceptance fields at the end are
 filled from an explicit owner response. An implementation author or automated reviewer must not

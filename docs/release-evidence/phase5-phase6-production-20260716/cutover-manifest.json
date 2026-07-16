@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T13:26:33Z",
+  "recorded_at": "2026-07-16T14:22:45Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -15,10 +15,27 @@
     ],
     "next_complete_observation_candidate": "2026-07-17",
     "phase_5": "go",
-    "phase_6": "no-go",
+    "phase_6": "release-authorized-with-explicit-observation-waiver",
     "open_p0": 0,
     "open_p1": 0,
-    "blocking_reason": "the 2026-07-16 afternoon window did not publish, so all four batches of the next complete production date remain required"
+    "blocking_reason": null
+  },
+  "release_authorization": {
+    "decision": "approved-with-explicit-pre-release-observation-waiver",
+    "recorded_at": "2026-07-16T14:22:45Z",
+    "statement": "既然模拟测试通过了，我们就不等这个了吧，直接上线。到时候线上如果有什么问题的话再看，不然的话，这个时间耽搁得太久了",
+    "reference": "Codex task 019f62a1-585d-79d1-9dc5-3c48a6521f26",
+    "evidence": "production-observation-waiver.json",
+    "waived_pre_release_condition": "four successful production batches for the 2026-07-17 Asia/Shanghai report date",
+    "truthfulness_constraint": "unobserved batches remain incomplete and must not be represented as passed",
+    "post_release_follow_up": [
+      "observe the next real production batches and publication path",
+      "run final report-day artifact consistency after a complete day",
+      "repeat production Supabase Auth/RLS, legacy-client, and row-count smoke",
+      "complete rollback-owner handoff and independent post-release review"
+    ],
+    "rollback_targets_retained": true,
+    "cleanup_authorized": false
   },
   "owners": {
     "release": "Chengsheng Deng",

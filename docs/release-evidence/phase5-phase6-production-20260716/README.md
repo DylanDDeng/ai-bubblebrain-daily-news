@@ -2,7 +2,7 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 13:26 UTC
+Evidence updated: 2026-07-16 14:22 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -15,7 +15,10 @@ Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pendi
 ## Current decision
 
 - Phase 5 production state remains operational and its auditable Gate is **GO**.
-- Phase 6 observation and cleanup handoff: **NO-GO**.
+- Phase 6 complete-day observation remains incomplete and is not represented as passed.
+- Release authorization: **GO WITH EXPLICIT OBSERVATION WAIVER**. The release owner explicitly
+  accepted shipping before the four `2026-07-17` production batches are observed and moved that
+  observation to post-release follow-up.
 - Open P0 findings: none confirmed.
 - Open P1 findings: none. The exact current Astro Preview is explicitly approved, and the historical
   PAT has objective HTTP 401 revocation evidence.
@@ -25,7 +28,11 @@ Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pendi
   its batches must pass publication, CI, Pages, and artifact-consistency Gates before Phase 6 can be
   approved.
 
-This document must not be interpreted as permission to skip the complete-day observation Gate.
+The release-owner decision and its exact scope are archived in
+[`production-observation-waiver.json`](production-observation-waiver.json). It waives the
+complete-day observation only as a pre-release blocking condition. It does not claim that any
+unobserved batch passed, authorize cleanup, remove rollback targets, or waive immediate production
+smoke checks.
 
 ## 2026-07-16 Cron remediation and rapid Staging evidence
 
@@ -147,11 +154,11 @@ unless it exposes a regression in those earlier Gates.
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO implementation**; final production smoke repeats after the complete observation day |
 | Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `58b155f`; [tracked Preview evidence, artifact manifest, and explicit approval](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 605-route deployed verifier; Lighthouse 0.98/0.99 | **GO** |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **GO** |
-| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **NO-GO**; observe all four batches on the next complete production date, then run final verification, review, and handoff |
+| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **RELEASE AUTHORIZED WITH EXPLICIT WAIVER**; the four-batch observation is incomplete and moves to post-release follow-up without being recorded as passed |
 
-The remaining work is the time-gated complete-day observation followed by final production,
-Supabase/RLS, independent-review, and rollback-handoff checks. PR #18 must remain Draft and cleanup
-must remain unauthorized.
+The complete-day observation, final Supabase/RLS repeat, and rollback-handoff acceptance remain
+post-release follow-up. They no longer block release under the owner's explicit waiver. Cleanup
+remains unauthorized and all rollback targets remain retained.
 
 ## Cutover manifest
 
@@ -360,7 +367,8 @@ The following items remain mandatory:
 - [x] Diagnose the missed `2026-07-16` afternoon window, validate the fixes with a real isolated
       Cron, deploy the remediated production Worker, and preserve fail-closed evidence.
 - [ ] Observe all four structured batches for the next complete production date with required checks
-      green. The current candidate is `2026-07-17`.
+      green. The current candidate is `2026-07-17`; the release owner explicitly waived this only as
+      a pre-release blocking condition and moved it to post-release follow-up.
 - [ ] Confirm all four batch IDs and item lists are complete in the final canonical JSON.
 - [ ] Confirm final JSON and both Markdown artifacts match the structured renderer outputs.
 - [ ] Re-run production search, topic/entity, anchor, custom-domain, Supabase/RLS, and row-count smoke.
@@ -369,7 +377,7 @@ The following items remain mandatory:
       that the historically exposed PAT now returns HTTP 401.
 - [x] Complete one clean 605-route run for the latest immutable Astro Preview.
 - [x] Record [explicit user approval](../phase4-preview-20260716/preview-approval.json) of that exact Preview/SHA.
-- [ ] Complete independent final review with no open P0/P1 finding.
+- [ ] Complete independent post-release review with no open P0/P1 finding.
 - [ ] Obtain explicit acceptance of the scoped
       [`ROLLBACK_HANDOFF.md`](ROLLBACK_HANDOFF.md) before cleanup begins.
 
@@ -400,6 +408,6 @@ REPORT_DATE=2026-07-17 npm run verify:report-day
 
 Then rebuild from the final `main`, verify its immutable Pages deployment and custom domain with
 `scripts/verify-preview.mjs`, re-run the authenticated Supabase/RLS and exact row-count smoke, and
-record the final Worker and Pages IDs. Only after those results are archived may the independent
-final review run. PR #18 remains Draft until that review returns `GO` with no P0/P1 and the rollback
-owner accepts the handoff.
+record the final Worker and Pages IDs. Under the release-owner waiver these are post-release
+follow-up rather than blockers for PR #18. Rollback-owner acceptance and cleanup authorization
+remain separate explicit decisions.
