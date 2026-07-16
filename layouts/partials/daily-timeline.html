@@ -71,8 +71,18 @@
     <noscript> · {{ if $isEnglish }}Filters require JavaScript; all items remain visible.{{ else }}筛选需要 JavaScript；当前已展示全部内容。{{ end }}</noscript>
   </div>
 
+  {{- $completedBatches := where $report.batches "status" "completed" -}}
+  {{- $pendingBatches := where $report.batches "status" "ne" "completed" -}}
+  {{- $orderedBatches := slice -}}
+  {{- range (collections.Reverse $completedBatches) -}}
+    {{- $orderedBatches = $orderedBatches | append . -}}
+  {{- end -}}
+  {{- range $pendingBatches -}}
+    {{- $orderedBatches = $orderedBatches | append . -}}
+  {{- end -}}
+
   <div class="timeline-batches">
-    {{ range $report.batches }}
+    {{ range $orderedBatches }}
       {{- $batch := . -}}
       {{- $batchItems := slice -}}
       {{- range $batch.item_ids -}}
