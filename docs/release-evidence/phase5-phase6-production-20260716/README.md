@@ -235,7 +235,8 @@ The following items remain mandatory:
 - [x] Complete one clean 594-route run for the latest immutable Astro Preview.
 - [ ] Record explicit user approval of that exact Preview/SHA.
 - [ ] Complete independent final review with no open P0/P1 finding.
-- [ ] Obtain rollback-owner handoff acceptance before cleanup begins.
+- [ ] Obtain explicit acceptance of the scoped
+      [`ROLLBACK_HANDOFF.md`](ROLLBACK_HANDOFF.md) before cleanup begins.
 
 Hugo, legacy reads, and legacy database fields remain retained. No cleanup is authorized by this
 in-progress evidence document.
