@@ -41,6 +41,7 @@ describe('provider-preserving structured fetch', () => {
             entry.adapter.fetch.mock.calls[0][2].signal instanceof AbortSignal
         ))).toBe(true);
         expect(adapters.every(entry => entry.adapter.transform.mock.calls.length === 1)).toBe(true);
+        expect(adapters.every(entry => entry.adapter.transform.mock.calls[0][2].strict === true)).toBe(true);
         expect(calls).toEqual(adapters.flatMap(entry => [
             `fetch:${entry.provider}`,
             `transform:${entry.provider}`,

@@ -100,7 +100,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
         }
 
         try {
-            const transformed = entry.adapter.transform(raw, entry.contentType);
+            const transformed = entry.adapter.transform(raw, entry.contentType, { strict: true });
             if (!Array.isArray(transformed)) throw new Error('Adapter transform must return an array');
             taggedByType[entry.contentType].push(...transformed.map(item => ({
                 provider: entry.provider,

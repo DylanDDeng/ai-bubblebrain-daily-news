@@ -228,13 +228,14 @@ JSON Array of Chinese Translations:`;
             };
         });
     },
-    transform: (projectsData, sourceType) => {
+    transform: (projectsData, sourceType, { strict = false } = {}) => {
         const unifiedProjects = [];
         const now = getISODate();
         if (Array.isArray(projectsData)) {
             projectsData.forEach((project, index) => {
                 unifiedProjects.push({
-                    id: index + 1, // Use project.url as ID if available
+                    // Structured runs use the stable canonical URL; legacy keeps its old index ID.
+                    id: strict ? project.url : index + 1,
                     type: sourceType,
                     url: project.url,
                     title: project.name,
