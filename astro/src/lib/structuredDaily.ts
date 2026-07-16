@@ -59,6 +59,20 @@ export interface StructuredDailyReport {
 	items: StructuredDailyItem[];
 }
 
+export function orderTimelineBatches(
+	batches: readonly StructuredDailyBatch[],
+): StructuredDailyBatch[] {
+	const completed: StructuredDailyBatch[] = [];
+	const pending: StructuredDailyBatch[] = [];
+
+	for (const batch of batches) {
+		if (batch.status === 'completed') completed.push(batch);
+		else pending.push(batch);
+	}
+
+	return [...completed.reverse(), ...pending];
+}
+
 const reportCache = new Map<string, Promise<StructuredDailyReport | null>>();
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
 

@@ -3,6 +3,7 @@ import type { DailyLocale } from '../lib/daily';
 import {
 	cleanTimelineSummary,
 	formatTimelineTime,
+	orderTimelineBatches,
 	type DailyContentType,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
@@ -29,6 +30,7 @@ const typeOrder: Array<'all' | DailyContentType> = [
 	'socialMedia',
 ];
 const overview = cleanTimelineSummary(report.overview.text);
+const orderedBatches = orderTimelineBatches(report.batches);
 ---
 
 <link rel="stylesheet" href="/css/daily-timeline.css" />
@@ -118,9 +120,9 @@ const overview = cleanTimelineSummary(report.overview.text);
 
 	<div class="timeline-batches">
 		{
-			report.batches.map((batch) => {
+			orderedBatches.map((batch) => {
 				// The producer stores each batch in ascending chronology for deterministic artifacts.
-				// The reading UI reverses that stable order so the newest item is encountered first.
+				// The reading UI keeps that source untouched while showing each batch's newest item first.
 				const items = batch.item_ids
 					.map((id) => itemById.get(id))
 					.filter((item) => item !== undefined)

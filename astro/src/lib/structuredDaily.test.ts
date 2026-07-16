@@ -8,6 +8,8 @@ import {
 	dailyDataDirectory,
 	formatTimelineTime,
 	loadStructuredDailyReport,
+	orderTimelineBatches,
+	type StructuredDailyBatch,
 	type StructuredDailyItem,
 } from './structuredDaily';
 
@@ -98,5 +100,40 @@ describe('timeline time labels', () => {
 				'2026-07-14',
 			),
 		).toBe('—');
+	});
+});
+
+describe('timeline batch order', () => {
+	const batch = (
+		id: StructuredDailyBatch['id'],
+		status: StructuredDailyBatch['status'],
+	): StructuredDailyBatch => ({
+		id,
+		label: id,
+		status,
+		generated_at: status === 'completed' ? '2026-07-16T00:00:00.000Z' : null,
+		item_ids: [],
+	});
+
+	it('shows completed batches newest first and keeps pending batches after them', () => {
+		const batches = [
+			batch('morning', 'completed'),
+			batch('afternoon', 'pending'),
+			batch('night', 'completed'),
+			batch('lateNight', 'pending'),
+		];
+
+		expect(orderTimelineBatches(batches).map(({ id }) => id)).toEqual([
+			'night',
+			'morning',
+			'afternoon',
+			'lateNight',
+		]);
+		expect(batches.map(({ id }) => id)).toEqual([
+			'morning',
+			'afternoon',
+			'night',
+			'lateNight',
+		]);
 	});
 });
