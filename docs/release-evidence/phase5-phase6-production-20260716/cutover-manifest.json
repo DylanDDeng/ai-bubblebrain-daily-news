@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T10:55:00Z",
+  "recorded_at": "2026-07-16T12:42:00Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -60,13 +60,27 @@
     "production_origin": "https://ff3a2b5f.ai-bubblebrain-daily-news.pages.dev",
     "source_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
     "latest_evidence_preview": {
-      "deployment_id": "546c94c2-6131-4d8e-bf18-ab519b9261f4",
-      "source_sha": "f9448fd699b84fce58272ac4de3f53143d06ce28",
-      "origin": "https://546c94c2.ai-bubblebrain-daily-news.pages.dev",
-      "route_manifest_records": 594,
-      "artifact_sha256": "b54077b81f9928837cabdaca1f84d96ee1408b61cecc15196af47f7b103b2482",
+      "deployment_id": "e4cd8eea-20b0-494e-a681-e23bc96b5277",
+      "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+      "origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
+      "route_manifest_records": 605,
+      "artifact_sha256": "d29a2e7af2cde49902d48edd70766d9bdcaa142a5ab9cee47111b2e9a06ee307",
       "axe_violations": 0,
       "axe_incomplete": 0,
+      "lighthouse_desktop_performance": 0.98,
+      "lighthouse_mobile_performance": 0.99,
+      "external_link_audit": {
+        "gate": "PASS_WITH_WARNINGS",
+        "total": 4563,
+        "directly_evaluated": 1720,
+        "direct_coverage_ratio": 1,
+        "success": 1254,
+        "confirmed_dead_unwaived": 0,
+        "policy_failure": 0,
+        "waived": 2843,
+        "report_sha256": "a419b64bb815ffb17d4108ca3604fd3cead98f07ac42af24ea222f441186e94c",
+        "waiver_policy_sha256": "a25e9edd6c906bd6d9d369ca11610a28ca9ef008ba3927c0d5f6640176838ede"
+      },
       "complete_route_verifier": "passed-on-second-full-run-after-one-transient-route-timeout-and-successful-direct-reprobe",
       "user_approval": "missing"
     },

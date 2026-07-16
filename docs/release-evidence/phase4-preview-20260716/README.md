@@ -1,22 +1,22 @@
 # Phase 4 real Astro Preview evidence
 
-Evidence updated: 2026-07-16 03:52 UTC
+Evidence updated: 2026-07-16 12:42 UTC
 
 Repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
 ## Current decision
 
-The accessibility-fix Preview now passes the complete technical Gate, including zero axe violations
-and zero incomplete rules. Phase 4 remains **NO-GO** only because the release record does not yet
-contain explicit user approval for this exact immutable Preview and source SHA.
+The current Preview passes the complete technical Gate, including performance parity, zero axe
+violations, and zero incomplete rules. Phase 4 remains **NO-GO** only because the release record
+does not yet contain explicit user approval for this exact immutable Preview and source SHA.
 
 ## Current immutable Preview
 
-- Source SHA: `f9448fd699b84fce58272ac4de3f53143d06ce28`
-- Deployment ID: `546c94c2-6131-4d8e-bf18-ab519b9261f4`
-- Origin: `https://546c94c2.ai-bubblebrain-daily-news.pages.dev`
-- Route-manifest records: 594
-- Artifact SHA-256: `b54077b81f9928837cabdaca1f84d96ee1408b61cecc15196af47f7b103b2482`
+- Source SHA: `58b155f4d277fd4cde8856c9be9a57d26000cfc6`
+- Deployment ID: `e4cd8eea-20b0-494e-a681-e23bc96b5277`
+- Origin: `https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev`
+- Route-manifest records: 605
+- Artifact SHA-256: `d29a2e7af2cde49902d48edd70766d9bdcaa142a5ab9cee47111b2e9a06ee307`
 - PR #18 checks: site build, Worker security, renderer parity, database security, and Cloudflare
   Pages all passed; publication promotion was correctly skipped for the evidence PR.
 
@@ -35,8 +35,8 @@ and no-JavaScript runs supplied explicit context configuration through `open --c
 | Keyboard | first `Tab` focused `跳到正文`; `Enter` moved focus to `#main-content` |
 | No JavaScript | 390x844, 157 anchors and full content remained; page displayed `筛选需要 JavaScript；当前已展示全部内容。`; zero horizontal overflow |
 | axe-core 4.12.1 | WCAG 2 A/AA, 2.1 A/AA and 2.2 AA tags; 0 violations, 0 incomplete rules, 27 passes |
-| Lighthouse desktop | performance 1.00, accessibility 1.00, best practices 1.00, SEO 0.66 |
-| Lighthouse mobile | performance 0.98, accessibility 1.00, best practices 1.00, SEO 0.66 |
+| Lighthouse desktop | performance 0.98, accessibility 1.00, best practices 1.00, SEO 0.66 |
+| Lighthouse mobile | performance 0.99, accessibility 1.00, best practices 1.00, SEO 0.66 |
 
 The SEO score reflects the intentionally non-indexable `pages.dev` Preview host and is not treated
 as production SEO evidence. Canonical and robots behavior is checked by the route verifier.
@@ -49,13 +49,20 @@ The initial axe run against predecessor Preview `4d1d2d76` at `bba32d5` found on
 named containers and `color-contrast` on 1,337 nodes. Therefore the old report is retained only as
 defect-discovery evidence and is not treated as a pass.
 
-The fix replaces those containers with named `nav` and `section` landmarks, renders the
+The accessibility fix replaces those containers with named `nav` and `section` landmarks, renders the
 decorative rail as an `aria-hidden` element, removes opacity from the entry animation, removes the
 Astro body gradient, and increases faint-text contrast in both themes. axe-core 4.12.1 at
 `2026-07-16T03:37:46.533Z` then returned 0 violations, 0 incomplete checks, and 27 passes. Its raw
 report SHA-256 is `f945af7cad405c6ea9cf2391ba45530d9ceedd7954b32e34df9e7f4438ff320c`.
-The immutable Cloudflare Preview independently reproduced that 0/0 result at
-`2026-07-16T03:46:16.131Z`.
+The current immutable Preview independently reproduced 0/0 on both the homepage and daily route at
+`2026-07-16T11:37:20.058Z` and `2026-07-16T11:37:22.819Z`.
+
+An exact-SHA Lighthouse run on predecessor `11dc1c3` exposed a real performance regression:
+desktop 0.57 and mobile 0.69 on the daily route. The bottleneck was the render-blocking Google CJK
+font stylesheet and its approximately 1 MiB of downloaded font subsets. Commit `58b155f` removed
+those remote font requests in favor of the existing native Chinese system-font stack. The deployed
+edge result improved to desktop 0.98 and mobile 0.99 with accessibility and best practices still at
+1.00. The predecessor reports remain untracked defect-discovery evidence and are not used as a pass.
 
 ## 404 and route verification
 
@@ -64,28 +71,36 @@ The custom missing route returned HTTP 404 and rendered the localized Astro 404 
 source and artifact hashes above.
 
 The first full verifier run against this Preview reached the end with one transient edge timeout at
-`/search/index.json`. A bounded direct re-probe returned HTTP 200 in 1.328 seconds. The second full
-run then passed cleanly: 594 routes, redirects, headers, metadata, custom 404, and 4,491 parsed
+`/search/index.json`. A bounded direct re-probe returned HTTP 200 in 3.963 seconds. The second full
+run then passed cleanly: 605 routes, redirects, headers, metadata, custom 404, and 4,563 parsed
 external links. External network probing was not requested in that run because the separate bounded
 audit below covers it.
 
 ## External-link audit
 
-The final Phase 4 link-policy candidate remains:
+The current exact Preview link-policy candidate is:
 
-- Source SHA: `d3e909420ffe2804a882e9345f4e519ce923960a`
-- Preview: `https://2fafb80f.ai-bubblebrain-daily-news.pages.dev`
-- Started: `2026-07-15T15:00:57.332Z`
-- Finished: `2026-07-15T15:07:11.103Z`
+- Source SHA: `58b155f4d277fd4cde8856c9be9a57d26000cfc6`
+- Preview: `https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev`
+- Started: `2026-07-16T12:37:04.716Z`
+- Finished: `2026-07-16T12:40:25.222Z`
 - Result: `PASS_WITH_WARNINGS`
-- 4,386 discovered links; 1,393 evaluated directly; 1,321 successes; 0 confirmed dead; 0 policy
-  failures; no Gate violations
-- 2,993 X-origin links covered by bounded, owned waivers expiring 2026-08-15
+- 4,563 discovered links; 1,720 evaluated directly with 100% direct coverage of the unwaived set;
+  1,254 successes; 0 unwaived confirmed dead; 0 policy failures; no Gate violations
+- One known deleted GitHub URL is covered by its exact-URL waiver; 2,842 transient network outcomes
+  are covered by owned, exact-origin, cardinality-capped waivers, for 2,843 total waivers expiring
+  2026-08-15
 - Local raw-report SHA-256:
-  `cbdc12ceae62044253eb4685d7d60ee23cb2dae1098779b71c35e06944c88d6a`
+  `a419b64bb815ffb17d4108ca3604fd3cead98f07ac42af24ea222f441186e94c`
 
-The preceding `1b35163` audit failed and is retained only as defect-discovery evidence. It is not
-used as a passing Gate.
+The first exact-Preview attempt was `INCONCLUSIVE` because four existing origin-waiver caps no
+longer matched the expanded route manifest. Review found no unwaived hard failure and confirmed the
+additional URLs were the same bounded historical source classes. The caps were updated only to the
+exact `58b155f` cardinalities: `http://x.com` 107, `https://x.com` 1,567,
+`https://huggingface.co` 11, and `https://www.youtube.com` 10. Outcomes, owners, and expiry dates
+remain unchanged. The audit then passed within all coverage and failure-ratio budgets. Older failed
+or predecessor audits are retained only as defect-discovery or historical evidence and are not used
+as the current passing Gate.
 
 ## Local artifact hashes
 
@@ -97,13 +112,13 @@ raw browser files remain on the release-owner workstation until rollback handoff
 cleanup approval; production database dumps are excluded from this retention record. Important
 hashes are:
 
-- deployed axe JSON: `d86b52ca5bb58b147b5f8543a0167688b76a0a6b3c7cfd1d902ad536f4dd88a2`
+- deployed axe JSON: `e667696adb82d39d02001914798e5ee784debc5e0443bbee75cde46abb99ee15`
 - local accessibility-fix axe JSON: `f945af7cad405c6ea9cf2391ba45530d9ceedd7954b32e34df9e7f4438ff320c`
-- desktop Lighthouse JSON: `6210a7a7954d9b6d68e6e6ce618d8a1ba255c43825632f7612fdd37a7b942b57`
-- mobile Lighthouse JSON: `d747424dd5e9f71dff0558612333d7158267076d1cb3e497d21dca9cccb92689`
-- desktop screenshot: `dff172e3a6938ce8724d023c87082c9f61ff15924e57ba36d5d9707f2d421e97`
-- mobile screenshot: `affa620047c47e2767f290f3b73c3e09f9a37545d86a56de40b061a162fb9199`
-- no-JavaScript screenshot: `1a08fd8d76981fc062c244901b5d2b521e889ab07469f09ac00ff271d560c1c0`
+- desktop Lighthouse JSON: `6ecac542f77cf132bf0d0b4b8f0929a84b6c19c3f29f8cc6ba8c6356c8c39128`
+- mobile Lighthouse JSON: `7b6e14a1ab04157614920d3898d1f9b6fda4528512f2043f787d3faf215bcf29`
+- desktop screenshot: `b196307db1bcc1ffbcd336a7f9362e351dc14ad11601bf59456fcfb8140b613d`
+- mobile screenshot: `0dd3487b74de037b05a66d9b3730641fb894f4a06c341fcfd90511b3e35634bb`
+- no-JavaScript screenshot: `f41d22b6c0dbfa9d49c6f046a20373239d6d967b0780d36fdaae5ef0cee565b3`
 
 ## Publisher exclusivity
 
@@ -125,6 +140,6 @@ may be performed as a separately reviewed cleanup action after rollback-owner ha
 ## Remaining approval condition
 
 The user must explicitly approve
-`https://546c94c2.ai-bubblebrain-daily-news.pages.dev` at
-`f9448fd699b84fce58272ac4de3f53143d06ce28`. Any later UI-affecting commit invalidates that target
+`https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev` at
+`58b155f4d277fd4cde8856c9be9a57d26000cfc6`. Any later UI-affecting commit invalidates that target
 and requires a new Preview Gate and approval.

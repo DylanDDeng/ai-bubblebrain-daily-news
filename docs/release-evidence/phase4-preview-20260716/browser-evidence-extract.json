@@ -1,36 +1,40 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T03:52:00Z",
+  "recorded_at": "2026-07-16T12:42:00Z",
   "purpose": "non-sensitive tracked extract of local raw browser reports",
   "preview": {
-    "source_sha": "f9448fd699b84fce58272ac4de3f53143d06ce28",
-    "deployment_id": "546c94c2-6131-4d8e-bf18-ab519b9261f4",
-    "origin": "https://546c94c2.ai-bubblebrain-daily-news.pages.dev",
+    "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+    "deployment_id": "e4cd8eea-20b0-494e-a681-e23bc96b5277",
+    "origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
     "daily_route": "/daily/2026/07/2026-07-16/"
   },
   "route_verifier": {
-    "manifest_records": 594,
-    "parsed_external_links": 4491,
+    "manifest_records": 605,
+    "parsed_external_links": 4563,
     "external_network_checks_requested": false,
     "first_full_run": "one transient timeout at /search/index.json",
-    "direct_reprobe": { "status": 200, "seconds": 1.328202 },
+    "direct_reprobe": { "status": 200, "seconds": 3.962507 },
     "second_full_run": "passed"
   },
   "browser": {
     "news_anchors": 157,
-    "desktop": { "width": 1280, "height": 720, "horizontal_overflow_px": 0, "screenshot_sha256": "dff172e3a6938ce8724d023c87082c9f61ff15924e57ba36d5d9707f2d421e97" },
-    "mobile": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "screenshot_sha256": "affa620047c47e2767f290f3b73c3e09f9a37545d86a56de40b061a162fb9199" },
-    "no_javascript": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "hidden_items": 0, "screenshot_sha256": "1a08fd8d76981fc062c244901b5d2b521e889ab07469f09ac00ff271d560c1c0" },
+    "desktop": { "width": 1280, "height": 720, "horizontal_overflow_px": 0, "screenshot_sha256": "b196307db1bcc1ffbcd336a7f9362e351dc14ad11601bf59456fcfb8140b613d" },
+    "mobile": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "screenshot_sha256": "0dd3487b74de037b05a66d9b3730641fb894f4a06c341fcfd90511b3e35634bb" },
+    "no_javascript": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "hidden_items": 0, "screenshot_sha256": "f41d22b6c0dbfa9d49c6f046a20373239d6d967b0780d36fdaae5ef0cee565b3" },
     "keyboard_skip_link": "passed"
   },
   "axe": {
-    "raw_report_sha256": "d86b52ca5bb58b147b5f8543a0167688b76a0a6b3c7cfd1d902ad536f4dd88a2",
+    "raw_report_sha256": "e667696adb82d39d02001914798e5ee784debc5e0443bbee75cde46abb99ee15",
     "engine": "axe-core 4.12.1",
-    "timestamp": "2026-07-16T03:46:16.131Z",
+    "timestamp": "2026-07-16T11:37:20.058Z through 2026-07-16T11:37:22.819Z",
     "violations": 0,
-    "passes": 27,
+    "passes": 46,
     "manual_or_incomplete": [],
     "gate": "passed",
+    "pages": [
+      { "route": "/", "violations": 0, "incomplete": 0, "passes": 19 },
+      { "route": "/daily/2026/07/2026-07-16/", "violations": 0, "incomplete": 0, "passes": 27 }
+    ],
     "local_fix_candidate": {
       "timestamp": "2026-07-16T03:37:46.533Z",
       "violations": 0,
@@ -54,9 +58,9 @@
   "lighthouse": {
     "version": "12.8.2",
     "desktop": {
-      "raw_report_sha256": "6210a7a7954d9b6d68e6e6ce618d8a1ba255c43825632f7612fdd37a7b942b57",
-      "fetch_time": "2026-07-16T03:46:35.867Z",
-      "performance": 1,
+      "raw_report_sha256": "6ecac542f77cf132bf0d0b4b8f0929a84b6c19c3f29f8cc6ba8c6356c8c39128",
+      "fetch_time": "2026-07-16T11:37:16.251Z",
+      "performance": 0.98,
       "accessibility": 1,
       "best_practices": 1,
       "seo": 0.66,
@@ -64,9 +68,9 @@
       "run_warnings": []
     },
     "mobile": {
-      "raw_report_sha256": "d747424dd5e9f71dff0558612333d7158267076d1cb3e497d21dca9cccb92689",
-      "fetch_time": "2026-07-16T03:46:36.282Z",
-      "performance": 0.98,
+      "raw_report_sha256": "7b6e14a1ab04157614920d3898d1f9b6fda4528512f2043f787d3faf215bcf29",
+      "fetch_time": "2026-07-16T11:37:17.030Z",
+      "performance": 0.99,
       "accessibility": 1,
       "best_practices": 1,
       "seo": 0.66,
@@ -75,18 +79,21 @@
     }
   },
   "external_link_audit": {
-    "source_sha": "d3e909420ffe2804a882e9345f4e519ce923960a",
-    "preview_origin": "https://2fafb80f.ai-bubblebrain-daily-news.pages.dev",
-    "raw_report_sha256": "cbdc12ceae62044253eb4685d7d60ee23cb2dae1098779b71c35e06944c88d6a",
-    "started_at": "2026-07-15T15:00:57.332Z",
-    "finished_at": "2026-07-15T15:07:11.103Z",
+    "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+    "preview_origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
+    "raw_report_sha256": "a419b64bb815ffb17d4108ca3604fd3cead98f07ac42af24ea222f441186e94c",
+    "waiver_policy_sha256": "a25e9edd6c906bd6d9d369ca11610a28ca9ef008ba3927c0d5f6640176838ede",
+    "started_at": "2026-07-16T12:37:04.716Z",
+    "finished_at": "2026-07-16T12:40:25.222Z",
     "gate": "PASS_WITH_WARNINGS",
-    "total": 4386,
-    "directly_evaluated": 1393,
-    "success": 1321,
-    "confirmed_dead": 0,
+    "total": 4563,
+    "directly_evaluated": 1720,
+    "direct_coverage_ratio": 1,
+    "success": 1254,
+    "confirmed_dead_total": 1,
+    "confirmed_dead_unwaived": 0,
     "policy_failure": 0,
-    "waived": 2993,
+    "waived": 2843,
     "gate_violations": []
   },
   "phase2_recovered_artifacts": {

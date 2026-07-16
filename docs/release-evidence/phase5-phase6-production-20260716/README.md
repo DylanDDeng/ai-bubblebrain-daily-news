@@ -2,7 +2,7 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 10:55 UTC
+Evidence updated: 2026-07-16 12:42 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -78,6 +78,23 @@ the authenticated route: three attempts returned HTTP 401 before acquiring a lea
 Git candidate. No auth bypass or direct Git write was attempted. This failed recovery does not
 close the production observation Gate.
 
+## Current exact Preview technical closure
+
+PR #18 now has an immutable current Preview at
+`https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev`, source
+`58b155f4d277fd4cde8856c9be9a57d26000cfc6`, artifact SHA-256
+`d29a2e7af2cde49902d48edd70766d9bdcaa142a5ab9cee47111b2e9a06ee307`. All CI checks passed.
+The deployed verifier passed 605 routes and 4,563 parsed external links on its second full run after
+one transient `/search/index.json` timeout and a successful HTTP 200 direct re-probe. Homepage and
+daily-route axe returned 0 violations and 0 incomplete checks. Daily-route Lighthouse returned
+performance 0.98 desktop and 0.99 mobile, with accessibility and best practices at 1.00. Responsive,
+keyboard, and no-JavaScript checks retained all 157 news anchors with no horizontal overflow. The
+exact Preview external-link audit passed with warnings: 4,563 URLs, all 1,720 unwaived URLs directly
+probed, 1,254 successes, no unwaived confirmed dead or policy failures, and 2,843 bounded waivers.
+
+This closes the current Preview's technical checks, but not its approval Gate. Explicit user approval
+must name this exact URL and SHA; any later UI-affecting commit invalidates the target.
+
 ## Requirement-to-evidence audit
 
 This audit separates work that is already complete from the three checks that are intentionally
@@ -92,7 +109,7 @@ unless it exposes a regression in those earlier Gates.
 | Phase 2 | JSON-driven Hugo/Astro timeline, historical fallback, navigation/filtering, responsive and no-JavaScript behavior, renderer parity | `3d0cc78`; 208-route Hugo/Astro comparison; [recovered browser artifact summary](../phase2-browser-20260715/README.md); current exact Preview regression | **GO**; the historical browser command transcript/URL was not recoverable and is explicitly scoped in the summary |
 | Phase 1D | Protected-main promotion, four isolated staging batches, byte consistency and cross-day structured/legacy recovery | PR #1 required checks; [`../phase1d-protection-drill-20260715/README.md`](../phase1d-protection-drill-20260715/README.md); [`../phase1d-staging-20260715/README.md`](../phase1d-staging-20260715/README.md); [historical production checkpoint](../phase1d-production-20260715/README.md); hardened legacy Worker `3538c9be-f09e-4482-b626-9d359ea1b30b` | **NO-GO evidence closure**; later rotation is asserted, but no non-secret revocation record or old-value 401/403 probe is archived |
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO implementation**; production security evidence closure shares the open historical-PAT P1 |
-| Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `f9448fd`; [tracked Preview evidence and artifact manifest](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 594-route deployed verifier | **NO-GO**; exact user Preview approval is not archived |
+| Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `58b155f`; [tracked Preview evidence and artifact manifest](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 605-route deployed verifier; Lighthouse 0.98/0.99 | **NO-GO**; exact user Preview approval is not archived |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **NO-GO evidence closure**; production is operational, but Phase 1D and Phase 4 prerequisite evidence is open |
 | Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **NO-GO**; close both P1 findings and observe all four batches on the next complete production date, then run final verification, review, and handoff |
 
@@ -313,7 +330,7 @@ The following items remain mandatory:
 - [ ] Record final Pages and Worker deployment/version IDs after the complete day.
 - [ ] Archive objective non-secret proof that the historically exposed PAT was revoked, or an old
       value probe returning HTTP 401/403.
-- [x] Complete one clean 594-route run for the latest immutable Astro Preview.
+- [x] Complete one clean 605-route run for the latest immutable Astro Preview.
 - [ ] Record explicit user approval of that exact Preview/SHA.
 - [ ] Complete independent final review with no open P0/P1 finding.
 - [ ] Obtain explicit acceptance of the scoped
@@ -341,7 +358,7 @@ membership, and exact regeneration of the canonical JSON plus both Markdown comp
 artifacts:
 
 ```bash
-REPORT_DATE=2026-07-16 npm run verify:report-day
+REPORT_DATE=2026-07-17 npm run verify:report-day
 ```
 
 Then rebuild from the final `main`, verify its immutable Pages deployment and custom domain with
