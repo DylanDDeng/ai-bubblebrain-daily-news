@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T03:31:00Z",
+  "recorded_at": "2026-07-16T03:52:00Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -49,13 +49,14 @@
     "production_origin": "https://52c8e180.ai-bubblebrain-daily-news.pages.dev",
     "source_sha": "116c23c75fd7d49316586da4bb1549be97629594",
     "latest_evidence_preview": {
-      "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
-      "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
-      "origin": "https://2747fe96.ai-bubblebrain-daily-news.pages.dev",
+      "deployment_id": "546c94c2-6131-4d8e-bf18-ab519b9261f4",
+      "source_sha": "f9448fd699b84fce58272ac4de3f53143d06ce28",
+      "origin": "https://546c94c2.ai-bubblebrain-daily-news.pages.dev",
       "route_manifest_records": 594,
-      "artifact_sha256": "47599a2dcef1475296b38d745146052e391c18f2cbe18dcb3f7673f80fc4113c",
+      "artifact_sha256": "b54077b81f9928837cabdaca1f84d96ee1408b61cecc15196af47f7b103b2482",
       "axe_violations": 0,
-      "complete_route_verifier": "passed-after-three-transient-single-route-timeout-attempts",
+      "axe_incomplete": 0,
+      "complete_route_verifier": "passed-on-second-full-run-after-one-transient-route-timeout-and-successful-direct-reprobe",
       "user_approval": "missing"
     },
     "cutover_baseline": {
@@ -137,7 +138,7 @@
     "route_count": 594,
     "renderer_parity_daily_routes": 208,
     "astro_tests": 46,
-    "root_tests": 258,
+    "root_tests": 264,
     "daily_json_sha256": "65194c5c84720b4b1f90c3806289fc2b88eb0e83900257cee4b98675cb4c9e6f",
     "report_items": 157,
     "search_items": 157,

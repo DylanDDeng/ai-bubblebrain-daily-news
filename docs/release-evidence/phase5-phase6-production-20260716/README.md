@@ -2,7 +2,7 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 03:31 UTC
+Evidence updated: 2026-07-16 03:52 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -40,7 +40,7 @@ unless it exposes a regression in those earlier Gates.
 | Phase 2 | JSON-driven Hugo/Astro timeline, historical fallback, navigation/filtering, responsive and no-JavaScript behavior, renderer parity | `3d0cc78`; 208-route Hugo/Astro comparison; [recovered browser artifact summary](../phase2-browser-20260715/README.md); current exact Preview regression | **GO**; the historical browser command transcript/URL was not recoverable and is explicitly scoped in the summary |
 | Phase 1D | Protected-main promotion, four isolated staging batches, byte consistency and cross-day structured/legacy recovery | PR #1 required checks; [`../phase1d-protection-drill-20260715/README.md`](../phase1d-protection-drill-20260715/README.md); [`../phase1d-staging-20260715/README.md`](../phase1d-staging-20260715/README.md); [historical production checkpoint](../phase1d-production-20260715/README.md); hardened legacy Worker `3538c9be-f09e-4482-b626-9d359ea1b30b` | **NO-GO evidence closure**; later rotation is asserted, but no non-secret revocation record or old-value 401/403 probe is archived |
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO implementation**; production security evidence closure shares the open historical-PAT P1 |
-| Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `d3e9094`; [tracked Preview evidence and artifact manifest](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; current deployed axe 0 violations; clean 594-route deployed verifier | **NO-GO**; exact user Preview approval is not archived |
+| Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `f9448fd`; [tracked Preview evidence and artifact manifest](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 594-route deployed verifier | **NO-GO**; exact user Preview approval is not archived |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **NO-GO evidence closure**; production is operational, but Phase 1D and Phase 4 prerequisite evidence is open |
 | Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, current production and recovery evidence below | **NO-GO**; close both P1 findings, observe afternoon/night/lateNight, then run final verification, review and handoff |
 

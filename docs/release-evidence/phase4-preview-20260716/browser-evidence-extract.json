@@ -1,39 +1,62 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T03:41:00Z",
+  "recorded_at": "2026-07-16T03:52:00Z",
   "purpose": "non-sensitive tracked extract of local raw browser reports",
   "preview": {
-    "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
-    "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
-    "origin": "https://2747fe96.ai-bubblebrain-daily-news.pages.dev",
+    "source_sha": "f9448fd699b84fce58272ac4de3f53143d06ce28",
+    "deployment_id": "546c94c2-6131-4d8e-bf18-ab519b9261f4",
+    "origin": "https://546c94c2.ai-bubblebrain-daily-news.pages.dev",
     "daily_route": "/daily/2026/07/2026-07-16/"
   },
+  "route_verifier": {
+    "manifest_records": 594,
+    "parsed_external_links": 4491,
+    "external_network_checks_requested": false,
+    "first_full_run": "one transient timeout at /search/index.json",
+    "direct_reprobe": { "status": 200, "seconds": 1.328202 },
+    "second_full_run": "passed"
+  },
+  "browser": {
+    "news_anchors": 157,
+    "desktop": { "width": 1280, "height": 720, "horizontal_overflow_px": 0, "screenshot_sha256": "dff172e3a6938ce8724d023c87082c9f61ff15924e57ba36d5d9707f2d421e97" },
+    "mobile": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "screenshot_sha256": "affa620047c47e2767f290f3b73c3e09f9a37545d86a56de40b061a162fb9199" },
+    "no_javascript": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "hidden_items": 0, "screenshot_sha256": "1a08fd8d76981fc062c244901b5d2b521e889ab07469f09ac00ff271d560c1c0" },
+    "keyboard_skip_link": "passed"
+  },
   "axe": {
-    "raw_report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3",
+    "raw_report_sha256": "d86b52ca5bb58b147b5f8543a0167688b76a0a6b3c7cfd1d902ad536f4dd88a2",
     "engine": "axe-core 4.12.1",
-    "timestamp": "2026-07-16T02:53:22.115Z",
+    "timestamp": "2026-07-16T03:46:16.131Z",
     "violations": 0,
     "passes": 27,
-    "manual_or_incomplete": [
-      { "id": "aria-prohibited-attr", "impact": "serious", "nodes": 2 },
-      { "id": "color-contrast", "impact": "serious", "nodes": 1337 }
-    ],
-    "gate": "failed-serious-incomplete",
+    "manual_or_incomplete": [],
+    "gate": "passed",
     "local_fix_candidate": {
       "timestamp": "2026-07-16T03:37:46.533Z",
       "violations": 0,
       "passes": 27,
       "incomplete": 0,
       "raw_report_sha256": "f945af7cad405c6ea9cf2391ba45530d9ceedd7954b32e34df9e7f4438ff320c",
-      "requires_deployed_preview_reproduction": true
+      "requires_deployed_preview_reproduction": false
     }
+  },
+  "previous_failed_preview_axe": {
+    "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
+    "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
+    "raw_report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3",
+    "violations": 0,
+    "manual_or_incomplete": [
+      { "id": "aria-prohibited-attr", "impact": "serious", "nodes": 2 },
+      { "id": "color-contrast", "impact": "serious", "nodes": 1337 }
+    ],
+    "gate": "failed-serious-incomplete"
   },
   "lighthouse": {
     "version": "12.8.2",
     "desktop": {
-      "raw_report_sha256": "b04bd722bb72cee23cec692dce4bc3dc1c9ad6e4d4828ed630ab141d058872aa",
-      "fetch_time": "2026-07-16T02:53:20.714Z",
-      "performance": 0.99,
+      "raw_report_sha256": "6210a7a7954d9b6d68e6e6ce618d8a1ba255c43825632f7612fdd37a7b942b57",
+      "fetch_time": "2026-07-16T03:46:35.867Z",
+      "performance": 1,
       "accessibility": 1,
       "best_practices": 1,
       "seo": 0.66,
@@ -41,9 +64,9 @@
       "run_warnings": []
     },
     "mobile": {
-      "raw_report_sha256": "d877413133bc2325bee814dc87d27ce0eb3c0f8d4ded014f3846f4c628dbe2f7",
-      "fetch_time": "2026-07-16T02:53:20.280Z",
-      "performance": 0.97,
+      "raw_report_sha256": "d747424dd5e9f71dff0558612333d7158267076d1cb3e497d21dca9cccb92689",
+      "fetch_time": "2026-07-16T03:46:36.282Z",
+      "performance": 0.98,
       "accessibility": 1,
       "best_practices": 1,
       "seo": 0.66,

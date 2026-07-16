@@ -1,42 +1,53 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T03:41:00Z",
+  "recorded_at": "2026-07-16T03:52:00Z",
   "decision": "no-go",
-  "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
-  "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
-  "preview_origin": "https://2747fe96.ai-bubblebrain-daily-news.pages.dev",
-  "artifact_sha256": "47599a2dcef1475296b38d745146052e391c18f2cbe18dcb3f7673f80fc4113c",
+  "source_sha": "f9448fd699b84fce58272ac4de3f53143d06ce28",
+  "deployment_id": "546c94c2-6131-4d8e-bf18-ab519b9261f4",
+  "preview_origin": "https://546c94c2.ai-bubblebrain-daily-news.pages.dev",
+  "artifact_sha256": "b54077b81f9928837cabdaca1f84d96ee1408b61cecc15196af47f7b103b2482",
   "browser_evidence_extract": "browser-evidence-extract.json",
   "route_manifest_records": 594,
-  "complete_route_verifier": "passed-after-three-transient-single-route-timeout-attempts",
+  "complete_route_verifier": "passed-on-second-full-run-after-one-transient-route-timeout-and-successful-direct-reprobe",
   "parsed_external_links": 4491,
   "browser": {
     "daily_route": "/daily/2026/07/2026-07-16/",
     "news_anchors": 157,
-    "desktop": { "width": 1280, "height": 720, "horizontal_overflow_px": 0 },
-    "mobile": { "width": 390, "height": 844, "horizontal_overflow_px": 0 },
-    "no_javascript": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "content_visible": true },
+    "desktop": { "width": 1280, "height": 720, "horizontal_overflow_px": 0, "screenshot_sha256": "dff172e3a6938ce8724d023c87082c9f61ff15924e57ba36d5d9707f2d421e97" },
+    "mobile": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "screenshot_sha256": "affa620047c47e2767f290f3b73c3e09f9a37545d86a56de40b061a162fb9199" },
+    "no_javascript": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "content_visible": true, "hidden_items": 0, "screenshot_sha256": "1a08fd8d76981fc062c244901b5d2b521e889ab07469f09ac00ff271d560c1c0" },
     "keyboard_skip_link": "passed"
   },
   "axe": {
     "version": "4.12.1",
-    "gate": "failed-serious-incomplete",
+    "gate": "passed",
     "violations": 0,
     "passes": 27,
-    "incomplete": 2,
-    "report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3",
+    "incomplete": 0,
+    "report_sha256": "d86b52ca5bb58b147b5f8543a0167688b76a0a6b3c7cfd1d902ad536f4dd88a2",
     "local_fix_candidate": {
       "timestamp": "2026-07-16T03:37:46.533Z",
       "violations": 0,
       "passes": 27,
       "incomplete": 0,
       "report_sha256": "f945af7cad405c6ea9cf2391ba45530d9ceedd7954b32e34df9e7f4438ff320c",
-      "requires_deployed_preview_reproduction": true
+      "requires_deployed_preview_reproduction": false
     }
   },
+  "previous_failed_preview_axe": {
+    "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
+    "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
+    "report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3",
+    "violations": 0,
+    "incomplete": [
+      { "id": "aria-prohibited-attr", "impact": "serious", "nodes": 2 },
+      { "id": "color-contrast", "impact": "serious", "nodes": 1337 }
+    ],
+    "gate": "failed-serious-incomplete"
+  },
   "lighthouse": {
-    "desktop": { "performance": 0.99, "accessibility": 1, "best_practices": 1, "seo": 0.66, "report_sha256": "b04bd722bb72cee23cec692dce4bc3dc1c9ad6e4d4828ed630ab141d058872aa" },
-    "mobile": { "performance": 0.97, "accessibility": 1, "best_practices": 1, "seo": 0.66, "report_sha256": "d877413133bc2325bee814dc87d27ce0eb3c0f8d4ded014f3846f4c628dbe2f7" }
+    "desktop": { "performance": 1, "accessibility": 1, "best_practices": 1, "seo": 0.66, "report_sha256": "6210a7a7954d9b6d68e6e6ce618d8a1ba255c43825632f7612fdd37a7b942b57" },
+    "mobile": { "performance": 0.98, "accessibility": 1, "best_practices": 1, "seo": 0.66, "report_sha256": "d747424dd5e9f71dff0558612333d7158267076d1cb3e497d21dca9cccb92689" }
   },
   "external_link_audit": {
     "source_sha": "d3e909420ffe2804a882e9345f4e519ce923960a",
@@ -60,7 +71,6 @@
     ]
   },
   "open_conditions": [
-    "full Gate rerun against the next immutable accessibility-fix Preview",
     "explicit user approval of that exact immutable Preview and source SHA"
   ]
 }
