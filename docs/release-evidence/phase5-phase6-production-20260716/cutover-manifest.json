@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T03:52:00Z",
+  "recorded_at": "2026-07-16T10:55:00Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -13,11 +13,12 @@
       { "id": "night", "scheduled_at": "2026-07-16T15:00:00Z", "verification_checkpoint": "2026-07-16T15:10:00Z" },
       { "id": "lateNight", "scheduled_at": "2026-07-16T19:00:00Z", "verification_checkpoint": "2026-07-16T19:10:00Z" }
     ],
+    "next_complete_observation_candidate": "2026-07-17",
     "phase_5": "no-go-evidence-closure",
     "phase_6": "no-go",
     "open_p0": 0,
     "open_p1": 2,
-    "blocking_reason": "historical PAT revocation proof and exact Preview approval are missing; afternoon, night, and lateNight observation batches are pending"
+    "blocking_reason": "historical PAT revocation proof and current exact Preview approval are missing; the 2026-07-16 afternoon window did not publish, so all four batches of the next complete production date remain required"
   },
   "owners": {
     "release": "Chengsheng Deng",
@@ -32,7 +33,7 @@
     "owner": "DylanDDeng",
     "name": "ai-bubblebrain-daily-news",
     "branch": "main",
-    "release_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+    "release_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
     "cutover_release_sha": "3765b785bcf411fe7630416bde4fb88204898d74",
     "release_pr": 17,
     "structured_morning_canary_pr": 15,
@@ -40,14 +41,24 @@
     "structured_morning_canary_merge_sha": "3bdabac567a52b03c4f7a254913d0d86d7de8c7f",
     "structured_morning_scheduled_pr": 19,
     "structured_morning_scheduled_sha": "e2dbb1fb2f27381a66890f38b0aa734596e2cb26",
-    "structured_morning_scheduled_merge_sha": "116c23c75fd7d49316586da4bb1549be97629594"
+    "structured_morning_scheduled_merge_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+    "cron_remediation_prs": [
+      21,
+      22,
+      23
+    ],
+    "cron_remediation_merge_shas": [
+      "1e567561934e664cad0fa99c49371f83470bb958",
+      "d472a19d3a4cc937cdfb40b4380c18be09da48a2",
+      "803a734a32d5b0492d6a19b18ba291ac5d687b2e"
+    ]
   },
   "pages": {
     "project": "ai-bubblebrain-daily-news",
     "custom_domain": "https://bubblenews.today",
-    "production_deployment_id": "52c8e180-733e-43ec-9973-1e9ceea7ac49",
-    "production_origin": "https://52c8e180.ai-bubblebrain-daily-news.pages.dev",
-    "source_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+    "production_deployment_id": "ff3a2b5f-5141-4bd5-8ec5-d66ef692cdb6",
+    "production_origin": "https://ff3a2b5f.ai-bubblebrain-daily-news.pages.dev",
+    "source_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
     "latest_evidence_preview": {
       "deployment_id": "546c94c2-6131-4d8e-bf18-ab519b9261f4",
       "source_sha": "f9448fd699b84fce58272ac4de3f53143d06ce28",
@@ -83,9 +94,9 @@
   },
   "worker": {
     "name": "ai-daily",
-    "production_version_id": "fbe0c15a-acb3-4298-9c5d-aabfe2f8966a",
+    "production_version_id": "e534753a-04d7-4365-952c-7bd02874b450",
     "production_traffic_percent": 100,
-    "producer_sha": "d3e909420ffe2804a882e9345f4e519ce923960a",
+    "producer_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
     "safe_variables": {
       "EXTERNAL_WRITES_ENABLED": "true",
       "DAILY_PUBLISH_MODE": "structured",
@@ -106,7 +117,27 @@
         "GITHUB_PUBLISH_STRATEGY": "pull_request"
       }
     },
-    "recovery_evidence": "../phase1d-staging-20260715/README.md"
+    "recovery_evidence": "../phase1d-staging-20260715/README.md",
+    "rapid_staging_probe": {
+      "scheduled_at": "2026-07-16T10:30:03Z",
+      "worker_probe_version_id": "93c7c0a0-1006-4ebd-956f-901e81e88a9a",
+      "worker_safe_final_version_id": "02e57c58-15dc-455d-8c41-8f44a39e42ef",
+      "producer_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+      "publication_sha": "4dc72c22f9484d6ae32e7ec28d4fd5b75567bb8d",
+      "branch": "codex/worker-staging-phase6",
+      "pages_deployment_id": "344a3def-2138-44f0-ae42-9167711b6893",
+      "pages_origin": "https://344a3def.ai-bubblebrain-daily-news.pages.dev",
+      "items": 264,
+      "search_items": 264,
+      "html_anchors": 264,
+      "route_records": 605,
+      "daily_json_sha256": "8515c29c1ae4fb4e45be548a4c753620cca93c81fc80eb9ae3a72937583986f0",
+      "markdown_sha256": "733a51267069146acf28b7fbf47168f5b373224f68d974e2a8378b5b5a837c55",
+      "independent_review": "no-p0-p1-p2",
+      "final_cron": "none",
+      "final_write_controls": "fail-closed",
+      "final_leases": 0
+    }
   },
   "supabase": {
     "project_ref": "znurdobjryrhshzkalup",
@@ -135,10 +166,10 @@
     "rollback_strategy": "additive forward-fix; retain legacy favorites.image_id"
   },
   "site_verification": {
-    "route_count": 594,
+    "route_count": 605,
     "renderer_parity_daily_routes": 208,
     "astro_tests": 46,
-    "root_tests": 264,
+    "root_tests": 328,
     "daily_json_sha256": "65194c5c84720b4b1f90c3806289fc2b88eb0e83900257cee4b98675cb4c9e6f",
     "report_items": 157,
     "search_items": 157,
@@ -167,10 +198,15 @@
     },
     {
       "id": "afternoon",
-      "status": "pending",
+      "status": "missed_gate",
       "items": 0,
       "publication_pr": null,
-      "ci": "pending"
+      "ci": "not_run",
+      "scheduled_at": "2026-07-16T07:00:00Z",
+      "success_marker": null,
+      "failure_marker": null,
+      "lease_after_recovery_attempts": false,
+      "manual_recovery_http_status": 401
     },
     {
       "id": "night",

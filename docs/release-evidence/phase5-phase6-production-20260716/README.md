@@ -2,7 +2,7 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 03:52 UTC
+Evidence updated: 2026-07-16 10:55 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -20,11 +20,63 @@ Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pendi
 - Open P0 findings: none confirmed.
 - Open P1 findings: two — objective proof that the historically exposed PAT was revoked, and
   explicit user approval of an exact Astro Preview after all Preview checks pass.
-- Time-gated blockers: only the `morning` batch has completed for the observation date. The scheduled
-  `afternoon`, `night`, and `lateNight` batches must complete and pass their publication, CI, Pages,
-  and artifact-consistency Gates before Phase 6 can be approved.
+- Time-gated blockers: only the `morning` batch completed for the original observation date. The
+  scheduled `afternoon` window passed without a production marker, publication PR, or completed
+  batch. The next complete production observation candidate is therefore `2026-07-17`; all four of
+  its batches must pass publication, CI, Pages, and artifact-consistency Gates before Phase 6 can be
+  approved.
 
 This document must not be interpreted as permission to skip the complete-day observation Gate.
+
+## 2026-07-16 Cron remediation and rapid Staging evidence
+
+The original `afternoon` production window did not publish. The report on protected `main` remains
+at 157 `morning` items with `afternoon`, `night`, and `lateNight` pending. Production KV has no
+afternoon success marker, failure marker, or residual lease, and GitHub has no afternoon candidate
+branch or publication PR. Because the pre-remediation Worker did not persist this failure, absence
+of a marker is not treated as success.
+
+Three fail-closed defects were diagnosed through isolated Staging Cron probes and fixed on protected
+`main`:
+
+- PR #21 / `1e567561934e664cad0fa99c49371f83470bb958`: strict provider failures, bounded retry,
+  cancellable deadlines, and safe scheduled failure markers.
+- PR #22 / `d472a19d3a4cc937cdfb40b4380c18be09da48a2`: 90-second provider deadline for translated
+  sources.
+- PR #23 / `803a734a32d5b0492d6a19b18ba291ac5d687b2e`: stable canonical URL identity for GitHub
+  Trending instead of rank indexes.
+
+All required checks passed on each PR. The final every-minute Staging probe ran at
+`2026-07-16T10:30:03Z` from producer `803a734a32d5b0492d6a19b18ba291ac5d687b2e` and published
+`4dc72c22f9484d6ae32e7ec28d4fd5b75567bb8d` to the isolated
+`codex/worker-staging-phase6` branch. Its confirmed KV marker records `success=true`,
+`mode=structured`, `batch=morning`, `publication_status=published`, and 107 fresh items from 184
+accepted inputs. The resulting report has 264 unique items.
+
+The exact Staging commit passed:
+
+- schema, semantic, identity, and filename validation;
+- byte-for-byte regeneration of both 403,076-byte Markdown artifacts, each with SHA-256
+  `733a51267069146acf28b7fbf47168f5b373224f68d974e2a8378b5b5a837c55`;
+- 328 Worker tests and 46 Astro tests;
+- a 300-page build and 605-record route contract;
+- 264/264 search-item-to-HTML-anchor parity;
+- HTTP 200 for the daily JSON/page, search, topics, and entities on immutable Pages Preview
+  `344a3def-2138-44f0-ae42-9167711b6893`;
+- live JSON parity with SHA-256
+  `8515c29c1ae4fb4e45be548a4c753620cca93c81fc80eb9ae3a72937583986f0`.
+
+Independent review found no P0, P1, or P2 issue in this Staging evidence. The temporary every-minute
+Cron was removed, all three Staging write controls were returned to fail-closed values, and the
+residual lease was deleted. Final Staging safe version:
+`02e57c58-15dc-455d-8c41-8f44a39e42ef`.
+
+The remediated production Worker was deployed from `main@803a734` at 100% as code version
+`e534753a-04d7-4365-952c-7bd02874b450`, preserving structured mode, protected pull-request
+publication, and the four declared Cron triggers. A manual afternoon recovery was not allowed past
+the authenticated route: three attempts returned HTTP 401 before acquiring a lease or creating a
+Git candidate. No auth bypass or direct Git write was attempted. This failed recovery does not
+close the production observation Gate.
 
 ## Requirement-to-evidence audit
 
@@ -42,7 +94,7 @@ unless it exposes a regression in those earlier Gates.
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO implementation**; production security evidence closure shares the open historical-PAT P1 |
 | Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `f9448fd`; [tracked Preview evidence and artifact manifest](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 594-route deployed verifier | **NO-GO**; exact user Preview approval is not archived |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **NO-GO evidence closure**; production is operational, but Phase 1D and Phase 4 prerequisite evidence is open |
-| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, current production and recovery evidence below | **NO-GO**; close both P1 findings, observe afternoon/night/lateNight, then run final verification, review and handoff |
+| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **NO-GO**; close both P1 findings and observe all four batches on the next complete production date, then run final verification, review, and handoff |
 
 The remaining work includes both time-gated batch observation and evidence-gated security/Preview
 closure. PR #18 must remain Draft and cleanup must remain unauthorized.
@@ -55,9 +107,9 @@ the observation day is incomplete.
 
 | Component | Production target | Rollback target |
 | --- | --- | --- |
-| Git | `main@116c23c75fd7d49316586da4bb1549be97629594` | Component-specific targets below |
-| Pages | `52c8e180-733e-43ec-9973-1e9ceea7ac49` | Hugo `b3c338c3-3342-40bf-965d-7e2e5b5545fa` |
-| Worker | `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a` | Hardened legacy `3538c9be-f09e-4482-b626-9d359ea1b30b` |
+| Git | `main@803a734a32d5b0492d6a19b18ba291ac5d687b2e` | Component-specific targets below |
+| Pages | `ff3a2b5f-5141-4bd5-8ec5-d66ef692cdb6` | Hugo `b3c338c3-3342-40bf-965d-7e2e5b5545fa` |
+| Worker | code `e534753a-04d7-4365-952c-7bd02874b450` | Hardened legacy `3538c9be-f09e-4482-b626-9d359ea1b30b` |
 | Supabase | `20260715000100`, `20260715000200` | Additive forward-fix; retain legacy tables and fields |
 
 Production Pages:
@@ -90,7 +142,7 @@ Secret values were neither printed nor archived in this evidence.
 
 ## Pages production verification
 
-The latest immutable production deployment and custom domain both passed `scripts/verify-preview.mjs`
+The post-morning immutable production deployment and custom domain both passed `scripts/verify-preview.mjs`
 against source SHA `116c23c75fd7d49316586da4bb1549be97629594` after scheduled morning PR #19:
 
 - 594 declared routes
@@ -107,6 +159,11 @@ The canonical `2026-07-16` report passed additional semantic smoke checks on bot
 - 157 search-index items with exact canonical keys and hrefs
 - 157 `news-<id>` HTML anchors
 - `/topics/`, `/entities/`, and `/search/`: HTTP 200
+
+After Cron remediation, Cloudflare Pages production advanced to
+`ff3a2b5f-5141-4bd5-8ec5-d66ef692cdb6` from
+`main@803a734a32d5b0492d6a19b18ba291ac5d687b2e`. Final complete-route verification of this
+deployment and the custom domain remains part of the next complete observation-day Gate.
 
 ## Pages rollback and restoration drill
 
@@ -137,11 +194,19 @@ was left on the intended Astro target.
 
 ## Worker rollback and recovery proof
 
-Cloudflare reports the structured Worker version at 100%:
+Cloudflare reported the cutover structured Worker version at 100%:
 
 - Version: `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`
 - Message: `Phase 5 structured boundary 2026-07-16 d3e9094`
 - Created: 2026-07-15 23:44:02 UTC
+
+The remediated Worker code is now deployed at 100%:
+
+- Version: `e534753a-04d7-4365-952c-7bd02874b450`
+- Message: `Phase 6 cron resilience 803a734`
+- Producer SHA: `803a734a32d5b0492d6a19b18ba291ac5d687b2e`
+- Cron: `0 2,7,15,19 * * *`
+- Publication remains structured through protected-main pull requests.
 
 The independent hardened legacy rollback version remains retained:
 
@@ -213,7 +278,7 @@ Asia/Shanghai (`2026-07-16T02:00:00Z` through the late-night verification checkp
 | Batch | Publication PR | Status | Final batch items | CI and Pages |
 | --- | --- | --- | ---: | --- |
 | morning | canary [#15](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/15), scheduled [#19](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/19) | completed | 157 | passed |
-| afternoon | pending | pending | 0 | pending |
+| afternoon | none | missed Gate; no marker/lease/PR | 0 | not run |
 | night | pending | pending | 0 | pending |
 | lateNight | pending | pending | 0 | pending |
 
@@ -238,9 +303,10 @@ timeout was retried successfully.
 
 The following items remain mandatory:
 
-- [ ] Observe and merge the `afternoon` structured publication with all required checks green.
-- [ ] Observe and merge the `night` structured publication with all required checks green.
-- [ ] Observe and merge the `lateNight` structured publication with all required checks green.
+- [x] Diagnose the missed `2026-07-16` afternoon window, validate the fixes with a real isolated
+      Cron, deploy the remediated production Worker, and preserve fail-closed evidence.
+- [ ] Observe all four structured batches for the next complete production date with required checks
+      green. The current candidate is `2026-07-17`.
 - [ ] Confirm all four batch IDs and item lists are complete in the final canonical JSON.
 - [ ] Confirm final JSON and both Markdown artifacts match the structured renderer outputs.
 - [ ] Re-run production search, topic/entity, anchor, custom-domain, Supabase/RLS, and row-count smoke.
@@ -258,8 +324,8 @@ in-progress evidence document.
 
 ## Deferred completion procedure
 
-The scheduled batches are observed rather than manually duplicated. After each of `afternoon`,
-`night`, and `lateNight`:
+The scheduled batches for the next complete production date are observed rather than manually
+duplicated. After each batch:
 
 1. Identify the structured publication PR and record its head SHA, merge SHA, item delta, and batch
    completion timestamp.
