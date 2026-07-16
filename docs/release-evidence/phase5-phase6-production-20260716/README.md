@@ -253,34 +253,13 @@ The scheduled batches are observed rather than manually duplicated. After each o
 4. Stop and invoke the component rollback decision if the item count is abnormal, the three
    artifacts disagree, a required check fails, or production route verification regresses.
 
-After `lateNight`, fetch the final `main` and run this fail-closed byte-consistency check from the
-repository root. It verifies all four batches, one-to-one batch membership, and exact regeneration
-of the canonical JSON plus both Markdown compatibility artifacts:
+After `lateNight`, fetch the final `main` and run the reusable fail-closed byte-consistency check
+from the repository root. It verifies the schema, identities, all four batches, one-to-one batch
+membership, and exact regeneration of the canonical JSON plus both Markdown compatibility
+artifacts:
 
 ```bash
-REPORT_DATE=2026-07-16 node --input-type=module <<'NODE'
-import { readFile } from 'node:fs/promises';
-import { createDailyReportArtifacts } from './src/daily/serialize.js';
-
-const date = process.env.REPORT_DATE;
-const report = JSON.parse(await readFile(`data/daily/${date}.json`, 'utf8'));
-if (report.batches.length !== 4 || report.batches.some(batch => batch.status !== 'completed')) {
-  throw new Error('The observation report does not contain four completed batches');
-}
-const itemIds = report.items.map(item => item.id);
-const batchIds = report.batches.flatMap(batch => batch.item_ids);
-if (new Set(itemIds).size !== itemIds.length
-    || new Set(batchIds).size !== batchIds.length
-    || itemIds.length !== batchIds.length
-    || itemIds.some(id => !batchIds.includes(id))) {
-  throw new Error('Report items and batch memberships are not one-to-one');
-}
-for (const artifact of createDailyReportArtifacts(report).files) {
-  const actual = await readFile(artifact.path, 'utf8');
-  if (actual !== artifact.content) throw new Error(`Artifact bytes differ: ${artifact.path}`);
-}
-console.log(`Verified ${date}: four batches, ${itemIds.length} items, three exact artifacts.`);
-NODE
+REPORT_DATE=2026-07-16 npm run verify:report-day
 ```
 
 Then rebuild from the final `main`, verify its immutable Pages deployment and custom domain with

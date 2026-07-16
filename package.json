@@ -13,6 +13,7 @@
     "test:worker": "npm run check:validator && npm run check:taxonomy && vitest run tests/worker",
     "test:worker:watch": "vitest tests/worker",
     "verify:renderers": "node scripts/verify-daily-renderers.mjs",
+    "verify:report-day": "node scripts/verify-complete-report-day.mjs",
     "verify:site": "node scripts/verify-site.mjs",
     "verify:preview": "node scripts/verify-preview.mjs",
     "worker:check": "wrangler deploy --dry-run --outdir .wrangler-dry-run",
