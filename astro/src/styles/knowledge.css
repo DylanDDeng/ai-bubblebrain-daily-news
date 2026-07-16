@@ -1,20 +1,20 @@
 .knowledge-shell {
-	--kn-paper: oklch(97% 0.012 205);
-	--kn-paper-raised: oklch(99% 0.008 205);
-	--kn-paper-muted: oklch(93% 0.018 205);
-	--kn-ink: oklch(24% 0.025 222);
-	--kn-ink-soft: oklch(43% 0.026 222);
-	--kn-ink-faint: oklch(56% 0.02 222);
-	--kn-rule: oklch(83% 0.025 205);
-	--kn-accent: oklch(48% 0.105 184);
-	--kn-accent-strong: oklch(39% 0.095 184);
-	--kn-focus: oklch(62% 0.15 190);
+	--kn-paper: #f4f1e9;
+	--kn-paper-raised: #faf8f2;
+	--kn-paper-muted: #ebe7dc;
+	--kn-ink: #20201e;
+	--kn-ink-soft: #5c5a55;
+	--kn-ink-faint: #85817a;
+	--kn-rule: #d3cec2;
+	--kn-accent: #254f99;
+	--kn-accent-strong: #1f437f;
+	--kn-focus: #214f9f;
 	width: min(70rem, calc(100% - 2rem));
 	margin: clamp(2rem, 5vw, 4.5rem) auto clamp(4rem, 8vw, 7rem);
 	padding: clamp(1.25rem, 4vw, 3rem);
 	border: 1px solid var(--kn-rule);
 	background: var(--kn-paper);
-	box-shadow: 0 1.5rem 4rem oklch(10% 0.02 222 / 14%);
+	box-shadow: none;
 	color: var(--kn-ink);
 	color-scheme: light;
 	container-type: inline-size;
@@ -417,8 +417,7 @@
 	}
 }
 
-@media (prefers-color-scheme: dark) {
-	.knowledge-shell {
+:root[data-theme='dark'] .knowledge-shell {
 		--kn-paper: oklch(18% 0.018 222);
 		--kn-paper-raised: oklch(22% 0.02 222);
 		--kn-paper-muted: oklch(25% 0.022 222);
@@ -431,7 +430,6 @@
 		--kn-focus: oklch(72% 0.14 190);
 		box-shadow: none;
 		color-scheme: dark;
-	}
 }
 
 @media (prefers-reduced-motion: reduce) {

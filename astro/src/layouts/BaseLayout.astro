@@ -8,6 +8,7 @@ interface Props {
 	alternateHref?: string | null;
 	canonicalPath?: string;
 	noindex?: boolean;
+	section?: string;
 }
 
 const {
@@ -19,33 +20,47 @@ const {
 	noindex = false,
 } = Astro.props;
 
-const homeHref = lang === 'en' ? '/en/' : '/';
-const dailyHref = lang === 'en' ? '/en/daily/' : '/daily/';
-const languageHref = alternateHref ?? (lang === 'en' ? '/' : '/en/');
+const isEnglish = lang === 'en';
+const homeHref = isEnglish ? '/en/' : '/';
+const dailyHref = isEnglish ? '/en/daily/' : '/daily/';
+const languageHref = alternateHref ?? (isEnglish ? '/' : '/en/');
 const canonicalUrl = new URL(canonicalPath, Astro.site);
 const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
-const knowledgeLinks =
-	lang === 'en'
-		? [
-				{ href: '/en/highlights/', label: 'Highlights' },
-				{ href: '/en/my-publish/', label: 'My Posts' },
-			]
-		: [
-				{ href: '/search/', label: '搜索' },
-				{ href: '/topics/', label: '主题' },
-				{ href: '/entities/', label: '实体' },
-				{ href: '/highlights/', label: '精选' },
-				{ href: '/my-publish/', label: '我的文章' },
-			];
+const todayLabel = new Intl.DateTimeFormat(isEnglish ? 'en-CA' : 'zh-CN', {
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit',
+}).format(new Date());
+const navLinks = isEnglish
+	? [
+			{ href: '/en/daily/', label: 'Daily brief' },
+			{ href: '/en/highlights/', label: 'Highlights' },
+			{ href: '/en/curations/', label: 'Curations' },
+			{ href: '/en/model-evals/', label: 'Model reviews' },
+			{ href: '/en/prompts/', label: 'Prompts' },
+			{ href: '/en/my-publish/', label: 'My writing' },
+			{ href: '/en/about/', label: 'About' },
+		]
+	: [
+			{ href: '/daily/', label: '资讯日报' },
+			{ href: '/highlights/', label: '精选阅读' },
+			{ href: '/topics/', label: '主题' },
+			{ href: '/entities/', label: '实体' },
+			{ href: '/model-evals/', label: '模型评测' },
+			{ href: '/prompts/', label: 'Prompt' },
+			{ href: '/my-publish/', label: '我的文章' },
+			{ href: '/about/', label: '关于' },
+		];
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-theme="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
+		<meta name="theme-color" content="#f4f1e9" />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content={title} />
@@ -53,48 +68,114 @@ const knowledgeLinks =
 		<meta property="og:url" content={canonicalUrl} />
 		<meta name="twitter:card" content="summary" />
 		<link rel="icon" href="/favicon.ico" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&display=swap"
+			rel="stylesheet"
+		/>
 		<link rel="canonical" href={canonicalUrl} />
 		<link rel="alternate" hreflang={lang} href={canonicalUrl} />
 		{
 			alternateUrl && (
-				<link rel="alternate" hreflang={lang === 'en' ? 'zh-CN' : 'en'} href={alternateUrl} />
+				<link rel="alternate" hreflang={isEnglish ? 'zh-CN' : 'en'} href={alternateUrl} />
 			)
 		}
 		<link
 			rel="alternate"
 			hreflang="x-default"
-			href={lang === 'en' && alternateUrl ? alternateUrl : canonicalUrl}
+			href={isEnglish && alternateUrl ? alternateUrl : canonicalUrl}
 		/>
 		<title>{title}</title>
+		<script is:inline>
+			(() => {
+				const saved = localStorage.getItem('bb-theme');
+				const theme = saved === 'dark' || saved === 'light' ? saved : 'light';
+				document.documentElement.dataset.theme = theme;
+			})();
+		</script>
 	</head>
 	<body>
-		<a class="skip-link" href="#main-content">{lang === 'en' ? 'Skip to content' : '跳到正文'}</a>
-		<header class="site-header">
-			<a class="site-brand" href={homeHref}>Bubble's Brain</a>
-			<nav aria-label={lang === 'en' ? 'Primary navigation' : '主导航'}>
-				<a
-					href={dailyHref}
-					aria-current={Astro.url.pathname.startsWith(dailyHref) ? 'page' : undefined}
-					>{lang === 'en' ? 'Daily Brief' : '资讯日报'}</a
-				>
-				{
-					knowledgeLinks.map((link) => (
-						<a
-							href={link.href}
-							aria-current={Astro.url.pathname.startsWith(link.href) ? 'page' : undefined}
-						>
-							{link.label}
-						</a>
-					))
-				}
-				<a href={languageHref}>{lang === 'en' ? '中文' : 'EN'}</a>
-			</nav>
-		</header>
-		<main id="main-content" tabindex="-1">
-			<slot />
-		</main>
-		<footer class="site-footer">
-			<p>Bubble's Brain · Personal knowledge archive</p>
-		</footer>
+		<a class="skip-link" href="#main-content">{isEnglish ? 'Skip to content' : '跳到正文'}</a>
+		<div class="site-frame">
+			<aside class="site-rail" aria-label={isEnglish ? 'Site navigation' : '网站导航'}>
+				<div class="rail-topline">
+					<a class="site-brand" href={homeHref}>Bubble's<br />Brain</a>
+					<button class="mobile-nav-toggle" type="button" aria-expanded="false" aria-controls="rail-menu">
+						<i class="ph ph-list" aria-hidden="true"></i>
+						<span class="sr-only">{isEnglish ? 'Open menu' : '打开菜单'}</span>
+					</button>
+				</div>
+				<div class="rail-menu" id="rail-menu">
+					<div class="rail-today">
+						<span>{isEnglish ? 'Today’s index' : '今日索引'}</span>
+						<strong>{todayLabel.replaceAll('/', '-')}</strong>
+					</div>
+					<nav class="rail-nav" aria-label={isEnglish ? 'Primary navigation' : '主导航'}>
+						{
+							navLinks.map((link) => (
+								<a
+									href={link.href}
+									aria-current={Astro.url.pathname.startsWith(link.href) ? 'page' : undefined}
+								>
+									{link.label}
+								</a>
+							))
+						}
+					</nav>
+					<div class="rail-controls">
+						<a href={languageHref}>{isEnglish ? '中文' : 'EN'}</a>
+						<button type="button" data-theme-toggle aria-label={isEnglish ? 'Toggle theme' : '切换主题'}>
+							<i class="ph ph-sun" data-theme-icon aria-hidden="true"></i>
+							<span>{isEnglish ? 'Light / dark' : '浅色 / 深色'}</span>
+						</button>
+					</div>
+					<p class="rail-motto">{isEnglish ? 'Build links, not noise.' : '建立连接，长期主义。'}</p>
+				</div>
+			</aside>
+			<div class="site-canvas">
+				<main id="main-content" tabindex="-1">
+					<slot />
+				</main>
+				<footer class="site-footer">
+					<div>
+						<strong>Bubble's Brain</strong>
+						<p>{isEnglish ? 'A personal AI knowledge archive.' : '一个持续生长的个人 AI 知识档案。'}</p>
+					</div>
+					<nav aria-label={isEnglish ? 'More sections' : '更多栏目'}>
+						<a href={isEnglish ? '/en/ai-tools/' : '/ai-tools/'}>{isEnglish ? 'AI tools' : 'AI 工具'}</a>
+						<a href={isEnglish ? '/en/curations/' : '/curations/'}>{isEnglish ? 'Curations' : '论文精选'}</a>
+						<a href={isEnglish ? '/en/x-trending/' : '/x-trending/'}>X Trending</a>
+						<a href={dailyHref}>RSS</a>
+					</nav>
+				</footer>
+			</div>
+		</div>
+		<script is:inline>
+			(() => {
+				const root = document.documentElement;
+				const toggle = document.querySelector('[data-theme-toggle]');
+				const icon = document.querySelector('[data-theme-icon]');
+				const syncThemeIcon = () => {
+					if (!(icon instanceof HTMLElement)) return;
+					icon.className = root.dataset.theme === 'dark' ? 'ph ph-moon' : 'ph ph-sun';
+				};
+				toggle?.addEventListener('click', () => {
+					const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+					root.dataset.theme = next;
+					localStorage.setItem('bb-theme', next);
+					syncThemeIcon();
+				});
+				syncThemeIcon();
+
+				const menuButton = document.querySelector('.mobile-nav-toggle');
+				const menu = document.querySelector('#rail-menu');
+				menuButton?.addEventListener('click', () => {
+					const expanded = menuButton.getAttribute('aria-expanded') === 'true';
+					menuButton.setAttribute('aria-expanded', String(!expanded));
+					menu?.classList.toggle('is-open', !expanded);
+				});
+			})();
+		</script>
 	</body>
 </html>

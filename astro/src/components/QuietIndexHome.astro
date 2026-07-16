@@ -1,0 +1,143 @@
+---
+import { getCollection } from 'astro:content';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+import { dailyPermalink, filterDailyEntries, parseDailyEntryId } from '../lib/daily';
+import { activeTaxonomyRecords, knowledgeTaxonomy } from '../lib/knowledge';
+import { loadLegacyContent } from '../lib/legacyContent';
+import { loadStructuredDailyReport } from '../lib/structuredDaily';
+import '../styles/quiet-index.css';
+
+interface Props {
+	locale: 'zh-CN' | 'en';
+}
+
+const { locale } = Astro.props;
+const isEnglish = locale === 'en';
+const [dailyEntries, legacyEntries] = await Promise.all([
+	getCollection('daily'),
+	loadLegacyContent(),
+]);
+const entries = filterDailyEntries(dailyEntries, locale);
+const latest = entries[0];
+const latestIdentity = latest ? parseDailyEntryId(latest.id) : null;
+const report = !isEnglish && latestIdentity ? await loadStructuredDailyReport(latestIdentity.dateKey) : null;
+const latestHref = latest ? dailyPermalink(latest.id) : isEnglish ? '/en/daily/' : '/daily/';
+const recentWriting = legacyEntries
+	.filter((entry) => entry.locale === locale && !entry.isIndex && ['my-publish', 'highlights', 'prompts'].includes(entry.section))
+	.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0))
+	.slice(0, 3);
+const staticRoot = resolve(process.cwd(), '../static');
+const [highlights, modelEvals] = await Promise.all([
+	JSON.parse(await readFile(resolve(staticRoot, isEnglish ? 'en/highlights.json' : 'highlights.json'), 'utf8')) as unknown[],
+	JSON.parse(await readFile(resolve(staticRoot, isEnglish ? 'en/model-evals.json' : 'model-evals.json'), 'utf8')) as unknown[],
+]);
+const localLegacy = legacyEntries.filter((entry) => entry.locale === locale && !entry.isIndex);
+const directory = isEnglish
+	? [
+			{ icon: 'ph-newspaper', label: 'Daily brief', detail: 'Dated AI notes and sources', href: '/en/daily/', count: entries.length },
+			{ icon: 'ph-bookmark-simple', label: 'Highlights', detail: 'Material worth revisiting', href: '/en/highlights/', count: highlights.length },
+			{ icon: 'ph-chart-bar', label: 'Model reviews', detail: 'Hands-on model comparisons', href: '/en/model-evals/', count: modelEvals.length },
+			{ icon: 'ph-code', label: 'Prompts', detail: 'Reusable prompts and systems', href: '/en/prompts/', count: localLegacy.filter((entry) => entry.section === 'prompts').length },
+			{ icon: 'ph-file-text', label: 'My writing', detail: 'Personal notes and experiments', href: '/en/my-publish/', count: localLegacy.filter((entry) => entry.section === 'my-publish').length },
+			{ icon: 'ph-info', label: 'About', detail: 'About this archive', href: '/en/about/', count: null },
+		]
+	: [
+			{ icon: 'ph-newspaper', label: '资讯日报', detail: '按时间线回看每日 AI 动态', href: '/daily/', count: entries.length },
+			{ icon: 'ph-bookmark-simple', label: '精选阅读', detail: '保留值得反复阅读的内容', href: '/highlights/', count: highlights.length },
+			{ icon: 'ph-tag', label: '主题', detail: '按主题梳理知识脉络', href: '/topics/', count: activeTaxonomyRecords(knowledgeTaxonomy.topics).length },
+			{ icon: 'ph-user-circle', label: '实体', detail: '人物、公司、产品与模型索引', href: '/entities/', count: activeTaxonomyRecords(knowledgeTaxonomy.entities).length },
+			{ icon: 'ph-chart-bar', label: '模型评测', detail: '模型横向对比与体验记录', href: '/model-evals/', count: modelEvals.length },
+			{ icon: 'ph-code', label: 'Prompt', detail: '可复用的提示词与系统模板', href: '/prompts/', count: localLegacy.filter((entry) => entry.section === 'prompts').length },
+			{ icon: 'ph-file-text', label: '我的文章', detail: '个人观察、实验与输出', href: '/my-publish/', count: localLegacy.filter((entry) => entry.section === 'my-publish').length },
+			{ icon: 'ph-info', label: '关于', detail: '关于本站与索引方法', href: '/about/', count: null },
+		];
+const timelinePreview = report?.items.slice(-3).reverse() ?? [];
+---
+
+<section class="quiet-home">
+	<header class="quiet-home-hero">
+		<div>
+			<h1>{isEnglish ? 'A personal index for a changing AI world.' : '一个人的 AI 知识索引。'}</h1>
+			<p>
+				{isEnglish
+					? 'Collect, connect, and revisit the AI material that matters — without letting the daily stream become noise.'
+					: '每日记录、整理与索引 AI 相关的一切，构建可回看、可引用、可连接的个人知识库。'}
+			</p>
+		</div>
+		<figure class="archive-card-art">
+			<img src="/media/quiet-index-archive-card.png" alt="" width="2072" height="759" />
+			<figcaption>{isEnglish ? 'for future me' : '写给未来的自己'}</figcaption>
+		</figure>
+	</header>
+
+	<section class="today-index" aria-labelledby="today-index-heading">
+		<div class="today-index-date">
+			<p>{isEnglish ? 'TODAY’S INDEX' : '今日索引'}</p>
+			<h2 id="today-index-heading">{latestIdentity?.dateKey ?? '—'}</h2>
+			<strong><span>{report?.items.length ?? 0}</span> {isEnglish ? 'items' : '条资讯'}</strong>
+		</div>
+		<div class="today-index-preview">
+			<p class="today-batch">{isEnglish ? 'Latest brief' : '10:00 更新 · 已发布批次'}</p>
+			{
+				timelinePreview.length > 0 ? (
+					timelinePreview.map((item) => (
+						<article>
+							<span>{item.source.name}</span>
+							<h3>{item.title}</h3>
+							<p>{item.summary}</p>
+						</article>
+					))
+				) : (
+					<p>{isEnglish ? 'Open the latest brief to begin.' : '打开最新日报，查看完整时间线。'}</p>
+				)
+			}
+			<a class="text-link" href={latestHref}>{isEnglish ? 'Read the brief' : '查看全部'} →</a>
+		</div>
+	</section>
+
+	<div class="home-lower-grid">
+		<section class="recent-collection" aria-labelledby="recent-heading">
+			<header class="section-line-heading">
+				<h2 id="recent-heading">{isEnglish ? 'Latest additions' : '最新收录'}</h2>
+				<a href={isEnglish ? '/en/my-publish/' : '/my-publish/'}>{isEnglish ? 'View all' : '查看全部'} →</a>
+			</header>
+			<div class="recent-list">
+				{
+					recentWriting.map((entry) => (
+						<article>
+							<time datetime={entry.date?.toISOString()}>{entry.date?.toISOString().slice(0, 10) ?? '—'}</time>
+							<div>
+								<p>{entry.section.replace('-', ' ')}</p>
+								<h3><a href={entry.route}>{entry.title}</a></h3>
+								{entry.description && <span>{entry.description}</span>}
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="knowledge-directory" aria-labelledby="directory-heading">
+			<header class="section-line-heading">
+				<h2 id="directory-heading">{isEnglish ? 'Browse the archive' : '浏览知识库'}</h2>
+				<a href={isEnglish ? '/en/daily/' : '/search/'}>{isEnglish ? 'Archive' : '搜索'} →</a>
+			</header>
+			<div class="directory-grid">
+				{
+					directory.map((item) => (
+						<a href={item.href}>
+							<i class={`ph ${item.icon}`} aria-hidden="true"></i>
+							<span>
+								<strong>{item.label}</strong>
+								<small>{item.detail}</small>
+							</span>
+							{item.count !== null && <b>{item.count}</b>}
+						</a>
+					))
+				}
+			</div>
+		</section>
+	</div>
+</section>
