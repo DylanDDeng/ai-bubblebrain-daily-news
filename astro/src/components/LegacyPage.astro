@@ -1,0 +1,224 @@
+---
+import { getEntry, render, type CollectionEntry } from 'astro:content';
+import { Buffer } from 'node:buffer';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+	legacyAlternate,
+	legacyChildren,
+	loadLegacyContent,
+	type LegacyContentEntry,
+} from '../lib/legacyContent';
+import ImageCompressTool from './tools/ImageCompressTool.astro';
+import AIInfographicTool from './tools/AIInfographicTool.astro';
+import '../styles/legacy-pages.css';
+import '../styles/ai-infographic.css';
+
+interface Props {
+	record: LegacyContentEntry;
+	markdownId: string | null;
+}
+
+interface HighlightItem {
+	id: string;
+	title: string;
+	description?: string;
+	thumb?: string;
+	tags?: string[];
+	originalUrl?: string;
+	detailUrl?: string;
+}
+
+interface ModelEvalItem {
+	id: string;
+	name: string;
+	company?: string;
+	logo?: string;
+	releaseDate?: string;
+	description?: string;
+	tags?: string[];
+}
+
+interface XTrendingItem {
+	id: string;
+	date?: string;
+	title: string;
+	description?: string;
+	author_name?: string;
+	author_handle?: string;
+	originalUrl?: string;
+	thumb?: string;
+	tags?: string[];
+}
+
+interface AiToolItem {
+	id: string;
+	name: string;
+	company?: string;
+	domain?: string;
+	logo?: string;
+	url?: string;
+}
+
+interface CurationItem {
+	id: string;
+	date?: string;
+	title: string;
+	description?: string;
+	tags?: string[];
+	originalUrl?: string;
+	detailUrl?: string;
+}
+
+type DirectoryKind = 'highlights' | 'model-evals' | 'x-trending' | 'ai-tools' | 'curations';
+
+const { record, markdownId } = Astro.props;
+const isEnglish = record.locale === 'en';
+const allRecords = await loadLegacyContent();
+const alternate = legacyAlternate(record, allRecords);
+const children = legacyChildren(record, allRecords);
+const markdownEntry = markdownId ? await getEntry('legacy', markdownId) : null;
+const rendered = markdownEntry ? await render(markdownEntry as CollectionEntry<'legacy'>) : null;
+const MarkdownContent = rendered?.Content;
+const staticRoot = resolve(process.cwd(), '../static');
+const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
+	about: { zh: '关于', en: 'About', kicker: 'ABOUT THE ARCHIVE' },
+	'ai-tools': { zh: 'AI 工具', en: 'AI Tools', kicker: 'USEFUL INSTRUMENTS' },
+	curations: { zh: '论文精选', en: 'Curations', kicker: 'PAPER DIGESTS' },
+	highlights: { zh: '精选阅读', en: 'Highlights', kicker: 'EDITOR’S SELECTION' },
+	'model-evals': { zh: '模型评测', en: 'Model Reviews', kicker: 'MODEL LEDGER' },
+	'my-publish': { zh: '我的文章', en: 'My Writing', kicker: 'PERSONAL NOTES' },
+	prompts: { zh: 'Prompt 收录', en: 'Prompts', kicker: 'PROMPT LIBRARY' },
+	'x-trending': { zh: 'X 热门内容', en: 'X Trending', kicker: 'SOCIAL SIGNALS' },
+};
+const label = pageLabels[record.section];
+const title = record.title && !record.title.includes('-') ? record.title : isEnglish ? label.en : label.zh;
+const description = record.description || (isEnglish ? `Browse the ${label.en.toLowerCase()} archive.` : `浏览${label.zh}的历史内容。`);
+const yearMatch = record.route.match(/\/model-evals\/(\d{4})\/$/);
+const dataPrefix = isEnglish ? 'en/' : '';
+let directoryItems: Array<HighlightItem | ModelEvalItem | XTrendingItem | AiToolItem | CurationItem> = [];
+let directoryKind: DirectoryKind | null = null;
+if (record.isIndex && ['highlights', 'model-evals', 'x-trending', 'ai-tools', 'curations'].includes(record.section)) {
+	directoryKind = record.section as DirectoryKind;
+	const filename =
+		record.section === 'model-evals' && yearMatch
+			? `model-evals-${yearMatch[1]}.json`
+			: `${record.section}.json`;
+	directoryItems = JSON.parse(await readFile(resolve(staticRoot, dataPrefix, filename), 'utf8'));
+}
+const knownRoutes = new Set(allRecords.map((entry) => entry.route));
+const articleSiblings = allRecords
+	.filter((entry) => entry.section === record.section && entry.locale === record.locale && !entry.isIndex)
+	.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+const articleIndex = articleSiblings.findIndex((entry) => entry.route === record.route);
+const newer = articleIndex > 0 ? articleSiblings[articleIndex - 1] : null;
+const older = articleIndex >= 0 && articleIndex < articleSiblings.length - 1 ? articleSiblings[articleIndex + 1] : null;
+const sectionHref = `${isEnglish ? '/en' : ''}/${record.section}/`;
+const isImageCompressor = record.route.endsWith('/ai-tools/image-compress/');
+const isAIInfographic = record.route.endsWith('/ai-tools/ai-infographics/');
+const isStandaloneHtml = record.sourcePath.endsWith('.html');
+const standaloneSrc = isStandaloneHtml
+	? `data:text/html;base64,${Buffer.from(record.body, 'utf8').toString('base64')}`
+	: null;
+---
+
+<BaseLayout
+	title={`${title} · Bubble's Brain`}
+	description={description}
+	lang={record.locale}
+	alternateHref={alternate?.route}
+	canonicalPath={record.route}
+>
+	{
+		record.isIndex ? (
+			<section class="legacy-shell directory-page" data-directory-page={directoryKind ?? undefined}>
+				<header class="directory-hero">
+					<div>
+						<p class="page-kicker">{label.kicker}</p>
+						<h1>{yearMatch ? `${yearMatch[1]} · ${isEnglish ? label.en : label.zh}` : isEnglish ? label.en : label.zh}</h1>
+						<p>{description}</p>
+					</div>
+					<p class="directory-count"><strong>{directoryItems.length || children.length}</strong><span>{isEnglish ? 'records' : '条记录'}</span></p>
+				</header>
+
+				{MarkdownContent && <div class="directory-intro"><MarkdownContent /></div>}
+
+				{directoryKind && directoryItems.length > 0 ? (
+					<>
+						<div class="directory-toolbar">
+							<label for={`${directoryKind}-search`}>{isEnglish ? 'Search this archive' : '搜索当前归档'}</label>
+							<div>
+								<i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+								<input id={directoryKind === 'highlights' ? 'highlight-search' : directoryKind === 'model-evals' ? 'eval-search' : `${directoryKind}-search`} type="search" data-directory-query placeholder={isEnglish ? 'Title, tag, or description' : '标题、标签或描述'} />
+							</div>
+						</div>
+						<div class={`content-directory content-directory--${directoryKind}`} data-directory-list data-source={`${directoryKind}.json`}>
+							{directoryItems.map((item) => {
+								const tags = 'tags' in item && Array.isArray(item.tags) ? item.tags : [];
+								const name = 'name' in item ? item.name : item.title;
+								const detail = 'description' in item ? item.description : '';
+								const image = 'logo' in item ? item.logo : 'thumb' in item ? item.thumb : undefined;
+								let href = 'url' in item ? item.url : 'detailUrl' in item ? item.detailUrl : 'originalUrl' in item ? item.originalUrl : undefined;
+								if (href?.startsWith('/') && !knownRoutes.has(href)) href = 'originalUrl' in item ? item.originalUrl : undefined;
+								const meta = 'company' in item ? item.company : 'author_name' in item ? item.author_name : 'date' in item ? item.date : '';
+								return (
+									<article data-directory-item data-search={`${name} ${detail ?? ''} ${tags.join(' ')} ${meta ?? ''}`.toLocaleLowerCase(record.locale)}>
+										{image && <img src={image} alt="" loading="lazy" referrerpolicy="no-referrer" />}
+										<div>
+											<p class="directory-item-meta">{meta}</p>
+											<h2>{href ? <a href={href} target={href.startsWith('http') ? '_blank' : undefined} rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}>{name}</a> : name}</h2>
+											{detail && <p>{detail}</p>}
+											{tags.length > 0 && <ul>{tags.map((tag) => <li>{tag}</li>)}</ul>}
+										</div>
+									</article>
+								);
+							})}
+						</div>
+						<p class="directory-empty" data-directory-empty hidden>{isEnglish ? 'No matching records.' : '没有匹配的记录。'}</p>
+					</>
+				) : children.length > 0 ? (
+					<div class="editorial-archive">
+						{children.map((child) => (
+							<article>
+								<time datetime={child.date?.toISOString()}>{child.date?.toISOString().slice(0, 10) ?? 'ARCHIVE'}</time>
+								<div>
+									<h2><a href={child.route}>{child.title}</a></h2>
+									{child.description && <p>{child.description}</p>}
+								</div>
+							</article>
+						))}
+					</div>
+				) : null}
+			</section>
+		) : isImageCompressor ? (
+			<ImageCompressTool locale={record.locale} title={title} description={description} />
+		) : isAIInfographic ? (
+			<AIInfographicTool locale={record.locale} title={title} description={description} />
+		) : (
+			<article class="article-shell legacy-article">
+				<header class="article-header">
+					<p class="page-kicker">{label.kicker}</p>
+					<h1>{title}</h1>
+					{record.date && <p class="article-meta"><time datetime={record.date.toISOString()}>{record.date.toISOString().slice(0, 10)}</time></p>}
+					{description && <p class="article-lede">{description}</p>}
+				</header>
+				{isStandaloneHtml ? (
+					<iframe class="standalone-article" title={title} src={standaloneSrc ?? undefined} sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>
+				) : MarkdownContent ? (
+					<div class="article-content"><MarkdownContent /></div>
+				) : (
+					<p class="article-empty">{isEnglish ? 'This archive entry has no body content yet.' : '这条归档目前还没有正文。'}</p>
+				)}
+				<nav class="article-pagination" aria-label={isEnglish ? 'Article navigation' : '文章导航'}>
+					<div>{newer && <><span>{isEnglish ? 'Newer' : '较新'}</span><a href={newer.route}>← {newer.title}</a></>}</div>
+					<a class="article-back" href={sectionHref}>{isEnglish ? 'Back to archive' : '返回归档'}</a>
+					<div>{older && <><span>{isEnglish ? 'Older' : '较早'}</span><a href={older.route}>{older.title} →</a></>}</div>
+				</nav>
+			</article>
+		)
+	}
+</BaseLayout>
+
+{directoryKind && <script is:inline type="module" src="/js/legacy-directory.js"></script>}

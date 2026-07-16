@@ -48,6 +48,11 @@ export async function triggerMarkerKey(triggerId) {
     return `structured:trigger:${await digest(String(triggerId))}`;
 }
 
+export async function failureMarkerKey(triggerId) {
+    if (!triggerId) return null;
+    return `structured:attempt-failure:${await digest(String(triggerId))}`;
+}
+
 export async function readTriggerMarker(kv, triggerId) {
     const key = await triggerMarkerKey(triggerId);
     return key ? readJson(kv, key) : null;
@@ -55,6 +60,13 @@ export async function readTriggerMarker(kv, triggerId) {
 
 export async function storeTriggerMarker(kv, triggerId, marker) {
     const key = await triggerMarkerKey(triggerId);
+    if (!key) return false;
+    await kv.put(key, JSON.stringify(marker), { expirationTtl: MARKER_TTL_SECONDS });
+    return true;
+}
+
+export async function storeFailureMarker(kv, triggerId, marker) {
+    const key = await failureMarkerKey(triggerId);
     if (!key) return false;
     await kv.put(key, JSON.stringify(marker), { expirationTtl: MARKER_TTL_SECONDS });
     return true;

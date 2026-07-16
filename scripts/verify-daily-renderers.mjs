@@ -52,8 +52,31 @@ function attributeValues(html, attribute) {
 
 function timelineNavHrefs(html) {
   const block =
-    html.match(/<div class="timeline-date-nav"[\s\S]*?<\/div>/)?.[0] || "";
+    html.match(/<nav class="timeline-date-nav"[\s\S]*?<\/nav>/)?.[0] || "";
   return attributeValues(block, "href");
+}
+
+function assertTimelineAccessibilityStructure(html, renderer) {
+  assert.match(
+    html,
+    /<nav\b[^>]*class="[^"]*\btimeline-date-nav\b[^"]*"[^>]*aria-label="[^"]+"[^>]*>/i,
+    `${renderer} timeline date navigation must be a named nav landmark`,
+  );
+  assert.match(
+    html,
+    /<section\b[^>]*class="[^"]*\btimeline-toolbar\b[^"]*"[^>]*aria-label="[^"]+"[^>]*>/i,
+    `${renderer} timeline filters must be a named region`,
+  );
+  assert.match(
+    html,
+    /<span\b[^>]*class="[^"]*\btimeline-rail\b[^"]*"[^>]*aria-hidden="true"[^>]*><\/span>/i,
+    `${renderer} timeline rail must be a hidden decorative element`,
+  );
+  assert.doesNotMatch(
+    html,
+    /<(?:div|span)\b[^>]*class="[^"]*\b(?:timeline-date-nav|timeline-toolbar)\b[^"]*"[^>]*aria-label=/i,
+    `${renderer} must not put accessible names on generic timeline containers`,
+  );
 }
 
 function timelineTimeLabels(html) {
@@ -311,6 +334,8 @@ title: sanitizer fixture
     assert.doesNotMatch(html, /proxy\.example|raw\.example/);
     assert.match(html, /type="module" src="\/js\/daily-timeline\.js"/);
   }
+  assertTimelineAccessibilityStructure(hugoStructured, "Hugo");
+  assertTimelineAccessibilityStructure(astroStructured, "Astro");
   for (const attribute of [
     "data-timeline-batch",
     "data-item-id",
@@ -422,7 +447,40 @@ title: sanitizer fixture
       source,
       `Astro ${asset} differs from shared source`,
     );
+    if (asset === "css/daily-timeline.css") {
+      assert.match(
+        source,
+        /\.daily-timeline \.timeline-rail\s*\{/,
+        "timeline rail styling must target the real decorative element",
+      );
+      assert.doesNotMatch(
+        source,
+        /\.daily-timeline \.timeline-items::before/,
+        "timeline rail must not regress to an inaccessible pseudo-element",
+      );
+      const enterAnimation = source.match(
+        /@keyframes timeline-enter\s*\{([\s\S]*?)\n\}/,
+      )?.[1];
+      assert.ok(enterAnimation, "timeline entry animation is missing");
+      assert.doesNotMatch(
+        enterAnimation,
+        /\bopacity\s*:/,
+        "timeline entry animation must not lower text contrast",
+      );
+    }
   }
+
+  const migrationCss = await readFile(
+    join(astroRoot, "src", "styles", "migration.css"),
+    "utf8",
+  );
+  const bodyRule = migrationCss.match(/body\s*\{([\s\S]*?)\n\}/)?.[1];
+  assert.ok(bodyRule, "Astro migration body rule is missing");
+  assert.doesNotMatch(
+    bodyRule,
+    /gradient\s*\(/,
+    "Astro body background must not lower timeline text contrast",
+  );
 
   console.log(
     `Renderer parity verified across ${dailyRoutes(astroFiles).length} daily routes.`,

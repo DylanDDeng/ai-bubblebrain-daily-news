@@ -600,12 +600,12 @@ for (const entry of legacyManifest.copied) {
 const specializedMarkers = new Map([
   [
     "ai-tools/image-compress/index.html",
-    ["id=imgc-input", "heic2any", "JSZip"],
+    ['id="imgc-input"', "heic2any", "jszip"],
   ],
-  ["model-evals/index.html", ["id=eval-search", "model-evals.json", "<script"]],
+  ["model-evals/index.html", ['id="eval-search"', "model-evals.json", "<script"]],
   [
     "highlights/index.html",
-    ["id=highlight-search", "highlights.json", "<script"],
+    ['id="highlight-search"', "highlights.json", "<script"],
   ],
 ]);
 for (const [path, markers] of specializedMarkers) {
@@ -613,7 +613,7 @@ for (const [path, markers] of specializedMarkers) {
   for (const marker of markers)
     invariant(
       html.includes(marker),
-      `Specialized compatibility behavior is missing ${marker} in ${path}`,
+      `Specialized Astro behavior is missing ${marker} in ${path}`,
     );
 }
 

@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
     acquireAdvisoryLease,
+    failureMarkerKey,
     releaseAdvisoryLease,
+    storeFailureMarker,
     storeTriggerMarker,
     triggerMarkerKey,
 } from '../../src/daily/runState.js';
@@ -37,5 +39,22 @@ describe('structured advisory run state', () => {
         expect(key).not.toContain('scheduled:123');
         await storeTriggerMarker(kv, 'scheduled:123', { commit_sha: 'abc' });
         expect(kv.put.mock.calls[0][2]).toEqual({ expirationTtl: 14 * 24 * 60 * 60 });
+    });
+
+    it('keeps failure records in a namespace separate from success markers', async () => {
+        const kv = fakeKv();
+        const triggerId = 'scheduled:123';
+        const successKey = await triggerMarkerKey(triggerId);
+        const failureKey = await failureMarkerKey(triggerId);
+
+        expect(failureKey).toMatch(/^structured:attempt-failure:[a-f0-9]{64}$/);
+        expect(failureKey).not.toBe(successKey);
+
+        await storeTriggerMarker(kv, triggerId, { success: true, commit_sha: 'abc' });
+        const successBytes = kv.values.get(successKey);
+        await storeFailureMarker(kv, triggerId, { success: false });
+
+        expect(kv.values.get(successKey)).toBe(successBytes);
+        expect(kv.values.get(failureKey)).toBe(JSON.stringify({ success: false }));
     });
 });

@@ -1,0 +1,12 @@
+---
+import LegacyPage from '../../components/LegacyPage.astro';
+import { legacyStaticPaths, type LegacyRouteProps } from '../../lib/legacyRoutes';
+
+export async function getStaticPaths() {
+	return legacyStaticPaths('zh-CN');
+}
+
+const { record, markdownId } = Astro.props as LegacyRouteProps;
+---
+
+<LegacyPage record={record} markdownId={markdownId} />

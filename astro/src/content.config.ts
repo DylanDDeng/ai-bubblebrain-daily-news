@@ -19,4 +19,36 @@ const daily = defineCollection({
 	}),
 });
 
-export const collections = { daily };
+const legacy = defineCollection({
+	loader: glob({
+		base: '../content',
+		pattern: [
+			'about/**/*.md',
+			'ai-tools/**/*.md',
+			'curations/**/*.md',
+			'highlights/**/*.md',
+			'model-evals/**/*.md',
+			'my-publish/**/*.md',
+			'prompts/**/*.md',
+			'x-trending/**/*.md',
+		],
+		generateId: ({ entry }) => entry.replace(/\.md$/, ''),
+	}),
+	schema: z
+		.object({
+			title: z.string().optional(),
+			description: z.string().optional().default(''),
+			date: z.coerce.date().optional(),
+			lastmod: z.coerce.date().optional(),
+			draft: z.boolean().optional().default(false),
+			tags: z.array(z.string()).optional().default([]),
+			aliases: z.array(z.string()).optional().default([]),
+			slug: z.string().optional(),
+			layout: z.string().optional(),
+			model: z.string().optional(),
+			tone: z.string().optional(),
+		})
+		.loose(),
+});
+
+export const collections = { daily, legacy };

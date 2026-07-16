@@ -13,8 +13,8 @@
     {
       "origin": "http://x.com",
       "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
-      "max_urls": 106,
-      "reason": "X blocks the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "max_urls": 107,
+      "reason": "X blocks the pinned release-audit network path; exact 58b155f candidate cardinality is capped pending a different egress probe.",
       "owner": "DylanDDeng",
       "expires_on": "2026-08-15"
     },
@@ -29,8 +29,8 @@
     {
       "origin": "https://huggingface.co",
       "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
-      "max_urls": 9,
-      "reason": "Hugging Face resets the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "max_urls": 11,
+      "reason": "Hugging Face resets the pinned release-audit network path; exact 58b155f candidate cardinality is capped pending a different egress probe.",
       "owner": "DylanDDeng",
       "expires_on": "2026-08-15"
     },
@@ -53,16 +53,16 @@
     {
       "origin": "https://www.youtube.com",
       "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
-      "max_urls": 7,
-      "reason": "YouTube blocks the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "max_urls": 10,
+      "reason": "YouTube blocks the pinned release-audit network path; exact 58b155f candidate cardinality is capped pending a different egress probe.",
       "owner": "DylanDDeng",
       "expires_on": "2026-08-15"
     },
     {
       "origin": "https://x.com",
       "outcomes": ["transport-unknown", "transient-upstream", "circuit-open"],
-      "max_urls": 1491,
-      "reason": "X blocks the pinned release-audit network path; exact current candidate cardinality is capped pending a different egress probe.",
+      "max_urls": 1567,
+      "reason": "X blocks the pinned release-audit network path; exact 58b155f candidate cardinality is capped pending a different egress probe.",
       "owner": "DylanDDeng",
       "expires_on": "2026-08-15"
     }

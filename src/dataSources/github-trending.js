@@ -1,6 +1,7 @@
 // src/dataSources/projects.js
 import { fetchData, getISODate, removeMarkdownCodeBlock, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { callChatAPI } from '../chatapi.js';
+import { normalizeProviderFailure, providerHttpError, providerInvalidShapeError } from '../daily/providerFailure.js';
 
 const GITHUB_TRENDING_URL = 'https://github.com/trending';
 
@@ -83,49 +84,85 @@ function parseGithubTrendingHtml(html) {
     }).filter(Boolean);
 }
 
-async function fetchGitHubTrendingProjects(projectsApiUrl) {
+function isExplicitGithubTrendingEmpty(html) {
+    return /there (?:aren't|are no) any trending repositories/i.test(html);
+}
+
+function hasValidProjectShape(project) {
+    if (!project || typeof project !== 'object') return false;
+    if (typeof project.owner !== 'string' || !project.owner.trim()) return false;
+    if (typeof project.name !== 'string' || !project.name.trim()) return false;
+    try {
+        const url = new URL(project.url);
+        return url.protocol === 'https:' && url.hostname === 'github.com';
+    } catch {
+        return false;
+    }
+}
+
+async function fetchGitHubTrendingProjects(projectsApiUrl, { strict = false, signal } = {}) {
     const since = getTrendingSince(projectsApiUrl);
     const response = await fetch(`${GITHUB_TRENDING_URL}?since=${encodeURIComponent(since)}`, {
         headers: {
             'Accept': 'text/html',
             'User-Agent': 'Mozilla/5.0 CloudFlare-AI-Insight-Daily'
-        }
+        },
+        signal,
     });
 
     if (!response.ok) {
+        if (strict) throw providerHttpError(response.status);
         throw new Error(`GitHub Trending fallback failed: ${response.status} ${response.statusText}`);
     }
 
     const html = await response.text();
-    return parseGithubTrendingHtml(html);
+    const projects = parseGithubTrendingHtml(html);
+    if (strict && projects.length === 0 && !isExplicitGithubTrendingEmpty(html)) {
+        throw providerInvalidShapeError();
+    }
+    return projects;
 }
 
 const ProjectsDataSource = {
-    fetch: async (env) => {
-        console.log(`Fetching projects from: ${env.PROJECTS_API_URL}`);
+    fetch: async (env, _foloCookie, { strict = false, signal } = {}) => {
+        console.log(strict
+            ? 'Fetching projects from configured primary endpoint.'
+            : `Fetching projects from: ${env.PROJECTS_API_URL}`);
         let projects = [];
         let primaryError = null;
 
         if (env.PROJECTS_API_URL) {
             try {
-                projects = await fetchData(env.PROJECTS_API_URL);
+                projects = await fetchData(env.PROJECTS_API_URL, { signal });
             } catch (error) {
                 primaryError = error;
-                console.error("Error fetching projects data:", error.message);
+                if (strict) {
+                    console.error('Configured projects endpoint failed', {
+                        errorType: normalizeProviderFailure(error).code,
+                    });
+                } else {
+                    console.error("Error fetching projects data:", error.message);
+                }
             }
         }
 
         if (!Array.isArray(projects)) {
-            console.error("Projects data is not an array:", projects);
+            if (strict) console.error('Configured projects endpoint returned an invalid shape');
+            else console.error("Projects data is not an array:", projects);
+            projects = [];
+        }
+        if (strict && projects.length > 0 && !projects.every(hasValidProjectShape)) {
+            primaryError = providerInvalidShapeError();
             projects = [];
         }
 
         if (projects.length === 0) {
             try {
                 console.log("Fetching projects from GitHub Trending fallback...");
-                projects = await fetchGitHubTrendingProjects(env.PROJECTS_API_URL);
+                projects = await fetchGitHubTrendingProjects(env.PROJECTS_API_URL, { strict, signal });
                 console.log(`Fetched ${projects.length} projects from GitHub Trending fallback.`);
             } catch (fallbackError) {
+                if (strict) throw normalizeProviderFailure(fallbackError);
                 console.error("Error fetching GitHub Trending fallback:", fallbackError.message);
                 return {
                     error: "Failed to fetch projects data",
@@ -138,6 +175,7 @@ const ProjectsDataSource = {
 
         if (projects.length === 0) {
             console.log("No projects fetched from API.");
+            if (strict) return [];
             return { items: [] };
         }
 
@@ -167,7 +205,7 @@ JSON Array of Chinese Translations:`;
         let translatedTexts = [];
         try {
             console.log(`Requesting translation for ${descriptionsToTranslate.length} project descriptions.`);
-            const chatResponse = await callChatAPI(env, promptText);
+            const chatResponse = await callChatAPI(env, promptText, null, { signal });
             const parsedTranslations = JSON.parse(removeMarkdownCodeBlock(chatResponse)); // Assuming direct JSON array response
 
             if (parsedTranslations && Array.isArray(parsedTranslations) && parsedTranslations.length === descriptionsToTranslate.length) {
@@ -177,7 +215,8 @@ JSON Array of Chinese Translations:`;
                 translatedTexts = descriptionsToTranslate.map(() => null);
             }
         } catch (translationError) {
-            console.error("Failed to translate project descriptions in batch:", translationError.message);
+            if (strict) console.error('Failed to translate project descriptions in batch');
+            else console.error("Failed to translate project descriptions in batch:", translationError.message);
             translatedTexts = descriptionsToTranslate.map(() => null);
         }
 
@@ -189,13 +228,14 @@ JSON Array of Chinese Translations:`;
             };
         });
     },
-    transform: (projectsData, sourceType) => {
+    transform: (projectsData, sourceType, { strict = false } = {}) => {
         const unifiedProjects = [];
         const now = getISODate();
         if (Array.isArray(projectsData)) {
             projectsData.forEach((project, index) => {
                 unifiedProjects.push({
-                    id: index + 1, // Use project.url as ID if available
+                    // Structured runs use the stable canonical URL; legacy keeps its old index ID.
+                    id: strict ? project.url : index + 1,
                     type: sourceType,
                     url: project.url,
                     title: project.name,

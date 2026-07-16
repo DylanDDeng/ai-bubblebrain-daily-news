@@ -1,16 +1,23 @@
 // src/dataSources/aibase.js
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
+import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
 
 const NewsDataSource = {
-    fetch: async (env, foloCookie) => { // Add sourceType
+    fetch: async (env, foloCookie, { strict = false, signal } = {}) => { // Add sourceType
         const feedId = env.AIBASE_FEED_ID;
         const fetchPages = parseInt(env.AIBASE_FETCH_PAGES || '3', 10);
         const allAibaseItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
         const foloDataApi = getFoloDataApi(env);
+        if (strict) {
+            assertProviderPositiveIntegerSetting(env.AIBASE_FETCH_PAGES, '3');
+            assertProviderPositiveIntegerSetting(env.FOLO_FILTER_DAYS, '3');
+            assertProviderUrl(foloDataApi);
+        }
 
         if (!feedId) {
+            if (strict) throw providerConfigurationError();
             console.error('AIBASE_FEED_ID is not set in environment variables.');
             return {
                 version: "https://jsonfeed.org/version/1.1",
@@ -64,13 +71,16 @@ const NewsDataSource = {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
+                    signal,
                 });
 
                 if (!response.ok) {
+                    if (strict) throw providerHttpError(response.status);
                     console.error(`Failed to fetch AI Base data, page ${i + 1}: ${await getFoloErrorMessage(response)}`);
                     break;
                 }
                 const data = await response.json();
+                if (strict) assertFoloPayload(data);
                 if (data && data.data && data.data.length > 0) {
                     const filteredItems = data.data.filter(entry => isDateWithinLastDays(entry.entries.publishedAt, filterDays));
                     allAibaseItems.push(...filteredItems.map(entry => ({
@@ -88,12 +98,13 @@ const NewsDataSource = {
                     break;
                 }
             } catch (error) {
+                if (strict) throw normalizeProviderFailure(error);
                 console.error(`Error fetching AI Base data, page ${i + 1}:`, error);
                 break;
             }
 
             // Random wait time between 0 and 5 seconds to avoid rate limiting
-            await sleep(Math.random() * 5000);
+            await sleep(Math.random() * 5000, { signal });
         }
 
         return {

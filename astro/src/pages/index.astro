@@ -1,27 +1,6 @@
 ---
-import { getCollection } from 'astro:content';
-
+import QuietIndexHome from '../components/QuietIndexHome.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { dailyPermalink, filterDailyEntries } from '../lib/daily';
-
-const latest = filterDailyEntries(await getCollection('daily'), 'zh-CN')[0];
-const latestHref = latest ? dailyPermalink(latest.id) : '/daily/';
-const destinations = [
-	{ href: '/daily/', label: '资讯日报', description: '按时间线回看每日 AI 动态、来源与摘要。' },
-	{ href: '/search/', label: '知识搜索', description: '跨日报检索新闻、主题、公司、产品与模型。' },
-	{
-		href: '/topics/',
-		label: '主题脉络',
-		description: '从 Agent、模型、研究、产品等主题继续阅读。',
-	},
-	{ href: '/entities/', label: '实体索引', description: '按机构、人物、产品与模型聚合相关记录。' },
-	{
-		href: '/highlights/',
-		label: '内容精选',
-		description: '保留值得反复阅读的文章、图片与实践素材。',
-	},
-	{ href: '/my-publish/', label: '我的发布', description: '沉淀个人观察、实验记录与长期输出。' },
-];
 ---
 
 <BaseLayout
@@ -29,25 +8,5 @@ const destinations = [
 	description="把每天的 AI 资讯整理成可以检索、回看和持续连接的个人知识库。"
 	alternateHref="/en/"
 >
-	<section class="page-shell home-shell">
-		<header class="page-heading home-hero">
-			<p class="eyebrow">PERSONAL AI KNOWLEDGE BASE</p>
-			<h1>把每天的 AI 噪音，整理成可回看的知识线索。</h1>
-			<p>这里收录资讯日报、主题脉络、实体索引与个人输出。先记录事实，再逐步建立关联。</p>
-			<div class="home-actions">
-				<a class="primary-action" href={latestHref}>阅读最新日报</a>
-				<a href="/search/">开始搜索</a>
-			</div>
-		</header>
-		<div class="destination-grid">
-			{
-				destinations.map((item) => (
-					<a class="destination-card" href={item.href}>
-						<span>{item.label}</span>
-						<p>{item.description}</p>
-					</a>
-				))
-			}
-		</div>
-	</section>
+	<QuietIndexHome locale="zh-CN" />
 </BaseLayout>

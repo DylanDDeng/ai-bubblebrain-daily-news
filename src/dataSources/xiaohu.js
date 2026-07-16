@@ -1,15 +1,22 @@
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml } from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
+import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
 
 const XiaohuDataSource = {
-    fetch: async (env, foloCookie) => {
+    fetch: async (env, foloCookie, { strict = false, signal } = {}) => {
         const feedId = env.XIAOHU_FEED_ID;
         const fetchPages = parseInt(env.XIAOHU_FETCH_PAGES || '3', 10);
         const allXiaohuItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
         const foloDataApi = getFoloDataApi(env);
+        if (strict) {
+            assertProviderPositiveIntegerSetting(env.XIAOHU_FETCH_PAGES, '3');
+            assertProviderPositiveIntegerSetting(env.FOLO_FILTER_DAYS, '3');
+            assertProviderUrl(foloDataApi);
+        }
 
         if (!feedId) {
+            if (strict) throw providerConfigurationError();
             console.error('XIAOHU_FEED_ID is not set in environment variables.');
             return {
                 version: "https://jsonfeed.org/version/1.1",
@@ -63,13 +70,16 @@ const XiaohuDataSource = {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
+                    signal,
                 });
 
                 if (!response.ok) {
+                    if (strict) throw providerHttpError(response.status);
                     console.error(`Failed to fetch Xiaohu.AI data, page ${i + 1}: ${await getFoloErrorMessage(response)}`);
                     break;
                 }
                 const data = await response.json();
+                if (strict) assertFoloPayload(data);
                 if (data && data.data && data.data.length > 0) {
                     const filteredItems = data.data.filter(entry => isDateWithinLastDays(entry.entries.publishedAt, filterDays));
                     allXiaohuItems.push(...filteredItems.map(entry => ({
@@ -87,12 +97,13 @@ const XiaohuDataSource = {
                     break;
                 }
             } catch (error) {
+                if (strict) throw normalizeProviderFailure(error);
                 console.error(`Error fetching Xiaohu.AI data, page ${i + 1}:`, error);
                 break;
             }
 
             // Random wait time between 0 and 5 seconds to avoid rate limiting
-            await sleep(Math.random() * 5000);
+            await sleep(Math.random() * 5000, { signal });
         }
 
         return {

@@ -48,7 +48,7 @@ const overview = cleanTimelineSummary(report.overview.text);
 			<h1><time datetime={report.date}>{report.date}</time></h1>
 			{overview && <p class="timeline-overview">{overview}</p>}
 		</div>
-		<div class="timeline-date-nav" aria-label={isEnglish ? 'Daily navigation' : '日报日期导航'}>
+		<nav class="timeline-date-nav" aria-label={isEnglish ? 'Daily navigation' : '日报日期导航'}>
 			{
 				newerHref ? (
 					<a href={newerHref}>← {isEnglish ? 'Newer' : '较新'}</a>
@@ -64,10 +64,10 @@ const overview = cleanTimelineSummary(report.overview.text);
 					<span aria-hidden="true">{isEnglish ? 'Older' : '较早'} →</span>
 				)
 			}
-		</div>
+		</nav>
 	</header>
 
-	<div class="timeline-toolbar" aria-label={isEnglish ? 'Timeline filters' : '时间轴筛选'}>
+	<section class="timeline-toolbar" aria-label={isEnglish ? 'Timeline filters' : '时间轴筛选'}>
 		<div
 			class="timeline-filter-group"
 			role="group"
@@ -100,19 +100,21 @@ const overview = cleanTimelineSummary(report.overview.text);
 				<button type="submit">{isEnglish ? 'Search' : '搜索'}</button>
 			</div>
 		</form>
-	</div>
+	</section>
 
 	<div class="timeline-status" aria-live="polite">
 		<span data-result-count>{report.items.length}</span>
 		<span>{isEnglish ? 'items' : '条资讯'}</span>
-		<noscript>
-			· {
+	</div>
+	<noscript>
+		<p class="timeline-status">
+			{
 				isEnglish
 					? 'Filters require JavaScript; all items remain visible.'
 					: '筛选需要 JavaScript；当前已展示全部内容。'
-			}</noscript
-		>
-	</div>
+			}
+		</p>
+	</noscript>
 
 	<div class="timeline-batches">
 		{
@@ -146,6 +148,7 @@ const overview = cleanTimelineSummary(report.overview.text);
 							<span data-batch-count>{items.length}</span>
 						</header>
 						<div class="timeline-items">
+							<span class="timeline-rail" aria-hidden="true"></span>
 							{items.map((item, index) => {
 								const summary = cleanTimelineSummary(item.summary);
 								const sourceName = cleanTimelineSummary(item.source.name) || item.source_type;

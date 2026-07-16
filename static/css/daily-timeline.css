@@ -1,16 +1,16 @@
 .daily-timeline {
-  --dt-paper: oklch(97% 0.012 205);
-  --dt-paper-raised: oklch(99% 0.008 205);
-  --dt-paper-muted: oklch(93% 0.018 205);
-  --dt-ink: oklch(24% 0.025 222);
-  --dt-ink-soft: oklch(43% 0.026 222);
-  --dt-ink-faint: oklch(56% 0.02 222);
-  --dt-rule: oklch(83% 0.025 205);
-  --dt-accent: oklch(48% 0.105 184);
-  --dt-accent-strong: oklch(39% 0.095 184);
-  --dt-focus: oklch(62% 0.15 190);
-  --dt-selected: oklch(91% 0.055 94);
-  --dt-selected-ink: oklch(37% 0.07 78);
+  --dt-paper: #f4f1e9;
+  --dt-paper-raised: #faf8f2;
+  --dt-paper-muted: #ebe7dc;
+  --dt-ink: #20201e;
+  --dt-ink-soft: #5c5a55;
+  --dt-ink-faint: oklch(50% 0.02 222);
+  --dt-rule: #d3cec2;
+  --dt-accent: #254f99;
+  --dt-accent-strong: #1f437f;
+  --dt-focus: #214f9f;
+  --dt-selected: #f3dfda;
+  --dt-selected-ink: #8b332b;
   width: min(70rem, calc(100% - 2rem));
   margin: clamp(2rem, 5vw, 4.5rem) auto clamp(4rem, 8vw, 7rem);
   padding: clamp(1rem, 3vw, 2.5rem);
@@ -22,7 +22,7 @@
     ui-sans-serif, system-ui, sans-serif;
   font-size: 1rem;
   line-height: 1.6;
-  box-shadow: 0 1.5rem 4rem oklch(10% 0.02 222 / 14%);
+  box-shadow: none;
   container-type: inline-size;
 }
 
@@ -239,7 +239,7 @@
 }
 
 .daily-timeline .timeline-batch-header > span {
-  color: var(--dt-ink-faint);
+  color: var(--dt-ink-soft);
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
 }
@@ -248,14 +248,13 @@
   position: relative;
 }
 
-.daily-timeline .timeline-items::before {
+.daily-timeline .timeline-rail {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 4.95rem;
   width: 1px;
   background: var(--dt-rule);
-  content: "";
 }
 
 .daily-timeline .timeline-item {
@@ -439,11 +438,9 @@
 
 @keyframes timeline-enter {
   from {
-    opacity: 0;
     transform: translateY(0.5rem);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
@@ -461,7 +458,7 @@
 }
 
 @container (max-width: 35rem) {
-  .daily-timeline .timeline-items::before {
+  .daily-timeline .timeline-rail {
     left: 0.34rem;
   }
 
@@ -486,14 +483,13 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  .daily-timeline {
+:root[data-theme="dark"] .daily-timeline {
     --dt-paper: oklch(18% 0.016 222);
     --dt-paper-raised: oklch(22% 0.018 222);
     --dt-paper-muted: oklch(25% 0.023 222);
     --dt-ink: oklch(92% 0.012 205);
     --dt-ink-soft: oklch(76% 0.018 205);
-    --dt-ink-faint: oklch(64% 0.018 205);
+    --dt-ink-faint: oklch(70% 0.018 205);
     --dt-rule: oklch(34% 0.025 222);
     --dt-accent: oklch(68% 0.105 184);
     --dt-accent-strong: oklch(76% 0.09 184);
@@ -501,7 +497,6 @@
     --dt-selected: oklch(30% 0.045 82);
     --dt-selected-ink: oklch(87% 0.06 92);
     box-shadow: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
