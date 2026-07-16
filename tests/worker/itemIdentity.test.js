@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { canonicalizeUrl, createIdentity } from '../../src/daily/identity.js';
+import { deduplicateSameDay } from '../../src/daily/dedupe.js';
 import { normalizeSourceItem } from '../../src/daily/normalize.js';
 import { SOURCE_REGISTRY } from '../../src/daily/sourceRegistry.js';
 import { STRUCTURED_SOURCE_ADAPTERS } from '../../src/daily/sourceAdapters.js';
 import { dataSources } from '../../src/dataFetchers.js';
+import GithubTrendingDataSource from '../../src/dataSources/github-trending.js';
 
 describe('source registry and stable identity v1', () => {
     it('freezes unique policies for all 11 registered source adapters', () => {
@@ -78,6 +80,35 @@ describe('source registry and stable identity v1', () => {
         });
         expect(first.strategy).toBe('canonical_url');
         expect(second.id).toBe(first.id);
+    });
+
+    it('does not bridge existing GitHub projects when trending order changes', async () => {
+        const alpha = {
+            owner: 'example', name: 'alpha', url: 'https://github.com/example/alpha',
+            description: 'Alpha',
+        };
+        const beta = {
+            owner: 'example', name: 'beta', url: 'https://github.com/example/beta',
+            description: 'Beta',
+        };
+        const legacy = GithubTrendingDataSource.transform([alpha, beta], 'project');
+        const structured = GithubTrendingDataSource.transform([beta, alpha], 'project', { strict: true });
+        const spoofedLegacy = GithubTrendingDataSource.transform([
+            { ...alpha, structured_source_id: 'upstream-controlled-value' },
+        ], 'project');
+        const normalize = async raw => (await normalizeSourceItem(raw, {
+            provider: 'github_trending',
+            batch: 'morning',
+            runAt: '2026-07-16T10:13:03.000Z',
+        })).item;
+        const existing = await Promise.all(legacy.map(normalize));
+        const incoming = await Promise.all(structured.map(normalize));
+
+        expect(() => deduplicateSameDay(existing, incoming)).not.toThrow();
+        expect(deduplicateSameDay(existing, incoming).items).toHaveLength(2);
+        expect(legacy.map(item => item.id)).toEqual([1, 2]);
+        expect(structured.map(item => item.id)).toEqual([beta.url, alpha.url]);
+        expect(spoofedLegacy[0].id).toBe(1);
     });
 
     it('keeps the same source ID distinct across providers', async () => {
