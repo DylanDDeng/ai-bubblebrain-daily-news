@@ -55,13 +55,13 @@ Worker publication failure does not authorize deleting already merged structured
 
 ## Preconditions for owner acceptance
 
-- [ ] All four 2026-07-16 batches completed through protected publication PRs.
+- [ ] All four 2026-07-17 batches completed through protected publication PRs.
 - [ ] Final canonical JSON and both Markdown artifacts passed the complete report-day verifier.
 - [ ] Final immutable Pages deployment and custom domain passed the complete route and production
       smoke checks.
 - [ ] Final Worker, Pages, Git, and Supabase identifiers and results are archived.
 - [x] Historical PAT revocation has [objective non-secret HTTP 401 evidence](../phase1d-production-20260715/pat-revocation-proof.json).
-- [ ] The exact immutable Astro Preview has explicit user approval.
+- [x] The exact immutable Astro Preview has [explicit user approval](../phase4-preview-20260716/preview-approval.json).
 - [ ] Independent final review is `GO` with no open P0/P1 finding.
 
 Hugo, compatibility reads, legacy database fields, the legacy Worker version, and the Hugo Pages

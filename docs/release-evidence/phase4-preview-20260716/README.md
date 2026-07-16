@@ -1,14 +1,14 @@
 # Phase 4 real Astro Preview evidence
 
-Evidence updated: 2026-07-16 12:42 UTC
+Evidence updated: 2026-07-16 13:26 UTC
 
 Repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
 ## Current decision
 
 The current Preview passes the complete technical Gate, including performance parity, zero axe
-violations, and zero incomplete rules. Phase 4 remains **NO-GO** only because the release record
-does not yet contain explicit user approval for this exact immutable Preview and source SHA.
+violations, and zero incomplete rules. The user explicitly approved this exact immutable Preview
+and source SHA on 2026-07-16. Phase 4 is therefore **GO**.
 
 ## Current immutable Preview
 
@@ -137,9 +137,11 @@ Cloudflare Pages is therefore the only declared and active production publisher.
 Pages repository setting is recorded rather than mutated while the release is `NO-GO`; disabling it
 may be performed as a separately reviewed cleanup action after rollback-owner handoff.
 
-## Remaining approval condition
+## Approval record
 
-The user must explicitly approve
+The user explicitly approved
 `https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev` at
-`58b155f4d277fd4cde8856c9be9a57d26000cfc6`. Any later UI-affecting commit invalidates that target
-and requires a new Preview Gate and approval.
+`58b155f4d277fd4cde8856c9be9a57d26000cfc6` with the statement `我批准`. The non-sensitive,
+machine-readable record is [`preview-approval.json`](preview-approval.json). Later commits on the
+evidence branch are documentation-only and do not change the approved UI artifact. Any later
+UI-affecting commit invalidates this target and requires a new Preview Gate and approval.

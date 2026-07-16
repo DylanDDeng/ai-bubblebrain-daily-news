@@ -2,7 +2,7 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 13:11 UTC
+Evidence updated: 2026-07-16 13:26 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -14,12 +14,11 @@ Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pendi
 
 ## Current decision
 
-- Phase 5 production state remains operational, but its auditable Gate is reopened as **NO-GO**
-  until the prerequisite evidence gaps below are closed.
+- Phase 5 production state remains operational and its auditable Gate is **GO**.
 - Phase 6 observation and cleanup handoff: **NO-GO**.
 - Open P0 findings: none confirmed.
-- Open P1 findings: one — explicit user approval of the exact current Astro Preview after all
-  Preview checks pass. The historical PAT now has objective HTTP 401 revocation evidence.
+- Open P1 findings: none. The exact current Astro Preview is explicitly approved, and the historical
+  PAT has objective HTTP 401 revocation evidence.
 - Time-gated blockers: only the `morning` batch completed for the original observation date. The
   scheduled `afternoon` window passed without a production marker, publication PR, or completed
   batch. The next complete production observation candidate is therefore `2026-07-17`; all four of
@@ -127,8 +126,10 @@ keyboard, and no-JavaScript checks retained all 157 news anchors with no horizon
 exact Preview external-link audit passed with warnings: 4,563 URLs, all 1,720 unwaived URLs directly
 probed, 1,254 successes, no unwaived confirmed dead or policy failures, and 2,843 bounded waivers.
 
-This closes the current Preview's technical checks, but not its approval Gate. Explicit user approval
-must name this exact URL and SHA; any later UI-affecting commit invalidates the target.
+This closes both the current Preview's technical checks and its approval Gate. The user explicitly
+approved this exact URL and SHA with `我批准`; the machine-readable record is
+[`../phase4-preview-20260716/preview-approval.json`](../phase4-preview-20260716/preview-approval.json).
+Any later UI-affecting commit invalidates the target.
 
 ## Requirement-to-evidence audit
 
@@ -144,12 +145,13 @@ unless it exposes a regression in those earlier Gates.
 | Phase 2 | JSON-driven Hugo/Astro timeline, historical fallback, navigation/filtering, responsive and no-JavaScript behavior, renderer parity | `3d0cc78`; 208-route Hugo/Astro comparison; [recovered browser artifact summary](../phase2-browser-20260715/README.md); current exact Preview regression | **GO**; the historical browser command transcript/URL was not recoverable and is explicitly scoped in the summary |
 | Phase 1D | Protected-main promotion, four isolated staging batches, byte consistency and cross-day structured/legacy recovery | PR #1 required checks; [`../phase1d-protection-drill-20260715/README.md`](../phase1d-protection-drill-20260715/README.md); [`../phase1d-staging-20260715/README.md`](../phase1d-staging-20260715/README.md); [historical production checkpoint and PAT HTTP 401 proof](../phase1d-production-20260715/README.md); hardened legacy Worker `3538c9be-f09e-4482-b626-9d359ea1b30b` | **GO** |
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO implementation**; final production smoke repeats after the complete observation day |
-| Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `58b155f`; [tracked Preview evidence and artifact manifest](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 605-route deployed verifier; Lighthouse 0.98/0.99 | **NO-GO**; exact user Preview approval is not archived |
-| Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **NO-GO evidence closure**; production is operational, but Phase 4 approval remains open |
-| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **NO-GO**; close the remaining Preview-approval P1 and observe all four batches on the next complete production date, then run final verification, review, and handoff |
+| Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `58b155f`; [tracked Preview evidence, artifact manifest, and explicit approval](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 605-route deployed verifier; Lighthouse 0.98/0.99 | **GO** |
+| Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **GO** |
+| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **NO-GO**; observe all four batches on the next complete production date, then run final verification, review, and handoff |
 
-The remaining work includes both time-gated batch observation and evidence-gated security/Preview
-closure. PR #18 must remain Draft and cleanup must remain unauthorized.
+The remaining work is the time-gated complete-day observation followed by final production,
+Supabase/RLS, independent-review, and rollback-handoff checks. PR #18 must remain Draft and cleanup
+must remain unauthorized.
 
 ## Cutover manifest
 
@@ -366,7 +368,7 @@ The following items remain mandatory:
 - [x] Archive [objective non-secret proof](../phase1d-production-20260715/pat-revocation-proof.json)
       that the historically exposed PAT now returns HTTP 401.
 - [x] Complete one clean 605-route run for the latest immutable Astro Preview.
-- [ ] Record explicit user approval of that exact Preview/SHA.
+- [x] Record [explicit user approval](../phase4-preview-20260716/preview-approval.json) of that exact Preview/SHA.
 - [ ] Complete independent final review with no open P0/P1 finding.
 - [ ] Obtain explicit acceptance of the scoped
       [`ROLLBACK_HANDOFF.md`](ROLLBACK_HANDOFF.md) before cleanup begins.

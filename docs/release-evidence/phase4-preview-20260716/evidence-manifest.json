@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T12:42:00Z",
-  "decision": "no-go",
+  "recorded_at": "2026-07-16T13:26:33Z",
+  "decision": "go",
   "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
   "deployment_id": "e4cd8eea-20b0-494e-a681-e23bc96b5277",
   "preview_origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
   "artifact_sha256": "d29a2e7af2cde49902d48edd70766d9bdcaa142a5ab9cee47111b2e9a06ee307",
+  "preview_approval": "preview-approval.json",
   "browser_evidence_extract": "browser-evidence-extract.json",
   "route_manifest_records": 605,
   "complete_route_verifier": "passed-on-second-full-run-after-one-transient-route-timeout-and-successful-direct-reprobe",
@@ -77,7 +78,13 @@
       "vera.ns.cloudflare.com"
     ]
   },
-  "open_conditions": [
-    "explicit user approval of that exact immutable Preview and source SHA"
-  ]
+  "user_approval": {
+    "status": "approved",
+    "approved_at": "2026-07-16T13:26:33Z",
+    "approval_text": "我批准",
+    "approval_reference": "Codex task 019f62a1-585d-79d1-9dc5-3c48a6521f26",
+    "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+    "preview_origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev"
+  },
+  "open_conditions": []
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T13:11:00Z",
+  "recorded_at": "2026-07-16T13:26:33Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -14,11 +14,11 @@
       { "id": "lateNight", "scheduled_at": "2026-07-16T19:00:00Z", "verification_checkpoint": "2026-07-16T19:10:00Z" }
     ],
     "next_complete_observation_candidate": "2026-07-17",
-    "phase_5": "no-go-evidence-closure",
+    "phase_5": "go",
     "phase_6": "no-go",
     "open_p0": 0,
-    "open_p1": 1,
-    "blocking_reason": "current exact Preview approval is missing; the 2026-07-16 afternoon window did not publish, so all four batches of the next complete production date remain required"
+    "open_p1": 0,
+    "blocking_reason": "the 2026-07-16 afternoon window did not publish, so all four batches of the next complete production date remain required"
   },
   "owners": {
     "release": "Chengsheng Deng",
@@ -82,7 +82,13 @@
         "waiver_policy_sha256": "a25e9edd6c906bd6d9d369ca11610a28ca9ef008ba3927c0d5f6640176838ede"
       },
       "complete_route_verifier": "passed-on-second-full-run-after-one-transient-route-timeout-and-successful-direct-reprobe",
-      "user_approval": "missing"
+      "user_approval": {
+        "status": "approved",
+        "approved_at": "2026-07-16T13:26:33Z",
+        "approval_text": "我批准",
+        "approval_reference": "Codex task 019f62a1-585d-79d1-9dc5-3c48a6521f26",
+        "evidence": "../phase4-preview-20260716/preview-approval.json"
+      }
     },
     "cutover_baseline": {
       "deployment_id": "b12e9087-78fb-4cf9-b925-897272e4c88c",
@@ -301,8 +307,6 @@
   },
   "open_findings": {
     "p0": [],
-    "p1": [
-      "No explicit user approval is archived for an exact immutable Astro Preview after a clean complete Preview verification"
-    ]
+    "p1": []
   }
 }
