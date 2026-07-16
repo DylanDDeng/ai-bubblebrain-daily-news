@@ -3,7 +3,10 @@ import {
     AtomicGitConflictError,
     AtomicGitUncertainError,
 } from '../../src/daily/gitAtomic.js';
-import { runStructuredDailyWorkflow } from '../../src/daily/structuredWorkflow.js';
+import {
+    runStructuredDailyWorkflow,
+    StructuredSourceFetchError,
+} from '../../src/daily/structuredWorkflow.js';
 
 const sha = character => character.repeat(40);
 const runInput = {
@@ -85,13 +88,48 @@ describe('structured publication workflow', () => {
         const deps = dependencies({
             fetchData: vi.fn(async () => ({
                 structuredItems: [],
-                errors: [{ provider: 'broken' }],
+                errors: [{
+                    provider: 'broken',
+                    content_type: 'news',
+                    stage: 'fetch',
+                    error_type: 'network',
+                    attempts: 2,
+                }],
             })),
         });
-        await expect(runStructuredDailyWorkflow(env, runInput, deps)).rejects.toThrow('source fetch failed');
+        const run = runStructuredDailyWorkflow(env, runInput, deps);
+        await expect(run).rejects.toMatchObject({
+            name: 'StructuredSourceFetchError',
+            sourceErrors: [{
+                provider: 'broken',
+                content_type: 'news',
+                stage: 'fetch',
+                error_type: 'network',
+                attempts: 2,
+            }],
+        });
+        await expect(run).rejects.toBeInstanceOf(StructuredSourceFetchError);
         expect(deps.resolveSnapshot).not.toHaveBeenCalled();
         expect(deps.commit).not.toHaveBeenCalled();
         expect(deps.releaseLease).toHaveBeenCalledOnce();
+    });
+
+    it('never treats a prior failure marker as a confirmed publication', async () => {
+        const deps = dependencies({
+            readMarker: vi.fn(async () => ({
+                success: false,
+                status: 'failed',
+                error_type: 'StructuredSourceFetchError',
+            })),
+        });
+
+        await expect(runStructuredDailyWorkflow(env, {
+            ...runInput,
+            triggerId: 'scheduled:failed',
+        }, deps)).resolves.toMatchObject({ success: true, commit_sha: sha('e') });
+
+        expect(deps.fetchData).toHaveBeenCalledOnce();
+        expect(deps.commit).toHaveBeenCalledOnce();
     });
 
     it('returns no-op only when all three artifacts match the same snapshot and head is unchanged', async () => {

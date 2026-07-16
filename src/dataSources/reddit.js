@@ -2,16 +2,23 @@ import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateT
 import { callChatAPI } from '../chatapi.js';
 import { removeMarkdownCodeBlock } from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
+import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
 
 const RedditDataSource = {
-    async fetch(env, foloCookie) {
+    async fetch(env, foloCookie, { strict = false, signal } = {}) {
         const listId = env.REDDIT_LIST_ID;
         const fetchPages = parseInt(env.REDDIT_FETCH_PAGES || '3', 10);
         const allRedditItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
         const foloDataApi = getFoloDataApi(env);
+        if (strict) {
+            assertProviderPositiveIntegerSetting(env.REDDIT_FETCH_PAGES, '3');
+            assertProviderPositiveIntegerSetting(env.FOLO_FILTER_DAYS, '3');
+            assertProviderUrl(foloDataApi);
+        }
 
         if (!listId) {
+            if (strict) throw providerConfigurationError();
             console.error('REDDIT_LIST_ID is not set in environment variables.');
             return {
                 version: "https://jsonfeed.org/version/1.1",
@@ -64,13 +71,16 @@ const RedditDataSource = {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
+                    signal,
                 });
 
                 if (!response.ok) {
+                    if (strict) throw providerHttpError(response.status);
                     console.error(`Failed to fetch Reddit data, page ${i + 1}: ${await getFoloErrorMessage(response)}`);
                     break;
                 }
                 const data = await response.json();
+                if (strict) assertFoloPayload(data, { requireFeeds: true });
                 if (data && data.data && data.data.length > 0) {
                     const filteredItems = data.data.filter(entry => isDateWithinLastDays(entry.entries.publishedAt, filterDays));
                     allRedditItems.push(...filteredItems.map(entry => ({
@@ -88,11 +98,12 @@ const RedditDataSource = {
                     break;
                 }
             } catch (error) {
+                if (strict) throw normalizeProviderFailure(error);
                 console.error(`Error fetching Reddit data, page ${i + 1}:`, error);
                 break;
             }
 
-            await sleep(Math.random() * 5000);
+            await sleep(Math.random() * 5000, { signal });
         }
 
         const redditData = {
@@ -141,7 +152,7 @@ Respond ONLY with the JSON array.`;
         let translatedItemsMap = new Map();
         try {
             console.log(`Requesting translation for ${itemsToTranslate.length} reddit titles for today.`);
-            const chatResponse = await callChatAPI(env, promptText);
+            const chatResponse = await callChatAPI(env, promptText, null, { signal });
             const parsedTranslations = JSON.parse(removeMarkdownCodeBlock(chatResponse));
 
             if (parsedTranslations) {
@@ -153,7 +164,8 @@ Respond ONLY with the JSON array.`;
                 });
             }
         } catch (translationError) {
-            console.error("Failed to translate reddit titles in batch:", translationError.message);
+            if (strict) console.error('Failed to translate reddit titles in batch');
+            else console.error("Failed to translate reddit titles in batch:", translationError.message);
         }
 
         redditData.items = redditData.items.map((originalItem, index) => {

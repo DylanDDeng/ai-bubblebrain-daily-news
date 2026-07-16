@@ -1,16 +1,23 @@
 // src/dataSources/openai-newsroom.js
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
+import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
 
 const NewsDataSource = {
-    fetch: async (env, foloCookie) => {
+    fetch: async (env, foloCookie, { strict = false, signal } = {}) => {
         const feedId = env.OPENAI_NEWSROOM_FEED_ID;
         const fetchPages = parseInt(env.OPENAI_NEWSROOM_FETCH_PAGES || '3', 10);
         const allItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
         const foloDataApi = getFoloDataApi(env);
+        if (strict) {
+            assertProviderPositiveIntegerSetting(env.OPENAI_NEWSROOM_FETCH_PAGES, '2');
+            assertProviderPositiveIntegerSetting(env.FOLO_FILTER_DAYS, '3');
+            assertProviderUrl(foloDataApi);
+        }
 
         if (!feedId) {
+            if (strict) throw providerConfigurationError();
             console.error('OPENAI_NEWSROOM_FEED_ID is not set in environment variables.');
             return {
                 version: "https://jsonfeed.org/version/1.1",
@@ -63,13 +70,16 @@ const NewsDataSource = {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
+                    signal,
                 });
 
                 if (!response.ok) {
+                    if (strict) throw providerHttpError(response.status);
                     console.error(`Failed to fetch OpenAI NewsRoom data, page ${i + 1}: ${await getFoloErrorMessage(response)}`);
                     break;
                 }
                 const data = await response.json();
+                if (strict) assertFoloPayload(data);
                 if (data && data.data && data.data.length > 0) {
                     const filteredItems = data.data.filter(entry => isDateWithinLastDays(entry.entries.publishedAt, filterDays));
                     allItems.push(...filteredItems.map(entry => ({
@@ -87,11 +97,12 @@ const NewsDataSource = {
                     break;
                 }
             } catch (error) {
+                if (strict) throw normalizeProviderFailure(error);
                 console.error(`Error fetching OpenAI NewsRoom data, page ${i + 1}:`, error);
                 break;
             }
 
-            await sleep(Math.random() * 5000);
+            await sleep(Math.random() * 5000, { signal });
         }
 
         return {

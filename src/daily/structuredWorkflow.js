@@ -30,6 +30,20 @@ export class StructuredRunLockedError extends Error {
     }
 }
 
+export class StructuredSourceFetchError extends Error {
+    constructor(sourceErrors) {
+        super(`Structured source fetch failed for ${sourceErrors.length} provider(s)`);
+        this.name = 'StructuredSourceFetchError';
+        this.sourceErrors = sourceErrors.map(error => ({
+            provider: error.provider,
+            content_type: error.content_type,
+            stage: error.stage || 'fetch',
+            error_type: error.error_type || 'Error',
+            attempts: Number.isInteger(error.attempts) ? error.attempts : 1,
+        }));
+    }
+}
+
 function parseReport(text, path) {
     if (text === null) return null;
     try {
@@ -211,7 +225,7 @@ export async function runStructuredDailyWorkflow(env, {
         const foloCookie = await deps.getFoloCookie(env);
         const fetched = await deps.fetchData(env, foloCookie);
         if (fetched.errors.length > 0) {
-            throw new Error(`Structured source fetch failed for ${fetched.errors.length} provider(s)`);
+            throw new StructuredSourceFetchError(fetched.errors);
         }
 
         for (let attempt = 1; attempt <= MAX_PUBLICATION_ATTEMPTS; attempt += 1) {
