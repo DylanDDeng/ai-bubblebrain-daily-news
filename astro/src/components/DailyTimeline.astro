@@ -105,14 +105,16 @@ const overview = cleanTimelineSummary(report.overview.text);
 	<div class="timeline-status" aria-live="polite">
 		<span data-result-count>{report.items.length}</span>
 		<span>{isEnglish ? 'items' : '条资讯'}</span>
-		<noscript>
-			· {
+	</div>
+	<noscript>
+		<p class="timeline-status">
+			{
 				isEnglish
 					? 'Filters require JavaScript; all items remain visible.'
 					: '筛选需要 JavaScript；当前已展示全部内容。'
-			}</noscript
-		>
-	</div>
+			}
+		</p>
+	</noscript>
 
 	<div class="timeline-batches">
 		{

@@ -17,7 +17,118 @@ describe('worker regression guards', () => {
             triggerId: `scheduled:${Date.UTC(2026, 6, 14)}`,
             runAt: '2026-07-14T00:00:00.000Z',
         });
-        expect(waitUntil).toHaveBeenCalledWith(workflowPromise);
+        expect(waitUntil).toHaveBeenCalledOnce();
+        await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({ success: true });
+    });
+
+    it('persists sanitized scheduled failures without converting them to success', async () => {
+        const error = Object.assign(new Error('secret upstream detail'), {
+            name: 'StructuredSourceFetchError',
+            sourceErrors: [{
+                provider: 'aibase',
+                content_type: 'news',
+                stage: 'fetch',
+                error_type: 'network',
+                attempts: 2,
+            }],
+        });
+        const scheduledWorkflow = vi.fn(() => { throw error; });
+        const waitUntil = vi.fn();
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        const DATA_KV = {
+            put: vi.fn(async () => undefined),
+        };
+        const worker = createWorker({ scheduledWorkflow });
+
+        await worker.scheduled(
+            { scheduledTime: Date.UTC(2026, 6, 14) },
+            { EXTERNAL_WRITES_ENABLED: 'true', DATA_KV },
+            { waitUntil },
+        );
+
+        expect(waitUntil).toHaveBeenCalledOnce();
+        await expect(waitUntil.mock.calls[0][0]).rejects.toBe(error);
+        expect(DATA_KV.put).toHaveBeenCalledOnce();
+        const [markerKey, rawMarker, options] = DATA_KV.put.mock.calls[0];
+        const marker = JSON.parse(rawMarker);
+        expect(marker).toEqual({
+            success: false,
+            status: 'failed',
+            trigger_type: 'scheduled',
+            run_at: '2026-07-14T00:00:00.000Z',
+            error_type: 'structured_source_fetch_failed',
+            source_errors: [{
+                provider: 'aibase',
+                content_type: 'news',
+                stage: 'fetch',
+                error_type: 'network',
+                attempts: 2,
+            }],
+        });
+        expect(markerKey).toMatch(/^structured:attempt-failure:[a-f0-9]{64}$/);
+        expect(options).toEqual({ expirationTtl: 14 * 24 * 60 * 60 });
+        expect(rawMarker).not.toContain('secret upstream detail');
+        expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('secret upstream detail');
+    });
+
+    it('preserves the original scheduled failure when marker persistence fails', async () => {
+        const error = new RangeError('workflow failed');
+        const scheduledWorkflow = vi.fn(async () => { throw error; });
+        const waitUntil = vi.fn();
+        const worker = createWorker({ scheduledWorkflow });
+
+        await worker.scheduled(
+            { scheduledTime: Date.UTC(2026, 6, 14) },
+            {
+                EXTERNAL_WRITES_ENABLED: 'true',
+                DATA_KV: { put: vi.fn(async () => { throw new Error('KV failed'); }) },
+            },
+            { waitUntil },
+        );
+
+        await expect(waitUntil.mock.calls[0][0]).rejects.toBe(error);
+    });
+
+    it('maps arbitrary failure metadata to closed values before logging or persistence', async () => {
+        const secret = 'secret-cookie-and-token';
+        const error = Object.assign(new Error(secret), {
+            name: secret,
+            cause: new Error(secret),
+            sourceErrors: [{
+                provider: secret,
+                content_type: secret,
+                stage: secret,
+                error_type: secret,
+                attempts: 999,
+            }],
+        });
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        const waitUntil = vi.fn();
+        const DATA_KV = { put: vi.fn(async () => undefined) };
+        const worker = createWorker({
+            scheduledWorkflow: vi.fn(async () => { throw error; }),
+        });
+
+        await worker.scheduled(
+            { scheduledTime: Date.UTC(2026, 6, 14) },
+            { EXTERNAL_WRITES_ENABLED: 'true', DATA_KV },
+            { waitUntil },
+        );
+        await expect(waitUntil.mock.calls[0][0]).rejects.toBe(error);
+
+        const marker = JSON.parse(DATA_KV.put.mock.calls[0][1]);
+        expect(marker).toMatchObject({
+            error_type: 'scheduled_workflow_failed',
+            source_errors: [{
+                provider: 'unknown',
+                content_type: 'unknown',
+                stage: 'unknown',
+                error_type: 'provider_failure',
+                attempts: 1,
+            }],
+        });
+        expect(JSON.stringify(marker)).not.toContain(secret);
+        expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain(secret);
     });
 
     it('never invokes scheduled workflows when external writes are not explicitly enabled', async () => {

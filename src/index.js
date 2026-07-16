@@ -12,6 +12,26 @@ import { handleIncrementalDailyWorkflow, runIncrementalDailyWorkflow } from './h
 import { debugFoloCookie, storeFoloCookieToKV } from './folo.js';
 import { handleAdminRoute, isAdminRoute } from './routes/adminRoutes.js';
 import { logMissingConfig } from './logging.js';
+import { storeFailureMarker } from './daily/runState.js';
+import { SOURCE_REGISTRY } from './daily/sourceRegistry.js';
+
+const SAFE_PROVIDER_NAMES = new Set(Object.keys(SOURCE_REGISTRY));
+const SAFE_CONTENT_TYPES = new Set(['news', 'project', 'paper', 'socialMedia']);
+const SAFE_FAILURE_STAGES = new Set(['fetch', 'transform']);
+const SAFE_PROVIDER_ERROR_CODES = new Set([
+    'missing_config',
+    'invalid_config',
+    'network',
+    'timeout',
+    'http_408',
+    'http_429',
+    'http_5xx',
+    'http_4xx',
+    'invalid_json',
+    'invalid_shape',
+    'provider_failure',
+    'transform_error',
+]);
 
 function jsonResponse(value, init = {}) {
     const headers = new Headers(init.headers);
@@ -82,6 +102,51 @@ function appendSessionCookie(response, cookie) {
         statusText: response.statusText,
         headers,
     });
+}
+
+function scheduledFailureMarker(error, runAt) {
+    const sourceErrors = Array.isArray(error?.sourceErrors)
+        ? error.sourceErrors.slice(0, 16).map(sourceError => ({
+            provider: SAFE_PROVIDER_NAMES.has(sourceError?.provider)
+                ? sourceError.provider
+                : 'unknown',
+            content_type: SAFE_CONTENT_TYPES.has(sourceError?.content_type)
+                ? sourceError.content_type
+                : 'unknown',
+            stage: SAFE_FAILURE_STAGES.has(sourceError?.stage)
+                ? sourceError.stage
+                : 'unknown',
+            error_type: SAFE_PROVIDER_ERROR_CODES.has(sourceError?.error_type)
+                ? sourceError.error_type
+                : 'provider_failure',
+            attempts: Number.isInteger(sourceError?.attempts)
+                && sourceError.attempts >= 1
+                && sourceError.attempts <= 3
+                ? sourceError.attempts
+                : 1,
+        }))
+        : [];
+    return {
+        success: false,
+        status: 'failed',
+        trigger_type: 'scheduled',
+        run_at: runAt,
+        error_type: error?.name === 'StructuredSourceFetchError'
+            ? 'structured_source_fetch_failed'
+            : 'scheduled_workflow_failed',
+        ...(sourceErrors.length > 0 ? { source_errors: sourceErrors } : {}),
+    };
+}
+
+async function recordScheduledFailure(env, triggerId, marker) {
+    if (!env.DATA_KV || typeof env.DATA_KV.put !== 'function') return;
+    try {
+        await storeFailureMarker(env.DATA_KV, triggerId, marker);
+    } catch (markerError) {
+        console.warn('[Scheduled] failure marker write failed', {
+            errorType: markerError?.name || 'Error',
+        });
+    }
 }
 
 export function createWorker({
@@ -168,10 +233,28 @@ export function createWorker({
                 console.warn('[Scheduled] external writes are disabled; workflow skipped');
                 return;
             }
-            ctx.waitUntil(scheduledWorkflow(env, {
-                triggerId: `scheduled:${event.scheduledTime}`,
-                runAt: new Date(event.scheduledTime).toISOString(),
-            }));
+            const triggerId = `scheduled:${event.scheduledTime}`;
+            const runAt = new Date(event.scheduledTime).toISOString();
+            const workflow = Promise.resolve()
+                .then(() => scheduledWorkflow(env, { triggerId, runAt }))
+                .catch(async error => {
+                    const marker = scheduledFailureMarker(error, runAt);
+                    console.error('[Scheduled] workflow failed', {
+                        errorType: marker.error_type,
+                        sourceErrors: Array.isArray(marker.source_errors)
+                            ? marker.source_errors.map(sourceError => ({
+                                provider: sourceError.provider,
+                                contentType: sourceError.content_type,
+                                stage: sourceError.stage,
+                                errorType: sourceError.error_type,
+                                attempts: sourceError.attempts,
+                            }))
+                            : [],
+                    });
+                    await recordScheduledFailure(env, triggerId, marker);
+                    throw error;
+                });
+            ctx.waitUntil(workflow);
         },
     };
 }

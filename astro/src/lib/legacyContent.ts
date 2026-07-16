@@ -28,6 +28,9 @@ export interface LegacyContentEntry {
 	draft: boolean;
 	aliases: string[];
 	isIndex: boolean;
+	sourcePath: string;
+	body: string;
+	frontmatter: Record<string, unknown>;
 }
 
 const repoRoot = resolve(process.cwd(), '..');
@@ -124,6 +127,9 @@ export async function loadLegacyContent(): Promise<LegacyContentEntry[]> {
 				draft: frontmatter.draft === true,
 				aliases: normalizeAliases(frontmatter.aliases),
 				isIndex,
+				sourcePath,
+				body: parsed.content,
+				frontmatter,
 			});
 		}
 	}

@@ -1,15 +1,22 @@
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
+import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
 
 const TwitterExtraDataSource = {
-    async fetch(env, foloCookie) {
+    async fetch(env, foloCookie, { strict = false, signal } = {}) {
         const listId = env.TWITTER_EXTRA_LIST_ID;
         const fetchPages = parseInt(env.TWITTER_EXTRA_FETCH_PAGES || '3', 10);
         const allTwitterItems = [];
         const filterDays = parseInt(env.FOLO_FILTER_DAYS || '3', 10);
         const foloDataApi = getFoloDataApi(env);
+        if (strict) {
+            assertProviderPositiveIntegerSetting(env.TWITTER_EXTRA_FETCH_PAGES, '3');
+            assertProviderPositiveIntegerSetting(env.FOLO_FILTER_DAYS, '3');
+            assertProviderUrl(foloDataApi);
+        }
 
         if (!listId) {
+            if (strict) throw providerConfigurationError();
             console.error('TWITTER_EXTRA_LIST_ID is not set in environment variables.');
             return {
                 version: "https://jsonfeed.org/version/1.1",
@@ -62,13 +69,16 @@ const TwitterExtraDataSource = {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
+                    signal,
                 });
 
                 if (!response.ok) {
+                    if (strict) throw providerHttpError(response.status);
                     console.error(`Failed to fetch Twitter Extra data, page ${i + 1}: ${await getFoloErrorMessage(response)}`);
                     break;
                 }
                 const data = await response.json();
+                if (strict) assertFoloPayload(data, { requireFeeds: true });
                 if (data && data.data && data.data.length > 0) {
                     const filteredItems = data.data.filter(entry => isDateWithinLastDays(entry.entries.publishedAt, filterDays));
                     allTwitterItems.push(...filteredItems.map(entry => ({
@@ -86,11 +96,12 @@ const TwitterExtraDataSource = {
                     break;
                 }
             } catch (error) {
+                if (strict) throw normalizeProviderFailure(error);
                 console.error(`Error fetching Twitter Extra data, page ${i + 1}:`, error);
                 break;
             }
 
-            await sleep(Math.random() * 5000);
+            await sleep(Math.random() * 5000, { signal });
         }
 
         return {
