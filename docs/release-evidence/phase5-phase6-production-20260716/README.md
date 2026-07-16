@@ -78,6 +78,27 @@ the authenticated route: three attempts returned HTTP 401 before acquiring a lea
 Git candidate. No auth bypass or direct Git write was attempted. This failed recovery does not
 close the production observation Gate.
 
+## 2026-07-17 production observation preflight
+
+At `2026-07-16T13:02:59Z`, a read-only preflight confirmed that the next complete observation day
+starts from a clean, intended state:
+
+- `origin/main` remains `803a734a32d5b0492d6a19b18ba291ac5d687b2e`, with no open Worker,
+  structured-publication, or daily candidate PR.
+- Worker deployment `8818fa66-7166-416d-98d6-b29aec1030ea` sends 100% traffic to active version
+  `7f5a6a92-60f0-45dc-b1fa-c9d20f36aa1f`. That secret-only successor retains code version
+  `e534753a-04d7-4365-952c-7bd02874b450` and producer `803a734`.
+- Safe variables remain structured, writes enabled, `main` plus pull-request publication; six
+  expected Secret bindings are present and no PAT-shaped binding exists.
+- The Cloudflare schedules API reports exactly `0 2,7,15,19 * * *`, last modified
+  `2026-07-16T10:50:11.356286Z`.
+- Production KV contains no `2026-07-17` structured lease or trigger marker before the first batch.
+- `https://bubblenews.today` returns HTTP 200 and its 605-record release manifest reports source
+  `803a734` with artifact SHA-256
+  `109c525eb1c01061ad4cb34f9a4422a2b531f5ef49a70c6dd5690e76dec6dfe0`.
+
+No deployment, trigger, KV, Git, or Pages state was changed by this preflight.
+
 ## Current exact Preview technical closure
 
 PR #18 now has an immutable current Preview at
@@ -111,7 +132,7 @@ unless it exposes a regression in those earlier Gates.
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO implementation**; final production smoke repeats after the complete observation day |
 | Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `58b155f`; [tracked Preview evidence and artifact manifest](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 605-route deployed verifier; Lighthouse 0.98/0.99 | **NO-GO**; exact user Preview approval is not archived |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **NO-GO evidence closure**; production is operational, but Phase 4 approval remains open |
-| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **NO-GO**; close both P1 findings and observe all four batches on the next complete production date, then run final verification, review, and handoff |
+| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **NO-GO**; close the remaining Preview-approval P1 and observe all four batches on the next complete production date, then run final verification, review, and handoff |
 
 The remaining work includes both time-gated batch observation and evidence-gated security/Preview
 closure. PR #18 must remain Draft and cleanup must remain unauthorized.
