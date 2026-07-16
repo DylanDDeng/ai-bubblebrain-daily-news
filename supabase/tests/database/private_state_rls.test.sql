@@ -9,10 +9,15 @@ values
   ('11111111-1111-4111-8111-111111111111', 'phase3-user1@example.invalid'),
   ('22222222-2222-4222-8222-222222222222', 'phase3-user2@example.invalid');
 
-insert into public.profiles (id, display_name)
-values
-  ('11111111-1111-4111-8111-111111111111', 'Phase 3 user 1'),
-  ('22222222-2222-4222-8222-222222222222', 'Phase 3 user 2');
+update public.profiles
+set display_name = case id
+  when '11111111-1111-4111-8111-111111111111' then 'Phase 3 user 1'
+  when '22222222-2222-4222-8222-222222222222' then 'Phase 3 user 2'
+end
+where id in (
+  '11111111-1111-4111-8111-111111111111',
+  '22222222-2222-4222-8222-222222222222'
+);
 
 select ok(
   not has_table_privilege('anon', 'public.entity_state', 'select'),

@@ -11,13 +11,16 @@
     "check:taxonomy": "node scripts/check-taxonomy-evolution.mjs",
     "test": "npm run check:validator && npm run check:taxonomy && vitest run",
     "test:worker": "npm run check:validator && npm run check:taxonomy && vitest run tests/worker",
+    "test:community": "vitest run workers",
     "test:worker:watch": "vitest tests/worker",
     "verify:renderers": "node scripts/verify-daily-renderers.mjs",
     "verify:report-day": "node scripts/verify-complete-report-day.mjs",
     "verify:site": "node scripts/verify-site.mjs",
     "verify:preview": "node scripts/verify-preview.mjs",
     "worker:check": "wrangler deploy --dry-run --outdir .wrangler-dry-run",
-    "worker:check:staging": "wrangler deploy --dry-run --config wrangler.staging.toml --outdir .wrangler-dry-run-staging"
+    "worker:check:staging": "wrangler deploy --dry-run --config wrangler.staging.toml --outdir .wrangler-dry-run-staging",
+    "community:check": "wrangler deploy --dry-run --config wrangler.community.toml --outdir .wrangler-dry-run-community",
+    "admin:check": "wrangler deploy --dry-run --config wrangler.admin.toml --outdir .wrangler-dry-run-admin"
   },
   "dependencies": {
     "ajv": "^8.20.0",

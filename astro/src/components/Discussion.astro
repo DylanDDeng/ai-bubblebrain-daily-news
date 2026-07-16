@@ -1,0 +1,73 @@
+---
+import type { DailyLocale } from '../lib/daily';
+import '../styles/discussion.css';
+
+interface Props {
+	threadId: string;
+	locale: DailyLocale;
+}
+
+const { threadId, locale } = Astro.props;
+const isEnglish = locale === 'en';
+---
+
+<section
+	class="discussion"
+	id="discussion"
+	data-discussion
+	data-thread-id={threadId}
+	data-locale={locale}
+	data-state="dormant"
+>
+	<header class="discussion-heading">
+		<div>
+			<p>{isEnglish ? 'COMMUNITY NOTES' : 'COMMUNITY NOTES · 讨论'}</p>
+			<h2>{isEnglish ? 'Discussion and additions' : '讨论与补充'}</h2>
+		</div>
+		<span data-discussion-count aria-live="polite">—</span>
+	</header>
+	<p class="discussion-status" data-discussion-status role="status">
+		{
+			isEnglish
+				? 'Comments load when this section approaches the viewport.'
+				: '评论将在接近此处时加载。'
+		}
+	</p>
+	<button type="button" class="discussion-retry" data-discussion-retry hidden
+		>{isEnglish ? 'Retry' : '重试'}</button
+	>
+	<ol class="discussion-list" data-discussion-list></ol>
+	<div class="discussion-auth-note" data-discussion-auth-note></div>
+	<form class="discussion-composer" data-discussion-form hidden>
+		<div class="discussion-reply-context" data-reply-context hidden>
+			<span data-reply-label></span>
+			<button type="button" data-cancel-reply>{isEnglish ? 'Cancel' : '取消'}</button>
+		</div>
+		<label>
+			<span>{isEnglish ? 'Type' : '类型'}</span>
+			<select name="type">
+				<option value="question">{isEnglish ? 'Question' : '提问'}</option>
+				<option value="repro">{isEnglish ? 'Repro feedback' : '复现反馈'}</option>
+				<option value="suggestion">{isEnglish ? 'Suggestion' : '改进建议'}</option>
+			</select>
+		</label>
+		<label class="discussion-content-field">
+			<span>{isEnglish ? 'Comment' : '内容'}</span>
+			<textarea name="content" rows="5" maxlength="4000" required></textarea>
+		</label>
+		<div class="discussion-composer-footer">
+			<span data-character-count>0 / 4000</span>
+			<div data-turnstile></div>
+			<button type="submit">{isEnglish ? 'Publish' : '发布'}</button>
+		</div>
+	</form>
+	<noscript
+		><p>
+			{isEnglish ? 'Sign-in and discussion require JavaScript.' : '登录与讨论需要启用 JavaScript。'}
+		</p></noscript
+	>
+</section>
+
+<script>
+	import '../scripts/discussion';
+</script>

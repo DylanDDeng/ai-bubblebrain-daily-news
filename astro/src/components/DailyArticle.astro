@@ -3,7 +3,9 @@ import { render, type CollectionEntry } from 'astro:content';
 
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DailyTimeline from './DailyTimeline.astro';
+import Discussion from './Discussion.astro';
 import { formatDailyDate, parseDailyEntryId, type DailyLocale } from '../lib/daily';
+import { commentThreadId } from '../lib/comments/threadId';
 import { sanitizeLegacyDailyHtml } from '../lib/legacyDailyHtml';
 import { loadStructuredDailyReport } from '../lib/structuredDaily';
 
@@ -22,6 +24,12 @@ const identity = parseDailyEntryId(entry.id);
 const report =
 	locale === 'zh-CN' && identity ? await loadStructuredDailyReport(identity.dateKey) : null;
 const legacyHtml = entry.rendered?.html ? sanitizeLegacyDailyHtml(entry.rendered.html) : null;
+const currentRoute = Astro.url.pathname;
+const threadId = commentThreadId({
+	route: currentRoute,
+	locale,
+	chineseAlternateRoute: locale === 'en' ? alternateHref : null,
+});
 ---
 
 <BaseLayout
@@ -53,4 +61,5 @@ const legacyHtml = entry.rendered?.html ? sanitizeLegacyDailyHtml(entry.rendered
 			</article>
 		)
 	}
+	<Discussion threadId={threadId} locale={locale} />
 </BaseLayout>

@@ -1,0 +1,12 @@
+name = "bubble-community-admin"
+main = "workers/admin/src/index.ts"
+compatibility_date = "2026-07-16"
+workers_dev = false
+
+routes = [
+  { pattern = "admin.bubblenews.today", custom_domain = true }
+]
+
+[vars]
+SUPABASE_URL = "https://znurdobjryrhshzkalup.supabase.co"
+ADMIN_ORIGIN = "https://admin.bubblenews.today"

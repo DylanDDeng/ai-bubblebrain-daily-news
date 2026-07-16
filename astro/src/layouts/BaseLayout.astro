@@ -1,5 +1,6 @@
 ---
 import '../styles/migration.css';
+import AuthControls from '../components/AuthControls.astro';
 
 interface Props {
 	title: string;
@@ -81,13 +82,6 @@ const navLinks = isEnglish
 			href={isEnglish && alternateUrl ? alternateUrl : canonicalUrl}
 		/>
 		<title>{title}</title>
-		<script is:inline>
-			(() => {
-				const saved = localStorage.getItem('bb-theme');
-				const theme = saved === 'dark' || saved === 'light' ? saved : 'light';
-				document.documentElement.dataset.theme = theme;
-			})();
-		</script>
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">{isEnglish ? 'Skip to content' : '跳到正文'}</a>
@@ -95,10 +89,18 @@ const navLinks = isEnglish
 			<aside class="site-rail" aria-label={isEnglish ? 'Site navigation' : '网站导航'}>
 				<div class="rail-topline">
 					<a class="site-brand" href={homeHref}>Bubble's<br />Brain</a>
-					<button class="mobile-nav-toggle" type="button" aria-expanded="false" aria-controls="rail-menu">
-						<i class="ph ph-list" aria-hidden="true"></i>
-						<span class="sr-only">{isEnglish ? 'Open menu' : '打开菜单'}</span>
-					</button>
+					<div class="rail-mobile-actions">
+						<AuthControls locale={lang} compact />
+						<button
+							class="mobile-nav-toggle"
+							type="button"
+							aria-expanded="false"
+							aria-controls="rail-menu"
+						>
+							<i class="ph ph-list" aria-hidden="true"></i>
+							<span class="sr-only">{isEnglish ? 'Open menu' : '打开菜单'}</span>
+						</button>
+					</div>
 				</div>
 				<div class="rail-menu" id="rail-menu">
 					<div class="rail-today">
@@ -118,8 +120,13 @@ const navLinks = isEnglish
 						}
 					</nav>
 					<div class="rail-controls">
+						<AuthControls locale={lang} />
 						<a href={languageHref}>{isEnglish ? '中文' : 'EN'}</a>
-						<button type="button" data-theme-toggle aria-label={isEnglish ? 'Toggle theme' : '切换主题'}>
+						<button
+							type="button"
+							data-theme-toggle
+							aria-label={isEnglish ? 'Toggle theme' : '切换主题'}
+						>
 							<i class="ph ph-sun" data-theme-icon aria-hidden="true"></i>
 							<span>{isEnglish ? 'Light / dark' : '浅色 / 深色'}</span>
 						</button>
@@ -134,42 +141,25 @@ const navLinks = isEnglish
 				<footer class="site-footer">
 					<div>
 						<strong>Bubble's Brain</strong>
-						<p>{isEnglish ? 'A personal AI knowledge archive.' : '一个持续生长的个人 AI 知识档案。'}</p>
+						<p>
+							{isEnglish ? 'A personal AI knowledge archive.' : '一个持续生长的个人 AI 知识档案。'}
+						</p>
 					</div>
 					<nav aria-label={isEnglish ? 'More sections' : '更多栏目'}>
-						<a href={isEnglish ? '/en/ai-tools/' : '/ai-tools/'}>{isEnglish ? 'AI tools' : 'AI 工具'}</a>
-						<a href={isEnglish ? '/en/curations/' : '/curations/'}>{isEnglish ? 'Curations' : '论文精选'}</a>
+						<a href={isEnglish ? '/en/ai-tools/' : '/ai-tools/'}
+							>{isEnglish ? 'AI tools' : 'AI 工具'}</a
+						>
+						<a href={isEnglish ? '/en/curations/' : '/curations/'}
+							>{isEnglish ? 'Curations' : '论文精选'}</a
+						>
 						<a href={isEnglish ? '/en/x-trending/' : '/x-trending/'}>X Trending</a>
 						<a href={dailyHref}>RSS</a>
 					</nav>
 				</footer>
 			</div>
 		</div>
-		<script is:inline>
-			(() => {
-				const root = document.documentElement;
-				const toggle = document.querySelector('[data-theme-toggle]');
-				const icon = document.querySelector('[data-theme-icon]');
-				const syncThemeIcon = () => {
-					if (!(icon instanceof HTMLElement)) return;
-					icon.className = root.dataset.theme === 'dark' ? 'ph ph-moon' : 'ph ph-sun';
-				};
-				toggle?.addEventListener('click', () => {
-					const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-					root.dataset.theme = next;
-					localStorage.setItem('bb-theme', next);
-					syncThemeIcon();
-				});
-				syncThemeIcon();
-
-				const menuButton = document.querySelector('.mobile-nav-toggle');
-				const menu = document.querySelector('#rail-menu');
-				menuButton?.addEventListener('click', () => {
-					const expanded = menuButton.getAttribute('aria-expanded') === 'true';
-					menuButton.setAttribute('aria-expanded', String(!expanded));
-					menu?.classList.toggle('is-open', !expanded);
-				});
-			})();
+		<script>
+			import '../scripts/siteShell';
 		</script>
 	</body>
 </html>

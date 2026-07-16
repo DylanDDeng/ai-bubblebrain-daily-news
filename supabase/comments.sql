@@ -1,4 +1,6 @@
--- Supabase comments schema for AI Gallery (and future site-wide migration)
+-- DEPRECATED: historical bootstrap only. Do not execute this file.
+-- The authoritative schema is supabase/migrations/*.sql.
+-- Supabase comments schema for AI Gallery (historical reference)
 -- Usage:
 -- 1) Open Supabase Dashboard → SQL Editor
 -- 2) Paste this file content and run

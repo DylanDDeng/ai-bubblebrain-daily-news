@@ -104,7 +104,9 @@ function htmlMetadata(html) {
 			href: tagAttribute(tag, 'href'),
 		}))
 		.sort((a, b) => a.locale.localeCompare(b.locale));
-	return { canonical, hreflang };
+	const robots = html.match(/<meta\b[^>]*name=["']robots["'][^>]*>/i)?.[0] ?? null;
+	const noindex = robots ? /noindex/i.test(tagAttribute(robots, 'content') ?? '') : false;
+	return { canonical, hreflang, noindex };
 }
 
 for (const file of await walk(distRoot)) {
@@ -137,7 +139,9 @@ for (const file of await walk(distRoot)) {
 		output_path: path,
 	};
 	if (record.content_type === 'text/html') {
-		Object.assign(record, htmlMetadata(await readFile(file, 'utf8')));
+		const metadata = htmlMetadata(await readFile(file, 'utf8'));
+		Object.assign(record, { canonical: metadata.canonical, hreflang: metadata.hreflang });
+		if (metadata.noindex) record.indexable = false;
 	}
 	records.push(record);
 	if (usesPagesCleanUrl) {

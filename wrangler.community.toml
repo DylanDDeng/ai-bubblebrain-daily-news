@@ -1,0 +1,19 @@
+name = "bubble-community-api"
+main = "workers/community/src/index.ts"
+compatibility_date = "2026-07-16"
+workers_dev = false
+
+routes = [
+  { pattern = "community-api.bubblenews.today", custom_domain = true }
+]
+
+[[ratelimits]]
+name = "COMMUNITY_RATE_LIMITER"
+namespace_id = "1002001"
+simple = { limit = 10, period = 60 }
+
+[vars]
+SUPABASE_URL = "https://znurdobjryrhshzkalup.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpudXJkb2JqcnlyaHNoemthbHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY5OTM1ODAsImV4cCI6MjA4MjU2OTU4MH0.1a5V2EECu9_To8KneGQRpt73JJSaIxLf592LPjxdp1Y"
+COMMENTS_WRITE_ENABLED = "false"
+ALLOWED_ORIGINS = "https://bubblenews.today,https://preview.bubblenews.today,http://127.0.0.1:4321"

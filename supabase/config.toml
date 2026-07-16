@@ -27,3 +27,27 @@ schema_paths = []
 [db.seed]
 enabled = false
 sql_paths = []
+
+[auth]
+enabled = true
+site_url = "https://bubblenews.today"
+additional_redirect_urls = [
+  "https://bubblenews.today/auth/callback/",
+  "http://127.0.0.1:4321/auth/callback/",
+]
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+secure_password_change = false
+max_frequency = "1m0s"
+otp_length = 8
+otp_expiry = 3600
+
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
