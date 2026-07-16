@@ -1,3 +1,5 @@
+import { readBoundedJsonObject, RequestBodyError } from "../../shared/request";
+
 interface RateLimitBinding {
   limit(input: { key: string }): Promise<{ success: boolean }>;
 }
@@ -27,6 +29,7 @@ const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const THREAD_PATTERN = /^page:\/[^\s]+\/$/;
 const ROOT_TYPES = new Set(["question", "repro", "suggestion"]);
+const TURNSTILE_ALWAYS_PASS_TEST_SECRET = "1x0000000000000000000000000000000AA";
 
 function json(body: unknown, status = 200, origin?: string): Response {
   const headers = new Headers({
@@ -55,16 +58,6 @@ function allowedOrigin(request: Request, env: CommunityEnv): string | null {
 
 function clientAddress(request: Request): string {
   return request.headers.get("CF-Connecting-IP") ?? "unknown";
-}
-
-async function readBody(request: Request): Promise<CreateBody> {
-  const length = Number(request.headers.get("Content-Length") ?? "0");
-  if (Number.isFinite(length) && length > 12_000)
-    throw new Error("Request body is too large");
-  const value: unknown = await request.json();
-  if (!value || typeof value !== "object" || Array.isArray(value))
-    throw new Error("Invalid JSON body");
-  return value as CreateBody;
 }
 
 function bearerToken(request: Request): string | null {
@@ -100,6 +93,15 @@ async function verifyTurnstile(
 ): Promise<boolean> {
   if (typeof token !== "string" || token.length < 10 || token.length > 2048)
     return false;
+  const expectedHostname = new URL(
+    request.headers.get("Origin") ?? request.url,
+  ).hostname.toLowerCase();
+  if (
+    !env.TURNSTILE_SECRET_KEY?.trim() ||
+    (expectedHostname === "bubblenews.today" &&
+      env.TURNSTILE_SECRET_KEY === TURNSTILE_ALWAYS_PASS_TEST_SECRET)
+  )
+    return false;
   const form = new FormData();
   form.set("secret", env.TURNSTILE_SECRET_KEY);
   form.set("response", token);
@@ -112,8 +114,17 @@ async function verifyTurnstile(
     },
   );
   if (!response.ok) return false;
-  const result = (await response.json()) as { success?: boolean };
-  return result.success === true;
+  const result = (await response.json()) as {
+    success?: boolean;
+    hostname?: string;
+    action?: string;
+  };
+  const responseHostname = result.hostname?.trim().toLowerCase();
+  return (
+    result.success === true &&
+    result.action === "comment" &&
+    responseHostname === expectedHostname
+  );
 }
 
 async function supabaseRpc(
@@ -142,23 +153,22 @@ async function supabaseRpc(
   return response.json();
 }
 
-async function loadComment(env: CommunityEnv, id: string): Promise<unknown> {
-  const response = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/page_comments?id=eq.${encodeURIComponent(id)}&select=*`,
-    {
-      headers: {
-        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-      },
-    },
-  );
-  if (!response.ok) throw new Error("Created comment could not be loaded");
-  const rows = (await response.json()) as unknown[];
+async function loadComment(
+  env: CommunityEnv,
+  threadId: string,
+  id: string,
+): Promise<unknown> {
+  const rows = (await supabaseRpc(env, "get_page_comments", {
+    p_thread_id: threadId,
+    p_comment_id: id,
+  })) as unknown[];
   if (rows.length !== 1) throw new Error("Created comment is not visible");
   return rows[0];
 }
 
 function publicError(error: unknown): { status: number; message: string } {
+  if (error instanceof RequestBodyError)
+    return { status: error.status, message: error.message };
   const message = error instanceof Error ? error.message : "Request failed";
   if (message === "Comment writing is disabled")
     return { status: 503, message };
@@ -196,7 +206,16 @@ async function handleMutation(
     return json({ error: "Please wait before posting again" }, 429, origin);
 
   try {
-    const body = await readBody(request);
+    const body = (await readBoundedJsonObject(request, {
+      maxBytes: 12_000,
+      allowedFields: [
+        "threadId",
+        "type",
+        "content",
+        "turnstileToken",
+        "parentId",
+      ],
+    })) as CreateBody;
     if (!(await verifyTurnstile(body.turnstileToken, request, env))) {
       return json({ error: "Human verification failed" }, 403, origin);
     }
@@ -244,7 +263,11 @@ async function handleMutation(
       });
       if (typeof id !== "string" || !UUID_PATTERN.test(id))
         throw new Error("Database returned an invalid comment ID");
-      return json({ comment: await loadComment(env, id) }, 201, origin);
+      return json(
+        { comment: await loadComment(env, body.threadId, id) },
+        201,
+        origin,
+      );
     }
 
     const deleteMatch = url.pathname.match(/^\/comments\/([0-9a-f-]+)$/i);

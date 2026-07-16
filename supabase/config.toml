@@ -33,11 +33,10 @@ enabled = true
 site_url = "https://bubblenews.today"
 additional_redirect_urls = [
   "https://bubblenews.today/auth/callback/",
-  "http://127.0.0.1:4321/auth/callback/",
 ]
 
 [auth.email]
-enable_signup = true
+enable_signup = false
 double_confirm_changes = true
 enable_confirmations = true
 secure_password_change = false

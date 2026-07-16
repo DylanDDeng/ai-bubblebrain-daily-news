@@ -22,11 +22,13 @@ const isEnglish = locale === 'en';
 	<header class="discussion-heading">
 		<div>
 			<p>{isEnglish ? 'COMMUNITY NOTES' : 'COMMUNITY NOTES · 讨论'}</p>
-			<h2>{isEnglish ? 'Discussion and additions' : '讨论与补充'}</h2>
+			<p class="discussion-title" role="heading" aria-level="2">
+				{isEnglish ? 'Discussion and additions' : '讨论与补充'}
+			</p>
 		</div>
 		<span data-discussion-count aria-live="polite">—</span>
 	</header>
-	<p class="discussion-status" data-discussion-status role="status">
+	<p class="discussion-status" data-discussion-status role="status" tabindex="-1">
 		{
 			isEnglish
 				? 'Comments load when this section approaches the viewport.'
@@ -39,8 +41,8 @@ const isEnglish = locale === 'en';
 	<ol class="discussion-list" data-discussion-list></ol>
 	<div class="discussion-auth-note" data-discussion-auth-note></div>
 	<form class="discussion-composer" data-discussion-form hidden>
-		<div class="discussion-reply-context" data-reply-context hidden>
-			<span data-reply-label></span>
+		<div class="discussion-reply-context" data-reply-context aria-live="polite" hidden>
+			<span id="discussion-reply-label" data-reply-label></span>
 			<button type="button" data-cancel-reply>{isEnglish ? 'Cancel' : '取消'}</button>
 		</div>
 		<label>
@@ -53,10 +55,15 @@ const isEnglish = locale === 'en';
 		</label>
 		<label class="discussion-content-field">
 			<span>{isEnglish ? 'Comment' : '内容'}</span>
-			<textarea name="content" rows="5" maxlength="4000" required></textarea>
+			<textarea
+				name="content"
+				rows="5"
+				maxlength="4000"
+				aria-describedby="discussion-reply-label discussion-character-count"
+				required></textarea>
 		</label>
 		<div class="discussion-composer-footer">
-			<span data-character-count>0 / 4000</span>
+			<span id="discussion-character-count" data-character-count>0 / 4000</span>
 			<div data-turnstile></div>
 			<button type="submit">{isEnglish ? 'Publish' : '发布'}</button>
 		</div>

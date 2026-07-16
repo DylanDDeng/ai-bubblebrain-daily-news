@@ -82,6 +82,7 @@ const navLinks = isEnglish
 			href={isEnglish && alternateUrl ? alternateUrl : canonicalUrl}
 		/>
 		<title>{title}</title>
+		<script is:inline src="/js/theme-bootstrap.js"></script>
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">{isEnglish ? 'Skip to content' : '跳到正文'}</a>
@@ -158,8 +159,6 @@ const navLinks = isEnglish
 				</footer>
 			</div>
 		</div>
-		<script>
-			import '../scripts/siteShell';
-		</script>
+		<script is:inline type="module" src="/js/site-shell.js"></script>
 	</body>
 </html>

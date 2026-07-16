@@ -1,0 +1,20 @@
+name = "bubble-community-api-staging"
+main = "workers/community/src/index.ts"
+compatibility_date = "2026-07-16"
+workers_dev = false
+
+routes = [
+  { pattern = "community-api-staging.bubblenews.today", custom_domain = true }
+]
+
+[[ratelimits]]
+name = "COMMUNITY_RATE_LIMITER"
+namespace_id = "2002001"
+simple = { limit = 10, period = 60 }
+
+[vars]
+COMMENTS_WRITE_ENABLED = "false"
+ALLOWED_ORIGINS = "https://preview.bubblenews.today"
+
+# Set SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, and
+# TURNSTILE_SECRET_KEY as staging Worker secrets before deployment.

@@ -70,7 +70,14 @@ describe("community worker", () => {
         new Response(JSON.stringify({ id: userId }), { status: 200 }),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ success: true }), { status: 200 }),
+        new Response(
+          JSON.stringify({
+            success: true,
+            action: "comment",
+            hostname: "bubblenews.today",
+          }),
+          { status: 200 },
+        ),
       )
       .mockResolvedValueOnce(
         new Response(JSON.stringify(commentId), { status: 200 }),
@@ -92,6 +99,7 @@ describe("community worker", () => {
     const rpcCall = fetchMock.mock.calls[2];
     expect(rpcCall[0]).toContain("/rpc/community_create_comment");
     expect(String((rpcCall[1] as RequestInit).body)).toContain(userId);
+    expect(fetchMock.mock.calls[3][0]).toContain("/rpc/get_page_comments");
   });
 
   it("rejects failed human verification without calling the database", async () => {
@@ -109,6 +117,67 @@ describe("community worker", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
+  it("rejects a Turnstile token issued for another hostname", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ id: userId }), { status: 200 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            action: "comment",
+            hostname: "other.example",
+          }),
+          { status: 200 },
+        ),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const response = await worker.fetch(request("/comments"), env());
+    expect(response.status).toBe(403);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects a Turnstile token issued for another action", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ id: userId }), { status: 200 }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            success: true,
+            action: "login",
+            hostname: "bubblenews.today",
+          }),
+          { status: 200 },
+        ),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const response = await worker.fetch(request("/comments"), env());
+    expect(response.status).toBe(403);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects Cloudflare's always-pass test secret on production", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ id: userId }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const response = await worker.fetch(
+      request("/comments"),
+      env({
+        TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
+      }),
+    );
+    expect(response.status).toBe(403);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("rejects malformed thread IDs before database access", async () => {
     const fetchMock = vi
       .fn()
@@ -116,7 +185,14 @@ describe("community worker", () => {
         new Response(JSON.stringify({ id: userId }), { status: 200 }),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ success: true }), { status: 200 }),
+        new Response(
+          JSON.stringify({
+            success: true,
+            action: "comment",
+            hostname: "bubblenews.today",
+          }),
+          { status: 200 },
+        ),
       );
     vi.stubGlobal("fetch", fetchMock);
     const response = await worker.fetch(
@@ -150,6 +226,51 @@ describe("community worker", () => {
       }),
     );
     expect(response.status).toBe(429);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects an oversized body even without Content-Length", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ id: userId }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const response = await worker.fetch(
+      request("/comments", {
+        body: JSON.stringify({
+          threadId: "page:/daily/2026/07/2026-07-16/",
+          type: "question",
+          content: "x".repeat(13_000),
+          turnstileToken: "turnstile-token-value",
+        }),
+      }),
+      env(),
+    );
+    expect(response.status).toBe(413);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects unexpected JSON fields before Turnstile or database access", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ id: userId }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const response = await worker.fetch(
+      request("/comments", {
+        body: JSON.stringify({
+          threadId: "page:/daily/2026/07/2026-07-16/",
+          type: "question",
+          content: "No extra fields",
+          turnstileToken: "turnstile-token-value",
+          actorId: userId,
+        }),
+      }),
+      env(),
+    );
+    expect(response.status).toBe(400);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

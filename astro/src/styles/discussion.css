@@ -5,6 +5,10 @@
 	border-block: 1px solid var(--rule);
 }
 
+.article-shell > .discussion {
+	width: 100%;
+}
+
 .discussion-composer[hidden],
 .discussion-reply-context[hidden] {
 	display: none !important;
@@ -25,10 +29,13 @@
 	letter-spacing: 0.08em;
 }
 
-.discussion-heading h2 {
+.discussion-heading .discussion-title {
 	margin: 0;
+	color: var(--ink);
+	font-family: var(--serif);
 	font-size: clamp(1.55rem, 4vw, 2.35rem);
 	font-weight: 600;
+	letter-spacing: normal;
 }
 
 .discussion-heading > span {
@@ -64,8 +71,14 @@
 
 .discussion-list header > div {
 	display: flex;
+	min-width: 0;
 	align-items: center;
 	gap: 10px;
+}
+
+.discussion-list header strong {
+	min-width: 0;
+	overflow-wrap: anywhere;
 }
 
 .discussion-list img,
@@ -81,8 +94,13 @@
 }
 
 .discussion-list time,
-.discussion-list strong {
+.discussion-list strong,
+.discussion-type {
 	font-size: 0.74rem;
+}
+
+.discussion-type {
+	color: var(--ink-faint);
 }
 
 .discussion-list time {
@@ -105,7 +123,8 @@
 .discussion-reply-context button,
 .discussion-retry,
 .discussion-auth-note button {
-	min-height: 36px;
+	min-height: 44px;
+	min-width: 44px;
 	padding: 0;
 	border: 0;
 	background: transparent;
@@ -178,6 +197,16 @@
 	color: var(--ink-faint);
 	font-family: var(--mono);
 	font-size: 0.7rem;
+}
+
+.discussion [data-turnstile],
+.discussion [data-turnstile] iframe {
+	max-width: 100%;
+	min-width: 0;
+}
+
+.discussion [data-turnstile] {
+	width: 100%;
 }
 
 @media (max-width: 640px) {

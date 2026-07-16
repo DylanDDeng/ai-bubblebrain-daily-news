@@ -20,6 +20,7 @@ const id = `auth-${compact ? 'compact' : 'rail'}-${locale.toLowerCase()}`;
 		aria-expanded="false"
 		aria-controls={`${id}-panel`}
 		aria-busy="true"
+		disabled
 	>
 		<span class="auth-avatar" data-auth-avatar aria-hidden="true">·</span>
 		<span data-auth-label>{locale === 'en' ? 'Account' : '账户'}</span>

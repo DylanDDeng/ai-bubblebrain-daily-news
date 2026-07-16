@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { safeRelativeNext } from './redirect';
+import { callbackUrl, safeRelativeNext } from './redirect';
+
+afterEach(() => vi.unstubAllGlobals());
 
 describe('safeRelativeNext', () => {
 	it('keeps safe relative paths, queries, and fragments', () => {
@@ -18,5 +20,10 @@ describe('safeRelativeNext', () => {
 		'/safe%0d%0aLocation:evil',
 	])('rejects unsafe next value %s', (value) => {
 		expect(safeRelativeNext(value, '/fallback/')).toBe('/fallback/');
+	});
+
+	it('uses the single production-allowlisted callback', () => {
+		vi.stubGlobal('window', { location: { origin: 'https://bubblenews.today' } });
+		expect(callbackUrl()).toBe('https://bubblenews.today/auth/callback/');
 	});
 });

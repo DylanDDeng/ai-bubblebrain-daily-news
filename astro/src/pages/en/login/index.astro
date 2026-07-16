@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title="Sign in · Bubble's Brain"
+	description="Sign in to join article discussions"
+	lang="en"
+	canonicalPath="/en/login/"
+	noindex
+>
+	<section class="page-shell auth-page" data-login-page data-locale="en">
+		<p class="page-kicker">COMMUNITY ACCESS</p>
+		<h1>Sign in</h1>
+		<p>Continue with Google to ask questions, add context, or share reproduction feedback.</p>
+		<button type="button" class="primary-action" data-login-google disabled>
+			Continue with Google
+		</button>
+		<p class="auth-page-status" data-login-status role="status"></p>
+		<noscript
+			><p>Sign-in requires JavaScript. You can still return home to keep reading.</p></noscript
+		>
+	</section>
+</BaseLayout>
+
+<script>
+	import '../../../scripts/loginPage';
+</script>

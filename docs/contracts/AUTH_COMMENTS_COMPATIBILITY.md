@@ -27,7 +27,7 @@ does not include `auth.users`.
 - Route values are not lowercased, URL-decoded, or inferred from `window.location.pathname`.
 - New public writes are accepted only for `page:/.../` threads.
 - Historical `ai-gallery:*` and `ai-video:*` rows remain in the base table but are excluded from the
-  public view.
+  public read RPC.
 
 ## Comment semantics
 
@@ -36,8 +36,11 @@ Root comments retain the legacy types `question`, `repro`, and `suggestion`. Rep
 
 ## Security boundary
 
-- Browsers can select only `public.page_comments`.
+- Browsers can execute only the parameter-validated `public.get_page_comments(text, uuid)` reader.
 - Browsers cannot select or mutate `public.comments` directly.
 - The Community API validates the Supabase user and calls service-role-only RPCs.
 - A database kill switch defaults to off and remains authoritative during frontend rollback.
 - Gallery/Video comments and favorites are retained, not deleted and not restored in this rollout.
+- Legacy favorites, entity state, and annotations remain readable by their owners, but browsers
+  cannot insert, update, or delete them until a future product surface restores those operations
+  behind a bounded API.

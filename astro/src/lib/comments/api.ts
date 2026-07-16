@@ -20,9 +20,7 @@ export async function loadPageComments(threadId: string): Promise<PageComment[]>
 	const client = await loadSupabaseClient();
 	if (!client) throw new Error('Community configuration is unavailable.');
 	const { data, error } = await client
-		.from('page_comments')
-		.select('id,thread_id,parent_id,user_id,type,content,created_at,display_name,avatar_url')
-		.eq('thread_id', threadId)
+		.rpc('get_page_comments', { p_thread_id: threadId })
 		.order('created_at', { ascending: true })
 		.limit(500);
 	if (error) throw error;

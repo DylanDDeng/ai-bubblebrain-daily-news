@@ -2,13 +2,20 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://lh3.googleusercontent.com https://*.googleusercontent.com; connect-src 'self' https://znurdobjryrhshzkalup.supabase.co https://community-api.bubblenews.today https://challenges.cloudflare.com https://api.moonshot.cn https://generativelanguage.googleapis.com; frame-src https://challenges.cloudflare.com; font-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://challenges.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co https://community-api.bubblenews.today https://community-api-staging.bubblenews.today https://challenges.cloudflare.com https://api.moonshot.cn https://generativelanguage.googleapis.com; frame-src data: https://challenges.cloudflare.com; font-src 'self' data:; media-src 'self' data: blob: https:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 /auth/*
   Cache-Control: no-store
   Referrer-Policy: no-referrer
 
 /login/*
+  Cache-Control: no-store
+
+/en/auth/*
+  Cache-Control: no-store
+  Referrer-Policy: no-referrer
+
+/en/login/*
   Cache-Control: no-store
 
 /eval-demos/*

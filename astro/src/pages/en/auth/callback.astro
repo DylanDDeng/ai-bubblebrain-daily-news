@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+	title="Completing sign-in · Bubble's Brain"
+	description="Complete secure sign-in"
+	lang="en"
+	canonicalPath="/en/auth/callback/"
+	noindex
+>
+	<section class="page-shell auth-page" data-auth-callback data-locale="en">
+		<p class="page-kicker">SECURE CALLBACK</p>
+		<h1 data-callback-title>Completing sign-in</h1>
+		<p data-callback-status role="status">Verifying this Google sign-in…</p>
+		<p>
+			<a href="/en/login/" data-callback-retry hidden>Try sign-in again</a> ·
+			<a href="/en/" data-callback-home>Return home</a>
+		</p>
+		<noscript>
+			<p>Completing sign-in requires JavaScript. Enable it and sign in again, or return home.</p>
+		</noscript>
+	</section>
+</BaseLayout>
+
+<script>
+	import '../../../scripts/authCallback';
+</script>

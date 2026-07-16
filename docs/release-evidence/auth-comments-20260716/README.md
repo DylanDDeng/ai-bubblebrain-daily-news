@@ -16,28 +16,46 @@
 ## Verified Gates
 
 - Supabase migrations and second-run idempotency: passed
-- pgTAP: 72 tests passed
-- Root Worker and community tests: 350 tests passed
-- Astro unit tests: 60 tests passed
+- pgTAP: 106 tests passed in both the initial migration run and the idempotency rerun
+- Root Worker and community tests: 363 tests passed
+- Astro unit tests: 61 tests passed
 - Astro typecheck and lint: passed
-- Complete Astro artifact: 613 routes verified
-- Community and Admin Worker dry-run bundles: passed
-- Production migration `20260716000100`: applied
+- Complete Astro artifact: 621 routes verified
+- Hugo/Astro renderer parity: 208 daily routes passed
+- Enforced CSP and external-script artifact gate: passed
+- Production, staging Community, and Admin Worker dry-run bundles: passed
+- Production migrations `20260716000100`, `20260716000200`, `20260716000300`, and
+  `20260716000400`:
+  applied and aligned locally/remotely
 - Production database lint: no schema errors
-- Anonymous `page_comments`: 200 with exactly 2 legacy page rows
+- Supabase Security Advisor: 0 errors; the two narrow public read-RPC warnings are expected, and
+  leaked-password protection is irrelevant while Email auth is disabled
+- Anonymous `get_page_comments`: 200 with exactly 2 legacy page rows
 - Anonymous `comments` base table: 401
-- Gallery rows through `page_comments`: 200 with 0 rows
+- Gallery thread through `get_page_comments`: 400
+- Browser profile updates: revoked; Google profile attribution is read-only
+- Legacy favorites, entity state, and annotations remain owner-readable, but authenticated
+  insert/update/delete privileges are revoked while their Astro features are absent
+- Admin moderation RPC: restricted to `page:/` threads; Gallery/Video archives cannot be mutated
+- Production Auth callback allowlist: only `https://bubblenews.today/auth/callback/`
+- Production Auth providers: Google enabled; Email disabled
+- Real Turnstile widget: managed mode, hostname restricted to `bubblenews.today`
+- Community Worker secrets: service role and real Turnstile secret present
+- Community Worker production version: `3d1fd390-3d81-494d-9910-3f8ecf585532`
+- Community Worker deployment: `3d6f2552-8e73-449a-938c-d935a5bd64f6`
+- Previous safe rollback version: `fa39969d-53c8-406b-932e-7e575f38f0a4`
+- Exact rollback command: `npx wrangler rollback fa39969d-53c8-406b-932e-7e575f38f0a4 --config wrangler.community.toml --name bubble-community-api --yes`
 - Community API health: 200 with `writesEnabled=false`
 - Community API write while disabled: 503
 - Unapproved Community API origin: 403
 - Browser mobile: account entry visible without opening navigation
 - Browser discussion: one root plus one reply, total count 2
-- Browser composer: hidden while anonymous and while no real Turnstile site key exists
+- Browser composer: hidden while anonymous; production build contains the real hostname-bound site key
 
 ## Remaining production Gates
 
-- Real Turnstile widget and secret
 - Authenticated create/reply/delete Canary using the real widget
 - Cloudflare Access application with MFA for `admin.bubblenews.today`
 - Admin deployment and mutation smoke test
+- PR required checks, merge, and exact-source production Pages deployment
 - Independent final security/data/UX review after those external controls are active

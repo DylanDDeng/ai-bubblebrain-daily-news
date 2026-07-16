@@ -1,5 +1,6 @@
 import {
 	bootAuth,
+	authSnapshot,
 	signInWithGoogle,
 	signOut,
 	subscribeAuth,
@@ -19,6 +20,8 @@ function localeCopy(locale: 'zh-CN' | 'en') {
 				anonymous: 'Not signed in',
 				loading: 'Checking session…',
 				error: 'Account unavailable',
+				serviceError: 'Account service is temporarily unavailable. Please retry.',
+				profileError: 'Your profile is not ready yet. Please retry.',
 			}
 		: {
 				account: '账户',
@@ -27,6 +30,8 @@ function localeCopy(locale: 'zh-CN' | 'en') {
 				anonymous: '尚未登录',
 				loading: '正在检查登录状态…',
 				error: '账户暂不可用',
+				serviceError: '账户服务暂时不可用，请重试。',
+				profileError: '账户资料尚未准备完成，请重试。',
 			};
 }
 
@@ -42,7 +47,9 @@ function render(root: HTMLElement, state: AuthState): void {
 	const avatar = root.querySelector('[data-auth-avatar]');
 	if (trigger)
 		trigger.ariaBusy = String(
-			state.status === 'booting' || state.status === 'provisioning_profile',
+			['booting', 'redirecting', 'authenticated', 'provisioning_profile', 'signing_out'].includes(
+				state.status,
+			),
 		);
 	if (login) login.hidden = state.status !== 'anonymous';
 	if (logout) logout.hidden = state.status !== 'ready';
@@ -59,7 +66,7 @@ function render(root: HTMLElement, state: AuthState): void {
 		text(avatar, '○');
 	} else if (state.status === 'recoverable_error') {
 		text(label, copy.error);
-		text(detail, state.error ?? copy.error);
+		text(detail, state.error?.includes('Profile') ? copy.profileError : copy.serviceError);
 		text(avatar, '!');
 	} else {
 		text(label, copy.account);
@@ -79,16 +86,22 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-auth-controls]'
 		trigger.ariaExpanded = 'false';
 		panel.hidden = true;
 	};
+	if (trigger) trigger.disabled = false;
 	trigger?.addEventListener('click', () => {
 		if (!panel) return;
 		const open = panel.hidden;
 		panel.hidden = !open;
 		trigger.ariaExpanded = String(open);
+		if (open && authSnapshot().status === 'booting') void bootAuth();
 	});
 	root.querySelector('[data-auth-login]')?.addEventListener('click', () => {
-		void signInWithGoogle(`${location.pathname}${location.search}${location.hash}`, locale);
+		void signInWithGoogle(`${location.pathname}${location.search}${location.hash}`, locale).catch(
+			() => undefined,
+		);
 	});
-	root.querySelector('[data-auth-signout]')?.addEventListener('click', () => void signOut());
+	root
+		.querySelector('[data-auth-signout]')
+		?.addEventListener('click', () => void signOut().catch(() => undefined));
 	root.querySelector('[data-auth-retry]')?.addEventListener('click', () => void bootAuth());
 	document.addEventListener('keydown', (event) => {
 		if (event.key === 'Escape' && panel && !panel.hidden) {
@@ -102,4 +115,9 @@ for (const root of document.querySelectorAll<HTMLElement>('[data-auth-controls]'
 	subscribeAuth((state) => render(root, state));
 }
 
-void bootAuth();
+const scheduleBoot = (): void => void bootAuth();
+if ('requestIdleCallback' in window) {
+	window.requestIdleCallback(scheduleBoot, { timeout: 1500 });
+} else {
+	globalThis.setTimeout(scheduleBoot, 500);
+}

@@ -3,39 +3,18 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="正在完成登录 · Bubble's Brain" description="完成安全登录" noindex>
-	<section class="page-shell auth-page" data-auth-callback>
+	<section class="page-shell auth-page" data-auth-callback data-locale="zh-CN">
 		<p class="page-kicker">SECURE CALLBACK</p>
 		<h1 data-callback-title>正在完成登录</h1>
 		<p data-callback-status role="status">正在验证本次 Google 登录，请稍候。</p>
-		<p><a href="/login/" data-callback-retry hidden>重新登录</a> · <a href="/">返回首页</a></p>
+		<p>
+			<a href="/login/" data-callback-retry hidden>重新登录</a> ·
+			<a href="/" data-callback-home>返回首页</a>
+		</p>
+		<noscript><p>完成登录需要启用 JavaScript。请启用后重新登录，或返回首页。</p></noscript>
 	</section>
 </BaseLayout>
 
 <script>
-	import { completeOAuthCallback } from '../../lib/auth/authStore';
-	import { safeRelativeNext } from '../../lib/auth/redirect';
-	const title = document.querySelector<HTMLElement>('[data-callback-title]');
-	const status = document.querySelector<HTMLElement>('[data-callback-status]');
-	const retry = document.querySelector<HTMLElement>('[data-callback-retry]');
-	const params = new URLSearchParams(location.search);
-	const code = params.get('code');
-	const oauthError = params.get('error_description') ?? params.get('error');
-	const storedNext = sessionStorage.getItem('bb-auth-next');
-	const next = safeRelativeNext(params.get('next') ?? storedNext, '/');
-	(async () => {
-		try {
-			if (oauthError) throw new Error(oauthError);
-			if (!code) throw new Error('登录回调缺少安全代码，请重新登录。');
-			await completeOAuthCallback(code);
-			history.replaceState({}, '', '/auth/callback/');
-			sessionStorage.removeItem('bb-auth-next');
-			if (title) title.textContent = '登录完成';
-			if (status) status.textContent = '正在返回之前的页面…';
-			location.replace(next);
-		} catch (error) {
-			if (title) title.textContent = '登录没有完成';
-			if (status) status.textContent = error instanceof Error ? error.message : '请重新登录。';
-			if (retry) retry.hidden = false;
-		}
-	})();
+	import '../../scripts/authCallback';
 </script>

@@ -1,6 +1,6 @@
 import type { Session, User } from '@supabase/supabase-js';
 
-import { loadSupabaseClient } from '../supabase/client';
+import { loadSupabaseClient, resetUnavailableSupabaseClient } from '../supabase/client';
 import { callbackUrl, safeRelativeNext } from './redirect';
 
 export type AuthStatus =
@@ -90,7 +90,11 @@ export function subscribeAuth(listener: (state: AuthState) => void): () => void 
 }
 
 export function bootAuth(): Promise<AuthState> {
-	if (bootPromise) return bootPromise;
+	if (bootPromise && state.status !== 'recoverable_error') return bootPromise;
+	if (state.status === 'recoverable_error') {
+		bootPromise = null;
+		resetUnavailableSupabaseClient();
+	}
 	bootPromise = (async () => {
 		const client = await loadSupabaseClient();
 		if (!client)
@@ -136,9 +140,17 @@ export function bootAuth(): Promise<AuthState> {
 export async function signInWithGoogle(next: string, locale: 'zh-CN' | 'en'): Promise<void> {
 	publish({ ...state, status: 'redirecting', error: null });
 	const client = await loadSupabaseClient();
-	if (!client) throw new Error('Community configuration is unavailable.');
-	sessionStorage.setItem('bb-auth-next', safeRelativeNext(next));
-	sessionStorage.setItem('bb-auth-locale', locale);
+	if (!client) {
+		const error = 'Community configuration is unavailable.';
+		publish({ ...state, status: 'recoverable_error', error });
+		throw new Error(error);
+	}
+	try {
+		sessionStorage.setItem('bb-auth-next', safeRelativeNext(next));
+		sessionStorage.setItem('bb-auth-locale', locale);
+	} catch {
+		// Session storage may be disabled; OAuth still completes with the locale fallback.
+	}
 	const { error } = await client.auth.signInWithOAuth({
 		provider: 'google',
 		options: { redirectTo: callbackUrl(), skipBrowserRedirect: false },
@@ -152,7 +164,11 @@ export async function signInWithGoogle(next: string, locale: 'zh-CN' | 'en'): Pr
 export async function completeOAuthCallback(code: string): Promise<AuthState> {
 	publish({ ...state, status: 'authenticated', error: null });
 	const client = await loadSupabaseClient();
-	if (!client) throw new Error('Community configuration is unavailable.');
+	if (!client) {
+		const error = 'Community configuration is unavailable.';
+		publish({ ...state, status: 'recoverable_error', error });
+		throw new Error(error);
+	}
 	const { data, error } = await client.auth.exchangeCodeForSession(code);
 	if (error || !data.session) {
 		const message = error?.message ?? 'The login session could not be completed.';

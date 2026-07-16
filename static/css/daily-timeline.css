@@ -85,6 +85,14 @@
   overflow-wrap: anywhere;
 }
 
+.daily-timeline .timeline-discussion-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--dt-accent-strong);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
 .daily-timeline .timeline-date-nav {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

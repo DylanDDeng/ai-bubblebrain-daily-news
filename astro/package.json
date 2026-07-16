@@ -17,8 +17,9 @@
 		"format:check": "prettier --check .",
 		"test": "vitest run",
 		"validate:data": "node scripts/validate-daily-data.mjs",
+		"verify:csp": "node scripts/verify-csp.mjs",
 		"verify:site": "node ../scripts/verify-site.mjs",
-		"verify": "npm run validate:data && npm run check && npm run lint && npm run test && npm run build && npm run verify:site"
+		"verify": "npm run validate:data && npm run check && npm run lint && npm run test && npm run build && npm run verify:csp && npm run verify:site"
 	},
 	"dependencies": {
 		"@phosphor-icons/web": "^2.1.2",

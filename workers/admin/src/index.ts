@@ -1,12 +1,165 @@
+import { readBoundedJsonObject, RequestBodyError } from "../../shared/request";
+
 export interface AdminEnv {
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
   ADMIN_EMAILS: string;
   ADMIN_ORIGIN: string;
+  CF_ACCESS_TEAM_DOMAIN: string;
+  CF_ACCESS_AUD: string;
 }
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const ACCESS_JWKS_TTL_MS = 5 * 60 * 1000;
+
+interface AccessClaims {
+  aud?: unknown;
+  email?: unknown;
+  exp?: unknown;
+  iss?: unknown;
+  nbf?: unknown;
+}
+
+interface CachedJwks {
+  expiresAt: number;
+  keys: JsonWebKey[];
+}
+
+const accessJwksCache = new Map<string, CachedJwks>();
+
+export function clearAccessJwksCacheForTests(): void {
+  accessJwksCache.clear();
+}
+
+function decodeBase64Url(value: string): Uint8Array {
+  if (!/^[A-Za-z0-9_-]+$/.test(value)) throw new Error("Invalid JWT encoding");
+  const padded = value
+    .replace(/-/g, "+")
+    .replace(/_/g, "/")
+    .padEnd(Math.ceil(value.length / 4) * 4, "=");
+  const binary = atob(padded);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+
+function decodeJwtJson(value: string): Record<string, unknown> {
+  const decoded = new TextDecoder("utf-8", { fatal: true }).decode(
+    decodeBase64Url(value),
+  );
+  const parsed: unknown = JSON.parse(decoded);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+    throw new Error("Invalid JWT object");
+  return parsed as Record<string, unknown>;
+}
+
+function accessIssuer(env: AdminEnv): string {
+  if (!env.CF_ACCESS_TEAM_DOMAIN?.trim() || !env.CF_ACCESS_AUD?.trim())
+    throw new Error("Cloudflare Access configuration is missing");
+  const url = new URL(env.CF_ACCESS_TEAM_DOMAIN);
+  if (
+    url.protocol !== "https:" ||
+    url.username ||
+    url.password ||
+    (url.pathname !== "/" && url.pathname !== "") ||
+    url.search ||
+    url.hash ||
+    !url.hostname.endsWith(".cloudflareaccess.com")
+  ) {
+    throw new Error("Cloudflare Access team domain is invalid");
+  }
+  return url.origin;
+}
+
+async function loadAccessJwks(
+  issuer: string,
+  forceRefresh = false,
+): Promise<JsonWebKey[]> {
+  const cached = accessJwksCache.get(issuer);
+  if (!forceRefresh && cached && cached.expiresAt > Date.now())
+    return cached.keys;
+  const response = await fetch(`${issuer}/cdn-cgi/access/certs`, {
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) throw new Error("Cloudflare Access keys are unavailable");
+  const payload = (await response.json()) as { keys?: unknown };
+  if (!Array.isArray(payload.keys))
+    throw new Error("Cloudflare Access keys are malformed");
+  const keys = payload.keys.filter(
+    (key): key is JsonWebKey =>
+      Boolean(key) && typeof key === "object" && !Array.isArray(key),
+  );
+  if (!keys.length) throw new Error("Cloudflare Access keys are empty");
+  accessJwksCache.set(issuer, {
+    expiresAt: Date.now() + ACCESS_JWKS_TTL_MS,
+    keys,
+  });
+  return keys;
+}
+
+function audienceMatches(value: unknown, expected: string): boolean {
+  if (typeof value === "string") return value === expected;
+  return Array.isArray(value) && value.some((entry) => entry === expected);
+}
+
+async function verifyAccessJwt(
+  token: string,
+  env: AdminEnv,
+): Promise<AccessClaims> {
+  const parts = token.split(".");
+  if (parts.length !== 3 || parts.some((part) => !part))
+    throw new Error("Invalid Access JWT");
+  const header = decodeJwtJson(parts[0]);
+  const claims = decodeJwtJson(parts[1]) as AccessClaims;
+  if (header.alg !== "RS256" || typeof header.kid !== "string" || !header.kid) {
+    throw new Error("Unsupported Access JWT");
+  }
+
+  const issuer = accessIssuer(env);
+  let keys = await loadAccessJwks(issuer);
+  let jwk = keys.find((candidate) => candidate.kid === header.kid);
+  if (!jwk) {
+    keys = await loadAccessJwks(issuer, true);
+    jwk = keys.find((candidate) => candidate.kid === header.kid);
+  }
+  if (
+    !jwk ||
+    jwk.kty !== "RSA" ||
+    (jwk.alg !== undefined && jwk.alg !== "RS256") ||
+    (jwk.use !== undefined && jwk.use !== "sig")
+  ) {
+    throw new Error("Access signing key is invalid");
+  }
+  const key = await crypto.subtle.importKey(
+    "jwk",
+    jwk,
+    { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+    false,
+    ["verify"],
+  );
+  const verified = await crypto.subtle.verify(
+    "RSASSA-PKCS1-v1_5",
+    key,
+    decodeBase64Url(parts[2]),
+    new TextEncoder().encode(`${parts[0]}.${parts[1]}`),
+  );
+  if (!verified) throw new Error("Access JWT signature is invalid");
+
+  const now = Math.floor(Date.now() / 1000);
+  if (
+    claims.iss !== issuer ||
+    !audienceMatches(claims.aud, env.CF_ACCESS_AUD.trim()) ||
+    typeof claims.exp !== "number" ||
+    !Number.isSafeInteger(claims.exp) ||
+    claims.exp <= now ||
+    (claims.nbf !== undefined &&
+      (typeof claims.nbf !== "number" ||
+        !Number.isSafeInteger(claims.nbf) ||
+        claims.nbf > now))
+  ) {
+    throw new Error("Access JWT claims are invalid");
+  }
+  return claims;
+}
 
 function securityHeaders(nonce?: string): Headers {
   const headers = new Headers({
@@ -33,15 +186,24 @@ function json(body: unknown, status = 200): Response {
   return new Response(value, { status, headers });
 }
 
-function adminEmail(request: Request, env: AdminEnv): string | null {
-  if (!request.headers.get("Cf-Access-Jwt-Assertion")) return null;
-  const email = request.headers
-    .get("Cf-Access-Authenticated-User-Email")
-    ?.trim()
-    .toLowerCase();
+async function adminEmail(
+  request: Request,
+  env: AdminEnv,
+): Promise<string | null> {
+  const token = request.headers.get("Cf-Access-Jwt-Assertion")?.trim();
+  if (!token) return null;
+  let claims: AccessClaims;
+  try {
+    claims = await verifyAccessJwt(token, env);
+  } catch {
+    return null;
+  }
+  const email =
+    typeof claims.email === "string" ? claims.email.trim().toLowerCase() : "";
   if (!email) return null;
   const allowed = new Set(
-    env.ADMIN_EMAILS.split(",")
+    String(env.ADMIN_EMAILS ?? "")
+      .split(",")
       .map((value) => value.trim().toLowerCase())
       .filter(Boolean),
   );
@@ -125,7 +287,7 @@ async function handleApi(request: Request, env: AdminEnv): Promise<Response> {
         : "";
     const response = await supabase(
       env,
-      `comments?select=id,thread_id,parent_id,user_id,type,content,created_at,moderation_status,moderation_reason,profiles(display_name,avatar_url)${statusFilter}&order=created_at.desc&limit=200`,
+      `comments?select=id,thread_id,parent_id,user_id,type,content,created_at,moderation_status,moderation_reason,profiles(display_name,avatar_url)&thread_id=like.page:/*${statusFilter}&order=created_at.desc&limit=200`,
     );
     if (!response.ok)
       return json({ error: "Comments could not be loaded" }, 502);
@@ -150,7 +312,10 @@ async function handleApi(request: Request, env: AdminEnv): Promise<Response> {
     /^\/admin\/api\/comments\/([0-9a-f-]+)\/moderate$/i,
   );
   if (request.method === "POST" && moderate && UUID_PATTERN.test(moderate[1])) {
-    const body = (await request.json()) as {
+    const body = (await readBoundedJsonObject(request, {
+      maxBytes: 4_096,
+      allowedFields: ["status", "reason"],
+    })) as {
       status?: unknown;
       reason?: unknown;
     };
@@ -172,7 +337,10 @@ async function handleApi(request: Request, env: AdminEnv): Promise<Response> {
     request.method === "POST" &&
     url.pathname === "/admin/api/settings/comments-write"
   ) {
-    const body = (await request.json()) as { enabled?: unknown };
+    const body = (await readBoundedJsonObject(request, {
+      maxBytes: 1_024,
+      allowedFields: ["enabled"],
+    })) as { enabled?: unknown };
     if (typeof body.enabled !== "boolean")
       return json({ error: "enabled must be boolean" }, 400);
     const enabled = await rpc(env, "admin_set_comment_writes", {
@@ -185,7 +353,7 @@ async function handleApi(request: Request, env: AdminEnv): Promise<Response> {
 
 export default {
   async fetch(request: Request, env: AdminEnv): Promise<Response> {
-    const email = adminEmail(request, env);
+    const email = await adminEmail(request, env);
     if (!email)
       return json({ error: "Cloudflare Access authentication required" }, 401);
     const url = new URL(request.url);
@@ -195,7 +363,9 @@ export default {
       return adminPage(email);
     try {
       return await handleApi(request, env);
-    } catch {
+    } catch (error) {
+      if (error instanceof RequestBodyError)
+        return json({ error: error.message }, error.status);
       return json({ error: "Admin service is temporarily unavailable" }, 502);
     }
   },

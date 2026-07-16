@@ -10,3 +10,7 @@ routes = [
 [vars]
 SUPABASE_URL = "https://znurdobjryrhshzkalup.supabase.co"
 ADMIN_ORIGIN = "https://admin.bubblenews.today"
+
+# Set SUPABASE_SERVICE_ROLE_KEY, ADMIN_EMAILS, CF_ACCESS_TEAM_DOMAIN, and
+# CF_ACCESS_AUD as Worker secrets. The Worker verifies the Access JWT against
+# the configured team JWKS and fails closed when either Access value is absent.

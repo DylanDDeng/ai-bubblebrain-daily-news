@@ -3,29 +3,17 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="登录 · Bubble's Brain" description="登录后参与文章讨论" noindex>
-	<section class="page-shell auth-page" data-login-page>
+	<section class="page-shell auth-page" data-login-page data-locale="zh-CN">
 		<p class="page-kicker">COMMUNITY ACCESS</p>
 		<h1>登录</h1>
 		<p>使用 Google 登录后，可以在文章下提问、补充信息或反馈复现结果。</p>
-		<button type="button" class="primary-action" data-login-google>使用 Google 继续</button>
+		<button type="button" class="primary-action" data-login-google disabled>使用 Google 继续</button
+		>
 		<p class="auth-page-status" data-login-status role="status"></p>
+		<noscript><p>登录需要启用 JavaScript。你仍可以返回首页继续阅读。</p></noscript>
 	</section>
 </BaseLayout>
 
 <script>
-	import { signInWithGoogle } from '../../lib/auth/authStore';
-	import { safeRelativeNext } from '../../lib/auth/redirect';
-	const button = document.querySelector<HTMLButtonElement>('[data-login-google]');
-	const status = document.querySelector<HTMLElement>('[data-login-status]');
-	button?.addEventListener('click', async () => {
-		button.disabled = true;
-		if (status) status.textContent = '正在前往 Google…';
-		try {
-			const next = safeRelativeNext(new URLSearchParams(location.search).get('next'));
-			await signInWithGoogle(next, 'zh-CN');
-		} catch (error) {
-			if (status) status.textContent = error instanceof Error ? error.message : '登录暂时不可用。';
-			button.disabled = false;
-		}
-	});
+	import '../../scripts/loginPage';
 </script>

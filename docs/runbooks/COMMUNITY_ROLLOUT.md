@@ -19,6 +19,8 @@ Admin Worker:
 
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `ADMIN_EMAILS`
+- `CF_ACCESS_TEAM_DOMAIN`
+- `CF_ACCESS_AUD`
 
 Secrets never enter Astro, GitHub artifacts, Worker variables, or logs.
 
@@ -27,8 +29,8 @@ Secrets never enter Astro, GitHub artifacts, Worker variables, or logs.
 1. Run `bash scripts/test-supabase-local.sh`.
 2. Run `npm test`, `npm run community:check`, `npm run admin:check`, and
    `npm run verify --prefix astro`.
-3. Push the additive Supabase migration. Confirm `page_comments` returns the two legacy page rows,
-   `comments` returns 401 to anon, and Gallery/Video rows are absent from the view.
+3. Push the additive Supabase migration. Confirm `get_page_comments` returns the two legacy page
+   rows, `comments` returns 401 to anon, and Gallery/Video thread IDs are rejected by the RPC.
 4. Deploy the Community API with `COMMENTS_WRITE_ENABLED="false"`. Confirm `/health` and a 503 write
    response from the production hostname.
 5. Deploy Astro login and read-only discussion. Confirm callback is noindex and the legacy page shows
@@ -48,8 +50,10 @@ Secrets never enter Astro, GitHub artifacts, Worker variables, or logs.
 2. Call service-role-only `admin_set_comment_writes(false)` or use the protected admin switch. The
    database switch is authoritative even if an old frontend remains cached.
 3. Re-deploy the last known-good Astro artifact from GitHub Actions.
-4. Roll back the Community Worker with `wrangler rollback <version> --name bubble-community-api` if
-   required.
+4. Roll back the Community Worker to the verified writes-off version with
+   `npx wrangler rollback fa39969d-53c8-406b-932e-7e575f38f0a4 --config wrangler.community.toml --name bubble-community-api --yes`
+   if required. After recovery, redeploy the intended exact source and repeat the health, disabled
+   write, and Origin checks.
 5. Keep the additive database migration. Fix database issues with a new forward migration; do not
    run a destructive down migration against the preserved 13 comments and 14 favorites.
 
@@ -57,5 +61,5 @@ Secrets never enter Astro, GitHub artifacts, Worker variables, or logs.
 
 - The database kill switch defaults to off.
 - The Community Worker deploys with writes off.
-- Astro hides the composer when no real Turnstile site key is present.
+- Astro hides the composer when the environment has no matching real Turnstile site key.
 - Gallery/Video comments and favorites remain stored but are not publicly routed.
