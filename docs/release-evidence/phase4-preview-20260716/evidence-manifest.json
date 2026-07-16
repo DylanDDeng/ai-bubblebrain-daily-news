@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-16T03:06:00Z",
+  "decision": "no-go",
+  "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
+  "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
+  "preview_origin": "https://2747fe96.ai-bubblebrain-daily-news.pages.dev",
+  "artifact_sha256": "47599a2dcef1475296b38d745146052e391c18f2cbe18dcb3f7673f80fc4113c",
+  "route_manifest_records": 594,
+  "complete_route_verifier": "passed-after-three-transient-single-route-timeout-attempts",
+  "parsed_external_links": 4491,
+  "browser": {
+    "daily_route": "/daily/2026/07/2026-07-16/",
+    "news_anchors": 157,
+    "desktop": { "width": 1280, "height": 720, "horizontal_overflow_px": 0 },
+    "mobile": { "width": 390, "height": 844, "horizontal_overflow_px": 0 },
+    "no_javascript": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "content_visible": true },
+    "keyboard_skip_link": "passed"
+  },
+  "axe": {
+    "version": "4.12.1",
+    "violations": 0,
+    "passes": 27,
+    "incomplete": 2,
+    "report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3"
+  },
+  "lighthouse": {
+    "desktop": { "performance": 0.99, "accessibility": 1, "best_practices": 1, "seo": 0.66, "report_sha256": "b04bd722bb72cee23cec692dce4bc3dc1c9ad6e4d4828ed630ab141d058872aa" },
+    "mobile": { "performance": 0.97, "accessibility": 1, "best_practices": 1, "seo": 0.66, "report_sha256": "d877413133bc2325bee814dc87d27ce0eb3c0f8d4ded014f3846f4c628dbe2f7" }
+  },
+  "external_link_audit": {
+    "source_sha": "d3e909420ffe2804a882e9345f4e519ce923960a",
+    "preview_origin": "https://2fafb80f.ai-bubblebrain-daily-news.pages.dev",
+    "gate": "pass-with-warnings",
+    "total": 4386,
+    "directly_evaluated": 1393,
+    "success": 1321,
+    "confirmed_dead": 0,
+    "policy_failure": 0,
+    "waived": 2993,
+    "report_sha256": "cbdc12ceae62044253eb4685d7d60ee23cb2dae1098779b71c35e06944c88d6a"
+  },
+  "open_conditions": [
+    "explicit user approval of the exact immutable preview and source SHA"
+  ]
+}

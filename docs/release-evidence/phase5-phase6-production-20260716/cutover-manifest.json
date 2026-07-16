@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T02:16:13Z",
+  "recorded_at": "2026-07-16T03:06:00Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
-    "phase_5": "go",
+    "phase_5": "no-go-evidence-closure",
     "phase_6": "no-go",
     "open_p0": 0,
-    "open_p1": 0,
-    "blocking_reason": "afternoon, night, and lateNight observation batches are pending"
+    "open_p1": 2,
+    "blocking_reason": "historical PAT revocation proof and exact Preview approval are missing; afternoon, night, and lateNight observation batches are pending"
   },
   "repository": {
     "owner": "DylanDDeng",
@@ -30,6 +30,16 @@
     "production_deployment_id": "52c8e180-733e-43ec-9973-1e9ceea7ac49",
     "production_origin": "https://52c8e180.ai-bubblebrain-daily-news.pages.dev",
     "source_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+    "latest_evidence_preview": {
+      "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
+      "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
+      "origin": "https://2747fe96.ai-bubblebrain-daily-news.pages.dev",
+      "route_manifest_records": 594,
+      "artifact_sha256": "47599a2dcef1475296b38d745146052e391c18f2cbe18dcb3f7673f80fc4113c",
+      "axe_violations": 0,
+      "complete_route_verifier": "passed-after-three-transient-single-route-timeout-attempts",
+      "user_approval": "missing"
+    },
     "cutover_baseline": {
       "deployment_id": "b12e9087-78fb-4cf9-b925-897272e4c88c",
       "source_sha": "3765b785bcf411fe7630416bde4fb88204898d74"
@@ -164,5 +174,12 @@
     "legacy_reads_retained": true,
     "legacy_database_fields_retained": true,
     "rollback_owner_handoff_accepted": false
+  },
+  "open_findings": {
+    "p0": [],
+    "p1": [
+      "No auditable non-secret proof that the historically exposed GitHub PAT was revoked or that the old value now returns HTTP 401/403",
+      "No explicit user approval is archived for an exact immutable Astro Preview after a clean complete Preview verification"
+    ]
   }
 }
