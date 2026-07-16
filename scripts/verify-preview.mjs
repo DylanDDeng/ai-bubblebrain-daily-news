@@ -9,6 +9,7 @@ import {
   evaluateExternalLinkAudit,
   probeExternalUrl,
 } from "./external-link-audit.mjs";
+import { expectedPreviewMediaType } from "./preview-media-types.mjs";
 
 const argumentsList = process.argv.slice(2);
 const checkExternal = argumentsList.includes("--check-external");
@@ -99,22 +100,6 @@ function htmlMetadata(html) {
       }))
       .sort((a, b) => a.locale.localeCompare(b.locale)),
   };
-}
-
-function expectedMediaType(contentType) {
-  return {
-    "application/javascript": "application/javascript",
-    "application/json": "application/json",
-    "application/octet-stream": "application/octet-stream",
-    "application/xml": "application/xml",
-    "image/png": "image/png",
-    "image/svg+xml": "image/svg+xml",
-    "image/vnd.microsoft.icon": "image/vnd.microsoft.icon",
-    "text/html": "text/html",
-    "text/plain": "text/plain",
-    "text/css": "text/css",
-    "video/mp4": "video/mp4",
-  }[contentType];
 }
 
 async function fetchManual(route, attempts = 3) {
@@ -219,7 +204,7 @@ async function verifyRecord(record) {
       ?.split(";", 1)[0]
       .trim()
       .toLowerCase();
-    const expectedType = expectedMediaType(record.content_type);
+    const expectedType = expectedPreviewMediaType(record.content_type);
     invariant(
       mediaType === expectedType,
       `${record.route}: expected ${expectedType}, received ${mediaType ?? "none"}`,
