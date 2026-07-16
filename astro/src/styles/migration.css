@@ -2,7 +2,8 @@
 
 :root {
 	color-scheme: light;
-	font-family: 'Noto Sans SC', 'PingFang SC', ui-sans-serif, system-ui, sans-serif;
+	font-family:
+		'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
 	background: #f4f1e9;
 	color: #20201e;
 	--paper: #f4f1e9;
@@ -17,8 +18,8 @@
 	--red: #b34135;
 	--red-soft: #f3dfda;
 	--focus: #214f9f;
-	--serif: 'Noto Serif SC', 'Songti SC', 'STSong', ui-serif, serif;
-	--mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+	--serif: 'Songti SC', 'STSong', 'Noto Serif CJK SC', ui-serif, Georgia, serif;
+	--mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
 	--rail-width: 216px;
 }
 
