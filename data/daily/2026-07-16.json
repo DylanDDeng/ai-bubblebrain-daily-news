@@ -301,17 +301,36 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-16T19:00:04.000Z",
       "id": "lateNight",
-      "item_ids": [],
+      "item_ids": [
+        "n_fbebccf6d9c9ad6b7147fc15a018c5fd9ef9a9cc326819ab4a58b88be744db9f",
+        "n_ddbed7eae6a8b30c37e6db1a24f93d40c08227ea95f88bbcdd9a0da1d993154e",
+        "n_4067547c30f908e7e8fa2adfdf760ebec5078dc65857a20e3b8466d7cf96f8e9",
+        "n_70ce6e42a7110fa0f916d19bcd9cd9033e556d36de4abe98c19f912e34adc16e",
+        "n_86f44ddd0042e7d0462f1cbb687c9c61d7b46a7b32483d2f2a688de7911bb126",
+        "n_42a61a2bf100482966e1aa43695f66ab3d2608a48db31d68a01518ceeff9993f",
+        "n_1f6938aa5807f5b6fa6561633f5ee1932fa0166a8c9740356516b1e449f39d6d",
+        "n_298a09924d513bcbad460ffe5a2259f513afec5a47cf36c652f9a489ed803cba",
+        "n_e00f34ecd75bfdd047ea19acab92794c7c04dbc5c91816e6a4f6f39ffb9fd842",
+        "n_4f3f8dcdae6afaf8c93bf98aa0e8bec5f148b7357a07ce4ef1d83bd231b8a0bb",
+        "n_6ed77229eeb0fef4557ee6c386b77cfb2c0235c101d450583ae212da64d66386",
+        "n_31a8d858ac9f06191ad77a662639010bffd47b4c683fedc1a120f4c32fbbf1e4",
+        "n_ecff2fa7c642d4fab8a5235562d0d68def370d7007beedf928f660a6596d6cce",
+        "n_bc56c6e02629358b11860db1f229406000611950ed83d622667b00adcb398ee5",
+        "n_da0b1585b5b3dbe674a5f7171b950de43efb21238319a22d69e3a6aa347c3eac",
+        "n_63558b69085af1c22d3ec1ce69f61feacdf844c4bf5707e277b85aef3002ea55",
+        "n_a09ed9a84964521a5a58eac291d56df0929326fb3ce7aa4bb28a7b1f7026877f",
+        "n_5524810cf46129510a398e450dd8f04cd25a251e772853baa68fdaeb6e1bd785"
+      ],
       "label": "次日 03:00 补充更新",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-16",
   "dedupe_version": 1,
-  "generated_at": "2026-07-16T15:00:04.000Z",
+  "generated_at": "2026-07-16T19:00:04.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -10855,6 +10874,668 @@
         "topic_open_source"
       ],
       "url": "https://github.com/codecrafters-io/build-your-own-x"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://openai.com/index/cars24",
+      "category": "agents",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_fbebccf6d9c9ad6b7147fc15a018c5fd9ef9a9cc326819ab4a58b88be744db9f",
+      "featured": false,
+      "id": "n_fbebccf6d9c9ad6b7147fc15a018c5fd9ef9a9cc326819ab4a58b88be744db9f",
+      "identity_claims": [
+        "c_226bd4b58e696197cc8bd2737bc7f9b83a2b705856eecec413fb3a8b8b625184",
+        "c_fbebccf6d9c9ad6b7147fc15a018c5fd9ef9a9cc326819ab4a58b88be744db9f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T00:00:00.188Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202461546383388673",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1202461546383388673",
+      "source_type": "openai_newsroom",
+      "summary": "Cars24 uses OpenAI-powered voice and chat agents to handle 1M+ monthly conversation minutes, recover 12% of lost leads, and bring agentic workflows to teams across the company.",
+      "time_precision": "exact",
+      "title": "How Cars24 scales conversations and builds faster with OpenAI",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://openai.com/index/cars24"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/sama/status/2077810840309510550",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ddbed7eae6a8b30c37e6db1a24f93d40c08227ea95f88bbcdd9a0da1d993154e",
+      "featured": false,
+      "id": "n_ddbed7eae6a8b30c37e6db1a24f93d40c08227ea95f88bbcdd9a0da1d993154e",
+      "identity_claims": [
+        "c_8e4756978f61e865b6cd48c1f826f19f15c24818c4264adc9703c886513a0acb",
+        "c_ddbed7eae6a8b30c37e6db1a24f93d40c08227ea95f88bbcdd9a0da1d993154e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T05:43:13.933Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202545721752915969",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1202545721752915969",
+      "source_type": "twitter_extra",
+      "summary": "RT Tibo On file deletions. We’ve investigated a handful of reports where GPT-5.6 unexpectedly deleted files. What we have found is that this most commonly occurs when: - Full access mode is enabled and codex is run without sandboxing protections, including without auto review being enabled - The model attempts to override the $HOME env var to define a temporary directory. - The model makes an honest mistake and mistakenly deletes $HOME instead. This is of course not how we want the system to behave, even when a user operates the model in full-access mode without the safeguards of our sandbox or without using auto review which checks for these kinds of high risk actions and rejects them. We are taking steps to mitigate this risk including by updating the developer message, guiding more users towards safer permission modes, and adding additional harness safeguards. Even though this happens extremely rarely, we’ll share a detailed post-mortem in the coming days that goes into more details and what we are doing to minimize risks further.",
+      "time_precision": "exact",
+      "title": "RT Tibo: On file deletions. We’ve investigated a handful of reports where GPT-5.6 unexpectedly deleted files. What we have found is that this most co...",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/sama/status/2077810840309510550"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/ezshine/status/2077648417506111797",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_4067547c30f908e7e8fa2adfdf760ebec5078dc65857a20e3b8466d7cf96f8e9",
+      "featured": false,
+      "id": "n_4067547c30f908e7e8fa2adfdf760ebec5078dc65857a20e3b8466d7cf96f8e9",
+      "identity_claims": [
+        "c_4067547c30f908e7e8fa2adfdf760ebec5078dc65857a20e3b8466d7cf96f8e9",
+        "c_92f0648619a361dd0dc57891b233774e322862fa9314816785e6cd8eb5b77a9d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T06:55:58.467Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202543403158491137",
+        "name": "twitter-大帅老猿"
+      },
+      "source_id": "1202543403158491137",
+      "source_type": "twitter_extra",
+      "summary": "是不是以后这些明星介绍都要说：“大家好，我是aaa，AKA bbb”",
+      "time_precision": "exact",
+      "title": "是不是以后这些明星介绍都要说：“大家好，我是aaa，AKA bbb”",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/ezshine/status/2077648417506111797"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077661517877739829",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_70ce6e42a7110fa0f916d19bcd9cd9033e556d36de4abe98c19f912e34adc16e",
+      "featured": false,
+      "id": "n_70ce6e42a7110fa0f916d19bcd9cd9033e556d36de4abe98c19f912e34adc16e",
+      "identity_claims": [
+        "c_698ead21684695a74cb21622af27df4629c48fb9c5a3ebd2297469fe27d74951",
+        "c_70ce6e42a7110fa0f916d19bcd9cd9033e556d36de4abe98c19f912e34adc16e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T07:48:01.763Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657799",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657799",
+      "source_type": "twitter_extra",
+      "summary": "Codex又给送了100美元的点数",
+      "time_precision": "exact",
+      "title": "Codex又给送了100美元的点数",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077661517877739829"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077665392575877449",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_86f44ddd0042e7d0462f1cbb687c9c61d7b46a7b32483d2f2a688de7911bb126",
+      "featured": false,
+      "id": "n_86f44ddd0042e7d0462f1cbb687c9c61d7b46a7b32483d2f2a688de7911bb126",
+      "identity_claims": [
+        "c_32820097d70ef617aed0d7e4eccd3a814c5df525043ce0aa94b38e11058b70be",
+        "c_86f44ddd0042e7d0462f1cbb687c9c61d7b46a7b32483d2f2a688de7911bb126"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T08:03:25.453Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657798",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657798",
+      "source_type": "twitter_extra",
+      "summary": "Grok开源后，已经有人分析了源码，没有偷偷上传的问题了。 Mia: I've inspected the open-sourced Grok Build so you don't have to. Here's exactly what data it sends (and what stays local): Core (unavoidable)→ Your prompts/conversations + tool calls go to xAI's inference API. That's the whole point of the CLI. Everything else is off by",
+      "time_precision": "exact",
+      "title": "Grok开源后，已经有人分析了源码，没有偷偷上传的问题了。",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077665392575877449"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077677480413118840",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_deepseek",
+        "entity_qwen"
+      ],
+      "event_id": "e_42a61a2bf100482966e1aa43695f66ab3d2608a48db31d68a01518ceeff9993f",
+      "featured": false,
+      "id": "n_42a61a2bf100482966e1aa43695f66ab3d2608a48db31d68a01518ceeff9993f",
+      "identity_claims": [
+        "c_42a61a2bf100482966e1aa43695f66ab3d2608a48db31d68a01518ceeff9993f",
+        "c_9f6fa11ca12d5c6fb474368f91816233e2fa5e1d764bc484215139e3b735b736"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T08:51:27.872Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657797",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657797",
+      "source_type": "twitter_extra",
+      "summary": "Anthropic国家安全政策负责人Tarun Chhabra，在昨天的Aspen安全论坛上，针对中美AI竞争，说了几个观点： 1、美国AI模型领先中国6-9个月； 2、美国AI的优势在于AI硬件，数据中心、芯片等AI硬件的生产力是中国的30-40倍；在能源和AI人才方面，美国优势没有那么大； 3、GLM 5.2是目前中国最先进的模型，而且蒸馏了Claude和GPT的数据，这应该是Anthropic首次公开指责GLM蒸馏数据，以前只提到DeepSeek和Qwen； 4、如果没有GPU硬件管制，中国AI应该现在跟美国并驾齐驱，甚至领先； 关于GLM的说法在39分40秒",
+      "time_precision": "exact",
+      "title": "Anthropic国家安全政策负责人Tarun Chhabra，在昨天的Aspen安全论坛上，针对中美AI竞争，说了几个观点： 1、美国AI模型领先中国6-9个月； 2、美国AI的优势在于AI...",
+      "topic_ids": [
+        "topic_models",
+        "topic_policy"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077677480413118840"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/lyson_ober/status/2077686743529369981",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_1f6938aa5807f5b6fa6561633f5ee1932fa0166a8c9740356516b1e449f39d6d",
+      "featured": false,
+      "id": "n_1f6938aa5807f5b6fa6561633f5ee1932fa0166a8c9740356516b1e449f39d6d",
+      "identity_claims": [
+        "c_1f6938aa5807f5b6fa6561633f5ee1932fa0166a8c9740356516b1e449f39d6d",
+        "c_357f2b04087f88c1cefeae8c3a5ab9810233a4136481a0cd37d23c1606f22708"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T09:28:15.958Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202595408853815296",
+        "name": "twitter-Lyson Ober"
+      },
+      "source_id": "1202595408853815296",
+      "source_type": "twitter_extra",
+      "summary": "Claude 用完就是用完了 Codex 也不说额度用完了 反正我就一直 Thinking 你就说我在不在工作吧（🤪",
+      "time_precision": "exact",
+      "title": "Claude 用完就是用完了 Codex 也不说额度用完了 反正我就一直 Thinking 你就说我在不在工作吧（🤪",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/lyson_ober/status/2077686743529369981"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077703439619137876",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_298a09924d513bcbad460ffe5a2259f513afec5a47cf36c652f9a489ed803cba",
+      "featured": false,
+      "id": "n_298a09924d513bcbad460ffe5a2259f513afec5a47cf36c652f9a489ed803cba",
+      "identity_claims": [
+        "c_298a09924d513bcbad460ffe5a2259f513afec5a47cf36c652f9a489ed803cba",
+        "c_9a023d1226ee9c18ad6cb1723901397e914843fe6a95a4d160665a27aa7f2f7c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T10:34:36.296Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657796",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657796",
+      "source_type": "twitter_extra",
+      "summary": "AI资讯日报，7月16日：",
+      "time_precision": "exact",
+      "title": "AI资讯日报，7月16日：https://gorden-sun.notion.site/7-16-AI-39f5942473258075bfabdc98ad48f99b?source=copy_link",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077703439619137876"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/omarsar0/status/2077728412068712851",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e00f34ecd75bfdd047ea19acab92794c7c04dbc5c91816e6a4f6f39ffb9fd842",
+      "featured": false,
+      "id": "n_e00f34ecd75bfdd047ea19acab92794c7c04dbc5c91816e6a4f6f39ffb9fd842",
+      "identity_claims": [
+        "c_b18c4140708b29aa55e55ae647e4d13868d280b8c075c9415b8bb2b5b04f19f7",
+        "c_e00f34ecd75bfdd047ea19acab92794c7c04dbc5c91816e6a4f6f39ffb9fd842"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T12:13:50.335Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202421642865709056",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1202421642865709056",
+      "source_type": "twitter_extra",
+      "summary": "Open source AI having a moment indeed! Sriram Krishnan: It is clear open source models and harnesses are having a moment. There's a few factors at work 1/ It is now obvious that you can catch up to near-SOTA performance and do so with a clear training lineage. See:@thinkymachines Inkling launch today. 2/ There are several",
+      "time_precision": "exact",
+      "title": "Open source AI having a moment indeed!",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/omarsar0/status/2077728412068712851"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/GemstoneNicole/status/2077741808034189488",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_4f3f8dcdae6afaf8c93bf98aa0e8bec5f148b7357a07ce4ef1d83bd231b8a0bb",
+      "featured": false,
+      "id": "n_4f3f8dcdae6afaf8c93bf98aa0e8bec5f148b7357a07ce4ef1d83bd231b8a0bb",
+      "identity_claims": [
+        "c_4f3f8dcdae6afaf8c93bf98aa0e8bec5f148b7357a07ce4ef1d83bd231b8a0bb",
+        "c_de8780397d6e092cae6d4b6697da26ba17a3eb74bb6d0d8d0f4d3cdaad3499c6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T13:07:04.657Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202508719602966528",
+        "name": "twitter-uncle-lu"
+      },
+      "source_id": "1202508719602966528",
+      "source_type": "twitter_extra",
+      "summary": "穿透下来，就是太菜了，不被喜欢罢了。",
+      "time_precision": "exact",
+      "title": "穿透下来，就是太菜了，不被喜欢罢了。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GemstoneNicole/status/2077741808034189488"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077754623105098066",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_6ed77229eeb0fef4557ee6c386b77cfb2c0235c101d450583ae212da64d66386",
+      "featured": false,
+      "id": "n_6ed77229eeb0fef4557ee6c386b77cfb2c0235c101d450583ae212da64d66386",
+      "identity_claims": [
+        "c_4db04801ab7d7a9c3dc4b5a00952f0b4e364ae1eb93b1cdb86f3ef034e794c9f",
+        "c_6ed77229eeb0fef4557ee6c386b77cfb2c0235c101d450583ae212da64d66386"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T13:57:59.121Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657795",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657795",
+      "source_type": "twitter_extra",
+      "summary": "Kimi K3在Kimi官网上线了",
+      "time_precision": "exact",
+      "title": "Kimi K3在Kimi官网上线了",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077754623105098066"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077775695795859637",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_31a8d858ac9f06191ad77a662639010bffd47b4c683fedc1a120f4c32fbbf1e4",
+      "featured": false,
+      "id": "n_31a8d858ac9f06191ad77a662639010bffd47b4c683fedc1a120f4c32fbbf1e4",
+      "identity_claims": [
+        "c_144a110f0643384dd713cfce83bce5b182459d022c0a8b84f62add5d297d4feb",
+        "c_31a8d858ac9f06191ad77a662639010bffd47b4c683fedc1a120f4c32fbbf1e4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T15:21:43.235Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657794",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657794",
+      "source_type": "twitter_extra",
+      "summary": "Kimi K3，2.8T（2800B）参数，100万上下文。 根据Kimi的报告，评分仅次于Fable 5和GPT-5.6 Sol，超过Opus。接下来我要试试这个模型，看看能力是不是真的这么强。",
+      "time_precision": "exact",
+      "title": "Kimi K3，2.8T（2800B）参数，100万上下文。 根据Kimi的报告，评分仅次于Fable 5和GPT-5.6 Sol，超过Opus。接下来我要试试这个模型，看看能力是不是真的这么强。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077775695795859637"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077783745172816220",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ecff2fa7c642d4fab8a5235562d0d68def370d7007beedf928f660a6596d6cce",
+      "featured": false,
+      "id": "n_ecff2fa7c642d4fab8a5235562d0d68def370d7007beedf928f660a6596d6cce",
+      "identity_claims": [
+        "c_5b5b7950fa29b3763b427122a593ea71106883313f15f06d6e0e2aa5c212a00c",
+        "c_ecff2fa7c642d4fab8a5235562d0d68def370d7007beedf928f660a6596d6cce"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T15:53:42.708Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657793",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657793",
+      "source_type": "twitter_extra",
+      "summary": "买了，来试试。49那档用不了K3，99那档上下文只有256，至少要买199这档。 Gorden Sun: Kimi K3，2.8T（2800B）参数，100万上下文。 根据Kimi的报告，评分仅次于Fable 5和GPT-5.6 Sol，超过Opus。接下来我要试试这个模型，看看能力是不是真的这么强。",
+      "time_precision": "exact",
+      "title": "买了，来试试。49那档用不了K3，99那档上下文只有256，至少要买199这档。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077783745172816220"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://openai.com/index/why-teens-deserve-access-safe-ai",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_bc56c6e02629358b11860db1f229406000611950ed83d622667b00adcb398ee5",
+      "featured": false,
+      "id": "n_bc56c6e02629358b11860db1f229406000611950ed83d622667b00adcb398ee5",
+      "identity_claims": [
+        "c_bc56c6e02629358b11860db1f229406000611950ed83d622667b00adcb398ee5",
+        "c_ea2934ef868ce81c1994f21ec5f610c6aec81c91ece70ccffc8f3887f29e249a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T16:00:00.598Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202461546383388672",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1202461546383388672",
+      "source_type": "openai_newsroom",
+      "summary": "Learn how OpenAI is making ChatGPT safer for teens with age-appropriate protections, learning tools, parental controls, and expert partnerships.",
+      "time_precision": "exact",
+      "title": "Why teens deserve access to safe AI",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://openai.com/index/why-teens-deserve-access-safe-ai"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/sama/status/2077810543667380334",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_da0b1585b5b3dbe674a5f7171b950de43efb21238319a22d69e3a6aa347c3eac",
+      "featured": false,
+      "id": "n_da0b1585b5b3dbe674a5f7171b950de43efb21238319a22d69e3a6aa347c3eac",
+      "identity_claims": [
+        "c_aa9420a35f6a17873b467465f23a7468411af13e92a46047bcd8fd59ecc00edb",
+        "c_da0b1585b5b3dbe674a5f7171b950de43efb21238319a22d69e3a6aa347c3eac"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T16:35:00.557Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202545721752915968",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1202545721752915968",
+      "source_type": "twitter_extra",
+      "summary": "RT Boaz Barak My first attempt at a twitter article.. if you prefer the blog form, see Boaz Barak:",
+      "time_precision": "exact",
+      "title": "RT Boaz Barak: My first attempt at a twitter article.. if you prefer the blog form, see https://windowsontheory.org/2026/07/16/all-watched-over/",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/sama/status/2077810543667380334"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2077803162682159302",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_63558b69085af1c22d3ec1ce69f61feacdf844c4bf5707e277b85aef3002ea55",
+      "featured": false,
+      "id": "n_63558b69085af1c22d3ec1ce69f61feacdf844c4bf5707e277b85aef3002ea55",
+      "identity_claims": [
+        "c_63558b69085af1c22d3ec1ce69f61feacdf844c4bf5707e277b85aef3002ea55",
+        "c_cc17e409b972b165ac3276dc726c638faefeebc7a5acd038393d7facf4723198"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T17:10:52.169Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202550115722657792",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1202550115722657792",
+      "source_type": "twitter_extra",
+      "summary": "Kimi K3生成的效果，第一次生成的有明显缺陷，这是修复了一轮后的效果。快进快退实际还是有问题的。 整体不错，但是速度太太太慢了，这么个前端任务跑了1个小时，Fable我记得也就20分钟。 在线体验： Github： Gorden Sun: Fable的前端效果真的神了，一句话生成的效果。 在线体验：",
+      "time_precision": "exact",
+      "title": "Kimi K3生成的效果，第一次生成的有明显缺陷，这是修复了一轮后的效果。快进快退实际还是有问题的。 整体不错，但是速度太太太慢了，这么个前端任务跑了1个小时...",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2077803162682159302"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/ezshine/status/2077809289830470040",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a09ed9a84964521a5a58eac291d56df0929326fb3ce7aa4bb28a7b1f7026877f",
+      "featured": false,
+      "id": "n_a09ed9a84964521a5a58eac291d56df0929326fb3ce7aa4bb28a7b1f7026877f",
+      "identity_claims": [
+        "c_a09ed9a84964521a5a58eac291d56df0929326fb3ce7aa4bb28a7b1f7026877f",
+        "c_c363c26e7ee49e9fd82a655f35300804354efdf7369524b6590ec62bec974455"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T17:35:13.204Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202543403158491136",
+        "name": "twitter-大帅老猿"
+      },
+      "source_id": "1202543403158491136",
+      "source_type": "twitter_extra",
+      "summary": "小红书的内容还挺长尾的，有一篇内容之前爆了千赞后就没涨了，过去了一个礼拜，今天又突然开始哐哐涨。",
+      "time_precision": "exact",
+      "title": "小红书的内容还挺长尾的，有一篇内容之前爆了千赞后就没涨了，过去了一个礼拜，今天又突然开始哐哐涨。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/ezshine/status/2077809289830470040"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/sama/status/2077817060068057493",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5524810cf46129510a398e450dd8f04cd25a251e772853baa68fdaeb6e1bd785",
+      "featured": false,
+      "id": "n_5524810cf46129510a398e450dd8f04cd25a251e772853baa68fdaeb6e1bd785",
+      "identity_claims": [
+        "c_206ac41d4577fa34166d99d7891a62c18a172f7d585543f802a00ec425985d89",
+        "c_5524810cf46129510a398e450dd8f04cd25a251e772853baa68fdaeb6e1bd785"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-16T19:00:04.000Z",
+      "published_at": "2026-07-16T18:06:05.988Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1202610710446575616",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1202610710446575616",
+      "source_type": "twitter_extra",
+      "summary": "we did not have our best last 12 months ever, which is mostly my fault, but we are about to have our best 12 months to date. the team is doing amazing work and i think you’ll be very happy with what they’ve got cooking for you. i am happy about this for many reasons, but mostly because i care about our users winning. AI has to be about giving lots of people more freedom, agency, and wealth. we want to do the right thing, but we do not want to scare people into doing our thing.",
+      "time_precision": "exact",
+      "title": "we did not have our best last 12 months ever, which is mostly my fault, but we are about to have our best 12 months to date. the team is doing amazing...",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/sama/status/2077817060068057493"
     }
   ],
   "overview": {
