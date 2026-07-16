@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T13:05:00Z",
+  "recorded_at": "2026-07-16T13:11:00Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -126,6 +126,10 @@
     "rollback": {
       "version_id": "3538c9be-f09e-4482-b626-9d359ea1b30b",
       "producer_sha": "d3e909420ffe2804a882e9345f4e519ce923960a",
+      "retained": true,
+      "last_verified_at": "2026-07-16T13:09:56Z",
+      "secret_binding_count": 6,
+      "pat_shaped_binding_count": 0,
       "safe_variables": {
         "EXTERNAL_WRITES_ENABLED": "true",
         "DAILY_PUBLISH_MODE": "legacy",
@@ -202,7 +206,22 @@
     },
     "authenticated_rls_smoke": "passed",
     "temporary_users_deleted": true,
-    "rollback_strategy": "additive forward-fix; retain legacy favorites.image_id"
+    "rollback_strategy": "additive forward-fix; retain legacy favorites.image_id",
+    "preflight": {
+      "observed_at": "2026-07-16T13:09:56Z",
+      "cli_version": "2.109.1",
+      "linked_project_ref": "znurdobjryrhshzkalup",
+      "migration_versions_local_remote_exact": [
+        "20260715000100",
+        "20260715000200"
+      ],
+      "migration_list_attempts": 2,
+      "first_attempt": "transient-connect-failure",
+      "bounded_retry": "passed",
+      "linked_lint_level_warning": "passed-no-schema-errors",
+      "mutations_performed": false,
+      "final_authenticated_smoke_required_after_complete_day": true
+    }
   },
   "security_evidence": {
     "historical_pat_revocation": {

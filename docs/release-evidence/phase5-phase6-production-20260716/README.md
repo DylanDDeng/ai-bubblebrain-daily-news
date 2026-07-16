@@ -2,7 +2,7 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 12:52 UTC
+Evidence updated: 2026-07-16 13:11 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -98,6 +98,20 @@ starts from a clean, intended state:
   `109c525eb1c01061ad4cb34f9a4422a2b531f5ef49a70c6dd5690e76dec6dfe0`.
 
 No deployment, trigger, KV, Git, or Pages state was changed by this preflight.
+
+## Supabase and rollback preflight
+
+At `2026-07-16T13:09:56Z`, Supabase CLI `2.109.1` confirmed that linked project
+`znurdobjryrhshzkalup` still has exact local/remote migration agreement for versions
+`20260715000100` and `20260715000200`. The first read-only migration-list connection failed
+transiently while the concurrent linked lint succeeded; one bounded retry then returned the exact
+two-version match. Linked `db lint --level warning` reported no schema errors.
+
+The retained Worker rollback version `3538c9be-f09e-4482-b626-9d359ea1b30b` was also re-read from
+Cloudflare. It remains legacy mode with structured writes disabled, protected `main` pull-request
+publication, six expected Secret bindings, and no PAT-shaped binding. Neither the database nor the
+rollback deployment was mutated. The final authenticated Auth/RLS, legacy-client, and exact
+row-count smoke remains mandatory after the complete production observation day.
 
 ## Current exact Preview technical closure
 
