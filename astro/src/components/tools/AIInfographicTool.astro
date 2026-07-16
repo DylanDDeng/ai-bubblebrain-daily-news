@@ -1,0 +1,106 @@
+---
+interface Props {
+	locale: 'zh-CN' | 'en';
+	title: string;
+	description: string;
+}
+
+const { locale, title, description } = Astro.props;
+const isEnglish = locale === 'en';
+---
+
+<section
+	class="legacy-shell infographic-tool"
+	data-aig-root
+	data-locale={locale}
+	data-error-key={isEnglish ? 'Enter your Moonshot API key.' : '请输入 Moonshot API Key。'}
+	data-error-content={isEnglish ? 'Add at least 50 characters of source content.' : '请输入至少 50 个字符的原始内容。'}
+	data-error-generic={isEnglish ? 'Generation failed. Check the API key and network connection.' : '生成失败，请检查 API Key 和网络连接。'}
+>
+	<header class="directory-hero infographic-tool__hero">
+		<div>
+			<p class="page-kicker">AI TOOL · LOCAL KEY</p>
+			<h1>{title}</h1>
+			<p>{description}</p>
+		</div>
+		<p class="infographic-tool__privacy">
+			<i class="ph ph-shield-check" aria-hidden="true"></i>
+			<span>{isEnglish ? 'Your key stays in this browser.' : 'API Key 仅保存在当前浏览器。'}</span>
+		</p>
+	</header>
+
+	<div class="infographic-workspace">
+		<form class="infographic-controls" data-aig-form novalidate>
+			<section class="infographic-panel" aria-labelledby="aig-model-title">
+				<header>
+					<i class="ph ph-stack" aria-hidden="true"></i>
+					<h2 id="aig-model-title">{isEnglish ? 'Model setup' : '模型配置'}</h2>
+				</header>
+				<div class="infographic-model-grid">
+					<p><span>{isEnglish ? 'Provider' : '供应商'}</span><strong>Moonshot AI</strong></p>
+					<p><span>{isEnglish ? 'Model' : '模型'}</span><strong>kimi-k2.5</strong></p>
+				</div>
+				<label for="aig-api-key">Moonshot API Key</label>
+				<div class="infographic-key-field">
+					<input id="aig-api-key" name="api-key" type="password" autocomplete="off" spellcheck="false" placeholder={isEnglish ? 'Paste your key' : '粘贴你的 API Key'} />
+					<button type="button" data-aig-toggle-key aria-label={isEnglish ? 'Show or hide API key' : '显示或隐藏 API Key'}>
+						<i class="ph ph-eye" aria-hidden="true"></i>
+					</button>
+				</div>
+			</section>
+
+			<section class="infographic-panel">
+				<div class="infographic-input-heading">
+					<label for="aig-content">{isEnglish ? 'Source content' : '输入内容'}</label>
+					<span data-aig-count>0 {isEnglish ? 'characters' : '字符'}</span>
+				</div>
+				<textarea id="aig-content" name="content" rows="13" placeholder={isEnglish ? 'Paste an article, report, or story to turn into a vertical infographic…' : '粘贴想要转换为竖屏信息图的文章、报告或故事……'}></textarea>
+				<p>{isEnglish ? 'The content is sent directly to Moonshot only when you generate.' : '只有点击生成时，内容才会直接发送给 Moonshot。'}</p>
+			</section>
+
+			<button class="infographic-generate" type="submit" data-aig-generate>
+				<i class="ph ph-sparkle" aria-hidden="true"></i>
+				<span data-aig-generate-label>{isEnglish ? 'Generate infographic' : '生成信息图'}</span>
+			</button>
+			<p class="infographic-error" data-aig-error role="alert" hidden></p>
+		</form>
+
+		<section class="infographic-preview infographic-preview--empty" data-aig-empty aria-live="polite">
+			<i class="ph ph-layout" aria-hidden="true"></i>
+			<h2>{isEnglish ? 'Your 9:16 preview appears here' : '9:16 预览会显示在这里'}</h2>
+			<p>{isEnglish ? 'The generated result is a standalone HTML file you can copy or download.' : '生成结果是一个可复制、可下载的独立 HTML 文件。'}</p>
+		</section>
+
+		<section class="infographic-preview" data-aig-result hidden>
+			<header class="infographic-preview__toolbar">
+				<strong><i class="ph ph-image-square" aria-hidden="true"></i>{isEnglish ? 'Preview' : '预览'}</strong>
+				<div>
+					<button type="button" data-aig-zoom-out aria-label={isEnglish ? 'Zoom out' : '缩小'}><i class="ph ph-minus" aria-hidden="true"></i></button>
+					<span data-aig-zoom-level>100%</span>
+					<button type="button" data-aig-zoom-in aria-label={isEnglish ? 'Zoom in' : '放大'}><i class="ph ph-plus" aria-hidden="true"></i></button>
+					<button type="button" data-aig-fullscreen aria-label={isEnglish ? 'Toggle fullscreen preview' : '切换全屏预览'}><i class="ph ph-arrows-out" aria-hidden="true"></i></button>
+				</div>
+			</header>
+			<div class="infographic-preview__stage">
+				<div data-aig-preview-wrapper>
+					<iframe data-aig-preview title={isEnglish ? 'Generated infographic preview' : '生成的信息图预览'} sandbox="allow-scripts"></iframe>
+				</div>
+			</div>
+			<footer class="infographic-preview__actions">
+				<span>9:16 · HTML</span>
+				<div>
+					<button type="button" data-aig-copy><i class="ph ph-copy" aria-hidden="true"></i>{isEnglish ? 'Copy HTML' : '复制 HTML'}</button>
+					<button type="button" data-aig-download><i class="ph ph-download-simple" aria-hidden="true"></i>{isEnglish ? 'Download' : '下载 HTML'}</button>
+					<button type="button" data-aig-new><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i>{isEnglish ? 'Start over' : '重新生成'}</button>
+				</div>
+			</footer>
+		</section>
+	</div>
+
+	<aside class="infographic-notes">
+		<strong>{isEnglish ? 'Output notes' : '输出说明'}</strong>
+		<p>{isEnglish ? 'The prompt asks Kimi to extract the main points and arrange them as a 9:16 Swiss-style HTML infographic. Review factual claims before publishing.' : '系统会让 Kimi 提炼重点并排成 9:16 瑞士风格 HTML 信息图；发布前请复核事实与表述。'}</p>
+	</aside>
+</section>
+
+<script is:inline type="module" src="/js/ai-infographic.js"></script>

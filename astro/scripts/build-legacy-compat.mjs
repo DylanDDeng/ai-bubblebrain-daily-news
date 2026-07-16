@@ -78,29 +78,32 @@ const redirectSources = new Set(
 		.map((line) => line.split(/\s+/)[0]),
 );
 
+
+const copied = [];
+const skippedRedirects = [];
 try {
-	const { stdout: hugoVersion } = await execFileAsync('hugo', ['version']);
-	if (!hugoVersion.includes('v0.147.9')) {
-		throw new Error(
-			`Hugo 0.147.9 is required for the compatibility build; received: ${hugoVersion.trim()}`,
+	if (roots.length > 0) {
+		const { stdout: hugoVersion } = await execFileAsync('hugo', ['version']);
+		if (!hugoVersion.includes('v0.147.9')) {
+			throw new Error(
+				`Hugo 0.147.9 is required for the compatibility build; received: ${hugoVersion.trim()}`,
+			);
+		}
+		await execFileAsync(
+			'hugo',
+			[
+				'--source',
+				repoRoot,
+				'--destination',
+				hugoRoot,
+				'--minify',
+				'--panicOnWarning',
+				'--printPathWarnings',
+			],
+			{ maxBuffer: 16 * 1024 * 1024 },
 		);
 	}
-	await execFileAsync(
-		'hugo',
-		[
-			'--source',
-			repoRoot,
-			'--destination',
-			hugoRoot,
-			'--minify',
-			'--panicOnWarning',
-			'--printPathWarnings',
-		],
-		{ maxBuffer: 16 * 1024 * 1024 },
-	);
 
-	const copied = [];
-	const skippedRedirects = [];
 	for (const root of roots) {
 		const sourceRoot = resolve(hugoRoot, root);
 		if (!(await exists(sourceRoot)))
@@ -143,7 +146,7 @@ try {
 		`${JSON.stringify(
 			{
 				schema_version: 1,
-				hugo_version: '0.147.9',
+				hugo_version: roots.length > 0 ? '0.147.9' : null,
 				ownership_sha256: sha256(ownershipBytes),
 				copied,
 				skipped_redirect_routes: skippedRedirects,

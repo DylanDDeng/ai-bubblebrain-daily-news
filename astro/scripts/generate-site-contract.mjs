@@ -79,6 +79,9 @@ function contentType(path) {
 	if (path.endsWith('.mp4')) return 'video/mp4';
 	if (path.endsWith('.png')) return 'image/png';
 	if (path.endsWith('.svg')) return 'image/svg+xml';
+	if (path.endsWith('.woff2')) return 'font/woff2';
+	if (path.endsWith('.woff')) return 'font/woff';
+	if (path.endsWith('.ttf')) return 'font/ttf';
 	if (path.endsWith('.ico')) return 'image/vnd.microsoft.icon';
 	if (path.endsWith('.txt')) return 'text/plain';
 	if (!path.includes('.')) return 'application/octet-stream';

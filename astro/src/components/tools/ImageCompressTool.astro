@@ -1,0 +1,49 @@
+---
+interface Props {
+	locale: 'zh-CN' | 'en';
+	title: string;
+	description: string;
+}
+
+const { locale, title, description } = Astro.props;
+const isEnglish = locale === 'en';
+---
+
+<section class="legacy-shell tool-shell" id="imgc-root">
+	<header class="directory-hero">
+		<div>
+			<p class="page-kicker">LOCAL BROWSER TOOL</p>
+			<h1>{title}</h1>
+			<p>{description}</p>
+		</div>
+	</header>
+	<div class="compress-workspace" id="imgc-guarded">
+		<label class="compress-dropzone" id="imgc-dropzone">
+			<i class="ph ph-image-square" aria-hidden="true"></i>
+			<strong>{isEnglish ? 'Choose images' : '选择图片'}</strong>
+			<span>{isEnglish ? 'JPEG, PNG, WebP, HEIC · processed locally' : '支持 JPEG、PNG、WebP、HEIC · 全程本地处理'}</span>
+			<input id="imgc-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple />
+		</label>
+		<div class="compress-controls">
+			<label>{isEnglish ? 'Maximum edge' : '最长边'}
+				<select id="imgc-resize">
+					<option value="0">{isEnglish ? 'Original size' : '保持原尺寸'}</option>
+					<option value="2048">2048 px</option>
+					<option value="1600">1600 px</option>
+					<option value="1200">1200 px</option>
+				</select>
+			</label>
+			<label class="compress-check" id="imgc-quantize-label"><input id="imgc-quantize" type="checkbox" checked /> {isEnglish ? 'Prefer WebP' : '优先输出 WebP'}</label>
+			<button id="imgc-download-all" type="button" disabled>{isEnglish ? 'Download ZIP' : '下载 ZIP'}</button>
+			<button id="imgc-clear" type="button" disabled>{isEnglish ? 'Clear' : '清空'}</button>
+		</div>
+		<p class="compress-note" id="imgc-note">{isEnglish ? 'Files never leave your browser.' : '文件不会离开你的浏览器。'}</p>
+		<div class="compress-summary" id="imgc-summary" hidden></div>
+		<div class="compress-list" id="imgc-list"></div>
+	</div>
+	<div id="imgc-lock-overlay" hidden><button id="imgc-login-btn" type="button">Login</button></div>
+</section>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js" defer></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+<script is:inline type="module" src="/js/image-compress.js"></script>
