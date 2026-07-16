@@ -35,6 +35,7 @@ const localManifestPath =
   manifestPathArgument ??
   "astro/dist/release-manifests/site-route-manifest.json";
 const localManifestText = await readFile(localManifestPath, "utf8");
+const localDistRoot = resolve(dirname(resolve(localManifestPath)), "..");
 const localManifest = JSON.parse(localManifestText);
 const expectedSha = (
   expectedShaArgument ??
@@ -125,11 +126,7 @@ async function fetchManual(route, attempts = 3) {
         signal: AbortSignal.timeout(20_000),
         headers: { "user-agent": "bubble-preview-verifier/1.0" },
       });
-      if (
-        response.status !== 429 &&
-        response.status < 500
-      )
-        return response;
+      if (response.status !== 429 && response.status < 500) return response;
       if (attempt === attempts - 1) return response;
       await response.body?.cancel();
     } catch (error) {
@@ -241,6 +238,19 @@ async function verifyRecord(record) {
       ].includes(record.content_type)
     ) {
       await response.body?.cancel();
+      return;
+    }
+
+    if (/^\/data\/daily\/\d{4}-\d{2}-\d{2}\.json$/.test(record.route)) {
+      const deployedBytes = Buffer.from(await response.arrayBuffer());
+      const localBytes = await readFile(
+        resolve(localDistRoot, record.output_path),
+      );
+      invariant(
+        deployedBytes.equals(localBytes),
+        `${record.route}: deployed JSON bytes differ from the release artifact`,
+      );
+      JSON.parse(deployedBytes.toString("utf8"));
       return;
     }
 
