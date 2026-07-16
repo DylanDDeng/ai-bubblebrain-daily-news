@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-16T12:50:36Z",
+  "purpose": "non-secret proof that the historically exposed GitHub PAT no longer authenticates",
+  "source": {
+    "cloudflare_worker": "ai-daily",
+    "historical_version_id": "9fde3a5e-7b50-4cdb-bf40-1d05ad370113",
+    "recovery_method": "PAT-shaped historical binding name read in-memory from version metadata without logging"
+  },
+  "token_identifier": {
+    "algorithm": "sha256",
+    "digest": "c62bcb5a52bbf38df133f626999804a5d7f9b557a0dc0d743e3f5043151a6036"
+  },
+  "probe": {
+    "method": "GET",
+    "endpoint": "https://api.github.com/user",
+    "observed_at": "2026-07-16T12:50:36Z",
+    "http_status": 401,
+    "response_body_archived": false
+  },
+  "decision": "passed-old-value-no-longer-authenticates",
+  "secret_value_archived": false
+}

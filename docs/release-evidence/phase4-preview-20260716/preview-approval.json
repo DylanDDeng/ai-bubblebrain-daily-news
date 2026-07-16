@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-16T13:26:33Z",
+  "approval": {
+    "status": "approved",
+    "statement": "我批准",
+    "reference": "Codex task 019f62a1-585d-79d1-9dc5-3c48a6521f26"
+  },
+  "target": {
+    "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+    "deployment_id": "e4cd8eea-20b0-494e-a681-e23bc96b5277",
+    "preview_origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
+    "artifact_sha256": "d29a2e7af2cde49902d48edd70766d9bdcaa142a5ab9cee47111b2e9a06ee307"
+  },
+  "scope": "Exact immutable Astro Preview and source SHA after the complete Phase 4 technical Gate",
+  "invalidation_rule": "Any later UI-affecting commit requires a new Preview Gate and explicit approval"
+}

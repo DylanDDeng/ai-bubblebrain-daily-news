@@ -20,6 +20,11 @@ migration, structured production publication, Pages cutover, or PR #9 merge occu
   to GitHub with HTTP 200 on the non-echo probe. It must be revoked and re-probed as 401/403.
 - PR #9 remains Draft.
 
+This is the historical Phase 3 preflight decision. Later Phase 6 evidence recovered the same old
+value without logging it and observed HTTP 401 from GitHub at `2026-07-16T12:50:36Z`; see the
+[non-secret revocation proof](../phase1d-production-20260715/pat-revocation-proof.json). The current
+release decision is maintained in the Phase 5/6 evidence.
+
 ## Structured-data preflight
 
 - `origin/main` contains only `data/daily/.gitkeep`; it contains no production daily JSON.

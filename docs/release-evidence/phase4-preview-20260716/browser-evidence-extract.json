@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-16T12:42:00Z",
+  "purpose": "non-sensitive tracked extract of local raw browser reports",
+  "preview": {
+    "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+    "deployment_id": "e4cd8eea-20b0-494e-a681-e23bc96b5277",
+    "origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
+    "daily_route": "/daily/2026/07/2026-07-16/"
+  },
+  "route_verifier": {
+    "manifest_records": 605,
+    "parsed_external_links": 4563,
+    "external_network_checks_requested": false,
+    "first_full_run": "one transient timeout at /search/index.json",
+    "direct_reprobe": { "status": 200, "seconds": 3.962507 },
+    "second_full_run": "passed"
+  },
+  "browser": {
+    "news_anchors": 157,
+    "desktop": { "width": 1280, "height": 720, "horizontal_overflow_px": 0, "screenshot_sha256": "b196307db1bcc1ffbcd336a7f9362e351dc14ad11601bf59456fcfb8140b613d" },
+    "mobile": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "screenshot_sha256": "0dd3487b74de037b05a66d9b3730641fb894f4a06c341fcfd90511b3e35634bb" },
+    "no_javascript": { "width": 390, "height": 844, "horizontal_overflow_px": 0, "hidden_items": 0, "screenshot_sha256": "f41d22b6c0dbfa9d49c6f046a20373239d6d967b0780d36fdaae5ef0cee565b3" },
+    "keyboard_skip_link": "passed"
+  },
+  "axe": {
+    "raw_report_sha256": "e667696adb82d39d02001914798e5ee784debc5e0443bbee75cde46abb99ee15",
+    "engine": "axe-core 4.12.1",
+    "timestamp": "2026-07-16T11:37:20.058Z through 2026-07-16T11:37:22.819Z",
+    "violations": 0,
+    "passes": 46,
+    "manual_or_incomplete": [],
+    "gate": "passed",
+    "pages": [
+      { "route": "/", "violations": 0, "incomplete": 0, "passes": 19 },
+      { "route": "/daily/2026/07/2026-07-16/", "violations": 0, "incomplete": 0, "passes": 27 }
+    ],
+    "local_fix_candidate": {
+      "timestamp": "2026-07-16T03:37:46.533Z",
+      "violations": 0,
+      "passes": 27,
+      "incomplete": 0,
+      "raw_report_sha256": "f945af7cad405c6ea9cf2391ba45530d9ceedd7954b32e34df9e7f4438ff320c",
+      "requires_deployed_preview_reproduction": false
+    }
+  },
+  "previous_failed_preview_axe": {
+    "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
+    "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
+    "raw_report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3",
+    "violations": 0,
+    "manual_or_incomplete": [
+      { "id": "aria-prohibited-attr", "impact": "serious", "nodes": 2 },
+      { "id": "color-contrast", "impact": "serious", "nodes": 1337 }
+    ],
+    "gate": "failed-serious-incomplete"
+  },
+  "lighthouse": {
+    "version": "12.8.2",
+    "desktop": {
+      "raw_report_sha256": "6ecac542f77cf132bf0d0b4b8f0929a84b6c19c3f29f8cc6ba8c6356c8c39128",
+      "fetch_time": "2026-07-16T11:37:16.251Z",
+      "performance": 0.98,
+      "accessibility": 1,
+      "best_practices": 1,
+      "seo": 0.66,
+      "runtime_error": null,
+      "run_warnings": []
+    },
+    "mobile": {
+      "raw_report_sha256": "7b6e14a1ab04157614920d3898d1f9b6fda4528512f2043f787d3faf215bcf29",
+      "fetch_time": "2026-07-16T11:37:17.030Z",
+      "performance": 0.99,
+      "accessibility": 1,
+      "best_practices": 1,
+      "seo": 0.66,
+      "runtime_error": null,
+      "run_warnings": []
+    }
+  },
+  "external_link_audit": {
+    "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+    "preview_origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
+    "raw_report_sha256": "a419b64bb815ffb17d4108ca3604fd3cead98f07ac42af24ea222f441186e94c",
+    "waiver_policy_sha256": "a25e9edd6c906bd6d9d369ca11610a28ca9ef008ba3927c0d5f6640176838ede",
+    "started_at": "2026-07-16T12:37:04.716Z",
+    "finished_at": "2026-07-16T12:40:25.222Z",
+    "gate": "PASS_WITH_WARNINGS",
+    "total": 4563,
+    "directly_evaluated": 1720,
+    "direct_coverage_ratio": 1,
+    "success": 1254,
+    "confirmed_dead_total": 1,
+    "confirmed_dead_unwaived": 0,
+    "policy_failure": 0,
+    "waived": 2843,
+    "gate_violations": []
+  },
+  "phase2_recovered_artifacts": {
+    "desktop_screenshot_sha256": "8951edf477bcf0247665c46d4b960e7bc93fbcc379812807159b628c0fea3cf2",
+    "mobile_screenshot_sha256": "f34eaaa83b6cdd4f7a57ebb81efeb6b996664a44a6a93dd2db9c6899cd45b0bb",
+    "markdown_fallback_snapshot_sha256": "94d515fe900c4a8594a239ff21c42ea8a22688b9f59c7187fdc3b207b21b4b0e",
+    "structured_timeline_snapshot_sha256": "a9af70ac6621ba0211c7ae46635867f1031b8a47faa534bf514c9730fabb612f",
+    "no_javascript_snapshot_sha256": "8d087a5ae8ab89c3262e1cbcaa04f52b0c850112abf850f26a952c114fc2f827"
+  },
+  "retention": {
+    "raw_reports_location": "gitignored output/playwright on the release-owner workstation",
+    "retain_until": "rollback-owner handoff acceptance and separate cleanup approval",
+    "production_database_dumps_excluded": true,
+    "raw_browser_reports_committed": false,
+    "reason": "raw browser reports total more than 11 MiB and contain redundant page-node detail; immutable hashes and non-sensitive Gate fields are tracked here"
+  }
+}

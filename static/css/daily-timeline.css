@@ -4,7 +4,7 @@
   --dt-paper-muted: #ebe7dc;
   --dt-ink: #20201e;
   --dt-ink-soft: #5c5a55;
-  --dt-ink-faint: #85817a;
+  --dt-ink-faint: oklch(50% 0.02 222);
   --dt-rule: #d3cec2;
   --dt-accent: #254f99;
   --dt-accent-strong: #1f437f;
@@ -239,7 +239,7 @@
 }
 
 .daily-timeline .timeline-batch-header > span {
-  color: var(--dt-ink-faint);
+  color: var(--dt-ink-soft);
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
 }
@@ -248,14 +248,13 @@
   position: relative;
 }
 
-.daily-timeline .timeline-items::before {
+.daily-timeline .timeline-rail {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 4.95rem;
   width: 1px;
   background: var(--dt-rule);
-  content: "";
 }
 
 .daily-timeline .timeline-item {
@@ -439,11 +438,9 @@
 
 @keyframes timeline-enter {
   from {
-    opacity: 0;
     transform: translateY(0.5rem);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }
@@ -461,7 +458,7 @@
 }
 
 @container (max-width: 35rem) {
-  .daily-timeline .timeline-items::before {
+  .daily-timeline .timeline-rail {
     left: 0.34rem;
   }
 
@@ -492,7 +489,7 @@
     --dt-paper-muted: oklch(25% 0.023 222);
     --dt-ink: oklch(92% 0.012 205);
     --dt-ink-soft: oklch(76% 0.018 205);
-    --dt-ink-faint: oklch(64% 0.018 205);
+    --dt-ink-faint: oklch(70% 0.018 205);
     --dt-rule: oklch(34% 0.025 222);
     --dt-accent: oklch(68% 0.105 184);
     --dt-accent-strong: oklch(76% 0.09 184);

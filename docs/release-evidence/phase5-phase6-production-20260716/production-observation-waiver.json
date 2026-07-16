@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-16T14:22:45Z",
+  "authorization": {
+    "decision": "approved-with-explicit-pre-release-observation-waiver",
+    "statement": "既然模拟测试通过了，我们就不等这个了吧，直接上线。到时候线上如果有什么问题的话再看，不然的话，这个时间耽搁得太久了",
+    "reference": "Codex task 019f62a1-585d-79d1-9dc5-3c48a6521f26"
+  },
+  "release_candidate": {
+    "repository": "DylanDDeng/ai-bubblebrain-daily-news",
+    "pull_request": 18,
+    "head_sha_before_waiver_record": "4a79e274d1dd277ad31a0fadade4e7d4145f4c0a",
+    "approved_preview_source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+    "approved_preview_origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev"
+  },
+  "waived_pre_release_condition": {
+    "report_date": "2026-07-17",
+    "timezone": "Asia/Shanghai",
+    "condition": "Observe all four real production Cron batches before release",
+    "status": "waived-as-pre-release-blocker-only"
+  },
+  "known_state": {
+    "isolated_real_cron_probe": "passed",
+    "production_four_batch_observation": "incomplete",
+    "open_p0": 0,
+    "open_p1": 0
+  },
+  "required_truthfulness": "This waiver authorizes release but does not mark any unobserved production batch as successful",
+  "mitigations": {
+    "immediate_production_smoke_required": true,
+    "post_release_batch_monitoring_retained": true,
+    "hugo_pages_rollback_retained": true,
+    "legacy_worker_rollback_retained": true,
+    "legacy_database_compatibility_retained": true,
+    "cleanup_authorized": false
+  }
+}

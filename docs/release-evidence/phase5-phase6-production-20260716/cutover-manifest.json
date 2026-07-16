@@ -1,0 +1,329 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-07-16T14:22:45Z",
+  "observation": {
+    "date": "2026-07-16",
+    "timezone": "Asia/Shanghai",
+    "scheduled_window_start": "2026-07-16T02:00:00Z",
+    "scheduled_window_end_after_verification": "2026-07-16T19:10:00Z",
+    "local_window": "2026-07-16 10:00 through 2026-07-17 03:10 Asia/Shanghai",
+    "batch_windows": [
+      { "id": "morning", "scheduled_at": "2026-07-16T02:00:00Z", "verification_checkpoint": "2026-07-16T02:10:00Z" },
+      { "id": "afternoon", "scheduled_at": "2026-07-16T07:00:00Z", "verification_checkpoint": "2026-07-16T07:10:00Z" },
+      { "id": "night", "scheduled_at": "2026-07-16T15:00:00Z", "verification_checkpoint": "2026-07-16T15:10:00Z" },
+      { "id": "lateNight", "scheduled_at": "2026-07-16T19:00:00Z", "verification_checkpoint": "2026-07-16T19:10:00Z" }
+    ],
+    "next_complete_observation_candidate": "2026-07-17",
+    "phase_5": "go",
+    "phase_6": "release-authorized-with-explicit-observation-waiver",
+    "open_p0": 0,
+    "open_p1": 0,
+    "blocking_reason": null
+  },
+  "release_authorization": {
+    "decision": "approved-with-explicit-pre-release-observation-waiver",
+    "recorded_at": "2026-07-16T14:22:45Z",
+    "statement": "既然模拟测试通过了，我们就不等这个了吧，直接上线。到时候线上如果有什么问题的话再看，不然的话，这个时间耽搁得太久了",
+    "reference": "Codex task 019f62a1-585d-79d1-9dc5-3c48a6521f26",
+    "evidence": "production-observation-waiver.json",
+    "waived_pre_release_condition": "four successful production batches for the 2026-07-17 Asia/Shanghai report date",
+    "truthfulness_constraint": "unobserved batches remain incomplete and must not be represented as passed",
+    "post_release_follow_up": [
+      "observe the next real production batches and publication path",
+      "run final report-day artifact consistency after a complete day",
+      "repeat production Supabase Auth/RLS, legacy-client, and row-count smoke",
+      "complete rollback-owner handoff and independent post-release review"
+    ],
+    "rollback_targets_retained": true,
+    "cleanup_authorized": false
+  },
+  "owners": {
+    "release": "Chengsheng Deng",
+    "git_publication": "Chengsheng Deng",
+    "cloudflare_pages": "Chengsheng Deng",
+    "worker": "Chengsheng Deng",
+    "supabase": "Chengsheng Deng",
+    "rollback_handoff": null,
+    "rollback_handoff_status": "pending-explicit-acceptance"
+  },
+  "repository": {
+    "owner": "DylanDDeng",
+    "name": "ai-bubblebrain-daily-news",
+    "branch": "main",
+    "release_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "cutover_release_sha": "3765b785bcf411fe7630416bde4fb88204898d74",
+    "release_pr": 17,
+    "structured_morning_canary_pr": 15,
+    "structured_morning_canary_sha": "62b3049b0ed566b5fec2b2fd7fafbeed85ba8553",
+    "structured_morning_canary_merge_sha": "3bdabac567a52b03c4f7a254913d0d86d7de8c7f",
+    "structured_morning_scheduled_pr": 19,
+    "structured_morning_scheduled_sha": "e2dbb1fb2f27381a66890f38b0aa734596e2cb26",
+    "structured_morning_scheduled_merge_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+    "cron_remediation_prs": [
+      21,
+      22,
+      23
+    ],
+    "cron_remediation_merge_shas": [
+      "1e567561934e664cad0fa99c49371f83470bb958",
+      "d472a19d3a4cc937cdfb40b4380c18be09da48a2",
+      "803a734a32d5b0492d6a19b18ba291ac5d687b2e"
+    ]
+  },
+  "pages": {
+    "project": "ai-bubblebrain-daily-news",
+    "custom_domain": "https://bubblenews.today",
+    "production_deployment_id": "ff3a2b5f-5141-4bd5-8ec5-d66ef692cdb6",
+    "production_origin": "https://ff3a2b5f.ai-bubblebrain-daily-news.pages.dev",
+    "source_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "latest_evidence_preview": {
+      "deployment_id": "e4cd8eea-20b0-494e-a681-e23bc96b5277",
+      "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
+      "origin": "https://e4cd8eea.ai-bubblebrain-daily-news.pages.dev",
+      "route_manifest_records": 605,
+      "artifact_sha256": "d29a2e7af2cde49902d48edd70766d9bdcaa142a5ab9cee47111b2e9a06ee307",
+      "axe_violations": 0,
+      "axe_incomplete": 0,
+      "lighthouse_desktop_performance": 0.98,
+      "lighthouse_mobile_performance": 0.99,
+      "external_link_audit": {
+        "gate": "PASS_WITH_WARNINGS",
+        "total": 4563,
+        "directly_evaluated": 1720,
+        "direct_coverage_ratio": 1,
+        "success": 1254,
+        "confirmed_dead_unwaived": 0,
+        "policy_failure": 0,
+        "waived": 2843,
+        "report_sha256": "a419b64bb815ffb17d4108ca3604fd3cead98f07ac42af24ea222f441186e94c",
+        "waiver_policy_sha256": "a25e9edd6c906bd6d9d369ca11610a28ca9ef008ba3927c0d5f6640176838ede"
+      },
+      "complete_route_verifier": "passed-on-second-full-run-after-one-transient-route-timeout-and-successful-direct-reprobe",
+      "user_approval": {
+        "status": "approved",
+        "approved_at": "2026-07-16T13:26:33Z",
+        "approval_text": "我批准",
+        "approval_reference": "Codex task 019f62a1-585d-79d1-9dc5-3c48a6521f26",
+        "evidence": "../phase4-preview-20260716/preview-approval.json"
+      }
+    },
+    "cutover_baseline": {
+      "deployment_id": "b12e9087-78fb-4cf9-b925-897272e4c88c",
+      "source_sha": "3765b785bcf411fe7630416bde4fb88204898d74"
+    },
+    "rollback": {
+      "deployment_id": "b3c338c3-3342-40bf-965d-7e2e5b5545fa",
+      "source_sha": "8ed05acde833ee01e7fbec85fd4e7e8ebc762d28",
+      "renderer": "hugo",
+      "observed_at": "2026-07-16T00:47:25.507Z",
+      "root_status": 200,
+      "daily_status": 200,
+      "rss_status": 200,
+      "sitemap_status": 200
+    },
+    "restoration": {
+      "deployment_id": "b12e9087-78fb-4cf9-b925-897272e4c88c",
+      "source_sha": "3765b785bcf411fe7630416bde4fb88204898d74",
+      "verified_at": "2026-07-16T00:48:39Z",
+      "route_count": 594,
+      "status": "passed"
+    }
+  },
+  "worker": {
+    "name": "ai-daily",
+    "production_deployment_id": "8818fa66-7166-416d-98d6-b29aec1030ea",
+    "production_version_id": "7f5a6a92-60f0-45dc-b1fa-c9d20f36aa1f",
+    "production_code_version_id": "e534753a-04d7-4365-952c-7bd02874b450",
+    "production_traffic_percent": 100,
+    "producer_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "cron": "0 2,7,15,19 * * *",
+    "safe_variables": {
+      "EXTERNAL_WRITES_ENABLED": "true",
+      "DAILY_PUBLISH_MODE": "structured",
+      "DAILY_STRUCTURED_WRITES_ENABLED": "true",
+      "DAILY_STRUCTURED_START_DATE": "2026-07-16",
+      "DAILY_STRUCTURED_RESUME_DATE": "2026-07-16",
+      "GITHUB_BRANCH": "main",
+      "GITHUB_PUBLISH_STRATEGY": "pull_request"
+    },
+    "rollback": {
+      "version_id": "3538c9be-f09e-4482-b626-9d359ea1b30b",
+      "producer_sha": "d3e909420ffe2804a882e9345f4e519ce923960a",
+      "retained": true,
+      "last_verified_at": "2026-07-16T13:09:56Z",
+      "secret_binding_count": 6,
+      "pat_shaped_binding_count": 0,
+      "safe_variables": {
+        "EXTERNAL_WRITES_ENABLED": "true",
+        "DAILY_PUBLISH_MODE": "legacy",
+        "DAILY_STRUCTURED_WRITES_ENABLED": "false",
+        "GITHUB_BRANCH": "main",
+        "GITHUB_PUBLISH_STRATEGY": "pull_request"
+      }
+    },
+    "recovery_evidence": "../phase1d-staging-20260715/README.md",
+    "rapid_staging_probe": {
+      "scheduled_at": "2026-07-16T10:30:03Z",
+      "worker_probe_version_id": "93c7c0a0-1006-4ebd-956f-901e81e88a9a",
+      "worker_safe_final_version_id": "02e57c58-15dc-455d-8c41-8f44a39e42ef",
+      "producer_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+      "publication_sha": "4dc72c22f9484d6ae32e7ec28d4fd5b75567bb8d",
+      "branch": "codex/worker-staging-phase6",
+      "pages_deployment_id": "344a3def-2138-44f0-ae42-9167711b6893",
+      "pages_origin": "https://344a3def.ai-bubblebrain-daily-news.pages.dev",
+      "items": 264,
+      "search_items": 264,
+      "html_anchors": 264,
+      "route_records": 605,
+      "daily_json_sha256": "8515c29c1ae4fb4e45be548a4c753620cca93c81fc80eb9ae3a72937583986f0",
+      "markdown_sha256": "733a51267069146acf28b7fbf47168f5b373224f68d974e2a8378b5b5a837c55",
+      "independent_review": "no-p0-p1-p2",
+      "final_cron": "none",
+      "final_write_controls": "fail-closed",
+      "final_leases": 0
+    }
+  },
+  "next_observation_preflight": {
+    "observed_at": "2026-07-16T13:02:59Z",
+    "report_date": "2026-07-17",
+    "repository_main_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "open_publication_prs": 0,
+    "worker_deployment_id": "8818fa66-7166-416d-98d6-b29aec1030ea",
+    "worker_active_version_id": "7f5a6a92-60f0-45dc-b1fa-c9d20f36aa1f",
+    "worker_code_version_id": "e534753a-04d7-4365-952c-7bd02874b450",
+    "worker_traffic_percent": 100,
+    "worker_secret_binding_count": 6,
+    "worker_pat_shaped_binding_count": 0,
+    "cron": "0 2,7,15,19 * * *",
+    "cron_modified_at": "2026-07-16T10:50:11.356286Z",
+    "structured_leases": 0,
+    "structured_trigger_markers": 0,
+    "pages_custom_domain_status": 200,
+    "pages_source_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "pages_route_records": 605,
+    "pages_artifact_sha256": "109c525eb1c01061ad4cb34f9a4422a2b531f5ef49a70c6dd5690e76dec6dfe0",
+    "mutations_performed": false,
+    "gate": "passed"
+  },
+  "supabase": {
+    "project_ref": "znurdobjryrhshzkalup",
+    "migration_versions": [
+      "20260715000100",
+      "20260715000200"
+    ],
+    "linked_lint": "passed",
+    "phase_6_snapshot_sha256": "09372453c3c344335ebe4f3d58b07f768a92263031518f6758b66787646cf579",
+    "baseline_rows": {
+      "profiles": 2,
+      "comments": 13,
+      "favorites": 14,
+      "entity_state": 14,
+      "annotations": 0
+    },
+    "after_smoke_rows": {
+      "profiles": 2,
+      "comments": 13,
+      "favorites": 14,
+      "entity_state": 14,
+      "annotations": 0
+    },
+    "authenticated_rls_smoke": "passed",
+    "temporary_users_deleted": true,
+    "rollback_strategy": "additive forward-fix; retain legacy favorites.image_id",
+    "preflight": {
+      "observed_at": "2026-07-16T13:09:56Z",
+      "cli_version": "2.109.1",
+      "linked_project_ref": "znurdobjryrhshzkalup",
+      "migration_versions_local_remote_exact": [
+        "20260715000100",
+        "20260715000200"
+      ],
+      "migration_list_attempts": 2,
+      "first_attempt": "transient-connect-failure",
+      "bounded_retry": "passed",
+      "linked_lint_level_warning": "passed-no-schema-errors",
+      "mutations_performed": false,
+      "final_authenticated_smoke_required_after_complete_day": true
+    }
+  },
+  "security_evidence": {
+    "historical_pat_revocation": {
+      "record": "../phase1d-production-20260715/pat-revocation-proof.json",
+      "observed_at": "2026-07-16T12:50:36Z",
+      "token_sha256": "c62bcb5a52bbf38df133f626999804a5d7f9b557a0dc0d743e3f5043151a6036",
+      "github_user_http_status": 401,
+      "secret_value_archived": false,
+      "gate": "passed"
+    }
+  },
+  "site_verification": {
+    "route_count": 605,
+    "renderer_parity_daily_routes": 208,
+    "astro_tests": 46,
+    "root_tests": 328,
+    "daily_json_sha256": "65194c5c84720b4b1f90c3806289fc2b88eb0e83900257cee4b98675cb4c9e6f",
+    "report_items": 157,
+    "search_items": 157,
+    "html_anchors": 157,
+    "knowledge_routes": {
+      "/topics/": 200,
+      "/entities/": 200,
+      "/search/": 200
+    }
+  },
+  "batches": [
+    {
+      "id": "morning",
+      "status": "completed",
+      "items": 157,
+      "publication_pr": 19,
+      "publication_prs": [
+        15,
+        19
+      ],
+      "canary_head_sha": "62b3049b0ed566b5fec2b2fd7fafbeed85ba8553",
+      "canary_merge_sha": "3bdabac567a52b03c4f7a254913d0d86d7de8c7f",
+      "scheduled_head_sha": "e2dbb1fb2f27381a66890f38b0aa734596e2cb26",
+      "scheduled_merge_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+      "ci": "passed"
+    },
+    {
+      "id": "afternoon",
+      "status": "missed_gate",
+      "items": 0,
+      "publication_pr": null,
+      "ci": "not_run",
+      "scheduled_at": "2026-07-16T07:00:00Z",
+      "success_marker": null,
+      "failure_marker": null,
+      "lease_after_recovery_attempts": false,
+      "manual_recovery_http_status": 401
+    },
+    {
+      "id": "night",
+      "status": "pending",
+      "items": 0,
+      "publication_pr": null,
+      "ci": "pending"
+    },
+    {
+      "id": "lateNight",
+      "status": "pending",
+      "items": 0,
+      "publication_pr": null,
+      "ci": "pending"
+    }
+  ],
+  "cleanup": {
+    "authorized": false,
+    "hugo_retained": true,
+    "legacy_reads_retained": true,
+    "legacy_database_fields_retained": true,
+    "rollback_handoff_record": "ROLLBACK_HANDOFF.md",
+    "rollback_owner_handoff_accepted": false
+  },
+  "open_findings": {
+    "p0": [],
+    "p1": []
+  }
+}
