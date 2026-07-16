@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T12:42:00Z",
+  "recorded_at": "2026-07-16T12:52:00Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -17,8 +17,8 @@
     "phase_5": "no-go-evidence-closure",
     "phase_6": "no-go",
     "open_p0": 0,
-    "open_p1": 2,
-    "blocking_reason": "historical PAT revocation proof and current exact Preview approval are missing; the 2026-07-16 afternoon window did not publish, so all four batches of the next complete production date remain required"
+    "open_p1": 1,
+    "blocking_reason": "current exact Preview approval is missing; the 2026-07-16 afternoon window did not publish, so all four batches of the next complete production date remain required"
   },
   "owners": {
     "release": "Chengsheng Deng",
@@ -179,6 +179,16 @@
     "temporary_users_deleted": true,
     "rollback_strategy": "additive forward-fix; retain legacy favorites.image_id"
   },
+  "security_evidence": {
+    "historical_pat_revocation": {
+      "record": "../phase1d-production-20260715/pat-revocation-proof.json",
+      "observed_at": "2026-07-16T12:50:36Z",
+      "token_sha256": "c62bcb5a52bbf38df133f626999804a5d7f9b557a0dc0d743e3f5043151a6036",
+      "github_user_http_status": 401,
+      "secret_value_archived": false,
+      "gate": "passed"
+    }
+  },
   "site_verification": {
     "route_count": 605,
     "renderer_parity_daily_routes": 208,
@@ -248,7 +258,6 @@
   "open_findings": {
     "p0": [],
     "p1": [
-      "No auditable non-secret proof that the historically exposed GitHub PAT was revoked or that the old value now returns HTTP 401/403",
       "No explicit user approval is archived for an exact immutable Astro Preview after a clean complete Preview verification"
     ]
   }

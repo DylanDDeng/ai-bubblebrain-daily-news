@@ -122,3 +122,13 @@ writes disabled. Production structured publication remains disabled until the la
 
 This checkpoint remained **NO-GO**. Later production promotion evidence supersedes the decision
 after credential rotation and must be used for the current Gate status.
+
+## Historical PAT revocation closure
+
+The old value was recovered in-memory from historical Worker version
+`9fde3a5e-7b50-4cdb-bf40-1d05ad370113` without logging or archiving the secret. At
+`2026-07-16T12:50:36Z`, a non-echo `GET https://api.github.com/user` probe returned HTTP 401. The
+token is identified only by SHA-256
+`c62bcb5a52bbf38df133f626999804a5d7f9b557a0dc0d743e3f5043151a6036`. The machine-readable,
+non-secret record is [`pat-revocation-proof.json`](pat-revocation-proof.json). This closes the later
+credential-revocation evidence Gate; it does not alter the historical checkpoint decision above.
