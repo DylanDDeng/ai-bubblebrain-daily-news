@@ -303,6 +303,37 @@ for (const route of requiredRoutes)
     `Missing required 200 route: ${route}`,
   );
 
+const dailyDataDirectory = resolve(repoRoot, "data", "daily");
+const dailyDataNames = (await readdir(dailyDataDirectory))
+  .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
+  .sort();
+const publishedDailyRecords = contract.records.filter(
+  (record) =>
+    record.status === 200 &&
+    /^\/data\/daily\/\d{4}-\d{2}-\d{2}\.json$/.test(record.route),
+);
+invariant(
+  publishedDailyRecords.length === dailyDataNames.length,
+  `Structured daily route count drifted (${publishedDailyRecords.length} routes for ${dailyDataNames.length} source files)`,
+);
+for (const name of dailyDataNames) {
+  const route = `/data/daily/${name}`;
+  const record = byRoute.get(route);
+  invariant(
+    record?.status === 200 &&
+      record.owner === "astro" &&
+      record.content_type === "application/json" &&
+      record.output_path === `data/daily/${name}`,
+    `Missing canonical structured daily route: ${route}`,
+  );
+  const source = await readFile(resolve(dailyDataDirectory, name));
+  const output = await readFile(resolve(distRoot, record.output_path));
+  invariant(
+    source.equals(output),
+    `Published structured daily JSON differs from its canonical source: ${route}`,
+  );
+}
+
 for (const [source, target] of [
   ["/index.xml", "/rss.xml"],
   ["/en/index.xml", "/en/rss.xml"],
