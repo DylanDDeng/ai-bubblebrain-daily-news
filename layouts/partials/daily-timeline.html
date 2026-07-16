@@ -33,7 +33,7 @@
       <h1><time datetime="{{ $report.date }}">{{ $report.date }}</time></h1>
       {{ with $overview }}<p class="timeline-overview">{{ . }}</p>{{ end }}
     </div>
-    <div class="timeline-date-nav" aria-label="{{ if $isEnglish }}Daily navigation{{ else }}日报日期导航{{ end }}">
+    <nav class="timeline-date-nav" aria-label="{{ if $isEnglish }}Daily navigation{{ else }}日报日期导航{{ end }}">
       {{ with $page.NextInSection }}
         <a href="{{ .RelPermalink }}">← {{ if $isEnglish }}Newer{{ else }}较新{{ end }}</a>
       {{ else }}
@@ -45,10 +45,10 @@
       {{ else }}
         <span aria-hidden="true">{{ if $isEnglish }}Older{{ else }}较早{{ end }} →</span>
       {{ end }}
-    </div>
+    </nav>
   </header>
 
-  <div class="timeline-toolbar" aria-label="{{ if $isEnglish }}Timeline filters{{ else }}时间轴筛选{{ end }}">
+  <section class="timeline-toolbar" aria-label="{{ if $isEnglish }}Timeline filters{{ else }}时间轴筛选{{ end }}">
     <div class="timeline-filter-group" role="group" aria-label="{{ if $isEnglish }}Content type{{ else }}内容类型{{ end }}">
       {{ range $typeOrder }}
         <button type="button" data-filter-type="{{ . }}" aria-pressed="{{ if eq . "all" }}true{{ else }}false{{ end }}">
@@ -63,7 +63,7 @@
         <button type="submit">{{ if $isEnglish }}Search{{ else }}搜索{{ end }}</button>
       </div>
     </form>
-  </div>
+  </section>
 
   <div class="timeline-status" aria-live="polite">
     <span data-result-count>{{ len $report.items }}</span>
@@ -91,6 +91,7 @@
           <span data-batch-count>{{ len $batchItems }}</span>
         </header>
         <div class="timeline-items">
+          <span class="timeline-rail" aria-hidden="true"></span>
           {{ range $index, $item := $batchItems }}
             {{- $summary := partial "timeline-clean-text.html" $item.summary -}}
             {{- $sourceName := partial "timeline-clean-text.html" $item.source.name | default $item.source_type -}}

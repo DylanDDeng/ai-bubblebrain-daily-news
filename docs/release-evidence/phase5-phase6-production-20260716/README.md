@@ -2,11 +2,15 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Evidence updated: 2026-07-16 03:06 UTC
+Evidence updated: 2026-07-16 03:31 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
 Release owner: Chengsheng Deng
+
+Component owners during the observation window: Git publication, Cloudflare Pages, Worker, and
+Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pending in
+[`ROLLBACK_HANDOFF.md`](ROLLBACK_HANDOFF.md).
 
 ## Current decision
 
@@ -194,6 +198,17 @@ Both temporary users were deleted. Cascading cleanup restored every observed tab
 baseline count.
 
 ## Observation-day publication status
+
+The scheduled observation window runs from `2026-07-16 10:00` through `2026-07-17 03:10`
+Asia/Shanghai (`2026-07-16T02:00:00Z` through the late-night verification checkpoint at
+`2026-07-16T19:10:00Z`). The Worker batch schedules and verification checkpoints are:
+
+| Batch | Scheduled (Asia/Shanghai) | Scheduled (UTC) | Verification checkpoint (UTC) |
+| --- | --- | --- | --- |
+| morning | 2026-07-16 10:00 | 2026-07-16 02:00 | 2026-07-16 02:10 |
+| afternoon | 2026-07-16 15:00 | 2026-07-16 07:00 | 2026-07-16 07:10 |
+| night | 2026-07-16 23:00 | 2026-07-16 15:00 | 2026-07-16 15:10 |
+| lateNight | 2026-07-17 03:00 | 2026-07-16 19:00 | 2026-07-16 19:10 |
 
 | Batch | Publication PR | Status | Final batch items | CI and Pages |
 | --- | --- | --- | ---: | --- |

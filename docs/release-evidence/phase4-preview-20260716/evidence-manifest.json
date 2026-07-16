@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T03:06:00Z",
+  "recorded_at": "2026-07-16T03:41:00Z",
   "decision": "no-go",
   "source_sha": "81d017ae4e4fb644e18c61d0f1db41654c2e9a0f",
   "deployment_id": "2747fe96-fdde-44ce-8c39-b92261df8415",
   "preview_origin": "https://2747fe96.ai-bubblebrain-daily-news.pages.dev",
   "artifact_sha256": "47599a2dcef1475296b38d745146052e391c18f2cbe18dcb3f7673f80fc4113c",
+  "browser_evidence_extract": "browser-evidence-extract.json",
   "route_manifest_records": 594,
   "complete_route_verifier": "passed-after-three-transient-single-route-timeout-attempts",
   "parsed_external_links": 4491,
@@ -19,10 +20,19 @@
   },
   "axe": {
     "version": "4.12.1",
+    "gate": "failed-serious-incomplete",
     "violations": 0,
     "passes": 27,
     "incomplete": 2,
-    "report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3"
+    "report_sha256": "5ddb453abe7e3869fda45966a461a6049fe84530bf20bdf9b7bf4192591741a3",
+    "local_fix_candidate": {
+      "timestamp": "2026-07-16T03:37:46.533Z",
+      "violations": 0,
+      "passes": 27,
+      "incomplete": 0,
+      "report_sha256": "f945af7cad405c6ea9cf2391ba45530d9ceedd7954b32e34df9e7f4438ff320c",
+      "requires_deployed_preview_reproduction": true
+    }
   },
   "lighthouse": {
     "desktop": { "performance": 0.99, "accessibility": 1, "best_practices": 1, "seo": 0.66, "report_sha256": "b04bd722bb72cee23cec692dce4bc3dc1c9ad6e4d4828ed630ab141d058872aa" },
@@ -40,7 +50,17 @@
     "waived": 2993,
     "report_sha256": "cbdc12ceae62044253eb4685d7d60ee23cb2dae1098779b71c35e06944c88d6a"
   },
+  "publisher_exclusivity": {
+    "active_publisher": "cloudflare-pages",
+    "github_pages_repository_setting": "enabled-inert-workflow-mode",
+    "github_pages_deployment_workflow_present": false,
+    "production_dns_nameservers": [
+      "dilbert.ns.cloudflare.com",
+      "vera.ns.cloudflare.com"
+    ]
+  },
   "open_conditions": [
-    "explicit user approval of the exact immutable preview and source SHA"
+    "full Gate rerun against the next immutable accessibility-fix Preview",
+    "explicit user approval of that exact immutable Preview and source SHA"
   ]
 }
