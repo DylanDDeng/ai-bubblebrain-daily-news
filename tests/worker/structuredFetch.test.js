@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { fetchProviderPreservingData } from '../../src/daily/structuredFetch.js';
+import {
+    DEFAULT_FETCH_TIMEOUT_MS,
+    fetchProviderPreservingData,
+} from '../../src/daily/structuredFetch.js';
 import { classifyProviderFailure, ProviderFetchError } from '../../src/daily/providerFailure.js';
 
 function adapter(provider, contentType, items, calls) {
@@ -199,6 +202,29 @@ describe('provider-preserving structured fetch', () => {
             error_type: 'timeout',
             attempts: 2,
         }]);
+    });
+
+    it('reserves the full ninety-second budget for pagination and translation', async () => {
+        vi.useFakeTimers();
+        try {
+            expect(DEFAULT_FETCH_TIMEOUT_MS).toBe(90_000);
+            const calls = [];
+            const delayed = adapter('delayed', 'news', [], calls);
+            delayed.adapter.fetch.mockImplementation(async () => (
+                await new Promise(resolve => setTimeout(() => resolve([{
+                    id: 1,
+                    published_date: '2026-07-16',
+                }]), 75_000))
+            ));
+
+            const request = fetchProviderPreservingData({}, null, { adapters: [delayed] });
+            await vi.advanceTimersByTimeAsync(75_000);
+
+            await expect(request).resolves.toMatchObject({ errors: [] });
+            expect(delayed.adapter.fetch).toHaveBeenCalledOnce();
+        } finally {
+            vi.useRealTimers();
+        }
     });
 
     it('normalizes arbitrary provider codes and never trusts retryable metadata', () => {
