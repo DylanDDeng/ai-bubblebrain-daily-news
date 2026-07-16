@@ -4,7 +4,8 @@ import { classifyProviderFailure } from './providerFailure.js';
 const CONTENT_TYPE_ORDER = ['news', 'project', 'paper', 'socialMedia'];
 const DEFAULT_FETCH_ATTEMPTS = 2;
 const DEFAULT_RETRY_DELAY_MS = 1000;
-const DEFAULT_FETCH_TIMEOUT_MS = 30_000;
+// Folo pagination plus the chat client's own 60-second translation deadline must fit in one attempt.
+export const DEFAULT_FETCH_TIMEOUT_MS = 90_000;
 
 function wait(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
