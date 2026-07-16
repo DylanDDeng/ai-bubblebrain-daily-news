@@ -346,10 +346,30 @@ export function getRandomUserAgent() {
 /**
  * Pauses execution for a specified number of milliseconds.
  * @param {number} ms - The number of milliseconds to sleep.
+ * @param {{ signal?: AbortSignal }} [options] - Optional cancellation signal.
  * @returns {Promise<void>} A promise that resolves after the specified time.
  */
-export function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+export function sleep(ms, { signal } = {}) {
+    if (!signal) return new Promise(resolve => setTimeout(resolve, ms));
+    const abortReason = () => {
+        if (signal.reason instanceof Error) return signal.reason;
+        const error = new Error('Operation aborted');
+        error.name = 'AbortError';
+        return error;
+    };
+    if (signal.aborted) return Promise.reject(abortReason());
+    return new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+            signal.removeEventListener('abort', onAbort);
+            resolve();
+        }, ms);
+        const onAbort = () => {
+            clearTimeout(timeoutId);
+            signal.removeEventListener('abort', onAbort);
+            reject(abortReason());
+        };
+        signal.addEventListener('abort', onAbort, { once: true });
+    });
 }
 
 export function replaceImageProxy(proxy, content) {

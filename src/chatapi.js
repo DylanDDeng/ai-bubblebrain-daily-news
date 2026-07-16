@@ -9,7 +9,7 @@
  * @returns {Promise<string>} The generated text content.
  * @throws {Error} If GEMINI_API_URL is not set, or if API call fails or returns blocked/empty content.
  */
-async function callGeminiChatAPI(env, promptText, systemPromptText = null) {
+async function callGeminiChatAPI(env, promptText, systemPromptText = null, { signal } = {}) {
     if (!env.GEMINI_API_URL) {
         throw new Error("GEMINI_API_URL environment variable is not set.");
     }
@@ -35,7 +35,8 @@ async function callGeminiChatAPI(env, promptText, systemPromptText = null) {
         const response = await fetchWithTimeout(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal,
         });
 
         if (!response.ok) {
@@ -306,7 +307,7 @@ async function* callGeminiChatAPIStream(env, promptText, systemPromptText = null
  * @returns {Promise<string>} The generated text content.
  * @throws {Error} If OPENAI_API_URL or OPENAI_API_KEY is not set, or if API call fails.
  */
-async function callOpenAIChatAPI(env, promptText, systemPromptText = null) {
+async function callOpenAIChatAPI(env, promptText, systemPromptText = null, { signal } = {}) {
     if (!env.OPENAI_API_URL) {
         throw new Error("OPENAI_API_URL environment variable is not set.");
     }
@@ -337,7 +338,8 @@ async function callOpenAIChatAPI(env, promptText, systemPromptText = null) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${env.OPENAI_API_KEY}`
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal,
         });
 
         if (!response.ok) {
@@ -532,12 +534,12 @@ async function* callOpenAIChatAPIStream(env, promptText, systemPromptText = null
  * @returns {Promise<string>} The generated text content.
  * @throws {Error} If API keys/URLs are not set, or if API call fails.
  */
-export async function callChatAPI(env, promptText, systemPromptText = null) {
+export async function callChatAPI(env, promptText, systemPromptText = null, options = {}) {
     const platform = env.USE_MODEL_PLATFORM;
     if (platform.startsWith("OPEN")) {
-        return callOpenAIChatAPI(env, promptText, systemPromptText);
+        return callOpenAIChatAPI(env, promptText, systemPromptText, options);
     } else { // Default to Gemini
-        return callGeminiChatAPI(env, promptText, systemPromptText);
+        return callGeminiChatAPI(env, promptText, systemPromptText, options);
     }
 }
 
@@ -570,7 +572,15 @@ export async function* callChatAPIStream(env, promptText, systemPromptText = nul
  */
 async function fetchWithTimeout(resource, options = {}, timeout = 60000) {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+  const externalSignal = options.signal;
+  let timedOut = false;
+  const forwardAbort = () => controller.abort(externalSignal.reason);
+  if (externalSignal?.aborted) forwardAbort();
+  else externalSignal?.addEventListener('abort', forwardAbort, { once: true });
+  const id = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeout);
 
   try {
     const response = await fetch(resource, {
@@ -580,7 +590,7 @@ async function fetchWithTimeout(resource, options = {}, timeout = 60000) {
     return response;
   } catch (error) {
     // 当 abort() 被调用时，fetch 会抛出一个 AbortError
-    if (error.name === 'AbortError') {
+    if (error.name === 'AbortError' && timedOut) {
       throw new Error('Request timed out');
     }
     // 其他网络错误等
@@ -588,5 +598,6 @@ async function fetchWithTimeout(resource, options = {}, timeout = 60000) {
   } finally {
     // 清除计时器，防止内存泄漏
     clearTimeout(id);
+    externalSignal?.removeEventListener('abort', forwardAbort);
   }
 }
