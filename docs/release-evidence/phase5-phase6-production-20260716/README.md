@@ -1,8 +1,8 @@
 # Phase 5 cutover and Phase 6 observation evidence
 
-Observation date: 2026-07-16 Asia/Shanghai
+Observation date: 2026-07-16 Asia/Shanghai; complete follow-up date: 2026-07-17 Asia/Shanghai
 
-Evidence updated: 2026-07-16 14:22 UTC
+Evidence updated: 2026-07-17 19:24 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
@@ -15,18 +15,17 @@ Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pendi
 ## Current decision
 
 - Phase 5 production state remains operational and its auditable Gate is **GO**.
-- Phase 6 complete-day observation remains incomplete and is not represented as passed.
+- Phase 6 complete-day production observation for `2026-07-17` is now **OBSERVED AND PASSED**.
 - Release authorization: **GO WITH EXPLICIT OBSERVATION WAIVER**. The release owner explicitly
   accepted shipping before the four `2026-07-17` production batches are observed and moved that
-  observation to post-release follow-up.
+  observation to post-release follow-up; that follow-up observation is now complete.
 - Open P0 findings: none confirmed.
-- Open P1 findings: none. The exact current Astro Preview is explicitly approved, and the historical
-  PAT has objective HTTP 401 revocation evidence.
-- Time-gated blockers: only the `morning` batch completed for the original observation date. The
-  scheduled `afternoon` window passed without a production marker, publication PR, or completed
-  batch. The next complete production observation candidate is therefore `2026-07-17`; all four of
-  its batches must pass publication, CI, Pages, and artifact-consistency Gates before Phase 6 can be
-  approved.
+- Open P1 findings: none confirmed after the final evidence update. The exact current Astro Preview
+  is explicitly approved, and the historical PAT has objective HTTP 401 revocation evidence.
+- Remaining blockers to close the Goal: independent final review must stay GO, and the rollback
+  owner must explicitly accept the scoped handoff. Cleanup remains unauthorized.
+- Truthfulness constraint: the original `2026-07-16` afternoon window remains missed/pending. It is
+  not rewritten as successful and is not counted as the complete-day proof.
 
 The release-owner decision and its exact scope are archived in
 [`production-observation-waiver.json`](production-observation-waiver.json). It waives the
@@ -151,33 +150,35 @@ unless it exposes a regression in those earlier Gates.
 | Phase 1 | Authenticated/idempotent structured publishing; deterministic JSON plus two Markdown artifacts; atomic Git publication | `7373132`, `6926019`, `dfcc3ab`; protected-publication conflict, replay, duplicate, lost-response and promotion tests in [`../phase1d-protection-drill-20260715/README.md`](../phase1d-protection-drill-20260715/README.md) | **GO** |
 | Phase 2 | JSON-driven Hugo/Astro timeline, historical fallback, navigation/filtering, responsive and no-JavaScript behavior, renderer parity | `3d0cc78`; 208-route Hugo/Astro comparison; [recovered browser artifact summary](../phase2-browser-20260715/README.md); current exact Preview regression | **GO**; the historical browser command transcript/URL was not recoverable and is explicitly scoped in the summary |
 | Phase 1D | Protected-main promotion, four isolated staging batches, byte consistency and cross-day structured/legacy recovery | PR #1 required checks; [`../phase1d-protection-drill-20260715/README.md`](../phase1d-protection-drill-20260715/README.md); [`../phase1d-staging-20260715/README.md`](../phase1d-staging-20260715/README.md); [historical production checkpoint and PAT HTTP 401 proof](../phase1d-production-20260715/README.md); hardened legacy Worker `3538c9be-f09e-4482-b626-9d359ea1b30b` | **GO** |
-| Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations `20260715000100` and `20260715000200`; production two-user Auth/RLS smoke and exact restored row counts below | **GO implementation**; final production smoke repeats after the complete observation day |
+| Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations through `20260716000400`; production two-user Auth/RLS smoke and exact restored row counts below | **GO**; final production smoke was repeated in the Phase 6 complete-day follow-up |
 | Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `58b155f`; [tracked Preview evidence, artifact manifest, and explicit approval](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 605-route deployed verifier; Lighthouse 0.98/0.99 | **GO** |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **GO** |
-| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, and current production/recovery evidence below | **RELEASE AUTHORIZED WITH EXPLICIT WAIVER**; the four-batch observation is incomplete and moves to post-release follow-up without being recorded as passed |
+| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, production PRs #29–#32, final `main@d7a35de`, Pages `99a26c75`, and current production/recovery evidence below | **OBSERVED AND PASSED FOR 2026-07-17**; independent final review and rollback-owner handoff remain required before closing the Goal |
 
-The complete-day observation, final Supabase/RLS repeat, and rollback-handoff acceptance remain
-post-release follow-up. They no longer block release under the owner's explicit waiver. Cleanup
-remains unauthorized and all rollback targets remain retained.
+The complete-day observation and final Supabase/RLS repeat are now recorded as post-release
+follow-up evidence. Rollback-handoff acceptance remains pending. Cleanup remains unauthorized and
+all rollback targets remain retained.
 
 ## Cutover manifest
 
 The machine-readable snapshot is
-[`cutover-manifest.json`](cutover-manifest.json). It intentionally records Phase 6 as `no-go` while
-the observation day is incomplete.
+[`cutover-manifest.json`](cutover-manifest.json). It records both the original cutover baseline and
+the final `2026-07-17` post-release observation state.
 
 | Component | Production target | Rollback target |
 | --- | --- | --- |
-| Git | `main@803a734a32d5b0492d6a19b18ba291ac5d687b2e` | Component-specific targets below |
-| Pages | `ff3a2b5f-5141-4bd5-8ec5-d66ef692cdb6` | Hugo `b3c338c3-3342-40bf-965d-7e2e5b5545fa` |
-| Worker | code `e534753a-04d7-4365-952c-7bd02874b450` | Hardened legacy `3538c9be-f09e-4482-b626-9d359ea1b30b` |
-| Supabase | `20260715000100`, `20260715000200` | Additive forward-fix; retain legacy tables and fields |
+| Git | `main@d7a35de97377c5b2ff80c5be825e70226637f63d` | Component-specific targets below |
+| Pages | `99a26c75-cadd-4fd4-ab0f-ae80d006a729` | Hugo `b3c338c3-3342-40bf-965d-7e2e5b5545fa` |
+| Worker | active version `7f5a6a92-60f0-45dc-b1fa-c9d20f36aa1f`, code `e534753a-04d7-4365-952c-7bd02874b450` | Hardened legacy `3538c9be-f09e-4482-b626-9d359ea1b30b` |
+| Supabase | `20260715000100`, `20260715000200`, `20260716000100`, `20260716000200`, `20260716000300`, `20260716000400` | Additive forward-fix; retain legacy tables and fields |
 
 Production Pages:
 
-- Immutable origin: `https://52c8e180.ai-bubblebrain-daily-news.pages.dev`
+- Immutable production origin: `https://99a26c75.ai-bubblebrain-daily-news.pages.dev`
 - Custom domain: `https://bubblenews.today`
-- Build source SHA: `116c23c75fd7d49316586da4bb1549be97629594`
+- Build source SHA: `d7a35de97377c5b2ff80c5be825e70226637f63d`
+- Route artifact SHA-256: `bb149918ed1d3e67b70de3e025a6052602faac912f82bee2aebe21c33e9b1715`
+- Route records: 623
 - Cutover baseline deployment: `b12e9087-78fb-4cf9-b925-897272e4c88c` at
   `3765b785bcf411fe7630416bde4fb88204898d74`
 - PR #17: `https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/17`
@@ -223,8 +224,10 @@ The canonical `2026-07-16` report passed additional semantic smoke checks on bot
 
 After Cron remediation, Cloudflare Pages production advanced to
 `ff3a2b5f-5141-4bd5-8ec5-d66ef692cdb6` from
-`main@803a734a32d5b0492d6a19b18ba291ac5d687b2e`. Final complete-route verification of this
-deployment and the custom domain remains part of the next complete observation-day Gate.
+`main@803a734a32d5b0492d6a19b18ba291ac5d687b2e`. This was the pre-complete-day production
+checkpoint. The final complete-day production deployment is recorded below as
+`99a26c75-cadd-4fd4-ab0f-ae80d006a729` from
+`main@d7a35de97377c5b2ff80c5be825e70226637f63d`.
 
 ## Pages rollback and restoration drill
 
@@ -360,19 +363,78 @@ Pages passed. Production deployment `52c8e180-733e-43ec-9973-1e9ceea7ac49`, its 
 and the custom domain passed the complete 594-route verifier after one transient `/gallery.json`
 timeout was retried successfully.
 
+## Post-release complete-day observation
+
+The next complete production candidate, `2026-07-17` Asia/Shanghai, completed all four real
+structured batches after the release-owner waiver moved this Gate to post-release follow-up.
+
+| Batch | Publication PR | Head SHA | Merge SHA | Final batch items | Required checks |
+| --- | --- | --- | --- | ---: | --- |
+| morning | [#29](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/29) | `00389af7a2d12ab97233ec71846b635669997553` | `da3cb67b7c285d6e917935783474e287d0503200` | 27 | passed |
+| afternoon | [#30](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/30) | `e0c6d9381fb6b71687eb54a731c322d7b269baf5` | `56c7ba536be30d731be1809fd0e985c2214062ed` | 51 | passed |
+| night | [#31](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/31) | `aab860d136716745158dc66759adefb26da37721` | `63246e8dee2f259bf9f018ff8aad93418303eb6e` | 44 | passed |
+| lateNight | [#32](https://github.com/DylanDDeng/ai-bubblebrain-daily-news/pull/32) | `63e73f93c1e48959d7c8e92b7e7fb227820ac1c2` | `d7a35de97377c5b2ff80c5be825e70226637f63d` | 11 | passed |
+
+Remote production KV namespace `4cacd7ba71aa4c4c92447012c28345af` contained success markers for
+the `2026-07-17` morning, afternoon, night, and lateNight structured runs. No
+`structured:attempt-failure:*` markers or `structured:lease:2026-07-17:*` leases were present at the
+final checkpoint.
+
+Final `main` is `d7a35de97377c5b2ff80c5be825e70226637f63d`. Cloudflare Pages production
+deployment `99a26c75-cadd-4fd4-ab0f-ae80d006a729` serves source `d7a35de` with route artifact
+SHA-256 `bb149918ed1d3e67b70de3e025a6052602faac912f82bee2aebe21c33e9b1715` and 623 route records.
+The custom domain `https://bubblenews.today` and immutable production origin
+`https://99a26c75.ai-bubblebrain-daily-news.pages.dev` both passed `scripts/verify-preview.mjs`
+against the local final artifact.
+
+Because the publication merge did not create push-triggered GitHub Actions runs for the merge commit,
+`main@d7a35de` was also verified with manual `workflow_dispatch` runs on `main`: Build and Verify
+Site run `29607244679` passed, and Worker CI run `29607244674` passed with `worker-security`,
+`database-security`, and `renderer-parity` successful. The `promote-publication` job was skipped for
+the manual dispatch as expected.
+
+Final local verification used Node `22.17.0`:
+
+- `REPORT_DATE=2026-07-17 npm run verify:report-day`: passed, 4 completed batches, 133 items, and
+  byte-exact `data/daily/2026-07-17.json`, `daily/2026-07-17.md`, and
+  `content/daily/2026-07-17.md`.
+- `npm test`: passed, 22 files and 363 tests.
+- `npm run verify:renderers`: passed across 209 daily routes.
+- `npm run verify --prefix astro`: passed, including 11 files and 63 tests, Astro check, lint,
+  build, CSP, 623 routes, 27 XML endpoints, and 99 sandboxed demos.
+- Final daily JSON, search index, and HTML anchors each contained 133 unique item IDs with no
+  missing or duplicate IDs.
+- `/topics/`, `/entities/`, `/search/`, and `/search/index.json` returned HTTP 200 on the custom
+  domain.
+
+Supabase project `znurdobjryrhshzkalup` was rechecked after the complete day. The linked migration
+list matched local and remote for `20260715000100`, `20260715000200`, `20260716000100`,
+`20260716000200`, `20260716000300`, and `20260716000400`. `supabase db lint --linked` passed with no
+schema errors. The final public dump SHA-256 was
+`813f106049336a57faeb980c2683eac0d733f1d0efc9298cf8dc31bd38a4bc8a`; row counts remained
+`profiles=2`, `comments=13`, `favorites=14`, `entity_state=14`, and `annotations=0`, with comments
+distributed as page `2`, Gallery archive `8`, and Video archive `3`. Anonymous base-table REST access to
+`comments`, `entity_state`, and `annotations` returned 401; Gallery `get_page_comments` returned
+400; the known legacy page thread `page:/daily/2025/12/2025-12-30/` returned 2 rows; Community API
+health returned 200 with `writesEnabled=false`. The authenticated owner-delete UI canary remains a
+future prerequisite before comments writing is enabled; writes are currently disabled in production.
+
+The `2026-07-16` afternoon window remains permanently missed/pending. It is not counted as a
+successful batch.
+
 ## Final Phase 6 completion checklist
 
 The following items remain mandatory:
 
 - [x] Diagnose the missed `2026-07-16` afternoon window, validate the fixes with a real isolated
       Cron, deploy the remediated production Worker, and preserve fail-closed evidence.
-- [ ] Observe all four structured batches for the next complete production date with required checks
+- [x] Observe all four structured batches for the next complete production date with required checks
       green. The current candidate is `2026-07-17`; the release owner explicitly waived this only as
       a pre-release blocking condition and moved it to post-release follow-up.
-- [ ] Confirm all four batch IDs and item lists are complete in the final canonical JSON.
-- [ ] Confirm final JSON and both Markdown artifacts match the structured renderer outputs.
-- [ ] Re-run production search, topic/entity, anchor, custom-domain, Supabase/RLS, and row-count smoke.
-- [ ] Record final Pages and Worker deployment/version IDs after the complete day.
+- [x] Confirm all four batch IDs and item lists are complete in the final canonical JSON.
+- [x] Confirm final JSON and both Markdown artifacts match the structured renderer outputs.
+- [x] Re-run production search, topic/entity, anchor, custom-domain, Supabase/RLS, and row-count smoke.
+- [x] Record final Pages and Worker deployment/version IDs after the complete day.
 - [x] Archive [objective non-secret proof](../phase1d-production-20260715/pat-revocation-proof.json)
       that the historically exposed PAT now returns HTTP 401.
 - [x] Complete one clean 605-route run for the latest immutable Astro Preview.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-16T14:22:45Z",
+  "recorded_at": "2026-07-17T19:24:11Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -14,8 +14,14 @@
       { "id": "lateNight", "scheduled_at": "2026-07-16T19:00:00Z", "verification_checkpoint": "2026-07-16T19:10:00Z" }
     ],
     "next_complete_observation_candidate": "2026-07-17",
+    "next_complete_observation_status": "passed",
     "phase_5": "go",
-    "phase_6": "release-authorized-with-explicit-observation-waiver",
+    "phase_6": "observed-passed-pending-independent-review-and-rollback-owner-acceptance",
+    "original_observation_result": {
+      "date": "2026-07-16",
+      "afternoon": "missed_gate_no_success_marker_failure_marker_lease_or_publication_pr",
+      "counted_as_success": false
+    },
     "open_p0": 0,
     "open_p1": 0,
     "blocking_reason": null
@@ -50,7 +56,8 @@
     "owner": "DylanDDeng",
     "name": "ai-bubblebrain-daily-news",
     "branch": "main",
-    "release_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "release_sha": "d7a35de97377c5b2ff80c5be825e70226637f63d",
+    "post_release_complete_day_sha": "d7a35de97377c5b2ff80c5be825e70226637f63d",
     "cutover_release_sha": "3765b785bcf411fe7630416bde4fb88204898d74",
     "release_pr": 17,
     "structured_morning_canary_pr": 15,
@@ -68,14 +75,59 @@
       "1e567561934e664cad0fa99c49371f83470bb958",
       "d472a19d3a4cc937cdfb40b4380c18be09da48a2",
       "803a734a32d5b0492d6a19b18ba291ac5d687b2e"
-    ]
+    ],
+    "post_release_publication_prs": [
+      {
+        "batch": "morning",
+        "number": 29,
+        "head_sha": "00389af7a2d12ab97233ec71846b635669997553",
+        "merge_sha": "da3cb67b7c285d6e917935783474e287d0503200",
+        "items": 27,
+        "required_checks": "passed"
+      },
+      {
+        "batch": "afternoon",
+        "number": 30,
+        "head_sha": "e0c6d9381fb6b71687eb54a731c322d7b269baf5",
+        "merge_sha": "56c7ba536be30d731be1809fd0e985c2214062ed",
+        "items": 51,
+        "required_checks": "passed"
+      },
+      {
+        "batch": "night",
+        "number": 31,
+        "head_sha": "aab860d136716745158dc66759adefb26da37721",
+        "merge_sha": "63246e8dee2f259bf9f018ff8aad93418303eb6e",
+        "items": 44,
+        "required_checks": "passed"
+      },
+      {
+        "batch": "lateNight",
+        "number": 32,
+        "head_sha": "63e73f93c1e48959d7c8e92b7e7fb227820ac1c2",
+        "merge_sha": "d7a35de97377c5b2ff80c5be825e70226637f63d",
+        "items": 11,
+        "required_checks": "passed"
+      }
+    ],
+    "manual_main_ci": {
+      "reason": "publication merge did not create push-triggered GitHub Actions runs for the merge commit",
+      "build_and_verify_site_run": 29607244679,
+      "worker_ci_run": 29607244674,
+      "head_sha": "d7a35de97377c5b2ff80c5be825e70226637f63d",
+      "status": "passed"
+    }
   },
   "pages": {
     "project": "ai-bubblebrain-daily-news",
     "custom_domain": "https://bubblenews.today",
-    "production_deployment_id": "ff3a2b5f-5141-4bd5-8ec5-d66ef692cdb6",
-    "production_origin": "https://ff3a2b5f.ai-bubblebrain-daily-news.pages.dev",
-    "source_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "production_deployment_id": "99a26c75-cadd-4fd4-ab0f-ae80d006a729",
+    "production_origin": "https://99a26c75.ai-bubblebrain-daily-news.pages.dev",
+    "source_sha": "d7a35de97377c5b2ff80c5be825e70226637f63d",
+    "route_manifest_records": 623,
+    "artifact_sha256": "bb149918ed1d3e67b70de3e025a6052602faac912f82bee2aebe21c33e9b1715",
+    "custom_domain_verifier": "passed",
+    "immutable_origin_verifier": "passed",
     "latest_evidence_preview": {
       "deployment_id": "e4cd8eea-20b0-494e-a681-e23bc96b5277",
       "source_sha": "58b155f4d277fd4cde8856c9be9a57d26000cfc6",
@@ -209,10 +261,14 @@
     "project_ref": "znurdobjryrhshzkalup",
     "migration_versions": [
       "20260715000100",
-      "20260715000200"
+      "20260715000200",
+      "20260716000100",
+      "20260716000200",
+      "20260716000300",
+      "20260716000400"
     ],
     "linked_lint": "passed",
-    "phase_6_snapshot_sha256": "09372453c3c344335ebe4f3d58b07f768a92263031518f6758b66787646cf579",
+    "phase_6_snapshot_sha256": "813f106049336a57faeb980c2683eac0d733f1d0efc9298cf8dc31bd38a4bc8a",
     "baseline_rows": {
       "profiles": 2,
       "comments": 13,
@@ -229,6 +285,15 @@
     },
     "authenticated_rls_smoke": "passed",
     "temporary_users_deleted": true,
+    "final_rest_smoke": {
+      "comments_base_status": 401,
+      "entity_state_base_status": 401,
+      "annotations_base_status": 401,
+      "gallery_rpc_status": 400,
+      "legacy_page_rpc_rows": 2,
+      "community_health_status": 200,
+      "community_writes_enabled": false
+    },
     "rollback_strategy": "additive forward-fix; retain legacy favorites.image_id",
     "preflight": {
       "observed_at": "2026-07-16T13:09:56Z",
@@ -236,14 +301,19 @@
       "linked_project_ref": "znurdobjryrhshzkalup",
       "migration_versions_local_remote_exact": [
         "20260715000100",
-        "20260715000200"
+        "20260715000200",
+        "20260716000100",
+        "20260716000200",
+        "20260716000300",
+        "20260716000400"
       ],
       "migration_list_attempts": 2,
       "first_attempt": "transient-connect-failure",
       "bounded_retry": "passed",
       "linked_lint_level_warning": "passed-no-schema-errors",
       "mutations_performed": false,
-      "final_authenticated_smoke_required_after_complete_day": true
+      "final_authenticated_smoke_required_after_complete_day": false,
+      "final_authenticated_smoke_resolution": "prior authenticated two-user RLS smoke retained; final repeat used db lint, CI database-security, anonymous REST denial, legacy page RPC, Gallery RPC denial, community health, and exact row counts because production writes remain disabled"
     }
   },
   "security_evidence": {
@@ -257,61 +327,66 @@
     }
   },
   "site_verification": {
-    "route_count": 605,
-    "renderer_parity_daily_routes": 208,
-    "astro_tests": 46,
-    "root_tests": 328,
-    "daily_json_sha256": "65194c5c84720b4b1f90c3806289fc2b88eb0e83900257cee4b98675cb4c9e6f",
-    "report_items": 157,
-    "search_items": 157,
-    "html_anchors": 157,
+    "route_count": 623,
+    "renderer_parity_daily_routes": 209,
+    "astro_tests": 63,
+    "root_tests": 363,
+    "daily_json_sha256": "708e3f23172a201a9e686fe263140b104f27a1290337543e2f4f325738b4dd14",
+    "daily_markdown_sha256": "f219ad85386ec4f9c871a944adbe4bf630a16285dda665f19c38c11013bdd74c",
+    "report_items": 133,
+    "search_items": 133,
+    "html_anchors": 133,
     "knowledge_routes": {
       "/topics/": 200,
       "/entities/": 200,
-      "/search/": 200
+      "/search/": 200,
+      "/search/index.json": 200
     }
   },
   "batches": [
     {
       "id": "morning",
       "status": "completed",
-      "items": 157,
-      "publication_pr": 19,
-      "publication_prs": [
-        15,
-        19
-      ],
-      "canary_head_sha": "62b3049b0ed566b5fec2b2fd7fafbeed85ba8553",
-      "canary_merge_sha": "3bdabac567a52b03c4f7a254913d0d86d7de8c7f",
-      "scheduled_head_sha": "e2dbb1fb2f27381a66890f38b0aa734596e2cb26",
-      "scheduled_merge_sha": "116c23c75fd7d49316586da4bb1549be97629594",
+      "report_date": "2026-07-17",
+      "items": 27,
+      "publication_pr": 29,
+      "head_sha": "00389af7a2d12ab97233ec71846b635669997553",
+      "merge_sha": "da3cb67b7c285d6e917935783474e287d0503200",
+      "generated_at": "2026-07-17T02:00:04.000Z",
       "ci": "passed"
     },
     {
       "id": "afternoon",
-      "status": "missed_gate",
-      "items": 0,
-      "publication_pr": null,
-      "ci": "not_run",
-      "scheduled_at": "2026-07-16T07:00:00Z",
-      "success_marker": null,
-      "failure_marker": null,
-      "lease_after_recovery_attempts": false,
-      "manual_recovery_http_status": 401
+      "status": "completed",
+      "report_date": "2026-07-17",
+      "items": 51,
+      "publication_pr": 30,
+      "head_sha": "e0c6d9381fb6b71687eb54a731c322d7b269baf5",
+      "merge_sha": "56c7ba536be30d731be1809fd0e985c2214062ed",
+      "generated_at": "2026-07-17T07:00:04.000Z",
+      "ci": "passed"
     },
     {
       "id": "night",
-      "status": "pending",
-      "items": 0,
-      "publication_pr": null,
-      "ci": "pending"
+      "status": "completed",
+      "report_date": "2026-07-17",
+      "items": 44,
+      "publication_pr": 31,
+      "head_sha": "aab860d136716745158dc66759adefb26da37721",
+      "merge_sha": "63246e8dee2f259bf9f018ff8aad93418303eb6e",
+      "generated_at": "2026-07-17T15:00:04.000Z",
+      "ci": "passed"
     },
     {
       "id": "lateNight",
-      "status": "pending",
-      "items": 0,
-      "publication_pr": null,
-      "ci": "pending"
+      "status": "completed",
+      "report_date": "2026-07-17",
+      "items": 11,
+      "publication_pr": 32,
+      "head_sha": "63e73f93c1e48959d7c8e92b7e7fb227820ac1c2",
+      "merge_sha": "d7a35de97377c5b2ff80c5be825e70226637f63d",
+      "generated_at": "2026-07-17T19:00:04.000Z",
+      "ci": "passed"
     }
   ],
   "cleanup": {

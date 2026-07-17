@@ -19,9 +19,9 @@ infer acceptance.
 
 | Component | Intended production state | Retained rollback target | Rollback action |
 | --- | --- | --- | --- |
-| Pages | Latest verified Astro deployment for final `main` | Hugo deployment `b3c338c3-3342-40bf-965d-7e2e5b5545fa` at `8ed05acde833ee01e7fbec85fd4e7e8ebc762d28` | Promote the immutable Hugo deployment, then verify the custom domain has converged before declaring recovery |
-| Worker | Structured version `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a` | Hardened legacy version `3538c9be-f09e-4482-b626-9d359ea1b30b` | Restore the retained version with `DAILY_PUBLISH_MODE=legacy` and `DAILY_STRUCTURED_WRITES_ENABLED=false`; preserve pull-request publication |
-| Supabase | Additive migrations `20260715000100` and `20260715000200` | Existing legacy tables, columns, and RLS-compatible clients | Do not destructively reverse migrations; disable new consumers if required and use an additive forward-fix |
+| Pages | Verified Astro production deployment `99a26c75-cadd-4fd4-ab0f-ae80d006a729` at `d7a35de97377c5b2ff80c5be825e70226637f63d` | Hugo deployment `b3c338c3-3342-40bf-965d-7e2e5b5545fa` at `8ed05acde833ee01e7fbec85fd4e7e8ebc762d28` | Promote the immutable Hugo deployment, then verify the custom domain has converged before declaring recovery |
+| Worker | Production deployment `8818fa66-7166-416d-98d6-b29aec1030ea`, active version `7f5a6a92-60f0-45dc-b1fa-c9d20f36aa1f`, code version `e534753a-04d7-4365-952c-7bd02874b450` | Hardened legacy version `3538c9be-f09e-4482-b626-9d359ea1b30b` | Restore the retained version with `DAILY_PUBLISH_MODE=legacy` and `DAILY_STRUCTURED_WRITES_ENABLED=false`; preserve pull-request publication |
+| Supabase | Additive migrations `20260715000100`, `20260715000200`, `20260716000100`, `20260716000200`, `20260716000300`, and `20260716000400` | Existing legacy tables, columns, and RLS-compatible clients | Do not destructively reverse migrations; disable new consumers if required and use an additive forward-fix |
 | Git publication | Protected `main` and structured three-file publication PRs | Last verified merge on protected `main` | Leave failed candidates unmerged, preserve evidence, and follow the structured recovery runbook; never force-update the publication lock |
 
 The authoritative component identifiers remain in [`cutover-manifest.json`](cutover-manifest.json).
@@ -59,11 +59,11 @@ Worker publication failure does not authorize deleting already merged structured
 
 ## Preconditions for owner acceptance
 
-- [ ] All four 2026-07-17 batches completed through protected publication PRs.
-- [ ] Final canonical JSON and both Markdown artifacts passed the complete report-day verifier.
-- [ ] Final immutable Pages deployment and custom domain passed the complete route and production
+- [x] All four 2026-07-17 batches completed through protected publication PRs.
+- [x] Final canonical JSON and both Markdown artifacts passed the complete report-day verifier.
+- [x] Final immutable Pages deployment and custom domain passed the complete route and production
       smoke checks.
-- [ ] Final Worker, Pages, Git, and Supabase identifiers and results are archived.
+- [x] Final Worker, Pages, Git, and Supabase identifiers and results are archived.
 - [x] Historical PAT revocation has [objective non-secret HTTP 401 evidence](../phase1d-production-20260715/pat-revocation-proof.json).
 - [x] The exact immutable Astro Preview has [explicit user approval](../phase4-preview-20260716/preview-approval.json).
 - [ ] Independent final review is `GO` with no open P0/P1 finding.
