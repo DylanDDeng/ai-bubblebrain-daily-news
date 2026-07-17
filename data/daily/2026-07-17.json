@@ -147,17 +147,29 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-17T19:00:04.000Z",
       "id": "lateNight",
-      "item_ids": [],
+      "item_ids": [
+        "n_d55393005901f0576e9f23b1224069b334196e7165e1f319c4c88816ecc99e30",
+        "n_5e455407080911da69cdeaf48ae272d805b599db638a456d6d29aa77a794e2b4",
+        "n_409c23a6ee62ef9f6b0617fb2a28b584b39033ece8a053d701a5dfd415d53992",
+        "n_5e08bace13395fa2657614243838ed60ef440fd517b9d65767e707fb3e5ccb2f",
+        "n_f53d3d55d87c174d95439ebd569e1a4c285f0b3f3ee21af1b19c80e213712f81",
+        "n_8669264d71c735ad4bb020c29df67950ac57604c85905bcb7deffe961abd020f",
+        "n_7253a6e323c5aab440a08904b2ec1d5ffceca47e3525fd753aec53e221b72236",
+        "n_d13f68609ff0c6e86dffce6ae87f79b92b1587c4a54c5a09e15b41ae86f91778",
+        "n_d20e94074affb938f05f2bf0982395e47def34a83d997ccf572f1286a5221c7b",
+        "n_a13926f04051c4ddb85f01ccf1a85c99d23b9d8247ade2870019376da5535e1d",
+        "n_0c51831c50d600a91b8bb85cf0d3c3ec9d532dd625cd356d876564ba293d1b23"
+      ],
       "label": "次日 03:00 补充更新",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-17",
   "dedupe_version": 1,
-  "generated_at": "2026-07-17T15:00:04.000Z",
+  "generated_at": "2026-07-17T19:00:04.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4759,6 +4771,414 @@
         "topic_open_source"
       ],
       "url": "https://github.com/tirth8205/code-review-graph"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://www.reddit.com/r/MachineLearning/comments/1uytlac/eu_ai_act_openrag_933_legally_structured_chunks/",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d55393005901f0576e9f23b1224069b334196e7165e1f319c4c88816ecc99e30",
+      "featured": false,
+      "id": "n_d55393005901f0576e9f23b1224069b334196e7165e1f319c4c88816ecc99e30",
+      "identity_claims": [
+        "c_8ecdd0a1816e2ae10001b96bde69b302f2a824360fb7024065640bc805a9b028",
+        "c_d55393005901f0576e9f23b1224069b334196e7165e1f319c4c88816ecc99e30"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T08:18:09.630Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203917485099671555",
+        "name": "newest submissions : MachineLearning"
+      },
+      "source_id": "1203917485099671555",
+      "source_type": "reddit",
+      "summary": "I have released EU AI Act OpenRAG, a downloadable corpus of Regulation (EU) 2024/1689 designed for RAG and legal-NLP experimentation. Instead of sliding character windows, the corpus chunks on the Regulation’s legal structure: one chunk per article paragraph one per recital one per Article 3 definition one per annex point chapter, section and provision metadata stored separately The resulting SQLite database contains 933 chunks and a normalized 1024-dimensional BGE-M3 embedding for every chunk. It also includes exact EUR-Lex links, Article 113 application-date metadata and deliberately narrow derived labels. Direct textual classification is stored separately from broader regulatory-regime association, and ambiguous cases remain NULL. I evaluated it against the AI Act Evaluation Benchmark using a like-for-like whole-unit baseline: scenario article recall@20: 0.541 structural vs 0.449 baseline QA article hit@10: 0.927 structural vs 0.898 baseline overall RAG classification remained close and was slightly lower on the structural corpus, suggesting that generator behaviour dominates that task more than chunk granularity I have published the full results, limitations, derivation methodology, label audit and licensing breakdown rather than only the favourable metrics. Dataset: huggingface.co/datasets/faitholopade/aiact-openrag I would appreciate technical feedback, particularly on the retrieval evaluation, structural chunking methodology and what additional baselines would be most useful. submitted by /u/Automatic-Forever-63 [link] [comments]",
+      "time_precision": "exact",
+      "title": "欧盟AI法案OpenRAG：一个SQLite文件中包含933个法律结构化块和BGE-M3嵌入 [P]",
+      "topic_ids": [
+        "topic_research",
+        "topic_policy"
+      ],
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1uytlac/eu_ai_act_openrag_933_legally_structured_chunks/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://www.reddit.com/r/MachineLearning/comments/1uytw5s/acl_arr_2026_cant_seem_to_find_the_review_issue/",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5e455407080911da69cdeaf48ae272d805b599db638a456d6d29aa77a794e2b4",
+      "featured": false,
+      "id": "n_5e455407080911da69cdeaf48ae272d805b599db638a456d6d29aa77a794e2b4",
+      "identity_claims": [
+        "c_15146a7bd6e872a35fbb61200bed4689f37f5a2501bda7bcce653454622aa998",
+        "c_5e455407080911da69cdeaf48ae272d805b599db638a456d6d29aa77a794e2b4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T08:36:05.799Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203917485099671554",
+        "name": "newest submissions : MachineLearning"
+      },
+      "source_id": "1203917485099671554",
+      "source_type": "reddit",
+      "summary": "hey, first time going through this process, the deadline is by today AoE so i'm kinda worried, i just can't seem to find it next to the \"official comment\" button on my submission, what am i doing wrong? anyone who's having the same issue? submitted by /u/DLLDoesShit [link] [comments]",
+      "time_precision": "exact",
+      "title": "ACL ARR 2026 - 似乎找不到审稿问题报告按钮？[D]",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1uytw5s/acl_arr_2026_cant_seem_to_find_the_review_issue/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://openai.com/index/a-scorecard-for-the-ai-age",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_409c23a6ee62ef9f6b0617fb2a28b584b39033ece8a053d701a5dfd415d53992",
+      "featured": false,
+      "id": "n_409c23a6ee62ef9f6b0617fb2a28b584b39033ece8a053d701a5dfd415d53992",
+      "identity_claims": [
+        "c_409c23a6ee62ef9f6b0617fb2a28b584b39033ece8a053d701a5dfd415d53992",
+        "c_ef9f45181d1277a6b17a4857981f7c8a9ddc5ea15a71816f0edb8aef6897e9c4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T10:00:00.375Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203834168673284096",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1203834168673284096",
+      "source_type": "openai_newsroom",
+      "summary": "Sarah Friar, CFO of OpenaAI, introduces a practical AI scorecard to measure ROI through useful work, cost per successful task, dependability, and return on compute.",
+      "time_precision": "exact",
+      "title": "A scorecard for the AI age",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://openai.com/index/a-scorecard-for-the-ai-age"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2078058861932507150",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5e08bace13395fa2657614243838ed60ef440fd517b9d65767e707fb3e5ccb2f",
+      "featured": false,
+      "id": "n_5e08bace13395fa2657614243838ed60ef440fd517b9d65767e707fb3e5ccb2f",
+      "identity_claims": [
+        "c_5e08bace13395fa2657614243838ed60ef440fd517b9d65767e707fb3e5ccb2f",
+        "c_d2e1cd235bc70096ba507976a35d7e7c1febf613b38da860b4d7eff410848cd5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T10:06:55.739Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203969674203656193",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1203969674203656193",
+      "source_type": "twitter_extra",
+      "summary": "别手搓排版了，这个Skill 让 AI 直接产出杂志级信息卡！ 你只管把文字丢给 AI，排版交给 infocard-skills： 这是一套开源的 Agent Skill，让 AI 学会「编辑部级排版」：读入任意自然语言内容，自动判断信息密度、挑选布局骨架，按现代杂志与瑞士国际主义风格生成定版 HTML 信息卡，再一键渲染成 3:4、16:9 等多种画幅的成图。 它内置六步工作流和严格的质量红线——标题不许改写、版面不许留大片空白、模块必须有主次——从密度判断到渲后自检，全程自动把关。 无论是知识卡片、榜单总结还是内容封面，从此文字进去，设计感直接拉满地出来。",
+      "time_precision": "exact",
+      "title": "别手搓排版了，这个Skill 让 AI 直接产出杂志级信息卡！ 你只管把文字丢给 AI，排版交给 infocard-skills： https://github.com/shaom/infocard-skills 这是一套...",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2078058861932507150"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://www.reddit.com/r/MachineLearning/comments/1uyw0i0/tacl_journal_doubts_d/",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f53d3d55d87c174d95439ebd569e1a4c285f0b3f3ee21af1b19c80e213712f81",
+      "featured": false,
+      "id": "n_f53d3d55d87c174d95439ebd569e1a4c285f0b3f3ee21af1b19c80e213712f81",
+      "identity_claims": [
+        "c_c5d38189f64b509b752b44a4327419b541fb86537b5576cc3fc1b0fe66159bba",
+        "c_f53d3d55d87c174d95439ebd569e1a4c285f0b3f3ee21af1b19c80e213712f81"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T10:37:21.077Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203917485099671553",
+        "name": "newest submissions : MachineLearning"
+      },
+      "source_id": "1203917485099671553",
+      "source_type": "reddit",
+      "summary": "I submitted my TACL paper approx on June 1th and was scheduled for July 1st cycle, when and how do you guys think we'll be getting our reviews given the July cycle for the paper which I've submitted at TACL? And how long does the entire process take for those who have submitted to TACL? Also, I do want to ask, how good is TACL as a journal and how respectable or how is a TACL publication viewed? submitted by /u/Practical-Buddy6323 [link] [comments]",
+      "time_precision": "exact",
+      "title": "TACL期刊疑虑 [D]",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1uyw0i0/tacl_journal_doubts_d/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://www.reddit.com/r/MachineLearning/comments/1uyys70/researchers_is_this_framework_useful_or_complete/",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8669264d71c735ad4bb020c29df67950ac57604c85905bcb7deffe961abd020f",
+      "featured": false,
+      "id": "n_8669264d71c735ad4bb020c29df67950ac57604c85905bcb7deffe961abd020f",
+      "identity_claims": [
+        "c_8669264d71c735ad4bb020c29df67950ac57604c85905bcb7deffe961abd020f",
+        "c_8b69081bc7c0f1eac83b4ae9423ead77fdda65c043faa3fb13dd4307fab2d5b6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T12:49:02.653Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203917485099671552",
+        "name": "newest submissions : MachineLearning"
+      },
+      "source_id": "1203917485099671552",
+      "source_type": "reddit",
+      "summary": "Title: Researchers: Is this framework useful, or complete BS? I'm working on a visual framework that tries to describe how research progresses from simply collecting information to producing genuinely original discoveries. The image isn't intended to be a formal scientific model or a replacement for established research methodology. It's just an attempt to build an intuitive mental model that students and early-career researchers can use. The basic progression is: Level 0: Raw copy-paste / plagiarism Level 1: Information compilation Level 2: Understanding &#x26; summarization Level 3: Comparison &#x26; evaluation Level 4: Interpretation &#x26; analysis Level 5: Applying knowledge to solve problems Level 6: Designing experiments that generate new evidence Level 7: Combining existing ideas in novel ways Level 8: Making an original contribution (new method, dataset, benchmark, algorithm, theory, etc.) Level 9: Breakthrough work that significantly changes a field Level 10: Paradigm-shifting discoveries that redefine how we understand a domain Some examples I had in mind: Level 2: A literature review that accurately explains existing work. Level 4: An analysis explaining why Transformers scale better than earlier architectures. Level 5: Building and evaluating a better RAG pipeline for a real-world application. Level 6: Running controlled experiments to test whether a new training strategy improves performance. Level 7: Combining ideas from two different fields to create a new research direction. Level 8: Publishing a genuinely new architecture, benchmark, or algorithm. Level 9: Attention Is All You Need (Transformers) opening an entirely new direction for AI. Level 10: Think of discoveries on the scale of Einstein's relativity or Newton's mechanics—rare, civilization-level shifts. I know this is subjective, which is exactly why I'm posting it here. I'd really appreciate criticism from people who actually do research. Some questions I'm hoping you can answer: Is this progression fundamentally reasonable, or is it misleading? Which levels don't make sense? Are there levels that should be merged or split? Am I confusing difficulty with originality? What dimensions are missing? (Novelty, rigor, reproducibility, significance, etc.) Is there an existing framework in academia that already captures this idea better? If you were mentoring a new PhD student, would you find something like this useful, or would you throw it away? Please don't worry about being polite—I genuinely want to know whether this is a useful teaching tool or just academic nonsense. If it's flawed, I'd much rather understand why than keep refining something built on a bad premise. submitted by /u/farhadak_and2005 [link] [comments]",
+      "time_precision": "exact",
+      "title": "研究人员：这个框架有用，还是纯属胡说八道？[D]",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://www.reddit.com/r/MachineLearning/comments/1uyys70/researchers_is_this_framework_useful_or_complete/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2078154564272889992",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_7253a6e323c5aab440a08904b2ec1d5ffceca47e3525fd753aec53e221b72236",
+      "featured": false,
+      "id": "n_7253a6e323c5aab440a08904b2ec1d5ffceca47e3525fd753aec53e221b72236",
+      "identity_claims": [
+        "c_22ca2b1ecfa6bf085b9fcbaa97172a9d1d497f2f9267d2ac8ba3f341089d5311",
+        "c_7253a6e323c5aab440a08904b2ec1d5ffceca47e3525fd753aec53e221b72236"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T13:47:03.402Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203928531772362752",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1203928531772362752",
+      "source_type": "twitter_extra",
+      "summary": "RT Gantrol 助力国产百元手柄平替Codex Micro，开源Agent controller。只要人民币，不要230美元。甚至无需运费 大致思路是，将手柄操作转成Codex操作。目前仅支持Windows 64位，由于是一天内（让Codex）赶工出来的，会有不少问题，开软件，重启Codex(ChatGPT)会好很多 开源地址：",
+      "time_precision": "exact",
+      "title": "RT Gantrol: 助力国产百元手柄平替Codex Micro，开源Agent controller。只要人民币，不要230美元。甚至无需运费 大致思路是，将手柄操作转成Codex操作。目前仅支...",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2078154564272889992"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2078120758967251092",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d13f68609ff0c6e86dffce6ae87f79b92b1587c4a54c5a09e15b41ae86f91778",
+      "featured": false,
+      "id": "n_d13f68609ff0c6e86dffce6ae87f79b92b1587c4a54c5a09e15b41ae86f91778",
+      "identity_claims": [
+        "c_c27bf8751b052e906c57af10992e84e64dbbfdc6d1d8cb82ac35dcdac50ac5bb",
+        "c_d13f68609ff0c6e86dffce6ae87f79b92b1587c4a54c5a09e15b41ae86f91778"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T14:12:53.693Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203969674203656192",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1203969674203656192",
+      "source_type": "twitter_extra",
+      "summary": "今晚成功把我每个月 $200 的订阅，众筹出去一半！！ 这每个月一百刀是这么赚来的： 我老婆有个很喜欢的视频号，发了一个视频，她很想下载下来，避免这个号删除这个视频。 这时我程序员的身份就被记起了，可是视频号这种完全封闭的系统，我这种水平是不可能几分钟通过找 url 等方式下载它的。 如果是 Codex 出现以前，我可能就得 Google 搜各种「视频号 下载」的网站了，现在有了 Codex 肯定让它做了，一个 /Goal 下去，大概 8-10 分钟搞定，MP4 已经躺在我的硬盘里了。 到这已经有一声「哇🤩」了。。还不算完，我说这么视频里说话比较快还不标准，要不我再给你做个字幕？ 这时我感觉众筹的机会来了，我接着说： 如果这个视频的字幕你还满意的话，后面每个视频号视频都由我来处理如何？不过它比较费 token，我得把我的 Plus 升级到 Pro，这样你要处理的视频就可以不限量了。（我都不知道自己鬼扯了些什么。。。） 果然 Codex 和我老婆都不负众望 😃，视频字幕搞定了、我每个月 $100 订阅也搞定了！",
+      "time_precision": "exact",
+      "title": "今晚成功把我每个月 $200 的订阅，众筹出去一半！！ 这每个月一百刀是这么赚来的： 我老婆有个很喜欢的视频号，发了一个视频，她很想下载下来，避免这个号删除这...",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shao__meng/status/2078120758967251092"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/huangyun_122/status/2078131948204249486",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d20e94074affb938f05f2bf0982395e47def34a83d997ccf572f1286a5221c7b",
+      "featured": false,
+      "id": "n_d20e94074affb938f05f2bf0982395e47def34a83d997ccf572f1286a5221c7b",
+      "identity_claims": [
+        "c_12db0ba038a3cdb7f883cdf795415960d7b57bf9e185522e95110943e833f65f",
+        "c_d20e94074affb938f05f2bf0982395e47def34a83d997ccf572f1286a5221c7b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T14:57:20.856Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203895538403934210",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1203895538403934210",
+      "source_type": "twitter_extra",
+      "summary": "最近黄推有点猛，找舍不得不回的评论，成本进一步增加，可又不敢上 RPA，怕 N 总封我号",
+      "time_precision": "exact",
+      "title": "最近黄推有点猛，找舍不得不回的评论，成本进一步增加，可又不敢上 RPA，怕 N 总封我号",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2078131948204249486"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/huangyun_122/status/2078138245662327231",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_deepseek"
+      ],
+      "event_id": "e_a13926f04051c4ddb85f01ccf1a85c99d23b9d8247ade2870019376da5535e1d",
+      "featured": false,
+      "id": "n_a13926f04051c4ddb85f01ccf1a85c99d23b9d8247ade2870019376da5535e1d",
+      "identity_claims": [
+        "c_38d502da979c1bbc1abfedea4f9308537edee79cd6b7b67eb5e464c70ce7be7c",
+        "c_a13926f04051c4ddb85f01ccf1a85c99d23b9d8247ade2870019376da5535e1d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T15:22:22.866Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203895538403934209",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1203895538403934209",
+      "source_type": "twitter_extra",
+      "summary": "每天夸一夸 OpenCode + Deepseek V4, 在 windows 上用起来毫无心理负担，不用心惊胆战被封 就连启动时长超过 10秒都要抽一抽它",
+      "time_precision": "exact",
+      "title": "每天夸一夸 OpenCode + Deepseek V4, 在 windows 上用起来毫无心理负担，不用心惊胆战被封 就连启动时长超过 10秒都要抽一抽它",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2078138245662327231"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/huangyun_122/status/2078147628471390221",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_0c51831c50d600a91b8bb85cf0d3c3ec9d532dd625cd356d876564ba293d1b23",
+      "featured": false,
+      "id": "n_0c51831c50d600a91b8bb85cf0d3c3ec9d532dd625cd356d876564ba293d1b23",
+      "identity_claims": [
+        "c_0c51831c50d600a91b8bb85cf0d3c3ec9d532dd625cd356d876564ba293d1b23",
+        "c_eb63e093c6d39cb10ff266904b940182f3d54042ad1f3fc4bd872760180ef867"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-17T19:00:04.000Z",
+      "published_at": "2026-07-17T15:59:39.033Z",
+      "published_date": "2026-07-17",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1203895538403934208",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1203895538403934208",
+      "source_type": "twitter_extra",
+      "summary": "OpenCode + DS / Kimi / Grok, AI 就像水电一样，Windows 右键弄个开关，系统级别让 Agent 能力流进来",
+      "time_precision": "exact",
+      "title": "OpenCode + DS / Kimi / Grok, AI 就像水电一样，Windows 右键弄个开关，系统级别让 Agent 能力流进来",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/huangyun_122/status/2078147628471390221"
     }
   ],
   "overview": {
