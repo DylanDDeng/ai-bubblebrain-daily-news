@@ -439,7 +439,7 @@ The following items remain mandatory:
       that the historically exposed PAT now returns HTTP 401.
 - [x] Complete one clean 605-route run for the latest immutable Astro Preview.
 - [x] Record [explicit user approval](../phase4-preview-20260716/preview-approval.json) of that exact Preview/SHA.
-- [ ] Complete independent post-release review with no open P0/P1 finding.
+- [x] Complete independent post-release review with no open P0/P1 finding.
 - [ ] Obtain explicit acceptance of the scoped
       [`ROLLBACK_HANDOFF.md`](ROLLBACK_HANDOFF.md) before cleanup begins.
 
