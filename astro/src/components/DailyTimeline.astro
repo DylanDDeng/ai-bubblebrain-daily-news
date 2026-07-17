@@ -49,6 +49,9 @@ const orderedBatches = orderTimelineBatches(report.batches);
 			</p>
 			<h1><time datetime={report.date}>{report.date}</time></h1>
 			{overview && <p class="timeline-overview">{overview}</p>}
+			<a class="timeline-discussion-link" href="#discussion">
+				{isEnglish ? 'Discussion and additions ↓' : '讨论与补充 ↓'}
+			</a>
 		</div>
 		<nav class="timeline-date-nav" aria-label={isEnglish ? 'Daily navigation' : '日报日期导航'}>
 			{
@@ -150,7 +153,7 @@ const orderedBatches = orderTimelineBatches(report.batches);
 							<span data-batch-count>{items.length}</span>
 						</header>
 						<div class="timeline-items">
-							<span class="timeline-rail" aria-hidden="true"></span>
+							<span class="timeline-rail" aria-hidden="true" />
 							{items.map((item, index) => {
 								const summary = cleanTimelineSummary(item.summary);
 								const sourceName = cleanTimelineSummary(item.source.name) || item.source_type;

@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="正在完成登录 · Bubble's Brain" description="完成安全登录" noindex>
+	<section class="page-shell auth-page" data-auth-callback data-locale="zh-CN">
+		<p class="page-kicker">SECURE CALLBACK</p>
+		<h1 data-callback-title>正在完成登录</h1>
+		<p data-callback-status role="status">正在验证本次 Google 登录，请稍候。</p>
+		<p>
+			<a href="/login/" data-callback-retry hidden>重新登录</a> ·
+			<a href="/" data-callback-home>返回首页</a>
+		</p>
+		<noscript><p>完成登录需要启用 JavaScript。请启用后重新登录，或返回首页。</p></noscript>
+	</section>
+</BaseLayout>
+
+<script>
+	import '../../scripts/authCallback';
+</script>

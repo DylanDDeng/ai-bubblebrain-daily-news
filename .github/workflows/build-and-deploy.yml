@@ -15,6 +15,8 @@ jobs:
     name: build-and-deploy
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      PUBLIC_COMMENTS_WRITE_UI_ENABLED: ${{ vars.PUBLIC_COMMENTS_WRITE_UI_ENABLED || 'false' }}
 
     steps:
       - name: Checkout repository

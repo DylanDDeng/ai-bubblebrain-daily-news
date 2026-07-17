@@ -50,3 +50,9 @@ build/
 # Daily content (if you want to keep it local)
 # daily/
 # content/daily/
+# Private operational exports and release evidence containing raw data
+/output/
+.wrangler-dry-run-community/
+.wrangler-dry-run-community-staging/
+.wrangler-dry-run-admin/
+.playwright-cli/

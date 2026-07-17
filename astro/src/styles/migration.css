@@ -145,6 +145,92 @@ iframe {
 	justify-content: space-between;
 }
 
+.rail-mobile-actions {
+	display: flex;
+	align-items: center;
+}
+
+.auth-controls {
+	position: relative;
+}
+
+.auth-trigger {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	min-height: 44px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--ink-soft);
+	font-size: 0.75rem;
+	cursor: pointer;
+}
+
+.auth-avatar {
+	display: inline-grid;
+	width: 24px;
+	height: 24px;
+	border: 1px solid var(--rule);
+	border-radius: 50%;
+	place-items: center;
+	background: var(--paper-muted);
+	font-size: 0.68rem;
+}
+
+.auth-panel {
+	position: absolute;
+	bottom: calc(100% + 10px);
+	left: 0;
+	z-index: 120;
+	width: min(280px, calc(100vw - 32px));
+	padding: 16px;
+	border: 1px solid var(--rule);
+	background: var(--paper-raised);
+}
+
+.auth-panel p {
+	margin: 0 0 12px;
+	color: var(--ink-soft);
+	font-size: 0.75rem;
+	overflow-wrap: anywhere;
+}
+
+.auth-actions {
+	display: grid;
+	gap: 8px;
+}
+
+.auth-actions button {
+	min-height: 40px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--blue);
+	text-align: left;
+	cursor: pointer;
+}
+
+.auth-controls--compact {
+	display: none;
+}
+
+.auth-page {
+	max-width: 720px;
+}
+
+.auth-page > p:not(.page-kicker) {
+	max-width: 56ch;
+	color: var(--ink-soft);
+}
+
+.auth-page .primary-action {
+	min-height: 48px;
+	border: 1px solid var(--blue);
+	cursor: pointer;
+}
+
 .site-brand {
 	font-family: var(--serif);
 	font-size: 1.55rem;
@@ -509,6 +595,34 @@ h1 {
 		width: 44px;
 		height: 44px;
 		place-items: center;
+	}
+
+	.auth-controls--compact {
+		display: block;
+	}
+
+	.auth-controls--compact .auth-trigger {
+		width: 44px;
+		justify-content: center;
+	}
+
+	.auth-controls--compact [data-auth-label] {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+
+	.auth-controls--compact .auth-panel {
+		top: calc(100% + 8px);
+		right: 0;
+		bottom: auto;
+		left: auto;
+	}
+
+	.rail-menu .auth-controls {
+		display: none;
 	}
 
 	.rail-menu {
