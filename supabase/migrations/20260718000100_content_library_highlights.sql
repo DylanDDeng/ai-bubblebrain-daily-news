@@ -274,30 +274,6 @@ begin
 end;
 $$;
 
-reset role;
-
-do $$
-declare function_name text;
-begin
-  foreach function_name in array array[
-    'list_public_highlights_v1', 'list_admin_highlights_v1',
-    'read_admin_highlights_v1', 'create_highlight_v1'
-  ] loop
-    execute format('alter function private.%I(%s) owner to content_rpc_owner',
-      function_name,
-      case function_name
-        when 'list_public_highlights_v1' then 'text,integer'
-        when 'list_admin_highlights_v1' then 'text,integer'
-        when 'read_admin_highlights_v1' then 'jsonb,jsonb,text'
-        else 'text,text,text,text,text,text[],text,text,uuid,jsonb,text'
-      end
-    );
-  end loop;
-end;
-$$;
-
-set local role content_rpc_owner;
-
 revoke all on function private.list_public_highlights_v1(text, integer)
   from public, anon, authenticated, service_role,
        content_ingestor, content_editor, content_controller, content_reader, content_deployer;
