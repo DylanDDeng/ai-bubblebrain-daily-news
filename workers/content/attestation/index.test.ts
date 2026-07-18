@@ -124,6 +124,31 @@ describe("identity attestation action contract", () => {
     expect(response.status).toBe(400);
   });
 
+  it.each(["highlight.create", "prompt.create", "model_eval.create"])(
+    "signs the audited Routine library action %s without Control TOTP",
+    async (action) => {
+      const response = await handleAttestation(
+        new Request("https://attestation.internal/v1/assert", {
+          method: "POST",
+          headers: { "Cf-Access-Jwt-Assertion": "signed-access-token" },
+          body: JSON.stringify({
+            audience: "content-routine",
+            action,
+            body_sha256: "a".repeat(64),
+          }),
+        }),
+        env,
+      );
+      expect(response.status).toBe(200);
+      const assertion = (await response.json()) as { payload: string };
+      expect(JSON.parse(assertion.payload)).toMatchObject({
+        action,
+        aud: "content-routine",
+        auth_context: "access",
+      });
+    },
+  );
+
   it("rejects unregistered actions before signing", async () => {
     const response = await handleAttestation(
       new Request("https://attestation.internal/v1/assert", {

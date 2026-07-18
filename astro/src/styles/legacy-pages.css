@@ -224,6 +224,18 @@
 	line-height: 1.75;
 }
 
+.prompt-library-source[hidden] {
+	display: none;
+}
+
+.prompt-library-source pre {
+	overflow-x: auto;
+	padding: 20px;
+	border: 1px solid var(--rule);
+	background: var(--paper-raised);
+	white-space: pre-wrap;
+}
+
 .standalone-article {
 	display: block;
 	width: 100%;

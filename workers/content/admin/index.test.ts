@@ -136,6 +136,37 @@ describe("routine content admin information architecture", () => {
     );
   });
 
+  it.each([
+    ["/v1/prompts?locale=zh-CN&limit=12", "/v1/prompts", "prompt", 12],
+    ["/v1/model-evals?locale=en&limit=8", "/v1/model-evals", "model_eval", 8],
+  ])(
+    "lists the shared library through the route-bound read RPC for %s",
+    async (path, route, kind, limit) => {
+      const { sql, queries } = fakeSql();
+      vi.mocked(openContentDatabase).mockReturnValue(sql as never);
+      const response = await worker.fetch(
+        new Request(`https://admin.test${path}`),
+        {} as never,
+      );
+      expect(response.status).toBe(200);
+      expect(queries.join("\n")).toContain("read_admin_library_v1");
+      expect(attest).toHaveBeenCalledWith(
+        expect.any(Request),
+        expect.anything(),
+        "content-routine",
+        "admin.read",
+        {
+          route,
+          arguments: {
+            kind,
+            locale: route === "/v1/prompts" ? "zh-CN" : "en",
+            limit,
+          },
+        },
+      );
+    },
+  );
+
   it("creates a validated highlight through an attested mutation", async () => {
     const { sql, queries } = fakeSql();
     vi.mocked(openContentDatabase).mockReturnValue(sql as never);
@@ -182,6 +213,115 @@ describe("routine content admin information architecture", () => {
     });
     const response = await worker.fetch(
       new Request("https://admin.test/v1/highlights", { method: "POST" }),
+      {} as never,
+    );
+    expect(response.status).toBe(400);
+    expect(queries).toEqual([]);
+  });
+
+  it("creates a complete Prompt through an attested mutation", async () => {
+    const { sql, queries } = fakeSql();
+    vi.mocked(openContentDatabase).mockReturnValue(sql as never);
+    vi.mocked(idempotencyKey).mockReturnValue(
+      "11111111-1111-4111-8111-111111111111",
+    );
+    vi.mocked(readAdminBody).mockResolvedValue({
+      locale: "zh-CN",
+      slug: "agent-review",
+      title: "Agent 评审",
+      description: "评审一个实现方案",
+      model: "Claude",
+      body_markdown: "# 完整 Prompt\n\n请检查实现。",
+      date: "2026-07-18",
+      tags: ["Agent"],
+      status: "published",
+      reason: "手动收录 Prompt",
+    });
+    const response = await worker.fetch(
+      new Request("https://admin.test/v1/prompts", { method: "POST" }),
+      {} as never,
+    );
+    expect(response.status).toBe(201);
+    expect(queries.join("\n")).toContain("create_prompt_v1");
+    expect(attest).toHaveBeenCalledWith(
+      expect.any(Request),
+      expect.anything(),
+      "content-routine",
+      "prompt.create",
+      expect.objectContaining({ slug: "agent-review" }),
+    );
+  });
+
+  it("creates a model evaluation without inventing scores", async () => {
+    const { sql, queries } = fakeSql();
+    vi.mocked(openContentDatabase).mockReturnValue(sql as never);
+    vi.mocked(idempotencyKey).mockReturnValue(
+      "11111111-1111-4111-8111-111111111111",
+    );
+    vi.mocked(readAdminBody).mockResolvedValue({
+      locale: "zh-CN",
+      external_id: "model-2026",
+      name: "Model 2026",
+      company: "Example",
+      logo_url: "https://example.com/model.png",
+      release_month: "2026-07",
+      description: "模型目录卡片",
+      tags: ["推理"],
+      status: "published",
+      reason: "手动收录模型评测",
+    });
+    const response = await worker.fetch(
+      new Request("https://admin.test/v1/model-evals", { method: "POST" }),
+      {} as never,
+    );
+    expect(response.status).toBe(201);
+    expect(queries.join("\n")).toContain("create_model_eval_v1");
+    expect(attest).toHaveBeenCalledWith(
+      expect.any(Request),
+      expect.anything(),
+      "content-routine",
+      "model_eval.create",
+      expect.objectContaining({ external_id: "model-2026" }),
+    );
+    expect(vi.mocked(attest).mock.calls.at(-1)?.[4]).not.toHaveProperty(
+      "score",
+    );
+  });
+
+  it.each([
+    [
+      "/v1/prompts",
+      {
+        locale: "zh-CN",
+        slug: "Invalid Slug",
+        title: "Prompt",
+        body_markdown: "body",
+        date: "2026-02-30",
+        tags: [],
+        status: "published",
+        reason: "invalid prompt",
+      },
+    ],
+    [
+      "/v1/model-evals",
+      {
+        locale: "zh-CN",
+        external_id: "model",
+        name: "Model",
+        company: "Example",
+        logo_url: "javascript:alert(1)",
+        release_month: "2026-13",
+        tags: [],
+        status: "published",
+        reason: "invalid model",
+      },
+    ],
+  ])("rejects malformed library writes for %s", async (path, body) => {
+    const { sql, queries } = fakeSql();
+    vi.mocked(openContentDatabase).mockReturnValue(sql as never);
+    vi.mocked(readAdminBody).mockResolvedValue(body);
+    const response = await worker.fetch(
+      new Request(`https://admin.test${path}`, { method: "POST" }),
       {} as never,
     );
     expect(response.status).toBe(400);
