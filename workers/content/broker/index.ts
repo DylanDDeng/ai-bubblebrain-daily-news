@@ -1258,8 +1258,18 @@ export async function reconcileProduction(
       }
       return "committed";
     } catch {
-      if (!current)
-        throw new Error("Reconciler has no last-known-good artifact");
+      if (!current) {
+        // A first-ever promotion can be terminated before Pages changes while
+        // leaving the fenced slot in a deploying state. With no current
+        // pointer there is nothing to restore; release the slot only after the
+        // target failed verification against the latest production deployment.
+        await sql`select private.finish_production_recovery_v1(
+          ${target.site_release_id}::uuid, ${Number(slot.fencing_token)},
+          ${Number(slot.expected_pointer_generation)}, true,
+          ${sql.json({ production_unchanged: true, reconciled: true, no_current_release: true })}
+        )`;
+        return "restored";
+      }
       const currentFiles = await artifactFiles(current, env);
       const restorationStartedAt = Date.now();
       const restored = await uploadPages(currentFiles, current, env);
