@@ -67,6 +67,5 @@ select
 from source
 on conflict (locale, external_id) do nothing;
 
-reset role;
-
+-- Preserve the Supabase migration writer's outer role; SET LOCAL unwinds here.
 commit;
