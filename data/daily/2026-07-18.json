@@ -54,11 +54,28 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-18T15:00:03.000Z",
       "id": "night",
-      "item_ids": [],
+      "item_ids": [
+        "n_6336a03c69468f2dedc92a6702b5d2b812c652674de3b9510a5efc78d159f4c4",
+        "n_801a245da4e35be745033c8874f104ba15a6a71cc26f4d170e87c998d12a7e70",
+        "n_f9d843a6d22cd838b8c432cb7b5316948e16aaaa60548df6515e0376a49b3bd8",
+        "n_18f70b24ec08bec10e89d6e5d50bc40c00d8331198af37c8f9455b760343a396",
+        "n_6ac93a611e21221db68a255a67d4bd150637fb9b5a0691bd33fa5f3d67af74a5",
+        "n_e7bd0e1f00b2d578870c36f843473faf71de622545282ddfead2a8a68f4a8b24",
+        "n_a0e1d2212ce9d0acf3bf34785ff84852b2d615d660faf34bd2fa33f39b4df084",
+        "n_1c80cf0de309ec33b69a93bded11fd067ca5474b2409f8d84cc005ea552ec678",
+        "n_e3a239a02e69c3f8cff05bb0c4c1123d3b9d0921d19ac581650ce3f4dbc98c44",
+        "n_7963a4a7926c8951636ebc42ad3f3007c71f46c35be04e620ffa7400e945515f",
+        "n_2c13b0d7a6db8043e1c283fe35fc24712a522a3649f7a9b35a187067fc09134a",
+        "n_37556085be516f0c69da03201263289e5633e828f655b4a9630953cf3e96f881",
+        "n_8779b09b3e9f87a367c43446b68bd43cf251826884f2ca1a5d51812adf3c7891",
+        "n_a81d557646569ce3fad7556d4c536e438300c3837c1fdabb8160439d321f90cf",
+        "n_ed108fd86da5bb0dce71a73b29763e5f0fb3666b6e431cd87353101aa41bd651",
+        "n_fe928823c63a6dd2adcad4be723c5d95ee0b6513d90cde633aa68063ccb1aa32"
+      ],
       "label": "23:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -71,7 +88,7 @@
   "classifier_version": 1,
   "date": "2026-07-18",
   "dedupe_version": 1,
-  "generated_at": "2026-07-18T07:00:14.000Z",
+  "generated_at": "2026-07-18T15:00:03.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1455,6 +1472,602 @@
         "topic_open_source"
       ],
       "url": "https://x.com/dotey/status/2078350528099107292"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2078295435492704414",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_deepseek"
+      ],
+      "event_id": "e_6336a03c69468f2dedc92a6702b5d2b812c652674de3b9510a5efc78d159f4c4",
+      "featured": false,
+      "id": "n_6336a03c69468f2dedc92a6702b5d2b812c652674de3b9510a5efc78d159f4c4",
+      "identity_claims": [
+        "c_6336a03c69468f2dedc92a6702b5d2b812c652674de3b9510a5efc78d159f4c4",
+        "c_8c2222000a0f7ee8f01aa7a8c36131a873a65a55b43a906aff81c27a545f8a2f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T01:46:59.636Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204801987577671681",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1204801987577671681",
+      "source_type": "twitter_extra",
+      "summary": "No DeepSeek V4 Pro, no MiniMax M3? SemiAnalysis: CHINA’S KIMI K3 HAS SURPASSED ALL AMERICAN MODELS IN FRONT-END CODING WHILE BEING SMALLER THAN MOST CLOSED-SOURCE FRONTIER MODELS. Great work by the @Kimi_Moonshot team.",
+      "time_precision": "exact",
+      "title": "No DeepSeek V4 Pro, no MiniMax M3 ?",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shao__meng/status/2078295435492704414"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2078303251628540367",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_801a245da4e35be745033c8874f104ba15a6a71cc26f4d170e87c998d12a7e70",
+      "featured": false,
+      "id": "n_801a245da4e35be745033c8874f104ba15a6a71cc26f4d170e87c998d12a7e70",
+      "identity_claims": [
+        "c_801a245da4e35be745033c8874f104ba15a6a71cc26f4d170e87c998d12a7e70",
+        "c_ab1cb93f6a5acde25625fd15c800ce6276b6aac2d7baf9dada98791c86d9d3b2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T02:18:02.227Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204801987577671680",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1204801987577671680",
+      "source_type": "twitter_extra",
+      "summary": "喜欢 GPT-5.6 Sol 的 10000 个理由 不是纯标题党，这个标题有个背景：Tibo 发布了一个活动，鼓励推友们分享自己使用 GPT-5.6 Sol 的心得、切换到 Codex 的原因等，前 10000 个审核通过的帖子，可以获得 $100 Codex Credits，我自己也得到了这 $100 不过实际点进去看这 10000 个帖子，能发现很多都是僵尸账号、内容真实性也比较低，所以，重点就是： 早看到、早发帖、早占坑！ Sam Altman: this is cool:",
+      "time_precision": "exact",
+      "title": "喜欢 GPT-5.6 Sol 的 10000 个理由 不是纯标题党，这个标题有个背景：Tibo 发布了一个活动，鼓励推友们分享自己使用 GPT-5.6 Sol 的心得、切换到 Codex 的原因等...",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/shao__meng/status/2078303251628540367"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/GemstoneNicole/status/2078303258159014006",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_f9d843a6d22cd838b8c432cb7b5316948e16aaaa60548df6515e0376a49b3bd8",
+      "featured": false,
+      "id": "n_f9d843a6d22cd838b8c432cb7b5316948e16aaaa60548df6515e0376a49b3bd8",
+      "identity_claims": [
+        "c_55da56081422c107e7067b86d8773b7664c147bed63f6db5f6e5fea7a51322af",
+        "c_f9d843a6d22cd838b8c432cb7b5316948e16aaaa60548df6515e0376a49b3bd8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T02:18:04.379Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204899062243827712",
+        "name": "twitter-uncle-lu"
+      },
+      "source_id": "1204899062243827712",
+      "source_type": "twitter_extra",
+      "summary": "我操了她妈的 早上起来昨天500块的claude号被封了 我操了！！！！！！ uncle-lu: 人就是贱 我完全用不惯GPT5的这种对话风格 最后还是500块买了ClaudeMax 这个Claude回复的风格和细节，真的很不错 OpenAI能不能出点运营用的模型，不是一二三四五六七八咔咔咔写一堆然后啥也没用的模型",
+      "time_precision": "exact",
+      "title": "我操了她妈的 早上起来昨天500块的claude号被封了 我操了！！！！！！",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/GemstoneNicole/status/2078303258159014006"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2078304773716193685",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_18f70b24ec08bec10e89d6e5d50bc40c00d8331198af37c8f9455b760343a396",
+      "featured": false,
+      "id": "n_18f70b24ec08bec10e89d6e5d50bc40c00d8331198af37c8f9455b760343a396",
+      "identity_claims": [
+        "c_18f70b24ec08bec10e89d6e5d50bc40c00d8331198af37c8f9455b760343a396",
+        "c_a8b26ade58b3859159e91d5579c409af55079761f57c5e0e73ad42576201c2ca"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T02:24:05.114Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204801987560894465",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1204801987560894465",
+      "source_type": "twitter_extra",
+      "summary": "Claude Fable 5 订阅因为各种不可抗力一推再推后。。 Max 和 Team Premium 用户：7 月 20 日起，Fable 5 正式纳入订阅套餐，可使用每周额度的 50%。 Pro 和 Team Standard 用户：Fable 5 不进入套餐，继续走按量计费（usage credits，输入 $10/百万 token、输出 $50/百万 token），作为补偿一次性发放 $100 额度。 Claude Fable 5 的订阅闹剧终于要结束了，非 Max 和 Team Premium 的朋友们，好聚好散 😄 Claude: Beginning July 20, Claude Fable 5 will be included in all Max and Team Premium plans, at 50% of limits. Pro and Team Standard users will continue to have access to Fable via usage credits, and will receive a one-time $100 credit. Demand for Fable has been challenging to",
+      "time_precision": "exact",
+      "title": "Claude Fable 5 订阅因为各种不可抗力一推再推后。。 Max 和 Team Premium 用户：7 月 20 日起，Fable 5 正式纳入订阅套餐，可使用每周额度的 50%。 Pro 和 Team...",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/shao__meng/status/2078304773716193685"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2078308400954564755",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_6ac93a611e21221db68a255a67d4bd150637fb9b5a0691bd33fa5f3d67af74a5",
+      "featured": false,
+      "id": "n_6ac93a611e21221db68a255a67d4bd150637fb9b5a0691bd33fa5f3d67af74a5",
+      "identity_claims": [
+        "c_6ac93a611e21221db68a255a67d4bd150637fb9b5a0691bd33fa5f3d67af74a5",
+        "c_9ac59cdac5d8b7dc344ec1a40e8d6175254155ea2ae1f788fe648057b3cd71a9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T02:38:30.976Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204801987560894464",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1204801987560894464",
+      "source_type": "twitter_extra",
+      "summary": "Google，醒醒！不要再玩域名啦！ Gemini 都快排不进首屏了 🤦🏻‍♀️ Google AI Studio: 🧵 drop your custom ai studio domains, we want to see what you're building 👇",
+      "time_precision": "exact",
+      "title": "Google，醒醒！不要再玩域名啦！ Gemini 都快排不进首屏了 🤦🏻‍♀️",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/shao__meng/status/2078308400954564755"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/dotey/status/2078359885809430878",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_e7bd0e1f00b2d578870c36f843473faf71de622545282ddfead2a8a68f4a8b24",
+      "featured": false,
+      "id": "n_e7bd0e1f00b2d578870c36f843473faf71de622545282ddfead2a8a68f4a8b24",
+      "identity_claims": [
+        "c_1141345706a2a7b1182ebafb33cad9be7ca50ea8cf3a048a9a4dc0c3be71fd8f",
+        "c_e7bd0e1f00b2d578870c36f843473faf71de622545282ddfead2a8a68f4a8b24"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T06:03:05.317Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204866186047639552",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1204866186047639552",
+      "source_type": "twitter_extra",
+      "summary": "RT @evilcos: 我们 @SlowMist_Team 已验证，玩 Claude Code 的注意这类投毒攻击。",
+      "time_precision": "exact",
+      "title": "RT @evilcos: 我们 @SlowMist_Team 已验证，玩 Claude Code 的注意这类投毒攻击。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2078359885809430878"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/dotey/status/2078397664954089512",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a0e1d2212ce9d0acf3bf34785ff84852b2d615d660faf34bd2fa33f39b4df084",
+      "featured": false,
+      "id": "n_a0e1d2212ce9d0acf3bf34785ff84852b2d615d660faf34bd2fa33f39b4df084",
+      "identity_claims": [
+        "c_468bd770f0bbdfa82371c11502b55bcfcc887238b6950d25c8d2b0d055b59787",
+        "c_a0e1d2212ce9d0acf3bf34785ff84852b2d615d660faf34bd2fa33f39b4df084"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T08:33:12.420Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204898607312916480",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1204898607312916480",
+      "source_type": "twitter_extra",
+      "summary": "观念会慢慢改变的，因为团队代码也会慢慢变成AI维护。 当然前提是团队得普及 GPT 5.6 级别以上的模型。好的模型写的代码水平远超绝大部分人，已经不太需要人类的品味了。 蚍蜉 Showtime: 对于团队协作的代码，我会看代码，因为这是我交付的作品，代表我的品味，后续可能会由他人来维护。 对于个人项目，目前主要关注需求、验收和架构，不太关注具体代码了。",
+      "time_precision": "exact",
+      "title": "观念会慢慢改变的，因为团队代码也会慢慢变成AI维护。 当然前提是团队得普及 GPT 5.6 级别以上的模型。好的模型写的代码水平远超绝大部分人，已经不太需要人类的...",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2078397664954089512"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/oran_ge/status/2078415786100822249",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_1c80cf0de309ec33b69a93bded11fd067ca5474b2409f8d84cc005ea552ec678",
+      "featured": false,
+      "id": "n_1c80cf0de309ec33b69a93bded11fd067ca5474b2409f8d84cc005ea552ec678",
+      "identity_claims": [
+        "c_1c80cf0de309ec33b69a93bded11fd067ca5474b2409f8d84cc005ea552ec678",
+        "c_ae88b8e560ad93550a0a4cac257381a427a58313d990315de20a8646db333595"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T09:45:13.797Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205161517176119296",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1205161517176119296",
+      "source_type": "twitter_extra",
+      "summary": "让 Codex 做 PPT，效果实在太差了，完全不能用... 生图来了五张后面就全部超时了 这东西虽然便宜，但纯纯浪费时间啊",
+      "time_precision": "exact",
+      "title": "让 Codex 做 PPT，效果实在太差了，完全不能用... 生图来了五张后面就全部超时了 这东西虽然便宜，但纯纯浪费时间啊",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2078415786100822249"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/dotey/status/2078478177588904314",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e3a239a02e69c3f8cff05bb0c4c1123d3b9d0921d19ac581650ce3f4dbc98c44",
+      "featured": false,
+      "id": "n_e3a239a02e69c3f8cff05bb0c4c1123d3b9d0921d19ac581650ce3f4dbc98c44",
+      "identity_claims": [
+        "c_cacdb94a90383f3d137b151c6a2500764182a5edf50d68a457dd69251fd1a487",
+        "c_e3a239a02e69c3f8cff05bb0c4c1123d3b9d0921d19ac581650ce3f4dbc98c44"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T11:24:57.992Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205258224354185216",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1205258224354185216",
+      "source_type": "twitter_extra",
+      "summary": "RT Frank Y 此時再回來看這篇, 依然適用 宝玉: 唐杰 @jietang 是清华大学教授、智谱（GLM 系列模型出自他们家）AI 首席科学家，也是国内最懂大模型的人之一。他刚发了长微博（见评论），谈 2025 年对大模型的感悟。 有意思的是，唐杰和 Andrej Karpathy",
+      "time_precision": "exact",
+      "title": "RT Frank Y: 此時再回來看這篇, 依然適用",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2078478177588904314"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/dotey/status/2078493011177005136",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_7963a4a7926c8951636ebc42ad3f3007c71f46c35be04e620ffa7400e945515f",
+      "featured": false,
+      "id": "n_7963a4a7926c8951636ebc42ad3f3007c71f46c35be04e620ffa7400e945515f",
+      "identity_claims": [
+        "c_7963a4a7926c8951636ebc42ad3f3007c71f46c35be04e620ffa7400e945515f",
+        "c_a8bff007b6852fc9389b4ba924c8720dab071c48e2794fb6a7ebf0151684b49b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": "2026-07-18T14:52:05.447Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205276375624175616",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1205276375624175616",
+      "source_type": "twitter_extra",
+      "summary": "模型发布苦不苦，想想 Gemini 3.5 (pro) 好歹都高光过，总比胎死腹中要好…… 忒修斯的船板: 有种预感即将到来的几个模型会让K3光环熄灭的速度比GLM-5.2还快",
+      "time_precision": "exact",
+      "title": "模型发布苦不苦，想想 Gemini 3.5 (pro) 好歹都高光过，总比胎死腹中要好……",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2078493011177005136"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://github.com/elder-plinius/G0DM0D3",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_2c13b0d7a6db8043e1c283fe35fc24712a522a3649f7a9b35a187067fc09134a",
+      "featured": false,
+      "id": "n_2c13b0d7a6db8043e1c283fe35fc24712a522a3649f7a9b35a187067fc09134a",
+      "identity_claims": [
+        "c_0f6bc2c64bdd32f8c1b0189fcc868a85f82743230dee07a65c47b2fe9a2a6f00",
+        "c_2c13b0d7a6db8043e1c283fe35fc24712a522a3649f7a9b35a187067fc09134a"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": null,
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/elder-plinius/G0DM0D3",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/elder-plinius/G0DM0D3",
+      "source_type": "github_trending",
+      "summary": "解放的AI聊天",
+      "time_precision": "date_only",
+      "title": "G0DM0D3",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/elder-plinius/G0DM0D3"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://github.com/rohitg00/ai-engineering-from-scratch",
+      "category": "products",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_37556085be516f0c69da03201263289e5633e828f655b4a9630953cf3e96f881",
+      "featured": false,
+      "id": "n_37556085be516f0c69da03201263289e5633e828f655b4a9630953cf3e96f881",
+      "identity_claims": [
+        "c_37556085be516f0c69da03201263289e5633e828f655b4a9630953cf3e96f881",
+        "c_cdf557a018bcc23217744552c00e47b1d157587dead42ace680c5c2fbb1f154e"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": null,
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/rohitg00/ai-engineering-from-scratch",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/rohitg00/ai-engineering-from-scratch",
+      "source_type": "github_trending",
+      "summary": "学习它。构建它。为他人发布它。",
+      "time_precision": "date_only",
+      "title": "ai-engineering-from-scratch",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/rohitg00/ai-engineering-from-scratch"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://github.com/Robbyant/lingbot-map",
+      "category": "models",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_8779b09b3e9f87a367c43446b68bd43cf251826884f2ca1a5d51812adf3c7891",
+      "featured": false,
+      "id": "n_8779b09b3e9f87a367c43446b68bd43cf251826884f2ca1a5d51812adf3c7891",
+      "identity_claims": [
+        "c_8779b09b3e9f87a367c43446b68bd43cf251826884f2ca1a5d51812adf3c7891",
+        "c_d30f84da5f9da59a49f83c2bc8abfb942eff54dd15c3e47e4f402ac1d54fcbc0"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": null,
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/Robbyant/lingbot-map",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/Robbyant/lingbot-map",
+      "source_type": "github_trending",
+      "summary": "一种前馈3D基础模型，用于从流数据重建场景",
+      "time_precision": "date_only",
+      "title": "lingbot-map",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/Robbyant/lingbot-map"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://github.com/KnockOutEZ/wigolo",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_a81d557646569ce3fad7556d4c536e438300c3837c1fdabb8160439d321f90cf",
+      "featured": false,
+      "id": "n_a81d557646569ce3fad7556d4c536e438300c3837c1fdabb8160439d321f90cf",
+      "identity_claims": [
+        "c_1ece93ecd0bc126e60e8e2b2cedbf73f519261d1aaf80099472848ed01c4c42d",
+        "c_a81d557646569ce3fad7556d4c536e438300c3837c1fdabb8160439d321f90cf"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": null,
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/KnockOutEZ/wigolo",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/KnockOutEZ/wigolo",
+      "source_type": "github_trending",
+      "summary": "为你的AI编码代理打造的必备网络——基于MCP的本地优先搜索、抓取、爬取和研究。无需API密钥，无需云，每次查询0美元。公开测试版。",
+      "time_precision": "date_only",
+      "title": "wigolo",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/KnockOutEZ/wigolo"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://github.com/lyogavin/airllm",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_ed108fd86da5bb0dce71a73b29763e5f0fb3666b6e431cd87353101aa41bd651",
+      "featured": false,
+      "id": "n_ed108fd86da5bb0dce71a73b29763e5f0fb3666b6e431cd87353101aa41bd651",
+      "identity_claims": [
+        "c_27729249891744fd85cdfeca444b4c428b3afa259f6b430b0c098b75d4591039",
+        "c_ed108fd86da5bb0dce71a73b29763e5f0fb3666b6e431cd87353101aa41bd651"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": null,
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/lyogavin/airllm",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/lyogavin/airllm",
+      "source_type": "github_trending",
+      "summary": "使用单个4GB GPU进行AirLLM 70B推理",
+      "time_precision": "date_only",
+      "title": "airllm",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/lyogavin/airllm"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://github.com/MoonshotAI/kimi-cli",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_fe928823c63a6dd2adcad4be723c5d95ee0b6513d90cde633aa68063ccb1aa32",
+      "featured": false,
+      "id": "n_fe928823c63a6dd2adcad4be723c5d95ee0b6513d90cde633aa68063ccb1aa32",
+      "identity_claims": [
+        "c_916adba495f379995604ff8c831087cc4f7f64d7746fa5cbbb67a95dbe2c584b",
+        "c_fe928823c63a6dd2adcad4be723c5d95ee0b6513d90cde633aa68063ccb1aa32"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T15:00:03.000Z",
+      "published_at": null,
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/MoonshotAI/kimi-cli",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/MoonshotAI/kimi-cli",
+      "source_type": "github_trending",
+      "summary": "Kimi Code CLI 是你的下一个CLI代理。",
+      "time_precision": "date_only",
+      "title": "kimi-cli",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/MoonshotAI/kimi-cli"
     }
   ],
   "overview": {
@@ -1467,10 +2080,10 @@
     "text": "今日 AI 增量日报正在更新中。"
   },
   "producer": {
-    "commit_sha": "803a734a32d5b0492d6a19b18ba291ac5d687b2e",
+    "commit_sha": null,
     "dedupe_lookback_days": 7,
     "name": "bubble-brain-worker",
-    "version": "phase6-cron-resilience"
+    "version": "phase1d-production"
   },
   "schema_version": 1,
   "taxonomy_version": 1,
