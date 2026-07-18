@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "recorded_at": "2026-07-17T19:24:11Z",
+  "recorded_at": "2026-07-18T02:08:13Z",
   "observation": {
     "date": "2026-07-16",
     "timezone": "Asia/Shanghai",
@@ -16,7 +16,7 @@
     "next_complete_observation_candidate": "2026-07-17",
     "next_complete_observation_status": "passed",
     "phase_5": "go",
-    "phase_6": "observed-passed-pending-independent-review-and-rollback-owner-acceptance",
+    "phase_6": "complete",
     "original_observation_result": {
       "date": "2026-07-16",
       "afternoon": "missed_gate_no_success_marker_failure_marker_lease_or_publication_pr",
@@ -49,8 +49,8 @@
     "cloudflare_pages": "Chengsheng Deng",
     "worker": "Chengsheng Deng",
     "supabase": "Chengsheng Deng",
-    "rollback_handoff": null,
-    "rollback_handoff_status": "pending-explicit-acceptance"
+    "rollback_handoff": "Chengsheng Deng",
+    "rollback_handoff_status": "accepted"
   },
   "repository": {
     "owner": "DylanDDeng",
@@ -395,7 +395,11 @@
     "legacy_reads_retained": true,
     "legacy_database_fields_retained": true,
     "rollback_handoff_record": "ROLLBACK_HANDOFF.md",
-    "rollback_owner_handoff_accepted": false
+    "rollback_owner_handoff_accepted": true,
+    "rollback_owner": "Chengsheng Deng",
+    "rollback_owner_handoff_accepted_at": "2026-07-18T02:08:13Z",
+    "rollback_owner_handoff_accepted_evidence_sha": "c84c9baaabbb385a1442d8e0ba0282666af8b3bd",
+    "rollback_owner_handoff_acceptance_reference": "Codex thread user response: “好，那我先接受，先完成吧”"
   },
   "open_findings": {
     "p0": [],

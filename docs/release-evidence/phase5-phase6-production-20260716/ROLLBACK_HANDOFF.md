@@ -2,18 +2,19 @@
 
 Observation date: 2026-07-16 Asia/Shanghai
 
-Status: **PENDING**
+Status: **ACCEPTED**
 
 Cleanup authorized: **NO**
 
 Release note: the release owner explicitly waived the four-batch observation only as a pre-release
-blocker in [`production-observation-waiver.json`](production-observation-waiver.json). This handoff
-remains `PENDING`; the waiver neither accepts this handoff nor authorizes cleanup.
+blocker in [`production-observation-waiver.json`](production-observation-waiver.json). That waiver
+did not accept this handoff or authorize cleanup. The rollback owner later accepted this scoped
+handoff after the complete 2026-07-17 production-day observation and independent final reviews were
+archived.
 
-This record defines the exact responsibility being handed to the rollback owner. It is not an
-acceptance record until every prerequisite is complete and the acceptance fields at the end are
-filled from an explicit owner response. An implementation author or automated reviewer must not
-infer acceptance.
+This record defines the exact responsibility handed to the rollback owner. The acceptance fields at
+the end are filled from an explicit owner response, not inferred by an implementation author or
+automated reviewer.
 
 ## Retained rollback targets
 
@@ -74,8 +75,8 @@ cleanup release.
 
 ## Acceptance record
 
-- Rollback owner: **PENDING EXPLICIT CONFIRMATION**
-- Accepted at: **PENDING**
-- Accepted evidence revision / Git SHA: **PENDING**
-- Explicit acceptance reference: **PENDING**
+- Rollback owner: **Chengsheng Deng**
+- Accepted at: **2026-07-18T02:08:13Z**
+- Accepted evidence revision / Git SHA: **c84c9baaabbb385a1442d8e0ba0282666af8b3bd**
+- Explicit acceptance reference: **Codex thread user response: “好，那我先接受，先完成吧”**
 - Cleanup authorization: **NO — separate approval required**

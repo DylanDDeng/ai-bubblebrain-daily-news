@@ -2,14 +2,14 @@
 
 Observation date: 2026-07-16 Asia/Shanghai; complete follow-up date: 2026-07-17 Asia/Shanghai
 
-Evidence updated: 2026-07-17 19:24 UTC
+Evidence updated: 2026-07-18 02:08 UTC
 
 Production repository: `DylanDDeng/ai-bubblebrain-daily-news`
 
 Release owner: Chengsheng Deng
 
-Component owners during the observation window: Git publication, Cloudflare Pages, Worker, and
-Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pending in
+Component owners during the observation window: Git publication, Cloudflare Pages, Worker, Supabase,
+and rollback handoff — Chengsheng Deng. Rollback-owner acceptance is recorded in
 [`ROLLBACK_HANDOFF.md`](ROLLBACK_HANDOFF.md).
 
 ## Current decision
@@ -22,8 +22,8 @@ Supabase — Chengsheng Deng. Rollback-owner acceptance remains explicitly pendi
 - Open P0 findings: none confirmed.
 - Open P1 findings: none confirmed after the final evidence update. The exact current Astro Preview
   is explicitly approved, and the historical PAT has objective HTTP 401 revocation evidence.
-- Remaining blockers to close the Goal: independent final review must stay GO, and the rollback
-  owner must explicitly accept the scoped handoff. Cleanup remains unauthorized.
+- Remaining blockers to close the Goal: none. Independent final review is GO, and the rollback
+  owner explicitly accepted the scoped handoff. Cleanup remains unauthorized.
 - Truthfulness constraint: the original `2026-07-16` afternoon window remains missed/pending. It is
   not rewritten as successful and is not counted as the complete-day proof.
 
@@ -153,11 +153,11 @@ unless it exposes a regression in those earlier Gates.
 | Phase 3 | Stable taxonomy/search contracts and additive authenticated state with legacy-client compatibility and RLS isolation | PR #10; [`../phase3-knowledge-20260715/README.md`](../phase3-knowledge-20260715/README.md); linked migrations through `20260716000400`; production two-user Auth/RLS smoke and exact restored row counts below | **GO**; final production smoke was repeated in the Phase 6 complete-day follow-up |
 | Phase 4 | Whole-domain Astro route ownership and real Pages preview, including URL/XML/metadata/404, accessibility, performance, no-JS and external-link checks | `3bde526` through `58b155f`; [tracked Preview evidence, artifact manifest, and explicit approval](../phase4-preview-20260716/README.md); external audit `PASS_WITH_WARNINGS`; deployed axe 0 violations and 0 incomplete; clean 605-route deployed verifier; Lighthouse 0.98/0.99 | **GO** |
 | Phase 5 | Independently reversible Supabase, Worker, Pages and publication-mode promotions with explicit rollback targets | Cutover manifest below; PRs #15–#17; Pages `b12e9087-78fb-4cf9-b925-897272e4c88c`; Worker `fbe0c15a-acb3-4298-9c5d-aabfe2f8966a`; successful Pages rollback/restoration drill | **GO** |
-| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, production PRs #29–#32, final `main@d7a35de`, Pages `99a26c75`, and current production/recovery evidence below | **OBSERVED AND PASSED FOR 2026-07-17**; independent final review and rollback-owner handoff remain required before closing the Goal |
+| Phase 6 | Complete report day, four successful production batches, final artifact and production smoke, independent review and rollback-owner handoff | Morning canary PR #15, scheduled morning PR #19, Cron remediation PRs #21–#23, isolated Staging commit `4dc72c2`, production PRs #29–#32, final `main@d7a35de`, Pages `99a26c75`, current production/recovery evidence below, final independent review, and accepted rollback handoff | **GO / COMPLETE** |
 
-The complete-day observation and final Supabase/RLS repeat are now recorded as post-release
-follow-up evidence. Rollback-handoff acceptance remains pending. Cleanup remains unauthorized and
-all rollback targets remain retained.
+The complete-day observation, final Supabase/RLS repeat, independent final review, and
+rollback-handoff acceptance are now recorded as post-release follow-up evidence. Cleanup remains
+unauthorized and all rollback targets remain retained.
 
 ## Cutover manifest
 
@@ -440,11 +440,11 @@ The following items remain mandatory:
 - [x] Complete one clean 605-route run for the latest immutable Astro Preview.
 - [x] Record [explicit user approval](../phase4-preview-20260716/preview-approval.json) of that exact Preview/SHA.
 - [x] Complete independent post-release review with no open P0/P1 finding.
-- [ ] Obtain explicit acceptance of the scoped
+- [x] Obtain explicit acceptance of the scoped
       [`ROLLBACK_HANDOFF.md`](ROLLBACK_HANDOFF.md) before cleanup begins.
 
 Hugo, legacy reads, and legacy database fields remain retained. No cleanup is authorized by this
-in-progress evidence document.
+completed evidence document.
 
 ## Deferred completion procedure
 
