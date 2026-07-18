@@ -296,6 +296,6 @@ grant execute on function private.create_highlight_v1(
   text, text, text, text, text, text[], text, text, uuid, jsonb, text
 ) to content_editor;
 
-reset role;
-
+-- SET LOCAL ROLE unwinds at COMMIT. RESET ROLE would also clear the Supabase
+-- migration writer's outer role before it records this migration.
 commit;
