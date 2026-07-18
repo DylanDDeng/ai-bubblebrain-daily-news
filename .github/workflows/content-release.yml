@@ -1,0 +1,227 @@
+name: Exact Content Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dispatch_id:
+        required: true
+        type: string
+      site_release_id:
+        required: true
+        type: string
+      site_release_sequence:
+        required: true
+        type: string
+      expected_predecessor_id:
+        required: false
+        type: string
+      expected_content_sha:
+        required: true
+        type: string
+      code_sha:
+        required: true
+        type: string
+      build_environment_version:
+        required: true
+        type: string
+      mode:
+        required: true
+        type: choice
+        options: [shadow, production]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-production-${{ github.event.inputs.mode }}
+  cancel-in-progress: false
+
+jobs:
+  exact-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: ${{ github.event.inputs.mode == 'production' && 'content-production' || 'content-preview' }}
+    env:
+      DISPATCH_ID: ${{ github.event.inputs.dispatch_id }}
+      SITE_RELEASE_ID: ${{ github.event.inputs.site_release_id }}
+      CONTENT_RELEASE_ID: ${{ github.event.inputs.site_release_id }}
+      CONTENT_RELEASE_SEQUENCE: ${{ github.event.inputs.site_release_sequence }}
+      EXPECTED_PREDECESSOR_ID: ${{ github.event.inputs.expected_predecessor_id }}
+      CONTENT_ROOT_SHA256: ${{ github.event.inputs.expected_content_sha }}
+      EXACT_CODE_SHA: ${{ github.event.inputs.code_sha }}
+      BUILD_ENVIRONMENT_VERSION: ${{ github.event.inputs.build_environment_version }}
+      DEPLOYMENT_MODE: ${{ github.event.inputs.mode }}
+      CONTENT_BUILD_API_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
+      PUBLIC_CONTENT_API_ORIGIN: https://content-api.bubblenews.today
+      CONTENT_BUILD_API_SECRET: ${{ secrets.CONTENT_BUILD_API_SECRET }}
+      CONTENT_DEPLOY_CALLBACK_URL: ${{ vars.CONTENT_DEPLOY_CALLBACK_URL }}
+      CONTENT_DEPLOY_CALLBACK_SECRET: ${{ secrets.CONTENT_DEPLOY_CALLBACK_SECRET }}
+      R2_ARTIFACT_BUCKET: bubble-content-artifacts
+      TZ: UTC
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+
+    steps:
+      - name: Validate immutable workflow inputs
+        shell: bash
+        run: |
+          [[ "$DISPATCH_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$ ]]
+          [[ "$SITE_RELEASE_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$ ]]
+          if [[ -n "$EXPECTED_PREDECESSOR_ID" ]]; then
+            [[ "$EXPECTED_PREDECESSOR_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$ ]]
+          fi
+          [[ "$CONTENT_RELEASE_SEQUENCE" =~ ^[1-9][0-9]*$ ]]
+          [[ "$CONTENT_ROOT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EXACT_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BUILD_ENVIRONMENT_VERSION" == "node22.17-astro7-hugo0.147.9-v1" ]]
+
+      - name: Checkout exact code SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.code_sha }}
+          fetch-depth: 0
+
+      - name: Verify checkout identity
+        run: test "$(git rev-parse HEAD)" = "$EXACT_CODE_SHA"
+
+      - name: Setup Node.js 22.17.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            astro/package-lock.json
+
+      - name: Setup Hugo 0.147.9
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.147.9"
+          extended: true
+
+      - name: Verify pinned build toolchain
+        run: |
+          test "$(node --version)" = "v22.17.0"
+          test "$(npm --version)" = "10.9.2"
+          test "$(hugo version | awk '{print $2}' | cut -d+ -f1)" = "v0.147.9"
+
+      - name: Fail closed on unresolved production configuration
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PREVIEW_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
+          CLOUDFLARE_R2_LOCK_READ_TOKEN: ${{ secrets.R2_LOCK_READ_API_TOKEN }}
+          R2_ARTIFACT_ACCESS_KEY_ID: ${{ secrets.R2_ARTIFACT_ACCESS_KEY_ID }}
+          R2_ARTIFACT_SECRET_ACCESS_KEY: ${{ secrets.R2_ARTIFACT_SECRET_ACCESS_KEY }}
+          PRODUCTION_BROKER_URL: ${{ vars.PRODUCTION_BROKER_URL }}
+          PRODUCTION_BROKER_HMAC_SECRET: ${{ secrets.PRODUCTION_BROKER_HMAC_SECRET }}
+        run: node scripts/validate-content-production-config.mjs workflow-release
+
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          npm ci --prefix astro
+
+      - name: Verify Worker contracts
+        run: npm test
+
+      - name: Build pinned content release
+        env:
+          GITHUB_SHA: ${{ github.event.inputs.code_sha }}
+        run: |
+          npm run check --prefix astro
+          npm run lint --prefix astro
+          npm run test --prefix astro
+          npm run build --prefix astro
+          npm run verify:csp --prefix astro
+          npm run verify:site --prefix astro
+
+      - name: Verify embedded release identity
+        run: |
+          node -e "const m=require('./astro/dist/release-manifests/site-route-manifest.json');const b=m.build;if(b.code_sha!==process.env.EXACT_CODE_SHA||b.source_sha!==process.env.EXACT_CODE_SHA||b.site_release_id!==process.env.SITE_RELEASE_ID||String(b.site_release_sequence)!==process.env.CONTENT_RELEASE_SEQUENCE||b.content_sha256!==process.env.CONTENT_ROOT_SHA256||b.build_environment_version!==process.env.BUILD_ENVIRONMENT_VERSION||b.node_version!=='v22.17.0'||b.npm_version!=='10.9.2'||b.hugo_version!=='0.147.9'||b.build_timezone!=='UTC'||b.build_locale!=='C.UTF-8'||![b.content_schema_version,b.content_taxonomy_version,b.content_serializer_version,b.content_search_contract_version,b.content_source_contract_version].every(Boolean))process.exit(1)"
+
+      - name: Create deterministic content-addressed artifact
+        run: |
+          node scripts/create-content-addressed-artifact.mjs astro/dist content-release-artifact.json > artifact-summary.json
+          echo "ARTIFACT_SHA256=$(jq -r .artifact_sha256 artifact-summary.json)" >> "$GITHUB_ENV"
+          echo "ARTIFACT_BYTES=$(jq -r .artifact_byte_length artifact-summary.json)" >> "$GITHUB_ENV"
+          echo "ARTIFACT_OBJECT_KEY=$(jq -r .artifact_object_key artifact-summary.json)" >> "$GITHUB_ENV"
+          echo "ARTIFACT_HASH_ALGORITHM=$(jq -r .hash_algorithm artifact-summary.json)" >> "$GITHUB_ENV"
+
+      - name: Require indefinite locks for every artifact prefix
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_R2_LOCK_READ_TOKEN: ${{ secrets.R2_LOCK_READ_API_TOKEN }}
+        run: |
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer $CLOUDFLARE_R2_LOCK_READ_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets/$R2_ARTIFACT_BUCKET/lock" \
+            > artifact-r2-lock.json
+          node scripts/assert-r2-lock.mjs artifact-r2-lock.json "assets/sha256/preflight" indefinite \
+            > asset-lock-evidence.json
+          node scripts/assert-r2-lock.mjs artifact-r2-lock.json "artifacts/sha256/preflight.json" indefinite \
+            > inventory-lock-evidence.json
+          jq -s '{verified:true,rules:.}' asset-lock-evidence.json inventory-lock-evidence.json \
+            > artifact-lock-evidence.json
+
+      - name: Upload immutable content-addressed R2 artifact
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ARTIFACT_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_ARTIFACT_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          R2_UPLOAD_CONCURRENCY: "8"
+        run: |
+          node scripts/upload-content-addressed-artifact.mjs content-release-artifact.json astro/dist > r2-upload-summary.json
+          jq -e '.inventory_sha256 == env.ARTIFACT_SHA256 and (.inventory_byte_length | tostring) == env.ARTIFACT_BYTES' r2-upload-summary.json >/dev/null
+
+      - name: Register immutable artifact
+        run: |
+          artifact_fingerprint="$(jq -r '.build.artifact_sha256' astro/dist/release-manifests/site-route-manifest.json)"
+          [[ "$artifact_fingerprint" =~ ^[0-9a-f]{64}$ ]]
+          evidence="$(jq -nc --arg object_key "$ARTIFACT_OBJECT_KEY" --arg hash "$ARTIFACT_SHA256" --arg fingerprint "$artifact_fingerprint" --arg algorithm "$ARTIFACT_HASH_ALGORITHM" --arg code "$EXACT_CODE_SHA" --arg env "$BUILD_ENVIRONMENT_VERSION" --argjson bytes "$ARTIFACT_BYTES" '{object_key:$object_key,byte_length:$bytes,artifact_sha256:$hash,artifact_fingerprint_sha256:$fingerprint,hash_algorithm:$algorithm,code_sha:$code,build_environment_version:$env}')"
+          node scripts/send-content-deployment-callback.mjs artifact_registered "$evidence"
+
+      - name: Deploy exact files to Pages Preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler pages deploy astro/dist --project-name bubble-content-preview --branch "release-$CONTENT_RELEASE_SEQUENCE" --commit-hash "$EXACT_CODE_SHA" --commit-dirty=false | tee preview-deploy.log
+          preview_url="$(grep -Eo 'https://[^ ]+\.pages\.dev' preview-deploy.log | tail -1)"
+          test -n "$preview_url"
+          echo "PREVIEW_URL=$preview_url" >> "$GITHUB_ENV"
+
+      - name: Verify Preview route parity and exact bytes
+        run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/release-manifests/site-route-manifest.json
+
+      - name: Record Preview evidence
+        run: |
+          evidence="$(jq -nc --arg url "$PREVIEW_URL" --arg artifact "$ARTIFACT_SHA256" --arg content "$CONTENT_ROOT_SHA256" '{preview_url:$url,artifact_sha256:$artifact,content_sha256:$content,route_parity:true}')"
+          node scripts/send-content-deployment-callback.mjs preview_verified "$evidence"
+
+      - name: Request fenced production promotion
+        if: ${{ github.event.inputs.mode == 'production' }}
+        env:
+          PRODUCTION_BROKER_URL: ${{ vars.PRODUCTION_BROKER_URL }}
+          PRODUCTION_BROKER_HMAC_SECRET: ${{ secrets.PRODUCTION_BROKER_HMAC_SECRET }}
+        run: |
+          test -n "$PRODUCTION_BROKER_URL"
+          body="$(jq -nc --arg dispatch "$DISPATCH_ID" --arg release "$SITE_RELEASE_ID" --argjson sequence "$CONTENT_RELEASE_SEQUENCE" --arg predecessor "$EXPECTED_PREDECESSOR_ID" --arg artifact "$ARTIFACT_SHA256" --arg object "$ARTIFACT_OBJECT_KEY" --arg code "$EXACT_CODE_SHA" --arg content "$CONTENT_ROOT_SHA256" --arg environment "$BUILD_ENVIRONMENT_VERSION" '{dispatch_id:$dispatch,site_release_id:$release,site_release_sequence:$sequence,expected_predecessor_id:($predecessor | if length > 0 then . else null end),artifact_sha256:$artifact,artifact_object_key:$object,code_sha:$code,content_sha256:$content,build_environment_version:$environment}')"
+          printf '%s' "$body" | node scripts/request-production-promotion.mjs > broker-result.json
+          jq -e '.ok == true and (.site_release_id == env.SITE_RELEASE_ID)' broker-result.json >/dev/null
+
+      - name: Upload short-lived workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-release-${{ github.event.inputs.site_release_sequence }}
+          path: |
+            content-release-artifact.json
+            artifact-lock-evidence.json
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Record failed workflow
+        if: ${{ failure() }}
+        continue-on-error: true
+        run: node scripts/send-content-deployment-callback.mjs failed '{"error":"workflow_failed"}'

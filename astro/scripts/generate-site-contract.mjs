@@ -3,6 +3,15 @@ import { execFileSync } from 'node:child_process';
 import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { relative, resolve } from 'node:path';
 
+import {
+	assertRouteBuildContract,
+	contentContractFromEnvironment,
+	PINNED_BUILD_LOCALE,
+	PINNED_BUILD_TIMEZONE,
+	PINNED_TOOLCHAIN,
+	readNpmVersion,
+} from '../../scripts/content-route-build-contract.mjs';
+
 const astroRoot = process.cwd();
 const distRoot = resolve(astroRoot, 'dist');
 const manifestRelativePath = 'release-manifests/site-route-manifest.json';
@@ -50,6 +59,38 @@ function sourceSha() {
 		}).trim();
 	if (!/^[\da-f]{40}$/i.test(value)) throw new Error(`Invalid build source SHA: ${value}`);
 	return value.toLowerCase();
+}
+
+function optionalHash(name, length) {
+	const value = process.env[name];
+	if (!value) return null;
+	if (!new RegExp(`^[\\da-f]{${length}}$`, 'i').test(value)) throw new Error(`Invalid ${name}`);
+	return value.toLowerCase();
+}
+
+function contentReleaseMetadata() {
+	const id = process.env.CONTENT_RELEASE_ID || null;
+	if (
+		id &&
+		!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)
+	) {
+		throw new Error('Invalid CONTENT_RELEASE_ID');
+	}
+	const sequenceText = process.env.CONTENT_RELEASE_SEQUENCE;
+	const sequence = sequenceText === undefined ? null : Number(sequenceText);
+	if (sequence !== null && (!Number.isSafeInteger(sequence) || sequence < 1)) {
+		throw new Error('Invalid CONTENT_RELEASE_SEQUENCE');
+	}
+	const metadata = {
+		site_release_id: id,
+		site_release_sequence: sequence,
+		content_sha256: optionalHash('CONTENT_ROOT_SHA256', 64),
+		manifest_sha256: optionalHash('CONTENT_MANIFEST_SHA256', 64),
+		build_environment_version:
+			process.env.BUILD_ENVIRONMENT_VERSION || 'node22.17-astro7-hugo0.147.9-v1',
+		editorial_preview_sha256: optionalHash('EDITORIAL_PREVIEW_SHA256', 64),
+	};
+	return id ? { ...metadata, ...contentContractFromEnvironment() } : metadata;
 }
 
 function routeFromPath(path) {
@@ -193,16 +234,28 @@ for (const record of records) {
 	identities.add(identity);
 }
 
+const codeSha = sourceSha();
+const build = {
+	code_sha: codeSha,
+	source_sha: codeSha,
+	...contentReleaseMetadata(),
+	artifact_sha256: await artifactFingerprint(),
+	hash_algorithm: 'sha256-path-and-content-v1',
+	node_version: process.version,
+	npm_version: readNpmVersion(),
+	astro_version: PINNED_TOOLCHAIN.astro_version,
+	hugo_version: PINNED_TOOLCHAIN.hugo_version,
+	build_timezone: process.env.TZ || PINNED_BUILD_TIMEZONE,
+	build_locale: process.env.LC_ALL || process.env.LANG || PINNED_BUILD_LOCALE,
+};
+assertRouteBuildContract(build);
+
 await writeFile(
 	resolve(distRoot, manifestRelativePath),
 	`${JSON.stringify(
 		{
 			schema_version: 3,
-			build: {
-				source_sha: sourceSha(),
-				artifact_sha256: await artifactFingerprint(),
-				hash_algorithm: 'sha256-path-and-content-v1',
-			},
+			build,
 			records,
 		},
 		null,

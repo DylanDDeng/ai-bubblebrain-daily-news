@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-17T21:42:25Z",
+  "wrangler_version": "4.110.0",
+  "status": "passed",
+  "workers": [
+    {
+      "name": "main-worker",
+      "config": "wrangler.toml",
+      "upload_kib": 712.89,
+      "gzip_kib": 139.84,
+      "exit_code": 0
+    },
+    {
+      "name": "content-api",
+      "config": "wrangler.content-api.toml",
+      "upload_kib": 91.36,
+      "gzip_kib": 23.81,
+      "exit_code": 0
+    },
+    {
+      "name": "identity-attestation",
+      "config": "wrangler.content-attestation.toml",
+      "upload_kib": 11.07,
+      "gzip_kib": 3.63,
+      "exit_code": 0
+    },
+    {
+      "name": "deployer",
+      "config": "wrangler.content-deployer.toml",
+      "upload_kib": 101.85,
+      "gzip_kib": 25.99,
+      "exit_code": 0
+    },
+    {
+      "name": "production-broker",
+      "config": "wrangler.content-broker.toml",
+      "upload_kib": 136.28,
+      "gzip_kib": 34.73,
+      "exit_code": 0
+    },
+    {
+      "name": "routine-admin",
+      "config": "wrangler.content-admin.toml",
+      "upload_kib": 117.9,
+      "gzip_kib": 32.22,
+      "exit_code": 0
+    },
+    {
+      "name": "control-plane",
+      "config": "wrangler.content-control.toml",
+      "upload_kib": 120.21,
+      "gzip_kib": 32.39,
+      "exit_code": 0
+    },
+    {
+      "name": "editorial-materializer",
+      "config": "wrangler.content-editorial.toml",
+      "upload_kib": 99.7,
+      "gzip_kib": 25.29,
+      "exit_code": 0
+    }
+  ]
+}

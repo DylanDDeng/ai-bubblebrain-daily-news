@@ -1,0 +1,26 @@
+name = "bubble-content-api"
+main = "workers/content/api/index.ts"
+compatibility_date = "2026-07-17"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+routes = [
+  { pattern = "content-api.bubblenews.today", custom_domain = true },
+  { pattern = "content-api-origin.bubblenews.today", custom_domain = true }
+]
+
+[vars]
+PUBLIC_SITE_ORIGIN = "https://bubblenews.today"
+
+# The corresponding Postgres role has only reader RPCs.
+[[hyperdrive]]
+binding = "CONTENT_DB"
+id = "2216d162d2264a1dafcad6e5e21dfdb1"
+
+[[r2_buckets]]
+binding = "REPORT_SNAPSHOTS"
+bucket_name = "bubble-content-report-snapshots"
+
+[[r2_buckets]]
+binding = "SITE_MANIFESTS"
+bucket_name = "bubble-content-site-manifests"

@@ -37,10 +37,14 @@ export interface KnowledgeSearchItem {
 export interface KnowledgeSearchIndex {
 	schema_version: 1;
 	taxonomy_version: 1;
+	site_release_id: string | null;
 	item_count: number;
 	report_dates: string[];
 	items: KnowledgeSearchItem[];
 }
+
+const STATIC_SEARCH_MAX_REPORT_DAYS = 7;
+const STATIC_SEARCH_MAX_BYTES = 8 * 1024 * 1024;
 
 function itemHref(date: string, id: string): string {
 	const [year, month] = date.split('-');
@@ -98,10 +102,20 @@ export async function buildKnowledgeSearchIndex(
 	options: {
 		directory?: string;
 		locale?: KnowledgeLocale;
+		siteReleaseId?: string | null;
 	} = {},
 ): Promise<KnowledgeSearchIndex> {
 	const directory = dailyDataDirectory(options.directory);
 	const locale = options.locale ?? 'zh-CN';
+	const siteReleaseId = options.siteReleaseId ?? process.env.CONTENT_RELEASE_ID ?? null;
+	if (
+		siteReleaseId !== null &&
+		!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+			siteReleaseId,
+		)
+	) {
+		throw new Error('Invalid site release identity for search index');
+	}
 	let names: string[];
 	try {
 		names = await readdir(directory);
@@ -109,44 +123,56 @@ export async function buildKnowledgeSearchIndex(
 		if ((error as NodeJS.ErrnoException).code === 'ENOENT') names = [];
 		else throw error;
 	}
-	const reportDates = names
+	const availableReportDates = names
 		.filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
 		.map((name) => name.slice(0, -5))
 		.sort((left, right) => right.localeCompare(left));
-	const reports = await Promise.all(
-		reportDates.map((date) => loadStructuredDailyReport(date, { directory })),
-	);
-	const items = reports.flatMap((report, reportIndex) => {
-		if (!report)
-			throw new Error(`Structured daily report disappeared: ${reportDates[reportIndex]}`);
-		return report.items.map((item) => ({
-			key: `${report.date}:${item.id}`,
-			id: item.id,
-			date: report.date,
-			href: itemHref(report.date, item.id),
-			title: item.title,
-			summary: item.summary,
-			source_name: item.source.name,
-			source_type: item.source_type,
-			content_type: item.content_type,
-			category: item.category,
-			published_at: item.published_at,
-			published_date: item.published_date,
-			topic_ids: canonicalizeTaxonomyIds(item.topic_ids, knowledgeTaxonomy.topics, topicsById),
-			entity_ids: canonicalizeTaxonomyIds(
-				item.entity_ids,
-				knowledgeTaxonomy.entities,
-				entitiesById,
-			),
-			search_text: searchText(item, locale),
-		}));
-	});
+	const reportDates = availableReportDates.slice(0, STATIC_SEARCH_MAX_REPORT_DAYS);
+	const items: KnowledgeSearchItem[] = [];
+	for (const date of reportDates) {
+		const report = await loadStructuredDailyReport(date, { directory });
+		if (!report) throw new Error(`Structured daily report disappeared: ${date}`);
+		items.push(
+			...report.items.map((item) => ({
+				key: `${report.date}:${item.id}`,
+				id: item.id,
+				date: report.date,
+				href: itemHref(report.date, item.id),
+				title: item.title,
+				summary: item.summary,
+				source_name: item.source.name,
+				source_type: item.source_type,
+				content_type: item.content_type,
+				category: item.category,
+				published_at: item.published_at,
+				published_date: item.published_date,
+				topic_ids: canonicalizeTaxonomyIds(item.topic_ids, knowledgeTaxonomy.topics, topicsById),
+				entity_ids: canonicalizeTaxonomyIds(
+					item.entity_ids,
+					knowledgeTaxonomy.entities,
+					entitiesById,
+				),
+				search_text: searchText(item, locale),
+			})),
+		);
+	}
 	items.sort(compareSearchItems);
-	return {
+	const result: KnowledgeSearchIndex = {
 		schema_version: 1,
 		taxonomy_version: 1,
+		site_release_id: siteReleaseId,
 		item_count: items.length,
 		report_dates: reportDates,
 		items,
 	};
+	const encoder = new TextEncoder();
+	while (
+		result.items.length > 0 &&
+		encoder.encode(JSON.stringify(result)).byteLength > STATIC_SEARCH_MAX_BYTES
+	) {
+		result.items.pop();
+	}
+	result.item_count = result.items.length;
+	result.report_dates = [...new Set(result.items.map((item) => item.date))];
+	return result;
 }

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+    contentApiSearchUrl,
     itemMatchesKnowledgeState,
     knowledgeSearchForState,
+    normalizeHistoricalSearchResult,
     parseKnowledgeSearchState,
 } from '../../static/js/knowledge-search.js';
 
@@ -64,5 +66,34 @@ describe('knowledge search URL state', () => {
             topicId: 'topic_models',
             entityId: '',
         })).toBe(false);
+    });
+
+    it('binds historical search to the embedded release instead of current', () => {
+        const releaseId = '11111111-1111-4111-8111-111111111111';
+        const url = contentApiSearchUrl('https://content-api.bubblenews.today', releaseId, '模型');
+        expect(url.pathname).toBe(`/v1/releases/${releaseId}/search`);
+        expect(url.pathname).not.toContain('/current');
+        expect(url.searchParams.get('q')).toBe('模型');
+        expect(() => contentApiSearchUrl('https://content-api.bubblenews.today', 'latest', 'x')).toThrow();
+    });
+
+    it('normalizes API results to the same immutable daily anchor contract', () => {
+        const id = `n_${'a'.repeat(64)}`;
+        expect(normalizeHistoricalSearchResult({
+            report_date: '2026-07-17',
+            item_id: id,
+            item: {
+                title: 'Agent update',
+                summary: 'Release-pinned result',
+                content_type: 'news',
+                source: { name: 'Example' },
+                topic_ids: ['topic_agents'],
+                entity_ids: [],
+            },
+        })).toMatchObject({
+            id,
+            href: `/daily/2026/07/2026-07-17/#news-${id}`,
+            topicIds: ['topic_agents'],
+        });
     });
 });

@@ -7,8 +7,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
 	dailyDataDirectory,
 	formatTimelineTime,
+	isDatabaseOwnedDailyDate,
 	loadStructuredDailyReport,
 	orderTimelineBatches,
+	structuredCutoverDate,
 	type StructuredDailyBatch,
 	type StructuredDailyItem,
 } from './structuredDaily';
@@ -31,9 +33,29 @@ async function fixture(): Promise<Record<string, unknown>> {
 
 afterEach(async () => {
 	delete process.env.DAILY_DATA_DIR;
+	delete process.env.STRUCTURED_CUTOVER_DATE;
 	await Promise.all(
 		temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })),
 	);
+});
+
+describe('structured daily source ownership', () => {
+	it('keeps pre-cutover dates on legacy Markdown and includes both locales after cutover', () => {
+		expect(structuredCutoverDate()).toBe('2026-07-16');
+		expect(isDatabaseOwnedDailyDate('2026-07-15')).toBe(false);
+		expect(isDatabaseOwnedDailyDate('2026-07-16')).toBe(true);
+	});
+
+	it('honors a release-pinned cutover date and rejects malformed configuration', () => {
+		process.env.STRUCTURED_CUTOVER_DATE = '2026-07-14';
+		expect(isDatabaseOwnedDailyDate('2026-07-13')).toBe(false);
+		expect(isDatabaseOwnedDailyDate('2026-07-14')).toBe(true);
+
+		process.env.STRUCTURED_CUTOVER_DATE = 'July 14';
+		expect(() => isDatabaseOwnedDailyDate('2026-07-14')).toThrow(
+			'STRUCTURED_CUTOVER_DATE must use YYYY-MM-DD',
+		);
+	});
 });
 
 describe('structured daily report loader', () => {
@@ -129,11 +151,6 @@ describe('timeline batch order', () => {
 			'afternoon',
 			'lateNight',
 		]);
-		expect(batches.map(({ id }) => id)).toEqual([
-			'morning',
-			'afternoon',
-			'night',
-			'lateNight',
-		]);
+		expect(batches.map(({ id }) => id)).toEqual(['morning', 'afternoon', 'night', 'lateNight']);
 	});
 });

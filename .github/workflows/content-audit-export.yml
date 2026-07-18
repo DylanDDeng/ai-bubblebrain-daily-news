@@ -1,0 +1,140 @@
+name: Immutable Content Audit Export
+
+on:
+  schedule:
+    - cron: "37 2 * * *"
+  workflow_dispatch:
+    inputs:
+      export_date:
+        description: Closed UTC date to export (YYYY-MM-DD)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-audit-export
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: content-backup
+    env:
+      AUDIT_BUCKET: bubble-content-audit
+      CONTENT_AUDIT_DATABASE_URL: ${{ secrets.CONTENT_BACKUP_DATABASE_URL }}
+      CONTENT_DATABASE_PROJECT_REF: ${{ vars.CONTENT_DATABASE_PROJECT_REF }}
+      CONTENT_DATABASE_TOPOLOGY: ${{ vars.CONTENT_DATABASE_TOPOLOGY }}
+      CONTENT_SHARED_PROJECT_ACK: ${{ vars.CONTENT_SHARED_PROJECT_ACK }}
+      AGE_RECIPIENT: ${{ vars.CONTENT_BACKUP_AGE_RECIPIENT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_AUDIT_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_AUDIT_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_R2_LOCK_READ_TOKEN: ${{ secrets.R2_LOCK_READ_API_TOKEN }}
+      R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      REQUESTED_EXPORT_DATE: ${{ inputs.export_date }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+
+      - name: Validate isolated audit environment
+        run: |
+          node scripts/validate-content-production-config.mjs workflow-audit
+          if [[ -n "$REQUESTED_EXPORT_DATE" ]]; then
+            [[ "$REQUESTED_EXPORT_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+            date -u -d "$REQUESTED_EXPORT_DATE" +%F | grep -Fx "$REQUESTED_EXPORT_DATE"
+          fi
+
+      - name: Install age
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes age
+
+      - name: Export and encrypt one closed UTC day
+        run: |
+          umask 077
+          export_started_at="$(date -u +%FT%TZ)"
+          if [[ -n "$REQUESTED_EXPORT_DATE" ]]; then
+            export_date="$REQUESTED_EXPORT_DATE"
+          else
+            export_date="$(date -u -d 'yesterday' +%F)"
+          fi
+          today="$(date -u +%F)"
+          if [[ ! "$export_date" < "$today" ]]; then
+            echo "Audit export requires a closed UTC date before $today" >&2
+            exit 1
+          fi
+          next_date="$(date -u -d "$export_date + 1 day" +%F)"
+          psql -X "$CONTENT_AUDIT_DATABASE_URL" --no-psqlrc --quiet --tuples-only --no-align \
+            --set=ON_ERROR_STOP=1 --set=export_date="$export_date" --set=next_date="$next_date" \
+            > audit.jsonl <<'SQL'
+          copy (
+            select row_to_json(a)::text
+            from private.content_audit_log a
+            where a.inserted_at >= :'export_date'::date
+              and a.inserted_at < :'next_date'::date
+            order by a.id
+          ) to stdout;
+          SQL
+          row_count="$(wc -l < audit.jsonl | tr -d ' ')"
+          plain_sha="$(sha256sum audit.jsonl | awk '{print $1}')"
+          age --recipient "$AGE_RECIPIENT" --output audit.jsonl.age audit.jsonl
+          cipher_sha="$(sha256sum audit.jsonl.age | awk '{print $1}')"
+          cipher_bytes="$(wc -c < audit.jsonl.age | tr -d ' ')"
+          object_key="audit/${export_date//-//}/$cipher_sha.jsonl.age"
+          export_completed_at="$(date -u +%FT%TZ)"
+          psql_version="$(psql --version)"
+          printf 'EXPORT_STARTED_AT=%s\nEXPORT_COMPLETED_AT=%s\nPSQL_VERSION=%s\nEXPORT_DATE=%s\nROW_COUNT=%s\nPLAIN_SHA256=%s\nCIPHER_SHA256=%s\nCIPHER_BYTES=%s\nAUDIT_OBJECT_KEY=%s\n' \
+            "$export_started_at" "$export_completed_at" "$psql_version" "$export_date" "$row_count" "$plain_sha" "$cipher_sha" "$cipher_bytes" "$object_key" >> "$GITHUB_ENV"
+          rm audit.jsonl
+
+      - name: Require a covering 365-day R2 lock rule
+        run: |
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer $CLOUDFLARE_R2_LOCK_READ_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets/$AUDIT_BUCKET/lock" \
+            > r2-lock.json
+          node scripts/assert-r2-lock.mjs r2-lock.json "$AUDIT_OBJECT_KEY" 31536000 > lock-evidence.json
+
+      - name: Put and re-download locked R2 audit object
+        run: |
+          if ! aws s3api head-object --bucket "$AUDIT_BUCKET" --key "$AUDIT_OBJECT_KEY" --endpoint-url "$R2_ENDPOINT" >/dev/null 2>&1; then
+            if ! aws s3api put-object --bucket "$AUDIT_BUCKET" --key "$AUDIT_OBJECT_KEY" --body audit.jsonl.age --if-none-match '*' --endpoint-url "$R2_ENDPOINT" >/dev/null; then
+              aws s3api head-object --bucket "$AUDIT_BUCKET" --key "$AUDIT_OBJECT_KEY" --endpoint-url "$R2_ENDPOINT" >/dev/null
+            fi
+          fi
+          aws s3 cp "s3://$AUDIT_BUCKET/$AUDIT_OBJECT_KEY" verified.jsonl.age --endpoint-url "$R2_ENDPOINT" --no-progress
+          test "$(sha256sum verified.jsonl.age | awk '{print $1}')" = "$CIPHER_SHA256"
+          test "$(wc -c < verified.jsonl.age | tr -d ' ')" = "$CIPHER_BYTES"
+
+      - name: Emit audit export evidence
+        run: |
+          jq -nc \
+            --arg project_ref "$CONTENT_DATABASE_PROJECT_REF" \
+            --arg started_at "$EXPORT_STARTED_AT" \
+            --arg completed_at "$EXPORT_COMPLETED_AT" \
+            --arg psql_version "$PSQL_VERSION" \
+            --arg export_date "$EXPORT_DATE" \
+            --arg object_key "$AUDIT_OBJECT_KEY" \
+            --arg plain_sha256 "$PLAIN_SHA256" \
+            --arg cipher_sha256 "$CIPHER_SHA256" \
+            --argjson rows "$ROW_COUNT" \
+            --argjson bytes "$CIPHER_BYTES" \
+            '{schema_version:1,kind:"content-audit-export",project_ref:$project_ref,started_at:$started_at,completed_at:$completed_at,psql_version:$psql_version,export_date:$export_date,encrypted:true,encryption:"age-x25519",row_count:$rows,plain_sha256:$plain_sha256,object_key:$object_key,cipher_sha256:$cipher_sha256,byte_length:$bytes}' \
+            > audit-export-evidence-core.json
+          jq -s '.[0] + {r2_lock:.[1]}' audit-export-evidence-core.json lock-evidence.json > audit-export-evidence.json
+
+      - name: Upload short-lived evidence only
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-audit-export-evidence-${{ github.run_id }}
+          path: audit-export-evidence.json
+          retention-days: 14
+          if-no-files-found: error

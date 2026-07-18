@@ -75,6 +75,26 @@ export function orderTimelineBatches(
 
 const reportCache = new Map<string, Promise<StructuredDailyReport | null>>();
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
+export const DEFAULT_STRUCTURED_CUTOVER_DATE = '2026-07-16';
+
+export function structuredCutoverDate(value = process.env.STRUCTURED_CUTOVER_DATE): string {
+	const cutoverDate = value?.trim() || DEFAULT_STRUCTURED_CUTOVER_DATE;
+	if (!dateKeyPattern.test(cutoverDate)) {
+		throw new Error('STRUCTURED_CUTOVER_DATE must use YYYY-MM-DD');
+	}
+	return cutoverDate;
+}
+
+export function isDatabaseOwnedDailyDate(
+	dateKey: string,
+	cutoverDate = structuredCutoverDate(),
+): boolean {
+	if (!dateKeyPattern.test(dateKey)) throw new Error(`Invalid structured daily date: ${dateKey}`);
+	if (!dateKeyPattern.test(cutoverDate)) {
+		throw new Error('STRUCTURED_CUTOVER_DATE must use YYYY-MM-DD');
+	}
+	return dateKey >= cutoverDate;
+}
 
 export function dailyDataDirectory(directory?: string): string {
 	if (directory) return resolve(directory);

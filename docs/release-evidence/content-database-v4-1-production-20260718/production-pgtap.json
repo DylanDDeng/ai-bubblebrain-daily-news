@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "kind": "content-database-production-pgtap",
+  "executed_at": "2026-07-18T04:10:36Z",
+  "project_ref": "znurdobjryrhshzkalup",
+  "project_name": "test1",
+  "test_file": "supabase/tests/database/content_database_security.test.sql",
+  "plan": 112,
+  "passed": 112,
+  "failed": 0,
+  "transaction_rolled_back": true,
+  "recent_retention_evidence_hidden_in_test_transaction": true,
+  "production_switches_enabled": false
+}
