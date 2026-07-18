@@ -123,6 +123,11 @@ export function validateContentObservabilityEnvironment(env) {
   const cacheSampleMinimum = Number(
     env.CONTENT_API_CACHE_SAMPLE_MINIMUM ?? "100",
   );
+  const startedAtText = required(
+    "CONTENT_OBSERVABILITY_STARTED_AT",
+    env.CONTENT_OBSERVABILITY_STARTED_AT,
+  );
+  const startedAt = Date.parse(startedAtText);
   if (
     !Number.isFinite(cacheHitMinimum) ||
     cacheHitMinimum < 0 ||
@@ -131,6 +136,14 @@ export function validateContentObservabilityEnvironment(env) {
     cacheSampleMinimum < 1
   ) {
     throw new Error("cache observability thresholds are invalid");
+  }
+  if (
+    !Number.isFinite(startedAt) ||
+    new Date(startedAt).toISOString() !== startedAtText
+  ) {
+    throw new Error(
+      "CONTENT_OBSERVABILITY_STARTED_AT must be an exact UTC ISO timestamp",
+    );
   }
   return {
     accountId,
@@ -141,6 +154,7 @@ export function validateContentObservabilityEnvironment(env) {
     databaseUrl,
     manifestUrls,
     projectRef,
+    startedAt,
     topology,
     zoneId,
   };
@@ -257,7 +271,9 @@ export function evaluateContentObservability(input, now = Date.now()) {
       attempt,
     ]),
   );
-  const dueBatches = dueContentBatches(now);
+  const dueBatches = dueContentBatches(now).filter(
+    (batch) => Date.parse(batch.scheduled_at) >= (input.startedAt ?? -Infinity),
+  );
   for (const due of dueBatches) {
     const attempt = attempts.get(`${due.report_date}:${due.batch_id}`);
     if (!attempt || !["succeeded", "failed"].includes(attempt.status)) {
@@ -438,6 +454,7 @@ async function run(env = process.env, now = Date.now()) {
         currentEndpoints,
         database: rows[0]?.result,
         staticManifests,
+        startedAt: input.startedAt,
       },
       now,
     );

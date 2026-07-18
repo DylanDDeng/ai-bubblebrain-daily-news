@@ -204,12 +204,14 @@ describe("content production preflight", () => {
         "https://example.com/release-manifests/site-route-manifest.json,https://www.example.net/release-manifests/site-route-manifest.json",
       CONTENT_API_CACHE_HIT_MINIMUM: "0.5",
       CONTENT_API_CACHE_SAMPLE_MINIMUM: "100",
+      CONTENT_OBSERVABILITY_STARTED_AT: "2026-07-18T15:00:00.000Z",
     };
     expect(
       validateWorkflowEnvironment("workflow-observability", environment),
     ).toEqual({
       profile: "workflow-observability",
       projectRef: "abcdefghijklmnopqrst",
+      startedAt: "2026-07-18T15:00:00.000Z",
     });
     expect(() =>
       validateWorkflowEnvironment("workflow-observability", {

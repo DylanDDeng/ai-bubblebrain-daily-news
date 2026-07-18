@@ -141,6 +141,7 @@ describe("content observability production identity", () => {
       "https://content-api.example.com/v1/current,https://content-api-alt.example.com/v1/current",
     CONTENT_STATIC_MANIFEST_URLS:
       "https://example.com/release-manifests/site-route-manifest.json,https://www.example.com/release-manifests/site-route-manifest.json",
+    CONTENT_OBSERVABILITY_STARTED_AT: "2026-07-18T15:00:00.000Z",
   };
 
   it("requires a matching project topology and independent endpoint sets", () => {
@@ -197,6 +198,22 @@ describe("content observability production identity", () => {
     expect(result.healthy).toBe(true);
     expect(result.analytics.server_error_ratio).toBeNull();
     expect(result.analytics.cache_hit_ratio).toBeNull();
+  });
+
+  it("does not require terminal attempts for slots before monitoring started", () => {
+    const input = healthyInput();
+    input.startedAt = Date.parse("2026-07-18T07:00:00.000Z");
+    input.database.publication_attempts =
+      input.database.publication_attempts.filter(
+        (attempt) => Date.parse(attempt.scheduled_at) >= input.startedAt,
+      );
+    const result = evaluateContentObservability(input, NOW);
+    expect(result.healthy).toBe(true);
+    expect(
+      result.due_batches.every(
+        (batch) => Date.parse(batch.scheduled_at) >= input.startedAt,
+      ),
+    ).toBe(true);
   });
 });
 

@@ -39,6 +39,8 @@ Use the `content-production-observability` GitHub environment. Configure:
 - two distinct exact `/v1/current` endpoints in `CONTENT_CURRENT_URLS`;
 - two distinct custom-domain
   `/release-manifests/site-route-manifest.json` endpoints in `CONTENT_STATIC_MANIFEST_URLS`;
+- exact UTC cutover timestamp in `CONTENT_OBSERVABILITY_STARTED_AT`; canonical batch slots before
+  this boundary are intentionally outside the monitor's SLA;
 - optional `CONTENT_API_CACHE_HIT_MINIMUM` and `CONTENT_API_CACHE_SAMPLE_MINIMUM` variables, then
   set `CONTENT_OBSERVABILITY_ENABLED=true` only after the manual run is healthy.
 
@@ -46,7 +48,9 @@ Every run validates configuration before connecting, reads only
 `private.get_content_observability_v1()`, probes both API and static identities without cache,
 queries the preceding five-minute Cloudflare analytics window, and exits nonzero for a batch lacking
 terminal status ten minutes after a canonical slot, a failed batch, identity drift, stale search,
-5xx above 1%, cache degradation with enough samples, a stale outbox row or any DLQ row. A valid
+5xx above 1%, cache degradation with enough samples, a stale outbox row or any unresolved DLQ row.
+Rows explicitly terminalized as `superseded_by_history_bootstrap` remain immutable evidence but are
+not actionable DLQ alerts. A valid
 zero-traffic window does not create a false 5xx/cache alert because the explicit endpoint probes
 still prove reachability.
 
