@@ -107,7 +107,10 @@ export async function buildKnowledgeSearchIndex(
 ): Promise<KnowledgeSearchIndex> {
 	const directory = dailyDataDirectory(options.directory);
 	const locale = options.locale ?? 'zh-CN';
-	const siteReleaseId = options.siteReleaseId ?? process.env.CONTENT_RELEASE_ID ?? null;
+	const siteReleaseId =
+		options.siteReleaseId === undefined
+			? (process.env.CONTENT_RELEASE_ID ?? null)
+			: options.siteReleaseId;
 	if (
 		siteReleaseId !== null &&
 		!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
