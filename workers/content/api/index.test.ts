@@ -127,6 +127,50 @@ describe("release-pinned content API", () => {
     expect(await failed.text()).not.toContain("secret");
   });
 
+  it("serves current public highlights with bounded cache and locale", async () => {
+    const callRpc = vi.fn().mockResolvedValue({
+      schema_version: 1,
+      locale: "zh-CN",
+      item_count: 1,
+      items: [{ id: "highlight-01", title: "精选" }],
+    });
+    const response = await handleContentApiRequest(
+      new Request("https://content.test/v1/highlights?locale=zh-CN&limit=35"),
+      {},
+      { callRpc },
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toContain("s-maxage=300");
+    expect(response.headers.get("etag")).toContain("sha256-");
+    expect(callRpc).toHaveBeenCalledWith("highlights", {
+      locale: "zh-CN",
+      limit: 35,
+    });
+  });
+
+  it("rejects unsupported highlight locales and excessive limits", async () => {
+    const callRpc = vi.fn();
+    expect(
+      (
+        await handleContentApiRequest(
+          new Request("https://content.test/v1/highlights?locale=fr"),
+          {},
+          { callRpc },
+        )
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await handleContentApiRequest(
+          new Request("https://content.test/v1/highlights?limit=1000"),
+          {},
+          { callRpc },
+        )
+      ).status,
+    ).toBe(400);
+    expect(callRpc).not.toHaveBeenCalled();
+  });
+
   it("allows browser search only from the pinned public site origin", async () => {
     const callRpc = vi.fn().mockResolvedValue({
       site_release_id: RELEASE,

@@ -416,7 +416,8 @@ select ok(
       ('authorize_production_reconcile_v1'),
       ('authorize_production_rollback_v1'),
       ('retry_content_outbox_v1'),
-      ('rebuild_content_release_v1')
+      ('rebuild_content_release_v1'),
+      ('create_highlight_v1')
     ) expected(proname)
     where not exists (
       select 1

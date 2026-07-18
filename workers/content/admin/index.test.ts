@@ -16,7 +16,13 @@ vi.mock("../shared/admin", () => ({
 }));
 
 import { openContentDatabase } from "../shared/db";
-import { attest, csrfSessionResponse, requireAccess } from "../shared/admin";
+import {
+  attest,
+  csrfSessionResponse,
+  idempotencyKey,
+  readAdminBody,
+  requireAccess,
+} from "../shared/admin";
 import worker from "./index";
 
 function fakeSql(queryError?: Error & { code?: string }) {
@@ -106,6 +112,76 @@ describe("routine content admin information architecture", () => {
     vi.mocked(openContentDatabase).mockReturnValue(sql as never);
     const response = await worker.fetch(
       new Request("https://admin.test/v1/content?after=latest"),
+      {} as never,
+    );
+    expect(response.status).toBe(400);
+    expect(queries).toEqual([]);
+  });
+
+  it("lists highlights through a route-bound read attestation", async () => {
+    const { sql, queries } = fakeSql();
+    vi.mocked(openContentDatabase).mockReturnValue(sql as never);
+    const response = await worker.fetch(
+      new Request("https://admin.test/v1/highlights?locale=zh-CN&limit=35"),
+      {} as never,
+    );
+    expect(response.status).toBe(200);
+    expect(queries.join("\n")).toContain("read_admin_highlights_v1");
+    expect(attest).toHaveBeenCalledWith(
+      expect.any(Request),
+      expect.anything(),
+      "content-routine",
+      "admin.read",
+      { route: "/v1/highlights", arguments: { locale: "zh-CN", limit: 35 } },
+    );
+  });
+
+  it("creates a validated highlight through an attested mutation", async () => {
+    const { sql, queries } = fakeSql();
+    vi.mocked(openContentDatabase).mockReturnValue(sql as never);
+    vi.mocked(idempotencyKey).mockReturnValue(
+      "11111111-1111-4111-8111-111111111111",
+    );
+    vi.mocked(readAdminBody).mockResolvedValue({
+      locale: "zh-CN",
+      title: "新的精选内容",
+      description: "值得保存的资料",
+      source_url: "https://example.com/article",
+      cover_url: null,
+      tags: ["Agent"],
+      status: "published",
+      reason: "手动收录精选内容",
+    });
+    const response = await worker.fetch(
+      new Request("https://admin.test/v1/highlights", { method: "POST" }),
+      {} as never,
+    );
+    expect(response.status).toBe(201);
+    expect(queries.join("\n")).toContain("create_highlight_v1");
+    expect(attest).toHaveBeenCalledWith(
+      expect.any(Request),
+      expect.anything(),
+      "content-routine",
+      "highlight.create",
+      expect.objectContaining({ title: "新的精选内容", status: "published" }),
+    );
+  });
+
+  it("rejects unsafe highlight URLs before attestation", async () => {
+    const { sql, queries } = fakeSql();
+    vi.mocked(openContentDatabase).mockReturnValue(sql as never);
+    vi.mocked(readAdminBody).mockResolvedValue({
+      locale: "zh-CN",
+      title: "不安全链接",
+      description: "",
+      source_url: "javascript:alert(1)",
+      cover_url: null,
+      tags: [],
+      status: "published",
+      reason: "验证非法链接",
+    });
+    const response = await worker.fetch(
+      new Request("https://admin.test/v1/highlights", { method: "POST" }),
       {} as never,
     );
     expect(response.status).toBe(400);

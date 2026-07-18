@@ -12,7 +12,13 @@ type Env = {
 type R2BucketLike = {
   get(key: string): Promise<{ arrayBuffer(): Promise<ArrayBuffer> } | null>;
 };
-type RpcName = "current" | "manifest" | "report" | "item" | "search";
+type RpcName =
+  | "current"
+  | "manifest"
+  | "report"
+  | "item"
+  | "search"
+  | "highlights";
 type RpcCaller = (
   name: RpcName,
   args: Record<string, unknown>,
@@ -44,6 +50,16 @@ async function immutableJson(
   const hash = knownHash || (await sha256Hex(canonicalJsonBytes(body)));
   return json(body, 200, {
     "Cache-Control": "public, max-age=31536000, immutable",
+    ETag: `"sha256-${hash}"`,
+  });
+}
+
+async function currentLibraryJson(
+  body: Record<string, unknown>,
+): Promise<Response> {
+  const hash = await sha256Hex(canonicalJsonBytes(body));
+  return json(body, 200, {
+    "Cache-Control": "public, max-age=60, s-maxage=300, must-revalidate",
     ETag: `"sha256-${hash}"`,
   });
 }
@@ -107,11 +123,17 @@ async function databaseCaller(
       rows = await sql<Record<string, unknown>[]>`
         select private.get_release_item_v1(${String(args.releaseId)}::uuid, ${String(args.itemId)}) as result
       `;
-    } else {
+    } else if (name === "search") {
       rows = await sql<Record<string, unknown>[]>`
         select private.search_release_v1(
           ${String(args.releaseId)}::uuid, ${String(args.query)}, ${Number(args.limit)},
           ${args.beforeDate ? String(args.beforeDate) : null}::date
+        ) as result
+      `;
+    } else {
+      rows = await sql<Record<string, unknown>[]>`
+        select private.list_public_highlights_v1(
+          ${String(args.locale)}, ${Number(args.limit)}
         ) as result
       `;
     }
@@ -148,6 +170,23 @@ export async function handleContentApiRequest(
       const result = await call("current", {});
       return result
         ? json(result, 200, { "Cache-Control": "no-cache, max-age=0" })
+        : json({ error: "not_found" }, 404, { "Cache-Control": "no-store" });
+    }
+
+    if (url.pathname === "/v1/highlights") {
+      const locale = url.searchParams.get("locale") || "zh-CN";
+      const limit = Number(url.searchParams.get("limit") || "100");
+      if (
+        !["zh-CN", "en"].includes(locale) ||
+        !Number.isInteger(limit) ||
+        limit < 1 ||
+        limit > 200
+      ) {
+        return json({ error: "invalid_request" }, 400);
+      }
+      const result = await call("highlights", { locale, limit });
+      return result
+        ? currentLibraryJson(result)
         : json({ error: "not_found" }, 404, { "Cache-Control": "no-store" });
     }
 
