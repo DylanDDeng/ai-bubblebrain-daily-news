@@ -30,7 +30,9 @@ afterEach(async () => {
 describe('knowledge search index', () => {
 	it('returns an empty deterministic index when structured reports are absent', async () => {
 		const directory = await dailyDirectory();
-		await expect(buildKnowledgeSearchIndex({ directory })).resolves.toEqual({
+		await expect(
+			buildKnowledgeSearchIndex({ directory, siteReleaseId: null }),
+		).resolves.toEqual({
 			schema_version: 1,
 			taxonomy_version: 1,
 			site_release_id: null,
