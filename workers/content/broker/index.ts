@@ -1004,8 +1004,10 @@ async function promote(request: Request, env: Env): Promise<Response> {
   let deploymentChanged = false;
   let authorization: JsonRecord | null = null;
   let context: ArtifactContext | null = null;
+  let promotionStage = "load_context";
   try {
     context = await deployContext(sql, String(body.site_release_id));
+    promotionStage = "compare_request";
     comparePromotion(context, body);
     if (context.current_site_release_id === context.site_release_id) {
       return json({
@@ -1014,6 +1016,7 @@ async function promote(request: Request, env: Env): Promise<Response> {
         site_release_id: context.site_release_id,
       });
     }
+    promotionStage = "authorize";
     authorization = await rpc(
       sql,
       sql<JsonRecord[]>`
@@ -1025,14 +1028,19 @@ async function promote(request: Request, env: Env): Promise<Response> {
     );
     const token = Number(authorization.fencing_token);
     const generation = Number(authorization.expected_pointer_generation);
+    promotionStage = "mark_deploying";
     await sql`select private.mark_promotion_deploying_v1(${context.site_release_id}::uuid, ${token}, ${generation})`;
+    promotionStage = "load_artifact";
     const files = await artifactFiles(context, env);
     const deploymentStartedAt = Date.now();
+    promotionStage = "upload_pages";
     const deployment = await uploadPages(files, context, env);
     deploymentChanged = true;
+    promotionStage = "mark_verifying";
     await sql`select private.mark_promotion_verifying_v1(
       ${context.site_release_id}::uuid, ${token}, ${generation}, ${deployment.id}
     )`;
+    promotionStage = "verify_deployment";
     const evidence = await verifyDeployment(
       context,
       deployment.url,
@@ -1040,7 +1048,9 @@ async function promote(request: Request, env: Env): Promise<Response> {
       files,
       deploymentStartedAt,
     );
+    promotionStage = "purge_caches";
     await purgeContentCaches(env);
+    promotionStage = "commit_promotion";
     const committed = await rpc(
       sql,
       sql<JsonRecord[]>`
@@ -1088,6 +1098,7 @@ async function promote(request: Request, env: Env): Promise<Response> {
       }
     }
     console.error("[ContentBroker] promotion failed", {
+      stage: promotionStage,
       errorType: error instanceof Error ? error.name : "Error",
     });
     return json({ error: "promotion_failed" }, 503);
