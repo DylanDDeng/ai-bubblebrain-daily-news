@@ -4,7 +4,7 @@ import { z } from 'astro/zod';
 
 const daily = defineCollection({
 	loader: glob({
-		base: '../content/daily',
+		base: process.env.DAILY_CONTENT_DIR || '../content/daily',
 		pattern: ['????-??-??.md', '????-??-??.en.md'],
 		generateId: ({ entry }) => entry.replace(/\.md$/, ''),
 	}),

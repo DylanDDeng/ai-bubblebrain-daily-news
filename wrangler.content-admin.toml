@@ -1,0 +1,32 @@
+name = "bubble-content-routine-admin"
+main = "workers/content/admin/index.ts"
+compatibility_date = "2026-07-16"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+routes = [
+  { pattern = "content-admin.bubblenews.today", custom_domain = true }
+]
+
+[vars]
+CF_ACCESS_TEAM_DOMAIN = "https://restless-night-0dd3.cloudflareaccess.com"
+CF_ACCESS_AUD = "20e067d073ecea1435e5078ac577ce5cdf31e4b1fa19cb976b395dfc9b2185e5"
+ADMIN_ALLOWED_ORIGIN = "https://content-admin.bubblenews.today"
+
+[[hyperdrive]]
+binding = "CONTENT_DB"
+id = "61e37f9a7cd24ba5a644e1c914da0e14"
+
+[[services]]
+binding = "ATTESTATION"
+service = "bubble-content-identity-attestation"
+
+[[services]]
+binding = "DEPLOYER"
+service = "bubble-content-deployer"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+# Set PREVIEW_DISPATCH_SECRET to the same preview-only value on Routine Admin and Deployer.

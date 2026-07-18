@@ -1,0 +1,30 @@
+name = "bubble-content-control-plane"
+main = "workers/content/control/index.ts"
+compatibility_date = "2026-07-16"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+routes = [
+  { pattern = "content-control.bubblenews.today", custom_domain = true }
+]
+
+[vars]
+CF_ACCESS_TEAM_DOMAIN = "https://restless-night-0dd3.cloudflareaccess.com"
+CF_ACCESS_AUD = "47182245c06323d869da0304035da2d1177e4ce60589ea6d827d94fc5ccce4c6"
+ADMIN_ALLOWED_ORIGIN = "https://content-control.bubblenews.today"
+
+[[hyperdrive]]
+binding = "CONTENT_DB"
+id = "80b87c4d8a914581a18eae1b72ff15d1"
+
+[[services]]
+binding = "ATTESTATION"
+service = "bubble-content-identity-attestation"
+
+[[services]]
+binding = "PRODUCTION_BROKER"
+service = "bubble-content-production-broker"
+
+[observability]
+enabled = true
+head_sampling_rate = 1

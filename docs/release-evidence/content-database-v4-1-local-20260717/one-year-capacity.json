@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "kind": "content-database-v4.1-one-year-local-projection",
+  "database": "local-supabase-only",
+  "started_at": "2026-07-17T21:28:05.885Z",
+  "workload": {
+    "days": 365,
+    "items_per_day": 200
+  },
+  "dataset": {
+    "status": "passed",
+    "report_snapshots": 365,
+    "report_item_placements": 73000,
+    "final_release_reports": 365,
+    "exact_report_bytes": 248834215,
+    "average_report_bytes": 681738,
+    "database_bytes": 392400019,
+    "load_elapsed_ms": 1366,
+    "reused_existing_local_dataset": true,
+    "final_site_release_id": "3a39577a-f4e4-4c56-8524-c0495473804c"
+  },
+  "rpc_latency": {
+    "local_projection_only": true,
+    "report": {
+      "samples": 120,
+      "p50_ms": 10.06,
+      "p95_ms": 11.858,
+      "p99_ms": 12.571,
+      "max_ms": 13.182
+    },
+    "item": {
+      "samples": 120,
+      "p50_ms": 1.757,
+      "p95_ms": 2.093,
+      "p99_ms": 2.803,
+      "max_ms": 4.279
+    },
+    "chinese_substring_search": {
+      "samples": 120,
+      "p50_ms": 23.099,
+      "p95_ms": 24.635,
+      "p99_ms": 25.323,
+      "max_ms": 26.776
+    },
+    "budgets_ms": {
+      "report_item_p95": 250,
+      "chinese_search_p95": 750
+    }
+  },
+  "chinese_search": [
+    {
+      "query": "大模型智能体",
+      "result_count": 20,
+      "top_title": "大模型智能体平台发布 2027-12-12",
+      "top_rank": 0.3
+    },
+    {
+      "query": "人工智能芯片",
+      "result_count": 20,
+      "top_title": "人工智能芯片产业进展 2027-12-12",
+      "top_rank": 0.3
+    },
+    {
+      "query": "多模态生成模型",
+      "result_count": 20,
+      "top_title": "多模态生成模型研究 2027-12-12",
+      "top_rank": 0.368421
+    }
+  ],
+  "query_plan": {
+    "planning_time_ms": 0.273,
+    "execution_time_ms": 0.152,
+    "nodes": [
+      {
+        "node_type": "Limit",
+        "index_name": null,
+        "actual_rows": 20
+      },
+      {
+        "node_type": "Nested Loop",
+        "index_name": null,
+        "actual_rows": 20
+      },
+      {
+        "node_type": "Bitmap Heap Scan",
+        "index_name": null,
+        "actual_rows": 20
+      },
+      {
+        "node_type": "BitmapOr",
+        "index_name": null,
+        "actual_rows": 0
+      },
+      {
+        "node_type": "Bitmap Index Scan",
+        "index_name": "report_snapshot_items_title_trgm_idx",
+        "actual_rows": 365
+      },
+      {
+        "node_type": "Bitmap Index Scan",
+        "index_name": "report_snapshot_items_summary_trgm_idx",
+        "actual_rows": 365
+      },
+      {
+        "node_type": "Bitmap Index Scan",
+        "index_name": "report_snapshot_items_title_trgm_idx",
+        "actual_rows": 365
+      },
+      {
+        "node_type": "Memoize",
+        "index_name": null,
+        "actual_rows": 1
+      },
+      {
+        "node_type": "Index Scan",
+        "index_name": "site_release_reports_site_release_id_report_snapshot_id_key",
+        "actual_rows": 1
+      }
+    ],
+    "shared_hit_blocks": 133
+  },
+  "connections": {
+    "probe_concurrency": 20,
+    "observed_peak_connections": 20,
+    "role_connection_limit": 20
+  },
+  "build": {
+    "status": "measured-local",
+    "wall_time_ms": 59863,
+    "peak_rss_bytes": 3457024000,
+    "projected_r2_fetch_bytes": 248834215,
+    "dist": {
+      "files": 1393,
+      "bytes": 1083970303,
+      "largest_file_bytes": 18334262,
+      "largest_file": "eval-videos/apple-ipad-air-animation.mp4"
+    },
+    "content_addressed_manifest_bytes": 465820,
+    "content_addressed_total_asset_bytes": 1083970303,
+    "broker_peak_asset_bytes": 18334262,
+    "budgets": {
+      "ci_p95_ms": 480000,
+      "peak_rss_bytes": 4294967296,
+      "content_addressed_manifest_bytes": 2097152,
+      "total_asset_bytes": 1342177280,
+      "broker_peak_asset_bytes": 26214400
+    },
+    "log_tail": [
+      "21:28:47   ├─ /prompts/gpt-5-full-potential/index.html (+4ms) ",
+      "21:28:47   ├─ /prompts/hacker-news-content-editor/index.html (+5ms) ",
+      "21:28:47   ├─ /prompts/knowlege-card/index.html (+5ms) ",
+      "21:28:47   ├─ /prompts/notebooklm-system-prompt/index.html (+4ms) ",
+      "21:28:47   ├─ /prompts/nsfw/index.html (+4ms) ",
+      "21:28:47   ├─ /prompts/openai-learning-mode/index.html (+4ms) ",
+      "21:28:47   ├─ /prompts/qwen-web-dev/index.html (+8ms) ",
+      "21:28:47   ├─ /prompts/richard-feynman-learning/index.html (+5ms) ",
+      "21:28:47   ├─ /x-trending/index.html (+5ms) ",
+      "21:28:47   ├─ /index.html (+9ms) ",
+      "21:28:47 ✓ Completed in 33.71s.",
+      "",
+      "21:28:47 [build] ✓ Completed in 34.03s.",
+      "21:28:47 [build] 826 page(s) built in 34.70s",
+      "21:28:47 [build] Complete!",
+      "Published 365 canonical structured daily JSON file(s).",
+      "Generated Cloudflare redirects: /Users/chengshengdeng/Documents/CloudFlare-AI-Insight-Daily/astro/dist/_redirects",
+      "Merged 0 declared Hugo compatibility files into Astro dist; skipped 0 redirect sources.",
+      "Generated complete site route contract with 1507 records.",
+      ""
+    ]
+  },
+  "static_search": {
+    "status": "passed",
+    "bytes": 8381329,
+    "max_bytes": 8388608,
+    "report_days": 6,
+    "max_report_days": 7,
+    "item_count": 1083,
+    "truncated_by_bytes": true
+  },
+  "cost_projection": {
+    "planning_assumptions_not_live_invoice_rates": true,
+    "r2": {
+      "end_of_year_report_gib": 0.232,
+      "end_of_year_manifest_gib_budget": 0.244,
+      "end_of_year_artifact_gib_budget": 150,
+      "average_monthly_storage_gib": 75.238,
+      "assumed_standard_storage_usd_per_gib_month": 0.015,
+      "estimated_average_storage_usd_per_month": 1.13
+    },
+    "supabase": {
+      "projected_database_gib": 0.365,
+      "monthly_egress_warning_gib": 10,
+      "monthly_egress_hard_review_gib": 20,
+      "incremental_storage_and_egress_price_must_be_refreshed_before_procurement": true
+    },
+    "github_actions": {
+      "production_builds_per_year_budget": 1460,
+      "projected_minutes_per_year": 1457
+    }
+  },
+  "completed_at": "2026-07-17T21:29:11.931Z",
+  "elapsed_ms": 66044,
+  "status": "passed"
+}

@@ -1,0 +1,108 @@
+name: Content Production Runtime Preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      code_sha:
+        description: Exact 40-character commit SHA to validate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-production-runtime-preflight
+  cancel-in-progress: false
+
+jobs:
+  validate-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: content-production
+    env:
+      EXACT_CODE_SHA: ${{ github.event.inputs.code_sha }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_R2_LOCK_READ_TOKEN: ${{ secrets.R2_LOCK_READ_API_TOKEN }}
+      REPORT_BUCKET: bubble-content-report-snapshots
+      MANIFEST_BUCKET: bubble-content-site-manifests
+      ARTIFACT_BUCKET: bubble-content-artifacts
+
+    steps:
+      - name: Validate immutable workflow input
+        shell: bash
+        run: '[[ "$EXACT_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]'
+
+      - name: Checkout exact code SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.code_sha }}
+          fetch-depth: 0
+
+      - name: Verify checkout identity
+        run: test "$(git rev-parse HEAD)" = "$EXACT_CODE_SHA"
+
+      - name: Setup Node.js 22.17.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Fail closed on unresolved production configuration
+        run: |
+          node scripts/validate-content-production-config.mjs workflow-runtime-preflight
+          npm run content:production:preflight
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Verify repository contracts
+        run: npm test
+
+      - name: Verify all production Worker bundles
+        run: |
+          npm run worker:check
+          npm run content:api:check
+          npm run content:attestation:check
+          npm run content:deployer:check
+          npm run content:broker:check
+          npm run content:admin:check
+          npm run content:control:check
+          npm run content:editorial:check
+
+      - name: Read live R2 lock rules
+        shell: bash
+        run: |
+          for bucket in "$REPORT_BUCKET" "$MANIFEST_BUCKET" "$ARTIFACT_BUCKET"; do
+            curl --fail --silent --show-error \
+              --header "Authorization: Bearer $CLOUDFLARE_R2_LOCK_READ_TOKEN" \
+              "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets/$bucket/lock" \
+              > "$bucket-lock.json"
+          done
+
+      - name: Require indefinite locks for every immutable runtime prefix
+        run: |
+          node scripts/assert-r2-lock.mjs "$REPORT_BUCKET-lock.json" \
+            "report-snapshots/sha256/preflight.json" indefinite > report-lock-evidence.json
+          node scripts/assert-r2-lock.mjs "$MANIFEST_BUCKET-lock.json" \
+            "site-manifests/sha256/preflight.json" indefinite > manifest-lock-evidence.json
+          node scripts/assert-r2-lock.mjs "$ARTIFACT_BUCKET-lock.json" \
+            "assets/sha256/preflight" indefinite > asset-lock-evidence.json
+          node scripts/assert-r2-lock.mjs "$ARTIFACT_BUCKET-lock.json" \
+            "artifacts/sha256/preflight.json" indefinite > inventory-lock-evidence.json
+          jq -s \
+            --arg code_sha "$EXACT_CODE_SHA" \
+            '{verified:true,code_sha:$code_sha,checked_at:(now | todateiso8601),rules:.}' \
+            report-lock-evidence.json manifest-lock-evidence.json \
+            asset-lock-evidence.json inventory-lock-evidence.json \
+            > runtime-preflight-evidence.json
+
+      - name: Upload runtime-preflight evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-runtime-preflight-${{ github.event.inputs.code_sha }}
+          path: runtime-preflight-evidence.json
+          retention-days: 14
+          if-no-files-found: error

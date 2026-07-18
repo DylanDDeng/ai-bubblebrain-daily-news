@@ -27,11 +27,10 @@ const dailyHref = isEnglish ? '/en/daily/' : '/daily/';
 const languageHref = alternateHref ?? (isEnglish ? '/' : '/en/');
 const canonicalUrl = new URL(canonicalPath, Astro.site);
 const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
-const todayLabel = new Intl.DateTimeFormat(isEnglish ? 'en-CA' : 'zh-CN', {
-	year: 'numeric',
-	month: '2-digit',
-	day: '2-digit',
-}).format(new Date());
+const indexDate = process.env.SITE_DISPLAY_DATE;
+if (!/^\d{4}-\d{2}-\d{2}$/.test(indexDate ?? '')) {
+	throw new Error('SITE_DISPLAY_DATE must be a deterministic source date');
+}
 const navLinks = isEnglish
 	? [
 			{ href: '/en/daily/', label: 'Daily brief' },
@@ -105,8 +104,8 @@ const navLinks = isEnglish
 				</div>
 				<div class="rail-menu" id="rail-menu">
 					<div class="rail-today">
-						<span>{isEnglish ? 'Today’s index' : '今日索引'}</span>
-						<strong>{todayLabel.replaceAll('/', '-')}</strong>
+						<span>{isEnglish ? 'Latest index' : '最新索引'}</span>
+						<strong>{indexDate}</strong>
 					</div>
 					<nav class="rail-nav" aria-label={isEnglish ? 'Primary navigation' : '主导航'}>
 						{

@@ -1,0 +1,272 @@
+{
+  "schema_version": 11,
+  "captured_at": "2026-07-18T02:20:49Z",
+  "branch": "codex/content-database-v4-1",
+  "base_source_sha": "da3cb67b7c285d6e917935783474e287d0503200",
+  "decision": {
+    "local_implementation": "GO",
+    "production_publication": "NO_GO",
+    "any_production_switch_enabled": false
+  },
+  "database": {
+    "pgtap_files": 3,
+    "content_migrations": 11,
+    "pgtap_tests": 211,
+    "content_security_tests": 105,
+    "migration_second_run_idempotent": true,
+    "plpgsql_functions_checked": 53,
+    "plpgsql_check_findings": 0,
+    "production_topology": {
+      "mode": "shared_project",
+      "project_ref": "znurdobjryrhshzkalup",
+      "owner_approved": true,
+      "remote_content_migrations_applied": 11,
+      "all_seven_capability_switches_false": true,
+      "isolated_project_remains_default": true,
+      "exact_blast_radius_acknowledgement_required": true,
+      "remote_pgtap_blocked_by_local_ipv6_connectivity": true
+    },
+    "editorial_integration": {
+      "passed": true,
+      "missing_and_duplicate_report_dates_rejected": true,
+      "stage_idempotent": true,
+      "finalize_idempotent": true,
+      "base_active_override_links": 0,
+      "editorial_active_override_links": 1
+    },
+    "ingestion_publication_slot": {
+      "deterministic_key": "report_date+batch+content_sha256",
+      "reservation_reused_before_finalize": true,
+      "release_reconciled_after_commit_response_loss": true,
+      "outbox_rows_after_retry": 1,
+      "different_payload_cas_rejected": true
+    },
+    "release_read_isolation": {
+      "unpromoted_public_manifest_report_item_search_denied": true,
+      "authenticated_build_access_preserved": true,
+      "production_verified_public_access_enabled": true
+    },
+    "editorial_removal": {
+      "report_scoped_hide_passed": true,
+      "report_hide_created_global_override": false,
+      "global_suppression_retry_passed": true,
+      "claim_stage_finalize_kill_switches_passed": true
+    },
+    "deployer_alerting": {
+      "dead_letter_alert": true,
+      "ten_minute_actionable_backlog_alert": true
+    },
+    "production_observability": {
+      "deployer_only_snapshot_rpc": true,
+      "unacknowledged_shared_project_and_privileged_role_denied": true,
+      "five_minute_workflow": true,
+      "batch_terminal_deadline_minutes": 10,
+      "current_and_static_identity_endpoints_each": 2,
+      "api_5xx_threshold": 0.01,
+      "cache_and_search_freshness_checked": true,
+      "outbox_and_dead_letter_checked": true,
+      "monitor_results_persisted_immutably": true,
+      "healthy_and_unhealthy_results_persisted": true,
+      "two_day_eight_slot_evaluator_implemented": true,
+      "locked_content_addressed_archive_workflow": true,
+      "real_observation_window_complete": false,
+      "independent_incident_and_reviewer_evidence_required": true,
+      "live_fired_recovered_drill_complete": false
+    },
+    "publication_attempt_history": {
+      "append_only_attempt_numbers": true,
+      "failed_then_succeeded_rows_preserved": true,
+      "late_failure_cannot_downgrade_success": true
+    },
+    "operational_retention": {
+      "audit_quarterly_partitioned": true,
+      "successful_attempt_and_deployed_outbox_days": 180,
+      "failed_dlq_recovery_days_minimum": 365,
+      "runtime_partition_ddl": false
+    },
+    "admin_operations": {
+      "routine_console_rendered": true,
+      "control_console_rendered": true,
+      "browser_database_credentials_exposed": false,
+      "content_inventory": true,
+      "operations_inventory": true,
+      "verifier_diff": true,
+      "verifier_requires_complete_release_identity": true,
+      "verifier_inventory_and_fingerprint_compared_separately": true,
+      "authoritative_edge_evidence_source": "production_broker_pointer_transaction",
+      "owner_attested_retry": true,
+      "same_release_rebuild": true,
+      "routine_mutation_denied": true,
+      "unbound_principal_read_denied": true,
+      "direct_read_rpc_denied": true,
+      "idempotent_and_audited": true
+    },
+    "admin_security": {
+      "attestation_signature_algorithm": "Ed25519",
+      "database_attestation_key_material": "public-only",
+      "audited_dual_key_rotation_implemented": true,
+      "attestation_key_id_replacement_rejected": true,
+      "access_rs256_jwks": true,
+      "issuer_audience_expiry_nbf_iat_checked": true,
+      "routine_and_control_access_audiences_separate": true,
+      "admin_reads_request_attested_and_role_bound": true,
+      "control_independent_totp": true,
+      "authenticated_csrf_session_bootstrap": true,
+      "csrf_cookie_host_only_http_only_secure_strict": true,
+      "mutation_origin_and_double_submit_required": true,
+      "routine_publish_route_absent": true,
+      "routine_publish_rpc_denied": true,
+      "control_publisher_publish_with_totp": true
+    },
+    "recovery_controls": {
+      "database_project_ref_must_match_url": true,
+      "shared_project_explicitly_denied": false,
+      "shared_project_requires_exact_acknowledgement": true,
+      "backup_lock_minimum_days": 30,
+      "audit_lock_minimum_days": 365,
+      "live_lock_prefix_and_duration_checked_before_upload": true,
+      "pitr_and_backup_age_monitor_implemented": true,
+      "dashboard_health_callback_dedicated_hmac": true,
+      "dashboard_stale_after_seconds": 2700,
+      "runtime_indefinite_lock_preflight_implemented": true,
+      "maximum_backup_age_seconds": 3600,
+      "live_monitor_evidence_complete": false
+    }
+  },
+  "historical_import": {
+    "report_count": 2,
+    "item_count": 322,
+    "total_bytes": 884244,
+    "second_import_idempotent": true,
+    "reports": [
+      {
+        "date": "2026-07-16",
+        "byte_length": 815804,
+        "byte_sha256": "e2e89e7d44b155a598ea871a8c87f5ee86dc795e71224f32050a0c4778ecf331"
+      },
+      {
+        "date": "2026-07-17",
+        "byte_length": 68440,
+        "byte_sha256": "63d2681bc45889ad5c62a120e20a5f40c62b5c2ac755983269514f19d0598560"
+      }
+    ]
+  },
+  "tests": {
+    "root_test_files": 36,
+    "root_tests": 468,
+    "astro_test_files": 11,
+    "astro_tests": 65,
+    "wrangler_dry_runs": 8,
+    "workflow_yaml_files": 8,
+    "git_mode_route_contract_records": 623,
+    "pinned_route_contract_records": 625,
+    "xml_endpoints": 27,
+    "failure_matrix_passed": true,
+    "open_candidate_and_merge_commit_mirror_reconcile": true,
+    "dispatch_response_loss_exact_tuple_retry": true,
+    "production_callback_loss_reclaim": true,
+    "shadow_preview_terminal": true,
+    "report_scoped_hide_release": true,
+    "global_suppression_staged_failure_retry": true,
+    "editorial_publish_kill_switches": true,
+    "production_reconcile_totp_and_audit": true,
+    "admin_operations_retry_rebuild_and_audit": true,
+    "audit_export_closed_days_only": true,
+    "strict_access_iat_and_csrf_bootstrap": true,
+    "production_configuration_preflight": true,
+    "immutable_runtime_prefix_lock_preflight": true,
+    "ed25519_attestation_and_rotation": true,
+    "routine_publish_boundary": true,
+    "recovery_health_dashboard_callback": true,
+    "production_observability_monitor": true,
+    "production_observation_window_gate": true,
+    "production_observation_window_locked_archive": true,
+    "r2_lock_and_recovery_health_parsers": true,
+    "one_year_capacity_passed": true
+  },
+  "reproducible_build": {
+    "node_version": "22.17.0",
+    "build_environment_version": "node22.17-astro7-hugo0.147.9-v1",
+    "consecutive_builds_matched": true,
+    "complete_dist_sha256": "110a8ee63a2326112f0aea2005bd469d0d58fa09580a951db1c4ae034f7e818a",
+    "artifact_fingerprint_sha256": "055d97c64da2d55aba16a98e81d925c91728b2340d6d93a9afed88cb45ad55c1",
+    "inventory_sha256_distinct_from_fingerprint": true,
+    "content_addressed_inventory": {
+      "hash_algorithm": "sha256-content-addressed-pages-v1",
+      "sha256": "f95f9a734a4a8a4d69e3a04cd7e3f6aa9e63aaec3d45c3ee6bbebfcc54d1230b",
+      "byte_length": 171554,
+      "object_key": "artifacts/sha256/f95f9a734a4a8a4d69e3a04cd7e3f6aa9e63aaec3d45c3ee6bbebfcc54d1230b.json",
+      "artifact_fingerprint_sha256": "055d97c64da2d55aba16a98e81d925c91728b2340d6d93a9afed88cb45ad55c1",
+      "file_count": 511,
+      "total_asset_bytes": 94018029,
+      "largest_file_bytes": 18334262,
+      "largest_file": "eval-videos/apple-ipad-air-animation.mp4"
+    }
+  },
+  "artifact_upload": {
+    "conditional_write": true,
+    "get_verify_every_object": true,
+    "bounded_concurrency": 8,
+    "whole_site_buffered": false,
+    "collision_fails_closed": true,
+    "pages_missing_asset_flow_tested": true
+  },
+  "production_cache_purge": {
+    "explicit_https_urls_only": true,
+    "runs_after_multi_edge_verification": true,
+    "runs_before_pointer_cas": true,
+    "failure_blocks_commit_and_success_response": true,
+    "production_token_drill_complete": false
+  },
+  "production_convergence": {
+    "maximum_inconsistency_ms": 60000,
+    "configured_bound_minimum_ms": 10000,
+    "configured_bound_maximum_ms": 300000,
+    "window_starts_before_upload": true,
+    "every_probe_bounded": true,
+    "window_exceeded_fails_promotion": true,
+    "last_known_good_restore_required": true,
+    "authoritative_evidence_records_elapsed_and_limit": true,
+    "production_drill_complete": false
+  },
+  "capacity_projection": {
+    "reports": 365,
+    "placements": 73000,
+    "database_bytes": 392400019,
+    "build_wall_time_ms": 59863,
+    "build_peak_rss_bytes": 3457024000,
+    "projected_asset_files": 1393,
+    "projected_asset_bytes": 1083970303,
+    "largest_asset_bytes": 18334262,
+    "static_search_bytes": 8381329,
+    "static_search_days": 6,
+    "report_p95_ms": 11.858,
+    "item_p95_ms": 2.093,
+    "chinese_search_p95_ms": 24.635,
+    "public_rpc_releases_production_verified": true,
+    "status": "passed"
+  },
+  "cloudflare": {
+    "preview_project": "bubble-content-preview",
+    "preview_url": "https://bubble-content-preview.pages.dev/",
+    "production_project": "ai-bubblebrain-daily-news",
+    "r2_object_locks": {
+      "bubble-content-report-snapshots": "indefinite",
+      "bubble-content-site-manifests": "indefinite",
+      "bubble-content-artifacts": "indefinite",
+      "bubble-content-audit": "365_days",
+      "bubble-content-backups": "30_days"
+    }
+  },
+  "blocked_on": [
+    "PITR live monitor evidence and shared-project recovery drill",
+    "real Hyperdrive Access and secret configuration",
+    "real Broker zone ID and least-privilege cache purge permission drill",
+    "production R2 writer negative tests",
+    "four real release Previews and production fault drills",
+    "independent security platform and admin GO reviews",
+    "Phase 5 cutover and Cloudflare Git publisher shutdown",
+    "two complete Asia Shanghai observation days",
+    "production observability fired and recovered alert drill"
+  ]
+}

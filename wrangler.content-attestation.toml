@@ -1,0 +1,13 @@
+name = "bubble-content-identity-attestation"
+main = "workers/content/attestation/index.ts"
+compatibility_date = "2026-07-17"
+workers_dev = false
+
+[vars]
+CF_ACCESS_TEAM_DOMAIN = "https://restless-night-0dd3.cloudflareaccess.com"
+CF_ACCESS_ROUTINE_AUD = "20e067d073ecea1435e5078ac577ce5cdf31e4b1fa19cb976b395dfc9b2185e5"
+CF_ACCESS_CONTROL_AUD = "47182245c06323d869da0304035da2d1177e4ce60589ea6d827d94fc5ccce4c6"
+ATTESTATION_ED25519_KEY_ID = "content-attestation-2026-07-v1"
+
+# This Worker intentionally has no database binding. Set
+# ATTESTATION_ED25519_PRIVATE_JWK and CONTROL_TOTP_SECRET as Worker secrets.

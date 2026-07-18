@@ -20,11 +20,29 @@
     "worker:check": "wrangler deploy --dry-run --outdir .wrangler-dry-run",
     "worker:check:staging": "wrangler deploy --dry-run --config wrangler.staging.toml --outdir .wrangler-dry-run-staging",
     "community:check": "wrangler deploy --dry-run --config wrangler.community.toml --outdir .wrangler-dry-run-community",
-    "admin:check": "wrangler deploy --dry-run --config wrangler.admin.toml --outdir .wrangler-dry-run-admin"
+    "admin:check": "wrangler deploy --dry-run --config wrangler.admin.toml --outdir .wrangler-dry-run-admin",
+    "content:api:check": "wrangler deploy --dry-run --config wrangler.content-api.toml --outdir .wrangler-dry-run-content-api",
+    "content:attestation:check": "wrangler deploy --dry-run --config wrangler.content-attestation.toml --outdir .wrangler-dry-run-content-attestation",
+    "content:deployer:check": "wrangler deploy --dry-run --config wrangler.content-deployer.toml --outdir .wrangler-dry-run-content-deployer",
+    "content:broker:check": "wrangler deploy --dry-run --config wrangler.content-broker.toml --outdir .wrangler-dry-run-content-broker",
+    "content:admin:check": "wrangler deploy --dry-run --config wrangler.content-admin.toml --outdir .wrangler-dry-run-content-admin",
+    "content:control:check": "wrangler deploy --dry-run --config wrangler.content-control.toml --outdir .wrangler-dry-run-content-control",
+    "content:history:plan": "node scripts/import-structured-history.mjs",
+    "content:bootstrap": "node scripts/bootstrap-content-database.mjs",
+    "content:attestation:rotate": "node scripts/rotate-content-attestation-key.mjs",
+    "content:editorial:check": "wrangler deploy --dry-run --config wrangler.content-editorial.toml --outdir .wrangler-dry-run-content-editorial",
+    "content:editorial:test-local": "node scripts/test-content-editorial-local.mjs",
+    "content:failure-matrix:test-local": "node scripts/test-content-failure-matrix-local.mjs",
+    "content:capacity:test-local": "node scripts/test-content-capacity-local.mjs",
+    "content:observability:check": "node scripts/check-content-observability.mjs",
+    "content:observation-window:check": "node scripts/check-content-observation-window.mjs",
+    "content:production:preflight": "node scripts/validate-content-production-config.mjs wrangler"
   },
   "dependencies": {
+    "@noble/hashes": "^2.0.1",
     "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "postgres": "^3.4.7"
   },
   "devDependencies": {
     "fast-xml-parser": "^5.10.0",

@@ -1,0 +1,96 @@
+name: Content Two-Day Observation Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: First Asia/Shanghai report date in the two-day window (YYYY-MM-DD)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-observation-${{ inputs.start_date }}
+  cancel-in-progress: false
+
+jobs:
+  verify-and-archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: content-production-observability
+    env:
+      OBSERVATION_BUCKET: bubble-content-audit
+      CONTENT_OBSERVATION_START_DATE: ${{ inputs.start_date }}
+      CONTENT_OBSERVABILITY_DATABASE_URL: ${{ secrets.CONTENT_OBSERVABILITY_DATABASE_URL }}
+      CONTENT_DATABASE_PROJECT_REF: ${{ vars.CONTENT_DATABASE_PROJECT_REF }}
+      CONTENT_DATABASE_TOPOLOGY: ${{ vars.CONTENT_DATABASE_TOPOLOGY }}
+      CONTENT_SHARED_PROJECT_ACK: ${{ vars.CONTENT_SHARED_PROJECT_ACK }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_AUDIT_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_AUDIT_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_R2_LOCK_READ_TOKEN: ${{ secrets.R2_LOCK_READ_API_TOKEN }}
+      R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate isolated observation archive configuration
+        run: node scripts/validate-content-production-config.mjs workflow-observation-window
+
+      - name: Prove all eight real slots and write deterministic evidence
+        run: |
+          npm run content:observation-window:check -- --evidence-out observation-window.json
+          evidence_sha="$(sha256sum observation-window.json | awk '{print $1}')"
+          evidence_bytes="$(wc -c < observation-window.json | tr -d ' ')"
+          object_key="observation-windows/$CONTENT_OBSERVATION_START_DATE/$evidence_sha.json"
+          printf 'OBSERVATION_EVIDENCE_SHA=%s\nOBSERVATION_EVIDENCE_BYTES=%s\nOBSERVATION_OBJECT_KEY=%s\n' \
+            "$evidence_sha" "$evidence_bytes" "$object_key" >> "$GITHUB_ENV"
+
+      - name: Require a covering 365-day R2 lock rule
+        run: |
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer $CLOUDFLARE_R2_LOCK_READ_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets/$OBSERVATION_BUCKET/lock" \
+            > r2-lock.json
+          node scripts/assert-r2-lock.mjs r2-lock.json "$OBSERVATION_OBJECT_KEY" 31536000 > lock-evidence.json
+
+      - name: Put and re-download locked observation evidence
+        run: |
+          if ! aws s3api head-object --bucket "$OBSERVATION_BUCKET" --key "$OBSERVATION_OBJECT_KEY" --endpoint-url "$R2_ENDPOINT" >/dev/null 2>&1; then
+            if ! aws s3api put-object --bucket "$OBSERVATION_BUCKET" --key "$OBSERVATION_OBJECT_KEY" --body observation-window.json --if-none-match '*' --content-type application/json --endpoint-url "$R2_ENDPOINT" >/dev/null; then
+              aws s3api head-object --bucket "$OBSERVATION_BUCKET" --key "$OBSERVATION_OBJECT_KEY" --endpoint-url "$R2_ENDPOINT" >/dev/null
+            fi
+          fi
+          aws s3 cp "s3://$OBSERVATION_BUCKET/$OBSERVATION_OBJECT_KEY" verified-observation-window.json --endpoint-url "$R2_ENDPOINT" --no-progress
+          test "$(sha256sum verified-observation-window.json | awk '{print $1}')" = "$OBSERVATION_EVIDENCE_SHA"
+          test "$(wc -c < verified-observation-window.json | tr -d ' ')" = "$OBSERVATION_EVIDENCE_BYTES"
+
+      - name: Emit immutable archive receipt
+        run: |
+          jq -s \
+            --arg bucket "$OBSERVATION_BUCKET" \
+            --arg object_key "$OBSERVATION_OBJECT_KEY" \
+            --arg sha256 "$OBSERVATION_EVIDENCE_SHA" \
+            --argjson byte_length "$OBSERVATION_EVIDENCE_BYTES" \
+            '.[0] + {archive:{bucket:$bucket,object_key:$object_key,sha256:$sha256,byte_length:$byte_length,r2_lock:.[1]}}' \
+            observation-window.json lock-evidence.json > observation-window-receipt.json
+
+      - name: Upload short-lived archive receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-observation-window-${{ inputs.start_date }}-${{ github.run_id }}
+          path: observation-window-receipt.json
+          retention-days: 14
+          if-no-files-found: error

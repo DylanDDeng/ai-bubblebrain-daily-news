@@ -1,0 +1,313 @@
+import { openContentDatabase, type ContentSql } from "../shared/db";
+import {
+  attest,
+  csrfSessionResponse,
+  idempotencyKey,
+  readAdminBody,
+  requireAccess,
+  requireMutationGuards,
+  type AdminEnv,
+} from "../shared/admin";
+import { contentConsoleResponse } from "../shared/console";
+
+type Env = AdminEnv & {
+  CONTENT_DB?: { connectionString?: string };
+  CONTENT_DATABASE_URL?: string;
+  DEPLOYER: Fetcher;
+  PREVIEW_DISPATCH_SECRET: string;
+};
+
+type JsonRecord = Record<string, unknown>;
+const UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
+async function result(
+  query: PromiseLike<readonly JsonRecord[]>,
+): Promise<unknown> {
+  const rows = await query;
+  return rows[0]?.result ?? null;
+}
+
+function int(value: string | null, fallback: number): number {
+  const parsed = value === null ? fallback : Number(value);
+  if (!Number.isSafeInteger(parsed)) throw new Error("invalid_request");
+  return parsed;
+}
+
+async function authorizedRead(
+  request: Request,
+  env: Env,
+  sql: ContentSql,
+  route: string,
+  arguments_: JsonRecord,
+): Promise<Response> {
+  const context = { route, arguments: arguments_ };
+  const proof = await attest(
+    request,
+    env,
+    "content-routine",
+    "admin.read",
+    context,
+  );
+  try {
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.read_admin_v1(
+        'content-routine', ${route}, ${sql.json(arguments_)},
+        ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+    );
+  } catch (error) {
+    if ((error as { code?: string })?.code === "42501") {
+      throw new Error("forbidden");
+    }
+    throw error;
+  }
+}
+
+async function readRoute(
+  request: Request,
+  env: Env,
+  url: URL,
+  sql: ContentSql,
+): Promise<Response | null> {
+  if (url.pathname === "/v1/dashboard") {
+    return authorizedRead(request, env, sql, url.pathname, {});
+  }
+  if (url.pathname === "/v1/reports") {
+    const before = url.searchParams.get("before");
+    if (before && !/^\d{4}-\d{2}-\d{2}$/.test(before))
+      throw new Error("invalid_request");
+    return authorizedRead(request, env, sql, url.pathname, {
+      before,
+      limit: int(url.searchParams.get("limit"), 50),
+    });
+  }
+  if (url.pathname === "/v1/releases") {
+    return authorizedRead(request, env, sql, url.pathname, {
+      limit: int(url.searchParams.get("limit"), 50),
+    });
+  }
+  if (url.pathname === "/v1/content") {
+    const after = url.searchParams.get("after");
+    if (after && !/^n_[a-f0-9]{64}$/.test(after))
+      throw new Error("invalid_request");
+    return authorizedRead(request, env, sql, url.pathname, {
+      after,
+      limit: int(url.searchParams.get("limit"), 50),
+    });
+  }
+  if (url.pathname === "/v1/drafts") {
+    return authorizedRead(request, env, sql, url.pathname, {
+      limit: int(url.searchParams.get("limit"), 50),
+    });
+  }
+  if (url.pathname === "/v1/operations") {
+    return authorizedRead(request, env, sql, url.pathname, {
+      limit: int(url.searchParams.get("limit"), 50),
+    });
+  }
+  if (url.pathname === "/v1/operations/verifier-diff") {
+    const releaseId = url.searchParams.get("site_release_id");
+    if (releaseId && !UUID.test(releaseId)) throw new Error("invalid_request");
+    return authorizedRead(request, env, sql, url.pathname, {
+      site_release_id: releaseId,
+    });
+  }
+  if (url.pathname === "/v1/audit") {
+    const before = url.searchParams.get("before");
+    return authorizedRead(request, env, sql, url.pathname, {
+      before: before ? int(before, 0) : null,
+      limit: int(url.searchParams.get("limit"), 100),
+    });
+  }
+  return null;
+}
+
+async function mutation(
+  request: Request,
+  env: Env,
+  sql: ContentSql,
+  url: URL,
+): Promise<Response | null> {
+  requireMutationGuards(request, env);
+  const body = await readAdminBody(request);
+  const key = idempotencyKey(request);
+  let match: RegExpExecArray | null;
+  if (url.pathname === "/v1/drafts") {
+    if (!UUID.test(String(body.base_site_release_id)))
+      throw new Error("invalid_request");
+    const proof = await attest(
+      request,
+      env,
+      "content-routine",
+      "draft.create",
+      body,
+    );
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.create_editorial_draft_v1(
+        ${String(body.base_site_release_id)}::uuid, ${key}::uuid,
+        ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+      201,
+    );
+  }
+  if ((match = /^\/v1\/drafts\/([0-9a-f-]{36})\/items$/i.exec(url.pathname))) {
+    if (
+      !UUID.test(match[1]) ||
+      typeof body.item_id !== "string" ||
+      !UUID.test(String(body.base_revision_id)) ||
+      (body.base_override_id !== null &&
+        body.base_override_id !== undefined &&
+        !UUID.test(String(body.base_override_id))) ||
+      !body.patch ||
+      typeof body.patch !== "object" ||
+      Array.isArray(body.patch) ||
+      !Number.isSafeInteger(body.expected_row_version) ||
+      typeof body.reason !== "string"
+    ) {
+      throw new Error("invalid_request");
+    }
+    const proof = await attest(
+      request,
+      env,
+      "content-routine",
+      "draft.update",
+      body,
+    );
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.upsert_editorial_draft_item_v1(
+        ${match[1]}::uuid, ${String(body.item_id)}, ${String(body.base_revision_id)}::uuid,
+        ${body.base_override_id ? String(body.base_override_id) : null}::uuid,
+        ${sql.json(body.patch as JsonRecord)}, ${Number(body.expected_row_version)}, ${String(body.reason)},
+        ${key}::uuid, ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+    );
+  }
+  if ((match = /^\/v1\/drafts\/([0-9a-f-]{36})\/rebase$/i.exec(url.pathname))) {
+    if (
+      !UUID.test(match[1]) ||
+      !UUID.test(String(body.new_base_site_release_id)) ||
+      !Number.isSafeInteger(body.expected_row_version)
+    )
+      throw new Error("invalid_request");
+    const proof = await attest(
+      request,
+      env,
+      "content-routine",
+      "draft.rebase",
+      body,
+    );
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.rebase_editorial_draft_v1(
+        ${match[1]}::uuid, ${String(body.new_base_site_release_id)}::uuid,
+        ${Number(body.expected_row_version)}, ${key}::uuid,
+        ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+    );
+  }
+  if (
+    (match = /^\/v1\/drafts\/([0-9a-f-]{36})\/preview$/i.exec(url.pathname))
+  ) {
+    if (
+      !UUID.test(match[1]) ||
+      !Number.isSafeInteger(body.expected_row_version)
+    )
+      throw new Error("invalid_request");
+    const proof = await attest(
+      request,
+      env,
+      "content-routine",
+      "preview.build",
+      body,
+    );
+    const preview = (await result(sql<JsonRecord[]>`
+      select private.request_preview_build_v1(
+        ${match[1]}::uuid, ${Number(body.expected_row_version)}, ${key}::uuid,
+        ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `)) as JsonRecord;
+    const dispatched = await env.DEPLOYER.fetch(
+      "https://deployer.internal/internal/preview-dispatch",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Preview-Dispatch-Secret": env.PREVIEW_DISPATCH_SECRET,
+        },
+        body: JSON.stringify({
+          draft_id: preview.draft_id,
+          preview_sha256: preview.preview_sha256,
+        }),
+      },
+    );
+    if (!dispatched.ok) throw new Error("preview_dispatch_failed");
+    return json(preview, 202);
+  }
+  return null;
+}
+
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    try {
+      await requireAccess(request, env);
+    } catch {
+      return json({ error: "unauthorized" }, 401);
+    }
+    const url = new URL(request.url);
+    if (request.method === "GET" && url.pathname === "/") {
+      return contentConsoleResponse("routine");
+    }
+    if (request.method === "GET" && url.pathname === "/v1/session") {
+      return csrfSessionResponse();
+    }
+    const sql = openContentDatabase(env, "content-routine-admin");
+    try {
+      const response =
+        request.method === "GET"
+          ? await readRoute(request, env, url, sql)
+          : request.method === "POST"
+            ? await mutation(request, env, sql, url)
+            : json({ error: "method_not_allowed" }, 405);
+      return response || json({ error: "not_found" }, 404);
+    } catch (error) {
+      const code =
+        error instanceof Error ? error.message : "service_unavailable";
+      if (
+        [
+          "invalid_request",
+          "invalid_idempotency_key",
+          "invalid_origin",
+          "csrf_rejected",
+        ].includes(code)
+      ) {
+        return json({ error: code }, 400);
+      }
+      if (code === "step_up_required") return json({ error: code }, 403);
+      if (code === "forbidden") return json({ error: code }, 403);
+      console.error("[ContentAdmin] request failed", {
+        errorType: error instanceof Error ? error.name : "Error",
+      });
+      return json({ error: "service_unavailable" }, 503);
+    } finally {
+      await sql.end({ timeout: 2 });
+    }
+  },
+};

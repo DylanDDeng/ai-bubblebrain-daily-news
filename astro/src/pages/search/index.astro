@@ -6,12 +6,18 @@ import { buildKnowledgeSearchIndex } from '../../lib/searchIndex';
 import '../../styles/knowledge.css';
 
 const index = await buildKnowledgeSearchIndex();
+const contentApiOrigin = process.env.PUBLIC_CONTENT_API_ORIGIN ?? '';
 const topics = activeTaxonomyRecords(knowledgeTaxonomy.topics);
 const entities = activeTaxonomyRecords(knowledgeTaxonomy.entities);
 ---
 
 <BaseLayout title="搜索 · Bubble's Brain" description="按新闻条目搜索资讯日报">
-	<section class="knowledge-shell knowledge-search" data-knowledge-search>
+	<section
+		class="knowledge-shell knowledge-search"
+		data-knowledge-search
+		data-content-release-id={index.site_release_id ?? undefined}
+		data-content-api-origin={index.site_release_id ? contentApiOrigin : undefined}
+	>
 		<header class="knowledge-heading knowledge-search-heading">
 			<div>
 				<p class="knowledge-kicker">SEARCH THE LEDGER · 新闻级索引</p>
@@ -68,6 +74,7 @@ const entities = activeTaxonomyRecords(knowledgeTaxonomy.entities);
 
 		<div class="knowledge-search-status" aria-live="polite">
 			<span><strong data-search-result-count>{index.item_count}</strong> 条结果</span>
+			<span data-search-error hidden></span>
 			<noscript>JavaScript 关闭时展示完整索引；搜索参数仍可复制分享。</noscript>
 		</div>
 

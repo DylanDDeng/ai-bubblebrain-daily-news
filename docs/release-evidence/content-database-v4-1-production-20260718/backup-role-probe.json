@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "kind": "content-backup-role-production-probe",
+  "project_ref": "znurdobjryrhshzkalup",
+  "database_role": "content_backup",
+  "migration_second_run": "passed",
+  "selectable_content_tables": 54,
+  "mutable_private_tables": 0,
+  "community_private_tables_readable": false,
+  "github_environment": "content-backup",
+  "production_switches_enabled": false
+}

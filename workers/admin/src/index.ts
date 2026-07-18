@@ -12,13 +12,17 @@ export interface AdminEnv {
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ACCESS_JWKS_TTL_MS = 5 * 60 * 1000;
+const ACCESS_CLOCK_SKEW_SECONDS = 60;
 
-interface AccessClaims {
+export interface AccessClaims {
   aud?: unknown;
   email?: unknown;
   exp?: unknown;
   iss?: unknown;
   nbf?: unknown;
+  sub?: unknown;
+  iat?: unknown;
+  amr?: unknown;
 }
 
 interface CachedJwks {
@@ -101,7 +105,7 @@ function audienceMatches(value: unknown, expected: string): boolean {
   return Array.isArray(value) && value.some((entry) => entry === expected);
 }
 
-async function verifyAccessJwt(
+export async function verifyAccessJwt(
   token: string,
   env: AdminEnv,
 ): Promise<AccessClaims> {
@@ -151,6 +155,10 @@ async function verifyAccessJwt(
     typeof claims.exp !== "number" ||
     !Number.isSafeInteger(claims.exp) ||
     claims.exp <= now ||
+    typeof claims.iat !== "number" ||
+    !Number.isSafeInteger(claims.iat) ||
+    claims.iat > now + ACCESS_CLOCK_SKEW_SECONDS ||
+    claims.iat >= claims.exp ||
     (claims.nbf !== undefined &&
       (typeof claims.nbf !== "number" ||
         !Number.isSafeInteger(claims.nbf) ||

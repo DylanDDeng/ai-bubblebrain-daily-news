@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "content-cloudflare-deployment-source-probe",
+  "checked_at": "2026-07-18T04:10:36Z",
+  "account_id": "1967d844a7f75cc7ec6120b750a5cc91",
+  "workers": {
+    "bubble-content-production-broker": {
+      "deployed": true,
+      "latest_deployment_id": "7fa3f433-dea0-4052-8d9a-bdb65b8cedad",
+      "latest_version_id": "92edb25d-d004-48bc-a9c9-9e13c9b9aff3",
+      "traffic_percentage": 100
+    },
+    "bubble-content-deployer": {
+      "deployed": true,
+      "latest_deployment_id": "97f3244a-f2e1-4677-b2cf-293b6466db0a",
+      "latest_version_id": "c433a547-e211-49e3-a761-fb2adc32a2ea",
+      "traffic_percentage": 100
+    },
+    "bubble-content-api": {
+      "deployed": true,
+      "latest_deployment_id": "e31991aa-8cb1-4656-aac9-c5e385b91063",
+      "latest_version_id": "81ad03d3-7d4f-4857-8b2a-0f83575db836",
+      "traffic_percentage": 100
+    },
+    "bubble-content-control": {
+      "deployed": true,
+      "latest_deployment_id": "f2e49245-1d50-42e4-aa0e-67c3e33a3b40",
+      "latest_version_id": "787d321a-e199-4058-bd67-3896995d7291",
+      "traffic_percentage": 100
+    },
+    "bubble-content-admin": {
+      "deployed": true,
+      "latest_deployment_id": "e12f0e7b-5a82-4e7a-8ba3-5d5cde7f1c3b",
+      "latest_version_id": "8f67415b-f162-4a6a-bfd4-625bfe63f652",
+      "traffic_percentage": 100
+    },
+    "bubble-content-attestation": {
+      "deployed": true,
+      "latest_deployment_id": "ed0c681c-217b-450e-b9c2-e4a9c5a4bac7",
+      "latest_version_id": "8044b6e5-026d-49a4-9754-ca27526390e2",
+      "traffic_percentage": 100
+    }
+  },
+  "pages_projects": {
+    "ai-bubblebrain-daily-news": {
+      "production": true,
+      "git_provider_connected": true,
+      "cutover_gate_closed": false
+    },
+    "bubble-content-preview": {
+      "production": false,
+      "git_provider_connected": false
+    }
+  },
+  "production_switches_enabled": false
+}
