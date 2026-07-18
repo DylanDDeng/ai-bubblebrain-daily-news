@@ -88,7 +88,9 @@ async function exactJson(
 }
 
 if (!releaseId) {
-	runRenderer({ SITE_DISPLAY_DATE: await latestStructuredDate(resolve(repoRoot, 'data', 'daily')) });
+	runRenderer({
+		SITE_DISPLAY_DATE: await latestStructuredDate(resolve(repoRoot, 'data', 'daily')),
+	});
 	process.exit(0);
 }
 assertPinnedToolchain(process.version, readNpmVersion());
@@ -316,7 +318,11 @@ await writeFile(
 	resolve(workspace, 'build-input.json'),
 	`${JSON.stringify(
 		{
-			code_sha: process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || null,
+			code_sha:
+				process.env.EXACT_CODE_SHA ||
+				process.env.CF_PAGES_COMMIT_SHA ||
+				process.env.GITHUB_SHA ||
+				null,
 			site_release_id: releaseId,
 			site_release_sequence: manifest.site_release_sequence,
 			content_sha256: manifest.content_root_sha256,
