@@ -521,10 +521,13 @@ async function fetchContentAddressedAsset(
     throw new Error("Content-addressed artifact asset is unavailable");
   }
   const bytes = new Uint8Array(await object.arrayBuffer());
-  if (
-    (await sha256(bytes)) !== asset.sha256 ||
-    pagesAssetHash({ path: asset.path, bytes }) !== asset.pages_hash
-  ) {
+  // The immutable inventory is already verified against its database-bound
+  // fingerprint before any asset is loaded. Recomputing the Pages BLAKE3 key
+  // here base64-encodes every missing asset and can exhaust Worker CPU for a
+  // media-heavy release. The content SHA is sufficient to prove that these
+  // bytes are the exact bytes named by the verified inventory; Pages still
+  // receives the inventory's precomputed pages_hash as the upload key.
+  if ((await sha256(bytes)) !== asset.sha256) {
     throw new Error("Content-addressed artifact asset hash mismatch");
   }
   return bytes;
