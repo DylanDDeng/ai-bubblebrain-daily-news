@@ -76,6 +76,46 @@ async function authorizedRead(
   }
 }
 
+async function authorizedHighlightRead(
+  request: Request,
+  env: Env,
+  sql: ContentSql,
+  arguments_: JsonRecord,
+): Promise<Response> {
+  const context = { route: "/v1/highlights", arguments: arguments_ };
+  const proof = await attest(
+    request,
+    env,
+    "content-routine",
+    "admin.read",
+    context,
+  );
+  try {
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.read_admin_highlights_v1(
+        ${sql.json(arguments_)}, ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+    );
+  } catch (error) {
+    if ((error as { code?: string })?.code === "42501") {
+      throw new Error("forbidden");
+    }
+    throw error;
+  }
+}
+
+function validHttpsUrl(value: unknown, optional = false): boolean {
+  if ((value === null || value === "") && optional) return true;
+  if (typeof value !== "string") return false;
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 async function readRoute(
   request: Request,
   env: Env,
@@ -107,6 +147,13 @@ async function readRoute(
       after,
       limit: int(url.searchParams.get("limit"), 50),
     });
+  }
+  if (url.pathname === "/v1/highlights") {
+    const locale = url.searchParams.get("locale") || "zh-CN";
+    const limit = int(url.searchParams.get("limit"), 100);
+    if (!["zh-CN", "en"].includes(locale) || limit < 1 || limit > 200)
+      throw new Error("invalid_request");
+    return authorizedHighlightRead(request, env, sql, { locale, limit });
   }
   if (url.pathname === "/v1/drafts") {
     return authorizedRead(request, env, sql, url.pathname, {
@@ -145,6 +192,46 @@ async function mutation(
   const body = await readAdminBody(request);
   const key = idempotencyKey(request);
   let match: RegExpExecArray | null;
+  if (url.pathname === "/v1/highlights") {
+    if (
+      !["zh-CN", "en"].includes(String(body.locale)) ||
+      typeof body.title !== "string" ||
+      body.title.trim().length < 1 ||
+      body.title.trim().length > 300 ||
+      (body.description !== undefined &&
+        typeof body.description !== "string") ||
+      !validHttpsUrl(body.source_url) ||
+      !validHttpsUrl(body.cover_url, true) ||
+      !Array.isArray(body.tags) ||
+      body.tags.length > 20 ||
+      body.tags.some(
+        (tag) => typeof tag !== "string" || !tag.trim() || tag.length > 64,
+      ) ||
+      !["draft", "published"].includes(String(body.status)) ||
+      typeof body.reason !== "string" ||
+      body.reason.trim().length < 4
+    ) {
+      throw new Error("invalid_request");
+    }
+    const proof = await attest(
+      request,
+      env,
+      "content-routine",
+      "highlight.create",
+      body,
+    );
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.create_highlight_v1(
+        ${String(body.locale)}, ${body.title.trim()}, ${String(body.description || "")},
+        ${String(body.source_url)}, ${body.cover_url ? String(body.cover_url) : null},
+        ${body.tags as string[]}, ${String(body.status)}, ${body.reason.trim()},
+        ${key}::uuid, ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+      201,
+    );
+  }
   if (url.pathname === "/v1/drafts") {
     if (!UUID.test(String(body.base_site_release_id)))
       throw new Error("invalid_request");

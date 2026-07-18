@@ -156,7 +156,15 @@ const threadId =
 >
 	{
 		record.isIndex ? (
-			<section class="legacy-shell directory-page" data-directory-page={directoryKind ?? undefined}>
+			<section
+				class="legacy-shell directory-page"
+				data-directory-page={directoryKind ?? undefined}
+				data-library-api={
+					directoryKind === 'highlights'
+						? `https://content-api.bubblenews.today/v1/highlights?locale=${record.locale}&limit=200`
+						: undefined
+				}
+			>
 				<header class="directory-hero">
 					<div>
 						<p class="page-kicker">{label.kicker}</p>
@@ -171,7 +179,7 @@ const threadId =
 					</div>
 					<p class="directory-count">
 						<>
-							<strong>{directoryItems.length || children.length}</strong>
+							<strong data-directory-count>{directoryItems.length || children.length}</strong>
 							<span>{isEnglish ? 'records' : '条记录'}</span>
 						</>
 					</p>
