@@ -106,6 +106,36 @@ async function authorizedHighlightRead(
   }
 }
 
+async function authorizedLibraryRead(
+  request: Request,
+  env: Env,
+  sql: ContentSql,
+  route: "/v1/prompts" | "/v1/model-evals",
+  arguments_: JsonRecord,
+): Promise<Response> {
+  const context = { route, arguments: arguments_ };
+  const proof = await attest(
+    request,
+    env,
+    "content-routine",
+    "admin.read",
+    context,
+  );
+  try {
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.read_admin_library_v1(
+        ${sql.json(arguments_)}, ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+    );
+  } catch (error) {
+    if ((error as { code?: string })?.code === "42501")
+      throw new Error("forbidden");
+    throw error;
+  }
+}
+
 function validHttpsUrl(value: unknown, optional = false): boolean {
   if ((value === null || value === "") && optional) return true;
   if (typeof value !== "string") return false;
@@ -114,6 +144,18 @@ function validHttpsUrl(value: unknown, optional = false): boolean {
   } catch {
     return false;
   }
+}
+
+function validIsoDate(value: unknown): boolean {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value))
+    return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  return (
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month - 1 &&
+    parsed.getUTCDate() === day
+  );
 }
 
 async function readRoute(
@@ -154,6 +196,28 @@ async function readRoute(
     if (!["zh-CN", "en"].includes(locale) || limit < 1 || limit > 200)
       throw new Error("invalid_request");
     return authorizedHighlightRead(request, env, sql, { locale, limit });
+  }
+  if (url.pathname === "/v1/prompts") {
+    const locale = url.searchParams.get("locale") || "zh-CN";
+    const limit = int(url.searchParams.get("limit"), 100);
+    if (!["zh-CN", "en"].includes(locale) || limit < 1 || limit > 200)
+      throw new Error("invalid_request");
+    return authorizedLibraryRead(request, env, sql, "/v1/prompts", {
+      kind: "prompt",
+      locale,
+      limit,
+    });
+  }
+  if (url.pathname === "/v1/model-evals") {
+    const locale = url.searchParams.get("locale") || "zh-CN";
+    const limit = int(url.searchParams.get("limit"), 100);
+    if (!["zh-CN", "en"].includes(locale) || limit < 1 || limit > 200)
+      throw new Error("invalid_request");
+    return authorizedLibraryRead(request, env, sql, "/v1/model-evals", {
+      kind: "model_eval",
+      locale,
+      limit,
+    });
   }
   if (url.pathname === "/v1/drafts") {
     return authorizedRead(request, env, sql, url.pathname, {
@@ -227,6 +291,100 @@ async function mutation(
         ${String(body.source_url)}, ${body.cover_url ? String(body.cover_url) : null},
         ${body.tags as string[]}, ${String(body.status)}, ${body.reason.trim()},
         ${key}::uuid, ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+      201,
+    );
+  }
+  if (url.pathname === "/v1/prompts") {
+    if (
+      !["zh-CN", "en"].includes(String(body.locale)) ||
+      typeof body.slug !== "string" ||
+      !/^[a-z0-9][a-z0-9-]{0,119}$/.test(body.slug) ||
+      typeof body.title !== "string" ||
+      !body.title.trim() ||
+      body.title.length > 300 ||
+      (body.description !== undefined &&
+        typeof body.description !== "string") ||
+      (body.model !== undefined && typeof body.model !== "string") ||
+      typeof body.body_markdown !== "string" ||
+      body.body_markdown.length < 1 ||
+      body.body_markdown.length > 100000 ||
+      (body.date !== null &&
+        body.date !== undefined &&
+        !validIsoDate(body.date)) ||
+      !Array.isArray(body.tags) ||
+      body.tags.length > 20 ||
+      body.tags.some(
+        (tag) => typeof tag !== "string" || !tag.trim() || tag.length > 64,
+      ) ||
+      !["draft", "published"].includes(String(body.status)) ||
+      typeof body.reason !== "string" ||
+      body.reason.trim().length < 4
+    )
+      throw new Error("invalid_request");
+    const proof = await attest(
+      request,
+      env,
+      "content-routine",
+      "prompt.create",
+      body,
+    );
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.create_prompt_v1(
+        ${String(body.locale)}, ${body.slug}, ${body.title.trim()},
+        ${String(body.description || "")}, ${String(body.model || "")},
+        ${body.tags as string[]}, ${body.body_markdown},
+        ${body.date ? String(body.date) : null}::date, ${String(body.status)},
+        ${body.reason.trim()}, ${key}::uuid, ${sql.json(proof.assertion)}, ${proof.bodySha256}
+      ) as result
+    `),
+      201,
+    );
+  }
+  if (url.pathname === "/v1/model-evals") {
+    if (
+      !["zh-CN", "en"].includes(String(body.locale)) ||
+      typeof body.external_id !== "string" ||
+      !body.external_id.trim() ||
+      body.external_id.length > 200 ||
+      typeof body.name !== "string" ||
+      !body.name.trim() ||
+      body.name.length > 300 ||
+      typeof body.company !== "string" ||
+      !body.company.trim() ||
+      body.company.length > 120 ||
+      !validHttpsUrl(body.logo_url, true) ||
+      typeof body.release_month !== "string" ||
+      !/^20\d{2}-(0[1-9]|1[0-2])$/.test(body.release_month) ||
+      (body.description !== undefined &&
+        typeof body.description !== "string") ||
+      !Array.isArray(body.tags) ||
+      body.tags.length > 20 ||
+      body.tags.some(
+        (tag) => typeof tag !== "string" || !tag.trim() || tag.length > 64,
+      ) ||
+      !["draft", "published"].includes(String(body.status)) ||
+      typeof body.reason !== "string" ||
+      body.reason.trim().length < 4
+    )
+      throw new Error("invalid_request");
+    const proof = await attest(
+      request,
+      env,
+      "content-routine",
+      "model_eval.create",
+      body,
+    );
+    return json(
+      await result(sql<JsonRecord[]>`
+      select private.create_model_eval_v1(
+        ${String(body.locale)}, ${body.external_id.trim()}, ${body.name.trim()},
+        ${body.company.trim()}, ${body.logo_url ? String(body.logo_url) : null},
+        ${body.release_month}, ${String(body.description || "")}, ${body.tags as string[]},
+        ${String(body.status)}, ${body.reason.trim()}, ${key}::uuid,
+        ${sql.json(proof.assertion)}, ${proof.bodySha256}
       ) as result
     `),
       201,

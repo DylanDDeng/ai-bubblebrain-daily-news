@@ -18,7 +18,10 @@ type RpcName =
   | "report"
   | "item"
   | "search"
-  | "highlights";
+  | "highlights"
+  | "prompts"
+  | "prompt"
+  | "modelEvals";
 type RpcCaller = (
   name: RpcName,
   args: Record<string, unknown>,
@@ -130,10 +133,29 @@ async function databaseCaller(
           ${args.beforeDate ? String(args.beforeDate) : null}::date
         ) as result
       `;
-    } else {
+    } else if (name === "highlights") {
       rows = await sql<Record<string, unknown>[]>`
         select private.list_public_highlights_v1(
           ${String(args.locale)}, ${Number(args.limit)}
+        ) as result
+      `;
+    } else if (name === "prompts") {
+      rows = await sql<Record<string, unknown>[]>`
+        select private.list_public_prompts_v1(
+          ${String(args.locale)}, ${Number(args.limit)}
+        ) as result
+      `;
+    } else if (name === "prompt") {
+      rows = await sql<Record<string, unknown>[]>`
+        select private.get_public_prompt_v1(
+          ${String(args.locale)}, ${String(args.externalId)}
+        ) as result
+      `;
+    } else {
+      rows = await sql<Record<string, unknown>[]>`
+        select private.list_public_model_evals_v1(
+          ${String(args.locale)}, ${args.year === null ? null : Number(args.year)},
+          ${Number(args.limit)}
         ) as result
       `;
     }
@@ -185,6 +207,57 @@ export async function handleContentApiRequest(
         return json({ error: "invalid_request" }, 400);
       }
       const result = await call("highlights", { locale, limit });
+      return result
+        ? currentLibraryJson(result)
+        : json({ error: "not_found" }, 404, { "Cache-Control": "no-store" });
+    }
+
+    if (url.pathname === "/v1/prompts") {
+      const locale = url.searchParams.get("locale") || "zh-CN";
+      const limit = Number(url.searchParams.get("limit") || "100");
+      if (
+        !["zh-CN", "en"].includes(locale) ||
+        !Number.isInteger(limit) ||
+        limit < 1 ||
+        limit > 200
+      ) {
+        return json({ error: "invalid_request" }, 400);
+      }
+      const result = await call("prompts", { locale, limit });
+      return result
+        ? currentLibraryJson(result)
+        : json({ error: "not_found" }, 404, { "Cache-Control": "no-store" });
+    }
+
+    const prompt = url.pathname.match(
+      /^\/v1\/prompts\/(prompt-[a-z0-9][a-z0-9-]{0,119})$/,
+    );
+    if (prompt) {
+      const locale = url.searchParams.get("locale") || "zh-CN";
+      if (!["zh-CN", "en"].includes(locale))
+        return json({ error: "invalid_request" }, 400);
+      const result = await call("prompt", { locale, externalId: prompt[1] });
+      return result
+        ? currentLibraryJson(result)
+        : json({ error: "not_found" }, 404, { "Cache-Control": "no-store" });
+    }
+
+    if (url.pathname === "/v1/model-evals") {
+      const locale = url.searchParams.get("locale") || "zh-CN";
+      const yearValue = url.searchParams.get("year");
+      const year = yearValue === null ? null : Number(yearValue);
+      const limit = Number(url.searchParams.get("limit") || "100");
+      if (
+        !["zh-CN", "en"].includes(locale) ||
+        (year !== null &&
+          (!Number.isInteger(year) || year < 2000 || year > 2100)) ||
+        !Number.isInteger(limit) ||
+        limit < 1 ||
+        limit > 200
+      ) {
+        return json({ error: "invalid_request" }, 400);
+      }
+      const result = await call("modelEvals", { locale, year, limit });
       return result
         ? currentLibraryJson(result)
         : json({ error: "not_found" }, 404, { "Cache-Control": "no-store" });

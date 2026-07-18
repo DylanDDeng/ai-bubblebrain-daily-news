@@ -1,16 +1,18 @@
 (() => {
   const root = document.querySelector("[data-directory-page]");
-  if (!root) return;
+  if (!(root instanceof HTMLElement)) return;
   const input = root.querySelector("[data-directory-query]");
   const empty = root.querySelector("[data-directory-empty]");
+  const list = root.querySelector("[data-directory-list]");
+  const count = root.querySelector("[data-directory-count]");
+  const kind = root.dataset.directoryPage;
   if (!(input instanceof HTMLInputElement)) return;
+
+  const locale = document.documentElement.lang || "zh-CN";
   const apply = () => {
-    const query = input.value
-      .trim()
-      .toLocaleLowerCase(document.documentElement.lang || "zh-CN");
+    const query = input.value.trim().toLocaleLowerCase(locale);
     let visible = 0;
-    const items = Array.from(root.querySelectorAll("[data-directory-item]"));
-    for (const item of items) {
+    for (const item of root.querySelectorAll("[data-directory-item]")) {
       const match =
         !query || (item.getAttribute("data-search") || "").includes(query);
       item.hidden = !match;
@@ -20,11 +22,10 @@
   };
   input.addEventListener("input", apply);
 
-  const api = root.getAttribute("data-library-api");
-  const list = root.querySelector("[data-directory-list]");
-  const count = root.querySelector("[data-directory-count]");
+  const api = root.dataset.libraryApi;
   if (!api || !(list instanceof HTMLElement)) return;
 
+  const text = (value) => (typeof value === "string" ? value : "");
   const safeHref = (value) => {
     if (typeof value !== "string" || !value) return null;
     if (value.startsWith("/")) return value;
@@ -35,77 +36,121 @@
       return null;
     }
   };
-  const renderHighlights = (records) => {
+  const safeTags = (value) =>
+    Array.isArray(value)
+      ? value.filter((tag) => typeof tag === "string" && tag)
+      : [];
+
+  const addImage = (article, value, contain = false) => {
+    const imageUrl = safeHref(value);
+    if (!imageUrl) return;
+    const image = document.createElement("img");
+    image.src = imageUrl;
+    image.alt = "";
+    image.loading = "lazy";
+    image.referrerPolicy = "no-referrer";
+    if (contain) image.style.objectFit = "contain";
+    article.append(image);
+  };
+
+  const addHeading = (body, title, href) => {
+    const heading = document.createElement("h2");
+    const safe = safeHref(href);
+    if (safe) {
+      const anchor = document.createElement("a");
+      anchor.href = safe;
+      anchor.textContent = title;
+      if (safe.startsWith("https://")) {
+        anchor.target = "_blank";
+        anchor.rel = "noopener noreferrer";
+      }
+      heading.append(anchor);
+    } else {
+      heading.textContent = title;
+    }
+    body.append(heading);
+  };
+
+  const renderRecord = (record) => {
+    if (!record || typeof record !== "object") return null;
+    const title =
+      kind === "model-evals" ? text(record.name) : text(record.title);
+    if (!title) return null;
+    const tags = safeTags(record.tags);
+    const description = text(record.description);
+    const article = document.createElement("article");
+    article.dataset.directoryItem = "";
+
+    let meta = "";
+    let href = null;
+    if (kind === "highlights") {
+      meta = record.kind === "highlight_article" ? "ARTICLE" : "BOOKMARK";
+      href = safeHref(record.detailUrl) || safeHref(record.originalUrl);
+      addImage(article, record.thumb);
+    } else if (kind === "prompts") {
+      meta = [text(record.model), text(record.date)]
+        .filter(Boolean)
+        .join(" · ");
+      href = safeHref(record.detailUrl);
+    } else if (kind === "model-evals") {
+      meta = [text(record.company), text(record.releaseDate)]
+        .filter(Boolean)
+        .join(" · ");
+      addImage(article, record.logo, true);
+    } else {
+      return null;
+    }
+
+    article.dataset.search = [title, description, meta, ...tags]
+      .join(" ")
+      .toLocaleLowerCase(locale);
+    const body = document.createElement("div");
+    const metaNode = document.createElement("p");
+    metaNode.className = "directory-item-meta";
+    metaNode.textContent = meta;
+    body.append(metaNode);
+    addHeading(body, title, href);
+    if (description) {
+      const detail = document.createElement("p");
+      detail.textContent = description;
+      body.append(detail);
+    }
+    if (tags.length) {
+      const tagList = document.createElement("ul");
+      for (const tag of tags) {
+        const item = document.createElement("li");
+        item.textContent = tag;
+        tagList.append(item);
+      }
+      body.append(tagList);
+    }
+    article.append(body);
+    return article;
+  };
+
+  const render = (records) => {
     const fragment = document.createDocumentFragment();
+    let rendered = 0;
     for (const record of records) {
-      if (!record || typeof record.title !== "string") continue;
-      const article = document.createElement("article");
-      article.dataset.directoryItem = "";
-      const tags = Array.isArray(record.tags)
-        ? record.tags.filter((tag) => typeof tag === "string")
-        : [];
-      article.dataset.search = [record.title, record.description || "", ...tags]
-        .join(" ")
-        .toLocaleLowerCase(document.documentElement.lang || "zh-CN");
-      const imageUrl = safeHref(record.thumb);
-      if (imageUrl) {
-        const image = document.createElement("img");
-        image.src = imageUrl;
-        image.alt = "";
-        image.loading = "lazy";
-        image.referrerPolicy = "no-referrer";
-        article.append(image);
-      }
-      const body = document.createElement("div");
-      const meta = document.createElement("p");
-      meta.className = "directory-item-meta";
-      meta.textContent =
-        record.kind === "highlight_article" ? "ARTICLE" : "BOOKMARK";
-      body.append(meta);
-      const heading = document.createElement("h2");
-      const href = safeHref(record.detailUrl) || safeHref(record.originalUrl);
-      if (href) {
-        const anchor = document.createElement("a");
-        anchor.href = href;
-        anchor.textContent = record.title;
-        if (href.startsWith("https://")) {
-          anchor.target = "_blank";
-          anchor.rel = "noopener noreferrer";
-        }
-        heading.append(anchor);
-      } else heading.textContent = record.title;
-      body.append(heading);
-      if (typeof record.description === "string" && record.description) {
-        const description = document.createElement("p");
-        description.textContent = record.description;
-        body.append(description);
-      }
-      if (tags.length) {
-        const tagList = document.createElement("ul");
-        for (const tag of tags) {
-          const item = document.createElement("li");
-          item.textContent = tag;
-          tagList.append(item);
-        }
-        body.append(tagList);
-      }
-      article.append(body);
+      const article = renderRecord(record);
+      if (!article) continue;
       fragment.append(article);
+      rendered += 1;
     }
     list.replaceChildren(fragment);
-    if (count) count.textContent = String(records.length);
+    if (count) count.textContent = String(rendered);
     apply();
   };
 
   fetch(api, { headers: { Accept: "application/json" } })
     .then((response) => {
-      if (!response.ok) throw new Error("highlight library unavailable");
+      if (!response.ok) throw new Error("content library unavailable");
       return response.json();
     })
     .then((payload) => {
-      if (Array.isArray(payload.items)) renderHighlights(payload.items);
+      if (Array.isArray(payload.items)) render(payload.items);
     })
     .catch(() => {
-      // The server-rendered JSON list remains the no-JS and outage fallback.
+      // Server-rendered legacy content remains the no-JS and outage fallback.
     });
 })();
