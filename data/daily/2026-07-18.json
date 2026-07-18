@@ -31,11 +31,27 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-18T07:00:14.000Z",
       "id": "afternoon",
-      "item_ids": [],
+      "item_ids": [
+        "n_bc5a9a3aa22b5d785994d9ab08b89d3c0ffccb588fde1372c31c44ecff411378",
+        "n_58f837076be1902e8dcbff8b5ff80efe199c3e2a6a8c89e247c3fd27ce64d4ac",
+        "n_be0ab41a40063b861f653a1cad9f410a41178776a72614242b30eecdfa37f0e2",
+        "n_d2468b6fe6fcb56daf2727df7dc1604adeb93390708943096be7b833b3af23d4",
+        "n_efdd725505d7bcd6757af11c93f54c297a85f77616142f0aed9d0b932b27908e",
+        "n_2efdcefd0b0e9698dc15dd0ad9fedaf516158f19c7933985b05e9c25e7752818",
+        "n_48aa1f5e45880ea60dc60eacb2255d806faaa25005ba20a7de2b796f07b44e84",
+        "n_03e38d8d3ecf1635606f146837ebb997e1b4f745cac25b66892287be4c49b4bf",
+        "n_809143e932f751b0fd9632f74fc4443ad2adde683e598a2c1bbafa11079d67cd",
+        "n_435769505747ec6bf180e0e9ab6f10e7008cc5e7e4a282513c9572cd5e910c6b",
+        "n_965050e191f1e4e3edc83297e81022a71bdafc651e874733bd813602e782516d",
+        "n_169d6004e74d7eedae61a8dba6acfa33415264877a77a4a918318fca417a29dd",
+        "n_33c435b4559e648d63d9cfcba3a8beab60a08600944be447a50fdaeb4781162a",
+        "n_af67230eebb74f7279c0bf8da7c42b4a75a732f46382c1321d5d955acad6b818",
+        "n_46155ccdf1e077fe14767babc16a1a38be9b90cc779681f3d86466a1b09f4422"
+      ],
       "label": "15:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -55,7 +71,7 @@
   "classifier_version": 1,
   "date": "2026-07-18",
   "dedupe_version": 1,
-  "generated_at": "2026-07-18T02:00:04.000Z",
+  "generated_at": "2026-07-18T07:00:14.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -887,6 +903,558 @@
         "topic_other"
       ],
       "url": "https://x.com/Gorden_Sun/status/2078277224747368541"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.15278",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_bc5a9a3aa22b5d785994d9ab08b89d3c0ffccb588fde1372c31c44ecff411378",
+      "featured": false,
+      "id": "n_bc5a9a3aa22b5d785994d9ab08b89d3c0ffccb588fde1372c31c44ecff411378",
+      "identity_claims": [
+        "c_bc5a9a3aa22b5d785994d9ab08b89d3c0ffccb588fde1372c31c44ecff411378",
+        "c_d38a37a96f9ec03a403d6e14e15e95d977734af11b10511d2e2944753f7af19b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-15T20:00:00.483Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204562352209379329",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1204562352209379329",
+      "source_type": "huggingface_papers",
+      "summary": "Video models are evolving into vision foundation models, yet they still lack human-like multi-step reasoning. Streaming autoregressive diffusion models are efficient but limited in reasoning, while bidirectional diffusion enables global revision with high inference costs due to dense frame-level denoising. Both paradigms struggle to achieve logical consistency and low-latency streaming for complex reasoning tasks. We propose HDR (Hierarchical Denoising for Visual Reasoning), a unified framework that integrates hierarchical latents into causal video generation for multi-step reasoning. HDR organizes video latents into a tree-structured hierarchy, enabling coarse-to-fine reasoning before streaming output. Coarse denoising layers preserve uncertain hypotheses for global planning, while finer layers progressively refine them into concrete visual states. A sparse hierarchical attention pattern (SHAP) further reduces temporal attention costs. We introduce a level-stratified multi-step video reasoning benchmark with out-of-distribution cases, covering six tasks: maze navigation, Tower of Hanoi, one-line drawing, sliding puzzle, Sokoban, and water pouring. Compared with streaming autoregressive diffusion baselines, HDR improves success from 34.22 to 60.29 (76.2% relative gain) and increases average progress from 76.00 to 89.56, demonstrating more consistent reasoning trajectories. HDR maintains low-latency streaming at 0.70 seconds per latent, achieving 54.2 times faster inference than bidirectional diffusion. It also retains 82.9% of full-data performance with only 2% training data, compared with 52.0% for bidirectional diffusion. Real-world robot experiments further demonstrate HDR's potential for physical interaction and world modeling. Project demo:",
+      "time_precision": "exact",
+      "title": "用于多步视觉推理的层次化去噪",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.15278"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.15058",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_58f837076be1902e8dcbff8b5ff80efe199c3e2a6a8c89e247c3fd27ce64d4ac",
+      "featured": false,
+      "id": "n_58f837076be1902e8dcbff8b5ff80efe199c3e2a6a8c89e247c3fd27ce64d4ac",
+      "identity_claims": [
+        "c_067bb86eed7e814b94e9c2ae4afed4d2a319760336be2443d4916669e8a15e4f",
+        "c_58f837076be1902e8dcbff8b5ff80efe199c3e2a6a8c89e247c3fd27ce64d4ac"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-15T20:00:00.623Z",
+      "published_date": "2026-07-16",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204562352209379328",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1204562352209379328",
+      "source_type": "huggingface_papers",
+      "summary": "CAD-to-image alignment aims to estimate an object's 9D pose (rotation, translation, and anisotropic scale) from a single RGB image, enabling applications in robotics and augmented reality. Recent zero-shot methods use visual foundation models to match image regions to CAD models, yet typically their correspondences are appearance-driven and degrade under occlusion or sim-to-real domain shift. To address these limitations, we introduce SUFLECA (Scaling Up Feature LEarning for CAD Alignment), a weakly-supervised framework for zero-shot CAD alignment with two key contributions. First, SUFLECA scales up geometry-grounded feature learning from pretrained visual representations through Normalized Object Coordinates (NOCs) supervision on 674K images spanning 12 real and synthetic datasets, learning compact geometry-aware features that generalize across domains. Second, we propose a geometrically consistent matching algorithm that establishes reliable one-to-one CAD-to-image correspondences. Together, these contributions enable accurate, sub-second alignment per object instance without iterative pose refinement. On ScanNet25k, SUFLECA achieves 33.4%/42.3% category/instance accuracy, outperforming, with a smaller computational footprint, the strongest zero-shot baseline by 10.3/12.2 percentage points and, for the first time on this benchmark, even surpassing fully supervised methods. Code is available at:",
+      "time_precision": "exact",
+      "title": "SUFLECA：扩大特征学习以用于CAD到图像对齐",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.15058"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/ezshine/status/2078168921736380921",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_be0ab41a40063b861f653a1cad9f410a41178776a72614242b30eecdfa37f0e2",
+      "featured": false,
+      "id": "n_be0ab41a40063b861f653a1cad9f410a41178776a72614242b30eecdfa37f0e2",
+      "identity_claims": [
+        "c_be0ab41a40063b861f653a1cad9f410a41178776a72614242b30eecdfa37f0e2",
+        "c_d816a1dbf50428f68f42160bbe948d35579378574c8b685168c800d1320715c3"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-17T17:24:16.474Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204524656137097218",
+        "name": "twitter-大帅老猿"
+      },
+      "source_id": "1204524656137097218",
+      "source_type": "twitter_extra",
+      "summary": "终于升到头等舱了，我知道未来这个会很火，这里会高手如云，所以先截图留念一下。 VibeLoft 真的是一个很有意思的产品",
+      "time_precision": "exact",
+      "title": "终于升到头等舱了，我知道未来这个会很火，这里会高手如云，所以先截图留念一下。 VibeLoft 真的是一个很有意思的产品 https://vibeloft.ai/",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/ezshine/status/2078168921736380921"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/ezshine/status/2078246682333225455",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d2468b6fe6fcb56daf2727df7dc1604adeb93390708943096be7b833b3af23d4",
+      "featured": false,
+      "id": "n_d2468b6fe6fcb56daf2727df7dc1604adeb93390708943096be7b833b3af23d4",
+      "identity_claims": [
+        "c_d2468b6fe6fcb56daf2727df7dc1604adeb93390708943096be7b833b3af23d4",
+        "c_da2495d70ce09bd4d7bd14eded44d0d9ea8cbce86cb2342f07650080ad1dfd18"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-17T22:33:15.613Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204524656137097217",
+        "name": "twitter-大帅老猿"
+      },
+      "source_id": "1204524656137097217",
+      "source_type": "twitter_extra",
+      "summary": "才知道刘亦菲的妈妈这么好看的啊",
+      "time_precision": "exact",
+      "title": "才知道刘亦菲的妈妈这么好看的啊",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/ezshine/status/2078246682333225455"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/ezshine/status/2078254427560128806",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_efdd725505d7bcd6757af11c93f54c297a85f77616142f0aed9d0b932b27908e",
+      "featured": false,
+      "id": "n_efdd725505d7bcd6757af11c93f54c297a85f77616142f0aed9d0b932b27908e",
+      "identity_claims": [
+        "c_3b00ac953a065c911f2a3bfeeb21b282121a71554ddb9ef556f8630bc7dd3b71",
+        "c_efdd725505d7bcd6757af11c93f54c297a85f77616142f0aed9d0b932b27908e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-17T23:04:02.308Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204524656137097216",
+        "name": "twitter-大帅老猿"
+      },
+      "source_id": "1204524656137097216",
+      "source_type": "twitter_extra",
+      "summary": "这是什么神仙阵容，还真没印象看过这一版，今天找来回顾一下",
+      "time_precision": "exact",
+      "title": "这是什么神仙阵容，还真没印象看过这一版，今天找来回顾一下",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/ezshine/status/2078254427560128806"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/vista8/status/2078309612374433883",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2efdcefd0b0e9698dc15dd0ad9fedaf516158f19c7933985b05e9c25e7752818",
+      "featured": false,
+      "id": "n_2efdcefd0b0e9698dc15dd0ad9fedaf516158f19c7933985b05e9c25e7752818",
+      "identity_claims": [
+        "c_2efdcefd0b0e9698dc15dd0ad9fedaf516158f19c7933985b05e9c25e7752818",
+        "c_f4c94cb8f5d4d74416db646e2824521d2b2d0828898e80926f470df8b32f670f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T02:43:19.466Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204585948843515904",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1204585948843515904",
+      "source_type": "twitter_extra",
+      "summary": "今晚20:00，邀请 X 上多个朋友直播。 每人7分钟介绍自己的 Vibe Coding 作品或 FDE 项目。 🔗 飞书会议链接： （开始前5分钟进入就行）",
+      "time_precision": "exact",
+      "title": "今晚20:00，邀请 X 上多个朋友直播。 每人7分钟介绍自己的 Vibe Coding 作品或 FDE 项目。 🔗 飞书会议链接：https://vc.feishu.cn/j/108720872 （开始前5分钟...",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2078309612374433883"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078310274042564896",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_48aa1f5e45880ea60dc60eacb2255d806faaa25005ba20a7de2b796f07b44e84",
+      "featured": false,
+      "id": "n_48aa1f5e45880ea60dc60eacb2255d806faaa25005ba20a7de2b796f07b44e84",
+      "identity_claims": [
+        "c_48aa1f5e45880ea60dc60eacb2255d806faaa25005ba20a7de2b796f07b44e84",
+        "c_a4336fa599608b8a5ac78766a19433ad129799f794b40d1d4f0ea619eac19cbc"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T02:45:57.841Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204717410326740993",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1204717410326740993",
+      "source_type": "twitter_extra",
+      "summary": "Max 和 Team Premium 会继续可以通过订阅使用Fable 5，Pro和普通团队版则只能获得一次性100美元的积分额度 Claude: Beginning July 20, Claude Fable 5 will be included in all Max and Team Premium plans, at 50% of limits. Pro and Team Standard users will continue to have access to Fable via usage credits, and will receive a one-time $100 credit. Demand for Fable has been challenging to",
+      "time_precision": "exact",
+      "title": "Max 和 Team Premium 会继续可以通过订阅使用Fable 5，Pro和普通团队版则只能获得一次性100美元的积分额度",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078310274042564896"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/oran_ge/status/2078311484418048157",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_03e38d8d3ecf1635606f146837ebb997e1b4f745cac25b66892287be4c49b4bf",
+      "featured": false,
+      "id": "n_03e38d8d3ecf1635606f146837ebb997e1b4f745cac25b66892287be4c49b4bf",
+      "identity_claims": [
+        "c_03e38d8d3ecf1635606f146837ebb997e1b4f745cac25b66892287be4c49b4bf",
+        "c_88d71bc3c50d74759ca8f2318dbd1e1cba3638af960096c43f6f4fa96e55dd61"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T02:50:45.287Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204586005567430657",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1204586005567430657",
+      "source_type": "twitter_extra",
+      "summary": "以前我只是模糊地知道西西弗斯是个永远在推石头的人。 但今天让 AI 给我查了一下西西弗斯的完整故事。 西西弗斯是个很有趣的人啊。 现代人关心西西弗斯是否幸福，古代人其实更关心西西弗斯为何要被神罚，这个关注点的偏移也很现代。 西西弗斯的完整故事 1. 他是谁 西西弗斯是科林斯（当时叫以弗拉）的建城者和第一任国王。他父亲是风神之子埃俄罗斯，家世显赫。但他真正出名的不是血统，是狡猾。荷马写他是\"世间最诡计多端的人\"。 2. 泄露宙斯的秘密 河神阿索波斯的女儿埃吉娜被宙斯带走了。河神四处寻找，西西弗斯主动告密：是宙斯干的。作为交换条件，他要河神在科林斯的卫城山上引出一道泉水。 他用一位至高神的秘密，换了一口泉。 宙斯暴怒。 3. 捆住死神 宙斯下令让死神塔纳托斯去捆锁西西弗斯，把他带到冥界塔耳塔洛斯。但西西弗斯早就察觉到死神靠近了。他反过来把塔纳托斯骗进锁链，捆住了死神本身。 死神被锁住以后，世间没有人能死。老人不死，病人不死，战场上的士兵也不死。战神阿瑞斯发现自己的战争失去了意义——没有人倒下——于是亲自出手释放了塔纳托斯。 死神被释放后，西西弗斯是第一个被带走的人。 4. 骗过冥后 但西西弗斯在死前做了一件事：他吩咐妻子墨洛珀，在他死后不要为他举行葬礼，把他的尸体赤裸地扔在广场上。 到了冥界，西西弗斯向冥后珀耳塞福涅抱怨：我的妻子对我如此不敬，连葬礼都不办。请允许我回到人间去责备她，然后我会回来。 珀耳塞福涅同意了。 西西弗斯回到阳光下，然后——拒绝回去。 他又活了很多年。有的版本说他最终死于年老，有的说是赫尔墨斯把他强行拖回了冥界。 5. 永恒的惩罚 这一次没有第三次逃脱。 冥王哈迪斯为他安排了一块巨石和一座永远到不了顶的山坡。石头被施了魔法，每当快到山顶，就会自动滚落。西西弗斯必须走下去，重新推它上来。 一个一生都在制造出口的人，被安排了一个永远没有出口的循环。一个两次逃脱死亡的人，被赐予了一种永远不会结束的存在。 惩罚的精妙不在于它痛苦，而在于它精准地回应了他的一生：你想永远不死？好。你想永远不停地做事？好。你最擅长看见终点然后逃跑？我让你永远看不见终点。",
+      "time_precision": "exact",
+      "title": "以前我只是模糊地知道西西弗斯是个永远在推石头的人。 但今天让 AI 给我查了一下西西弗斯的完整故事。 西西弗斯是个很有趣的人啊。 现代人关心西西弗斯是否幸福...",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2078311484418048157"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/dotey/status/2078311802933285059",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_809143e932f751b0fd9632f74fc4443ad2adde683e598a2c1bbafa11079d67cd",
+      "featured": false,
+      "id": "n_809143e932f751b0fd9632f74fc4443ad2adde683e598a2c1bbafa11079d67cd",
+      "identity_claims": [
+        "c_325969b53eafe5f2aa86a87061b89b1fe545b8bad455f66326c00e4fed51008a",
+        "c_809143e932f751b0fd9632f74fc4443ad2adde683e598a2c1bbafa11079d67cd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T02:52:01.372Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204586368726978560",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1204586368726978560",
+      "source_type": "twitter_extra",
+      "summary": "靴子落地了：从7月20日起，Claude Fable 5 将包含在所有 Max 和 Team Premium 计划中，限额为50%。 这得感谢 GPT 5.6 和 Kimi 3 Claude: Beginning July 20, Claude Fable 5 will be included in all Max and Team Premium plans, at 50% of limits. Pro and Team Standard users will continue to have access to Fable via usage credits, and will receive a one-time $100 credit. Demand for Fable has been challenging to",
+      "time_precision": "exact",
+      "title": "靴子落地了：从7月20日起，Claude Fable 5 将包含在所有 Max 和 Team Premium 计划中，限额为50%。 这得感谢 GPT 5.6 和 Kimi 3",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2078311802933285059"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/oran_ge/status/2078312719367971010",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_435769505747ec6bf180e0e9ab6f10e7008cc5e7e4a282513c9572cd5e910c6b",
+      "featured": false,
+      "id": "n_435769505747ec6bf180e0e9ab6f10e7008cc5e7e4a282513c9572cd5e910c6b",
+      "identity_claims": [
+        "c_23782ee1227cfaa093349f20b5bd600bdf73b2fcf1e82ae9d976c8ff35c1e370",
+        "c_435769505747ec6bf180e0e9ab6f10e7008cc5e7e4a282513c9572cd5e910c6b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T02:55:40.217Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204586005567430656",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1204586005567430656",
+      "source_type": "twitter_extra",
+      "summary": "Fable 5 今天正式确定永久会包含在 Max 计划中 如果我们站在多年以后的未来看向现在 Fable 5 不过是智能发展史上的一粒普通的尘埃 只是 A 社实在太抓马太喜欢搞事情了 其实没有 A 社也会有 O 社 K 社训练出这样的模型 大模型和大多数技术一样，是人类集体智慧和极致工程的产物 并没有什么独家秘籍",
+      "time_precision": "exact",
+      "title": "Fable 5 今天正式确定永久会包含在 Max 计划中 如果我们站在多年以后的未来看向现在 Fable 5 不过是智能发展史上的一粒普通的尘埃 只是 A 社实在太抓马太喜欢搞...",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/oran_ge/status/2078312719367971010"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/aiwarts/status/2078318807521935739",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_965050e191f1e4e3edc83297e81022a71bdafc651e874733bd813602e782516d",
+      "featured": false,
+      "id": "n_965050e191f1e4e3edc83297e81022a71bdafc651e874733bd813602e782516d",
+      "identity_claims": [
+        "c_965050e191f1e4e3edc83297e81022a71bdafc651e874733bd813602e782516d",
+        "c_e77491e892a66837748dedf880d955b74afb18ad56304acfe4ade7a4a99ac491"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T03:19:51.055Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204623621813620736",
+        "name": "twitter-卡尔的AI沃茨"
+      },
+      "source_id": "1204623621813620736",
+      "source_type": "twitter_extra",
+      "summary": "",
+      "time_precision": "exact",
+      "title": "http://x.com/i/article/2078085305006268416",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/aiwarts/status/2078318807521935739"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/vista8/status/2078334003007082916",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_169d6004e74d7eedae61a8dba6acfa33415264877a77a4a918318fca417a29dd",
+      "featured": false,
+      "id": "n_169d6004e74d7eedae61a8dba6acfa33415264877a77a4a918318fca417a29dd",
+      "identity_claims": [
+        "c_169d6004e74d7eedae61a8dba6acfa33415264877a77a4a918318fca417a29dd",
+        "c_74e7aa7c9532a31cd436ad8e061c594e9c15be172670e450e47f6056d2d9db44"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T04:20:14.042Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204728179017555969",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1204728179017555969",
+      "source_type": "twitter_extra",
+      "summary": "",
+      "time_precision": "exact",
+      "title": "http://x.com/i/article/2078332315873464320",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2078334003007082916"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078336038368690325",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_33c435b4559e648d63d9cfcba3a8beab60a08600944be447a50fdaeb4781162a",
+      "featured": false,
+      "id": "n_33c435b4559e648d63d9cfcba3a8beab60a08600944be447a50fdaeb4781162a",
+      "identity_claims": [
+        "c_33c435b4559e648d63d9cfcba3a8beab60a08600944be447a50fdaeb4781162a",
+        "c_eb12248d755f50b3e374a007fb1512467fc1c0eeb3b7063e18d3d0f9fb698042"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T04:28:19.727Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204717410326740992",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1204717410326740992",
+      "source_type": "twitter_extra",
+      "summary": "Grok 4.6下周将完成初始训练，2T参数，性能可能超过Kimi K3（听听就好，马斯克习惯性夸大），但是速度更快价格更便宜。训练完到实际能用上，还得不少时间，少说也得1到2个月 Elon Musk: @minchoi Our 2T model, which is better than our 1.5T in every way, will finish initial training next week. It might be able to exceed Kimi, but with speed and token efficiency close to our 1.5T (aka Grok 4.5).",
+      "time_precision": "exact",
+      "title": "Grok 4.6下周将完成初始训练，2T参数，性能可能超过Kimi K3（听听就好，马斯克习惯性夸大），但是速度更快价格更便宜。训练完到实际能用上，还得不少时间，少说...",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078336038368690325"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/vista8/status/2078337668942094436",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_af67230eebb74f7279c0bf8da7c42b4a75a732f46382c1321d5d955acad6b818",
+      "featured": false,
+      "id": "n_af67230eebb74f7279c0bf8da7c42b4a75a732f46382c1321d5d955acad6b818",
+      "identity_claims": [
+        "c_41215c651410bb58127cec104669b92161eb84711da6ea7cc9466e81ee5c586e",
+        "c_af67230eebb74f7279c0bf8da7c42b4a75a732f46382c1321d5d955acad6b818"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T04:34:48.248Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204728179017555968",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1204728179017555968",
+      "source_type": "twitter_extra",
+      "summary": "乔帮主对Kimi K3的详细评测报告来了！非常牛逼，但也有一些局限。 6个真实场景项目，每个都能在线体验使用。 模型局限也有几条： 1. 因训练方式原因，与官方的 Kimi Code 匹配更好，如接入 Claude Code，效果可能会有折损。 2. 优化了长程、高难任务，主动性很强；遇到简单、模糊需求，反而会过度思考和发挥。 3. K3 在交互、界面、视觉、空间等相关场景完全可以作为首选模型，但架构、后端等场景，仍落后于最强闭源模型 Claude Fable 5 和 GPT-5.6 向阳乔木:",
+      "time_precision": "exact",
+      "title": "乔帮主对Kimi K3的详细评测报告来了！非常牛逼，但也有一些局限。 6个真实场景项目，每个都能在线体验使用。 模型局限也有几条： 1. 因训练方式原因，与官方的 K...",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://x.com/vista8/status/2078337668942094436"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/dotey/status/2078350528099107292",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_46155ccdf1e077fe14767babc16a1a38be9b90cc779681f3d86466a1b09f4422",
+      "featured": false,
+      "id": "n_46155ccdf1e077fe14767babc16a1a38be9b90cc779681f3d86466a1b09f4422",
+      "identity_claims": [
+        "c_46155ccdf1e077fe14767babc16a1a38be9b90cc779681f3d86466a1b09f4422",
+        "c_cbc7863ad794313685ce60b6c2b029b45323e6806c43b2429dbf23c3d6ffb12d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T07:00:14.000Z",
+      "published_at": "2026-07-18T05:25:54.075Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1204728117646577664",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1204728117646577664",
+      "source_type": "twitter_extra",
+      "summary": "现在还有人在推荐的所谓开源“剪映 CapCut”替代 OpenCut 现在已经只有一个壳了，基本上啥代码都没有。 以前的那个半成品也归档不再更新了。",
+      "time_precision": "exact",
+      "title": "现在还有人在推荐的所谓开源“剪映 CapCut”替代 OpenCut 现在已经只有一个壳了，基本上啥代码都没有。https://github.com/OpenCut-app/OpenCut 以前的那个半成...",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2078350528099107292"
     }
   ],
   "overview": {
