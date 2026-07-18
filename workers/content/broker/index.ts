@@ -521,10 +521,13 @@ async function fetchContentAddressedAsset(
     throw new Error("Content-addressed artifact asset is unavailable");
   }
   const bytes = new Uint8Array(await object.arrayBuffer());
-  if (
-    (await sha256(bytes)) !== asset.sha256 ||
-    pagesAssetHash({ path: asset.path, bytes }) !== asset.pages_hash
-  ) {
+  // The immutable inventory is already verified against its database-bound
+  // fingerprint before any asset is loaded. Recomputing the Pages BLAKE3 key
+  // here base64-encodes every missing asset and can exhaust Worker CPU for a
+  // media-heavy release. The content SHA is sufficient to prove that these
+  // bytes are the exact bytes named by the verified inventory; Pages still
+  // receives the inventory's precomputed pages_hash as the upload key.
+  if ((await sha256(bytes)) !== asset.sha256) {
     throw new Error("Content-addressed artifact asset hash mismatch");
   }
   return bytes;
@@ -1004,8 +1007,10 @@ async function promote(request: Request, env: Env): Promise<Response> {
   let deploymentChanged = false;
   let authorization: JsonRecord | null = null;
   let context: ArtifactContext | null = null;
+  let promotionStage = "load_context";
   try {
     context = await deployContext(sql, String(body.site_release_id));
+    promotionStage = "compare_request";
     comparePromotion(context, body);
     if (context.current_site_release_id === context.site_release_id) {
       return json({
@@ -1014,6 +1019,7 @@ async function promote(request: Request, env: Env): Promise<Response> {
         site_release_id: context.site_release_id,
       });
     }
+    promotionStage = "authorize";
     authorization = await rpc(
       sql,
       sql<JsonRecord[]>`
@@ -1025,14 +1031,19 @@ async function promote(request: Request, env: Env): Promise<Response> {
     );
     const token = Number(authorization.fencing_token);
     const generation = Number(authorization.expected_pointer_generation);
+    promotionStage = "mark_deploying";
     await sql`select private.mark_promotion_deploying_v1(${context.site_release_id}::uuid, ${token}, ${generation})`;
+    promotionStage = "load_artifact";
     const files = await artifactFiles(context, env);
     const deploymentStartedAt = Date.now();
+    promotionStage = "upload_pages";
     const deployment = await uploadPages(files, context, env);
     deploymentChanged = true;
+    promotionStage = "mark_verifying";
     await sql`select private.mark_promotion_verifying_v1(
       ${context.site_release_id}::uuid, ${token}, ${generation}, ${deployment.id}
     )`;
+    promotionStage = "verify_deployment";
     const evidence = await verifyDeployment(
       context,
       deployment.url,
@@ -1040,7 +1051,9 @@ async function promote(request: Request, env: Env): Promise<Response> {
       files,
       deploymentStartedAt,
     );
+    promotionStage = "purge_caches";
     await purgeContentCaches(env);
+    promotionStage = "commit_promotion";
     const committed = await rpc(
       sql,
       sql<JsonRecord[]>`
@@ -1074,12 +1087,15 @@ async function promote(request: Request, env: Env): Promise<Response> {
             ${context.site_release_id}::uuid, ${token}, ${generation}, true,
             ${sql.json({ ...recovery, restored_site_release_id: previous.site_release_id, deployment_id: restored.id })}
           )`;
-        } else {
+        } else if (!deploymentChanged) {
           await sql`select private.finish_production_recovery_v1(
             ${context.site_release_id}::uuid, ${token}, ${generation}, true,
             ${sql.json({ production_unchanged: true })}
           )`;
         }
+        // If Pages changed during the first-ever promotion there is no prior
+        // release to restore. Keep the slot in verifying so the scheduled
+        // reconciler can commit after delayed multi-edge convergence.
       } catch {
         await sql`select private.finish_production_recovery_v1(
           ${context.site_release_id}::uuid, ${token}, ${generation}, false,
@@ -1088,6 +1104,7 @@ async function promote(request: Request, env: Env): Promise<Response> {
       }
     }
     console.error("[ContentBroker] promotion failed", {
+      stage: promotionStage,
       errorType: error instanceof Error ? error.name : "Error",
     });
     return json({ error: "promotion_failed" }, 503);
@@ -1244,8 +1261,18 @@ export async function reconcileProduction(
       }
       return "committed";
     } catch {
-      if (!current)
-        throw new Error("Reconciler has no last-known-good artifact");
+      if (!current) {
+        // A first-ever promotion can be terminated before Pages changes while
+        // leaving the fenced slot in a deploying state. With no current
+        // pointer there is nothing to restore; release the slot only after the
+        // target failed verification against the latest production deployment.
+        await sql`select private.finish_production_recovery_v1(
+          ${target.site_release_id}::uuid, ${Number(slot.fencing_token)},
+          ${Number(slot.expected_pointer_generation)}, true,
+          ${sql.json({ production_unchanged: true, reconciled: true, no_current_release: true })}
+        )`;
+        return "restored";
+      }
       const currentFiles = await artifactFiles(current, env);
       const restorationStartedAt = Date.now();
       const restored = await uploadPages(currentFiles, current, env);

@@ -110,7 +110,8 @@ async function verifiedPrivateObject(
   return new Response(bytes, {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "private, no-store",
+      "Cache-Control": "private, no-store, no-transform",
+      "Content-Encoding": "identity",
       ETag: `"sha256-${expectedHash}"`,
       "X-Content-Type-Options": "nosniff",
     },

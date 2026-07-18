@@ -51,6 +51,7 @@ async function artifactFingerprint() {
 
 function sourceSha() {
 	const value =
+		process.env.EXACT_CODE_SHA ||
 		process.env.CF_PAGES_COMMIT_SHA ||
 		process.env.GITHUB_SHA ||
 		execFileSync('git', ['rev-parse', 'HEAD'], {

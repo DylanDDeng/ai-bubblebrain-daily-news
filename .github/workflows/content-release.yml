@@ -104,7 +104,7 @@ jobs:
         run: |
           test "$(node --version)" = "v22.17.0"
           test "$(npm --version)" = "10.9.2"
-          test "$(hugo version | awk '{print $2}' | cut -d+ -f1)" = "v0.147.9"
+          hugo version | grep -Eq '^hugo v0\.147\.9([+-]|[[:space:]])'
 
       - name: Fail closed on unresolved production configuration
         env:
@@ -126,19 +126,51 @@ jobs:
         run: npm test
 
       - name: Build pinned content release
-        env:
-          GITHUB_SHA: ${{ github.event.inputs.code_sha }}
         run: |
           npm run check --prefix astro
           npm run lint --prefix astro
-          npm run test --prefix astro
-          npm run build --prefix astro
+          env -u CONTENT_RELEASE_ID npm run test --prefix astro
+          env -u GITHUB_SHA CF_PAGES_COMMIT_SHA="$EXACT_CODE_SHA" npm run build --prefix astro
           npm run verify:csp --prefix astro
           npm run verify:site --prefix astro
 
       - name: Verify embedded release identity
         run: |
-          node -e "const m=require('./astro/dist/release-manifests/site-route-manifest.json');const b=m.build;if(b.code_sha!==process.env.EXACT_CODE_SHA||b.source_sha!==process.env.EXACT_CODE_SHA||b.site_release_id!==process.env.SITE_RELEASE_ID||String(b.site_release_sequence)!==process.env.CONTENT_RELEASE_SEQUENCE||b.content_sha256!==process.env.CONTENT_ROOT_SHA256||b.build_environment_version!==process.env.BUILD_ENVIRONMENT_VERSION||b.node_version!=='v22.17.0'||b.npm_version!=='10.9.2'||b.hugo_version!=='0.147.9'||b.build_timezone!=='UTC'||b.build_locale!=='C.UTF-8'||![b.content_schema_version,b.content_taxonomy_version,b.content_serializer_version,b.content_search_contract_version,b.content_source_contract_version].every(Boolean))process.exit(1)"
+          node <<'NODE'
+          const build = require('./astro/dist/release-manifests/site-route-manifest.json').build;
+          const expected = {
+            code_sha: process.env.EXACT_CODE_SHA,
+            source_sha: process.env.EXACT_CODE_SHA,
+            site_release_id: process.env.SITE_RELEASE_ID,
+            site_release_sequence: process.env.CONTENT_RELEASE_SEQUENCE,
+            content_sha256: process.env.CONTENT_ROOT_SHA256,
+            build_environment_version: process.env.BUILD_ENVIRONMENT_VERSION,
+            node_version: 'v22.17.0',
+            npm_version: '10.9.2',
+            hugo_version: '0.147.9',
+            build_timezone: 'UTC',
+            build_locale: 'C.UTF-8',
+          };
+          const mismatches = Object.entries(expected).flatMap(([field, value]) => {
+            const actual = field === 'site_release_sequence'
+              ? String(build[field])
+              : build[field];
+            return actual === value ? [] : [{ field, expected: value, actual }];
+          });
+          for (const field of [
+            'content_schema_version',
+            'content_taxonomy_version',
+            'content_serializer_version',
+            'content_search_contract_version',
+            'content_source_contract_version',
+          ]) {
+            if (!build[field]) mismatches.push({ field, expected: 'present', actual: build[field] });
+          }
+          if (mismatches.length > 0) {
+            console.error(JSON.stringify({ error: 'embedded_release_identity_mismatch', mismatches }, null, 2));
+            process.exit(1);
+          }
+          NODE
 
       - name: Create deterministic content-addressed artifact
         run: |

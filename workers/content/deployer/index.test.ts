@@ -160,7 +160,10 @@ describe("authenticated immutable build content", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(response.headers.get("cache-control")).toBe(
+      "private, no-store, no-transform",
+    );
+    expect(response.headers.get("content-encoding")).toBe("identity");
     expect(response.headers.get("etag")).toBe(`"sha256-${hash}"`);
     expect(callRpc).toHaveBeenCalledWith(
       "manifest",
