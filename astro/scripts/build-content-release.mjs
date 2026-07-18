@@ -342,6 +342,7 @@ runRenderer({
 	CONTENT_SERIALIZER_VERSION: contentContract.content_serializer_version,
 	CONTENT_SEARCH_CONTRACT_VERSION: contentContract.content_search_contract_version,
 	CONTENT_SOURCE_CONTRACT_VERSION: contentContract.content_source_contract_version,
+	STRUCTURED_CUTOVER_DATE: manifest.structured_cutover_date,
 	PUBLIC_CONTENT_API_ORIGIN: publicApiOrigin.origin,
 	SITE_DISPLAY_DATE: finalDate || manifest.structured_cutover_date,
 	EDITORIAL_PREVIEW_SHA256: process.env.EDITORIAL_PREVIEW_SHA256 || '',

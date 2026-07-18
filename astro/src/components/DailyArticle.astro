@@ -7,7 +7,7 @@ import Discussion from './Discussion.astro';
 import { formatDailyDate, parseDailyEntryId, type DailyLocale } from '../lib/daily';
 import { commentThreadId } from '../lib/comments/threadId';
 import { sanitizeLegacyDailyHtml } from '../lib/legacyDailyHtml';
-import { loadStructuredDailyReport } from '../lib/structuredDaily';
+import { isDatabaseOwnedDailyDate, loadStructuredDailyReport } from '../lib/structuredDaily';
 
 interface Props {
 	entry: CollectionEntry<'daily'>;
@@ -21,7 +21,10 @@ const { entry, locale, newerHref = null, olderHref = null, alternateHref = null 
 const { Content } = await render(entry);
 const archiveHref = locale === 'en' ? '/en/daily/' : '/daily/';
 const identity = parseDailyEntryId(entry.id);
-const report = identity ? await loadStructuredDailyReport(identity.dateKey) : null;
+const report =
+	identity && isDatabaseOwnedDailyDate(identity.dateKey)
+		? await loadStructuredDailyReport(identity.dateKey)
+		: null;
 const legacyHtml = entry.rendered?.html ? sanitizeLegacyDailyHtml(entry.rendered.html) : null;
 const currentRoute = Astro.url.pathname;
 const threadId = commentThreadId({
