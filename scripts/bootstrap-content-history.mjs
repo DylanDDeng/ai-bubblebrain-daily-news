@@ -19,6 +19,7 @@ if (
 
 const root = resolve(import.meta.dirname, "..");
 const temporaryRoot = mkdtempSync(join(tmpdir(), "content-history-bootstrap-"));
+let ingestorRoleGranted = false;
 
 function canonicalize(value) {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -264,6 +265,8 @@ try {
       'pointer', (select target_site_release_id from private.release_current_pointer where singleton),
       'releases', (select coalesce(jsonb_agg(id order by sequence), '[]'::jsonb) from private.site_releases),
       'artifact_count', (select count(*) from private.release_artifacts),
+      'current_user', current_user,
+      'can_use_ingestor', pg_has_role(current_user, 'content_ingestor', 'USAGE'),
       'historical_snapshot_count', (
         select count(*) from private.report_snapshots where report_date in ('2026-07-16', '2026-07-17')
       )
@@ -272,6 +275,8 @@ try {
   if (
     state.pointer !== null ||
     state.artifact_count !== 0 ||
+    state.current_user !== "postgres" ||
+    state.can_use_ingestor !== false ||
     state.historical_snapshot_count !== 0 ||
     state.releases.length !== 1 ||
     state.releases[0] !== expectedReleaseId
@@ -280,6 +285,9 @@ try {
       "Production state is not the expected unpromoted initial release",
     );
   }
+
+  query("grant content_ingestor to postgres");
+  ingestorRoleGranted = true;
 
   const firstReport = loadHistoricalReport("2026-07-16");
   const secondReport = loadHistoricalReport("2026-07-17");
@@ -323,5 +331,8 @@ try {
     )}\n`,
   );
 } finally {
+  if (ingestorRoleGranted) {
+    query("revoke content_ingestor from postgres");
+  }
   rmSync(temporaryRoot, { recursive: true, force: true });
 }
