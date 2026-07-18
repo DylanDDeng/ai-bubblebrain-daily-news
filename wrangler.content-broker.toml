@@ -1,0 +1,37 @@
+name = "bubble-content-production-broker"
+main = "workers/content/broker/index.ts"
+compatibility_date = "2026-07-16"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+routes = [
+  { pattern = "content-broker.bubblenews.today", custom_domain = true }
+]
+
+[vars]
+PAGES_PROJECT = "ai-bubblebrain-daily-news"
+PRODUCTION_BRANCH = "main"
+VERIFY_MIN_ENDPOINTS = "2"
+# From production upload start through exact multi-origin convergence. Exceeding this restores last-known-good.
+MAX_PRODUCTION_INCONSISTENCY_MS = "60000"
+# Configure at least two independently routed verifier origins before enabling publication.
+PRODUCTION_VERIFY_URLS = "https://bubblenews.today,https://ai-bubblebrain-daily-news.pages.dev"
+# The Broker token needs Pages deploy and zone cache purge only.
+CLOUDFLARE_ACCOUNT_ID = "1967d844a7f75cc7ec6120b750a5cc91"
+CLOUDFLARE_ZONE_ID = "28c567baefb0e59f50d46220f2969c83"
+CONTENT_API_PURGE_URLS = "https://content-api.bubblenews.today/v1/current,https://content-api-origin.bubblenews.today/v1/current"
+
+[[r2_buckets]]
+binding = "ARTIFACTS"
+bucket_name = "bubble-content-artifacts"
+
+[[hyperdrive]]
+binding = "CONTENT_DB"
+id = "136110d1dbf246d8b655e047cb4a8f0d"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[triggers]
+crons = ["*/5 * * * *"]

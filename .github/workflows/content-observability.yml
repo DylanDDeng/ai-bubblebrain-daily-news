@@ -1,0 +1,50 @@
+name: Content Production Observability
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-production-observability
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    if: ${{ vars.CONTENT_OBSERVABILITY_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: content-production-observability
+    env:
+      CONTENT_OBSERVABILITY_DATABASE_URL: ${{ secrets.CONTENT_OBSERVABILITY_DATABASE_URL }}
+      CONTENT_DATABASE_PROJECT_REF: ${{ vars.CONTENT_DATABASE_PROJECT_REF }}
+      CONTENT_DATABASE_TOPOLOGY: ${{ vars.CONTENT_DATABASE_TOPOLOGY }}
+      CONTENT_SHARED_PROJECT_ACK: ${{ vars.CONTENT_SHARED_PROJECT_ACK }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+      CLOUDFLARE_ANALYTICS_API_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_API_TOKEN }}
+      CONTENT_CURRENT_URLS: ${{ vars.CONTENT_CURRENT_URLS }}
+      CONTENT_STATIC_MANIFEST_URLS: ${{ vars.CONTENT_STATIC_MANIFEST_URLS }}
+      CONTENT_API_CACHE_HIT_MINIMUM: ${{ vars.CONTENT_API_CACHE_HIT_MINIMUM || '0.5' }}
+      CONTENT_API_CACHE_SAMPLE_MINIMUM: ${{ vars.CONTENT_API_CACHE_SAMPLE_MINIMUM || '100' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate isolated least-privilege monitor configuration
+        run: node scripts/validate-content-production-config.mjs workflow-observability
+
+      - name: Check batch, release, edge, API and search health
+        run: npm run content:observability:check

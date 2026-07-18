@@ -2,6 +2,7 @@
 name = "ai-daily"
 main = "src/index.js" # <-- Important: path to your main worker script
 compatibility_date = "2025-05-20" # Or your project's compatibility date
+compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 kv_namespaces = [
@@ -61,8 +62,16 @@ GITHUB_BRANCH = "main"
 GITHUB_PUBLISH_STRATEGY = "pull_request"
 GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"
 EXTERNAL_WRITES_ENABLED = "true"
-DAILY_PUBLISH_MODE = "legacy"
-DAILY_STRUCTURED_WRITES_ENABLED = "false"
+DAILY_PUBLISH_MODE = "structured"
+DAILY_STRUCTURED_WRITES_ENABLED = "true"
+DAILY_STRUCTURED_START_DATE = "2026-07-16"
+CONTENT_DATABASE_MIRROR_ENABLED = "true"
+CONTENT_DATABASE_PUBLICATION_ENABLED = "true"
+STRUCTURED_CUTOVER_DATE = "2026-07-16"
+DAILY_SOURCE_CONTRACT_VERSION = "daily-source-v1"
+DAILY_SERIALIZER_VERSION = "daily-json-c14n-v1"
+SEARCH_CONTRACT_VERSION = "search-v1"
+BUILD_ENVIRONMENT_VERSION = "node22.17-astro7-hugo0.147.9-v1"
 DAILY_PRODUCER_VERSION = "phase1d-production"
 DAILY_TITLE = "AI资讯"
 DAILY_TITLE_MIN = " `AI 日报` "
@@ -72,6 +81,19 @@ PODCAST_END = "今天的情报就到这里，注意隐蔽，赶紧撤离"
 BOOK_LINK = ""
 INSERT_FOOT = "false"
 INSERT_APP_URL = "<h3>[查看完整版AI日报↗️ https://ai.hubtoday.app/](https://ai.hubtoday.app/)</h3>"
+
+# Owner-approved shared-project content_ingestor connection (ADR-002).
+[[hyperdrive]]
+binding = "CONTENT_DB"
+id = "a8155f35059c4b2faf4b06ef43c30fa3"
+
+[[r2_buckets]]
+binding = "REPORT_SNAPSHOTS"
+bucket_name = "bubble-content-report-snapshots"
+
+[[r2_buckets]]
+binding = "SITE_MANIFESTS"
+bucket_name = "bubble-content-site-manifests"
 
 [triggers]
 # 北京时间 10:00、15:00、23:00、次日 03:00 分批增量更新

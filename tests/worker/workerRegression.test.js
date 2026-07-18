@@ -166,8 +166,12 @@ describe('worker regression guards', () => {
         expect(config).toContain('GITHUB_PUBLISH_STRATEGY = "pull_request"');
         expect(config).toContain('GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"');
         expect(config).toContain('crons = ["0 2,7,15,19 * * *"]');
-        expect(config).toContain('DAILY_PUBLISH_MODE = "legacy"');
-        expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');
+        expect(config).toContain('DAILY_PUBLISH_MODE = "structured"');
+        expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "true"');
+        expect(config).toContain('DAILY_STRUCTURED_START_DATE = "2026-07-16"');
+        expect(config).toContain('CONTENT_DATABASE_MIRROR_ENABLED = "true"');
+        expect(config).toContain('CONTENT_DATABASE_PUBLICATION_ENABLED = "true"');
+        expect(config).toContain('id = "a8155f35059c4b2faf4b06ef43c30fa3"');
     });
 
     it('promotes automation publication pull requests only after all required checks', async () => {

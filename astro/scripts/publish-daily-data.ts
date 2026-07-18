@@ -4,7 +4,9 @@ import { publishDailyData } from '../src/lib/publishDailyData';
 
 const astroRoot = process.cwd();
 const names = await publishDailyData({
-	sourceDirectory: resolve(astroRoot, '..', 'data', 'daily'),
+	sourceDirectory: process.env.DAILY_DATA_DIR
+		? resolve(process.env.DAILY_DATA_DIR)
+		: resolve(astroRoot, '..', 'data', 'daily'),
 	outputDirectory: resolve(astroRoot, 'dist', 'data', 'daily'),
 });
 

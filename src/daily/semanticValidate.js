@@ -111,7 +111,7 @@ export function validateDailyReportSemantics(report, { enforcePhase1 = false } =
 }
 
 export function validateReportFilename(report, path) {
-    const match = /(?:^|\/)data\/daily\/(\d{4}-\d{2}-\d{2})\.json$/.exec(path);
+    const match = /(?:^|\/)(\d{4}-\d{2}-\d{2})\.json$/.exec(path);
     if (!match || match[1] !== report.date) throw new Error('Report filename does not match report date');
     return true;
 }

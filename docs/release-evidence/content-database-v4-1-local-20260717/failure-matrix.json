@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "kind": "content-database-v4.1-local-failure-matrix",
+  "database": "local-supabase-only",
+  "started_at": "2026-07-17T22:02:22.191Z",
+  "checks": {
+    "identical_ingestion_50": {
+      "status": "passed",
+      "unique_snapshot_ids": 1,
+      "non_idempotent": 1,
+      "idempotent": 49,
+      "elapsed_ms": 146
+    },
+    "ingestion_publication_slot": {
+      "status": "passed",
+      "reservation_reused_before_finalize": true,
+      "release_reconciled_after_commit": true,
+      "outbox_rows_after_retry": 1,
+      "different_payload_rejected": "Ingestion publication slot CAS conflict",
+      "attempt_started_then_succeeded": true,
+      "failed_attempt_retried_with_append_only_history": true,
+      "late_failure_preserved_success": true,
+      "shadow_disabled_rejected": "Content capability is disabled: shadow_build",
+      "production_disabled_rejected": "Content capability is disabled: publication",
+      "invalid_mode_rejected": "Invalid content release dispatch mode",
+      "wrong_dispatch_tuple_rejected": "Content release dispatch identity mismatch"
+    },
+    "different_ingestion_50": {
+      "status": "passed",
+      "unique_snapshot_ids": 50,
+      "version_min": 1,
+      "version_max": 50,
+      "elapsed_ms": 193
+    },
+    "outbox_claims": {
+      "status": "passed",
+      "concurrent_workers": 50,
+      "unique_claims": 13,
+      "null_claims": 37,
+      "expired_lease_reclaimed": true,
+      "exhausted_claimed_lease_dead_lettered": true
+    },
+    "callback_monotonicity": {
+      "status": "passed",
+      "terminal_state": "deployed",
+      "wrong_tuple_rejected": "Deployment event identity mismatch"
+    },
+    "callback_loss_recovery": {
+      "status": "passed",
+      "production_preview_reclaimed_after_lease": true,
+      "production_attempts": 2,
+      "shadow_preview_remained_terminal": true
+    },
+    "release_read_isolation": {
+      "status": "passed",
+      "unpromoted_public_endpoints_denied": [
+        "manifest",
+        "report",
+        "item",
+        "search"
+      ],
+      "authenticated_build_access_preserved": true,
+      "production_verified_public_access_enabled": true
+    },
+    "release_ordering_and_recovery": {
+      "status": "passed",
+      "generations": {
+        "A": 1,
+        "B": 2,
+        "rollback_to_A": 3,
+        "D": 4
+      },
+      "forward_rollback_contention_rejected": true,
+      "expired_C_token_rejected": true,
+      "rollback_reconcile_restored_B": true,
+      "late_B_C_commits_rejected": true,
+      "post_rollback_sequence": 21
+    },
+    "editorial_concurrency_and_rebase": {
+      "status": "passed",
+      "concurrent_browser_winners": 1,
+      "concurrent_browser_conflicts": 1,
+      "stale_preview_publish_rejected": true,
+      "stale_rebase_conflicts": 1,
+      "conflict_incremented_row_version": true,
+      "explicit_rebase_completed": true,
+      "post_request_kill_switches": {
+        "claim": ["admin_publish", "publication"],
+        "stage": ["admin_publish", "publication"],
+        "finalize": ["admin_publish", "publication"]
+      },
+      "current_release_generation": 5
+    },
+    "report_scoped_hide_release": {
+      "status": "passed",
+      "target_report_date": "2098-01-01",
+      "hidden_release_refs": 0,
+      "base_release_refs": 1,
+      "staged_global_overrides": 0,
+      "finalize_audit_rows": 1
+    },
+    "attestation_and_role_separation": {
+      "status": "passed",
+      "signature_algorithm": "Ed25519",
+      "database_key_material": "public-only",
+      "forged_signature_rejected": true,
+      "request_binding_rejected": ["audience", "action", "body_sha256"],
+      "auth_context_rejected": true,
+      "expired_and_24_hour_rejected": true,
+      "replay_rejected": true,
+      "routine_publish_execute_denied": true,
+      "routine_control_execute_denied": true,
+      "production_reconcile_totp_required": true,
+      "production_reconcile_audited": true
+    },
+    "global_suppression_release": {
+      "status": "passed",
+      "publication_kill_switch_blocked_claim": true,
+      "queued_before_materialization": true,
+      "staged_failure_retried_with_new_reservation": true,
+      "immutable_release_created": "9a9caf68-cf6f-4b37-88b1-1e0153225977",
+      "suppressed_release_refs": 0,
+      "outbox_rows": 1,
+      "audit_rows": 3,
+      "reintroduction_rejected": true
+    },
+    "admin_operations": {
+      "status": "passed",
+      "content_inventory_readable": true,
+      "operations_inventory_readable": true,
+      "verifier_diff_readable": true,
+      "unbound_principal_read_denied": "Attested principal lacks the required role",
+      "direct_read_rpc_denied": "permission denied for function list_admin_operations_v1",
+      "manual_retry_preserved_dispatch_identity": true,
+      "routine_retry_denied": true,
+      "same_release_rebuild_idempotent": true,
+      "rebuild_created_new_dispatch_identity": true,
+      "retry_audit_rows": 1,
+      "rebuild_audit_rows": 1,
+      "manual_attempt_events": 2
+    }
+  },
+  "final_pointer": {
+    "target_site_release_id": "205cf072-daa3-45c9-9cf9-034c514ff394",
+    "target_release_sequence": "22",
+    "generation": "5",
+    "manifest_sha256": "3854b14caf1cbcd7945d061c61ed06f905e595f411de2da1e37eeaca3ee7db5c",
+    "artifact_sha256": "e1657aa04983876c41c01bb9e92a9b55c4a3320a54b7425e7d52acbd00ca08b0",
+    "build_environment_version": "node22.17-astro7-hugo0.147.9-v1"
+  },
+  "completed_at": "2026-07-17T22:02:23.120Z",
+  "elapsed_ms": 924,
+  "status": "passed"
+}

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "content-control-access-totp-canary",
+  "project_ref": "znurdobjryrhshzkalup",
+  "control_origin": "https://content-control.bubblenews.today",
+  "actor_sub": "a42283c3-ca87-54d9-8ef6-e943c7c51100",
+  "actor_email": "chengshengdeng97@163.com",
+  "actor_role": "Owner",
+  "action": "settings.update",
+  "reason": "deployed Control TOTP canary verification",
+  "request_id": "e9bb506e-9623-4745-b645-db8ccb4e71e8",
+  "target": {
+    "setting_key": "publication",
+    "enabled": false,
+    "row_version": 2
+  },
+  "result": "updated",
+  "inserted_at": "2026-07-18T03:57:34.592004Z",
+  "production_switches_enabled": false
+}

@@ -1,5 +1,8 @@
 ## 项目部署与维护
 
+> 结构化日报切换后必须使用 [v4.1 fenced production release](runbooks/CONTENT_PRODUCTION_RELEASE.md)。
+> 下方遗留部署说明不得用于绕过 Production Deploy Broker。
+
 ### 🏗️ 项目架构
 
 本项目依托 Cloudflare 强大的生态系统，实现了高效、轻量与良好的可扩展性。

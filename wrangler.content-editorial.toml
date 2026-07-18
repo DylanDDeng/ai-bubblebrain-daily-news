@@ -1,0 +1,24 @@
+name = "bubble-content-editorial-materializer"
+main = "workers/content/editorial/index.ts"
+compatibility_date = "2026-07-17"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+[triggers]
+crons = ["* * * * *"]
+
+[[hyperdrive]]
+binding = "CONTENT_DB"
+id = "a8155f35059c4b2faf4b06ef43c30fa3"
+
+[[r2_buckets]]
+binding = "REPORT_SNAPSHOTS"
+bucket_name = "bubble-content-report-snapshots"
+
+[[r2_buckets]]
+binding = "SITE_MANIFESTS"
+bucket_name = "bubble-content-site-manifests"
+
+[observability]
+enabled = true
+head_sampling_rate = 1

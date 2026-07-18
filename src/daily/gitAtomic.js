@@ -1,9 +1,5 @@
 import { callGitHubApi } from '../github.js';
-import {
-    expectedPublicationPaths,
-    parsePublicationCommit,
-    validatePublicationPull,
-} from './publicationPolicy.js';
+import { expectedPublicationPaths, parsePublicationCommit, validatePublicationPull } from './publicationPolicy.js';
 
 const PUBLICATION_LOCK_TTL_MS = 15 * 60 * 1000;
 const PUBLICATION_LOCK_RELEASE_PREFIX = 'Publication lock released ';
@@ -48,9 +44,9 @@ function supersededCandidateSha(pull) {
 
 function selectPublicationPull(pulls) {
     if (pulls.length <= 1) return pulls[0] || null;
-    const byHeadSha = new Map(pulls.map(pull => [pull?.head?.sha, pull]));
+    const byHeadSha = new Map(pulls.map((pull) => [pull?.head?.sha, pull]));
     const referenced = new Set(pulls.map(supersededCandidateSha).filter(Boolean));
-    const terminals = pulls.filter(pull => !referenced.has(pull?.head?.sha));
+    const terminals = pulls.filter((pull) => !referenced.has(pull?.head?.sha));
     if (terminals.length !== 1) {
         throw new AtomicGitConflictError('Multiple unrelated publication pull requests are open');
     }
@@ -72,7 +68,7 @@ function selectPublicationPull(pulls) {
 
 function decodeBase64Utf8(value) {
     const binary = atob(String(value || '').replace(/\s/g, ''));
-    const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+    const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
     return new TextDecoder().decode(bytes);
 }
 
@@ -90,10 +86,7 @@ export class AtomicGitUncertainError extends Error {
     }
 }
 
-export async function resolveBranchSnapshot(env, {
-    api = callGitHubApi,
-    branch = env.GITHUB_BRANCH,
-} = {}) {
+export async function resolveBranchSnapshot(env, { api = callGitHubApi, branch = env.GITHUB_BRANCH } = {}) {
     if (!branch) throw new Error('GITHUB_BRANCH is required');
     const ref = await api(env, `/git/ref/heads/${refPath(branch)}`);
     const headSha = ref?.object?.sha;
@@ -104,11 +97,18 @@ export async function resolveBranchSnapshot(env, {
     return { branch, headSha, treeSha };
 }
 
-export async function resolvePublicationSnapshot(env, {
-    api = callGitHubApi,
-    branch = env.GITHUB_BRANCH,
-    expectedMode,
-} = {}) {
+export async function resolveCommitSnapshot(env, commitSha, { api = callGitHubApi } = {}) {
+    if (!/^[a-f0-9]{40}$/.test(commitSha || '')) throw new Error('Invalid Git commit SHA');
+    const commit = await api(env, `/git/commits/${commitSha}`);
+    const treeSha = commit?.tree?.sha;
+    if (!/^[a-f0-9]{40}$/.test(treeSha || '')) throw new Error('Invalid Git commit tree');
+    return { branch: null, headSha: commitSha, treeSha };
+}
+
+export async function resolvePublicationSnapshot(
+    env,
+    { api = callGitHubApi, branch = env.GITHUB_BRANCH, expectedMode } = {},
+) {
     const strategy = env.GITHUB_PUBLISH_STRATEGY || 'direct';
     if (strategy === 'direct') return resolveBranchSnapshot(env, { api, branch });
     if (strategy !== 'pull_request') {
@@ -118,8 +118,9 @@ export async function resolvePublicationSnapshot(env, {
     const prefix = String(env.GITHUB_PUBLISH_BRANCH_PREFIX || '').replace(/^\/+|\/+$/g, '');
     if (!prefix) throw new Error('GITHUB_PUBLISH_BRANCH_PREFIX is required');
     const pulls = await listPublicationPulls(env, branch, 'open', { api });
-    const publications = pulls.filter(pull => isSameRepositoryPull(env, pull)
-        && publicationBranchDetails(pull?.head?.ref, prefix));
+    const publications = pulls.filter(
+        (pull) => isSameRepositoryPull(env, pull) && publicationBranchDetails(pull?.head?.ref, prefix),
+    );
     if (publications.length === 0) {
         const snapshot = await resolveBranchSnapshot(env, { api, branch });
         return {
@@ -134,7 +135,10 @@ export async function resolvePublicationSnapshot(env, {
     if (expectedMode && details.mode !== expectedMode) {
         throw new AtomicGitConflictError('Publication mode transition has an in-flight pull request');
     }
-    const snapshot = await resolveBranchSnapshot(env, { api, branch: pull.head.ref });
+    const snapshot = await resolveBranchSnapshot(env, {
+        api,
+        branch: pull.head.ref,
+    });
     if (pull?.head?.sha && pull.head.sha !== snapshot.headSha) {
         throw new AtomicGitConflictError('Publication pull head changed during snapshot resolution');
     }
@@ -149,19 +153,19 @@ export async function resolvePublicationSnapshot(env, {
     };
 }
 
-export function createSnapshotReader(env, snapshot, {
-    api = callGitHubApi,
-    maxBlobBytes = 10 * 1024 * 1024,
-} = {}) {
+export function createSnapshotReader(env, snapshot, { api = callGitHubApi, maxBlobBytes = 10 * 1024 * 1024 } = {}) {
     const treeCache = new Map();
     const blobCache = new Map();
 
     async function treeEntries(treeSha) {
         if (!treeCache.has(treeSha)) {
-            treeCache.set(treeSha, api(env, `/git/trees/${treeSha}`).then(result => {
-                if (!Array.isArray(result?.tree)) throw new Error('Invalid Git tree response');
-                return result.tree;
-            }));
+            treeCache.set(
+                treeSha,
+                api(env, `/git/trees/${treeSha}`).then((result) => {
+                    if (!Array.isArray(result?.tree)) throw new Error('Invalid Git tree response');
+                    return result.tree;
+                }),
+            );
         }
         return treeCache.get(treeSha);
     }
@@ -172,21 +176,24 @@ export function createSnapshotReader(env, snapshot, {
         let treeSha = snapshot.treeSha;
         for (let index = 0; index < parts.length; index += 1) {
             const entries = await treeEntries(treeSha);
-            const entry = entries.find(candidate => candidate.path === parts[index]);
+            const entry = entries.find((candidate) => candidate.path === parts[index]);
             if (!entry) return null;
             const last = index === parts.length - 1;
             if (last) {
                 if (entry.type !== 'blob') throw new Error(`Git path is not a blob: ${path}`);
                 if (!blobCache.has(entry.sha)) {
-                    blobCache.set(entry.sha, api(env, `/git/blobs/${entry.sha}`).then(blob => {
-                        if (blob?.encoding !== 'base64' || typeof blob.content !== 'string') {
-                            throw new Error(`Invalid Git blob response: ${path}`);
-                        }
-                        if (!Number.isInteger(blob.size) || blob.size < 0 || blob.size > maxBlobBytes) {
-                            throw new Error(`Git blob exceeds structured read limit: ${path}`);
-                        }
-                        return decodeBase64Utf8(blob.content);
-                    }));
+                    blobCache.set(
+                        entry.sha,
+                        api(env, `/git/blobs/${entry.sha}`).then((blob) => {
+                            if (blob?.encoding !== 'base64' || typeof blob.content !== 'string') {
+                                throw new Error(`Invalid Git blob response: ${path}`);
+                            }
+                            if (!Number.isInteger(blob.size) || blob.size < 0 || blob.size > maxBlobBytes) {
+                                throw new Error(`Git blob exceeds structured read limit: ${path}`);
+                            }
+                            return decodeBase64Utf8(blob.content);
+                        }),
+                    );
                 }
                 return blobCache.get(entry.sha);
             }
@@ -202,24 +209,21 @@ export function createSnapshotReader(env, snapshot, {
 export async function isCommitIncluded(env, candidateSha, headSha, { api = callGitHubApi } = {}) {
     if (candidateSha === headSha) return true;
     const comparison = await api(env, `/compare/${candidateSha}...${headSha}`);
-    return comparison?.merge_base_commit?.sha === candidateSha
-        && ['ahead', 'identical'].includes(comparison.status);
+    return comparison?.merge_base_commit?.sha === candidateSha && ['ahead', 'identical'].includes(comparison.status);
 }
 
 export async function verifySnapshotHead(env, snapshot, { api = callGitHubApi } = {}) {
-    const current = await resolveBranchSnapshot(env, { api, branch: snapshot.branch });
+    const current = await resolveBranchSnapshot(env, {
+        api,
+        branch: snapshot.branch,
+    });
     return current.headSha === snapshot.headSha;
 }
 
-async function createCandidateCommit(env, {
-    snapshot,
-    files,
-    message,
-    committedAt,
-}, { api }) {
+async function createCandidateCommit(env, { snapshot, files, message, committedAt }, { api }) {
     if (!snapshot?.headSha || !snapshot?.treeSha) throw new Error('Git snapshot is required');
     if (!Array.isArray(files) || files.length === 0) throw new Error('Files are required');
-    if (new Set(files.map(file => file.path)).size !== files.length) {
+    if (new Set(files.map((file) => file.path)).size !== files.length) {
         throw new Error('Duplicate atomic commit paths');
     }
 
@@ -257,18 +261,21 @@ async function createCandidateCommit(env, {
     return { sha: candidate.sha, treeSha: createdTree.sha };
 }
 
-export async function commitFilesAtomically(env, {
-    snapshot,
-    files,
-    message,
-    committedAt,
-}, { api = callGitHubApi } = {}) {
-    const candidate = await createCandidateCommit(env, {
-        snapshot,
-        files,
-        message,
-        committedAt,
-    }, { api });
+export async function commitFilesAtomically(
+    env,
+    { snapshot, files, message, committedAt },
+    { api = callGitHubApi } = {},
+) {
+    const candidate = await createCandidateCommit(
+        env,
+        {
+            snapshot,
+            files,
+            message,
+            committedAt,
+        },
+        { api },
+    );
     const candidateSha = candidate.sha;
 
     try {
@@ -280,7 +287,10 @@ export async function commitFilesAtomically(env, {
     } catch (updateError) {
         let current;
         try {
-            current = await resolveBranchSnapshot(env, { api, branch: snapshot.branch });
+            current = await resolveBranchSnapshot(env, {
+                api,
+                branch: snapshot.branch,
+            });
             if (await isCommitIncluded(env, candidateSha, current.headSha, { api })) {
                 return { commitSha: candidateSha, reconciled: true, pending: false };
             }
@@ -300,23 +310,26 @@ async function listOpenPublicationPulls(env, baseBranch, { api }) {
 }
 
 async function listPublicationPulls(env, baseBranch, state, { api }) {
-    const query = new URLSearchParams({ state, base: baseBranch, per_page: '100' });
+    const query = new URLSearchParams({
+        state,
+        base: baseBranch,
+        per_page: '100',
+    });
     const pulls = await api(env, `/pulls?${query.toString()}`);
     if (!Array.isArray(pulls)) throw new Error('Invalid GitHub pull request list');
     return pulls;
 }
 
-export async function resolvePublicationAlias(env, candidateSha, baseBranch, {
-    api = callGitHubApi,
-} = {}) {
+export async function resolvePublicationAlias(env, candidateSha, baseBranch, { api = callGitHubApi } = {}) {
     if (!/^[a-f0-9]{40}$/.test(candidateSha || '')) return null;
     const pulls = await listPublicationPulls(env, baseBranch, 'all', { api });
     let currentSha = candidateSha;
     const visited = new Set([currentSha]);
     for (let depth = 0; depth < 8; depth += 1) {
         const marker = `<!-- supersedes-candidate:${currentSha} -->`;
-        const matches = pulls.filter(pull => isSameRepositoryPull(env, pull)
-            && String(pull?.body || '').includes(marker));
+        const matches = pulls.filter(
+            (pull) => isSameRepositoryPull(env, pull) && String(pull?.body || '').includes(marker),
+        );
         if (matches.length > 1) {
             throw new AtomicGitConflictError('Multiple publication aliases target one candidate');
         }
@@ -375,10 +388,7 @@ async function refShaOrNull(env, branch, { api }) {
     }
 }
 
-export async function acquirePublicationLock(env, snapshot, baseBranch, {
-    api,
-    now = new Date(),
-} = {}) {
+export async function acquirePublicationLock(env, snapshot, baseBranch, { api, now = new Date() } = {}) {
     const prefix = String(env.GITHUB_PUBLISH_BRANCH_PREFIX || '').replace(/^\/+|\/+$/g, '');
     const baseSegment = String(baseBranch || '').replace(/[^a-zA-Z0-9._-]+/g, '-');
     if (!baseSegment) throw new Error('Invalid base branch for publication lock');
@@ -400,10 +410,11 @@ export async function acquirePublicationLock(env, snapshot, baseBranch, {
     const lockSha = lockCommit?.sha;
     if (!/^[a-f0-9]{40}$/.test(lockSha || '')) throw new Error('Invalid publication lock SHA');
 
-    const create = () => api(env, '/git/refs', 'POST', {
-        ref: `refs/heads/${lockBranch}`,
-        sha: lockSha,
-    });
+    const create = () =>
+        api(env, '/git/refs', 'POST', {
+            ref: `refs/heads/${lockBranch}`,
+            sha: lockSha,
+        });
     try {
         await create();
         return { branch: lockBranch, sha: lockSha, reconciled: false };
@@ -420,8 +431,7 @@ export async function acquirePublicationLock(env, snapshot, baseBranch, {
         const current = await api(env, `/git/commits/${currentSha}`);
         const createdAt = new Date(current?.committer?.date).getTime();
         const released = String(current?.message || '').startsWith(PUBLICATION_LOCK_RELEASE_PREFIX);
-        if (!released && (!Number.isFinite(createdAt)
-            || instant.getTime() - createdAt <= PUBLICATION_LOCK_TTL_MS)) {
+        if (!released && (!Number.isFinite(createdAt) || instant.getTime() - createdAt <= PUBLICATION_LOCK_TTL_MS)) {
             throw new AtomicGitConflictError('Another publication holds the Git lock', {
                 cause: createError,
             });
@@ -451,7 +461,7 @@ export async function acquirePublicationLock(env, snapshot, baseBranch, {
                 ...(released ? { acquiredReleased: true } : { replacedStale: true }),
             };
         } catch (retryError) {
-            if (await refShaOrNull(env, lockBranch, { api }) === takeoverSha) {
+            if ((await refShaOrNull(env, lockBranch, { api })) === takeoverSha) {
                 return {
                     branch: lockBranch,
                     sha: takeoverSha,
@@ -466,10 +476,7 @@ export async function acquirePublicationLock(env, snapshot, baseBranch, {
     }
 }
 
-export async function releasePublicationLock(env, lock, {
-    api,
-    now = new Date(),
-} = {}) {
+export async function releasePublicationLock(env, lock, { api, now = new Date() } = {}) {
     const currentSha = await refShaOrNull(env, lock.branch, { api });
     if (currentSha === null) return { reconciled: true };
     if (currentSha !== lock.sha) {
@@ -505,7 +512,7 @@ export async function releasePublicationLock(env, lock, {
         });
         return { reconciled: false };
     } catch (releaseError) {
-        if (await refShaOrNull(env, lock.branch, { api }) === releaseSha) {
+        if ((await refShaOrNull(env, lock.branch, { api })) === releaseSha) {
             return { reconciled: true };
         }
         throw new AtomicGitUncertainError('Publication lock release could not be reconciled', {
@@ -518,14 +525,17 @@ function comparisonPaths(comparison) {
     if (!Array.isArray(comparison?.files) || comparison.files.length >= 300) {
         throw new AtomicGitConflictError('Publication comparison is incomplete or too large');
     }
-    return comparison.files.map(file => file?.filename).filter(Boolean).sort();
+    return comparison.files
+        .map((file) => file?.filename)
+        .filter(Boolean)
+        .sort();
 }
 
-async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mode, {
-    api,
-    candidatePaths = [],
-}) {
-    const baseSnapshot = await resolveBranchSnapshot(env, { api, branch: baseBranch });
+async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mode, { api, candidatePaths = [] }) {
+    const baseSnapshot = await resolveBranchSnapshot(env, {
+        api,
+        branch: baseBranch,
+    });
     const comparison = await api(env, `/compare/${baseSnapshot.headSha}...${snapshot.headSha}`);
     const mergeBaseSha = comparison?.merge_base_commit?.sha;
     if (!/^[a-f0-9]{40}$/.test(mergeBaseSha || '')) {
@@ -534,9 +544,11 @@ async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mo
     if (mergeBaseSha === baseSnapshot.headSha) {
         return { snapshot, policyChain: null, replayedFrom: null };
     }
-    if (!Array.isArray(comparison?.commits)
-        || comparison.commits.length < 1
-        || comparison.commits.length !== comparison.total_commits) {
+    if (
+        !Array.isArray(comparison?.commits) ||
+        comparison.commits.length < 1 ||
+        comparison.commits.length !== comparison.total_commits
+    ) {
         throw new AtomicGitConflictError('Publication commit chain is incomplete');
     }
 
@@ -544,7 +556,7 @@ async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mo
     const baseChangedPaths = new Set(comparisonPaths(baseComparison));
     const aggregatePaths = comparisonPaths(comparison);
     const replayWritePaths = new Set([...aggregatePaths, ...candidatePaths]);
-    if ([...replayWritePaths].some(path => baseChangedPaths.has(path))) {
+    if ([...replayWritePaths].some((path) => baseChangedPaths.has(path))) {
         throw new AtomicGitConflictError('Main changed a publication artifact being replayed');
     }
 
@@ -557,7 +569,7 @@ async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mo
             throw new AtomicGitConflictError('Invalid pending publication commit SHA');
         }
         const commit = await api(env, `/git/commits/${commitSha}`);
-        const parentShas = commit?.parents?.map(parent => parent.sha) || [];
+        const parentShas = commit?.parents?.map((parent) => parent.sha) || [];
         const details = parsePublicationCommit(commit?.message);
         if (parentShas.length !== 1 || parentShas[0] !== expectedParent || details?.mode !== mode) {
             throw new AtomicGitConflictError('Pending publication chain is not replayable');
@@ -565,8 +577,10 @@ async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mo
         const expectedPaths = expectedPublicationPaths(details.reportDate, mode);
         const commitComparison = await api(env, `/compare/${expectedParent}...${commitSha}`);
         const changedPaths = comparisonPaths(commitComparison);
-        if (changedPaths.length !== expectedPaths.length
-            || expectedPaths.some((path, index) => path !== changedPaths[index])) {
+        if (
+            changedPaths.length !== expectedPaths.length ||
+            expectedPaths.some((path, index) => path !== changedPaths[index])
+        ) {
             throw new AtomicGitConflictError('Pending publication commit paths are not replayable');
         }
         const treeSha = commit?.tree?.sha;
@@ -583,7 +597,7 @@ async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mo
         let report;
         if (mode === 'structured') {
             try {
-                report = JSON.parse(files.find(file => file.path.endsWith('.json')).content);
+                report = JSON.parse(files.find((file) => file.path.endsWith('.json')).content);
             } catch {
                 throw new AtomicGitConflictError('Pending structured report is invalid');
             }
@@ -615,18 +629,24 @@ async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mo
     let replaySnapshot = baseSnapshot;
     const policyChain = [];
     for (const entry of replayEntries) {
-        const created = await createCandidateCommit(env, {
-            snapshot: replaySnapshot,
-            ...entry,
-        }, { api });
+        const created = await createCandidateCommit(
+            env,
+            {
+                snapshot: replaySnapshot,
+                ...entry,
+            },
+            { api },
+        );
         policyChain.push({
             sha: created.sha,
             parents: [replaySnapshot.headSha],
             message: entry.message,
-            changedPaths: entry.files.map(file => file.path).sort(),
-            ...(mode === 'structured' ? {
-                report: JSON.parse(entry.files.find(file => file.path.endsWith('.json')).content),
-            } : {}),
+            changedPaths: entry.files.map((file) => file.path).sort(),
+            ...(mode === 'structured'
+                ? {
+                      report: JSON.parse(entry.files.find((file) => file.path.endsWith('.json')).content),
+                  }
+                : {}),
         });
         replaySnapshot = {
             branch: snapshot.branch,
@@ -635,13 +655,20 @@ async function replayPublicationChain(env, snapshot, predecessor, baseBranch, mo
             treeSha: created.treeSha,
         };
     }
-    return { snapshot: replaySnapshot, policyChain, replayedFrom: snapshot.headSha };
+    return {
+        snapshot: replaySnapshot,
+        policyChain,
+        replayedFrom: snapshot.headSha,
+    };
 }
 
 async function closeSupersededPulls(env, pulls, branchPrefix, exactBranch, { api }) {
-    const superseded = pulls.filter(pull => isSameRepositoryPull(env, pull)
-        && pull?.head?.ref !== exactBranch
-        && String(pull?.head?.ref || '').startsWith(`${branchPrefix}/`));
+    const superseded = pulls.filter(
+        (pull) =>
+            isSameRepositoryPull(env, pull) &&
+            pull?.head?.ref !== exactBranch &&
+            String(pull?.head?.ref || '').startsWith(`${branchPrefix}/`),
+    );
     for (const pull of superseded) {
         if (!Number.isInteger(pull?.number)) continue;
         try {
@@ -665,17 +692,13 @@ async function closeSupersededPulls(env, pulls, branchPrefix, exactBranch, { api
     }
 }
 
-async function commitFilesViaPullRequestLocked(env, {
-    snapshot,
-    files,
-    message,
-    committedAt,
-    reportDate,
-    batch,
-    mode,
-}, { api = callGitHubApi } = {}) {
+async function commitFilesViaPullRequestLocked(
+    env,
+    { snapshot, files, message, committedAt, reportDate, batch, mode },
+    { api = callGitHubApi } = {},
+) {
     const prefix = String(env.GITHUB_PUBLISH_BRANCH_PREFIX || '').replace(/^\/+|\/+$/g, '');
-    if (!prefix || !prefix.split('/').every(part => /^[a-zA-Z0-9._-]+$/.test(part))) {
+    if (!prefix || !prefix.split('/').every((part) => /^[a-zA-Z0-9._-]+$/.test(part))) {
         throw new Error('GITHUB_PUBLISH_BRANCH_PREFIX is required for pull request publishing');
     }
     const dateSegment = publicationBranchSegment(reportDate, 'report date');
@@ -683,65 +706,67 @@ async function commitFilesViaPullRequestLocked(env, {
     const modeSegment = publicationBranchSegment(mode, 'publication mode');
     const baseBranch = snapshot.baseBranch || snapshot.branch;
     const openPulls = await listOpenPublicationPulls(env, baseBranch, { api });
-    const publicationPulls = openPulls.filter(pull => isSameRepositoryPull(env, pull)
-        && publicationBranchDetails(pull?.head?.ref, prefix));
+    const publicationPulls = openPulls.filter(
+        (pull) => isSameRepositoryPull(env, pull) && publicationBranchDetails(pull?.head?.ref, prefix),
+    );
 
     const predecessor = selectPublicationPull(publicationPulls);
     if (publicationPulls.length > 1) {
         await closeSupersededPulls(
             env,
-            publicationPulls.filter(pull => pull.number !== predecessor.number),
+            publicationPulls.filter((pull) => pull.number !== predecessor.number),
             prefix,
             predecessor.head.ref,
             { api },
         );
     }
     if (predecessor) {
-        if (snapshot.publicationPullNumber !== predecessor.number
-            || predecessor?.head?.ref !== snapshot.branch
-            || (predecessor?.head?.sha && predecessor.head.sha !== snapshot.headSha)) {
+        if (
+            snapshot.publicationPullNumber !== predecessor.number ||
+            predecessor?.head?.ref !== snapshot.branch ||
+            (predecessor?.head?.sha && predecessor.head.sha !== snapshot.headSha)
+        ) {
             throw new AtomicGitConflictError('Publication queue moved before candidate creation');
         }
         const predecessorMode = publicationBranchDetails(predecessor.head.ref, prefix)?.mode;
         if (predecessorMode !== modeSegment) {
             throw new AtomicGitConflictError('Cannot supersede a publication from another mode');
         }
-    } else if (snapshot.publicationPullNumber !== null
-        && snapshot.publicationPullNumber !== undefined) {
+    } else if (snapshot.publicationPullNumber !== null && snapshot.publicationPullNumber !== undefined) {
         throw new AtomicGitConflictError('Publication predecessor disappeared before candidate creation');
     }
 
     const replay = predecessor
         ? await replayPublicationChain(env, snapshot, predecessor, baseBranch, modeSegment, {
-            api,
-            candidatePaths: files.map(file => file.path),
-        })
+              api,
+              candidatePaths: files.map((file) => file.path),
+          })
         : { snapshot, policyChain: null, replayedFrom: null };
-    const candidate = await createCandidateCommit(env, {
-        snapshot: replay.snapshot,
-        files,
-        message,
-        committedAt,
-    }, { api });
+    const candidate = await createCandidateCommit(
+        env,
+        {
+            snapshot: replay.snapshot,
+            files,
+            message,
+            committedAt,
+        },
+        { api },
+    );
     const candidateSha = candidate.sha;
     const familyPrefix = `${prefix}/${dateSegment}-${batchSegment}-${modeSegment}`;
     const branch = `${familyPrefix}/${candidateSha.slice(0, 12)}`;
-    const existing = openPulls.find(pull => isSameRepositoryPull(env, pull)
-        && pull?.head?.ref === branch);
+    const existing = openPulls.find((pull) => isSameRepositoryPull(env, pull) && pull?.head?.ref === branch);
 
     if (replay.policyChain) {
         let report;
         if (modeSegment === 'structured') {
             try {
-                report = JSON.parse(files.find(file => file.path.endsWith('.json'))?.content);
+                report = JSON.parse(files.find((file) => file.path.endsWith('.json'))?.content);
             } catch {
                 throw new AtomicGitConflictError('Structured candidate report is invalid');
             }
         }
-        const candidateComparison = await api(
-            env,
-            `/compare/${replay.policyChain[0].parents[0]}...${candidateSha}`,
-        );
+        const candidateComparison = await api(env, `/compare/${replay.policyChain[0].parents[0]}...${candidateSha}`);
         validatePublicationPull({
             baseSha: replay.policyChain[0].parents[0],
             headSha: candidateSha,
@@ -753,7 +778,7 @@ async function commitFilesViaPullRequestLocked(env, {
                     sha: candidateSha,
                     parents: [replay.snapshot.headSha],
                     message,
-                    changedPaths: files.map(file => file.path).sort(),
+                    changedPaths: files.map((file) => file.path).sort(),
                     report,
                 },
             ],
@@ -781,9 +806,7 @@ async function commitFilesViaPullRequestLocked(env, {
                 base: baseBranch,
                 body: [
                     '<!-- bubble-daily-publication -->',
-                    ...(predecessor
-                        ? [`<!-- supersedes-candidate:${snapshot.headSha} -->`]
-                        : []),
+                    ...(predecessor ? [`<!-- supersedes-candidate:${snapshot.headSha} -->`] : []),
                     `Automated ${mode} publication for ${reportDate} ${batch}.`,
                     '',
                     `Candidate commit: ${candidateSha}`,
@@ -794,8 +817,9 @@ async function commitFilesViaPullRequestLocked(env, {
         } catch (createError) {
             try {
                 const reconciledPulls = await listPublicationPulls(env, baseBranch, 'all', { api });
-                pull = reconciledPulls.find(candidate => isSameRepositoryPull(env, candidate)
-                    && candidate?.head?.ref === branch);
+                pull = reconciledPulls.find(
+                    (candidate) => isSameRepositoryPull(env, candidate) && candidate?.head?.ref === branch,
+                );
                 if (!pull) throw createError;
                 reconciled = true;
             } catch (reconcileError) {

@@ -10,6 +10,7 @@ import {
   probeExternalUrl,
 } from "./external-link-audit.mjs";
 import { expectedPreviewMediaType } from "./preview-media-types.mjs";
+import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
 
 const argumentsList = process.argv.slice(2);
 const checkExternal = argumentsList.includes("--check-external");
@@ -40,6 +41,7 @@ const localDistRoot = resolve(dirname(resolve(localManifestPath)), "..");
 const localManifest = JSON.parse(localManifestText);
 const expectedSha = (
   expectedShaArgument ??
+  localManifest.build?.code_sha ??
   localManifest.build?.source_sha ??
   ""
 ).toLowerCase();
@@ -134,9 +136,13 @@ invariant(
   "Invalid local route manifest",
 );
 invariant(
-  localManifest.build?.source_sha === expectedSha,
+  localManifest.build?.code_sha === expectedSha &&
+    localManifest.build?.source_sha === expectedSha,
   "Local manifest does not match the expected Git SHA",
 );
+assertRouteBuildContract(localManifest.build, {
+  pinned: Boolean(localManifest.build?.site_release_id),
+});
 
 const manifestResponse = await fetchManual(
   "/release-manifests/site-route-manifest.json",
@@ -152,9 +158,13 @@ invariant(
   "Invalid preview route manifest",
 );
 invariant(
-  manifest.build?.source_sha === expectedSha,
+  manifest.build?.code_sha === expectedSha &&
+    manifest.build?.source_sha === expectedSha,
   "Preview manifest source SHA does not match the release candidate",
 );
+assertRouteBuildContract(manifest.build, {
+  pinned: Boolean(localManifest.build?.site_release_id),
+});
 invariant(
   manifest.build?.artifact_sha256 === localManifest.build?.artifact_sha256,
   "Preview artifact fingerprint differs from the locally verified release artifact",

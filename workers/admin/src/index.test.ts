@@ -191,6 +191,34 @@ describe("admin worker", () => {
     expect(response.status).toBe(401);
   });
 
+  it("rejects signed Access JWTs whose issued-at time is in the future", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jwksResponse()),
+    );
+    const response = await worker.fetch(
+      request(
+        "/admin/",
+        await accessToken({ iat: Math.floor(Date.now() / 1000) + 300 }),
+      ),
+      env(),
+    );
+    expect(response.status).toBe(401);
+  });
+
+  it("rejects signed Access JWTs whose expiry does not follow issued-at", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => jwksResponse()),
+    );
+    const issuedAt = Math.floor(Date.now() / 1000);
+    const response = await worker.fetch(
+      request("/admin/", await accessToken({ iat: issuedAt, exp: issuedAt })),
+      env(),
+    );
+    expect(response.status).toBe(401);
+  });
+
   it("rejects signed identities outside the email allowlist", async () => {
     vi.stubGlobal(
       "fetch",

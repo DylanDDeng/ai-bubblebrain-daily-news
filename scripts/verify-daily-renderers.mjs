@@ -186,13 +186,6 @@ try {
     `${JSON.stringify(fixture, null, 2)}\n`,
   );
 
-  const bilingualFixture = structuredClone(fixture);
-  bilingualFixture.date = "2026-01-08";
-  await writeFile(
-    join(dailyData, "2026-01-08.json"),
-    `${JSON.stringify(bilingualFixture, null, 2)}\n`,
-  );
-
   await mkdir(join(hugoSanitizerRoot, "content"), { recursive: true });
   await mkdir(join(hugoSanitizerRoot, "layouts", "partials"), {
     recursive: true,
@@ -279,7 +272,11 @@ title: sanitizer fixture
   });
   execFileSync("npm", ["run", "build"], {
     cwd: astroRoot,
-    env: { ...process.env, DAILY_DATA_DIR: dailyData },
+    env: {
+      ...process.env,
+      DAILY_DATA_DIR: dailyData,
+      STRUCTURED_CUTOVER_DATE: "2026-07-14",
+    },
     stdio: "inherit",
   });
 

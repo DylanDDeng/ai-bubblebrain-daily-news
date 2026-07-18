@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
 import { XMLParser } from "fast-xml-parser";
+import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
 
 const execFileAsync = promisify(execFile);
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -199,10 +200,35 @@ invariant(
 
 const contract = JSON.parse(await readFile(contractPath, "utf8"));
 const legacyManifest = JSON.parse(await readFile(legacyManifestPath, "utf8"));
+const pinnedContentBuild = Boolean(contract.build?.site_release_id);
 invariant(
   contract.schema_version === 3 && Array.isArray(contract.records),
   "Invalid site route contract",
 );
+let expectedPinnedBuild = null;
+if (pinnedContentBuild) {
+  const input = JSON.parse(
+    await readFile(resolve(astroRoot, ".content-release", "build-input.json"), "utf8"),
+  );
+  expectedPinnedBuild = {
+    code_sha: input.code_sha,
+    source_sha: input.code_sha,
+    site_release_id: input.site_release_id,
+    site_release_sequence: input.site_release_sequence,
+    content_sha256: input.content_sha256,
+    manifest_sha256: input.manifest_sha256,
+    build_environment_version: input.build_environment_version,
+    content_schema_version: input.content_schema_version,
+    content_taxonomy_version: input.content_taxonomy_version,
+    content_serializer_version: input.content_serializer_version,
+    content_search_contract_version: input.content_search_contract_version,
+    content_source_contract_version: input.content_source_contract_version,
+  };
+}
+assertRouteBuildContract(contract.build, {
+  pinned: pinnedContentBuild,
+  expected: expectedPinnedBuild,
+});
 invariant(
   /^[\da-f]{40}$/.test(contract.build?.source_sha ?? ""),
   "Site contract has no immutable source SHA",
@@ -303,7 +329,9 @@ for (const route of requiredRoutes)
     `Missing required 200 route: ${route}`,
   );
 
-const dailyDataDirectory = resolve(repoRoot, "data", "daily");
+const dailyDataDirectory = pinnedContentBuild
+  ? resolve(astroRoot, ".content-release", "data")
+  : resolve(repoRoot, "data", "daily");
 const dailyDataNames = (await readdir(dailyDataDirectory))
   .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
   .sort();
@@ -319,8 +347,31 @@ invariant(
 const searchIndex = JSON.parse(
   await readFile(resolve(distRoot, "search", "index.json"), "utf8"),
 );
+invariant(
+  (searchIndex.site_release_id ?? null) ===
+    (contract.build?.site_release_id ?? null),
+  "Static search release identity differs from the route manifest",
+);
+if (pinnedContentBuild) {
+  const searchHtml = await readFile(resolve(distRoot, "search", "index.html"), "utf8");
+  invariant(
+    searchHtml.includes(`data-content-release-id="${contract.build.site_release_id}"`) &&
+      searchHtml.includes(
+        'data-content-api-origin="https://content-api.bubblenews.today"',
+      ),
+    "Search HTML does not bind historical queries to the pinned release",
+  );
+}
 const expectedSearchDates = dailyDataNames.map((name) =>
   name.slice(0, -".json".length),
+);
+const pinnedEnglishDailyRssIdentities = new Set(
+  pinnedContentBuild
+    ? expectedSearchDates.map((date) => {
+        const url = `${siteOrigin}/en/daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/`;
+        return `${url}\n${url}`;
+      })
+    : [],
 );
 let expectedSearchItemCount = 0;
 for (const name of dailyDataNames) {
@@ -384,7 +435,9 @@ for (const name of dailyDataNames) {
 invariant(
   new Set(searchIndex.report_dates).size === searchIndex.report_dates.length &&
     searchIndex.report_dates.length === expectedSearchDates.length &&
-    expectedSearchDates.every((date) => searchIndex.report_dates.includes(date)),
+    expectedSearchDates.every((date) =>
+      searchIndex.report_dates.includes(date),
+    ),
   "Structured daily search report dates drifted",
 );
 invariant(
@@ -602,7 +655,10 @@ const specializedMarkers = new Map([
     "ai-tools/image-compress/index.html",
     ['id="imgc-input"', "heic2any", "jszip"],
   ],
-  ["model-evals/index.html", ['id="eval-search"', "model-evals.json", "<script"]],
+  [
+    "model-evals/index.html",
+    ['id="eval-search"', "model-evals.json", "<script"],
+  ],
   [
     "highlights/index.html",
     ['id="highlight-search"', "highlights.json", "<script"],
@@ -732,9 +788,18 @@ try {
     ]);
     const astroSet = rssIdentitySet(astroRss, record.route);
     const hugoSet = rssIdentitySet(hugoRss, record.route);
+    const expectedSet = new Set(hugoSet);
+    if (
+      pinnedContentBuild &&
+      (record.route === "/en/daily/rss.xml" || record.route === "/en/rss.xml")
+    ) {
+      for (const identity of pinnedEnglishDailyRssIdentities)
+        expectedSet.add(identity);
+    }
+    const expectedIdentities = [...expectedSet].sort();
     invariant(
-      JSON.stringify(astroSet) === JSON.stringify(hugoSet),
-      `RSS accepted-set drift for ${record.route}: Astro ${astroSet.length}, Hugo ${hugoSet.length}`,
+      JSON.stringify(astroSet) === JSON.stringify(expectedIdentities),
+      `RSS accepted-set drift for ${record.route}: Astro ${astroSet.length}, expected ${expectedIdentities.length}`,
     );
   }
   const missingLegacyRoutes = [];

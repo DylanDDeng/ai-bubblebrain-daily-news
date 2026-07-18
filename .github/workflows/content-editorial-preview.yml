@@ -1,0 +1,147 @@
+name: Editorial Content Preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      dispatch_id:
+        required: true
+        type: string
+      draft_id:
+        required: true
+        type: string
+      preview_sha256:
+        required: true
+        type: string
+      base_site_release_id:
+        required: true
+        type: string
+      code_sha:
+        required: true
+        type: string
+      build_environment_version:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: editorial-preview-${{ github.event.inputs.draft_id }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: content-preview
+    env:
+      DISPATCH_ID: ${{ github.event.inputs.dispatch_id }}
+      DRAFT_ID: ${{ github.event.inputs.draft_id }}
+      EDITORIAL_PREVIEW_SHA256: ${{ github.event.inputs.preview_sha256 }}
+      SITE_RELEASE_ID: ${{ github.event.inputs.base_site_release_id }}
+      CONTENT_RELEASE_ID: ${{ github.event.inputs.base_site_release_id }}
+      EXACT_CODE_SHA: ${{ github.event.inputs.code_sha }}
+      BUILD_ENVIRONMENT_VERSION: ${{ github.event.inputs.build_environment_version }}
+      CONTENT_DEPLOYER_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
+      CONTENT_BUILD_API_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
+      PUBLIC_CONTENT_API_ORIGIN: https://content-api.bubblenews.today
+      CONTENT_BUILD_API_SECRET: ${{ secrets.CONTENT_BUILD_API_SECRET }}
+      CONTENT_DEPLOY_CALLBACK_URL: ${{ vars.CONTENT_DEPLOY_CALLBACK_URL }}
+      CONTENT_DEPLOY_CALLBACK_SECRET: ${{ secrets.CONTENT_DEPLOY_CALLBACK_SECRET }}
+      EDITORIAL_PREVIEW_INPUT_SECRET: ${{ secrets.PREVIEW_DISPATCH_SECRET }}
+      TZ: UTC
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+
+    steps:
+      - name: Validate immutable Preview inputs
+        run: |
+          [[ "$DISPATCH_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$ ]]
+          [[ "$DRAFT_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$ ]]
+          [[ "$SITE_RELEASE_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$ ]]
+          [[ "$EDITORIAL_PREVIEW_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$EXACT_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BUILD_ENVIRONMENT_VERSION" == "node22.17-astro7-hugo0.147.9-v1" ]]
+
+      - name: Checkout exact code SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.code_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js 22.17.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            astro/package-lock.json
+
+      - name: Setup Hugo 0.147.9
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.147.9"
+          extended: true
+
+      - name: Verify pinned build toolchain
+        run: |
+          test "$(node --version)" = "v22.17.0"
+          test "$(npm --version)" = "10.9.2"
+          test "$(hugo version | awk '{print $2}' | cut -d+ -f1)" = "v0.147.9"
+
+      - name: Fail closed on unresolved Preview configuration
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PREVIEW_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
+        run: node scripts/validate-content-production-config.mjs workflow-editorial-preview
+
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          npm ci --prefix astro
+
+      - name: Build attested draft overlay
+        env:
+          GITHUB_SHA: ${{ github.event.inputs.code_sha }}
+          EDITORIAL_DRAFT_ID: ${{ github.event.inputs.draft_id }}
+        run: |
+          export EDITORIAL_PREVIEW_INPUT_URL="$CONTENT_DEPLOYER_ORIGIN/internal/preview-input/$DRAFT_ID/$EDITORIAL_PREVIEW_SHA256"
+          npm run check --prefix astro
+          npm run lint --prefix astro
+          npm run test --prefix astro
+          npm run build --prefix astro
+          npm run verify:csp --prefix astro
+          npm run verify:site --prefix astro
+
+      - name: Verify embedded draft identity
+        run: |
+          node -e "const m=require('./astro/dist/release-manifests/site-route-manifest.json');const b=m.build;if(b.code_sha!==process.env.EXACT_CODE_SHA||b.source_sha!==process.env.EXACT_CODE_SHA||b.site_release_id!==process.env.SITE_RELEASE_ID||b.editorial_preview_sha256!==process.env.EDITORIAL_PREVIEW_SHA256||b.node_version!=='v22.17.0'||b.npm_version!=='10.9.2'||b.hugo_version!=='0.147.9'||b.build_timezone!=='UTC'||b.build_locale!=='C.UTF-8'||![b.content_schema_version,b.content_taxonomy_version,b.content_serializer_version,b.content_search_contract_version,b.content_source_contract_version].every(Boolean))process.exit(1)"
+          artifact_sha="$(node -e "process.stdout.write(require('./astro/dist/release-manifests/site-route-manifest.json').build.artifact_sha256)")"
+          [[ "$artifact_sha" =~ ^[0-9a-f]{64}$ ]]
+          echo "ARTIFACT_SHA256=$artifact_sha" >> "$GITHUB_ENV"
+
+      - name: Deploy exact draft to Pages Preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx wrangler pages deploy astro/dist --project-name bubble-content-preview --branch "draft-$DRAFT_ID" --commit-hash "$EXACT_CODE_SHA" --commit-dirty=false | tee preview-deploy.log
+          preview_url="$(grep -Eo 'https://[^ ]+\.pages\.dev' preview-deploy.log | tail -1)"
+          test -n "$preview_url"
+          echo "PREVIEW_URL=$preview_url" >> "$GITHUB_ENV"
+
+      - name: Verify Preview route parity
+        run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/release-manifests/site-route-manifest.json
+
+      - name: Register immutable Preview evidence
+        run: |
+          evidence="$(jq -nc --arg draft "$DRAFT_ID" --arg preview "$EDITORIAL_PREVIEW_SHA256" --arg artifact "$ARTIFACT_SHA256" --arg url "$PREVIEW_URL" '{draft_id:$draft,preview_sha256:$preview,artifact_sha256:$artifact,pages_preview_url:$url,route_parity:true}')"
+          node scripts/send-content-deployment-callback.mjs editorial_preview_verified "$evidence"
+
+      - name: Record failed Preview
+        if: ${{ failure() }}
+        continue-on-error: true
+        run: |
+          evidence="$(jq -nc --arg draft "$DRAFT_ID" --arg preview "$EDITORIAL_PREVIEW_SHA256" '{draft_id:$draft,preview_sha256:$preview,error_code:"workflow_failed"}')"
+          node scripts/send-content-deployment-callback.mjs editorial_preview_failed "$evidence"

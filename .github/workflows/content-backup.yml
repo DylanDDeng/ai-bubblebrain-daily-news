@@ -1,0 +1,117 @@
+name: Encrypted Content Database Backup
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: content-database-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: content-backup
+    env:
+      BACKUP_BUCKET: bubble-content-backups
+      CONTENT_BACKUP_DATABASE_URL: ${{ secrets.CONTENT_BACKUP_DATABASE_URL }}
+      CONTENT_DATABASE_PROJECT_REF: ${{ vars.CONTENT_DATABASE_PROJECT_REF }}
+      CONTENT_DATABASE_TOPOLOGY: ${{ vars.CONTENT_DATABASE_TOPOLOGY }}
+      CONTENT_SHARED_PROJECT_ACK: ${{ vars.CONTENT_SHARED_PROJECT_ACK }}
+      AGE_RECIPIENT: ${{ vars.CONTENT_BACKUP_AGE_RECIPIENT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_R2_LOCK_READ_TOKEN: ${{ secrets.R2_LOCK_READ_API_TOKEN }}
+      R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+
+      - name: Validate isolated backup environment
+        run: node scripts/validate-content-production-config.mjs workflow-backup
+
+      - name: Install age
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes age
+
+      - name: Create encrypted logical backup
+        run: |
+          umask 077
+          backup_started_at="$(date -u +%FT%TZ)"
+          content_tables=(
+            --table='private.admin_*'
+            --table='private.consumed_attestation_jtis'
+            --table='private.content_*'
+            --table='private.daily_*'
+            --table='private.editorial_*'
+            --table='private.global_*'
+            --table='private.preview_*'
+            --table='private.production_*'
+            --table='private.publication_*'
+            --table='private.recovery_*'
+            --table='private.release_*'
+            --table='private.report_*'
+            --table='private.site_*'
+          )
+          pg_dump "$CONTENT_BACKUP_DATABASE_URL" \
+            --format=custom --compress=9 --no-owner --no-acl --strict-names \
+            "${content_tables[@]}" --file=content.dump
+          plain_sha="$(sha256sum content.dump | awk '{print $1}')"
+          age --recipient "$AGE_RECIPIENT" --output content.dump.age content.dump
+          cipher_sha="$(sha256sum content.dump.age | awk '{print $1}')"
+          cipher_bytes="$(wc -c < content.dump.age | tr -d ' ')"
+          object_date="$(date -u +%Y/%m/%d)"
+          object_key="database/$object_date/$cipher_sha.dump.age"
+          backup_completed_at="$(date -u +%FT%TZ)"
+          pg_dump_version="$(pg_dump --version)"
+          printf 'BACKUP_STARTED_AT=%s\nBACKUP_COMPLETED_AT=%s\nPG_DUMP_VERSION=%s\nPLAIN_SHA256=%s\nCIPHER_SHA256=%s\nCIPHER_BYTES=%s\nBACKUP_OBJECT_KEY=%s\n' \
+            "$backup_started_at" "$backup_completed_at" "$pg_dump_version" "$plain_sha" "$cipher_sha" "$cipher_bytes" "$object_key" >> "$GITHUB_ENV"
+          rm content.dump
+
+      - name: Require a covering 30-day R2 lock rule
+        run: |
+          curl --fail --silent --show-error \
+            --header "Authorization: Bearer $CLOUDFLARE_R2_LOCK_READ_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets/$BACKUP_BUCKET/lock" \
+            > r2-lock.json
+          node scripts/assert-r2-lock.mjs r2-lock.json "$BACKUP_OBJECT_KEY" 2592000 > lock-evidence.json
+
+      - name: Put and re-download locked R2 backup
+        run: |
+          if ! aws s3api head-object --bucket "$BACKUP_BUCKET" --key "$BACKUP_OBJECT_KEY" --endpoint-url "$R2_ENDPOINT" >/dev/null 2>&1; then
+            if ! aws s3api put-object --bucket "$BACKUP_BUCKET" --key "$BACKUP_OBJECT_KEY" --body content.dump.age --if-none-match '*' --endpoint-url "$R2_ENDPOINT" >/dev/null; then
+              aws s3api head-object --bucket "$BACKUP_BUCKET" --key "$BACKUP_OBJECT_KEY" --endpoint-url "$R2_ENDPOINT" >/dev/null
+            fi
+          fi
+          aws s3 cp "s3://$BACKUP_BUCKET/$BACKUP_OBJECT_KEY" verified.dump.age --endpoint-url "$R2_ENDPOINT" --no-progress
+          test "$(sha256sum verified.dump.age | awk '{print $1}')" = "$CIPHER_SHA256"
+          test "$(wc -c < verified.dump.age | tr -d ' ')" = "$CIPHER_BYTES"
+
+      - name: Emit backup evidence
+        run: |
+          jq -nc --arg project_ref "$CONTENT_DATABASE_PROJECT_REF" --arg started_at "$BACKUP_STARTED_AT" --arg completed_at "$BACKUP_COMPLETED_AT" \
+            --arg pg_dump_version "$PG_DUMP_VERSION" --arg object_key "$BACKUP_OBJECT_KEY" --arg plain_sha256 "$PLAIN_SHA256" \
+            --arg cipher_sha256 "$CIPHER_SHA256" --argjson bytes "$CIPHER_BYTES" \
+            '{schema_version:1,kind:"content-database-backup",project_ref:$project_ref,started_at:$started_at,completed_at:$completed_at,pg_dump_version:$pg_dump_version,encrypted:true,encryption:"age-x25519",object_key:$object_key,plain_sha256:$plain_sha256,cipher_sha256:$cipher_sha256,byte_length:$bytes}' \
+            > backup-evidence-core.json
+          jq -s '.[0] + {r2_lock:.[1]}' backup-evidence-core.json lock-evidence.json > backup-evidence.json
+
+      - name: Upload short-lived evidence only
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-backup-evidence-${{ github.run_id }}
+          path: backup-evidence.json
+          retention-days: 14
+          if-no-files-found: error
