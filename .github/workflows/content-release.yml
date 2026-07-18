@@ -131,7 +131,7 @@ jobs:
         run: |
           npm run check --prefix astro
           npm run lint --prefix astro
-          npm run test --prefix astro
+          env -u CONTENT_RELEASE_ID npm run test --prefix astro
           npm run build --prefix astro
           npm run verify:csp --prefix astro
           npm run verify:site --prefix astro
