@@ -26,7 +26,7 @@ This register separates implemented code from production evidence. A checkmark m
 - [x] Access JWT validation checks RS256/JWKS, issuer, audience, expiry, not-before and issued-at chronology; Control adds independent TOTP
 - [x] backup/PITR freshness monitor, stale-aware Dashboard callback and fail-closed topology/configuration validators implemented
 - [x] five-minute batch +10m, manifest-drift, API 5xx/cache, search-freshness and outbox/DLQ monitor implemented with a deployer-only database RPC
-- [ ] Supabase PITR enabled and isolated restore drill within RPO/RTO
+- [x] ADR-003 records the owner's decision not to use PITR; encrypted logical backups and immutable R2 artifacts are the accepted recovery controls
 - [x] production R2 writer overwrite/delete negative tests with deployed credentials
 - [ ] live batch +10-minute, manifest-drift, API 5xx/cache and search-freshness fired/recovered alert drill archived
 
@@ -78,7 +78,7 @@ This register separates implemented code from production evidence. A checkmark m
 - [x] protected no-deploy runtime preflight requires exact code SHA plus indefinite report/manifest/artifact lock coverage
 - [x] Broker deployed with the sole production Pages token
 - [ ] Cloudflare Git production publisher disabled
-- [ ] PITR/restore evidence and deploy-after-upload crash drill
+- [ ] deploy-after-upload crash drill; PITR evidence is waived by ADR-003
 - [ ] production cache purge permission and failure drill with the deployed Broker token
 
 ## Phase 6
@@ -92,4 +92,6 @@ This register separates implemented code from production evidence. A checkmark m
 - [ ] read-only, draft, Preview, limited publish and emergency controls opened progressively
 - [ ] final three independent reviewers all GO with P0=0 and P1=0
 
-Production publication must remain disabled while any earlier unchecked hard gate remains.
+ADR-003 authorizes production activation with the remaining observation and review items tracked as
+follow-up evidence. Publication still requires a unique Pages publisher, a passing runtime preflight
+and successful smoke verification.

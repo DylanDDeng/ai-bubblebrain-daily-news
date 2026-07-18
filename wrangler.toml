@@ -62,10 +62,11 @@ GITHUB_BRANCH = "main"
 GITHUB_PUBLISH_STRATEGY = "pull_request"
 GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"
 EXTERNAL_WRITES_ENABLED = "true"
-DAILY_PUBLISH_MODE = "legacy"
-DAILY_STRUCTURED_WRITES_ENABLED = "false"
-CONTENT_DATABASE_MIRROR_ENABLED = "false"
-CONTENT_DATABASE_PUBLICATION_ENABLED = "false"
+DAILY_PUBLISH_MODE = "structured"
+DAILY_STRUCTURED_WRITES_ENABLED = "true"
+DAILY_STRUCTURED_START_DATE = "2026-07-16"
+CONTENT_DATABASE_MIRROR_ENABLED = "true"
+CONTENT_DATABASE_PUBLICATION_ENABLED = "true"
 STRUCTURED_CUTOVER_DATE = "2026-07-16"
 DAILY_SOURCE_CONTRACT_VERSION = "daily-source-v1"
 DAILY_SERIALIZER_VERSION = "daily-json-c14n-v1"
@@ -81,10 +82,10 @@ BOOK_LINK = ""
 INSERT_FOOT = "false"
 INSERT_APP_URL = "<h3>[查看完整版AI日报↗️ https://ai.hubtoday.app/](https://ai.hubtoday.app/)</h3>"
 
-# Replace with the physically isolated content_ingestor Hyperdrive before enabling mirror writes.
+# Owner-approved shared-project content_ingestor connection (ADR-002).
 [[hyperdrive]]
 binding = "CONTENT_DB"
-id = "00000000000000000000000000000000"
+id = "a8155f35059c4b2faf4b06ef43c30fa3"
 
 [[r2_buckets]]
 binding = "REPORT_SNAPSHOTS"
