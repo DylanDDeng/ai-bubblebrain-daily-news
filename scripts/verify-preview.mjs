@@ -104,7 +104,7 @@ function htmlMetadata(html) {
   };
 }
 
-async function fetchManual(route, attempts = 3) {
+async function fetchManual(route, attempts = 5) {
   let lastError;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
@@ -121,7 +121,10 @@ async function fetchManual(route, attempts = 3) {
       if (attempt === attempts - 1) throw error;
     }
     await new Promise((resolve) =>
-      setTimeout(resolve, 250 * 2 ** attempt + Math.floor(Math.random() * 100)),
+      setTimeout(
+        resolve,
+        Math.min(4_000, 500 * 2 ** attempt) + Math.floor(Math.random() * 200),
+      ),
     );
   }
   throw lastError;
