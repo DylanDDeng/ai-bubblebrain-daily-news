@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import '../styles/legacy-pages.css';
+
+interface Props {
+	locale: 'zh-CN' | 'en';
+}
+
+const { locale } = Astro.props;
+const isEnglish = locale === 'en';
+const canonicalPath = isEnglish ? '/en/prompts/library/' : '/prompts/library/';
+---
+
+<BaseLayout
+	title={`${isEnglish ? 'Prompt Library' : 'Prompt 资料库'} · Bubble's Brain`}
+	description={isEnglish
+		? 'Read a Prompt from the content library.'
+		: '查看内容数据库中的 Prompt。'}
+	lang={locale}
+	canonicalPath={canonicalPath}
+>
+	<article
+		class="article-shell legacy-article prompt-library-detail"
+		data-prompt-library-detail
+		data-locale={locale}
+		data-api-base="https://content-api.bubblenews.today"
+	>
+		<header class="article-header">
+			<p class="page-kicker">PROMPT LIBRARY</p>
+			<h1 data-prompt-title>{isEnglish ? 'Loading Prompt…' : '正在读取 Prompt…'}</h1>
+			<p class="article-meta" data-prompt-meta hidden></p>
+			<p class="article-lede" data-prompt-description hidden></p>
+		</header>
+		<p class="article-empty" data-prompt-status role="status">
+			{isEnglish ? 'Connecting to the content library…' : '正在连接内容数据库…'}
+		</p>
+		<div class="article-content prompt-library-source" data-prompt-body hidden></div>
+		<nav class="article-pagination" aria-label={isEnglish ? 'Prompt navigation' : 'Prompt 导航'}>
+			<div></div>
+			<a class="article-back" href={isEnglish ? '/en/prompts/' : '/prompts/'}>
+				{isEnglish ? 'Back to Prompts' : '返回 Prompt 列表'}
+			</a>
+			<div></div>
+		</nav>
+	</article>
+	<script is:inline type="module" src="/js/prompt-library-detail.js"></script>
+</BaseLayout>

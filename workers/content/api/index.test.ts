@@ -127,6 +127,137 @@ describe("release-pinned content API", () => {
     expect(await failed.text()).not.toContain("secret");
   });
 
+  it("serves current public highlights with bounded cache and locale", async () => {
+    const callRpc = vi.fn().mockResolvedValue({
+      schema_version: 1,
+      locale: "zh-CN",
+      item_count: 1,
+      items: [{ id: "highlight-01", title: "精选" }],
+    });
+    const response = await handleContentApiRequest(
+      new Request("https://content.test/v1/highlights?locale=zh-CN&limit=35"),
+      {},
+      { callRpc },
+    );
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toContain("s-maxage=300");
+    expect(response.headers.get("etag")).toContain("sha256-");
+    expect(callRpc).toHaveBeenCalledWith("highlights", {
+      locale: "zh-CN",
+      limit: 35,
+    });
+  });
+
+  it("rejects unsupported highlight locales and excessive limits", async () => {
+    const callRpc = vi.fn();
+    expect(
+      (
+        await handleContentApiRequest(
+          new Request("https://content.test/v1/highlights?locale=fr"),
+          {},
+          { callRpc },
+        )
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await handleContentApiRequest(
+          new Request("https://content.test/v1/highlights?limit=1000"),
+          {},
+          { callRpc },
+        )
+      ).status,
+    ).toBe(400);
+    expect(callRpc).not.toHaveBeenCalled();
+  });
+
+  it("serves Prompt lists and complete Prompt detail records", async () => {
+    const callRpc = vi
+      .fn()
+      .mockResolvedValueOnce({
+        schema_version: 1,
+        locale: "zh-CN",
+        item_count: 1,
+        items: [{ id: "prompt-agent-review", title: "Agent 评审" }],
+      })
+      .mockResolvedValueOnce({
+        schema_version: 1,
+        locale: "zh-CN",
+        id: "prompt-agent-review",
+        title: "Agent 评审",
+        body_markdown: "# 完整正文",
+      });
+    const list = await handleContentApiRequest(
+      new Request("https://content.test/v1/prompts?locale=zh-CN&limit=12"),
+      {},
+      { callRpc },
+    );
+    expect(list.status).toBe(200);
+    expect(callRpc).toHaveBeenNthCalledWith(1, "prompts", {
+      locale: "zh-CN",
+      limit: 12,
+    });
+    const detail = await handleContentApiRequest(
+      new Request(
+        "https://content.test/v1/prompts/prompt-agent-review?locale=zh-CN",
+      ),
+      {},
+      { callRpc },
+    );
+    expect(detail.status).toBe(200);
+    expect(await detail.json()).toMatchObject({ body_markdown: "# 完整正文" });
+    expect(callRpc).toHaveBeenNthCalledWith(2, "prompt", {
+      locale: "zh-CN",
+      externalId: "prompt-agent-review",
+    });
+  });
+
+  it("serves model evaluations with an optional year filter", async () => {
+    const callRpc = vi.fn().mockResolvedValue({
+      schema_version: 1,
+      locale: "zh-CN",
+      year: 2026,
+      item_count: 1,
+      items: [{ id: "model", name: "Model" }],
+    });
+    const response = await handleContentApiRequest(
+      new Request(
+        "https://content.test/v1/model-evals?locale=zh-CN&year=2026&limit=50",
+      ),
+      {},
+      { callRpc },
+    );
+    expect(response.status).toBe(200);
+    expect(callRpc).toHaveBeenCalledWith("modelEvals", {
+      locale: "zh-CN",
+      year: 2026,
+      limit: 50,
+    });
+  });
+
+  it("rejects invalid Prompt and model evaluation query parameters", async () => {
+    const callRpc = vi.fn();
+    expect(
+      (
+        await handleContentApiRequest(
+          new Request("https://content.test/v1/prompts?limit=201"),
+          {},
+          { callRpc },
+        )
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await handleContentApiRequest(
+          new Request("https://content.test/v1/model-evals?year=1999"),
+          {},
+          { callRpc },
+        )
+      ).status,
+    ).toBe(400);
+    expect(callRpc).not.toHaveBeenCalled();
+  });
+
   it("allows browser search only from the pinned public site origin", async () => {
     const callRpc = vi.fn().mockResolvedValue({
       site_release_id: RELEASE,

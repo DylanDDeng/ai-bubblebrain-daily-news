@@ -43,6 +43,16 @@ interface ModelEvalItem {
 	tags?: string[];
 }
 
+interface PromptItem {
+	id: string;
+	title: string;
+	description?: string;
+	model?: string;
+	date?: string;
+	tags?: string[];
+	detailUrl?: string;
+}
+
 interface XTrendingItem {
 	id: string;
 	date?: string;
@@ -74,7 +84,8 @@ interface CurationItem {
 	detailUrl?: string;
 }
 
-type DirectoryKind = 'highlights' | 'model-evals' | 'x-trending' | 'ai-tools' | 'curations';
+type DirectoryKind =
+	'highlights' | 'prompts' | 'model-evals' | 'x-trending' | 'ai-tools' | 'curations';
 
 const { record, markdownId } = Astro.props;
 const isEnglish = record.locale === 'en';
@@ -104,19 +115,35 @@ const description =
 const yearMatch = record.route.match(/\/model-evals\/(\d{4})\/$/);
 const dataPrefix = isEnglish ? 'en/' : '';
 let directoryItems: Array<
-	HighlightItem | ModelEvalItem | XTrendingItem | AiToolItem | CurationItem
+	HighlightItem | PromptItem | ModelEvalItem | XTrendingItem | AiToolItem | CurationItem
 > = [];
 let directoryKind: DirectoryKind | null = null;
 if (
 	record.isIndex &&
-	['highlights', 'model-evals', 'x-trending', 'ai-tools', 'curations'].includes(record.section)
+	['highlights', 'prompts', 'model-evals', 'x-trending', 'ai-tools', 'curations'].includes(
+		record.section,
+	)
 ) {
 	directoryKind = record.section as DirectoryKind;
-	const filename =
-		record.section === 'model-evals' && yearMatch
-			? `model-evals-${yearMatch[1]}.json`
-			: `${record.section}.json`;
-	directoryItems = JSON.parse(await readFile(resolve(staticRoot, dataPrefix, filename), 'utf8'));
+	if (record.section === 'prompts') {
+		directoryItems = children.map((child) => ({
+			id: child.route,
+			title: child.title,
+			description: child.description,
+			model: typeof child.frontmatter.model === 'string' ? child.frontmatter.model : undefined,
+			date: child.date?.toISOString().slice(0, 10),
+			tags: Array.isArray(child.frontmatter.tags)
+				? child.frontmatter.tags.filter((tag): tag is string => typeof tag === 'string')
+				: [],
+			detailUrl: child.route,
+		}));
+	} else {
+		const filename =
+			record.section === 'model-evals' && yearMatch
+				? `model-evals-${yearMatch[1]}.json`
+				: `${record.section}.json`;
+		directoryItems = JSON.parse(await readFile(resolve(staticRoot, dataPrefix, filename), 'utf8'));
+	}
 }
 const knownRoutes = new Set(allRecords.map((entry) => entry.route));
 const articleSiblings = allRecords
@@ -145,6 +172,16 @@ const threadId =
 				chineseAlternateRoute: isEnglish ? alternate?.route : null,
 			})
 		: null;
+const libraryApi =
+	directoryKind === 'highlights'
+		? `https://content-api.bubblenews.today/v1/highlights?locale=${record.locale}&limit=200`
+		: directoryKind === 'prompts'
+			? `https://content-api.bubblenews.today/v1/prompts?locale=${record.locale}&limit=200`
+			: directoryKind === 'model-evals'
+				? `https://content-api.bubblenews.today/v1/model-evals?locale=${record.locale}${
+						yearMatch ? `&year=${yearMatch[1]}` : ''
+					}&limit=200`
+				: undefined;
 ---
 
 <BaseLayout
@@ -156,7 +193,11 @@ const threadId =
 >
 	{
 		record.isIndex ? (
-			<section class="legacy-shell directory-page" data-directory-page={directoryKind ?? undefined}>
+			<section
+				class="legacy-shell directory-page"
+				data-directory-page={directoryKind ?? undefined}
+				data-library-api={libraryApi}
+			>
 				<header class="directory-hero">
 					<div>
 						<p class="page-kicker">{label.kicker}</p>
@@ -171,7 +212,7 @@ const threadId =
 					</div>
 					<p class="directory-count">
 						<>
-							<strong>{directoryItems.length || children.length}</strong>
+							<strong data-directory-count>{directoryItems.length || children.length}</strong>
 							<span>{isEnglish ? 'records' : '条记录'}</span>
 						</>
 					</p>
@@ -228,11 +269,13 @@ const threadId =
 								const meta =
 									'company' in item
 										? item.company
-										: 'author_name' in item
-											? item.author_name
-											: 'date' in item
-												? item.date
-												: '';
+										: 'model' in item
+											? item.model || item.date
+											: 'author_name' in item
+												? item.author_name
+												: 'date' in item
+													? item.date
+													: '';
 								return (
 									<article
 										data-directory-item
