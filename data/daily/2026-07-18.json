@@ -78,17 +78,31 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-18T19:00:03.000Z",
       "id": "lateNight",
-      "item_ids": [],
+      "item_ids": [
+        "n_cc467b4f7acab711c4d2663ed2b260934dbbc9a064ec035d5552a96edfa35699",
+        "n_dc8bc34807983bb3eae0bfa61fab9bb11b8057d08278e1530648b8ecaad7b48b",
+        "n_19ab34796f68e759fd238a8ce02eadbcbb94829adafa32e2baf3cdee7fc92a0e",
+        "n_2f0a4a198e3f9cc03d95a943f3b67f817779646117caff0eed905c210d41c374",
+        "n_41386e1e58e0120b901b4ae6e0b63bf2df3dedd7b10d77c198dd1e584cb001ad",
+        "n_fd77a0693d1abe73889ad89a6f0e4e4939dd6e0207b08ea9dd1b40852410df82",
+        "n_6a40f4318867274ca67df9b7d41cef03b65fb7ccf516532b4e9355852559d078",
+        "n_070c043da0aae6bdd5224bb915ec1f45b43f2d160b462feb467c1bc9f30119cf",
+        "n_663fd4fac0eeb4c28262d8c0825e22c2163cca14f3f8ba2a098a1aa5d2015829",
+        "n_3fe5cab0ce94e1e2e5b1875526d7911df2905c9ec810cb8427303a26b8b4f7db",
+        "n_8f501e1354321f0b9ae9e0da7487d570a633de20851b4357b4c5281c72af44d2",
+        "n_8a758fc047dfbed1f67ac721eb83747d9c1bbb9ee423a166f97414eda5c23b43",
+        "n_38c4f1e33ee47ae7d3ccde1c573a050d2de68c9ca353c649a5dd5d90c18428a4"
+      ],
       "label": "次日 03:00 补充更新",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-18",
   "dedupe_version": 1,
-  "generated_at": "2026-07-18T15:00:03.000Z",
+  "generated_at": "2026-07-18T19:00:03.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -2068,6 +2082,495 @@
         "topic_open_source"
       ],
       "url": "https://github.com/MoonshotAI/kimi-cli"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/aigclink/status/2078295202196795584",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_cc467b4f7acab711c4d2663ed2b260934dbbc9a064ec035d5552a96edfa35699",
+      "featured": false,
+      "id": "n_cc467b4f7acab711c4d2663ed2b260934dbbc9a064ec035d5552a96edfa35699",
+      "identity_claims": [
+        "c_6734f2612162b950f169e32d4554a80c0b334731b7249b096e6a50230e537073",
+        "c_cc467b4f7acab711c4d2663ed2b260934dbbc9a064ec035d5552a96edfa35699"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T01:46:03.480Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205296349654859777",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1205296349654859777",
+      "source_type": "twitter_extra",
+      "summary": "这两天很多身边的朋友都去WAIC了，问我有没有去参加之类的，我已经两年没去了。记得，2024年现场还有不少工程师，到了2025年的WAIC基本上就成为媒体和商务的专场。2026今年成了政府、媒体为主的专场了，这个大会已经不是一线从业者该去凑热闹的地方了，更多是利益再分配的一个场域，如果你本身已经在AI领域有利益在，那么可以去现场看看能不能获得新的机会，否则没有任何意义。",
+      "time_precision": "exact",
+      "title": "这两天很多身边的朋友都去WAIC了，问我有没有去参加之类的，我已经两年没去了。记得，2024年现场还有不少工程师，到了2025年的WAIC基本上就成为媒体和商务的专场...",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/aigclink/status/2078295202196795584"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/aigclink/status/2078324974730035637",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_dc8bc34807983bb3eae0bfa61fab9bb11b8057d08278e1530648b8ecaad7b48b",
+      "featured": false,
+      "id": "n_dc8bc34807983bb3eae0bfa61fab9bb11b8057d08278e1530648b8ecaad7b48b",
+      "identity_claims": [
+        "c_8e64b7fb1b2264875cc41cfae1b5d5dfc2b2d9576fbc511514b1d44f903ce5ac",
+        "c_dc8bc34807983bb3eae0bfa61fab9bb11b8057d08278e1530648b8ecaad7b48b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T03:44:22.638Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205296349654859776",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1205296349654859776",
+      "source_type": "twitter_extra",
+      "summary": "fable 5最终还是给max和team套餐开放了，限额为50%，看来gpt 5.6给anthropic的压力还是很大的，毕竟每天codex百万用户增长； 国内部分，k3的发布对智谱glm 5.2形成压力，会吸走一些本该智谱承接的开发者用户，尤其是套餐目前k3还是开放的。 Claude: Beginning July 20, Claude Fable 5 will be included in all Max and Team Premium plans, at 50% of limits. Pro and Team Standard users will continue to have access to Fable via usage credits, and will receive a one-time $100 credit. Demand for Fable has been challenging to",
+      "time_precision": "exact",
+      "title": "fable 5最终还是给max和team套餐开放了，限额为50%，看来gpt 5.6给anthropic的压力还是很大的，毕竟每天codex百万用户增长； 国内部分，k3的发布对智谱glm 5.2形...",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/aigclink/status/2078324974730035637"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078395546935742803",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_19ab34796f68e759fd238a8ce02eadbcbb94829adafa32e2baf3cdee7fc92a0e",
+      "featured": false,
+      "id": "n_19ab34796f68e759fd238a8ce02eadbcbb94829adafa32e2baf3cdee7fc92a0e",
+      "identity_claims": [
+        "c_19ab34796f68e759fd238a8ce02eadbcbb94829adafa32e2baf3cdee7fc92a0e",
+        "c_e2110d2cdf20d8f741067eece61416ec17f0b7ff204e6403e163372e080dbd87"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T08:24:47.288Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205429839436251142",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1205429839436251142",
+      "source_type": "twitter_extra",
+      "summary": "原推作者是OpenAI未来战略负责人，他说的话完全是出于OpenAI立场和利益来讲的。 他的观点： 1. Kimi 的实力是真的，不像简单蒸馏出来的。 在智能体编程任务里，Kimi已经接近 2026 年第一季度最强的公开模型。不过它很“吃 token”，实际推理成本未必像宣传中那么便宜。 2. 中国继续开放权重，可能不是因为特别支持开放，而是现实选择。 作者猜测，一方面中国政府没有那么相信 AGI 风险；另一方面受算力限制，中国公司难以长期承担大规模云端推理服务，所以更适合把模型权重放出去，让别人自己部署。对企业来说，开源也是追赶者获取用户和影响力的办法。 3. 开源模型看似“加速”，实际上可能抑制 AI 投资。 模型一旦可以免费下载、复制和部署，商业公司就更难靠模型本身赚钱，资本也会更谨慎地投入下一代模型训练。因此作者认为，开源模型本质上反而具有“减速主义”效果。 4. 开源模型的终点，可能是国家补贴的“AI 公共品”。 如果企业无法靠前沿模型持续盈利，最终可能变成政府出钱建设算力中心、训练模型，再以公共基础设施的形式提供 AI。作者把这种未来称为“AI 共产主义”，并对此非常反感。 5. 美国可能不会直接禁用中国开源模型，而是制造合规风险。 比如监管机构发布安全提示，暗示中国模型可能存在后门、数据泄露或供应链风险。即使证据不充分，只要让银行、医疗、金融等受监管企业感到不安，它们就会主动避开。 6. 当前风险可能有限，但未来能力越强，风险会突然跨过临界点。 今天开放一个强模型，世界可能只是“稍微危险一点”；但当模型具备更强的网络攻击、生物设计或自主复制能力时，开放权重的后果就可能非常明显。（原推还影射了新冠疫情） 我的观点： OpenAI显然是慌了，开源模型开始削弱单纯靠“卖模型能力”赚钱的空间。对于OpenAI、Anthropic这种前沿模型公司而言，强大的开源模型必定会降低他们的投资回报；但对于创业公司、科研机构和中小公司而言，开源模型能显著提高创新能力。强大的开源模型，让创新重心从少数模型实验室扩散到更广泛的应用和基础设施生态。 曾经浏览器、Linux、安卓都把底层能力免费化，真正赚钱的部分转移到了云服务、硬件、应用、数据和生态。未来基础模型可能也会变成类似操作系统的东西：底座越来越便宜，利润向上层迁移。 Dean W. Ball: Some observations on Kimi: 1. It's a very good model! I don't think its performance can be explained away by distillation or anything like that. In agentic coding sessions, it seems pretty much on par with the best public models of Q1 2026. In my fairly limited use, it also",
+      "time_precision": "exact",
+      "title": "原推作者是OpenAI未来战略负责人，他说的话完全是出于OpenAI立场和利益来讲的。 他的观点： 1. Kimi 的实力是真的，不像简单蒸馏出来的。 在智能体编程任务里，K...",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_business",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078395546935742803"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/huangyun_122/status/2078401166061580312",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2f0a4a198e3f9cc03d95a943f3b67f817779646117caff0eed905c210d41c374",
+      "featured": false,
+      "id": "n_2f0a4a198e3f9cc03d95a943f3b67f817779646117caff0eed905c210d41c374",
+      "identity_claims": [
+        "c_2f0a4a198e3f9cc03d95a943f3b67f817779646117caff0eed905c210d41c374",
+        "c_4af8279d87becd2e7b6c7acf41679927902eea491800d5febbb3748149d9fee9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T08:47:07.312Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205389339387658240",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1205389339387658240",
+      "source_type": "twitter_extra",
+      "summary": "笑死，国内一集美平台，让爱它的人爱的要死，恨它的人生不如死，你们猜猜是哪家",
+      "time_precision": "exact",
+      "title": "笑死，国内一集美平台，让爱它的人爱的要死，恨它的人生不如死，你们猜猜是哪家",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2078401166061580312"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/oran_ge/status/2078465756111790082",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_41386e1e58e0120b901b4ae6e0b63bf2df3dedd7b10d77c198dd1e584cb001ad",
+      "featured": false,
+      "id": "n_41386e1e58e0120b901b4ae6e0b63bf2df3dedd7b10d77c198dd1e584cb001ad",
+      "identity_claims": [
+        "c_1a15210f39739701b2b14d4eac41a45424e6c81ad9c3bc67daebb36a23c6606f",
+        "c_41386e1e58e0120b901b4ae6e0b63bf2df3dedd7b10d77c198dd1e584cb001ad"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T13:03:46.720Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205416471014989824",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1205416471014989824",
+      "source_type": "twitter_extra",
+      "summary": "看了一些人去法国看环法比赛拍的片段 怎么说呢 感觉这个时候在法国骑车是一种非常高级的生活方式 怪不得奈飞每年都要给环法拍一部大型纪录片",
+      "time_precision": "exact",
+      "title": "看了一些人去法国看环法比赛拍的片段 怎么说呢 感觉这个时候在法国骑车是一种非常高级的生活方式 怪不得奈飞每年都要给环法拍一部大型纪录片",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2078465756111790082"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/aiwarts/status/2078473937990951374",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_fd77a0693d1abe73889ad89a6f0e4e4939dd6e0207b08ea9dd1b40852410df82",
+      "featured": false,
+      "id": "n_fd77a0693d1abe73889ad89a6f0e4e4939dd6e0207b08ea9dd1b40852410df82",
+      "identity_claims": [
+        "c_f047b67a15c31fac8e51628e7c3be49c2520b4b4a25c52290b879500345be9cd",
+        "c_fd77a0693d1abe73889ad89a6f0e4e4939dd6e0207b08ea9dd1b40852410df82"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T13:36:17.117Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205368211134926848",
+        "name": "twitter-卡尔的AI沃茨"
+      },
+      "source_id": "1205368211134926848",
+      "source_type": "twitter_extra",
+      "summary": "",
+      "time_precision": "exact",
+      "title": "http://x.com/i/article/2078453201402232832",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/aiwarts/status/2078473937990951374"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078474290538963373",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_6a40f4318867274ca67df9b7d41cef03b65fb7ccf516532b4e9355852559d078",
+      "featured": false,
+      "id": "n_6a40f4318867274ca67df9b7d41cef03b65fb7ccf516532b4e9355852559d078",
+      "identity_claims": [
+        "c_15e02d3aa4214626cfa2b503ec9d0b7e0a2e03fb83be9826c2f2f174def2cce1",
+        "c_6a40f4318867274ca67df9b7d41cef03b65fb7ccf516532b4e9355852559d078"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T13:37:41.579Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205429839436251141",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1205429839436251141",
+      "source_type": "twitter_extra",
+      "summary": "不得不吐槽一句，Kimi K3的前端效果跟Claude太像了，网页也默认是Claude那种浅黄色的纸质风格。",
+      "time_precision": "exact",
+      "title": "不得不吐槽一句，Kimi K3的前端效果跟Claude太像了，网页也默认是Claude那种浅黄色的纸质风格。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078474290538963373"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/HiTw93/status/2078483084979413436",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_070c043da0aae6bdd5224bb915ec1f45b43f2d160b462feb467c1bc9f30119cf",
+      "featured": false,
+      "id": "n_070c043da0aae6bdd5224bb915ec1f45b43f2d160b462feb467c1bc9f30119cf",
+      "identity_claims": [
+        "c_070c043da0aae6bdd5224bb915ec1f45b43f2d160b462feb467c1bc9f30119cf",
+        "c_6972bb5c2af7e622f27925c833997bb0ebe6c711c99907fdcc5241c910ff0c99"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T14:12:38.568Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205501609044418560",
+        "name": "twitter-Tw93"
+      },
+      "source_id": "1205501609044418560",
+      "source_type": "twitter_extra",
+      "summary": "想和大伙分享一下，最近我用自己产品 Mole 遇到的 4 个 Aha Moment，对我使用非常有帮助。 第一个是，有一天下午居然收到了一个消息通知，说我的 Airpods 电量不足要充电了，这个功能惊喜到了我，是当时做电池健康的时候 AI 主动给我加上的，Mole 会提醒和Mac关联的蓝牙带电池的设备低电量充电，但是我一直没有遇到这个场景，直到遇到了，感觉非常贴心，但频繁不打扰。 第二个是，对于每日使用的我居然还可以清理掉 86G，之前有一个版本加上清理项目里面肯定无用的build编译内容，我的 Rust 项目产生了不少 target 内容，一下子清理这么多，非常有满足感。 第三个是，屏幕常亮的功能，经过用户提醒给加上了3种不同的常亮行为，我还是喜欢把屏幕打开的方式，比如周末你突然出门，你的 AICoding 可以用手机客户端很好的控制让他干活，非常稳定，也帮我节约了不少异步的时间。 第四个是，Mole 的电量显示居然也支持展示你的 iPhone 的电量了，之前这一块不是很好实现，但是很巧妙的实现了，现在可以在状态里面很清楚看到与你相关的设备的电量情况，也不打扰，但是很安心。 更神奇的是，以上这4个功能的起源都不是我想到的，是初期使用 Mole 的朋友反馈告诉我要加的功能，我加上后对我帮助非常大，非常感谢！话说你使用 Mole Mac 有惊喜的地方是哪一些，以及你非常建议 Mole 要加的功能，欢迎告诉我。",
+      "time_precision": "exact",
+      "title": "想和大伙分享一下，最近我用自己产品 Mole 遇到的 4 个 Aha Moment，对我使用非常有帮助。 第一个是，有一天下午居然收到了一个消息通知，说我的 Airpods 电量不...",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/HiTw93/status/2078483084979413436"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078484636100129123",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_deepseek"
+      ],
+      "event_id": "e_663fd4fac0eeb4c28262d8c0825e22c2163cca14f3f8ba2a098a1aa5d2015829",
+      "featured": false,
+      "id": "n_663fd4fac0eeb4c28262d8c0825e22c2163cca14f3f8ba2a098a1aa5d2015829",
+      "identity_claims": [
+        "c_19583860e16ea8e863d3660e15000d877d08b30ab1b74f5a2688bd47e028e431",
+        "c_663fd4fac0eeb4c28262d8c0825e22c2163cca14f3f8ba2a098a1aa5d2015829"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T14:18:48.007Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205429839436251140",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1205429839436251140",
+      "source_type": "twitter_extra",
+      "summary": "这些是目前我推荐的AI订阅方案，等下周DeepSeek V4正式版发布，也许会加上DeepSeek。",
+      "time_precision": "exact",
+      "title": "这些是目前我推荐的AI订阅方案，等下周DeepSeek V4正式版发布，也许会加上DeepSeek。",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078484636100129123"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078490764582260837",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_3fe5cab0ce94e1e2e5b1875526d7911df2905c9ec810cb8427303a26b8b4f7db",
+      "featured": false,
+      "id": "n_3fe5cab0ce94e1e2e5b1875526d7911df2905c9ec810cb8427303a26b8b4f7db",
+      "identity_claims": [
+        "c_3fe5cab0ce94e1e2e5b1875526d7911df2905c9ec810cb8427303a26b8b4f7db",
+        "c_61872291ab3ef83ea5076653e1d3ef9744d548027206b30dce79015c729bd33f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T14:43:09.048Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205429839436251139",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1205429839436251139",
+      "source_type": "twitter_extra",
+      "summary": "Kimi以前是做了多少坏事啊，我给国内好友安利Kimi K3能力很强值得订阅，大家的第一反应基本都是“真的吗？”",
+      "time_precision": "exact",
+      "title": "Kimi以前是做了多少坏事啊，我给国内好友安利Kimi K3能力很强值得订阅，大家的第一反应基本都是“真的吗？”",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078490764582260837"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078494050077036979",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8f501e1354321f0b9ae9e0da7487d570a633de20851b4357b4c5281c72af44d2",
+      "featured": false,
+      "id": "n_8f501e1354321f0b9ae9e0da7487d570a633de20851b4357b4c5281c72af44d2",
+      "identity_claims": [
+        "c_37ba7989a5ca6a4ddc8c23b3a84b0375f9979165090898742d3cadc2cbfa96a6",
+        "c_8f501e1354321f0b9ae9e0da7487d570a633de20851b4357b4c5281c72af44d2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T14:56:12.876Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205429839436251138",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1205429839436251138",
+      "source_type": "twitter_extra",
+      "summary": "商汤发布SenseNova U1 Pro：能写汉字的8K图片模型 能生成8K分辨率的图片，能在图里写大量汉字，但是目前并没有途径能实际试一下，基于商汤的口碑，我对抽卡率表示怀疑。 官网：",
+      "time_precision": "exact",
+      "title": "商汤发布SenseNova U1 Pro：能写汉字的8K图片模型 能生成8K分辨率的图片，能在图里写大量汉字，但是目前并没有途径能实际试一下，基于商汤的口碑，我对抽卡率表...",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078494050077036979"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078497295755354359",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8a758fc047dfbed1f67ac721eb83747d9c1bbb9ee423a166f97414eda5c23b43",
+      "featured": false,
+      "id": "n_8a758fc047dfbed1f67ac721eb83747d9c1bbb9ee423a166f97414eda5c23b43",
+      "identity_claims": [
+        "c_0fab5250f4276e1cf4284d1a15e363b4fe78a38f5283f40c4a059005a38d41f8",
+        "c_8a758fc047dfbed1f67ac721eb83747d9c1bbb9ee423a166f97414eda5c23b43"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T15:09:06.339Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205429839436251137",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1205429839436251137",
+      "source_type": "twitter_extra",
+      "summary": "Openship：开源自部署平台，把整个部署控制台从你的服务器上搬走 Coolify、CapRover、Dokku这类自托管部署工具有个通病：控制面板、构建系统、CI runner、数据库全跑在你的服务器上，和你的应用抢资源。Openship反过来——构建在你本地完成，服务器只收到打包好的Docker容器，上面只跑你的应用，别的什么都没有（也可以一个配置开关切回服务器构建）。 “本地构建+SSH推容器”这个架构切入点很聪明，切中自托管PaaS最痛的资源占用问题；但产品面铺得太宽，邮件服务器、CDN全自己做，不是每个团队都维护的了。 Github：",
+      "time_precision": "exact",
+      "title": "Openship：开源自部署平台，把整个部署控制台从你的服务器上搬走 Coolify、CapRover、Dokku这类自托管部署工具有个通病：控制面板、构建系统、CI runner、数据库...",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078497295755354359"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078504786060779544",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_38c4f1e33ee47ae7d3ccde1c573a050d2de68c9ca353c649a5dd5d90c18428a4",
+      "featured": false,
+      "id": "n_38c4f1e33ee47ae7d3ccde1c573a050d2de68c9ca353c649a5dd5d90c18428a4",
+      "identity_claims": [
+        "c_38c4f1e33ee47ae7d3ccde1c573a050d2de68c9ca353c649a5dd5d90c18428a4",
+        "c_457f457059a3acd2953db8a200d202e03bd7b0e7ac66b6e71cc9c02a9857315e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-18T19:00:03.000Z",
+      "published_at": "2026-07-18T15:38:52.959Z",
+      "published_date": "2026-07-18",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205429839436251136",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1205429839436251136",
+      "source_type": "twitter_extra",
+      "summary": "笑死我了。 为了防止没想到的意外情况发生，我一直设置了一条Snitch规则，Claude必须走本地小火箭的端口联网，看来是会有用处的。 Leyang: 谁能想到，兑换 6 个月的 20x 开源 claude 后，一个会话还没完成，就被 codex 擅自关闭代理软件，导致被 claude 封号呢？ codex 真有你的！ @thsottiaux (┬＿┬)",
+      "time_precision": "exact",
+      "title": "笑死我了。 为了防止没想到的意外情况发生，我一直设置了一条Snitch规则，Claude必须走本地小火箭的端口联网，看来是会有用处的。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078504786060779544"
     }
   ],
   "overview": {
