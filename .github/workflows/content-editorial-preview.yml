@@ -103,14 +103,13 @@ jobs:
 
       - name: Build attested draft overlay
         env:
-          GITHUB_SHA: ${{ github.event.inputs.code_sha }}
           EDITORIAL_DRAFT_ID: ${{ github.event.inputs.draft_id }}
         run: |
           export EDITORIAL_PREVIEW_INPUT_URL="$CONTENT_DEPLOYER_ORIGIN/internal/preview-input/$DRAFT_ID/$EDITORIAL_PREVIEW_SHA256"
           npm run check --prefix astro
           npm run lint --prefix astro
           env -u CONTENT_RELEASE_ID npm run test --prefix astro
-          npm run build --prefix astro
+          env -u GITHUB_SHA CF_PAGES_COMMIT_SHA="$EXACT_CODE_SHA" npm run build --prefix astro
           npm run verify:csp --prefix astro
           npm run verify:site --prefix astro
 
