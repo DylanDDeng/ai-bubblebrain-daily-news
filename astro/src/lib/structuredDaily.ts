@@ -74,6 +74,29 @@ export function orderTimelineBatches(
 	return [...completed.reverse(), ...pending];
 }
 
+const itemPublishedTimestamp = (item: StructuredDailyItem): number =>
+	Date.parse(item.published_at ?? item.published_date ?? item.ingested_at) || 0;
+
+export function homepageFeedItems(
+	items: readonly StructuredDailyItem[],
+	batches: readonly StructuredDailyBatch[],
+	limit = 8,
+): StructuredDailyItem[] {
+	const completedBatchRank = new Map(
+		orderTimelineBatches(batches)
+			.filter((batch) => batch.status === 'completed')
+			.map((batch, index) => [batch.id, index]),
+	);
+
+	return items
+		.filter((item) => completedBatchRank.has(item.batch))
+		.sort((a, b) => {
+			const batchOrder = completedBatchRank.get(a.batch)! - completedBatchRank.get(b.batch)!;
+			return batchOrder || itemPublishedTimestamp(b) - itemPublishedTimestamp(a);
+		})
+		.slice(0, Math.max(0, Math.trunc(limit)));
+}
+
 const reportCache = new Map<string, Promise<StructuredDailyReport | null>>();
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
 export const DEFAULT_STRUCTURED_CUTOVER_DATE = '2026-07-16';
