@@ -248,22 +248,25 @@ title: sanitizer fixture
     sanitizerHtml,
     /data-link="https:\/\/attr\.example\/a%5D\(https:\/\/attr\.example\/b\)"/u,
   );
-	assert.doesNotMatch(sanitizerHtml, /first\.example\/story/iu);
-	assert.match(sanitizerHtml, /<p>truncated before\s+truncated after<\/p>/u);
-	assert.match(
-		sanitizerHtml,
-		/<p>ordinary before <a href="https:\/\/ordinary\.example\/story">ordinary label<\/a> ordinary after<\/p>/u,
-	);
-	assert.match(
-		sanitizerHtml,
-		/<p>prose before https:\/\/zenodo\.example\/record，而正文 prose after<\/p>/u,
-	);
-	assert.doesNotMatch(sanitizerHtml, /href="https:\/\/zenodo\.example/iu);
-	assert.match(
-		sanitizerHtml,
-		/<p>combined before https:\/\/example\.com\/path。正文 combined after<\/p>/u,
-	);
-	assert.doesNotMatch(sanitizerHtml, /href="https:\/\/example\.com\/path%E3%80%82/iu);
+  assert.doesNotMatch(sanitizerHtml, /first\.example\/story/iu);
+  assert.match(sanitizerHtml, /<p>truncated before\s+truncated after<\/p>/u);
+  assert.match(
+    sanitizerHtml,
+    /<p>ordinary before <a href="https:\/\/ordinary\.example\/story">ordinary label<\/a> ordinary after<\/p>/u,
+  );
+  assert.match(
+    sanitizerHtml,
+    /<p>prose before https:\/\/zenodo\.example\/record，而正文 prose after<\/p>/u,
+  );
+  assert.doesNotMatch(sanitizerHtml, /href="https:\/\/zenodo\.example/iu);
+  assert.match(
+    sanitizerHtml,
+    /<p>combined before https:\/\/example\.com\/path。正文 combined after<\/p>/u,
+  );
+  assert.doesNotMatch(
+    sanitizerHtml,
+    /href="https:\/\/example\.com\/path%E3%80%82/iu,
+  );
 
   execFileSync("hugo", ["--destination", hugoOutput, "--cleanDestinationDir"], {
     cwd: repoRoot,
@@ -329,8 +332,24 @@ title: sanitizer fixture
     assert.match(html, /data-daily-timeline/);
     assert.match(html, /示例 AI 资讯/);
     assert.doesNotMatch(html, /proxy\.example|raw\.example/);
-    assert.match(html, /type="module" src="\/js\/daily-timeline\.js"/);
+    assert.match(
+      html,
+      /type="module" src="\/js\/daily-timeline\.js(?:\?v=[0-9a-f]{10})?"/,
+    );
   }
+  // Astro busts the shared timeline asset cache with a build-time content
+  // hash query; Hugo keeps the plain URL because it no longer serves
+  // production traffic.
+  assert.match(
+    astroStructured,
+    /href="\/css\/daily-timeline\.css\?v=[0-9a-f]{10}"/,
+    "Astro timeline stylesheet must carry a content-hash cache buster",
+  );
+  assert.match(
+    astroStructured,
+    /type="module" src="\/js\/daily-timeline\.js\?v=[0-9a-f]{10}"/,
+    "Astro timeline script must carry a content-hash cache buster",
+  );
   assertTimelineAccessibilityStructure(hugoStructured, "Hugo");
   assertTimelineAccessibilityStructure(astroStructured, "Astro");
   for (const attribute of [

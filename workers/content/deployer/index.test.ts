@@ -184,6 +184,10 @@ describe("automatic code release boundary", () => {
           { filename: "static/js/daily-timeline.js", status: "modified" },
           { filename: "workers/content/deployer/index.ts", status: "modified" },
           {
+            filename: "scripts/verify-daily-renderers.mjs",
+            status: "modified",
+          },
+          {
             filename: "supabase/migrations/20260719000100_release.sql",
             status: "added",
           },
@@ -202,7 +206,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(13);
+    ).toHaveLength(14);
   });
 
   it.each([

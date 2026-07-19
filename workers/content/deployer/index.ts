@@ -206,6 +206,7 @@ const INERT_ROOT_SCRIPTS = new Set([
   "scripts/request-code-release.mjs",
   "scripts/test-content-failure-matrix-local.mjs",
   "scripts/validate-content-production-config.mjs",
+  "scripts/verify-daily-renderers.mjs",
 ]);
 
 function assertGitHubComparePath(path: string): void {
