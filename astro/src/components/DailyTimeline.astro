@@ -1,4 +1,8 @@
 ---
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { dailyDateFromKey, formatDailyWeekday, type DailyLocale } from '../lib/daily';
 import {
 	cleanTimelineSummary,
@@ -19,6 +23,19 @@ interface Props {
 
 const { report, locale, newerHref = null, olderHref = null } = Astro.props;
 const isEnglish = locale === 'en';
+
+// Shared timeline assets are served unhashed from static/, so bust the
+// browser cache with a build-time content hash query instead.
+const staticAssetVersion = (assetPath: string): string => {
+	try {
+		const bytes = readFileSync(resolve(process.cwd(), '..', 'static', assetPath));
+		return createHash('sha256').update(bytes).digest('hex').slice(0, 10);
+	} catch {
+		return 'local';
+	}
+};
+const timelineCssHref = `/css/daily-timeline.css?v=${staticAssetVersion('css/daily-timeline.css')}`;
+const timelineJsSrc = `/js/daily-timeline.js?v=${staticAssetVersion('js/daily-timeline.js')}`;
 const itemById = new Map(report.items.map((item) => [item.id, item]));
 const typeLabels: Record<'all' | DailyContentType, string> = isEnglish
 	? { all: 'All', news: 'News', project: 'Projects', paper: 'Papers', socialMedia: 'Social' }
@@ -69,7 +86,7 @@ const newerKey = hrefDateKey(newerHref);
 const olderKey = hrefDateKey(olderHref);
 ---
 
-<link rel="stylesheet" href="/css/daily-timeline.css" />
+<link rel="stylesheet" href={timelineCssHref} />
 
 <article
 	class="daily-timeline"
@@ -314,4 +331,4 @@ const olderKey = hrefDateKey(olderHref);
 	</footer>
 </article>
 
-<script is:inline type="module" src="/js/daily-timeline.js"></script>
+<script is:inline type="module" src={timelineJsSrc}></script>
