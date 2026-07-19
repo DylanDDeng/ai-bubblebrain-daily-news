@@ -140,6 +140,16 @@ export function cleanTimelineSummary(value: string): string {
 	return sanitizeSummaryText(value);
 }
 
+// HH:MM wall-clock label for report/batch timestamps in the site's timezone.
+export function formatDailyTime(iso: string, locale: 'zh-CN' | 'en'): string {
+	return new Intl.DateTimeFormat(locale, {
+		timeZone: 'Asia/Shanghai',
+		hour: '2-digit',
+		minute: '2-digit',
+		hour12: false,
+	}).format(new Date(iso));
+}
+
 export function formatTimelineTime(
 	item: StructuredDailyItem,
 	locale: 'zh-CN' | 'en',

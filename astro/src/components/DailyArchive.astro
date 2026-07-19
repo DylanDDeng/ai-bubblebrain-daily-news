@@ -1,7 +1,22 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 
-import { dailyPermalink, formatDailyDate, type DailyLocale } from '../lib/daily';
+import {
+	dailyDateFromKey,
+	dailyPermalink,
+	formatDailyWeekday,
+	parseDailyEntryId,
+	type DailyEntryIdentity,
+	type DailyLocale,
+} from '../lib/daily';
+import { taxonomyLabel, topicsById } from '../lib/knowledge';
+import {
+	cleanTimelineSummary,
+	formatDailyTime,
+	isDatabaseOwnedDailyDate,
+	loadStructuredDailyReport,
+	type StructuredDailyReport,
+} from '../lib/structuredDaily';
 
 interface Props {
 	entries: CollectionEntry<'daily'>[];
@@ -9,31 +24,193 @@ interface Props {
 }
 
 const { entries, locale } = Astro.props;
-const heading = locale === 'en' ? 'Daily Brief' : '资讯日报';
+const isEnglish = locale === 'en';
+
+interface ArchiveRow {
+	entry: CollectionEntry<'daily'>;
+	identity: DailyEntryIdentity;
+	href: string;
+}
+
+const rows: ArchiveRow[] = entries.flatMap((entry) => {
+	const identity = parseDailyEntryId(entry.id);
+	const href = dailyPermalink(entry.id);
+	return identity && href ? [{ entry, identity, href }] : [];
+});
+
+// Structured reports exist only for database-owned dates; older rows render
+// from the collection entry alone, so they never touch the filesystem.
+const reportByDate = new Map<string, StructuredDailyReport | null>();
+await Promise.all(
+	rows
+		.filter(({ identity }) => isDatabaseOwnedDailyDate(identity.dateKey))
+		.map(async ({ identity }) => {
+			reportByDate.set(identity.dateKey, await loadStructuredDailyReport(identity.dateKey));
+		}),
+);
+
+const topTopicLabels = (report: StructuredDailyReport, limit: number): string[] => {
+	const counts = new Map<string, number>();
+	for (const item of report.items) {
+		for (const topicId of item.topic_ids) {
+			counts.set(topicId, (counts.get(topicId) ?? 0) + 1);
+		}
+	}
+	return [...counts.entries()]
+		.sort((a, b) => b[1] - a[1])
+		.map(([id]) => topicsById.get(id))
+		.filter((topic) => topic !== undefined)
+		.slice(0, limit)
+		.map((topic) => taxonomyLabel(topic, locale));
+};
+
+const latestRow = rows[0] ?? null;
+const latestReport = latestRow ? (reportByDate.get(latestRow.identity.dateKey) ?? null) : null;
+const latestDate = latestRow ? dailyDateFromKey(latestRow.identity.dateKey) : null;
+const monthDayFormatter = new Intl.DateTimeFormat(locale, {
+	month: 'long',
+	day: 'numeric',
+	timeZone: 'Asia/Shanghai',
+});
+const monthFormatter = new Intl.DateTimeFormat(locale, {
+	year: 'numeric',
+	month: 'long',
+	timeZone: 'Asia/Shanghai',
+});
+
+const heroTopics = latestReport ? topTopicLabels(latestReport, 4) : [];
+const heroLead = latestReport
+	? (latestReport.items.find((item) => item.featured) ?? latestReport.items[0] ?? null)
+	: null;
+const firstCompletedAt = latestReport
+	? (latestReport.batches
+			.filter((batch) => batch.status === 'completed' && batch.generated_at)
+			.map((batch) => batch.generated_at!)
+			.sort()[0] ?? latestReport.generated_at)
+	: null;
+
+interface MonthGroup {
+	monthKey: string;
+	rows: ArchiveRow[];
+}
+const groups: MonthGroup[] = [];
+for (const row of rows) {
+	const monthKey = row.identity.dateKey.slice(0, 7);
+	const last = groups.at(-1);
+	if (last && last.monthKey === monthKey) last.rows.push(row);
+	else groups.push({ monthKey, rows: [row] });
+}
+
+// Months within the latest three stay expanded; older ones collapse into a
+// <details> summary line so the archive stays a single static page.
+const shiftMonth = (monthKey: string, delta: number): string => {
+	const [year, month] = monthKey.split('-').map(Number);
+	const total = year * 12 + (month - 1) + delta;
+	return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}`;
+};
+const expandedCutoff = latestRow ? shiftMonth(latestRow.identity.dateKey.slice(0, 7), -2) : null;
 ---
 
-<section class="page-shell">
+<section class="page-shell daily-archive">
 	<header class="page-heading">
-		<h1>{heading}</h1>
+		<h1>{isEnglish ? 'Daily Brief' : '资讯日报'}</h1>
+		<p>
+			{
+				isEnglish
+					? 'A dated AI briefing, published in fixed batches.'
+					: '每天一份 AI 增量资讯，按批次固定发布。'
+			}
+		</p>
 	</header>
 
-	<div class="archive-list">
-		{
-			entries.map((entry) => {
-				const href = dailyPermalink(entry.id);
-				if (!href) return null;
+	{
+		latestRow && latestDate && (
+			<a class="archive-hero" href={latestRow.href}>
+				<p class="archive-hero-label">{isEnglish ? 'Latest issue' : '最新一期 · Latest'}</p>
+				<p class="archive-hero-date">
+					{monthDayFormatter.format(latestDate)}
+					<span class="weekday">{formatDailyWeekday(latestDate, locale)}</span>
+				</p>
+				{latestReport ? (
+					<>
+						{heroTopics.length > 0 && (
+							<ul class="archive-hero-topics">
+								{heroTopics.map((label) => (
+									<li>{label}</li>
+								))}
+							</ul>
+						)}
+						{heroLead && (
+							<p class="archive-hero-headline">
+								<strong>{isEnglish ? 'Top story: ' : '今日头条：'}</strong>
+								{cleanTimelineSummary(heroLead.title) || heroLead.title}
+							</p>
+						)}
+						<p class="archive-hero-meta">
+							{isEnglish
+								? `${latestReport.items.length} items · published ${formatDailyTime(firstCompletedAt!, locale)}`
+								: `${latestReport.items.length} 条收录 · ${formatDailyTime(firstCompletedAt!, locale)} 发布`}
+						</p>
+					</>
+				) : (
+					<p class="archive-hero-headline">{latestRow.entry.data.title}</p>
+				)}
+			</a>
+		)
+	}
 
+	{
+		groups.map((group) => {
+			const expanded = expandedCutoff !== null && group.monthKey >= expandedCutoff;
+			const monthLabel = monthFormatter.format(dailyDateFromKey(`${group.monthKey}-01`));
+			const countLabel = isEnglish
+				? `${group.rows.length} issues`
+				: `${group.rows.length} 期`;
+			const dayRows = group.rows.map((row) => {
+				const report = reportByDate.get(row.identity.dateKey) ?? null;
+				const date = dailyDateFromKey(row.identity.dateKey);
+				const summary = report ? topTopicLabels(report, 3).join(' · ') : '';
 				return (
-					<article class="archive-card">
-						<time datetime={entry.data.date.toISOString()}>
-							{formatDailyDate(entry.data.date, locale)}
-						</time>
-						<h2>
-							<a href={href}>{entry.data.title}</a>
-						</h2>
-					</article>
+					<a
+						class:list={['day-row', { today: row === latestRow }]}
+						href={row.href}
+					>
+						<span class="day-num">{row.identity.dateKey.slice(8)}</span>
+						<span class="weekday">
+							{formatDailyWeekday(date, locale, 'short')}
+							{row === latestRow && (
+								<span class="today-pill">{isEnglish ? 'Today' : '今天'}</span>
+							)}
+						</span>
+						<span class="topics">{summary || row.entry.data.title}</span>
+						{report && (
+							<span class="items">
+								{isEnglish ? `${report.items.length} items` : `${report.items.length} 条`}
+							</span>
+						)}
+					</a>
 				);
-			})
-		}
-	</div>
+			});
+			return expanded ? (
+				<section class="month-group">
+					<div class="month-heading">
+						<h2>{monthLabel}</h2>
+						<span class="count">{countLabel}</span>
+					</div>
+					{dayRows}
+				</section>
+			) : (
+				<details class="month-group">
+					<summary class="month-heading">
+						<h2>{monthLabel}</h2>
+						<span class="count">{countLabel}</span>
+						<span class="range">
+							{`${group.rows.at(-1)!.identity.dateKey.slice(5)} — ${group.rows[0].identity.dateKey.slice(5)}`}
+						</span>
+					</summary>
+					{dayRows}
+				</details>
+			);
+		})
+	}
 </section>

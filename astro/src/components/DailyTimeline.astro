@@ -1,7 +1,8 @@
 ---
-import type { DailyLocale } from '../lib/daily';
+import { dailyDateFromKey, formatDailyWeekday, type DailyLocale } from '../lib/daily';
 import {
 	cleanTimelineSummary,
+	formatDailyTime,
 	formatTimelineTime,
 	orderTimelineBatches,
 	type DailyContentType,
@@ -29,8 +30,43 @@ const typeOrder: Array<'all' | DailyContentType> = [
 	'paper',
 	'socialMedia',
 ];
+const typeCounts = new Map<DailyContentType, number>();
+for (const item of report.items) {
+	typeCounts.set(item.content_type, (typeCounts.get(item.content_type) ?? 0) + 1);
+}
+
 const overview = cleanTimelineSummary(report.overview.text);
 const orderedBatches = orderTimelineBatches(report.batches);
+const reportDate = dailyDateFromKey(report.date);
+const dateTitle = new Intl.DateTimeFormat(locale, {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+	timeZone: 'Asia/Shanghai',
+}).format(reportDate);
+const weekday = formatDailyWeekday(reportDate, locale);
+const archiveHref = isEnglish ? '/en/daily/' : '/daily/';
+
+const updateTimes = report.batches
+	.filter((batch) => batch.status === 'completed' && batch.generated_at)
+	.map((batch) => batch.generated_at!)
+	.sort()
+	.map((iso) => formatDailyTime(iso, locale));
+const updatesStat = isEnglish
+	? `${updateTimes.length} updates${updateTimes.length > 0 ? ` (${updateTimes.join(' / ')})` : ''}`
+	: `${updateTimes.length} 次更新${updateTimes.length > 0 ? `（${updateTimes.join(' / ')}）` : ''}`;
+const topicCount = new Set(report.items.flatMap((item) => item.topic_ids)).size;
+
+const hrefDateKey = (href: string | null): string | null =>
+	href?.match(/(\d{4}-\d{2}-\d{2})\/?$/)?.[1] ?? null;
+const navDateLabel = (dateKey: string): string =>
+	new Intl.DateTimeFormat(locale, {
+		month: 'long',
+		day: 'numeric',
+		timeZone: 'Asia/Shanghai',
+	}).format(dailyDateFromKey(dateKey));
+const newerKey = hrefDateKey(newerHref);
+const olderKey = hrefDateKey(olderHref);
 ---
 
 <link rel="stylesheet" href="/css/daily-timeline.css" />
@@ -42,42 +78,51 @@ const orderedBatches = orderTimelineBatches(report.batches);
 	data-expand-label={isEnglish ? 'Expand summary' : '展开摘要'}
 	data-collapse-label={isEnglish ? 'Collapse summary' : '收起摘要'}
 >
-	<header class="timeline-header">
-		<div>
-			<p class="timeline-kicker">
-				{isEnglish ? 'DAILY INTELLIGENCE LEDGER' : 'DAILY INTELLIGENCE LEDGER · 资讯日报'}
-			</p>
-			<h1><time datetime={report.date}>{report.date}</time></h1>
-			{overview && <p class="timeline-overview">{overview}</p>}
-			<a class="timeline-discussion-link" href="#discussion">
-				{isEnglish ? 'Discussion and additions ↓' : '讨论与补充 ↓'}
-			</a>
+	<nav class="timeline-date-nav" aria-label={isEnglish ? 'Daily navigation' : '日报日期导航'}>
+		{
+			newerHref ? (
+				<a class="nav-newer" href={newerHref}>
+					← {newerKey ? navDateLabel(newerKey) : isEnglish ? 'Newer' : '较新'}
+				</a>
+			) : (
+				<span class="disabled nav-newer" aria-hidden="true">
+					← {isEnglish ? 'Newer' : '较新'}
+				</span>
+			)
+		}
+		<a class="back" href={archiveHref}>{isEnglish ? '← Back to archive' : '← 返回归档'}</a>
+		{
+			olderHref ? (
+				<a class="nav-older" href={olderHref}>
+					{olderKey ? navDateLabel(olderKey) : isEnglish ? 'Older' : '较早'} →
+				</a>
+			) : (
+				<span class="disabled nav-older" aria-hidden="true">
+					{isEnglish ? 'Older' : '较早'} →
+				</span>
+			)
+		}
+	</nav>
+
+	<header class="day-header">
+		<p class="kicker">{isEnglish ? 'DAILY BRIEF' : '资讯日报 · DAILY BRIEF'}</p>
+		<h1>
+			<time datetime={report.date}>{dateTitle}</time>
+			<span class="weekday">{weekday}</span>
+		</h1>
+		{overview && <p class="overview">{overview}</p>}
+		<div class="stats">
+			<span>{isEnglish ? `${report.items.length} items` : `${report.items.length} 条收录`}</span>
+			<span>{updatesStat}</span>
+			<span>{isEnglish ? `${topicCount} topics` : `${topicCount} 个主题`}</span>
 		</div>
-		<nav class="timeline-date-nav" aria-label={isEnglish ? 'Daily navigation' : '日报日期导航'}>
-			{
-				newerHref ? (
-					<a href={newerHref}>← {isEnglish ? 'Newer' : '较新'}</a>
-				) : (
-					<span aria-hidden="true">← {isEnglish ? 'Newer' : '较新'}</span>
-				)
-			}
-			<a href={isEnglish ? '/en/daily/' : '/daily/'}>{isEnglish ? 'Archive' : '归档'}</a>
-			{
-				olderHref ? (
-					<a href={olderHref}>{isEnglish ? 'Older' : '较早'} →</a>
-				) : (
-					<span aria-hidden="true">{isEnglish ? 'Older' : '较早'} →</span>
-				)
-			}
-		</nav>
 	</header>
 
-	<section class="timeline-toolbar" aria-label={isEnglish ? 'Timeline filters' : '时间轴筛选'}>
-		<div
-			class="timeline-filter-group"
-			role="group"
-			aria-label={isEnglish ? 'Content type' : '内容类型'}
-		>
+	<section
+		class="toolbar timeline-toolbar"
+		aria-label={isEnglish ? 'Timeline filters' : '时间轴筛选'}
+	>
+		<div class="filters" role="group" aria-label={isEnglish ? 'Content type' : '内容类型'}>
 			{
 				typeOrder.map((type) => (
 					<button
@@ -85,31 +130,29 @@ const orderedBatches = orderTimelineBatches(report.batches);
 						data-filter-type={type}
 						aria-pressed={type === 'all' ? 'true' : 'false'}
 					>
-						{typeLabels[type]}
+						{typeLabels[type]} {type === 'all' ? report.items.length : (typeCounts.get(type) ?? 0)}
 					</button>
 				))
 			}
 		</div>
-		<form class="timeline-search" data-timeline-search role="search">
-			<label for={`timeline-search-${report.date}`}
+		<form class="search" data-timeline-search role="search">
+			<label class="sr-only" for={`timeline-search-${report.date}`}
 				>{isEnglish ? 'Search this day' : '搜索当日'}</label
 			>
-			<div>
-				<input
-					id={`timeline-search-${report.date}`}
-					name="q"
-					type="search"
-					autocomplete="off"
-					placeholder={isEnglish ? 'Title, source, summary' : '标题、来源或摘要'}
-				/>
-				<button type="submit">{isEnglish ? 'Search' : '搜索'}</button>
-			</div>
+			<input
+				id={`timeline-search-${report.date}`}
+				name="q"
+				type="search"
+				autocomplete="off"
+				placeholder={isEnglish ? 'Search this day' : '搜索当日'}
+			/>
+			<button type="submit">{isEnglish ? 'Search' : '搜索'}</button>
 		</form>
 	</section>
 
 	<div class="timeline-status" aria-live="polite">
 		<span data-result-count>{report.items.length}</span>
-		<span>{isEnglish ? 'items' : '条资讯'}</span>
+		<span>{isEnglish ? 'items shown' : '条资讯'}</span>
 	</div>
 	<noscript>
 		<p class="timeline-status">
@@ -121,7 +164,7 @@ const orderedBatches = orderTimelineBatches(report.batches);
 		</p>
 	</noscript>
 
-	<div class="timeline-batches">
+	<div class="batches">
 		{
 			orderedBatches.map((batch) => {
 				// The producer stores each batch in ascending chronology for deterministic artifacts.
@@ -131,30 +174,36 @@ const orderedBatches = orderTimelineBatches(report.batches);
 					.filter((item) => item !== undefined)
 					.reverse();
 				const batchLabel = cleanTimelineSummary(batch.label);
+				const pending = batch.status !== 'completed';
 				return (
 					<section
-						class="timeline-batch"
+						class={`batch${pending ? ' pending' : ''}`}
 						data-timeline-batch={batch.id}
 						data-batch-status={batch.status}
 					>
-						<header class="timeline-batch-header">
-							<div>
-								<p>{batchLabel}</p>
-								<h2>
-									{batch.status === 'completed'
-										? isEnglish
-											? 'Published batch'
-											: '已发布批次'
-										: isEnglish
-											? 'Pending'
-											: '等待更新'}
-								</h2>
-							</div>
-							<span data-batch-count>{items.length}</span>
-						</header>
-						<div class="timeline-items">
+						<div class="batch-heading">
+							<h2>
+								{pending ? `${batchLabel} · ${isEnglish ? 'scheduled' : '等待中'}` : batchLabel}
+							</h2>
+							{!pending && (
+								<span class="batch-count">
+									<span data-batch-count>{items.length}</span>
+									{isEnglish ? ' items' : ' 条'}
+								</span>
+							)}
+							<span class="batch-line" />
+						</div>
+						{pending ? (
+							<p class="pending-note">
+								{isEnglish
+									? 'Items will appear here once this batch is published.'
+									: '本批次发布后，条目会出现在这里。'}
+							</p>
+						) : (
 							<span class="timeline-rail" aria-hidden="true" />
-							{items.map((item, index) => {
+						)}
+						{!pending &&
+							items.map((item, index) => {
 								const summary = cleanTimelineSummary(item.summary);
 								const sourceName = cleanTimelineSummary(item.source.name) || item.source_type;
 								const title =
@@ -183,28 +232,31 @@ const orderedBatches = orderTimelineBatches(report.batches);
 								return (
 									<article
 										id={`news-${item.id}`}
-										class="timeline-item"
+										class={`timeline-item item${item.featured ? ' featured' : ''}`}
 										data-timeline-item
 										data-item-id={item.id}
 										data-content-type={item.content_type}
 										data-search={searchText}
 										style={`--timeline-index: ${Math.min(index, 10)}`}
 									>
-										<time datetime={item.published_at ?? item.published_date ?? undefined}>
-											{formatTimelineTime(item, locale, report.date)}
-										</time>
-										<span class="timeline-node" aria-hidden="true" />
-										<div class="timeline-item-body">
-											<p class="timeline-item-meta">
-												<span>{sourceName}</span>
-												<span>{typeLabels[item.content_type]}</span>
-												{item.featured && <strong>{isEnglish ? 'Selected' : '精选'}</strong>}
-											</p>
+										<span class="dot" aria-hidden="true" />
+										<div class="item-body">
+											<div class="meta">
+												<span class="src">{sourceName}</span>
+												<span class="badge">{typeLabels[item.content_type]}</span>
+												{item.featured && (
+													<span class="badge featured-badge">
+														{isEnglish ? 'Selected' : '精选'}
+													</span>
+												)}
+												<time datetime={item.published_at ?? item.published_date ?? undefined}>
+													{formatTimelineTime(item, locale, report.date)}
+												</time>
+											</div>
 											<h3>
 												{item.canonical_url ? (
 													<a href={item.canonical_url} target="_blank" rel="noopener noreferrer">
-														{title}
-														<span aria-hidden="true"> ↗</span>
+														{title} <span class="ext">↗</span>
 													</a>
 												) : (
 													title
@@ -212,7 +264,7 @@ const orderedBatches = orderTimelineBatches(report.batches);
 											</h3>
 											{summary && <p class="timeline-summary">{summary}</p>}
 											{topics.length > 0 && (
-												<ul class="timeline-topics" aria-label={isEnglish ? 'Topics' : '主题'}>
+												<ul class="topics" aria-label={isEnglish ? 'Topics' : '主题'}>
 													{topics.map((topic) => (
 														<li>
 															<a href={`/topics/${topic.slug}/`}>{taxonomyLabel(topic, locale)}</a>
@@ -221,10 +273,7 @@ const orderedBatches = orderTimelineBatches(report.batches);
 												</ul>
 											)}
 											{entities.length > 0 && (
-												<ul
-													class="timeline-topics"
-													aria-label={isEnglish ? 'Entities' : '相关实体'}
-												>
+												<ul class="topics" aria-label={isEnglish ? 'Entities' : '相关实体'}>
 													{entities.map((entity) => (
 														<li>
 															<a href={`/entities/${entity.slug}/`}>
@@ -244,18 +293,11 @@ const orderedBatches = orderTimelineBatches(report.batches);
 									</article>
 								);
 							})}
-							{items.length === 0 && (
-								<p class="timeline-batch-empty">
-									{batch.status === 'completed'
-										? isEnglish
-											? 'No new items in this batch.'
-											: '本批次没有新增资讯。'
-										: isEnglish
-											? 'Not published yet.'
-											: '尚未发布。'}
-								</p>
-							)}
-						</div>
+						{!pending && items.length === 0 && (
+							<p class="batch-empty">
+								{isEnglish ? 'No new items in this batch.' : '本批次没有新增资讯。'}
+							</p>
+						)}
 					</section>
 				);
 			})
@@ -265,6 +307,11 @@ const orderedBatches = orderTimelineBatches(report.batches);
 		<span>{isEnglish ? 'No items match these filters.' : '没有符合当前条件的资讯。'}</span>
 		<button type="button" data-clear-filters>{isEnglish ? 'Clear filters' : '清除筛选'}</button>
 	</p>
+
+	<footer class="page-foot">
+		<a href={archiveHref}>{isEnglish ? '← Back to archive' : '← 返回归档'}</a>
+		<a href="#discussion">{isEnglish ? 'Discussion and additions ↓' : '讨论与补充 ↓'}</a>
+	</footer>
 </article>
 
 <script is:inline type="module" src="/js/daily-timeline.js"></script>
