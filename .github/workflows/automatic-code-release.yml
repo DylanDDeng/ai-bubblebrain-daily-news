@@ -29,6 +29,8 @@ jobs:
       CODE_RELEASE_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
       CODE_RELEASE_SECRET: ${{ secrets.CODE_RELEASE_SECRET }}
       CONTENT_CURRENT_URLS: https://content-api.bubblenews.today/v1/current,https://content-api-origin.bubblenews.today/v1/current
+      CONTENT_SITE_IDENTITY_URLS: https://bubblenews.today/release-manifests/site-route-manifest.json,https://ai-bubblebrain-daily-news.pages.dev/release-manifests/site-route-manifest.json
+      CODE_RELEASE_SITE_PROBES_PER_ORIGIN: "3"
       CODE_RELEASE_WAIT_TIMEOUT_SECONDS: "2700"
       GH_TOKEN: ${{ github.token }}
 

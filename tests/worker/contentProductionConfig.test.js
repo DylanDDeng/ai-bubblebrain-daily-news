@@ -200,6 +200,9 @@ describe("content production preflight", () => {
       CODE_RELEASE_SECRET: "b".repeat(32),
       CONTENT_CURRENT_URLS:
         "https://content-api.example.com/v1/current,https://content-api-origin.example.com/v1/current",
+      CONTENT_SITE_IDENTITY_URLS:
+        "https://site.example.com/release-manifests/site-route-manifest.json,https://pages.example.com/release-manifests/site-route-manifest.json",
+      CODE_RELEASE_SITE_PROBES_PER_ORIGIN: "3",
       CODE_RELEASE_WAIT_TIMEOUT_SECONDS: "2700",
     };
     expect(
@@ -231,6 +234,19 @@ describe("content production preflight", () => {
           "https://content-api.example.com/v1/current?cached=true,https://content-api-origin.example.com/v1/current",
       }),
     ).toThrow(/exact \/v1\/current endpoints/);
+    expect(() =>
+      validateWorkflowEnvironment("workflow-code-release", {
+        ...environment,
+        CONTENT_SITE_IDENTITY_URLS:
+          "https://site.example.com/manifest.json,https://pages.example.com/release-manifests/site-route-manifest.json",
+      }),
+    ).toThrow(/exact \/release-manifests\/site-route-manifest\.json endpoints/);
+    expect(() =>
+      validateWorkflowEnvironment("workflow-code-release", {
+        ...environment,
+        CODE_RELEASE_SITE_PROBES_PER_ORIGIN: "1",
+      }),
+    ).toThrow(/must be between 2 and 5/);
   });
 
   it("requires a topology-approved deployer-only observability environment", () => {

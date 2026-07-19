@@ -12,6 +12,9 @@ function environment(overrides = {}) {
     EXACT_CODE_SHA: CODE_SHA,
     CONTENT_CURRENT_URLS:
       "https://api-one.example.test/v1/current,https://api-two.example.test/v1/current",
+    CONTENT_SITE_IDENTITY_URLS:
+      "https://site.example.test/release-manifests/site-route-manifest.json,https://pages.example.test/release-manifests/site-route-manifest.json",
+    CODE_RELEASE_SITE_PROBES_PER_ORIGIN: "3",
     CODE_RELEASE_REQUEST_MAX_ATTEMPTS: "2",
     CODE_RELEASE_REQUEST_DELAY_MS: "1",
     CODE_RELEASE_POLL_DELAY_MS: "1",
@@ -39,6 +42,11 @@ describe("automatic code release request and deployment wait", () => {
           202,
         );
       }
+      if (url.pathname === "/release-manifests/site-route-manifest.json") {
+        return json({
+          build: { site_release_id: RELEASE_ID, code_sha: CODE_SHA },
+        });
+      }
       pointerRound += 1;
       if (pointerRound <= 2) {
         return json({ site_release_id: "old", code_sha: "b".repeat(40) });
@@ -57,8 +65,46 @@ describe("automatic code release request and deployment wait", () => {
         log: vi.fn(),
       }),
     ).resolves.toEqual({ outcome: "deployed", siteReleaseId: RELEASE_ID });
-    expect(fetch).toHaveBeenCalledTimes(5);
+    expect(fetch).toHaveBeenCalledTimes(17);
     expect(sleep).toHaveBeenCalledOnce();
+  });
+
+  it("waits when one site edge still serves the predecessor identity", async () => {
+    let now = 0;
+    let siteProbe = 0;
+    const fetch = vi.fn(async (input) => {
+      const url = new URL(String(input));
+      if (url.pathname === "/internal/code-release") {
+        return json(
+          { status: "queued", site_release_id: RELEASE_ID, code_sha: CODE_SHA },
+          202,
+        );
+      }
+      if (url.pathname === "/v1/current") {
+        return json({ site_release_id: RELEASE_ID, code_sha: CODE_SHA });
+      }
+      siteProbe += 1;
+      return json({
+        build:
+          siteProbe === 2
+            ? { site_release_id: "old", code_sha: "b".repeat(40) }
+            : { site_release_id: RELEASE_ID, code_sha: CODE_SHA },
+      });
+    });
+    const sleep = vi.fn(async (milliseconds) => {
+      now += milliseconds;
+    });
+
+    await expect(
+      runCodeRelease(environment(), {
+        fetch,
+        sleep,
+        now: () => now,
+        log: vi.fn(),
+      }),
+    ).resolves.toEqual({ outcome: "deployed", siteReleaseId: RELEASE_ID });
+    expect(sleep).toHaveBeenCalledOnce();
+    expect(siteProbe).toBe(12);
   });
 
   it("reports a non-UI change set as an explicit safe no-op", async () => {
@@ -113,16 +159,22 @@ describe("automatic code release request and deployment wait", () => {
     let now = 0;
     const fetch = vi.fn(async (input) => {
       const url = new URL(String(input));
-      return url.pathname === "/internal/code-release"
-        ? json(
-            {
-              status: "queued",
-              site_release_id: RELEASE_ID,
-              code_sha: CODE_SHA,
-            },
-            202,
-          )
-        : json({ site_release_id: "old", code_sha: "b".repeat(40) });
+      if (url.pathname === "/internal/code-release") {
+        return json(
+          {
+            status: "queued",
+            site_release_id: RELEASE_ID,
+            code_sha: CODE_SHA,
+          },
+          202,
+        );
+      }
+      if (url.pathname === "/release-manifests/site-route-manifest.json") {
+        return json({
+          build: { site_release_id: RELEASE_ID, code_sha: CODE_SHA },
+        });
+      }
+      return json({ site_release_id: "old", code_sha: "b".repeat(40) });
     });
     const sleep = vi.fn(async (milliseconds) => {
       now += milliseconds;
@@ -136,7 +188,9 @@ describe("automatic code release request and deployment wait", () => {
         }),
         { fetch, sleep, now: () => now, log: vi.fn() },
       ),
-    ).rejects.toThrow(/did not become the verified current pointer/);
+    ).rejects.toThrow(
+      /did not converge across current pointers and site identities/,
+    );
   });
 
   it("retries only declared transient release-head failures", async () => {
@@ -148,6 +202,11 @@ describe("automatic code release request and deployment wait", () => {
         return requestCount === 1
           ? json({ error: "release_head_busy", retryable: true }, 409)
           : json({ status: "already_current", code_sha: CODE_SHA });
+      }
+      if (url.pathname === "/release-manifests/site-route-manifest.json") {
+        return json({
+          build: { site_release_id: RELEASE_ID, code_sha: CODE_SHA },
+        });
       }
       return json({ site_release_id: RELEASE_ID, code_sha: CODE_SHA });
     });
