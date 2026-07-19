@@ -12,8 +12,10 @@ routes = [
 PAGES_PROJECT = "ai-bubblebrain-daily-news"
 PRODUCTION_BRANCH = "main"
 VERIFY_MIN_ENDPOINTS = "2"
-# From production upload start through exact multi-origin convergence. Exceeding this restores last-known-good.
-MAX_PRODUCTION_INCONSISTENCY_MS = "60000"
+# From production upload start through exact multi-origin convergence. Pending
+# origins are probed in parallel until this hard limit; exceeding it restores
+# the last-known-good release while leaving the database pointer unchanged.
+MAX_PRODUCTION_INCONSISTENCY_MS = "240000"
 # Configure at least two independently routed verifier origins before enabling publication.
 PRODUCTION_VERIFY_URLS = "https://bubblenews.today,https://ai-bubblebrain-daily-news.pages.dev"
 # The Broker token needs Pages deploy and zone cache purge only.

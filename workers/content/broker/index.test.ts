@@ -391,20 +391,29 @@ describe("production convergence verification", () => {
     };
   }
 
-  function setup(corruptSearch = false) {
-    vi.stubGlobal(
-      "setTimeout",
-      ((callback: () => void) => {
-        callback();
-        return 0;
-      }) as typeof setTimeout,
-    );
+  function setup(corruptSearch = false, delayedManifestAttempts = 0) {
+    const manifestAttempts = new Map<string, number>();
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: RequestInfo | URL) => {
         const url = new URL(String(input));
         if (url.pathname === "/release-manifests/site-route-manifest.json") {
-          return new Response(JSON.stringify({ build: build() }), {
+          const attempts = (manifestAttempts.get(url.origin) || 0) + 1;
+          manifestAttempts.set(url.origin, attempts);
+          const delayed =
+            url.origin === "https://www.example.test" &&
+            attempts <= delayedManifestAttempts;
+          return new Response(JSON.stringify({
+            build: delayed
+              ? {
+                  ...build(),
+                  site_release_id: "019f6e2d-013f-7ea0-933e-b996531a9340",
+                  site_release_sequence: context.site_release_sequence - 1,
+                  code_sha: "f".repeat(40),
+                  source_sha: "f".repeat(40),
+                }
+              : build(),
+          }), {
             status: 200,
             headers: { "Content-Type": "application/json", "cf-ray": "id-IAD" },
           });
@@ -426,22 +435,42 @@ describe("production convergence verification", () => {
       }),
     );
     return {
-      PRODUCTION_VERIFY_URLS: "https://www.example.test",
-      VERIFY_MIN_ENDPOINTS: "2",
-    } as never;
+      env: {
+        PRODUCTION_VERIFY_URLS: "https://www.example.test",
+        VERIFY_MIN_ENDPOINTS: "2",
+      } as never,
+      manifestAttempts,
+    };
+  }
+
+  function controlledClock(startedAt = 1_000_000) {
+    let current = startedAt;
+    return {
+      startedAt,
+      advance: (milliseconds: number) => {
+        current += milliseconds;
+      },
+      dependencies: {
+        now: () => current,
+        sleep: async (milliseconds: number) => {
+          current += milliseconds;
+        },
+      },
+    };
   }
 
   it("requires exact HTML, daily JSON and search bytes on every origin", async () => {
+    const value = setup();
     await expect(
       verifyDeployment(
         context,
         "https://deploy.pages.dev",
-        setup(),
+        value.env,
         { kind: "tar", files },
       ),
     ).resolves.toMatchObject({
       multi_edge_verified: true,
-      maximum_inconsistency_ms: 60000,
+      maximum_inconsistency_ms: 240000,
       convergence_elapsed_ms: expect.any(Number),
       site_release_id: context.site_release_id,
       site_release_sequence: context.site_release_sequence,
@@ -458,24 +487,81 @@ describe("production convergence verification", () => {
     });
   });
 
-  it("fails closed when a custom-domain search artifact drifts", async () => {
+  it("continues beyond the legacy eight probes until a delayed edge converges", async () => {
+    const value = setup(false, 9);
+    const clock = controlledClock();
     await expect(
       verifyDeployment(
         context,
         "https://deploy.pages.dev",
-        setup(true),
+        { ...value.env, MAX_PRODUCTION_INCONSISTENCY_MS: "20000" },
         { kind: "tar", files },
+        clock.startedAt,
+        clock.dependencies,
+      ),
+    ).resolves.toMatchObject({
+      multi_edge_verified: true,
+      endpoints: expect.arrayContaining([
+        expect.objectContaining({
+          url: "https://www.example.test",
+          attempts: 10,
+        }),
+      ]),
+    });
+    expect(value.manifestAttempts.get("https://deploy.pages.dev")).toBe(1);
+    expect(value.manifestAttempts.get("https://www.example.test")).toBe(10);
+  });
+
+  it("fails closed when a custom-domain search artifact drifts", async () => {
+    const value = setup(true);
+    const clock = controlledClock();
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        { ...value.env, MAX_PRODUCTION_INCONSISTENCY_MS: "10000" },
+        { kind: "tar", files },
+        clock.startedAt,
+        clock.dependencies,
       ),
     ).rejects.toThrow("search/index.json");
   });
 
+  it("rejects a probe that finishes after the hard convergence deadline", async () => {
+    const value = setup();
+    const clock = controlledClock();
+    const fetcher = vi.mocked(fetch);
+    let advanced = false;
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        { ...value.env, MAX_PRODUCTION_INCONSISTENCY_MS: "10000" },
+        { kind: "tar", files },
+        clock.startedAt,
+        {
+          ...clock.dependencies,
+          fetch: async (input, init) => {
+            const response = await fetcher(input, init);
+            if (!advanced) {
+              advanced = true;
+              clock.advance(10_001);
+            }
+            return response;
+          },
+        },
+      ),
+    ).rejects.toThrow("within 10000ms");
+  });
+
   it("rejects an unsafe inconsistency-window configuration", async () => {
+    const value = setup();
     await expect(
       verifyDeployment(
         context,
         "https://deploy.pages.dev",
         {
-          ...setup(),
+          ...value.env,
           MAX_PRODUCTION_INCONSISTENCY_MS: "0",
         },
         { kind: "tar", files },
@@ -484,16 +570,16 @@ describe("production convergence verification", () => {
   });
 
   it("fails before probing when the measured inconsistency window is exhausted", async () => {
-    const env = setup();
+    const value = setup();
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockClear();
     await expect(
       verifyDeployment(
         context,
         "https://deploy.pages.dev",
-        env,
+        value.env,
         { kind: "tar", files },
-        Date.now() - 60_001,
+        Date.now() - 240_001,
       ),
     ).rejects.toThrow("inconsistency window exceeded");
     expect(fetchMock).not.toHaveBeenCalled();

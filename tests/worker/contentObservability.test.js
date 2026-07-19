@@ -337,7 +337,7 @@ describe("two-day production observation gate", () => {
     input.publication_attempts[0].trigger_kind = "manual:repair";
     input.manual_actions.push({ action: "operations.retry" });
     input.failure_events.push({ event_type: "rollback_committed" });
-    input.slots[1].edge_evidence.maximum_inconsistency_ms = 300_000;
+    input.slots[1].edge_evidence.maximum_inconsistency_ms = 300_001;
     input.checks[2].healthy = false;
     const result = evaluateContentObservationWindow(input, WINDOW_NOW);
     expect(result.measurable_gate_passed).toBe(false);

@@ -61,6 +61,25 @@ type ContentAddressedArtifact = {
 type ArtifactBundle =
   | { kind: "tar"; files: TarFile[] }
   | { kind: "content-addressed"; manifest: ContentAddressedArtifact };
+type VerificationFailure = {
+  origin: string;
+  phase: "release_identity" | "critical_artifact";
+  path: string;
+  status: number | null;
+  error_type?: string;
+  observed_site_release_id?: string | null;
+  observed_site_release_sequence?: number | null;
+  observed_code_sha?: string | null;
+  observed_sha256?: string | null;
+};
+type VerificationDependencies = {
+  fetch?: typeof fetch;
+  now?: () => number;
+  sleep?: (milliseconds: number) => Promise<void>;
+};
+type VerificationProbeResult =
+  | { ok: true; evidence: JsonRecord }
+  | { ok: false; failure: VerificationFailure };
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -736,15 +755,182 @@ async function criticalArtifactFiles(
   return files;
 }
 
+class ProductionConvergenceError extends Error {
+  readonly code = "production_convergence_timeout";
+  readonly elapsedMs: number;
+  readonly maximumInconsistencyMs: number;
+  readonly failures: VerificationFailure[];
+
+  constructor(
+    elapsedMs: number,
+    maximumInconsistencyMs: number,
+    failures: VerificationFailure[],
+  ) {
+    const summary = failures
+      .map(
+        (failure) =>
+          `${failure.origin}${failure.path} (${failure.phase}, status ${failure.status ?? "request_error"})`,
+      )
+      .join(", ");
+    super(
+      `Production deployment did not converge within ${maximumInconsistencyMs}ms: ${summary || "verification completed after the hard deadline"}`,
+    );
+    this.name = "ProductionConvergenceError";
+    this.elapsedMs = elapsedMs;
+    this.maximumInconsistencyMs = maximumInconsistencyMs;
+    this.failures = failures;
+  }
+}
+
+function errorDiagnostics(error: unknown): JsonRecord {
+  if (error instanceof ProductionConvergenceError) {
+    return {
+      errorType: error.name,
+      errorCode: error.code,
+      elapsedMs: error.elapsedMs,
+      maximumInconsistencyMs: error.maximumInconsistencyMs,
+      failures: error.failures,
+    };
+  }
+  return {
+    errorType: error instanceof Error ? error.name : "Error",
+    errorMessage:
+      error instanceof Error ? error.message.slice(0, 512) : "Unknown error",
+  };
+}
+
+async function probeDeploymentOrigin(
+  base: string,
+  context: ArtifactContext,
+  criticalFiles: Array<TarFile & { sha256: string }>,
+  attempt: number,
+  remainingMs: number,
+  fetcher: typeof fetch,
+): Promise<VerificationProbeResult> {
+  const origin = new URL(base).origin;
+  const manifestUrl = new URL(`/${ROUTE_MANIFEST}`, origin);
+  manifestUrl.searchParams.set(
+    "release_probe",
+    `${context.site_release_id}-${attempt}`,
+  );
+  let manifestResponse: Response;
+  try {
+    manifestResponse = await fetcher(manifestUrl, {
+      headers: { Accept: "application/json", "Cache-Control": "no-cache" },
+      signal: AbortSignal.timeout(Math.max(1, Math.min(15_000, remainingMs))),
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      failure: {
+        origin,
+        phase: "release_identity",
+        path: `/${ROUTE_MANIFEST}`,
+        status: null,
+        error_type: error instanceof Error ? error.name : "Error",
+      },
+    };
+  }
+  const manifest = manifestResponse.ok
+    ? await manifestResponse.json().catch(() => null)
+    : null;
+  if (!manifestResponse.ok || !expectedRouteBuild(manifest, context)) {
+    const build = (manifest as JsonRecord | null)?.build as
+      | JsonRecord
+      | undefined;
+    return {
+      ok: false,
+      failure: {
+        origin,
+        phase: "release_identity",
+        path: `/${ROUTE_MANIFEST}`,
+        status: manifestResponse.status,
+        observed_site_release_id:
+          typeof build?.site_release_id === "string"
+            ? build.site_release_id
+            : null,
+        observed_site_release_sequence: Number.isSafeInteger(
+          Number(build?.site_release_sequence),
+        )
+          ? Number(build?.site_release_sequence)
+          : null,
+        observed_code_sha:
+          typeof build?.code_sha === "string" ? build.code_sha : null,
+      },
+    };
+  }
+
+  const criticalResults = await Promise.all(
+    criticalFiles.map(async (file): Promise<VerificationFailure | null> => {
+      const path = deployedRoute(file.path);
+      const criticalUrl = new URL(path, origin);
+      criticalUrl.searchParams.set(
+        "release_probe",
+        `${context.site_release_id}-${attempt}`,
+      );
+      let response: Response;
+      try {
+        response = await fetcher(criticalUrl, {
+          headers: { "Cache-Control": "no-cache" },
+          signal: AbortSignal.timeout(
+            Math.max(1, Math.min(15_000, remainingMs)),
+          ),
+        });
+      } catch (error) {
+        return {
+          origin,
+          phase: "critical_artifact",
+          path,
+          status: null,
+          error_type: error instanceof Error ? error.name : "Error",
+        };
+      }
+      const bytes = response.ok
+        ? new Uint8Array(await response.arrayBuffer())
+        : null;
+      const observedHash = bytes ? await sha256(bytes) : null;
+      return bytes && observedHash === file.sha256
+        ? null
+        : {
+            origin,
+            phase: "critical_artifact",
+            path,
+            status: response.status,
+            observed_sha256: observedHash,
+          };
+    }),
+  );
+  const failure = criticalResults.find(
+    (result): result is VerificationFailure => result !== null,
+  );
+  if (failure) return { ok: false, failure };
+  return {
+    ok: true,
+    evidence: {
+      url: origin,
+      colo: manifestResponse.headers.get("cf-ray")?.split("-").at(-1) || null,
+      attempts: attempt,
+      exact_paths: criticalFiles.map((file) => deployedRoute(file.path)),
+    },
+  };
+}
+
 export async function verifyDeployment(
   context: ArtifactContext,
   deploymentUrl: string,
   env: Env,
   bundle: ArtifactBundle,
   windowStartedAt = Date.now(),
+  dependencies: VerificationDependencies = {},
 ): Promise<JsonRecord> {
+  const now = dependencies.now || Date.now;
+  const sleep =
+    dependencies.sleep ||
+    ((milliseconds: number) =>
+      new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
+  const fetcher = dependencies.fetch || fetch;
   const maximumInconsistencyMs = Number(
-    env.MAX_PRODUCTION_INCONSISTENCY_MS || "60000",
+    env.MAX_PRODUCTION_INCONSISTENCY_MS || "240000",
   );
   if (
     !Number.isSafeInteger(maximumInconsistencyMs) ||
@@ -754,7 +940,7 @@ export async function verifyDeployment(
     throw new Error("Production inconsistency limit is invalid");
   }
   const remainingWindow = (): number => {
-    const remaining = maximumInconsistencyMs - (Date.now() - windowStartedAt);
+    const remaining = maximumInconsistencyMs - (now() - windowStartedAt);
     if (remaining <= 0) {
       throw new Error("Production inconsistency window exceeded");
     }
@@ -763,80 +949,71 @@ export async function verifyDeployment(
   const configured = env.PRODUCTION_VERIFY_URLS.split(",")
     .map((value) => value.trim())
     .filter(Boolean);
-  const bases = [...new Set([deploymentUrl, ...configured])];
+  const bases = [
+    ...new Set(
+      [deploymentUrl, ...configured].map((value) => new URL(value).origin),
+    ),
+  ];
   const minimum = Math.max(2, Number(env.VERIFY_MIN_ENDPOINTS || "2"));
   if (bases.length < minimum)
     throw new Error("Multi-endpoint production verification is not configured");
-  const criticalFiles = await criticalArtifactFiles(bundle, env);
-  const evidence: JsonRecord[] = [];
-  for (const base of bases) {
-    remainingWindow();
-    const url = new URL(`/${ROUTE_MANIFEST}`, base);
-    let verified = false;
-    let colo: string | null = null;
-    for (let attempt = 0; attempt < 8; attempt += 1) {
-      const remaining = remainingWindow();
-      url.searchParams.set(
-        "release_probe",
-        `${context.site_release_id}-${attempt}`,
-      );
-      const response = await fetch(url, {
-        headers: { Accept: "application/json", "Cache-Control": "no-cache" },
-        signal: AbortSignal.timeout(Math.min(15_000, remaining)),
-      });
-      if (
-        response.ok &&
-        expectedRouteBuild(await response.json().catch(() => null), context)
-      ) {
-        colo = response.headers.get("cf-ray")?.split("-").at(-1) || null;
-        verified = true;
-        break;
-      }
-      await new Promise((resolve) =>
-        setTimeout(resolve, Math.min(250 * 2 ** attempt, 2_000)),
-      );
-    }
-    if (!verified)
-      throw new Error(
-        `Production release identity did not converge at ${url.origin}`,
-      );
-    for (const file of criticalFiles) {
-      const expectedHash = await sha256(file.bytes);
-      let exact = false;
-      for (let attempt = 0; attempt < 8; attempt += 1) {
-        const remaining = remainingWindow();
-        const criticalUrl = new URL(deployedRoute(file.path), base);
-        criticalUrl.searchParams.set(
-          "release_probe",
-          `${context.site_release_id}-${attempt}`,
-        );
-        const response = await fetch(criticalUrl, {
-          headers: { "Cache-Control": "no-cache" },
-          signal: AbortSignal.timeout(Math.min(15_000, remaining)),
-        });
-        const bytes = response.ok
-          ? new Uint8Array(await response.arrayBuffer())
-          : null;
-        if (bytes && (await sha256(bytes)) === expectedHash) {
-          exact = true;
-          break;
-        }
-        await new Promise((resolve) =>
-          setTimeout(resolve, Math.min(250 * 2 ** attempt, 2_000)),
-        );
-      }
-      if (!exact)
-        throw new Error(
-          `Production critical artifact did not converge at ${url.origin}: ${file.path}`,
-        );
-    }
-    evidence.push({
-      url: url.origin,
-      colo,
-      exact_paths: criticalFiles.map((file) => deployedRoute(file.path)),
-    });
-  }
   remainingWindow();
+  const criticalFiles = await Promise.all(
+    (await criticalArtifactFiles(bundle, env)).map(async (file) => ({
+      ...file,
+      sha256: await sha256(file.bytes),
+    })),
+  );
+  const evidenceByOrigin = new Map<string, JsonRecord>();
+  const attemptsByOrigin = new Map(bases.map((base) => [base, 0]));
+  let failures: VerificationFailure[] = [];
+  let round = 0;
+  while (evidenceByOrigin.size < bases.length) {
+    const remaining =
+      maximumInconsistencyMs - (now() - windowStartedAt);
+    if (remaining <= 0) break;
+    const pending = bases.filter((base) => !evidenceByOrigin.has(base));
+    const results = await Promise.all(
+      pending.map(async (base) => {
+        const attempt = (attemptsByOrigin.get(base) || 0) + 1;
+        attemptsByOrigin.set(base, attempt);
+        return {
+          base,
+          result: await probeDeploymentOrigin(
+            base,
+            context,
+            criticalFiles,
+            attempt,
+            remaining,
+            fetcher,
+          ),
+        };
+      }),
+    );
+    failures = [];
+    for (const { base, result } of results) {
+      if (result.ok) evidenceByOrigin.set(base, result.evidence);
+      else failures.push(result.failure);
+    }
+    if (evidenceByOrigin.size === bases.length) break;
+    const remainingAfterProbe =
+      maximumInconsistencyMs - (now() - windowStartedAt);
+    if (remainingAfterProbe <= 0) break;
+    const delay = Math.min(250 * 2 ** Math.min(round, 3), 2_000);
+    await sleep(Math.min(delay, remainingAfterProbe));
+    round += 1;
+  }
+  const elapsedMs = Math.max(0, now() - windowStartedAt);
+  if (
+    evidenceByOrigin.size !== bases.length ||
+    elapsedMs > maximumInconsistencyMs
+  ) {
+    throw new ProductionConvergenceError(
+      elapsedMs,
+      maximumInconsistencyMs,
+      failures,
+    );
+  }
   return {
     multi_edge_verified: true,
     site_release_id: context.site_release_id,
@@ -847,9 +1024,9 @@ export async function verifyDeployment(
     artifact_fingerprint_sha256: context.artifact_fingerprint_sha256,
     code_sha: context.code_sha,
     build_environment_version: context.build_environment_version,
-    convergence_elapsed_ms: Math.max(0, Date.now() - windowStartedAt),
+    convergence_elapsed_ms: elapsedMs,
     maximum_inconsistency_ms: maximumInconsistencyMs,
-    endpoints: evidence,
+    endpoints: bases.map((base) => evidenceByOrigin.get(base)),
   };
 }
 
@@ -1105,7 +1282,7 @@ async function promote(request: Request, env: Env): Promise<Response> {
     }
     console.error("[ContentBroker] promotion failed", {
       stage: promotionStage,
-      errorType: error instanceof Error ? error.name : "Error",
+      ...errorDiagnostics(error),
     });
     return json({ error: "promotion_failed" }, 503);
   } finally {
@@ -1260,7 +1437,10 @@ export async function reconcileProduction(
         );
       }
       return "committed";
-    } catch {
+    } catch (error) {
+      console.warn("[ContentBroker] reconcile target not committed", {
+        ...errorDiagnostics(error),
+      });
       if (!current) {
         // A first-ever promotion can be terminated before Pages changes while
         // leaving the fenced slot in a deploying state. With no current
@@ -1325,7 +1505,7 @@ export default {
     context.waitUntil(
       reconcileProduction(env).catch((error) => {
         console.error("[ContentBroker] reconcile failed", {
-          errorType: error instanceof Error ? error.name : "Error",
+          ...errorDiagnostics(error),
         });
       }),
     );
