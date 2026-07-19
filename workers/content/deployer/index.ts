@@ -291,7 +291,11 @@ function classifyCodeReleasePath(
       "astro/route-ownership.json",
       "astro/tsconfig.json",
       "static/css/daily-timeline.css",
+      "static/js/ai-infographic.js",
       "static/js/daily-timeline.js",
+      "static/js/knowledge-search.js",
+      "static/js/navigation.js",
+      "static/js/site-shell.js",
     ].includes(path)
   ) {
     return "publishable";
