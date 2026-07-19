@@ -38,8 +38,26 @@ const typeLabels: Record<DailyContentType, string> = isEnglish
 	? { news: 'News', project: 'Project', paper: 'Paper', socialMedia: 'Social' }
 	: { news: '资讯', project: '项目', paper: '论文', socialMedia: '社交' };
 const categoryLabels: Record<string, string> = isEnglish
-	? { models: 'Models', research: 'Research', open_source: 'Open source', other: 'Other' }
-	: { models: '大模型', research: '研究论文', open_source: '开源项目', other: '其他动态' };
+	? {
+			models: 'Models',
+			research: 'Research',
+			open_source: 'Open source',
+			agents: 'Agents',
+			products: 'Products',
+			business: 'Business',
+			policy: 'Policy',
+			other: 'Other',
+		}
+	: {
+			models: '大模型',
+			research: '研究论文',
+			open_source: '开源项目',
+			agents: '智能体',
+			products: '产品',
+			business: '商业',
+			policy: '政策',
+			other: '其他动态',
+		};
 
 const latestDate = latestIdentity ? dailyDateFromKey(latestIdentity.dateKey) : null;
 const monthDay = latestDate
@@ -55,7 +73,10 @@ const overview = report ? cleanTimelineSummary(report.overview.text) : '';
 const completedBatches = (report?.batches ?? []).filter(
 	(batch) => batch.status === 'completed' && batch.generated_at,
 );
-const lastCompletedAt = completedBatches.map((batch) => batch.generated_at!).sort().at(-1);
+const lastCompletedAt = completedBatches
+	.map((batch) => batch.generated_at!)
+	.sort()
+	.at(-1);
 const liveLabel =
 	lastCompletedAt || report?.generated_at
 		? formatDailyTime(lastCompletedAt ?? report!.generated_at, locale)
@@ -150,15 +171,11 @@ const previousDays = (
 							<a
 								class="lead-story"
 								href={lead.canonical_url ?? latestHref}
-								{...(lead.canonical_url
-									? { target: '_blank', rel: 'noopener noreferrer' }
-									: {})}
+								{...(lead.canonical_url ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
 							>
 								<p class="tag">{isEnglish ? 'TOP STORY' : '今日头条 · TOP STORY'}</p>
 								<h2>{cleanTimelineSummary(lead.title) || lead.title}</h2>
-								{cleanTimelineSummary(lead.summary) && (
-									<p>{cleanTimelineSummary(lead.summary)}</p>
-								)}
+								{cleanTimelineSummary(lead.summary) && <p>{cleanTimelineSummary(lead.summary)}</p>}
 								<p class="src">
 									{cleanTimelineSummary(lead.source.name) || lead.source_type} ·{' '}
 									{formatTimelineTime(lead, locale, report.date)}
@@ -193,11 +210,7 @@ const previousDays = (
 										</div>
 										<h3>
 											{item.canonical_url ? (
-												<a
-													href={item.canonical_url}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
+												<a href={item.canonical_url} target="_blank" rel="noopener noreferrer">
 													{title} <span class="ext">↗</span>
 												</a>
 											) : (
@@ -280,9 +293,7 @@ const previousDays = (
 						{weekdayLong && <span class="weekday">{weekdayLong}</span>}
 					</h1>
 					<p class="sub">
-						<a href={latestHref}>
-							{isEnglish ? 'Read the latest brief →' : '查看最新一期 →'}
-						</a>
+						<a href={latestHref}>{isEnglish ? 'Read the latest brief →' : '查看最新一期 →'}</a>
 					</p>
 				</div>
 			</header>
