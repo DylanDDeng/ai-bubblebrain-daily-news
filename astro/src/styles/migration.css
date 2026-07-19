@@ -404,10 +404,10 @@ h3 {
 
 h1 {
 	margin: 0;
-	font-size: clamp(2.65rem, 7vw, 6.4rem);
+	font-size: clamp(2rem, 3.6vw, 2.9rem);
 	font-weight: 600;
-	line-height: 1.08;
-	letter-spacing: -0.055em;
+	line-height: 1.15;
+	letter-spacing: -0.03em;
 }
 
 .page-heading > p:last-child:not(.eyebrow) {
@@ -461,7 +461,7 @@ h1 {
 
 .article-header h1 {
 	margin-top: 12px;
-	font-size: clamp(2.4rem, 6vw, 5.2rem);
+	font-size: clamp(1.75rem, 3vw, 2.5rem);
 }
 
 .article-meta,
@@ -681,8 +681,8 @@ h1 {
 	}
 
 	h1 {
-		font-size: clamp(2.35rem, 12vw, 3.8rem);
-		letter-spacing: -0.045em;
+		font-size: clamp(1.7rem, 7.5vw, 2rem);
+		letter-spacing: -0.02em;
 	}
 
 	.archive-card {
