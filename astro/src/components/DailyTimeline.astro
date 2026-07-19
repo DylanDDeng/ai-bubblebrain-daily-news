@@ -53,7 +53,6 @@ for (const item of report.items) {
 	typeCounts.set(item.content_type, (typeCounts.get(item.content_type) ?? 0) + 1);
 }
 
-const overview = cleanTimelineSummary(report.overview.text);
 const orderedBatches = orderTimelineBatches(report.batches);
 const reportDate = dailyDateFromKey(report.date);
 const dateTitle = new Intl.DateTimeFormat(locale, {
@@ -128,7 +127,6 @@ const olderKey = hrefDateKey(olderHref);
 			<time datetime={report.date}>{dateTitle}</time>
 			<span class="weekday">{weekday}</span>
 		</h1>
-		{overview && <p class="overview">{overview}</p>}
 		<div class="stats">
 			<span>{isEnglish ? `${report.items.length} items` : `${report.items.length} 条收录`}</span>
 			<span>{updatesStat}</span>
