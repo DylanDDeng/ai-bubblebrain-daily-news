@@ -408,6 +408,11 @@ function validateObservabilityEnvironment(env) {
   );
   const hitMinimum = Number(env.CONTENT_API_CACHE_HIT_MINIMUM ?? "0.5");
   const sampleMinimum = Number(env.CONTENT_API_CACHE_SAMPLE_MINIMUM ?? "100");
+  const startedAtText = required(
+    "CONTENT_OBSERVABILITY_STARTED_AT",
+    env.CONTENT_OBSERVABILITY_STARTED_AT,
+  );
+  const startedAt = Date.parse(startedAtText);
   if (
     !Number.isFinite(hitMinimum) ||
     hitMinimum < 0 ||
@@ -417,7 +422,17 @@ function validateObservabilityEnvironment(env) {
   ) {
     fail("content API cache thresholds are invalid");
   }
-  return { profile: "workflow-observability", projectRef };
+  if (
+    !Number.isFinite(startedAt) ||
+    new Date(startedAt).toISOString() !== startedAtText
+  ) {
+    fail("CONTENT_OBSERVABILITY_STARTED_AT must be an exact UTC ISO timestamp");
+  }
+  return {
+    profile: "workflow-observability",
+    projectRef,
+    startedAt: startedAtText,
+  };
 }
 
 function validateRecoveryEnvironment(env, profile) {

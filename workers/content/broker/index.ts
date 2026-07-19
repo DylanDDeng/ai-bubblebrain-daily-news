@@ -1087,12 +1087,15 @@ async function promote(request: Request, env: Env): Promise<Response> {
             ${context.site_release_id}::uuid, ${token}, ${generation}, true,
             ${sql.json({ ...recovery, restored_site_release_id: previous.site_release_id, deployment_id: restored.id })}
           )`;
-        } else {
+        } else if (!deploymentChanged) {
           await sql`select private.finish_production_recovery_v1(
             ${context.site_release_id}::uuid, ${token}, ${generation}, true,
             ${sql.json({ production_unchanged: true })}
           )`;
         }
+        // If Pages changed during the first-ever promotion there is no prior
+        // release to restore. Keep the slot in verifying so the scheduled
+        // reconciler can commit after delayed multi-edge convergence.
       } catch {
         await sql`select private.finish_production_recovery_v1(
           ${context.site_release_id}::uuid, ${token}, ${generation}, false,
