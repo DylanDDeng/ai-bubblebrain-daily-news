@@ -183,6 +183,8 @@ describe("automatic code release boundary", () => {
           { filename: "static/css/daily-timeline.css", status: "modified" },
           { filename: "static/js/daily-timeline.js", status: "modified" },
           { filename: "workers/content/deployer/index.ts", status: "modified" },
+          { filename: "src/daily/sourceAdapters.js", status: "modified" },
+          { filename: "wrangler.toml", status: "modified" },
           {
             filename: "scripts/verify-daily-renderers.mjs",
             status: "modified",
@@ -206,7 +208,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(14);
+    ).toHaveLength(16);
   });
 
   it.each([

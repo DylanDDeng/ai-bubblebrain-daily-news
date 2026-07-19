@@ -8,9 +8,9 @@ import { dataSources } from '../../src/dataFetchers.js';
 import GithubTrendingDataSource from '../../src/dataSources/github-trending.js';
 
 describe('source registry and stable identity v1', () => {
-    it('freezes unique policies for all 11 registered source adapters', () => {
+    it('freezes unique policies for all 12 registered source providers', () => {
         expect(Object.keys(SOURCE_REGISTRY)).toEqual([
-            'aibase', 'xiaohu', 'qbit', 'xinzhiyuan', 'openai_newsroom',
+            'aibase', 'xiaohu', 'qbit', 'simonwillison', 'xinzhiyuan', 'openai_newsroom',
             'github_trending', 'huggingface_papers', 'jiqizhixin',
             'twitter', 'twitter_extra', 'reddit',
         ]);
@@ -20,9 +20,12 @@ describe('source registry and stable identity v1', () => {
     });
 
     it('maps every active legacy adapter to exactly one structured provider without changing its output', () => {
+        // Retired providers (reddit) stay in the registry for historical identity
+        // but no longer have an active fetch adapter.
+        const retiredProviders = ['reddit'];
         expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(11);
         expect(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.provider))
-            .toEqual(Object.keys(SOURCE_REGISTRY));
+            .toEqual(Object.keys(SOURCE_REGISTRY).filter(provider => !retiredProviders.includes(provider)));
         for (const entry of STRUCTURED_SOURCE_ADAPTERS) {
             expect(dataSources[entry.contentType].sources).toContain(entry.adapter);
             expect(SOURCE_REGISTRY[entry.provider].contentType).toBe(entry.contentType);
