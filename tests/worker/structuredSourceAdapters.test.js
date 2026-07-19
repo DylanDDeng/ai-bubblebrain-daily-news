@@ -5,7 +5,7 @@ import HuggingfacePapersDataSource from '../../src/dataSources/huggingface-paper
 import JiqizhixinDataSource from '../../src/dataSources/jiqizhixin.js';
 import OpenAInewsroomDataSource from '../../src/dataSources/openai-newsroom.js';
 import QBitDataSource from '../../src/dataSources/qbit.js';
-import RedditDataSource from '../../src/dataSources/reddit.js';
+import SimonWillisonDataSource from '../../src/dataSources/simonwillison.js';
 import TwitterDataSource from '../../src/dataSources/twitter.js';
 import TwitterExtraDataSource from '../../src/dataSources/twitter-extra.js';
 import XiaohuDataSource from '../../src/dataSources/xiaohu.js';
@@ -17,13 +17,13 @@ const FOLO_ADAPTERS = [
     ['aibase', AibaseDataSource, 'AIBASE_FEED_ID', 'AIBASE_FETCH_PAGES'],
     ['xiaohu', XiaohuDataSource, 'XIAOHU_FEED_ID', 'XIAOHU_FETCH_PAGES'],
     ['qbit', QBitDataSource, 'QBIT_FEED_ID', 'QBIT_FETCH_PAGES'],
+    ['simonwillison', SimonWillisonDataSource, 'SIMONWILLISON_FEED_ID', 'SIMONWILLISON_FETCH_PAGES'],
     ['xinzhiyuan', XinZhiYuanDataSource, 'XINZHIYUAN_FEED_ID', 'XINZHIYUAN_FETCH_PAGES'],
     ['openai_newsroom', OpenAInewsroomDataSource, 'OPENAI_NEWSROOM_FEED_ID', 'OPENAI_NEWSROOM_FETCH_PAGES'],
     ['huggingface_papers', HuggingfacePapersDataSource, 'HGPAPERS_FEED_ID', 'HGPAPERS_FETCH_PAGES'],
     ['jiqizhixin', JiqizhixinDataSource, 'JIQIZHIXIN_FEED_ID', 'JIQIZHIXIN_FETCH_PAGES'],
     ['twitter', TwitterDataSource, 'TWITTER_LIST_ID', 'TWITTER_FETCH_PAGES'],
     ['twitter_extra', TwitterExtraDataSource, 'TWITTER_EXTRA_LIST_ID', 'TWITTER_EXTRA_FETCH_PAGES'],
-    ['reddit', RedditDataSource, 'REDDIT_LIST_ID', 'REDDIT_FETCH_PAGES'],
 ];
 
 function envFor(idName, pagesName, overrides = {}) {

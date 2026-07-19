@@ -343,6 +343,71 @@ describe('daily report v1 deterministic boundary', () => {
         expect(result.files[0].path).toBe('data/daily/2026-07-15.json');
     });
 
+    it('reruns the same reportDate and lateNight batch idempotently, appending only new items', async () => {
+        // The 02:00 and 03:00 Beijing cron triggers both resolve to the previous
+        // day's lateNight batch, so the same batch runs twice per report date.
+        const first = await build({
+            reportDate: '2026-07-15',
+            batch: 'lateNight',
+            runAt: '2026-07-15T18:00:00Z',
+            rawItems: [rawItem({
+                id: 'late-night',
+                url: 'https://example.com/late-night',
+                published_date: '2026-07-16T01:30:00+08:00',
+            })],
+        });
+
+        const rerunSameFetch = await build({
+            reportDate: '2026-07-15',
+            batch: 'lateNight',
+            existingReport: first.report,
+            runAt: '2026-07-15T19:00:00Z',
+            rawItems: [rawItem({
+                id: 'late-night',
+                url: 'https://example.com/late-night',
+                published_date: '2026-07-16T01:30:00+08:00',
+            })],
+        });
+        expect(rerunSameFetch.noOp).toBe(true);
+        expect(rerunSameFetch.json).toBe(first.json);
+        expect(rerunSameFetch.markdown).toBe(first.markdown);
+
+        const rerunWithNewItem = await build({
+            reportDate: '2026-07-15',
+            batch: 'lateNight',
+            existingReport: first.report,
+            runAt: '2026-07-15T19:00:00Z',
+            rawItems: [
+                rawItem({
+                    id: 'late-night',
+                    url: 'https://example.com/late-night',
+                    published_date: '2026-07-16T01:30:00+08:00',
+                }),
+                rawItem({
+                    id: 'late-night-extra',
+                    url: 'https://example.com/late-night-extra',
+                    title: 'A later story',
+                    published_date: '2026-07-16T02:30:00+08:00',
+                }),
+            ],
+        });
+        expect(rerunWithNewItem.noOp).toBe(false);
+        expect(rerunWithNewItem.metrics.fresh_count).toBe(1);
+        expect(rerunWithNewItem.report.items).toHaveLength(2);
+        expect(rerunWithNewItem.report.items.map(item => item.batch)).toEqual(['lateNight', 'lateNight']);
+        expect(rerunWithNewItem.report.items[0]).toMatchObject({
+            id: first.report.items[0].id,
+            source_id: 'late-night',
+            ingested_at: first.report.items[0].ingested_at,
+        });
+        expect(rerunWithNewItem.report.items[1]).toMatchObject({ source_id: 'late-night-extra' });
+        expect(rerunWithNewItem.report.batches.map(batch => batch.id))
+            .toEqual(['morning', 'afternoon', 'night', 'lateNight']);
+        expect(rerunWithNewItem.report.batches.find(batch => batch.id === 'lateNight').item_ids)
+            .toEqual(rerunWithNewItem.report.items.map(item => item.id));
+        expect(validateSchema(rerunWithNewItem.report), JSON.stringify(validateSchema.errors)).toBe(true);
+    });
+
     it('fails closed on mismatched current reports, duplicate history dates, and invalid start dates', async () => {
         const existing = await build();
         await expect(build({ reportDate: '2026-07-15', existingReport: existing.report }))
