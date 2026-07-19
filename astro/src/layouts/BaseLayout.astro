@@ -1,5 +1,6 @@
 ---
 import '../styles/migration.css';
+import { ClientRouter } from 'astro:transitions';
 import AuthControls from '../components/AuthControls.astro';
 
 interface Props {
@@ -82,6 +83,8 @@ const navLinks = isEnglish
 		/>
 		<title>{title}</title>
 		<script is:inline src="/js/theme-bootstrap.js"></script>
+		<ClientRouter fallback="swap" />
+		<script is:inline type="module" src="/js/navigation.js"></script>
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">{isEnglish ? 'Skip to content' : '跳到正文'}</a>

@@ -55,6 +55,17 @@ html {
 	scroll-behavior: smooth;
 }
 
+/*
+ * Client-side navigation removes full-document reload flashes. Keep the DOM
+ * swap deliberately motionless: the browser's default root cross-fade reads
+ * as another flash on fast page changes.
+ */
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation: none;
+}
+
 body {
 	min-width: 320px;
 	min-height: 100vh;

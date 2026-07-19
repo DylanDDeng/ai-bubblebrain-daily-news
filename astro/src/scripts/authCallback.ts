@@ -1,8 +1,10 @@
 import { completeOAuthCallback } from '../lib/auth/authStore';
 import { safeRelativeNext } from '../lib/auth/redirect';
 
-const root = document.querySelector<HTMLElement>('[data-auth-callback]');
-if (root) {
+function initAuthCallback(): void {
+	const root = document.querySelector<HTMLElement>('[data-auth-callback]');
+	if (!root || root.dataset.bound === 'true') return;
+	root.dataset.bound = 'true';
 	const title = root.querySelector<HTMLElement>('[data-callback-title]');
 	const status = root.querySelector<HTMLElement>('[data-callback-status]');
 	const retry = root.querySelector<HTMLAnchorElement>('[data-callback-retry]');
@@ -58,3 +60,6 @@ if (root) {
 		}
 	})();
 }
+
+document.addEventListener('astro:page-load', initAuthCallback);
+initAuthCallback();
