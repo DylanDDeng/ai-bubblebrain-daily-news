@@ -12,6 +12,32 @@ function positiveInteger(value, fallback, label) {
   return normalized;
 }
 
+function exactVerifierUrls(env, label, expectedPath) {
+  const urls = String(env[label] || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => new URL(value));
+  if (
+    urls.length < 2 ||
+    new Set(urls.map((url) => url.origin)).size < 2 ||
+    urls.some(
+      (url) =>
+        url.protocol !== "https:" ||
+        url.pathname !== expectedPath ||
+        url.search ||
+        url.hash ||
+        url.username ||
+        url.password,
+    )
+  ) {
+    throw new Error(
+      `${label} must contain at least two distinct exact HTTPS ${expectedPath} origins`,
+    );
+  }
+  return urls;
+}
+
 function codeReleaseConfiguration(env) {
   const origin = env.CODE_RELEASE_ORIGIN?.trim();
   const secret = env.CODE_RELEASE_SECRET?.trim();
@@ -22,31 +48,28 @@ function codeReleaseConfiguration(env) {
   const requestUrl = new URL("/internal/code-release", origin);
   if (requestUrl.protocol !== "https:")
     throw new Error("Code release origin must use HTTPS");
-  const currentUrls = String(env.CONTENT_CURRENT_URLS || "")
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean)
-    .map((value) => new URL(value));
-  if (
-    currentUrls.length < 2 ||
-    new Set(currentUrls.map((url) => url.origin)).size < 2 ||
-    currentUrls.some(
-      (url) =>
-        url.protocol !== "https:" ||
-        url.pathname !== "/v1/current" ||
-        url.search ||
-        url.hash ||
-        url.username ||
-        url.password,
-    )
-  ) {
-    throw new Error(
-      "CONTENT_CURRENT_URLS must contain at least two distinct exact HTTPS /v1/current origins",
-    );
-  }
+  const currentUrls = exactVerifierUrls(
+    env,
+    "CONTENT_CURRENT_URLS",
+    "/v1/current",
+  );
+  const siteIdentityUrls = exactVerifierUrls(
+    env,
+    "CONTENT_SITE_IDENTITY_URLS",
+    "/release-manifests/site-route-manifest.json",
+  );
+  const siteProbesPerOrigin = positiveInteger(
+    env.CODE_RELEASE_SITE_PROBES_PER_ORIGIN,
+    3,
+    "CODE_RELEASE_SITE_PROBES_PER_ORIGIN",
+  );
+  if (siteProbesPerOrigin > 5)
+    throw new Error("CODE_RELEASE_SITE_PROBES_PER_ORIGIN must not exceed 5");
   return {
     codeSha,
     currentUrls,
+    siteIdentityUrls,
+    siteProbesPerOrigin,
     requestUrl,
     secret,
     requestAttempts: positiveInteger(
@@ -178,6 +201,49 @@ function pointerMatches(pointer, codeSha, siteReleaseId) {
   );
 }
 
+function siteIdentityMatches(manifest, codeSha, siteReleaseId) {
+  return pointerMatches(manifest?.build, codeSha, siteReleaseId);
+}
+
+async function observeJsonIdentity(
+  url,
+  configuration,
+  siteReleaseId,
+  dependencies,
+  kind,
+) {
+  try {
+    const response = await dependencies.fetch(url, {
+      headers: {
+        Accept: "application/json",
+        "Cache-Control": "no-cache",
+      },
+    });
+    const body = await responseJson(response);
+    const identity = kind === "current" ? body : body?.build;
+    return {
+      kind,
+      url: url.origin,
+      ok: response.ok,
+      site_release_id: identity?.site_release_id || null,
+      code_sha: identity?.code_sha || null,
+      matches:
+        response.ok &&
+        (kind === "current"
+          ? pointerMatches(body, configuration.codeSha, siteReleaseId)
+          : siteIdentityMatches(body, configuration.codeSha, siteReleaseId)),
+    };
+  } catch (error) {
+    return {
+      kind,
+      url: url.origin,
+      ok: false,
+      error: error instanceof Error ? error.name : "Error",
+      matches: false,
+    };
+  }
+}
+
 async function waitForCurrentPointer(
   configuration,
   siteReleaseId,
@@ -186,35 +252,28 @@ async function waitForCurrentPointer(
   const startedAt = dependencies.now();
   let lastObserved = [];
   while (dependencies.now() - startedAt < configuration.waitTimeoutMs) {
-    const observations = await Promise.all(
-      configuration.currentUrls.map(async (url) => {
-        try {
-          const response = await dependencies.fetch(url, {
-            headers: {
-              Accept: "application/json",
-              "Cache-Control": "no-cache",
-            },
-          });
-          const body = await responseJson(response);
-          return {
-            url: url.origin,
-            ok: response.ok,
-            site_release_id: body?.site_release_id || null,
-            code_sha: body?.code_sha || null,
-            matches:
-              response.ok &&
-              pointerMatches(body, configuration.codeSha, siteReleaseId),
-          };
-        } catch (error) {
-          return {
-            url: url.origin,
-            ok: false,
-            error: error instanceof Error ? error.name : "Error",
-            matches: false,
-          };
-        }
-      }),
-    );
+    const observations = await Promise.all([
+      ...configuration.currentUrls.map((url) =>
+        observeJsonIdentity(
+          url,
+          configuration,
+          siteReleaseId,
+          dependencies,
+          "current",
+        ),
+      ),
+      ...configuration.siteIdentityUrls.flatMap((url) =>
+        Array.from({ length: configuration.siteProbesPerOrigin }, () =>
+          observeJsonIdentity(
+            url,
+            configuration,
+            siteReleaseId,
+            dependencies,
+            "site",
+          ),
+        ),
+      ),
+    ]);
     lastObserved = observations;
     if (observations.every((value) => value.matches)) {
       dependencies.log(
@@ -222,7 +281,13 @@ async function waitForCurrentPointer(
           outcome: "deployed",
           site_release_id: siteReleaseId || observations[0].site_release_id,
           code_sha: configuration.codeSha,
-          verified_current_origins: observations.map((value) => value.url),
+          verified_current_origins: configuration.currentUrls.map(
+            (url) => url.origin,
+          ),
+          verified_site_origins: configuration.siteIdentityUrls.map(
+            (url) => url.origin,
+          ),
+          site_probes_per_origin: configuration.siteProbesPerOrigin,
         }),
       );
       return {
@@ -233,7 +298,7 @@ async function waitForCurrentPointer(
     await dependencies.sleep(configuration.pollDelayMs);
   }
   throw new Error(
-    `Automatic code release did not become the verified current pointer before timeout: ${JSON.stringify(lastObserved)}`,
+    `Automatic code release did not converge across current pointers and site identities before timeout: ${JSON.stringify(lastObserved)}`,
   );
 }
 

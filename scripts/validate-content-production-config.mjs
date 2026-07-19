@@ -618,20 +618,35 @@ function validateCodeReleaseEnvironment(env) {
     originOnly: true,
   });
   secret("CODE_RELEASE_SECRET", env.CODE_RELEASE_SECRET, 32);
-  const currentUrls = required("CONTENT_CURRENT_URLS", env.CONTENT_CURRENT_URLS)
-    .split(",")
-    .map((value) => httpsUrl("CONTENT_CURRENT_URLS", value.trim()));
-  if (currentUrls.length < 2)
-    fail("CONTENT_CURRENT_URLS must contain at least two verifier origins");
-  if (new Set(currentUrls.map((url) => url.origin)).size < 2)
-    fail("CONTENT_CURRENT_URLS must contain distinct verifier origins");
-  if (
-    currentUrls.some(
-      (url) => url.pathname !== "/v1/current" || url.search || url.hash,
-    )
-  ) {
-    fail("CONTENT_CURRENT_URLS must contain exact /v1/current endpoints");
-  }
+  const validateVerifierUrls = (label, expectedPath) => {
+    const urls = required(label, env[label])
+      .split(",")
+      .map((value) => httpsUrl(label, value.trim()));
+    if (urls.length < 2)
+      fail(`${label} must contain at least two verifier origins`);
+    if (new Set(urls.map((url) => url.origin)).size < 2)
+      fail(`${label} must contain distinct verifier origins`);
+    if (
+      urls.some(
+        (url) => url.pathname !== expectedPath || url.search || url.hash,
+      )
+    ) {
+      fail(`${label} must contain exact ${expectedPath} endpoints`);
+    }
+  };
+  validateVerifierUrls("CONTENT_CURRENT_URLS", "/v1/current");
+  validateVerifierUrls(
+    "CONTENT_SITE_IDENTITY_URLS",
+    "/release-manifests/site-route-manifest.json",
+  );
+  const siteProbes = Number(
+    required(
+      "CODE_RELEASE_SITE_PROBES_PER_ORIGIN",
+      env.CODE_RELEASE_SITE_PROBES_PER_ORIGIN,
+    ),
+  );
+  if (!Number.isInteger(siteProbes) || siteProbes < 2 || siteProbes > 5)
+    fail("CODE_RELEASE_SITE_PROBES_PER_ORIGIN must be between 2 and 5");
   const waitTimeout = Number(
     required(
       "CODE_RELEASE_WAIT_TIMEOUT_SECONDS",
