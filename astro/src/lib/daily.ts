@@ -62,3 +62,20 @@ export function formatDailyDate(date: Date, locale: DailyLocale): string {
 		timeZone: 'Asia/Shanghai',
 	}).format(date);
 }
+
+// Anchors a YYYY-MM-DD key to midnight in the site's display timezone so
+// weekday/month-day labels never drift with the build machine's timezone.
+export function dailyDateFromKey(dateKey: string): Date {
+	return new Date(`${dateKey}T00:00:00+08:00`);
+}
+
+export function formatDailyWeekday(
+	date: Date,
+	locale: DailyLocale,
+	style: 'long' | 'short' = 'long',
+): string {
+	return new Intl.DateTimeFormat(locale, {
+		weekday: style,
+		timeZone: 'Asia/Shanghai',
+	}).format(date);
+}
