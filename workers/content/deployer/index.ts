@@ -206,6 +206,7 @@ const INERT_ROOT_SCRIPTS = new Set([
   "scripts/request-code-release.mjs",
   "scripts/test-content-failure-matrix-local.mjs",
   "scripts/validate-content-production-config.mjs",
+  "scripts/verify-daily-renderers.mjs",
 ]);
 
 function assertGitHubComparePath(path: string): void {
@@ -247,6 +248,9 @@ function classifyCodeReleasePath(
     path.startsWith("tests/") ||
     path.startsWith("docs/") ||
     path.startsWith("astro/.vscode/") ||
+    // Root worker pipeline code and its Wrangler config do not affect the
+    // site build; worker-ci guards them.
+    path.startsWith("src/") ||
     INERT_ROOT_SCRIPTS.has(path) ||
     [
       "astro/.editorconfig",
@@ -259,6 +263,8 @@ function classifyCodeReleasePath(
       "astro/prettier.config.mjs",
       "astro/vitest.config.ts",
       "wrangler.content-deployer.toml",
+      "wrangler.toml",
+      "wrangler.staging.toml",
     ].includes(path) ||
     (/^[^/]+\.md$/.test(path) && !path.startsWith("daily/"))
   ) {
@@ -284,6 +290,8 @@ function classifyCodeReleasePath(
       "astro/raw-html-policy.json",
       "astro/route-ownership.json",
       "astro/tsconfig.json",
+      "static/css/daily-timeline.css",
+      "static/js/daily-timeline.js",
     ].includes(path)
   ) {
     return "publishable";

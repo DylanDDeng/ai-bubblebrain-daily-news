@@ -4,19 +4,19 @@ import GithubTrendingDataSource from './dataSources/github-trending.js';
 import HuggingfacePapersDataSource from './dataSources/huggingface-papers.js';
 import XinZhiYuanDataSource from './dataSources/xinzhiyuan.js';
 import QBitDataSource from './dataSources/qbit.js';
+import SimonWillisonDataSource from './dataSources/simonwillison.js';
 import JiqizhixinDataSource from './dataSources/jiqizhixin.js';
 import XiaohuDataSource from './dataSources/xiaohu.js';
 import OpenAInewsroomDataSource from './dataSources/openai-newsroom.js';
 import TwitterDataSource from './dataSources/twitter.js';
 import TwitterExtraDataSource from './dataSources/twitter-extra.js';
-import RedditDataSource from './dataSources/reddit.js';
 
 // Register data sources as arrays to support multiple sources per type
 export const dataSources = {
-    news: { name: '新闻', sources: [AibaseDataSource, XiaohuDataSource, QBitDataSource, XinZhiYuanDataSource, OpenAInewsroomDataSource] },
+    news: { name: '新闻', sources: [AibaseDataSource, XiaohuDataSource, QBitDataSource, SimonWillisonDataSource, XinZhiYuanDataSource, OpenAInewsroomDataSource] },
     project: { name: '项目', sources: [GithubTrendingDataSource] },
     paper: { name: '论文', sources: [HuggingfacePapersDataSource, JiqizhixinDataSource] },
-    socialMedia: { name: '社交平台', sources: [TwitterDataSource, TwitterExtraDataSource, RedditDataSource] },
+    socialMedia: { name: '社交平台', sources: [TwitterDataSource, TwitterExtraDataSource] },
     // Add new data sources here as arrays, e.g.,
     // newType: { name: '新类型', sources: [NewTypeDataSource1, NewTypeDataSource2] },
 };
