@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   handleRollbackRequest,
+  isCommittedPromotionContext,
   pagesAssetHash,
   parseContentAddressedArtifact,
   parseDeterministicTar,
@@ -9,6 +10,24 @@ import {
   uploadPages,
   verifyDeployment,
 } from "./index";
+
+describe("promotion commit recovery", () => {
+  it("accepts only the target release at the next pointer generation", () => {
+    const context = {
+      current_site_release_id: "target-release",
+      pointer_generation: 8,
+    } as never;
+    expect(isCommittedPromotionContext(context, "target-release", 7)).toBe(
+      true,
+    );
+    expect(isCommittedPromotionContext(context, "other-release", 7)).toBe(
+      false,
+    );
+    expect(isCommittedPromotionContext(context, "target-release", 8)).toBe(
+      false,
+    );
+  });
+});
 
 const encoder = new TextEncoder();
 const databaseContentContract = {

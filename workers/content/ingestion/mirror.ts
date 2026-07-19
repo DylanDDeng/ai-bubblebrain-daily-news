@@ -3,6 +3,7 @@ import {
   failIngestionPublicationAttempt,
   finalizeSiteRelease,
   ingestReportSnapshot,
+  isRetryableReleaseContention,
   openContentDatabase,
   reserveIngestionSiteRelease,
   type ContentSql,
@@ -184,24 +185,30 @@ export async function mirrorStructuredReport(
       manifestSha256: manifestObject.sha256,
     };
   } catch (error) {
-    try {
-      await failIngestionPublicationAttempt(sql, {
-        reportDate: input.report.date,
-        batchId: input.batch,
-        inputSha256: reportObject.sha256,
-        triggerKind,
-        workerVersion,
-        errorCode: error instanceof Error ? error.name : "Error",
-        errorDetail: error instanceof Error ? error.message : String(error),
-      });
-    } catch (attemptError) {
-      console.error(
-        "[ContentMirror] failed to persist publication attempt failure",
-        {
-          errorType:
-            attemptError instanceof Error ? attemptError.name : "Error",
-        },
+    if (isRetryableReleaseContention(error)) {
+      console.warn(
+        "[ContentMirror] production release head is busy; retry later",
       );
+    } else {
+      try {
+        await failIngestionPublicationAttempt(sql, {
+          reportDate: input.report.date,
+          batchId: input.batch,
+          inputSha256: reportObject.sha256,
+          triggerKind,
+          workerVersion,
+          errorCode: error instanceof Error ? error.name : "Error",
+          errorDetail: error instanceof Error ? error.message : String(error),
+        });
+      } catch (attemptError) {
+        console.error(
+          "[ContentMirror] failed to persist publication attempt failure",
+          {
+            errorType:
+              attemptError instanceof Error ? attemptError.name : "Error",
+          },
+        );
+      }
     }
     throw error;
   } finally {

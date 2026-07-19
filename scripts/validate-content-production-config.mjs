@@ -612,6 +612,52 @@ function validateRuntimePreflightEnvironment(env) {
   return { profile: "workflow-runtime-preflight" };
 }
 
+function validateCodeReleaseEnvironment(env) {
+  matches("EXACT_CODE_SHA", env.EXACT_CODE_SHA, SHA1);
+  httpsUrl("CODE_RELEASE_ORIGIN", env.CODE_RELEASE_ORIGIN, {
+    originOnly: true,
+  });
+  secret("CODE_RELEASE_SECRET", env.CODE_RELEASE_SECRET, 32);
+  const validateVerifierUrls = (label, expectedPath) => {
+    const urls = required(label, env[label])
+      .split(",")
+      .map((value) => httpsUrl(label, value.trim()));
+    if (urls.length < 2)
+      fail(`${label} must contain at least two verifier origins`);
+    if (new Set(urls.map((url) => url.origin)).size < 2)
+      fail(`${label} must contain distinct verifier origins`);
+    if (
+      urls.some(
+        (url) => url.pathname !== expectedPath || url.search || url.hash,
+      )
+    ) {
+      fail(`${label} must contain exact ${expectedPath} endpoints`);
+    }
+  };
+  validateVerifierUrls("CONTENT_CURRENT_URLS", "/v1/current");
+  validateVerifierUrls(
+    "CONTENT_SITE_IDENTITY_URLS",
+    "/release-manifests/site-route-manifest.json",
+  );
+  const siteProbes = Number(
+    required(
+      "CODE_RELEASE_SITE_PROBES_PER_ORIGIN",
+      env.CODE_RELEASE_SITE_PROBES_PER_ORIGIN,
+    ),
+  );
+  if (!Number.isInteger(siteProbes) || siteProbes < 2 || siteProbes > 5)
+    fail("CODE_RELEASE_SITE_PROBES_PER_ORIGIN must be between 2 and 5");
+  const waitTimeout = Number(
+    required(
+      "CODE_RELEASE_WAIT_TIMEOUT_SECONDS",
+      env.CODE_RELEASE_WAIT_TIMEOUT_SECONDS,
+    ),
+  );
+  if (!Number.isInteger(waitTimeout) || waitTimeout < 60 || waitTimeout > 7200)
+    fail("CODE_RELEASE_WAIT_TIMEOUT_SECONDS must be between 60 and 7200");
+  return { profile: "workflow-code-release" };
+}
+
 export function validateWorkflowEnvironment(profile, env) {
   if (profile === "workflow-release") return validateReleaseEnvironment(env);
   if (profile === "workflow-editorial-preview")
@@ -624,6 +670,9 @@ export function validateWorkflowEnvironment(profile, env) {
   }
   if (profile === "workflow-runtime-preflight") {
     return validateRuntimePreflightEnvironment(env);
+  }
+  if (profile === "workflow-code-release") {
+    return validateCodeReleaseEnvironment(env);
   }
   if (profile === "workflow-observability") {
     return validateObservabilityEnvironment(env);

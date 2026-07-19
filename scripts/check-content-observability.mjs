@@ -194,6 +194,8 @@ function currentIdentity(value) {
     code_sha: String(value?.code_sha || ""),
     content_sha256: String(value?.content_sha256 || ""),
     manifest_sha256: String(value?.manifest_sha256 || ""),
+    content_base_release_id: String(value?.content_base_release_id || ""),
+    release_kind: String(value?.release_kind || "content"),
     site_release_id: String(value?.site_release_id || ""),
     site_release_sequence: Number(value?.site_release_sequence),
   };

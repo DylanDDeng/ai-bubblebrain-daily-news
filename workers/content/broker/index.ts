@@ -1206,6 +1206,17 @@ function comparePromotion(context: ArtifactContext, request: JsonRecord): void {
   }
 }
 
+export function isCommittedPromotionContext(
+  context: ArtifactContext,
+  targetSiteReleaseId: string,
+  expectedPointerGeneration: number,
+): boolean {
+  return (
+    context.current_site_release_id === targetSiteReleaseId &&
+    Number(context.pointer_generation) === expectedPointerGeneration + 1
+  );
+}
+
 async function promote(request: Request, env: Env): Promise<Response> {
   let body: JsonRecord;
   try {
@@ -1281,6 +1292,42 @@ async function promote(request: Request, env: Env): Promise<Response> {
     );
     return json({ ok: true, deployment_id: deployment.id, ...committed });
   } catch (error) {
+    if (
+      promotionStage === "commit_promotion" &&
+      deploymentChanged &&
+      authorization &&
+      context
+    ) {
+      const generation = Number(authorization.expected_pointer_generation);
+      try {
+        const committedContext = await deployContext(
+          sql,
+          context.site_release_id,
+        );
+        if (
+          isCommittedPromotionContext(
+            committedContext,
+            context.site_release_id,
+            generation,
+          )
+        ) {
+          return json({
+            ok: true,
+            idempotent: true,
+            site_release_id: context.site_release_id,
+            commit_response_recovered: true,
+          });
+        }
+      } catch {
+        // The commit result is ambiguous. Leave the verified target deployment
+        // in place so the fenced reconciler can finish or recover it safely.
+      }
+      console.error("[ContentBroker] promotion commit result is ambiguous", {
+        stage: promotionStage,
+        ...errorDiagnostics(error),
+      });
+      return json({ error: "promotion_commit_ambiguous" }, 503);
+    }
     if (authorization && context) {
       const token = Number(authorization.fencing_token);
       const generation = Number(authorization.expected_pointer_generation);

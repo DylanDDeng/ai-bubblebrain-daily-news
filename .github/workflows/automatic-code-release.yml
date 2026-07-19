@@ -1,0 +1,84 @@
+name: Automatic Code Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      code_sha:
+        description: Exact current main SHA to bootstrap or retry
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: automatic-production-code-release
+  cancel-in-progress: false
+
+jobs:
+  request-code-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 105
+    environment:
+      name: content-production
+    env:
+      EXACT_CODE_SHA: ${{ github.event_name == 'workflow_dispatch' && inputs.code_sha || github.sha }}
+      CODE_RELEASE_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
+      CODE_RELEASE_SECRET: ${{ secrets.CODE_RELEASE_SECRET }}
+      CONTENT_CURRENT_URLS: https://content-api.bubblenews.today/v1/current,https://content-api-origin.bubblenews.today/v1/current
+      CONTENT_SITE_IDENTITY_URLS: https://bubblenews.today/release-manifests/site-route-manifest.json,https://ai-bubblebrain-daily-news.pages.dev/release-manifests/site-route-manifest.json
+      CODE_RELEASE_SITE_PROBES_PER_ORIGIN: "3"
+      CODE_RELEASE_WAIT_TIMEOUT_SECONDS: "2700"
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Checkout exact main SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ env.EXACT_CODE_SHA }}
+          fetch-depth: 1
+
+      - name: Verify immutable request identity
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXACT_CODE_SHA"
+          [[ "$EXACT_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test -n "$CODE_RELEASE_ORIGIN"
+          test -n "$CODE_RELEASE_SECRET"
+
+      - name: Require a manual bootstrap SHA to be current main
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          current_main_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          test "$current_main_sha" = "$EXACT_CODE_SHA"
+
+      - name: Fail closed on automatic release configuration
+        run: node scripts/validate-content-production-config.mjs workflow-code-release
+
+      - name: Wait for successful main build verification
+        shell: bash
+        run: |
+          for attempt in $(seq 1 100); do
+            run_json="$(gh run list \
+              --workflow build-and-deploy.yml \
+              --commit "$EXACT_CODE_SHA" \
+              --event push \
+              --limit 1 \
+              --json status,conclusion,databaseId)"
+            status="$(jq -r '.[0].status // ""' <<<"$run_json")"
+            conclusion="$(jq -r '.[0].conclusion // ""' <<<"$run_json")"
+            if [[ "$status" == "completed" ]]; then
+              test "$conclusion" = "success"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Timed out waiting for Build and Verify Site" >&2
+          exit 1
+
+      - name: Request and verify production code release
+        run: node scripts/request-code-release.mjs
