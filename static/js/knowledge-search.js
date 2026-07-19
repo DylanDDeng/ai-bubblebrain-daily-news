@@ -271,14 +271,21 @@ function initKnowledgeSearch(root) {
     void apply({ query: "", type: "all", topicId: "", entityId: "" });
     controls.query?.focus();
   });
-  window.addEventListener("popstate", () => {
+  const handlePopState = () => {
     void apply(parseKnowledgeSearchState(window.location.search, options), false);
-  });
+  };
+  window.addEventListener("popstate", handlePopState);
+  document.addEventListener(
+    "astro:before-swap",
+    () => window.removeEventListener("popstate", handlePopState),
+    { once: true },
+  );
   void apply(state, false);
 }
 
 if (typeof document !== "undefined") {
   const start = () => initKnowledgeSearch(document.querySelector("[data-knowledge-search]"));
+  document.addEventListener("astro:page-load", start);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", start, { once: true });
   } else start();
