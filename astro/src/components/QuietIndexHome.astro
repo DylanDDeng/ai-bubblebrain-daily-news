@@ -13,11 +13,11 @@ import {
 	cleanTimelineSummary,
 	formatDailyTime,
 	formatTimelineTime,
+	homepageFeedItems,
 	isDatabaseOwnedDailyDate,
 	loadStructuredDailyReport,
 	timelineDisplayText,
 	type DailyContentType,
-	type StructuredDailyItem,
 } from '../lib/structuredDaily';
 import '../styles/quiet-index.css';
 
@@ -85,9 +85,7 @@ const liveLabel =
 const items = report?.items ?? [];
 const lead = items.find((item) => item.featured) ?? items[0] ?? null;
 const leadDisplayText = lead ? timelineDisplayText(lead) : null;
-const itemTimestamp = (item: StructuredDailyItem): number =>
-	Date.parse(item.published_at ?? item.published_date ?? item.ingested_at) || 0;
-const feedItems = [...items].sort((a, b) => itemTimestamp(b) - itemTimestamp(a)).slice(0, 8);
+const feedItems = homepageFeedItems(items, report?.batches ?? []);
 
 const categoryCounts = new Map<string, number>();
 const topicCounts = new Map<string, number>();
@@ -188,8 +186,8 @@ const previousDays = (
 							<span class="h-line" />
 							<span class="h-meta">
 								{isEnglish
-									? `${items.length} items · newest first`
-									: `${items.length} 条 · 最新在前`}
+									? `${items.length} items · latest additions first`
+									: `${items.length} 条 · 最新收录在前`}
 							</span>
 						</div>
 

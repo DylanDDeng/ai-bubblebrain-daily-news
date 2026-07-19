@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
 	dailyDataDirectory,
 	formatTimelineTime,
+	homepageFeedItems,
 	isDatabaseOwnedDailyDate,
 	loadStructuredDailyReport,
 	orderTimelineBatches,
@@ -153,6 +154,39 @@ describe('timeline batch order', () => {
 			'lateNight',
 		]);
 		expect(batches.map(({ id }) => id)).toEqual(['morning', 'afternoon', 'night', 'lateNight']);
+	});
+
+	it('orders the homepage by latest completed batch, then source publication time', () => {
+		const batches = [
+			batch('morning', 'completed'),
+			batch('afternoon', 'pending'),
+			batch('night', 'completed'),
+			batch('lateNight', 'completed'),
+		];
+		const item = (
+			id: string,
+			batchId: StructuredDailyBatch['id'],
+			publishedAt: string,
+		): StructuredDailyItem =>
+			({
+				id,
+				batch: batchId,
+				published_at: publishedAt,
+				published_date: publishedAt.slice(0, 10),
+				ingested_at: '2026-07-20T03:00:00.000Z',
+			}) as StructuredDailyItem;
+		const items = [
+			item('night-newer-source', 'night', '2026-07-19T22:00:00.000Z'),
+			item('late-night-older-source', 'lateNight', '2026-07-18T06:00:00.000Z'),
+			item('late-night-newer-source', 'lateNight', '2026-07-19T15:00:00.000Z'),
+			item('pending', 'afternoon', '2026-07-20T00:00:00.000Z'),
+		];
+
+		expect(homepageFeedItems(items, batches, 3).map(({ id }) => id)).toEqual([
+			'late-night-newer-source',
+			'late-night-older-source',
+			'night-newer-source',
+		]);
 	});
 });
 
