@@ -391,23 +391,42 @@ describe("production convergence verification", () => {
     };
   }
 
-  function setup(corruptSearch = false) {
-    vi.stubGlobal(
-      "setTimeout",
-      ((callback: () => void) => {
-        callback();
-        return 0;
-      }) as typeof setTimeout,
-    );
+  function setup(
+    corruptSearch = false,
+    delayedManifestAttempts = 0,
+    transformCustomHtml = false,
+  ) {
+    const manifestAttempts = new Map<string, number>();
     vi.stubGlobal(
       "fetch",
       vi.fn(async (input: RequestInfo | URL) => {
         const url = new URL(String(input));
         if (url.pathname === "/release-manifests/site-route-manifest.json") {
-          return new Response(JSON.stringify({ build: build() }), {
-            status: 200,
-            headers: { "Content-Type": "application/json", "cf-ray": "id-IAD" },
-          });
+          const attempts = (manifestAttempts.get(url.origin) || 0) + 1;
+          manifestAttempts.set(url.origin, attempts);
+          const delayed =
+            url.origin === "https://www.example.test" &&
+            attempts <= delayedManifestAttempts;
+          return new Response(
+            JSON.stringify({
+              build: delayed
+                ? {
+                    ...build(),
+                    site_release_id: "019f6e2d-013f-7ea0-933e-b996531a9340",
+                    site_release_sequence: context.site_release_sequence - 1,
+                    code_sha: "f".repeat(40),
+                    source_sha: "f".repeat(40),
+                  }
+                : build(),
+            }),
+            {
+              status: 200,
+              headers: {
+                "Content-Type": "application/json",
+                "cf-ray": "id-IAD",
+              },
+            },
+          );
         }
         const path =
           url.pathname === "/"
@@ -416,32 +435,58 @@ describe("production convergence verification", () => {
               ? `${url.pathname.slice(1)}index.html`
               : url.pathname.slice(1);
         const file = files.find((candidate) => candidate.path === path);
+        const transformedHtml =
+          transformCustomHtml &&
+          url.origin === "https://www.example.test" &&
+          path.endsWith(".html");
         const bytes =
           corruptSearch &&
           url.origin === "https://www.example.test" &&
           path === "search/index.json"
             ? encoder.encode("corrupt")
-            : file?.bytes;
-        return bytes ? new Response(bytes, { status: 200 }) : new Response(null, { status: 404 });
+            : transformedHtml
+              ? encoder.encode("cloudflare edge transformed html")
+              : file?.bytes;
+        return bytes
+          ? new Response(bytes, { status: 200 })
+          : new Response(null, { status: 404 });
       }),
     );
     return {
-      PRODUCTION_VERIFY_URLS: "https://www.example.test",
-      VERIFY_MIN_ENDPOINTS: "2",
-    } as never;
+      env: {
+        PRODUCTION_VERIFY_URLS: "https://www.example.test",
+        VERIFY_MIN_ENDPOINTS: "2",
+      } as never,
+      manifestAttempts,
+    };
+  }
+
+  function controlledClock(startedAt = 1_000_000) {
+    let current = startedAt;
+    return {
+      startedAt,
+      advance: (milliseconds: number) => {
+        current += milliseconds;
+      },
+      dependencies: {
+        now: () => current,
+        sleep: async (milliseconds: number) => {
+          current += milliseconds;
+        },
+      },
+    };
   }
 
   it("requires exact HTML, daily JSON and search bytes on every origin", async () => {
+    const value = setup();
     await expect(
-      verifyDeployment(
-        context,
-        "https://deploy.pages.dev",
-        setup(),
-        { kind: "tar", files },
-      ),
+      verifyDeployment(context, "https://deploy.pages.dev", value.env, {
+        kind: "tar",
+        files,
+      }),
     ).resolves.toMatchObject({
       multi_edge_verified: true,
-      maximum_inconsistency_ms: 60000,
+      maximum_inconsistency_ms: 240000,
       convergence_elapsed_ms: expect.any(Number),
       site_release_id: context.site_release_id,
       site_release_sequence: context.site_release_sequence,
@@ -452,30 +497,153 @@ describe("production convergence verification", () => {
       code_sha: context.code_sha,
       build_environment_version: context.build_environment_version,
       endpoints: [
-        { exact_paths: ["/", "/daily/2026/07/2026-07-17/", "/data/daily/2026-07-17.json", "/search/index.json"] },
-        { exact_paths: ["/", "/daily/2026/07/2026-07-17/", "/data/daily/2026-07-17.json", "/search/index.json"] },
+        {
+          exact_paths: [
+            "/",
+            "/daily/2026/07/2026-07-17/",
+            "/data/daily/2026-07-17.json",
+            "/search/index.json",
+          ],
+        },
+        {
+          exact_paths: [
+            "/",
+            "/daily/2026/07/2026-07-17/",
+            "/data/daily/2026-07-17.json",
+            "/search/index.json",
+          ],
+        },
       ],
     });
   });
 
-  it("fails closed when a custom-domain search artifact drifts", async () => {
-    await expect(
-      verifyDeployment(
-        context,
-        "https://deploy.pages.dev",
-        setup(true),
-        { kind: "tar", files },
-      ),
-    ).rejects.toThrow("search/index.json");
-  });
-
-  it("rejects an unsafe inconsistency-window configuration", async () => {
+  it("allows declared custom-domain HTML transforms while keeping two exact-byte origins", async () => {
+    const value = setup(false, 0, true);
     await expect(
       verifyDeployment(
         context,
         "https://deploy.pages.dev",
         {
-          ...setup(),
+          ...value.env,
+          PRODUCTION_VERIFY_URLS:
+            "https://www.example.test,https://raw.example.test",
+          TRANSFORMED_HTML_VERIFY_URLS: "https://www.example.test",
+          VERIFY_MIN_ENDPOINTS: "3",
+          VERIFY_MIN_EXACT_ENDPOINTS: "2",
+        },
+        { kind: "tar", files },
+      ),
+    ).resolves.toMatchObject({
+      endpoints: expect.arrayContaining([
+        expect.objectContaining({
+          url: "https://www.example.test",
+          exact_paths: ["/data/daily/2026-07-17.json", "/search/index.json"],
+          edge_transformed_html_paths: ["/", "/daily/2026/07/2026-07-17/"],
+        }),
+        expect.objectContaining({
+          url: "https://raw.example.test",
+          exact_paths: [
+            "/",
+            "/daily/2026/07/2026-07-17/",
+            "/data/daily/2026-07-17.json",
+            "/search/index.json",
+          ],
+        }),
+      ]),
+    });
+  });
+
+  it("rejects transformed HTML when only one exact-byte origin remains", async () => {
+    const value = setup(false, 0, true);
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        {
+          ...value.env,
+          TRANSFORMED_HTML_VERIFY_URLS: "https://www.example.test",
+          VERIFY_MIN_EXACT_ENDPOINTS: "2",
+        },
+        { kind: "tar", files },
+      ),
+    ).rejects.toThrow("exact-byte verification is not configured");
+  });
+
+  it("continues beyond the legacy eight probes until a delayed edge converges", async () => {
+    const value = setup(false, 9);
+    const clock = controlledClock();
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        { ...value.env, MAX_PRODUCTION_INCONSISTENCY_MS: "20000" },
+        { kind: "tar", files },
+        clock.startedAt,
+        clock.dependencies,
+      ),
+    ).resolves.toMatchObject({
+      multi_edge_verified: true,
+      endpoints: expect.arrayContaining([
+        expect.objectContaining({
+          url: "https://www.example.test",
+          attempts: 10,
+        }),
+      ]),
+    });
+    expect(value.manifestAttempts.get("https://deploy.pages.dev")).toBe(1);
+    expect(value.manifestAttempts.get("https://www.example.test")).toBe(10);
+  });
+
+  it("fails closed when a custom-domain search artifact drifts", async () => {
+    const value = setup(true);
+    const clock = controlledClock();
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        { ...value.env, MAX_PRODUCTION_INCONSISTENCY_MS: "10000" },
+        { kind: "tar", files },
+        clock.startedAt,
+        clock.dependencies,
+      ),
+    ).rejects.toThrow("search/index.json");
+  });
+
+  it("rejects a probe that finishes after the hard convergence deadline", async () => {
+    const value = setup();
+    const clock = controlledClock();
+    const fetcher = vi.mocked(fetch);
+    let advanced = false;
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        { ...value.env, MAX_PRODUCTION_INCONSISTENCY_MS: "10000" },
+        { kind: "tar", files },
+        clock.startedAt,
+        {
+          ...clock.dependencies,
+          fetch: async (input, init) => {
+            const response = await fetcher(input, init);
+            if (!advanced) {
+              advanced = true;
+              clock.advance(10_001);
+            }
+            return response;
+          },
+        },
+      ),
+    ).rejects.toThrow("within 10000ms");
+  });
+
+  it("rejects an unsafe inconsistency-window configuration", async () => {
+    const value = setup();
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        {
+          ...value.env,
           MAX_PRODUCTION_INCONSISTENCY_MS: "0",
         },
         { kind: "tar", files },
@@ -484,16 +652,16 @@ describe("production convergence verification", () => {
   });
 
   it("fails before probing when the measured inconsistency window is exhausted", async () => {
-    const env = setup();
+    const value = setup();
     const fetchMock = vi.mocked(fetch);
     fetchMock.mockClear();
     await expect(
       verifyDeployment(
         context,
         "https://deploy.pages.dev",
-        env,
+        value.env,
         { kind: "tar", files },
-        Date.now() - 60_001,
+        Date.now() - 240_001,
       ),
     ).rejects.toThrow("inconsistency window exceeded");
     expect(fetchMock).not.toHaveBeenCalled();
