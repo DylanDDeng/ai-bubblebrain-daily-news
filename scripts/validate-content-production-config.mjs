@@ -198,6 +198,64 @@ export function validateWranglerDocuments(documents) {
     );
   if (new Set(verifierUrls).size < 2)
     fail("Broker requires at least two distinct verifier origins");
+  const transformedHtmlVerifierUrls = required(
+    "Broker: TRANSFORMED_HTML_VERIFY_URLS",
+    tomlString(
+      documents["wrangler.content-broker.toml"],
+      "TRANSFORMED_HTML_VERIFY_URLS",
+    ),
+  )
+    .split(",")
+    .map(
+      (entry) =>
+        httpsUrl("Broker transformed HTML verifier URL", entry.trim(), {
+          originOnly: true,
+        }).origin,
+    );
+  if (
+    transformedHtmlVerifierUrls.some((origin) => !verifierUrls.includes(origin))
+  ) {
+    fail("every transformed HTML verifier must also be a verifier origin");
+  }
+  const minimumVerifierCount = Number(
+    required(
+      "Broker: VERIFY_MIN_ENDPOINTS",
+      tomlString(
+        documents["wrangler.content-broker.toml"],
+        "VERIFY_MIN_ENDPOINTS",
+      ),
+    ),
+  );
+  const minimumExactVerifierCount = Number(
+    required(
+      "Broker: VERIFY_MIN_EXACT_ENDPOINTS",
+      tomlString(
+        documents["wrangler.content-broker.toml"],
+        "VERIFY_MIN_EXACT_ENDPOINTS",
+      ),
+    ),
+  );
+  if (!Number.isSafeInteger(minimumVerifierCount) || minimumVerifierCount < 2) {
+    fail("Broker VERIFY_MIN_ENDPOINTS must be an integer of at least 2");
+  }
+  // The Pages deployment-specific URL is added by the Broker at runtime.
+  if (new Set(verifierUrls).size + 1 < minimumVerifierCount) {
+    fail("Broker does not configure enough verifier origins");
+  }
+  if (
+    !Number.isSafeInteger(minimumExactVerifierCount) ||
+    minimumExactVerifierCount < 2
+  ) {
+    fail("Broker VERIFY_MIN_EXACT_ENDPOINTS must be an integer of at least 2");
+  }
+  const exactConfiguredOrigins = new Set(
+    verifierUrls.filter(
+      (origin) => !transformedHtmlVerifierUrls.includes(origin),
+    ),
+  );
+  if (exactConfiguredOrigins.size + 1 < minimumExactVerifierCount) {
+    fail("Broker does not configure enough exact-byte verifier origins");
+  }
   const maximumInconsistencyMs = Number(
     required(
       "Broker: MAX_PRODUCTION_INCONSISTENCY_MS",
@@ -233,6 +291,9 @@ export function validateWranglerDocuments(documents) {
   return {
     files: WRANGLER_FILES.length,
     maximumInconsistencyMs,
+    minimumExactVerifierCount,
+    minimumVerifierCount,
+    transformedHtmlVerifierOrigins: new Set(transformedHtmlVerifierUrls).size,
     verifierOrigins: new Set(verifierUrls).size,
   };
 }
@@ -332,10 +393,9 @@ function backupConnectionFromDatabaseUrl(variable, value) {
     fail(`${variable} must use postgres or postgresql`);
   }
   const username = decodeURIComponent(parsed.username);
-  const backupRole = username.match(
-    /^content_backup(?:\.([a-z0-9]{20}))?$/i,
-  );
-  if (!backupRole) fail(`${variable} must use the dedicated content_backup role`);
+  const backupRole = username.match(/^content_backup(?:\.([a-z0-9]{20}))?$/i);
+  if (!backupRole)
+    fail(`${variable} must use the dedicated content_backup role`);
   const direct = parsed.hostname.match(
     /^db\.([a-z0-9]{20})\.supabase\.co$/i,
   )?.[1];
