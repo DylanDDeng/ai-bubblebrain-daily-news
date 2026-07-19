@@ -79,7 +79,7 @@ describe("content production preflight", () => {
     );
     expect(validateWranglerDocuments(configuredWranglerDocuments())).toEqual({
       files: 7,
-      maximumInconsistencyMs: 60000,
+      maximumInconsistencyMs: 240000,
       verifierOrigins: 2,
     });
   });

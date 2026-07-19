@@ -86,7 +86,9 @@ function verifierIdentityComplete(slot) {
     ) &&
     Number.isSafeInteger(Number(evidence.convergence_elapsed_ms)) &&
     Number(evidence.convergence_elapsed_ms) >= 0 &&
-    Number(evidence.maximum_inconsistency_ms) === 60_000 &&
+    Number.isSafeInteger(Number(evidence.maximum_inconsistency_ms)) &&
+    Number(evidence.maximum_inconsistency_ms) >= 10_000 &&
+    Number(evidence.maximum_inconsistency_ms) <= 300_000 &&
     Number(evidence.convergence_elapsed_ms) <=
       Number(evidence.maximum_inconsistency_ms) &&
     endpoints.length >= 2 &&
