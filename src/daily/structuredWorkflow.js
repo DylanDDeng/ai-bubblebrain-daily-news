@@ -17,6 +17,7 @@ import { isExplicitInstant, isRealDate, previousReportDates } from './time.js';
 import { resolveFoloCookie } from '../folo.js';
 import { callGitHubApi } from '../github.js';
 import { mirrorStructuredReport } from '../../workers/content/ingestion/mirror.ts';
+import { applyEditorialEnrichment } from './editorial.js';
 
 const MAX_PUBLICATION_ATTEMPTS = 3;
 
@@ -278,6 +279,7 @@ export async function runStructuredDailyWorkflow(
         acquireLease: dependencies.acquireLease || acquireAdvisoryLease,
         releaseLease: dependencies.releaseLease || releaseAdvisoryLease,
         mirror: dependencies.mirror || mirrorStructuredReport,
+        enrich: dependencies.enrich || applyEditorialEnrichment,
     };
     if (String(env.EXTERNAL_WRITES_ENABLED).toLowerCase() !== 'true') {
         throw new Error('External writes are disabled');
@@ -313,10 +315,11 @@ export async function runStructuredDailyWorkflow(
             throw new StructuredSourceFetchError(fetched.errors);
         }
 
+        const editorialCache = new Map();
         for (let attempt = 1; attempt <= MAX_PUBLICATION_ATTEMPTS; attempt += 1) {
             const snapshot = await deps.resolveSnapshot(env, { api: deps.api });
             const { reader, ...reports } = await loadReports(env, snapshot, reportDate, structuredStartDate, deps);
-            const result = await deps.build({
+            let result = await deps.build({
                 ...reports,
                 rawItems: fetched.structuredItems,
                 reportDate,
@@ -328,6 +331,13 @@ export async function runStructuredDailyWorkflow(
                 },
                 structuredStartDate,
             });
+            if (!result.noOp && Array.isArray(result.report?.items)) {
+                const existingIds = new Set(reports.existingReport?.items?.map(item => item.id) || []);
+                const freshIds = result.report.items
+                    .filter(item => !existingIds.has(item.id))
+                    .map(item => item.id);
+                result = await deps.enrich(env, result, { itemIds: freshIds, cache: editorialCache });
+            }
             const expectedPaths = assertPublicationFiles(result.files, reportDate);
 
             if (result.noOp) {

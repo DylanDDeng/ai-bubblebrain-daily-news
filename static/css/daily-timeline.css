@@ -338,11 +338,17 @@
   font-size: 1.04rem;
   font-weight: 600;
   line-height: 1.5;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .daily-timeline .item h3 a {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .daily-timeline .item h3 a:hover {
