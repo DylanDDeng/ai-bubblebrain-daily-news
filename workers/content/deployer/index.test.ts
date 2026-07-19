@@ -181,7 +181,11 @@ describe("automatic code release boundary", () => {
           { filename: "astro/src/lib/searchIndex.ts", status: "modified" },
           { filename: "astro/public/favicon.svg", status: "modified" },
           { filename: "static/css/daily-timeline.css", status: "modified" },
+          { filename: "static/js/ai-infographic.js", status: "modified" },
           { filename: "static/js/daily-timeline.js", status: "modified" },
+          { filename: "static/js/knowledge-search.js", status: "modified" },
+          { filename: "static/js/navigation.js", status: "added" },
+          { filename: "static/js/site-shell.js", status: "modified" },
           { filename: "workers/content/deployer/index.ts", status: "modified" },
           { filename: "src/daily/sourceAdapters.js", status: "modified" },
           { filename: "wrangler.toml", status: "modified" },
@@ -208,7 +212,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(16);
+    ).toHaveLength(20);
   });
 
   it.each([
