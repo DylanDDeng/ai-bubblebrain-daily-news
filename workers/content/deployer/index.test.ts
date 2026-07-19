@@ -180,6 +180,8 @@ describe("automatic code release boundary", () => {
           { filename: "astro/src/scripts/authControls.ts", status: "modified" },
           { filename: "astro/src/lib/searchIndex.ts", status: "modified" },
           { filename: "astro/public/favicon.svg", status: "modified" },
+          { filename: "static/css/daily-timeline.css", status: "modified" },
+          { filename: "static/js/daily-timeline.js", status: "modified" },
           { filename: "workers/content/deployer/index.ts", status: "modified" },
           {
             filename: "supabase/migrations/20260719000100_release.sql",
@@ -200,7 +202,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(11);
+    ).toHaveLength(13);
   });
 
   it.each([
