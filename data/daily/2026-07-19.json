@@ -53,11 +53,20 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-19T07:00:04.000Z",
       "id": "afternoon",
-      "item_ids": [],
+      "item_ids": [
+        "n_ca0128bee3e8f007c000dd0cfe798d885f87af3d4bce2026c2edda06330dc9cb",
+        "n_8934857fb26aadf591962561c8961c437e3b26869b2101ce299baec2425a40c4",
+        "n_2cc07458772223fa8b07d5a3b08786f05dd10f368b9ab43d717542a728f8f9b5",
+        "n_a28e388353f41bcbcd54b0ad3adb03cd92c080757d1ecd39c9a7d29ff25997c0",
+        "n_afcb95837d03c831b7d49a406ee80ef93c4ca2bcaba3d87bac1fd87ebcc27ce8",
+        "n_7a2b0f754c4342deb76b565c4d38307fb8a39debf33828b055a2c5240e14601f",
+        "n_d9acdf425531102b66e2dd42920795de3fc0a8bcb0eb56b042136e9ec14ad453",
+        "n_0e119da973a220a8491098b8da04c04a536a3ef1e8840d5a2a1216bea68f2980"
+      ],
       "label": "15:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -77,7 +86,7 @@
   "classifier_version": 1,
   "date": "2026-07-19",
   "dedupe_version": 1,
-  "generated_at": "2026-07-19T02:00:03.000Z",
+  "generated_at": "2026-07-19T07:00:04.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1744,6 +1753,294 @@
         "topic_models"
       ],
       "url": "https://www.reddit.com/r/MachineLearning/comments/1v09muj/interactive_map_of_gpt2s_token_embedding_space/"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/ezshine/status/2078569812515828094",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ca0128bee3e8f007c000dd0cfe798d885f87af3d4bce2026c2edda06330dc9cb",
+      "featured": false,
+      "id": "n_ca0128bee3e8f007c000dd0cfe798d885f87af3d4bce2026c2edda06330dc9cb",
+      "identity_claims": [
+        "c_39bf8af3756f62730c1c4aff6bd1fc1c3c01c026b58be8dd0a2a9e7bf16ae044",
+        "c_ca0128bee3e8f007c000dd0cfe798d885f87af3d4bce2026c2edda06330dc9cb"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-18T19:57:15.997Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205949163762634753",
+        "name": "twitter-大帅老猿"
+      },
+      "source_id": "1205949163762634753",
+      "source_type": "twitter_extra",
+      "summary": "邹市明败光2亿的罪魁祸首，娶错老婆不可怕，有这样的丈母娘才要命了。",
+      "time_precision": "exact",
+      "title": "邹市明败光2亿的罪魁祸首，娶错老婆不可怕，有这样的丈母娘才要命了。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/ezshine/status/2078569812515828094"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/ezshine/status/2078576169495224432",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8934857fb26aadf591962561c8961c437e3b26869b2101ce299baec2425a40c4",
+      "featured": false,
+      "id": "n_8934857fb26aadf591962561c8961c437e3b26869b2101ce299baec2425a40c4",
+      "identity_claims": [
+        "c_8934857fb26aadf591962561c8961c437e3b26869b2101ce299baec2425a40c4",
+        "c_9f5c5591e243a8295bfbb2a14018064ebc7d92286d8a6f3f37fbceaf7d05467e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-18T20:22:31.247Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1205949163762634752",
+        "name": "twitter-大帅老猿"
+      },
+      "source_id": "1205949163762634752",
+      "source_type": "twitter_extra",
+      "summary": "硅基流动这种垃圾公司，@SiliconFlowAI，求人宣传的时候哐哐送积分，过阵子再去看，只能用于调用一些入土的老模型。",
+      "time_precision": "exact",
+      "title": "硅基流动这种垃圾公司，@SiliconFlowAI ，求人宣传的时候哐哐送积分，过阵子再去看，只能用于调用一些入土的老模型。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/ezshine/status/2078576169495224432"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/GemstoneNicole/status/2078646436372324512",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2cc07458772223fa8b07d5a3b08786f05dd10f368b9ab43d717542a728f8f9b5",
+      "featured": false,
+      "id": "n_2cc07458772223fa8b07d5a3b08786f05dd10f368b9ab43d717542a728f8f9b5",
+      "identity_claims": [
+        "c_2cc07458772223fa8b07d5a3b08786f05dd10f368b9ab43d717542a728f8f9b5",
+        "c_9798ba85c366970e8a987e375aaaf21869b06404785742966c3c578365b51ca6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-19T01:01:44.983Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1206110443928461316",
+        "name": "twitter-uncle-lu"
+      },
+      "source_id": "1206110443928461316",
+      "source_type": "twitter_extra",
+      "summary": "又是4点22醒了一次 惊醒了一次",
+      "time_precision": "exact",
+      "title": "又是4点22醒了一次 惊醒了一次",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GemstoneNicole/status/2078646436372324512"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/GemstoneNicole/status/2078660618350146002",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a28e388353f41bcbcd54b0ad3adb03cd92c080757d1ecd39c9a7d29ff25997c0",
+      "featured": false,
+      "id": "n_a28e388353f41bcbcd54b0ad3adb03cd92c080757d1ecd39c9a7d29ff25997c0",
+      "identity_claims": [
+        "c_80dc9992101305c68f5396e87c0f53be911db5c4fa1f5192eb40c50e5c371910",
+        "c_a28e388353f41bcbcd54b0ad3adb03cd92c080757d1ecd39c9a7d29ff25997c0"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-19T01:58:05.158Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1206110443928461315",
+        "name": "twitter-uncle-lu"
+      },
+      "source_id": "1206110443928461315",
+      "source_type": "twitter_extra",
+      "summary": "又感冒了 我真的服 又柔弱人格启动受不了",
+      "time_precision": "exact",
+      "title": "又感冒了 我真的服 又柔弱人格启动受不了",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GemstoneNicole/status/2078660618350146002"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/GemstoneNicole/status/2078678383110828074",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_afcb95837d03c831b7d49a406ee80ef93c4ca2bcaba3d87bac1fd87ebcc27ce8",
+      "featured": false,
+      "id": "n_afcb95837d03c831b7d49a406ee80ef93c4ca2bcaba3d87bac1fd87ebcc27ce8",
+      "identity_claims": [
+        "c_afcb95837d03c831b7d49a406ee80ef93c4ca2bcaba3d87bac1fd87ebcc27ce8",
+        "c_d401e9645fd518781e4a0edee5abb437bcb2dc42ca7edd833e8884f1a19c572e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-19T03:08:41.842Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1206110443928461314",
+        "name": "twitter-uncle-lu"
+      },
+      "source_id": "1206110443928461314",
+      "source_type": "twitter_extra",
+      "summary": "真可悲啊 给别人不愿意要的东西 只会被唾弃 Sakura: 好可惜 我的真心 我的耐心 全都给了一个看见我流眼泪也无动于衷的人",
+      "time_precision": "exact",
+      "title": "真可悲啊 给别人不愿意要的东西 只会被唾弃",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GemstoneNicole/status/2078678383110828074"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/GemstoneNicole/status/2078682234970915128",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_7a2b0f754c4342deb76b565c4d38307fb8a39debf33828b055a2c5240e14601f",
+      "featured": false,
+      "id": "n_7a2b0f754c4342deb76b565c4d38307fb8a39debf33828b055a2c5240e14601f",
+      "identity_claims": [
+        "c_7a2b0f754c4342deb76b565c4d38307fb8a39debf33828b055a2c5240e14601f",
+        "c_94a0c416374e5dd1b922d1b5ce5271552a29e9fb1038fd9bf9d4fb5ba4c637c6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-19T03:23:59.166Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1206110443928461313",
+        "name": "twitter-uncle-lu"
+      },
+      "source_id": "1206110443928461313",
+      "source_type": "twitter_extra",
+      "summary": "我真的爆炸了！！！！！ 又他妈出现交付问题 我真的受不了了 组织变成这个狗屎样子 都是自己的锅 自己拉的💩他妈自己含泪也得咽掉 uncle-lu: 又感冒了 我真的服 又柔弱人格启动受不了",
+      "time_precision": "exact",
+      "title": "我真的爆炸了！！！！！ 又他妈出现交付问题 我真的受不了了 组织变成这个狗屎样子 都是自己的锅 自己拉的💩他妈自己含泪也得咽掉",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GemstoneNicole/status/2078682234970915128"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/oran_ge/status/2078700698355765738",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d9acdf425531102b66e2dd42920795de3fc0a8bcb0eb56b042136e9ec14ad453",
+      "featured": false,
+      "id": "n_d9acdf425531102b66e2dd42920795de3fc0a8bcb0eb56b042136e9ec14ad453",
+      "identity_claims": [
+        "c_7d1886240820b886a0035f4e21003ff37a95dfa95a3c920623c2d1f986bf4cf3",
+        "c_d9acdf425531102b66e2dd42920795de3fc0a8bcb0eb56b042136e9ec14ad453"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-19T03:36:13.208Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1206171426206310400",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1206171426206310400",
+      "source_type": "twitter_extra",
+      "summary": "RT 向阳乔木 写了个 AI 自动视频剪辑 skill，感觉立马可以抖音小红书起号了，嘿嘿。 买个33台词会员，没有也可以用pexels免费空镜头，加上Listenhub账号，完全可以让AI做各种视频了。 安装指令：npx skills add joeseesun/qiaomu-cut-skill --skill qiaomu-cut 演示效果： 后面会持续打磨，大家一起玩起来。 向阳乔木: 刚写了一个Skill，自动剪辑影视片段学常用英语表达。 还需迭代，后续看搞定后开源。",
+      "time_precision": "exact",
+      "title": "RT 向阳乔木: 写了个 AI 自动视频剪辑 skill，感觉立马可以抖音小红书起号了，嘿嘿。 买个33台词会员，没有也可以用pexels免费空镜头，加上Listenhub账号，完全...",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/oran_ge/status/2078700698355765738"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/GemstoneNicole/status/2078700765670248755",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_0e119da973a220a8491098b8da04c04a536a3ef1e8840d5a2a1216bea68f2980",
+      "featured": false,
+      "id": "n_0e119da973a220a8491098b8da04c04a536a3ef1e8840d5a2a1216bea68f2980",
+      "identity_claims": [
+        "c_0e119da973a220a8491098b8da04c04a536a3ef1e8840d5a2a1216bea68f2980",
+        "c_8c1d9bba636dbe80bd848b8ac381df8aa3a881f141f50291007fc232ccbd39c8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-19T07:00:04.000Z",
+      "published_at": "2026-07-19T04:37:37.166Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1206110443928461312",
+        "name": "twitter-uncle-lu"
+      },
+      "source_id": "1206110443928461312",
+      "source_type": "twitter_extra",
+      "summary": "头好晕好难受 最讨厌生病了 日子本来就太糟糕 更糟糕了",
+      "time_precision": "exact",
+      "title": "头好晕好难受 最讨厌生病了 日子本来就太糟糕 更糟糕了",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GemstoneNicole/status/2078700765670248755"
     }
   ],
   "overview": {
