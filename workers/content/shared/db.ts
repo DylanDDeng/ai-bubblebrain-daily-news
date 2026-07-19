@@ -7,6 +7,19 @@ type DatabaseEnv = {
 
 export type ContentSql = ReturnType<typeof postgres>;
 
+export function databaseErrorCode(error: unknown): string | null {
+  if (!error || typeof error !== "object") return null;
+  const value = error as { code?: unknown; cause?: unknown };
+  if (typeof value.code === "string" && value.code.length > 0) {
+    return value.code;
+  }
+  return value.cause === error ? null : databaseErrorCode(value.cause);
+}
+
+export function isRetryableReleaseContention(error: unknown): boolean {
+  return ["55P03", "40001"].includes(databaseErrorCode(error) || "");
+}
+
 export function openContentDatabase(
   env: DatabaseEnv,
   applicationName: string,

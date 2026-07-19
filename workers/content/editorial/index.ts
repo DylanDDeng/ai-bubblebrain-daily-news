@@ -1,5 +1,9 @@
 import { canonicalJsonBytes, equalBytes, sha256Hex } from "../shared/canonical";
-import { openContentDatabase } from "../shared/db";
+import {
+  databaseErrorCode,
+  isRetryableReleaseContention,
+  openContentDatabase,
+} from "../shared/db";
 import { putVerifiedImmutable } from "../shared/r2";
 
 type Env = {
@@ -30,12 +34,12 @@ const ALLOWED_PATCH_FIELDS = new Set([
 function validReleaseContract(input: JsonRecord): boolean {
   return Boolean(
     Number.isSafeInteger(input.schema_version) &&
-      Number(input.schema_version) >= 1 &&
-      Number.isSafeInteger(input.taxonomy_version) &&
-      Number(input.taxonomy_version) >= 1 &&
-      CONTRACT_VERSION.test(String(input.serializer_version || "")) &&
-      CONTRACT_VERSION.test(String(input.search_contract_version || "")) &&
-      CONTRACT_VERSION.test(String(input.source_contract_version || "")),
+    Number(input.schema_version) >= 1 &&
+    Number.isSafeInteger(input.taxonomy_version) &&
+    Number(input.taxonomy_version) >= 1 &&
+    CONTRACT_VERSION.test(String(input.serializer_version || "")) &&
+    CONTRACT_VERSION.test(String(input.search_contract_version || "")) &&
+    CONTRACT_VERSION.test(String(input.source_contract_version || "")),
   );
 }
 
@@ -299,9 +303,18 @@ export async function processEditorialPublish(
     return "published";
   } catch (error) {
     if (claimed?.id) {
-      await sql`select private.fail_editorial_publish_request_v1(
-        ${String(claimed.id)}::uuid, ${workerId}, ${error instanceof Error ? error.name : "Error"}
-      )`.catch(() => undefined);
+      const errorCode =
+        databaseErrorCode(error) ||
+        (error instanceof Error ? error.name : "Error");
+      if (isRetryableReleaseContention(error)) {
+        await sql`select private.defer_editorial_publish_request_v1(
+          ${String(claimed.id)}::uuid, ${workerId}, ${errorCode}
+        )`.catch(() => undefined);
+      } else {
+        await sql`select private.fail_editorial_publish_request_v1(
+          ${String(claimed.id)}::uuid, ${workerId}, ${errorCode}
+        )`.catch(() => undefined);
+      }
     }
     throw error;
   } finally {
@@ -428,9 +441,18 @@ export async function processGlobalSuppression(
     return "published";
   } catch (error) {
     if (claimed?.id) {
-      await sql`select private.fail_global_suppression_request_v1(
-        ${String(claimed.id)}::uuid, ${workerId}, ${error instanceof Error ? error.name : "Error"}
-      )`.catch(() => undefined);
+      const errorCode =
+        databaseErrorCode(error) ||
+        (error instanceof Error ? error.name : "Error");
+      if (isRetryableReleaseContention(error)) {
+        await sql`select private.defer_global_suppression_request_v1(
+          ${String(claimed.id)}::uuid, ${workerId}, ${errorCode}
+        )`.catch(() => undefined);
+      } else {
+        await sql`select private.fail_global_suppression_request_v1(
+          ${String(claimed.id)}::uuid, ${workerId}, ${errorCode}
+        )`.catch(() => undefined);
+      }
     }
     throw error;
   } finally {

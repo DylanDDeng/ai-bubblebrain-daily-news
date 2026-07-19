@@ -193,6 +193,46 @@ describe("content production preflight", () => {
     ).toThrow(/CLOUDFLARE_R2_LOCK_READ_TOKEN is too short/);
   });
 
+  it("requires an exact SHA, HTTPS origin, and dedicated code release secret", () => {
+    const environment = {
+      EXACT_CODE_SHA: "a".repeat(40),
+      CODE_RELEASE_ORIGIN: "https://content-deployer.bubblenews.today",
+      CODE_RELEASE_SECRET: "b".repeat(32),
+      CONTENT_CURRENT_URLS:
+        "https://content-api.example.com/v1/current,https://content-api-origin.example.com/v1/current",
+      CODE_RELEASE_WAIT_TIMEOUT_SECONDS: "2700",
+    };
+    expect(
+      validateWorkflowEnvironment("workflow-code-release", environment),
+    ).toEqual({ profile: "workflow-code-release" });
+    expect(() =>
+      validateWorkflowEnvironment("workflow-code-release", {
+        ...environment,
+        CODE_RELEASE_ORIGIN: "http://content-deployer.example.com",
+      }),
+    ).toThrow(/CODE_RELEASE_ORIGIN must be a credential-free HTTPS origin/);
+    expect(() =>
+      validateWorkflowEnvironment("workflow-code-release", {
+        ...environment,
+        CONTENT_CURRENT_URLS: "https://content-api.example.com/v1/current",
+      }),
+    ).toThrow(/at least two verifier origins/);
+    expect(() =>
+      validateWorkflowEnvironment("workflow-code-release", {
+        ...environment,
+        CONTENT_CURRENT_URLS:
+          "https://content-api.example.com/v1/current,https://content-api.example.com/v1/current",
+      }),
+    ).toThrow(/distinct verifier origins/);
+    expect(() =>
+      validateWorkflowEnvironment("workflow-code-release", {
+        ...environment,
+        CONTENT_CURRENT_URLS:
+          "https://content-api.example.com/v1/current?cached=true,https://content-api-origin.example.com/v1/current",
+      }),
+    ).toThrow(/exact \/v1\/current endpoints/);
+  });
+
   it("requires a topology-approved deployer-only observability environment", () => {
     const environment = {
       CONTENT_OBSERVABILITY_DATABASE_URL:

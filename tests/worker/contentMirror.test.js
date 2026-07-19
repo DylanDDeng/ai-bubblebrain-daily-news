@@ -31,7 +31,11 @@ function bucket() {
     };
 }
 
-function database({ loseFirstFinalizeResponse = false, rejectFinalize = false } = {}) {
+function database({
+    loseFirstFinalizeResponse = false,
+    rejectFinalize = false,
+    reserveError = null,
+} = {}) {
     const calls = [];
     let finalized = false;
     let attemptStatus = 'started';
@@ -65,6 +69,7 @@ function database({ loseFirstFinalizeResponse = false, rejectFinalize = false } 
             ];
         }
         if (query.includes('reserve_ingestion_site_release_v1')) {
+            if (reserveError) throw reserveError;
             return [{ result: { ...reservation, idempotent: finalized } }];
         }
         if (query.includes('finalize_site_release_v1')) {
@@ -244,4 +249,26 @@ describe('structured content database mirror', () => {
         ]);
         expect(db.sql.end).toHaveBeenCalledWith({ timeout: 2 });
     });
+
+    it.each(['55P03', '40001'])(
+        'does not permanently fail a publication attempt for transient database contention %s',
+        async (code) => {
+            const env = enabledEnv();
+            const contention = Object.assign(new Error('Release head is busy'), {
+                code,
+            });
+            const db = database({ reserveError: contention });
+
+            await expect(
+                mirrorStructuredReport(env, input(), {
+                    openDatabase: vi.fn(() => db.sql),
+                }),
+            ).rejects.toBe(contention);
+
+            expect(
+                db.calls.some((call) => call.query.includes('fail_ingestion_publication_attempt_v1')),
+            ).toBe(false);
+            expect(db.sql.end).toHaveBeenCalledWith({ timeout: 2 });
+        },
+    );
 });

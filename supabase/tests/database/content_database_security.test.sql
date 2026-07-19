@@ -8,8 +8,12 @@ select cmp_ok(
   '>=', 12::bigint,
   'content and release tables are installed in the private schema'
 );
-select is((select count(*) from private.content_settings), 7::bigint, 'all capability switches exist');
-select is((select count(*) from private.content_settings where enabled), 0::bigint, 'all capability switches fail closed');
+select is((select count(*) from private.content_settings), 8::bigint, 'all capability switches exist');
+select is(
+  (select count(*) from private.content_settings where enabled),
+  0::bigint,
+  'all production mutation capabilities start fail-closed'
+);
 select ok(
   (select bool_and(rolcanlogin) from pg_roles where rolname in (
     'content_ingestor', 'content_editor', 'content_controller', 'content_reader', 'content_deployer'

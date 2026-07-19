@@ -612,6 +612,37 @@ function validateRuntimePreflightEnvironment(env) {
   return { profile: "workflow-runtime-preflight" };
 }
 
+function validateCodeReleaseEnvironment(env) {
+  matches("EXACT_CODE_SHA", env.EXACT_CODE_SHA, SHA1);
+  httpsUrl("CODE_RELEASE_ORIGIN", env.CODE_RELEASE_ORIGIN, {
+    originOnly: true,
+  });
+  secret("CODE_RELEASE_SECRET", env.CODE_RELEASE_SECRET, 32);
+  const currentUrls = required("CONTENT_CURRENT_URLS", env.CONTENT_CURRENT_URLS)
+    .split(",")
+    .map((value) => httpsUrl("CONTENT_CURRENT_URLS", value.trim()));
+  if (currentUrls.length < 2)
+    fail("CONTENT_CURRENT_URLS must contain at least two verifier origins");
+  if (new Set(currentUrls.map((url) => url.origin)).size < 2)
+    fail("CONTENT_CURRENT_URLS must contain distinct verifier origins");
+  if (
+    currentUrls.some(
+      (url) => url.pathname !== "/v1/current" || url.search || url.hash,
+    )
+  ) {
+    fail("CONTENT_CURRENT_URLS must contain exact /v1/current endpoints");
+  }
+  const waitTimeout = Number(
+    required(
+      "CODE_RELEASE_WAIT_TIMEOUT_SECONDS",
+      env.CODE_RELEASE_WAIT_TIMEOUT_SECONDS,
+    ),
+  );
+  if (!Number.isInteger(waitTimeout) || waitTimeout < 60 || waitTimeout > 7200)
+    fail("CODE_RELEASE_WAIT_TIMEOUT_SECONDS must be between 60 and 7200");
+  return { profile: "workflow-code-release" };
+}
+
 export function validateWorkflowEnvironment(profile, env) {
   if (profile === "workflow-release") return validateReleaseEnvironment(env);
   if (profile === "workflow-editorial-preview")
@@ -624,6 +655,9 @@ export function validateWorkflowEnvironment(profile, env) {
   }
   if (profile === "workflow-runtime-preflight") {
     return validateRuntimePreflightEnvironment(env);
+  }
+  if (profile === "workflow-code-release") {
+    return validateCodeReleaseEnvironment(env);
   }
   if (profile === "workflow-observability") {
     return validateObservabilityEnvironment(env);

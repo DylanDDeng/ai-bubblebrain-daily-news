@@ -1,5 +1,6 @@
-import { sha256Hex } from "../shared/canonical";
+import { canonicalJsonBytes, sha256Hex } from "../shared/canonical";
 import { openContentDatabase, type ContentSql } from "../shared/db";
+import { putVerifiedImmutable } from "../shared/r2";
 
 type Env = {
   CONTENT_DB?: { connectionString?: string };
@@ -10,6 +11,7 @@ type Env = {
   DEPLOY_CALLBACK_SECRET: string;
   PREVIEW_DISPATCH_SECRET: string;
   CONTENT_BUILD_API_SECRET: string;
+  CODE_RELEASE_SECRET: string;
   RECOVERY_MONITOR_SECRET: string;
   REPORT_SNAPSHOTS?: R2BucketLike;
   SITE_MANIFESTS?: R2BucketLike;
@@ -17,11 +19,20 @@ type Env = {
 
 type R2BucketLike = {
   get(key: string): Promise<{ arrayBuffer(): Promise<ArrayBuffer> } | null>;
+  put(
+    key: string,
+    value: Uint8Array,
+    options?: {
+      onlyIf?: { etagDoesNotMatch?: string };
+      httpMetadata?: { contentType?: string };
+    },
+  ): Promise<unknown>;
 };
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const SHA1 = /^[a-f0-9]{40}$/;
 const CALLBACK_EVENTS = new Set([
   "building",
   "artifact_registered",
@@ -147,6 +158,251 @@ async function githubDispatch(
   );
   if (response.status !== 204)
     throw new Error(`GitHub dispatch rejected with ${response.status}`);
+}
+
+type GitHubFile = {
+  filename: string;
+  previous_filename?: string;
+  status: string;
+  sha?: string;
+};
+
+type GitHubCompare = {
+  status: string;
+  base_commit?: { sha?: string };
+  merge_base_commit?: { sha?: string };
+  commits?: Array<{ sha?: string }>;
+  files?: GitHubFile[];
+};
+
+async function githubJson(
+  env: Env,
+  path: string,
+): Promise<Record<string, unknown>> {
+  const repository = env.GITHUB_REPOSITORY?.trim();
+  if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository))
+    throw new Error("Invalid GitHub repository");
+  const response = await fetch(
+    `https://api.github.com/repos/${repository}/${path}`,
+    {
+      headers: {
+        Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+        Accept: "application/vnd.github+json",
+        "User-Agent": "bubble-content-deployer",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    },
+  );
+  if (!response.ok)
+    throw new Error(`GitHub request rejected with ${response.status}`);
+  return (await response.json()) as Record<string, unknown>;
+}
+
+type CodeReleasePathClass = "publishable" | "inert" | "db_owned";
+
+const INERT_ROOT_SCRIPTS = new Set([
+  "scripts/check-content-observability.mjs",
+  "scripts/check-content-observation-window.mjs",
+  "scripts/request-code-release.mjs",
+  "scripts/test-content-failure-matrix-local.mjs",
+  "scripts/validate-content-production-config.mjs",
+]);
+
+function assertGitHubComparePath(path: string): void {
+  if (
+    !path ||
+    path.startsWith("/") ||
+    path.includes("\\") ||
+    path
+      .split("/")
+      .some((segment) => !segment || segment === "." || segment === "..")
+  ) {
+    throw new Error("Malformed GitHub compare path");
+  }
+}
+
+function structuredDateFromPath(path: string): string | null {
+  const match =
+    /^(?:content\/daily\/(\d{4}-\d{2}-\d{2})(?:\.en)?\.md|daily\/(\d{4}-\d{2}-\d{2})\.md|data\/daily\/(\d{4}-\d{2}-\d{2})\.json)$/.exec(
+      path,
+    );
+  return match ? match[1] || match[2] || match[3] : null;
+}
+
+function classifyCodeReleasePath(
+  path: string,
+  structuredCutoverDate: string,
+): CodeReleasePathClass {
+  assertGitHubComparePath(path);
+
+  const structuredDate = structuredDateFromPath(path);
+  if (structuredDate && structuredDate >= structuredCutoverDate)
+    return "db_owned";
+
+  if (
+    /(?:^|\/)\w[^/]*\.test\.[cm]?[jt]sx?$/.test(path) ||
+    path.startsWith("workers/") ||
+    path.startsWith("supabase/") ||
+    path.startsWith(".github/") ||
+    path.startsWith("tests/") ||
+    path.startsWith("docs/") ||
+    path.startsWith("astro/.vscode/") ||
+    INERT_ROOT_SCRIPTS.has(path) ||
+    [
+      "astro/.editorconfig",
+      "astro/.gitignore",
+      "astro/.nvmrc",
+      "astro/.prettierignore",
+      "astro/AGENTS.md",
+      "astro/README.md",
+      "astro/eslint.config.js",
+      "astro/prettier.config.mjs",
+      "astro/vitest.config.ts",
+      "wrangler.content-deployer.toml",
+    ].includes(path) ||
+    (/^[^/]+\.md$/.test(path) && !path.startsWith("daily/"))
+  ) {
+    return "inert";
+  }
+
+  if (
+    [
+      "astro/src/pages/",
+      "astro/src/components/",
+      "astro/src/layouts/",
+      "astro/src/styles/",
+      "astro/src/scripts/",
+      "astro/src/lib/",
+    ].some((prefix) => path.startsWith(prefix)) ||
+    [
+      "astro/src/content.config.ts",
+      "astro/public/favicon.ico",
+      "astro/public/favicon.svg",
+      "astro/astro.config.mjs",
+      "astro/package.json",
+      "astro/package-lock.json",
+      "astro/raw-html-policy.json",
+      "astro/route-ownership.json",
+      "astro/tsconfig.json",
+    ].includes(path)
+  ) {
+    return "publishable";
+  }
+
+  throw new Error(`Code release contains forbidden or unknown path: ${path}`);
+}
+
+export function validateCodeReleaseChangeSet(
+  compare: GitHubCompare,
+  input: {
+    baseCodeSha: string;
+    targetCodeSha: string;
+    structuredCutoverDate: string;
+  },
+): GitHubFile[] {
+  const files = compare.files;
+  if (
+    compare.status !== "ahead" ||
+    compare.base_commit?.sha !== input.baseCodeSha ||
+    compare.merge_base_commit?.sha !== input.baseCodeSha ||
+    !Array.isArray(compare.commits) ||
+    compare.commits.at(-1)?.sha !== input.targetCodeSha ||
+    !Array.isArray(files) ||
+    files.length === 0 ||
+    files.length >= 300 ||
+    !DATE.test(input.structuredCutoverDate)
+  ) {
+    throw new Error("GitHub compare is not a complete fast-forward change set");
+  }
+  for (const file of files) {
+    if (
+      !file ||
+      typeof file.filename !== "string" ||
+      typeof file.status !== "string"
+    ) {
+      throw new Error("Malformed GitHub compare file");
+    }
+    classifyCodeReleasePath(file.filename, input.structuredCutoverDate);
+    if (file.previous_filename !== undefined) {
+      if (typeof file.previous_filename !== "string")
+        throw new Error("Malformed GitHub compare file");
+      classifyCodeReleasePath(
+        file.previous_filename,
+        input.structuredCutoverDate,
+      );
+    }
+  }
+  return files;
+}
+
+async function currentMainSha(env: Env): Promise<string> {
+  const ref = (env.GITHUB_WORKFLOW_REF || "main").replace(/^refs\/heads\//, "");
+  const result = await githubJson(
+    env,
+    `git/ref/heads/${encodeURIComponent(ref)}`,
+  );
+  const object = result.object as Record<string, unknown> | undefined;
+  const sha = String(object?.sha || "");
+  if (!SHA1.test(sha)) throw new Error("GitHub main ref is malformed");
+  return sha;
+}
+
+async function compareCodeRelease(
+  env: Env,
+  baseCodeSha: string,
+  targetCodeSha: string,
+  structuredCutoverDate: string,
+): Promise<{
+  files: GitHubFile[];
+  changeSetSha256: string;
+  publishableFileCount: number;
+}> {
+  const result = (await githubJson(
+    env,
+    `compare/${baseCodeSha}...${targetCodeSha}`,
+  )) as GitHubCompare;
+  const files = validateCodeReleaseChangeSet(result, {
+    baseCodeSha,
+    targetCodeSha,
+    structuredCutoverDate,
+  });
+  const normalized = files
+    .map((file) => ({
+      filename: file.filename,
+      previous_filename: file.previous_filename || null,
+      status: file.status,
+      sha: file.sha || null,
+    }))
+    .sort((left, right) => left.filename.localeCompare(right.filename));
+  return {
+    files,
+    publishableFileCount: files.filter(
+      (file) =>
+        classifyCodeReleasePath(file.filename, structuredCutoverDate) ===
+          "publishable" ||
+        (file.previous_filename !== undefined &&
+          classifyCodeReleasePath(
+            file.previous_filename,
+            structuredCutoverDate,
+          ) === "publishable"),
+    ).length,
+    changeSetSha256: await sha256Hex(
+      canonicalJsonBytes({
+        base_code_sha: baseCodeSha,
+        target_code_sha: targetCodeSha,
+        files: normalized,
+      }),
+    ),
+  };
+}
+
+function uuidFromHash(hash: string): string {
+  if (!/^[a-f0-9]{64}$/.test(hash)) throw new Error("Invalid UUID source hash");
+  const bytes = hash.slice(0, 32).split("");
+  bytes[12] = "5";
+  bytes[16] = ["8", "9", "a", "b"][parseInt(bytes[16], 16) % 4];
+  const value = bytes.join("");
+  return `${value.slice(0, 8)}-${value.slice(8, 12)}-${value.slice(12, 16)}-${value.slice(16, 20)}-${value.slice(20)}`;
 }
 
 async function recordEvent(
@@ -444,6 +700,290 @@ export async function handleRecoveryHealthCallback(
   }
 }
 
+const CODE_RELEASE_BUILD_ENVIRONMENT = "node22.17-astro7-hugo0.147.9-v1";
+
+type CodeReleaseDependencies = {
+  openDatabase?: typeof openContentDatabase;
+  getCurrentMainSha?: typeof currentMainSha;
+  compare?: typeof compareCodeRelease;
+};
+
+function supersededCodeRelease(
+  requestedCodeSha: string,
+  currentMainSha: string,
+): Response {
+  return json(
+    {
+      error: "code_release_target_superseded",
+      retryable: true,
+      requested_code_sha: requestedCodeSha,
+      current_main_sha: currentMainSha,
+    },
+    409,
+  );
+}
+
+async function readVerifiedManifest(
+  bucket: R2BucketLike | undefined,
+  descriptor: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  if (!bucket) throw new Error("Site manifest binding is unavailable");
+  const key = String(descriptor.object_key || "");
+  const expectedHash = String(descriptor.sha256 || "");
+  const expectedLength = Number(descriptor.byte_length);
+  if (
+    key !== `site-manifests/sha256/${expectedHash}.json` ||
+    !/^[a-f0-9]{64}$/.test(expectedHash) ||
+    !Number.isSafeInteger(expectedLength) ||
+    expectedLength <= 0
+  ) {
+    throw new Error("Base site manifest descriptor is malformed");
+  }
+  const object = await bucket.get(key);
+  if (!object) throw new Error("Base site manifest is missing");
+  const bytes = new Uint8Array(await object.arrayBuffer());
+  if (
+    bytes.byteLength !== expectedLength ||
+    (await sha256Hex(bytes)) !== expectedHash
+  ) {
+    throw new Error("Base site manifest verification failed");
+  }
+  const parsed = JSON.parse(
+    new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+  ) as unknown;
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed))
+    throw new Error("Base site manifest is malformed");
+  return parsed as Record<string, unknown>;
+}
+
+export async function handleCodeReleaseRequest(
+  request: Request,
+  env: Env,
+  dependencies: CodeReleaseDependencies = {},
+): Promise<Response> {
+  if (request.method !== "POST")
+    return json({ error: "method_not_allowed" }, 405);
+  const declared = Number(request.headers.get("Content-Length") || "0");
+  if (declared > 8 * 1024) return json({ error: "payload_too_large" }, 413);
+  const bytes = new Uint8Array(await request.arrayBuffer());
+  if (bytes.byteLength > 8 * 1024)
+    return json({ error: "payload_too_large" }, 413);
+  if (!env.CODE_RELEASE_SECRET)
+    return json({ error: "service_unavailable" }, 503);
+  const supplied = request.headers.get("X-Code-Release-Signature") || "";
+  const expected = await hmacHex(env.CODE_RELEASE_SECRET, bytes);
+  if (!timingSafeHex(supplied, expected))
+    return json({ error: "unauthorized" }, 401);
+
+  let payload: Record<string, unknown>;
+  try {
+    payload = JSON.parse(
+      new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+    ) as Record<string, unknown>;
+  } catch {
+    return json({ error: "invalid_request" }, 400);
+  }
+  const targetCodeSha = String(payload.code_sha || "").toLowerCase();
+  if (!SHA1.test(targetCodeSha)) return json({ error: "invalid_request" }, 400);
+
+  const sql = (dependencies.openDatabase || openContentDatabase)(
+    env,
+    "automatic-code-release",
+  );
+  try {
+    const baseRows = await sql<Record<string, unknown>[]>`
+      select private.get_code_release_base_v1() as result
+    `;
+    const base = baseRows[0]?.result as Record<string, unknown> | undefined;
+    const baseCodeSha = String(base?.code_sha || "");
+    const structuredCutoverDate = String(base?.structured_cutover_date || "");
+    if (
+      !base ||
+      !SHA1.test(baseCodeSha) ||
+      !UUID.test(String(base.site_release_id || "")) ||
+      !DATE.test(structuredCutoverDate)
+    ) {
+      throw new Error("Code release base is unavailable");
+    }
+    if (baseCodeSha === targetCodeSha) {
+      return json({
+        ok: true,
+        status: "already_current",
+        code_sha: targetCodeSha,
+      });
+    }
+
+    const mainSha = await (dependencies.getCurrentMainSha || currentMainSha)(
+      env,
+    );
+    if (mainSha !== targetCodeSha) {
+      return supersededCodeRelease(targetCodeSha, mainSha);
+    }
+
+    let comparison: {
+      files: GitHubFile[];
+      changeSetSha256: string;
+      publishableFileCount?: number;
+    };
+    try {
+      comparison = await (dependencies.compare || compareCodeRelease)(
+        env,
+        baseCodeSha,
+        targetCodeSha,
+        structuredCutoverDate,
+      );
+    } catch (error) {
+      return json(
+        {
+          error: "unsafe_code_release",
+          detail: error instanceof Error ? error.message : "invalid_change_set",
+        },
+        422,
+      );
+    }
+    const publishableFileCount =
+      comparison.publishableFileCount ??
+      comparison.files.filter(
+        (file) =>
+          classifyCodeReleasePath(file.filename, structuredCutoverDate) ===
+            "publishable" ||
+          (file.previous_filename !== undefined &&
+            classifyCodeReleasePath(
+              file.previous_filename,
+              structuredCutoverDate,
+            ) === "publishable"),
+      ).length;
+    if (publishableFileCount === 0) {
+      return json({
+        ok: true,
+        status: "no_changes",
+        code_sha: targetCodeSha,
+        changed_file_count: comparison.files.length,
+      });
+    }
+
+    const idempotencyHash = await sha256Hex(
+      canonicalJsonBytes({
+        base_code_sha: baseCodeSha,
+        target_code_sha: targetCodeSha,
+        change_set_sha256: comparison.changeSetSha256,
+      }),
+    );
+    const idempotencyKey = uuidFromHash(idempotencyHash);
+    const dispatchId = idempotencyKey;
+    const latestMainSha = await (
+      dependencies.getCurrentMainSha || currentMainSha
+    )(env);
+    if (latestMainSha !== targetCodeSha) {
+      return supersededCodeRelease(targetCodeSha, latestMainSha);
+    }
+    const reservationRows = await sql<Record<string, unknown>[]>`
+      select private.reserve_code_release_v1(
+        ${idempotencyKey}::uuid,
+        ${targetCodeSha},
+        ${baseCodeSha},
+        ${CODE_RELEASE_BUILD_ENVIRONMENT},
+        ${comparison.changeSetSha256}
+      ) as result
+    `;
+    const reservation = reservationRows[0]?.result as
+      | Record<string, unknown>
+      | undefined;
+    if (
+      !reservation ||
+      !UUID.test(String(reservation.reservation_id || "")) ||
+      !Number.isSafeInteger(Number(reservation.site_release_sequence)) ||
+      String(reservation.expected_predecessor_id || "") !==
+        String(base.site_release_id) ||
+      String(reservation.content_root_sha256 || "") !==
+        String(base.content_root_sha256)
+    ) {
+      throw new Error("Code release reservation identity mismatch");
+    }
+
+    const baseManifest = await readVerifiedManifest(
+      env.SITE_MANIFESTS,
+      reservation.base_manifest as Record<string, unknown>,
+    );
+    if (
+      String(baseManifest.site_release_id || "") !==
+        String(base.site_release_id) ||
+      String(baseManifest.content_root_sha256 || "") !==
+        String(base.content_root_sha256) ||
+      !Array.isArray(baseManifest.reports)
+    ) {
+      throw new Error("Base manifest identity mismatch");
+    }
+    const nextManifestBytes = canonicalJsonBytes({
+      ...baseManifest,
+      site_release_id: reservation.site_release_id,
+      site_release_sequence: Number(reservation.site_release_sequence),
+      expected_predecessor_id: reservation.expected_predecessor_id,
+    });
+    if (!env.SITE_MANIFESTS)
+      throw new Error("Site manifest binding is unavailable");
+    const manifestObject = await putVerifiedImmutable(
+      env.SITE_MANIFESTS,
+      "site-manifests",
+      "json",
+      nextManifestBytes,
+      "application/json; charset=utf-8",
+    );
+    const dispatchPayload = {
+      dispatch_id: dispatchId,
+      site_release_id: reservation.site_release_id,
+      site_release_sequence: Number(reservation.site_release_sequence),
+      expected_predecessor_id: reservation.expected_predecessor_id,
+      expected_content_sha: base.content_root_sha256,
+      code_sha: targetCodeSha,
+      build_environment_version: CODE_RELEASE_BUILD_ENVIRONMENT,
+      mode: "production",
+    };
+    const finalRows = await sql<Record<string, unknown>[]>`
+      select private.finalize_code_release_v1(
+        ${String(reservation.reservation_id)}::uuid,
+        ${manifestObject.key},
+        ${manifestObject.byteLength},
+        ${manifestObject.sha256},
+        ${dispatchId}::uuid,
+        ${sql.json(dispatchPayload)}
+      ) as result
+    `;
+    const release = finalRows[0]?.result as Record<string, unknown> | undefined;
+    if (
+      String(release?.site_release_id || "") !==
+      String(reservation.site_release_id)
+    )
+      throw new Error("Code release finalization identity mismatch");
+    return json(
+      {
+        ok: true,
+        status: "queued",
+        site_release_id: release.site_release_id,
+        site_release_sequence: release.site_release_sequence,
+        code_sha: targetCodeSha,
+        content_sha256: base.content_root_sha256,
+        changed_file_count: comparison.files.length,
+      },
+      202,
+    );
+  } catch (error) {
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code?: unknown }).code || "")
+        : "";
+    if (["55P03", "40001"].includes(code)) {
+      return json({ error: "release_head_busy", retryable: true }, 409);
+    }
+    console.error("[ContentDeployer] automatic code release failed", {
+      errorType: error instanceof Error ? error.name : "Error",
+    });
+    return json({ error: "service_unavailable", retryable: true }, 503);
+  } finally {
+    await sql.end({ timeout: 2 });
+  }
+}
+
 async function handlePreviewDispatch(
   request: Request,
   env: Env,
@@ -591,12 +1131,29 @@ export async function handleBuildContentRequest(
 }
 
 export default {
-  fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(
+    request: Request,
+    env: Env,
+    context: ExecutionContext,
+  ): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/callbacks/github")
       return handleDeploymentCallback(request, env);
     if (url.pathname === "/internal/recovery-health")
       return handleRecoveryHealthCallback(request, env);
+    if (url.pathname === "/internal/code-release") {
+      const response = await handleCodeReleaseRequest(request, env);
+      if (response.status === 202) {
+        context.waitUntil(
+          dispatchOne(env).catch((error) => {
+            console.error("[ContentDeployer] immediate code dispatch failed", {
+              errorType: error instanceof Error ? error.name : "Error",
+            });
+          }),
+        );
+      }
+      return response;
+    }
     if (
       url.pathname === "/internal/preview-dispatch" &&
       request.method === "POST"

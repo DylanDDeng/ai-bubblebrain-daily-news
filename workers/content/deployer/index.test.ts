@@ -3,9 +3,11 @@ import { createHash } from "node:crypto";
 import {
   dispatchOne,
   handleBuildContentRequest,
+  handleCodeReleaseRequest,
   handleRecoveryHealthCallback,
   outboxAlertReasons,
   runRetentionMaintenance,
+  validateCodeReleaseChangeSet,
   validateDispatchPayload,
 } from "./index";
 
@@ -31,6 +33,33 @@ async function signedRecoveryRequest(
   return new Request("https://deployer.test/internal/recovery-health", {
     method: "POST",
     headers: { "X-Content-Signature": hex },
+    body,
+  });
+}
+
+async function signedCodeReleaseRequest(
+  secret: string,
+  codeSha: string,
+): Promise<Request> {
+  const body = JSON.stringify({ code_sha: codeSha });
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(body),
+  );
+  const hex = Array.from(new Uint8Array(signature), (value) =>
+    value.toString(16).padStart(2, "0"),
+  ).join("");
+  return new Request("https://deployer.test/internal/code-release", {
+    method: "POST",
+    headers: { "X-Code-Release-Signature": hex },
     body,
   });
 }
@@ -116,6 +145,386 @@ describe("content release dispatch recovery", () => {
       site_release_id: valid.site_release_id,
     });
     expect(events).toEqual(["failed", "building"]);
+    expect(end).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("automatic code release boundary", () => {
+  const baseCodeSha = "a".repeat(40);
+  const targetCodeSha = "b".repeat(40);
+
+  function comparison(files: Array<Record<string, unknown>>) {
+    return {
+      status: "ahead",
+      base_commit: { sha: baseCodeSha },
+      merge_base_commit: { sha: baseCodeSha },
+      commits: [{ sha: targetCodeSha }],
+      files,
+    };
+  }
+
+  it("allows publishable UI alongside classified inert and DB-owned files", () => {
+    expect(
+      validateCodeReleaseChangeSet(
+        comparison([
+          { filename: "astro/src/pages/index.astro", status: "modified" },
+          {
+            filename: "astro/src/components/QuietIndexHome.astro",
+            status: "modified",
+          },
+          {
+            filename: "astro/src/layouts/BaseLayout.astro",
+            status: "modified",
+          },
+          { filename: "astro/src/styles/quiet-index.css", status: "modified" },
+          { filename: "astro/src/scripts/authControls.ts", status: "modified" },
+          { filename: "astro/src/lib/searchIndex.ts", status: "modified" },
+          { filename: "astro/public/favicon.svg", status: "modified" },
+          { filename: "workers/content/deployer/index.ts", status: "modified" },
+          {
+            filename: "supabase/migrations/20260719000100_release.sql",
+            status: "added",
+          },
+          {
+            filename: ".github/workflows/automatic-code-release.yml",
+            status: "added",
+          },
+          {
+            filename: "data/daily/2026-07-19.json",
+            status: "modified",
+          },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toHaveLength(11);
+  });
+
+  it.each([
+    "astro/scripts/generate-static-data.mjs",
+    "static/highlights.json",
+    "content/about/index.md",
+    "data/daily/2026-07-15.json",
+    "assets/daily.json",
+    "unknown/release-input.json",
+  ])("rejects a mixed release containing %s", (forbiddenPath) => {
+    expect(() =>
+      validateCodeReleaseChangeSet(
+        comparison([
+          { filename: "astro/src/pages/index.astro", status: "modified" },
+          { filename: forbiddenPath, status: "modified" },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toThrow(
+      `Code release contains forbidden or unknown path: ${forbiddenPath}`,
+    );
+  });
+
+  it("rejects a rename whose previous filename is forbidden", () => {
+    expect(() =>
+      validateCodeReleaseChangeSet(
+        comparison([
+          {
+            filename: "astro/src/pages/index.astro",
+            previous_filename: "static/highlights.json",
+            status: "renamed",
+          },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toThrow(
+      "Code release contains forbidden or unknown path: static/highlights.json",
+    );
+  });
+
+  it("returns a retryable conflict when the requested SHA is already superseded", async () => {
+    const currentMainSha = "c".repeat(40);
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      expect(strings.join("?")).toContain("get_code_release_base_v1");
+      return [
+        {
+          result: {
+            site_release_id: "11111111-1111-4111-8111-111111111111",
+            code_sha: baseCodeSha,
+            content_root_sha256: "d".repeat(64),
+            structured_cutover_date: "2026-07-16",
+          },
+        },
+      ];
+    });
+    Object.assign(sql, { end });
+    const compare = vi.fn();
+    const response = await handleCodeReleaseRequest(
+      await signedCodeReleaseRequest("code-secret", targetCodeSha),
+      { CODE_RELEASE_SECRET: "code-secret" } as never,
+      {
+        openDatabase: vi.fn(() => sql as never),
+        getCurrentMainSha: vi.fn(async () => currentMainSha),
+        compare,
+      },
+    );
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: "code_release_target_superseded",
+      retryable: true,
+      requested_code_sha: targetCodeSha,
+      current_main_sha: currentMainSha,
+    });
+    expect(compare).not.toHaveBeenCalled();
+    expect(sql).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+
+  it("rechecks main immediately before reservation", async () => {
+    const newerMainSha = "c".repeat(40);
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("get_code_release_base_v1")) {
+        return [
+          {
+            result: {
+              site_release_id: "11111111-1111-4111-8111-111111111111",
+              code_sha: baseCodeSha,
+              content_root_sha256: "d".repeat(64),
+              structured_cutover_date: "2026-07-16",
+            },
+          },
+        ];
+      }
+      throw new Error(`Reservation should not be attempted: ${query}`);
+    });
+    Object.assign(sql, { end });
+    const getCurrentMainSha = vi
+      .fn()
+      .mockResolvedValueOnce(targetCodeSha)
+      .mockResolvedValueOnce(newerMainSha);
+    const response = await handleCodeReleaseRequest(
+      await signedCodeReleaseRequest("code-secret", targetCodeSha),
+      { CODE_RELEASE_SECRET: "code-secret" } as never,
+      {
+        openDatabase: vi.fn(() => sql as never),
+        getCurrentMainSha,
+        compare: vi.fn(async () => ({
+          files: [
+            { filename: "astro/src/pages/index.astro", status: "modified" },
+          ],
+          changeSetSha256: "e".repeat(64),
+        })),
+      },
+    );
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({
+      error: "code_release_target_superseded",
+      retryable: true,
+      requested_code_sha: targetCodeSha,
+      current_main_sha: newerMainSha,
+    });
+    expect(getCurrentMainSha).toHaveBeenCalledTimes(2);
+    expect(sql).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+
+  it("returns no_changes for a classified infrastructure-only range", async () => {
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      expect(strings.join("?")).toContain("get_code_release_base_v1");
+      return [
+        {
+          result: {
+            site_release_id: "11111111-1111-4111-8111-111111111111",
+            code_sha: baseCodeSha,
+            content_root_sha256: "d".repeat(64),
+            structured_cutover_date: "2026-07-16",
+          },
+        },
+      ];
+    });
+    Object.assign(sql, { end });
+    const getCurrentMainSha = vi.fn(async () => targetCodeSha);
+    const response = await handleCodeReleaseRequest(
+      await signedCodeReleaseRequest("code-secret", targetCodeSha),
+      { CODE_RELEASE_SECRET: "code-secret" } as never,
+      {
+        openDatabase: vi.fn(() => sql as never),
+        getCurrentMainSha,
+        compare: vi.fn(async () => ({
+          files: [
+            {
+              filename: "workers/content/deployer/index.ts",
+              status: "modified",
+            },
+            {
+              filename: "data/daily/2026-07-19.json",
+              status: "modified",
+            },
+          ],
+          changeSetSha256: "e".repeat(64),
+        })),
+      },
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      ok: true,
+      status: "no_changes",
+      code_sha: targetCodeSha,
+      changed_file_count: 2,
+    });
+    expect(getCurrentMainSha).toHaveBeenCalledTimes(1);
+    expect(sql).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+
+  it("materializes a cloned manifest and queues the exact main SHA", async () => {
+    const baseReleaseId = "11111111-1111-4111-8111-111111111111";
+    const nextReleaseId = "22222222-2222-4222-8222-222222222222";
+    const contentSha = "c".repeat(64);
+    const dispatchIds: string[] = [];
+    const idempotencyKeys: string[] = [];
+    const baseManifest = {
+      site_release_id: baseReleaseId,
+      site_release_sequence: 7,
+      expected_predecessor_id: null,
+      content_root_sha256: contentSha,
+      structured_cutover_date: "2026-07-16",
+      reports: [{ report_date: "2026-07-19", byte_sha256: "d".repeat(64) }],
+    };
+    const baseBytes = new TextEncoder().encode(
+      `${JSON.stringify(baseManifest)}\n`,
+    );
+    const baseHash = createHash("sha256").update(baseBytes).digest("hex");
+    const objects = new Map<string, Uint8Array>([
+      [`site-manifests/sha256/${baseHash}.json`, baseBytes],
+    ]);
+    const bucket = {
+      get: vi.fn(async (key: string) => {
+        const bytes = objects.get(key);
+        return bytes ? { arrayBuffer: async () => bytes.buffer } : null;
+      }),
+      put: vi.fn(async (key: string, bytes: Uint8Array) => {
+        objects.set(key, bytes);
+      }),
+    };
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(
+      async (strings: TemplateStringsArray, ...values: unknown[]) => {
+        const query = strings.join("?");
+        if (query.includes("get_code_release_base_v1")) {
+          return [
+            {
+              result: {
+                site_release_id: baseReleaseId,
+                code_sha: baseCodeSha,
+                content_root_sha256: contentSha,
+                structured_cutover_date: "2026-07-16",
+              },
+            },
+          ];
+        }
+        if (query.includes("reserve_code_release_v1")) {
+          expect(values).toContain(targetCodeSha);
+          idempotencyKeys.push(String(values[0]));
+          return [
+            {
+              result: {
+                reservation_id: nextReleaseId,
+                site_release_id: nextReleaseId,
+                site_release_sequence: 8,
+                expected_predecessor_id: baseReleaseId,
+                content_root_sha256: contentSha,
+                base_manifest: {
+                  object_key: `site-manifests/sha256/${baseHash}.json`,
+                  byte_length: baseBytes.byteLength,
+                  sha256: baseHash,
+                },
+              },
+            },
+          ];
+        }
+        if (query.includes("finalize_code_release_v1")) {
+          const dispatchPayload = values.at(-1) as Record<string, unknown>;
+          dispatchIds.push(String(values[4]));
+          expect(dispatchPayload).toMatchObject({
+            dispatch_id: values[4],
+            site_release_id: nextReleaseId,
+            expected_predecessor_id: baseReleaseId,
+            code_sha: targetCodeSha,
+            expected_content_sha: contentSha,
+            mode: "production",
+          });
+          return [
+            {
+              result: {
+                site_release_id: nextReleaseId,
+                site_release_sequence: 8,
+              },
+            },
+          ];
+        }
+        throw new Error(`Unexpected SQL: ${query}`);
+      },
+    );
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const dependencies = {
+      openDatabase: vi.fn(() => sql as never),
+      getCurrentMainSha: vi.fn(async () => targetCodeSha),
+      compare: vi.fn(async () => ({
+        files: [
+          {
+            filename: "astro/src/styles/quiet-index.css",
+            status: "modified",
+          },
+        ],
+        changeSetSha256: "e".repeat(64),
+      })),
+    };
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const response = await handleCodeReleaseRequest(
+        await signedCodeReleaseRequest("code-secret", targetCodeSha),
+        {
+          CODE_RELEASE_SECRET: "code-secret",
+          SITE_MANIFESTS: bucket,
+        } as never,
+        dependencies,
+      );
+      expect(response.status).toBe(202);
+      expect(await response.json()).toMatchObject({
+        ok: true,
+        status: "queued",
+        site_release_id: nextReleaseId,
+        code_sha: targetCodeSha,
+        content_sha256: contentSha,
+      });
+    }
+
+    expect(idempotencyKeys).toHaveLength(2);
+    expect(idempotencyKeys).toEqual([
+      "b56f4d01-0b51-54ea-a471-f9da86f0c287",
+      "b56f4d01-0b51-54ea-a471-f9da86f0c287",
+    ]);
+    expect(dispatchIds).toHaveLength(2);
+    expect(dispatchIds).toEqual([
+      "b56f4d01-0b51-54ea-a471-f9da86f0c287",
+      "b56f4d01-0b51-54ea-a471-f9da86f0c287",
+    ]);
+    expect(bucket.put).toHaveBeenCalledTimes(1);
     expect(end).toHaveBeenCalledTimes(2);
   });
 });
