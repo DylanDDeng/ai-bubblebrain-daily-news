@@ -80,6 +80,9 @@ describe("content production preflight", () => {
     expect(validateWranglerDocuments(configuredWranglerDocuments())).toEqual({
       files: 7,
       maximumInconsistencyMs: 240000,
+      minimumExactVerifierCount: 2,
+      minimumVerifierCount: 3,
+      transformedHtmlVerifierOrigins: 1,
       verifierOrigins: 2,
     });
   });

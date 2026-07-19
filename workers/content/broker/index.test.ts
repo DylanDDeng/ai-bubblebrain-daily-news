@@ -391,7 +391,11 @@ describe("production convergence verification", () => {
     };
   }
 
-  function setup(corruptSearch = false, delayedManifestAttempts = 0) {
+  function setup(
+    corruptSearch = false,
+    delayedManifestAttempts = 0,
+    transformCustomHtml = false,
+  ) {
     const manifestAttempts = new Map<string, number>();
     vi.stubGlobal(
       "fetch",
@@ -403,20 +407,26 @@ describe("production convergence verification", () => {
           const delayed =
             url.origin === "https://www.example.test" &&
             attempts <= delayedManifestAttempts;
-          return new Response(JSON.stringify({
-            build: delayed
-              ? {
-                  ...build(),
-                  site_release_id: "019f6e2d-013f-7ea0-933e-b996531a9340",
-                  site_release_sequence: context.site_release_sequence - 1,
-                  code_sha: "f".repeat(40),
-                  source_sha: "f".repeat(40),
-                }
-              : build(),
-          }), {
-            status: 200,
-            headers: { "Content-Type": "application/json", "cf-ray": "id-IAD" },
-          });
+          return new Response(
+            JSON.stringify({
+              build: delayed
+                ? {
+                    ...build(),
+                    site_release_id: "019f6e2d-013f-7ea0-933e-b996531a9340",
+                    site_release_sequence: context.site_release_sequence - 1,
+                    code_sha: "f".repeat(40),
+                    source_sha: "f".repeat(40),
+                  }
+                : build(),
+            }),
+            {
+              status: 200,
+              headers: {
+                "Content-Type": "application/json",
+                "cf-ray": "id-IAD",
+              },
+            },
+          );
         }
         const path =
           url.pathname === "/"
@@ -425,13 +435,21 @@ describe("production convergence verification", () => {
               ? `${url.pathname.slice(1)}index.html`
               : url.pathname.slice(1);
         const file = files.find((candidate) => candidate.path === path);
+        const transformedHtml =
+          transformCustomHtml &&
+          url.origin === "https://www.example.test" &&
+          path.endsWith(".html");
         const bytes =
           corruptSearch &&
           url.origin === "https://www.example.test" &&
           path === "search/index.json"
             ? encoder.encode("corrupt")
-            : file?.bytes;
-        return bytes ? new Response(bytes, { status: 200 }) : new Response(null, { status: 404 });
+            : transformedHtml
+              ? encoder.encode("cloudflare edge transformed html")
+              : file?.bytes;
+        return bytes
+          ? new Response(bytes, { status: 200 })
+          : new Response(null, { status: 404 });
       }),
     );
     return {
@@ -462,12 +480,10 @@ describe("production convergence verification", () => {
   it("requires exact HTML, daily JSON and search bytes on every origin", async () => {
     const value = setup();
     await expect(
-      verifyDeployment(
-        context,
-        "https://deploy.pages.dev",
-        value.env,
-        { kind: "tar", files },
-      ),
+      verifyDeployment(context, "https://deploy.pages.dev", value.env, {
+        kind: "tar",
+        files,
+      }),
     ).resolves.toMatchObject({
       multi_edge_verified: true,
       maximum_inconsistency_ms: 240000,
@@ -481,10 +497,76 @@ describe("production convergence verification", () => {
       code_sha: context.code_sha,
       build_environment_version: context.build_environment_version,
       endpoints: [
-        { exact_paths: ["/", "/daily/2026/07/2026-07-17/", "/data/daily/2026-07-17.json", "/search/index.json"] },
-        { exact_paths: ["/", "/daily/2026/07/2026-07-17/", "/data/daily/2026-07-17.json", "/search/index.json"] },
+        {
+          exact_paths: [
+            "/",
+            "/daily/2026/07/2026-07-17/",
+            "/data/daily/2026-07-17.json",
+            "/search/index.json",
+          ],
+        },
+        {
+          exact_paths: [
+            "/",
+            "/daily/2026/07/2026-07-17/",
+            "/data/daily/2026-07-17.json",
+            "/search/index.json",
+          ],
+        },
       ],
     });
+  });
+
+  it("allows declared custom-domain HTML transforms while keeping two exact-byte origins", async () => {
+    const value = setup(false, 0, true);
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        {
+          ...value.env,
+          PRODUCTION_VERIFY_URLS:
+            "https://www.example.test,https://raw.example.test",
+          TRANSFORMED_HTML_VERIFY_URLS: "https://www.example.test",
+          VERIFY_MIN_ENDPOINTS: "3",
+          VERIFY_MIN_EXACT_ENDPOINTS: "2",
+        },
+        { kind: "tar", files },
+      ),
+    ).resolves.toMatchObject({
+      endpoints: expect.arrayContaining([
+        expect.objectContaining({
+          url: "https://www.example.test",
+          exact_paths: ["/data/daily/2026-07-17.json", "/search/index.json"],
+          edge_transformed_html_paths: ["/", "/daily/2026/07/2026-07-17/"],
+        }),
+        expect.objectContaining({
+          url: "https://raw.example.test",
+          exact_paths: [
+            "/",
+            "/daily/2026/07/2026-07-17/",
+            "/data/daily/2026-07-17.json",
+            "/search/index.json",
+          ],
+        }),
+      ]),
+    });
+  });
+
+  it("rejects transformed HTML when only one exact-byte origin remains", async () => {
+    const value = setup(false, 0, true);
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        {
+          ...value.env,
+          TRANSFORMED_HTML_VERIFY_URLS: "https://www.example.test",
+          VERIFY_MIN_EXACT_ENDPOINTS: "2",
+        },
+        { kind: "tar", files },
+      ),
+    ).rejects.toThrow("exact-byte verification is not configured");
   });
 
   it("continues beyond the legacy eight probes until a delayed edge converges", async () => {

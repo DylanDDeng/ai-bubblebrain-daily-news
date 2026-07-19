@@ -15,7 +15,9 @@ type Env = {
   PAGES_PROJECT: string;
   PRODUCTION_BRANCH: string;
   PRODUCTION_VERIFY_URLS: string;
+  TRANSFORMED_HTML_VERIFY_URLS?: string;
   VERIFY_MIN_ENDPOINTS?: string;
+  VERIFY_MIN_EXACT_ENDPOINTS?: string;
   MAX_PRODUCTION_INCONSISTENCY_MS?: string;
 };
 
@@ -181,7 +183,7 @@ export function parseDeterministicTar(bytes: Uint8Array): TarFile[] {
   }
   const files: TarFile[] = [];
   const paths = new Set<string>();
-  for (let offset = 0; offset + 512 <= bytes.length; ) {
+  for (let offset = 0; offset + 512 <= bytes.length;) {
     const header = bytes.subarray(offset, offset + 512);
     if (header.every((value) => value === 0)) break;
     const expectedChecksum = tarNumber(bytes, offset + 148, 8);
@@ -316,8 +318,7 @@ function matchesReleaseBuild(
     Number(build.content_taxonomy_version) ===
       Number(context.taxonomy_version) &&
     build.content_serializer_version === context.serializer_version &&
-    build.content_search_contract_version ===
-      context.search_contract_version &&
+    build.content_search_contract_version === context.search_contract_version &&
     build.content_source_contract_version === context.source_contract_version &&
     CONTRACT_VERSION.test(String(build.content_serializer_version || "")) &&
     CONTRACT_VERSION.test(
@@ -341,9 +342,9 @@ function matchesBuild(
 ): boolean {
   return Boolean(
     matchesReleaseBuild(build, context) &&
-      build?.hash_algorithm === "sha256-path-and-content-v1" &&
-      build.artifact_sha256 === artifactFingerprint &&
-      context.artifact_fingerprint_sha256 === artifactFingerprint,
+    build?.hash_algorithm === "sha256-path-and-content-v1" &&
+    build.artifact_sha256 === artifactFingerprint &&
+    context.artifact_fingerprint_sha256 === artifactFingerprint,
   );
 }
 
@@ -803,6 +804,7 @@ async function probeDeploymentOrigin(
   base: string,
   context: ArtifactContext,
   criticalFiles: Array<TarFile & { sha256: string }>,
+  allowHtmlTransform: boolean,
   attempt: number,
   remainingMs: number,
   fetcher: typeof fetch,
@@ -836,8 +838,7 @@ async function probeDeploymentOrigin(
     : null;
   if (!manifestResponse.ok || !expectedRouteBuild(manifest, context)) {
     const build = (manifest as JsonRecord | null)?.build as
-      | JsonRecord
-      | undefined;
+      JsonRecord | undefined;
     return {
       ok: false,
       failure: {
@@ -885,6 +886,9 @@ async function probeDeploymentOrigin(
           error_type: error instanceof Error ? error.name : "Error",
         };
       }
+      const exactBytesRequired =
+        !allowHtmlTransform || !file.path.endsWith(".html");
+      if (response.ok && !exactBytesRequired) return null;
       const bytes = response.ok
         ? new Uint8Array(await response.arrayBuffer())
         : null;
@@ -910,7 +914,13 @@ async function probeDeploymentOrigin(
       url: origin,
       colo: manifestResponse.headers.get("cf-ray")?.split("-").at(-1) || null,
       attempts: attempt,
-      exact_paths: criticalFiles.map((file) => deployedRoute(file.path)),
+      available_paths: criticalFiles.map((file) => deployedRoute(file.path)),
+      exact_paths: criticalFiles
+        .filter((file) => !allowHtmlTransform || !file.path.endsWith(".html"))
+        .map((file) => deployedRoute(file.path)),
+      edge_transformed_html_paths: criticalFiles
+        .filter((file) => allowHtmlTransform && file.path.endsWith(".html"))
+        .map((file) => deployedRoute(file.path)),
     },
   };
 }
@@ -949,14 +959,42 @@ export async function verifyDeployment(
   const configured = env.PRODUCTION_VERIFY_URLS.split(",")
     .map((value) => value.trim())
     .filter(Boolean);
+  const configuredOrigins = configured.map((value) => new URL(value).origin);
   const bases = [
-    ...new Set(
-      [deploymentUrl, ...configured].map((value) => new URL(value).origin),
-    ),
+    ...new Set([new URL(deploymentUrl).origin, ...configuredOrigins]),
   ];
-  const minimum = Math.max(2, Number(env.VERIFY_MIN_ENDPOINTS || "2"));
+  const minimum = Number(env.VERIFY_MIN_ENDPOINTS || "2");
+  if (!Number.isSafeInteger(minimum) || minimum < 2) {
+    throw new Error("Minimum production verifier count is invalid");
+  }
   if (bases.length < minimum)
     throw new Error("Multi-endpoint production verification is not configured");
+  const transformedHtmlOrigins = new Set(
+    String(env.TRANSFORMED_HTML_VERIFY_URLS || "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .map((value) => new URL(value).origin),
+  );
+  if (
+    [...transformedHtmlOrigins].some(
+      (origin) => !configuredOrigins.includes(origin),
+    )
+  ) {
+    throw new Error(
+      "HTML-transform verifier origin is not explicitly configured",
+    );
+  }
+  const minimumExact = Number(env.VERIFY_MIN_EXACT_ENDPOINTS || "2");
+  if (!Number.isSafeInteger(minimumExact) || minimumExact < 2) {
+    throw new Error("Minimum exact-byte verifier count is invalid");
+  }
+  if (
+    bases.filter((base) => !transformedHtmlOrigins.has(new URL(base).origin))
+      .length < minimumExact
+  ) {
+    throw new Error("Multi-endpoint exact-byte verification is not configured");
+  }
   remainingWindow();
   const criticalFiles = await Promise.all(
     (await criticalArtifactFiles(bundle, env)).map(async (file) => ({
@@ -969,8 +1007,7 @@ export async function verifyDeployment(
   let failures: VerificationFailure[] = [];
   let round = 0;
   while (evidenceByOrigin.size < bases.length) {
-    const remaining =
-      maximumInconsistencyMs - (now() - windowStartedAt);
+    const remaining = maximumInconsistencyMs - (now() - windowStartedAt);
     if (remaining <= 0) break;
     const pending = bases.filter((base) => !evidenceByOrigin.has(base));
     const results = await Promise.all(
@@ -983,6 +1020,7 @@ export async function verifyDeployment(
             base,
             context,
             criticalFiles,
+            transformedHtmlOrigins.has(new URL(base).origin),
             attempt,
             remaining,
             fetcher,
@@ -1344,7 +1382,11 @@ export async function handleRollbackRequest(
       env,
     );
     const deploymentStartedAt = Date.now();
-    const deployment = await (dependencies.upload || uploadPages)(artifact, context, env);
+    const deployment = await (dependencies.upload || uploadPages)(
+      artifact,
+      context,
+      env,
+    );
     const evidence = await (dependencies.verify || verifyDeployment)(
       context,
       deployment.url,

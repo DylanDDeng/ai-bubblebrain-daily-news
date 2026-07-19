@@ -11,13 +11,19 @@ routes = [
 [vars]
 PAGES_PROJECT = "ai-bubblebrain-daily-news"
 PRODUCTION_BRANCH = "main"
-VERIFY_MIN_ENDPOINTS = "2"
+VERIFY_MIN_ENDPOINTS = "3"
+VERIFY_MIN_EXACT_ENDPOINTS = "2"
 # From production upload start through exact multi-origin convergence. Pending
 # origins are probed in parallel until this hard limit; exceeding it restores
 # the last-known-good release while leaving the database pointer unchanged.
 MAX_PRODUCTION_INCONSISTENCY_MS = "240000"
 # Configure at least two independently routed verifier origins before enabling publication.
 PRODUCTION_VERIFY_URLS = "https://bubblenews.today,https://ai-bubblebrain-daily-news.pages.dev"
+# Cloudflare Email Address Obfuscation intentionally rewrites HTML on the
+# custom domain. That origin must still serve the exact release manifest and
+# non-HTML critical artifacts, while the deployment URL and pages.dev alias
+# retain full byte-for-byte HTML verification.
+TRANSFORMED_HTML_VERIFY_URLS = "https://bubblenews.today"
 # The Broker token needs Pages deploy and zone cache purge only.
 CLOUDFLARE_ACCOUNT_ID = "1967d844a7f75cc7ec6120b750a5cc91"
 CLOUDFLARE_ZONE_ID = "28c567baefb0e59f50d46220f2969c83"
