@@ -284,6 +284,8 @@ function classifyCodeReleasePath(
       "astro/raw-html-policy.json",
       "astro/route-ownership.json",
       "astro/tsconfig.json",
+      "static/css/daily-timeline.css",
+      "static/js/daily-timeline.js",
     ].includes(path)
   ) {
     return "publishable";
