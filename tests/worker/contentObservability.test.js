@@ -332,6 +332,23 @@ describe("two-day production observation gate", () => {
     );
   });
 
+  it("accepts a healthy code release that preserves a slot's content root", () => {
+    const input = healthyWindowInput();
+    input.checks[0].current = {
+      ...input.checks[0].current,
+      artifact_fingerprint_sha256: "9".repeat(64),
+      artifact_sha256: "8".repeat(64),
+      code_sha: "7".repeat(40),
+      manifest_sha256: "6".repeat(64),
+      release_kind: "code",
+      site_release_id: "99999999-9999-4999-8999-999999999999",
+      site_release_sequence: input.slots[0].site_release_sequence + 1,
+    };
+    const result = evaluateContentObservationWindow(input, WINDOW_NOW);
+    expect(result.measurable_gate_passed).toBe(true);
+    expect(result.reasons).toEqual([]);
+  });
+
   it("fails on manual repair, noncanonical trigger, rollback or missing edge evidence", () => {
     const input = healthyWindowInput();
     input.publication_attempts[0].trigger_kind = "manual:repair";

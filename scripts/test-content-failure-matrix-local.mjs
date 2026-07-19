@@ -847,7 +847,22 @@ try {
   );
   const claimFixtures = [];
   for (let index = 0; index < 12; index += 1) {
-    claimFixtures.push(await createRelease(snapshotA, `claim-${index}`));
+    const dispatchId = randomUUID();
+    const payload = {
+      dispatch_id: dispatchId,
+      site_release_id: releaseA.site_release_id,
+      site_release_sequence: releaseA.site_release_sequence,
+      expected_predecessor_id: releaseA.expected_predecessor_id,
+      expected_content_sha: releaseA.contentSha256,
+      code_sha: sha256(`code:claim-${index}`).slice(0, 40),
+      build_environment_version: BUILD_ENV,
+      mode: "shadow",
+    };
+    await admin`
+      insert into private.content_outbox(site_release_id, dispatch_id, payload)
+      values (${releaseA.site_release_id}::uuid, ${dispatchId}::uuid, ${admin.json(payload)})
+    `;
+    claimFixtures.push({ ...releaseA, dispatchId, label: `claim-${index}` });
   }
   const claimResults = await Promise.all(
     Array.from({ length: 50 }, (_, index) =>
@@ -869,7 +884,7 @@ try {
     "Outbox claim was duplicated",
   );
   const reclaimTarget = claimed.find(
-    (claim) => claim.site_release_id !== releaseA.site_release_id,
+    (claim) => claim.dispatch_id !== releaseA.dispatchId,
   );
   await admin`
 		update private.content_outbox set lease_expires_at = clock_timestamp() - interval '1 second'

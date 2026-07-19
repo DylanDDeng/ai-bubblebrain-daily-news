@@ -110,7 +110,12 @@ function checkCoversSlot(check, slot, expected, upperBound) {
     Number.isFinite(lowerBound) &&
     checkedAt >= lowerBound &&
     checkedAt < upperBound &&
-    identityMatches(check.current, slot) &&
+    (identityMatches(check.current, slot) ||
+      (check.current?.release_kind === "code" &&
+        UUID.test(String(check.current?.site_release_id || "")) &&
+        Number(check.current?.site_release_sequence) >
+          Number(slot.site_release_sequence) &&
+        check.current?.content_sha256 === slot.site_content_sha256)) &&
     Array.isArray(check.due_batches) &&
     check.due_batches.some(
       (batch) =>
