@@ -15,6 +15,7 @@ import {
 	formatTimelineTime,
 	isDatabaseOwnedDailyDate,
 	loadStructuredDailyReport,
+	timelineDisplayText,
 	type DailyContentType,
 	type StructuredDailyItem,
 } from '../lib/structuredDaily';
@@ -69,7 +70,6 @@ const monthDay = latestDate
 	: '—';
 const weekdayLong = latestDate ? formatDailyWeekday(latestDate, locale) : '';
 
-const overview = report ? cleanTimelineSummary(report.overview.text) : '';
 const completedBatches = (report?.batches ?? []).filter(
 	(batch) => batch.status === 'completed' && batch.generated_at,
 );
@@ -84,6 +84,7 @@ const liveLabel =
 
 const items = report?.items ?? [];
 const lead = items.find((item) => item.featured) ?? items[0] ?? null;
+const leadDisplayText = lead ? timelineDisplayText(lead) : null;
 const itemTimestamp = (item: StructuredDailyItem): number =>
 	Date.parse(item.published_at ?? item.published_date ?? item.ingested_at) || 0;
 const feedItems = [...items].sort((a, b) => itemTimestamp(b) - itemTimestamp(a)).slice(0, 8);
@@ -136,7 +137,6 @@ const previousDays = (
 								{isEnglish ? ' · Today' : ' · 今日'}
 							</span>
 						</h1>
-						{overview && <p class="sub">{overview}</p>}
 					</div>
 					{liveLabel && (
 						<span class="live-pill">
@@ -174,8 +174,8 @@ const previousDays = (
 								{...(lead.canonical_url ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
 							>
 								<p class="tag">{isEnglish ? 'TOP STORY' : '今日头条 · TOP STORY'}</p>
-								<h2>{cleanTimelineSummary(lead.title) || lead.title}</h2>
-								{cleanTimelineSummary(lead.summary) && <p>{cleanTimelineSummary(lead.summary)}</p>}
+								<h2>{leadDisplayText?.title || lead.title}</h2>
+								{leadDisplayText?.summary && <p>{leadDisplayText.summary}</p>}
 								<p class="src">
 									{cleanTimelineSummary(lead.source.name) || lead.source_type} ·{' '}
 									{formatTimelineTime(lead, locale, report.date)}
@@ -194,10 +194,9 @@ const previousDays = (
 						</div>
 
 						{feedItems.map((item) => {
-							const title =
-								cleanTimelineSummary(item.title) ||
-								(isEnglish ? 'Open original source' : '查看原文');
-							const summary = cleanTimelineSummary(item.summary);
+							const displayText = timelineDisplayText(item);
+							const title = displayText.title || (isEnglish ? 'Open original source' : '查看原文');
+							const summary = displayText.summary;
 							return (
 								<article class="feed-item">
 									<span class="time">{formatTimelineTime(item, locale, report.date)}</span>
