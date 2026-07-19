@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import { sanitizeSummaryText } from '../../../src/daily/summary.js';
+import { compactEditorialSummary, compactEditorialTitle } from '../../../src/daily/editorial.js';
 import {
 	validateDailyReportIdentities,
 	validateDailyReportSemantics,
@@ -138,6 +139,19 @@ export function loadStructuredDailyReport(
 
 export function cleanTimelineSummary(value: string): string {
 	return sanitizeSummaryText(value);
+}
+
+export function timelineDisplayText(item: StructuredDailyItem): { title: string; summary: string } {
+	const rawTitle = cleanTimelineSummary(item.title);
+	const rawSummary = cleanTimelineSummary(item.summary);
+	if (item.content_type !== 'socialMedia') return { title: rawTitle, summary: rawSummary };
+
+	const title = compactEditorialTitle(rawTitle, rawSummary);
+	const legacyLongTitle = Array.from(rawTitle).length > 48 || /[.…]{1,3}$/u.test(rawTitle);
+	return {
+		title,
+		summary: legacyLongTitle ? '' : compactEditorialSummary(rawSummary),
+	};
 }
 
 // HH:MM wall-clock label for report/batch timestamps in the site's timezone.

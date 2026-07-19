@@ -11,6 +11,7 @@ import {
 	loadStructuredDailyReport,
 	orderTimelineBatches,
 	structuredCutoverDate,
+	timelineDisplayText,
 	type StructuredDailyBatch,
 	type StructuredDailyItem,
 } from './structuredDaily';
@@ -152,5 +153,36 @@ describe('timeline batch order', () => {
 			'lateNight',
 		]);
 		expect(batches.map(({ id }) => id)).toEqual(['morning', 'afternoon', 'night', 'lateNight']);
+	});
+});
+
+describe('timeline editorial compatibility', () => {
+	it('compacts legacy social posts and removes their duplicated raw summary', () => {
+		const item = {
+			content_type: 'socialMedia',
+			title:
+				'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token，把企业知识沉淀成 Skills，然后把这些 Skills 内化到模型。',
+			summary:
+				'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token，把企业知识沉淀成 Skills，然后把这些 Skills 内化到模型。接下来企业就不需要那么多人了。',
+		} as StructuredDailyItem;
+
+		expect(timelineDisplayText(item)).toEqual({
+			title: 'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token',
+			summary: '',
+		});
+	});
+
+	it('keeps an AI-edited social headline and concise explanation', () => {
+		const item = {
+			content_type: 'socialMedia',
+			title: 'FDE 的阳谋：借企业落地沉淀模型能力',
+			summary:
+				'模型公司先帮助企业部署 Agent，再将企业经验沉淀为 Skills，最终降低企业对人力的依赖。',
+		} as StructuredDailyItem;
+
+		expect(timelineDisplayText(item)).toEqual({
+			title: item.title,
+			summary: item.summary,
+		});
 	});
 });

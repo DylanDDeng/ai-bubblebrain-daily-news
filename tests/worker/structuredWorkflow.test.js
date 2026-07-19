@@ -55,6 +55,7 @@ function dependencies(overrides = {}) {
             noOp: false,
             metrics: { raw_count: 0 },
         })),
+        enrich: vi.fn(async (_env, result) => result),
         commit: vi.fn(async () => ({ commitSha: sha('e'), reconciled: false })),
         verifyHead: vi.fn(async () => true),
         commitIncluded: vi.fn(async () => true),
@@ -63,6 +64,50 @@ function dependencies(overrides = {}) {
 }
 
 describe('structured publication workflow', () => {
+    it('editorializes only fresh items before publishing and skips exact no-ops', async () => {
+        const freshBuild = {
+            files: files(),
+            noOp: false,
+            metrics: { raw_count: 1 },
+            report: {
+                items: [{ id: 'existing' }, { id: 'fresh' }],
+            },
+        };
+        const enrich = vi.fn(async (_env, result) => result);
+        const existingReport = {
+            date: runInput.reportDate,
+            items: [{ id: 'existing' }],
+        };
+        const deps = dependencies({
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async path => (
+                    path === `data/daily/${runInput.reportDate}.json`
+                        ? JSON.stringify(existingReport)
+                        : null
+                )),
+            })),
+            build: vi.fn(async () => freshBuild),
+            enrich,
+        });
+
+        await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(enrich).toHaveBeenCalledWith(env, freshBuild, {
+            itemIds: ['fresh'],
+            cache: expect.any(Map),
+        });
+
+        const noOpDeps = dependencies({
+            build: vi.fn(async () => ({ files: files(), noOp: true, metrics: {}, report: { items: [] } })),
+            enrich: vi.fn(),
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async path => files().find(file => file.path === path)?.content ?? null),
+            })),
+        });
+        await runStructuredDailyWorkflow(env, runInput, noOpDeps);
+        expect(noOpDeps.enrich).not.toHaveBeenCalled();
+    });
+
     it('fails closed unless all write gates and structured inputs are valid', async () => {
         const variants = [
             [{ ...env, EXTERNAL_WRITES_ENABLED: 'false' }, 'External writes'],
