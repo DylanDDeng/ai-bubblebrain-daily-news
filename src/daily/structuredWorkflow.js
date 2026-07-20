@@ -17,7 +17,7 @@ import { isExplicitInstant, isRealDate, previousReportDates } from './time.js';
 import { resolveFoloCookie } from '../folo.js';
 import { callGitHubApi } from '../github.js';
 import { mirrorStructuredReport } from '../../workers/content/ingestion/mirror.ts';
-import { applyEditorialEnrichment } from './editorial.js';
+import { applyEditorialEnrichment, editorialNeedsEnrichment } from './editorial.js';
 
 const MAX_PUBLICATION_ATTEMPTS = 3;
 
@@ -331,12 +331,14 @@ export async function runStructuredDailyWorkflow(
                 },
                 structuredStartDate,
             });
-            if (!result.noOp && Array.isArray(result.report?.items)) {
+            if (Array.isArray(result.report?.items)) {
                 const existingIds = new Set(reports.existingReport?.items?.map(item => item.id) || []);
-                const freshIds = result.report.items
-                    .filter(item => !existingIds.has(item.id))
+                const editorialIds = result.report.items
+                    .filter(item => !existingIds.has(item.id) || editorialNeedsEnrichment(item))
                     .map(item => item.id);
-                result = await deps.enrich(env, result, { itemIds: freshIds, cache: editorialCache });
+                if (editorialIds.length > 0) {
+                    result = await deps.enrich(env, result, { itemIds: editorialIds, cache: editorialCache });
+                }
             }
             const expectedPaths = assertPublicationFiles(result.files, reportDate);
 

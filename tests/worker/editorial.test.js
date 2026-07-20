@@ -5,7 +5,9 @@ import {
     applyEditorialEnrichment,
     compactEditorialSummary,
     compactEditorialTitle,
+    editorialNeedsEnrichment,
     normalizeEditorialHeadline,
+    normalizeEditorialSummary,
 } from '../../src/daily/editorial.js';
 
 const RUN_AT = '2026-07-19T19:00:00.000Z';
@@ -58,11 +60,42 @@ describe('structured daily editorial enrichment', () => {
         )).toBe('A useful first sentence.');
     });
 
-    it('accepts concise model headlines and rejects teaser-shaped output', () => {
+    it('accepts complete Chinese output and rejects untranslated or teaser-shaped output', () => {
         expect(normalizeEditorialHeadline('FDE 的阳谋：借企业落地沉淀模型能力'))
             .toBe('FDE 的阳谋：借企业落地沉淀模型能力');
         expect(normalizeEditorialHeadline('RT 作者：这是一条仍带转发前缀的标题')).toBeNull();
+        expect(normalizeEditorialHeadline('ChatGPT Work runs in the cloud from mobile')).toBeNull();
+        expect(normalizeEditorialHeadline('ChatGPT Work 可在云端运行…')).toBeNull();
+        expect(normalizeEditorialHeadline('ChatGPT Work 的主要优势是：')).toBeNull();
         expect(normalizeEditorialHeadline(`${'过'.repeat(73)}`)).toBeNull();
+        expect(normalizeEditorialSummary('ChatGPT Work runs in the cloud from mobile.')).toBeNull();
+        expect(normalizeEditorialSummary('ChatGPT Work 可在云端持续运行，用户合上电脑后仍能从手机继续任务。'))
+            .not.toBeNull();
+    });
+
+    it('flags legacy same-day social headlines for editorial backfill', () => {
+        const base = {
+            content_type: 'socialMedia',
+            identity_strategy: 'source_id',
+        };
+        expect(editorialNeedsEnrichment({
+            ...base,
+            title: 'one of the best features of ChatGPT Work is that it runs in the cloud...',
+        })).toBe(true);
+        expect(editorialNeedsEnrichment({
+            ...base,
+            title: 'ChatGPT Work 可在云端持续运行，合上电脑后仍能从手机继续任务',
+        })).toBe(false);
+        expect(editorialNeedsEnrichment({
+            ...base,
+            identity_strategy: 'fallback',
+            title: 'untranslated fallback',
+        })).toBe(false);
+        expect(editorialNeedsEnrichment({
+            ...base,
+            content_type: 'news',
+            title: 'English news headline',
+        })).toBe(false);
     });
 
     it('stores AI title and summary without changing stable identity', async () => {
@@ -118,6 +151,37 @@ describe('structured daily editorial enrichment', () => {
 
         expect(retry.json).toBe(first.json);
         expect(generate).toHaveBeenCalledOnce();
+    });
+
+    it('retries once when the model returns an English headline', async () => {
+        const original = await build();
+        const id = original.report.items[0].id;
+        const generate = vi.fn()
+            .mockResolvedValueOnce(JSON.stringify({
+                items: [{
+                    id,
+                    title: 'ChatGPT Work runs in the cloud from mobile',
+                    summary: 'ChatGPT Work runs in the cloud from mobile.',
+                }],
+            }))
+            .mockResolvedValueOnce(JSON.stringify({
+                items: [{
+                    id,
+                    title: 'ChatGPT Work 可在云端运行并支持手机续接任务',
+                    summary: '任务在云端持续运行，用户合上电脑后仍能从手机继续处理。',
+                }],
+            }));
+
+        const result = await applyEditorialEnrichment(
+            { DAILY_EDITORIAL_ENRICHMENT_ENABLED: 'true' },
+            original,
+            { itemIds: [id], generate },
+        );
+
+        expect(result.report.items[0].title)
+            .toBe('ChatGPT Work 可在云端运行并支持手机续接任务');
+        expect(generate).toHaveBeenCalledTimes(2);
+        expect(result.metrics).toMatchObject({ editorial_ai_count: 1, editorial_fallback_count: 0 });
     });
 
     it('falls back safely when the model fails and leaves non-social items unchanged', async () => {
