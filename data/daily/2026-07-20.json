@@ -103,7 +103,6 @@
         "n_ce73e4d734423edc82dfd49a40ffc7ec010f2381cedee4d48fda00162c267374",
         "n_3b212058b987e2a64b66479a5e52cf7f7b948b040b309ddf4e6a4a2dc1a32e70",
         "n_6e52a24ae37a430928dab8616f62de285e66b2de52fdd4b1885b347b3a09fcbb",
-        "n_c854cd8655bb9c5c79e7f865ed05dcc09652ccf903afe5a21ac3edb9b26a83b3",
         "n_ab30ae44bd4a3a083d27a7c2e5e6fa09aac007fd869587b03def855c59fe2777",
         "n_b61289a5f48966c7d2c37add62a988db5a4d52b9b1eb0e339897c40738168d2e",
         "n_1df3de3bc9c076bf77c383c5c730c26f77c4f19e739dcf0d4e26874d5faedab2",
@@ -124,17 +123,27 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-20T18:00:45.000Z",
       "id": "lateNight",
-      "item_ids": [],
+      "item_ids": [
+        "n_3a6f277cbdca2be7cd3a9dfd21e4f1f2eed137425faddc88186be4f461f6d599",
+        "n_7361fe2a99825379b7860e1707c3f08b729294aaa82a872d3f54984e66651758",
+        "n_13e63c5af0c54e7d66c88056e964dbcbc3078bf22f737401678c8efb265eb26f",
+        "n_5254011594b85335e4c9fba4dddd55ce2b6b846d12d5d04e8bdfd80654193d13",
+        "n_7453b9dc9ec6a480636b71557f56d090dc85aebaeba64e6b4ff4960c59a19cea",
+        "n_90373faedda140a8556b4532330b98ff669e9e8f06fddf912a8158aff7eb2937",
+        "n_259cfc31d005ac2e7a113ad94de9df9bb6e9ee4ac28086d78868004793f56d7d",
+        "n_c52016bd1cbe2aad461cae156500648ccd2fcb614e02089863e9c296833e02b1",
+        "n_32a4d1d6cb42841152bce4c1df25b9ddf08be915f5ac675c8743426e8c900e87"
+      ],
       "label": "次日 03:00 补充更新",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-20",
   "dedupe_version": 1,
-  "generated_at": "2026-07-20T15:00:31.000Z",
+  "generated_at": "2026-07-20T18:00:45.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -3359,42 +3368,6 @@
     },
     {
       "batch": "night",
-      "canonical_url": "https://x.com/GemstoneNicole/status/2079020425296904292",
-      "category": "other",
-      "content_type": "socialMedia",
-      "entity_ids": [],
-      "event_id": "e_c854cd8655bb9c5c79e7f865ed05dcc09652ccf903afe5a21ac3edb9b26a83b3",
-      "featured": false,
-      "id": "n_c854cd8655bb9c5c79e7f865ed05dcc09652ccf903afe5a21ac3edb9b26a83b3",
-      "identity_claims": [
-        "c_85fe07a72e5f7feea6a50eeb8aa2b42bbd2a9d495fde13e6feba4b8fb4e50c9b",
-        "c_c854cd8655bb9c5c79e7f865ed05dcc09652ccf903afe5a21ac3edb9b26a83b3"
-      ],
-      "identity_strategy": "source_id",
-      "identity_version": 1,
-      "ingested_at": "2026-07-20T15:00:31.000Z",
-      "published_at": "2026-07-20T01:47:50.473Z",
-      "published_date": "2026-07-20",
-      "reason": null,
-      "related_source_ids": [],
-      "score": null,
-      "source": {
-        "homepage": null,
-        "id": "1207943755701592064",
-        "name": "twitter-uncle-lu"
-      },
-      "source_id": "1207943755701592064",
-      "source_type": "twitter_extra",
-      "summary": "好伤心 真的 身体不舒服是一方面 日子过这么糟糕是一方面 来上课真的头都要炸了",
-      "time_precision": "exact",
-      "title": "好伤心 真的 身体不舒服是一方面 日子过这么糟糕是一方面 来上课真的头都要炸了",
-      "topic_ids": [
-        "topic_other"
-      ],
-      "url": "https://x.com/GemstoneNicole/status/2079020425296904292"
-    },
-    {
-      "batch": "night",
       "canonical_url": "https://x.com/vista8/status/2079022177328759230",
       "category": "other",
       "content_type": "socialMedia",
@@ -3948,6 +3921,343 @@
         "topic_open_source"
       ],
       "url": "https://github.com/PrefectHQ/fastmcp"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://openai.com/index/safety-alignment-long-horizon-models",
+      "category": "policy",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_3a6f277cbdca2be7cd3a9dfd21e4f1f2eed137425faddc88186be4f461f6d599",
+      "featured": false,
+      "id": "n_3a6f277cbdca2be7cd3a9dfd21e4f1f2eed137425faddc88186be4f461f6d599",
+      "identity_claims": [
+        "c_3a6f277cbdca2be7cd3a9dfd21e4f1f2eed137425faddc88186be4f461f6d599",
+        "c_57428dc17ef397720dbf23b68674f3c35a2ea2d0a48b79fa88b034ef137324f8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T10:00:00.079Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208301254082539520",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1208301254082539520",
+      "source_type": "openai_newsroom",
+      "summary": "OpenAI shares lessons from deploying long-running AI models, highlighting new safety risks, observed failures, and improved safeguards through iterative deployment.",
+      "time_precision": "exact",
+      "title": "Safety and alignment in an era of long-horizon models",
+      "topic_ids": [
+        "topic_policy"
+      ],
+      "url": "https://openai.com/index/safety-alignment-long-horizon-models"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2079145096038039589",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_7361fe2a99825379b7860e1707c3f08b729294aaa82a872d3f54984e66651758",
+      "featured": false,
+      "id": "n_7361fe2a99825379b7860e1707c3f08b729294aaa82a872d3f54984e66651758",
+      "identity_claims": [
+        "c_1a4f62dfcaf53ea1e66e3b191e5746e5038569eacd1783dbd45e84b456eff546",
+        "c_7361fe2a99825379b7860e1707c3f08b729294aaa82a872d3f54984e66651758"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T10:03:14.363Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208202410359500802",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1208202410359500802",
+      "source_type": "twitter_extra",
+      "summary": "Kimi K3 太强了兄弟们！ 为了庆祝 Kimi K3 达成最强模型成就，Open Design特别推出限时特惠！面向 20+最强最新模型，包括 Fable 5、GPT 5.6、Grok 4.5 等等🔥🔥🔥 Open Design: 51% off Open Design Max yearly + $300/mo model credits for 20+ flagship models, celebrating Kimi K3’s outstanding performance. Limited time. Including Fable 5, GPT 5.6, Grok 4.5…⬇️",
+      "time_precision": "exact",
+      "title": "Kimi K3 太强了兄弟们！ 为了庆祝 Kimi K3 达成最强模型成就，Open Design特别推出限时特惠！面向",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/tuturetom/status/2079145096038039589"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2079193607286796600",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_13e63c5af0c54e7d66c88056e964dbcbc3078bf22f737401678c8efb265eb26f",
+      "featured": false,
+      "id": "n_13e63c5af0c54e7d66c88056e964dbcbc3078bf22f737401678c8efb265eb26f",
+      "identity_claims": [
+        "c_13e63c5af0c54e7d66c88056e964dbcbc3078bf22f737401678c8efb265eb26f",
+        "c_975394211c3d850289371ce2147fa6fcb1222b122bd5c29c931b726ac09a714f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T13:04:04.002Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208202410359500801",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1208202410359500801",
+      "source_type": "twitter_extra",
+      "summary": "RT Open Design Open Design 0.15.1 is out now No more losing the thread on long sessions, no more dead-end errors. The agent sees more, recovers better, and actually tells you what to do next.",
+      "time_precision": "exact",
+      "title": "Open Design 0.15.1 is out now No more losing the thread on long",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/tuturetom/status/2079193607286796600"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2079193587921637610",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_5254011594b85335e4c9fba4dddd55ce2b6b846d12d5d04e8bdfd80654193d13",
+      "featured": false,
+      "id": "n_5254011594b85335e4c9fba4dddd55ce2b6b846d12d5d04e8bdfd80654193d13",
+      "identity_claims": [
+        "c_5254011594b85335e4c9fba4dddd55ce2b6b846d12d5d04e8bdfd80654193d13",
+        "c_c59eda86e6f46efdf7f43129a5cca5165192851808668eae48f21b0a1ead2c3d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T13:15:55.379Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208202410359500800",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1208202410359500800",
+      "source_type": "twitter_extra",
+      "summary": "这期太干货了！强烈推荐👏 麦当mdldm: 不是吧，还没人出 Open Design 的教程，没人出我出咯！ 这期是「我看谁不学 AI 设计」系列第一节。 很多人已经开始用 Codex、Claude Code 处理文本、代码和工程任务。 但如果你要做海报、PPT、看板、B-roll、小程序原型，这类视觉内容继续硬塞进代码工具里，就会很不顺。 所以这期我带大家上手 Open",
+      "time_precision": "exact",
+      "title": "这期太干货了！强烈推荐👏 麦当mdldm: 不是吧，还没人出 Open Design 的教程",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/tuturetom/status/2079193587921637610"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/9hills/status/2079215862775791886",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai",
+        "entity_deepseek"
+      ],
+      "event_id": "e_7453b9dc9ec6a480636b71557f56d090dc85aebaeba64e6b4ff4960c59a19cea",
+      "featured": false,
+      "id": "n_7453b9dc9ec6a480636b71557f56d090dc85aebaeba64e6b4ff4960c59a19cea",
+      "identity_claims": [
+        "c_7453b9dc9ec6a480636b71557f56d090dc85aebaeba64e6b4ff4960c59a19cea",
+        "c_94eb9ba7ff9baa731c590ee5a32d55c982e5a015a75fe6007ecda63273d57f2c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T14:44:26.870Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208256073861873664",
+        "name": "twitter-九原客"
+      },
+      "source_id": "1208256073861873664",
+      "source_type": "twitter_extra",
+      "summary": "当前模型组合 超大杯：GPT-5.6-sol、Kimi K3、Grok-4.5、GLM-5.2 大杯：DeepSeek-V4-Pro 最近对 vibe coding 有点懈怠，不愿意浪费时间做一些垃圾项目（比如什么复刻macOS之类）。",
+      "time_precision": "exact",
+      "title": "当前模型组合 超大杯：GPT-5.6-sol、Kimi K3、Grok-4.5、GLM-5.2",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/9hills/status/2079215862775791886"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2079224106860400832",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_90373faedda140a8556b4532330b98ff669e9e8f06fddf912a8158aff7eb2937",
+      "featured": false,
+      "id": "n_90373faedda140a8556b4532330b98ff669e9e8f06fddf912a8158aff7eb2937",
+      "identity_claims": [
+        "c_1e2d5af47d9ad82aa3559a74acc9939a1944c837af3d2543d9209d44856d016b",
+        "c_90373faedda140a8556b4532330b98ff669e9e8f06fddf912a8158aff7eb2937"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T15:17:11.286Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208245128423002112",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1208245128423002112",
+      "source_type": "twitter_extra",
+      "summary": "FDE 和以前的consulting 什么区别？ tao: @dotey 和以前的consulting 没有本质区别： consultants 赚的比软件license fee少多了，但是别忘了沉淀下来的不光是后来被集成进软件的best practices 还有consultants",
+      "time_precision": "exact",
+      "title": "FDE 和以前的consulting 什么区别？",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/dotey/status/2079224106860400832"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2079245017491640534",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_259cfc31d005ac2e7a113ad94de9df9bb6e9ee4ac28086d78868004793f56d7d",
+      "featured": false,
+      "id": "n_259cfc31d005ac2e7a113ad94de9df9bb6e9ee4ac28086d78868004793f56d7d",
+      "identity_claims": [
+        "c_259cfc31d005ac2e7a113ad94de9df9bb6e9ee4ac28086d78868004793f56d7d",
+        "c_9b5d1733d36937e344ed10c829a23bbcae0e5f187a2fc20912673ac775e822f8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T16:40:17.556Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208279149613928448",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1208279149613928448",
+      "source_type": "twitter_extra",
+      "summary": "看工作内容吧，对我来说还不行，Opus 4.6 的写作、Opus 4.8 的设计和 Fable 5 对于疑难问题的处理目前都是难以替代的。 昨天我在测试转录一个播客音频的时候，时间戳总是对不上，我把这音频传到火山引擎云端转录，一样会时间戳对不上。 问 GPT 5.6 Sol，它认为是 VAD 切分的问题，修复后仍然不行。 问 Fable 5，它定位到是因为 MP3 是 VBR（变码率）文件，导致时间估算失败。简单修改就解决了这个问题。 类似的问题遇到过几次，比如上一次在做 Speaker 识别，性能不好，也是 Fable 5 搞定的，之前其他模型效果并不好。PR（ ） 普通场景差距不大，极端场景才能看出来差别。 响马: 我已经两个月不使用任何 Claude 模型，对工作没有影响。我相信越来越多的人会发现这一点。",
+      "time_precision": "exact",
+      "title": "看工作内容吧，对我来说还不行，Opus 4.6 的写作、Opus 4.8 的设计和 Fable",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2079245017491640534"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2079247699337957770",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_c52016bd1cbe2aad461cae156500648ccd2fcb614e02089863e9c296833e02b1",
+      "featured": false,
+      "id": "n_c52016bd1cbe2aad461cae156500648ccd2fcb614e02089863e9c296833e02b1",
+      "identity_claims": [
+        "c_69b5b5525b7e9d5289cb12d3fd3351cb5a6c57bbbeb493e7ed54940f0967ecb6",
+        "c_c52016bd1cbe2aad461cae156500648ccd2fcb614e02089863e9c296833e02b1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T16:50:56.939Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208334575227359233",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1208334575227359233",
+      "source_type": "twitter_extra",
+      "summary": "张小龙总是对的😂 kabikabi: 史诗级 feature!!! 微信居然支持.md 了。 微信最终还是打脸了替自己洗地和解释的那些人了。.md 的支持哪有说的那么的麻烦和破坏面。",
+      "time_precision": "exact",
+      "title": "张小龙总是对的😂 kabikabi: 史诗级 feature!!! 微信居然支持.md 了。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/dotey/status/2079247699337957770"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2079253422348419078",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_32a4d1d6cb42841152bce4c1df25b9ddf08be915f5ac675c8743426e8c900e87",
+      "featured": false,
+      "id": "n_32a4d1d6cb42841152bce4c1df25b9ddf08be915f5ac675c8743426e8c900e87",
+      "identity_claims": [
+        "c_2977e547a041e690d6b6e4ce38212f6a30bfaf26ef9f7c288d9adb79fce926c1",
+        "c_32a4d1d6cb42841152bce4c1df25b9ddf08be915f5ac675c8743426e8c900e87"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T18:00:45.000Z",
+      "published_at": "2026-07-20T17:13:41.981Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208334575227359232",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1208334575227359232",
+      "source_type": "twitter_extra",
+      "summary": "开源首先解决的是信任问题，其次是流量。 能不能赚钱取决于这东西有没有价值，是不是开源是其次的。 dontbesilent: 4 分 35 秒，Agent / Skill 如何变现",
+      "time_precision": "exact",
+      "title": "开源首先解决的是信任问题，其次是流量。 能不能赚钱取决于这东西有没有价值，是不是开源是其次的。",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2079253422348419078"
     }
   ],
   "overview": {
