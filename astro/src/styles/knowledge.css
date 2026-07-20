@@ -1,11 +1,11 @@
 .knowledge-shell {
-	--kn-paper: #f4f1e9;
-	--kn-paper-raised: #faf8f2;
-	--kn-paper-muted: #ebe7dc;
-	--kn-ink: #20201e;
-	--kn-ink-soft: #5c5a55;
-	--kn-ink-faint: #85817a;
-	--kn-rule: #d3cec2;
+	--kn-paper: var(--paper);
+	--kn-paper-raised: var(--paper-raised);
+	--kn-paper-muted: var(--paper-muted);
+	--kn-ink: var(--ink);
+	--kn-ink-soft: var(--ink-soft);
+	--kn-ink-faint: var(--ink-faint);
+	--kn-rule: var(--rule);
 	--kn-accent: #254f99;
 	--kn-accent-strong: #1f437f;
 	--kn-focus: #214f9f;
