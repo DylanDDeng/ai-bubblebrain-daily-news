@@ -315,8 +315,17 @@
 }
 
 .daily-timeline .item .meta .src {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: var(--ink-soft);
   font-weight: 600;
+}
+
+.daily-timeline .item .meta .src-x .x-logo {
+  display: inline-flex;
+  font-size: 0.9rem;
+  line-height: 1;
 }
 
 .daily-timeline .item .meta .badge {
