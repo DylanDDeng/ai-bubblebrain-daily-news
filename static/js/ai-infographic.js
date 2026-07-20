@@ -1,3 +1,4 @@
+(() => {
 const root = document.querySelector('[data-aig-root]');
 
 if (root) {
@@ -163,3 +164,4 @@ if (root) {
 		content.focus();
 	});
 }
+})();

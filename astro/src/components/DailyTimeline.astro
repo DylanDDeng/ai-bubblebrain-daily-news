@@ -9,6 +9,7 @@ import {
 	formatDailyTime,
 	formatTimelineTime,
 	orderTimelineBatches,
+	timelineDisplayText,
 	type DailyContentType,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
@@ -52,7 +53,6 @@ for (const item of report.items) {
 	typeCounts.set(item.content_type, (typeCounts.get(item.content_type) ?? 0) + 1);
 }
 
-const overview = cleanTimelineSummary(report.overview.text);
 const orderedBatches = orderTimelineBatches(report.batches);
 const reportDate = dailyDateFromKey(report.date);
 const dateTitle = new Intl.DateTimeFormat(locale, {
@@ -127,7 +127,6 @@ const olderKey = hrefDateKey(olderHref);
 			<time datetime={report.date}>{dateTitle}</time>
 			<span class="weekday">{weekday}</span>
 		</h1>
-		{overview && <p class="overview">{overview}</p>}
 		<div class="stats">
 			<span>{isEnglish ? `${report.items.length} items` : `${report.items.length} 条收录`}</span>
 			<span>{updatesStat}</span>
@@ -221,11 +220,12 @@ const olderKey = hrefDateKey(olderHref);
 						)}
 						{!pending &&
 							items.map((item, index) => {
-								const summary = cleanTimelineSummary(item.summary);
+								const displayText = timelineDisplayText(item);
+								const summary = displayText.summary;
+								const rawSummary = cleanTimelineSummary(item.summary);
 								const sourceName = cleanTimelineSummary(item.source.name) || item.source_type;
 								const title =
-									cleanTimelineSummary(item.title) ||
-									(isEnglish ? 'Open original source' : '查看原文');
+									displayText.title || (isEnglish ? 'Open original source' : '查看原文');
 								const topics = item.topic_ids
 									.map((id) => topicsById.get(id))
 									.filter((topic) => topic !== undefined);
@@ -236,7 +236,7 @@ const olderKey = hrefDateKey(olderHref);
 								const searchText = [
 									title,
 									sourceName,
-									summary,
+									rawSummary,
 									item.category,
 									...topics.flatMap((topic) => [taxonomyLabel(topic, locale), ...topic.aliases]),
 									...entities.flatMap((entity) => [
@@ -270,7 +270,7 @@ const olderKey = hrefDateKey(olderHref);
 													{formatTimelineTime(item, locale, report.date)}
 												</time>
 											</div>
-											<h3>
+											<h3 title={title}>
 												{item.canonical_url ? (
 													<a href={item.canonical_url} target="_blank" rel="noopener noreferrer">
 														{title} <span class="ext">↗</span>

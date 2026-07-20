@@ -133,9 +133,15 @@ export function initDailyTimeline(root) {
     input?.focus();
   });
 
-  window.addEventListener("popstate", () => {
+  const handlePopState = () => {
     commit(parseTimelineState(window.location.search), false);
-  });
+  };
+  window.addEventListener("popstate", handlePopState);
+  document.addEventListener(
+    "astro:before-swap",
+    () => window.removeEventListener("popstate", handlePopState),
+    { once: true },
+  );
   applyState(root, state);
 }
 
@@ -144,6 +150,7 @@ if (typeof document !== "undefined") {
     document
       .querySelectorAll("[data-daily-timeline]")
       .forEach(initDailyTimeline);
+  document.addEventListener("astro:page-load", start);
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", start, { once: true });
   else start();

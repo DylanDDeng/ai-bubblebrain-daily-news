@@ -75,45 +75,84 @@ function render(root: HTMLElement, state: AuthState): void {
 	}
 }
 
-for (const root of document.querySelectorAll<HTMLElement>('[data-auth-controls]')) {
-	if (root.dataset.bound === 'true') continue;
-	root.dataset.bound = 'true';
-	const locale = root.dataset.locale === 'en' ? 'en' : 'zh-CN';
-	const trigger = root.querySelector<HTMLButtonElement>('[data-auth-trigger]');
-	const panel = root.querySelector<HTMLElement>('[data-auth-panel]');
-	const close = (): void => {
-		if (!trigger || !panel) return;
-		trigger.ariaExpanded = 'false';
-		panel.hidden = true;
-	};
-	if (trigger) trigger.disabled = false;
-	trigger?.addEventListener('click', () => {
-		if (!panel) return;
-		const open = panel.hidden;
-		panel.hidden = !open;
-		trigger.ariaExpanded = String(open);
-		if (open && authSnapshot().status === 'booting') void bootAuth();
-	});
-	root.querySelector('[data-auth-login]')?.addEventListener('click', () => {
-		void signInWithGoogle(`${location.pathname}${location.search}${location.hash}`, locale).catch(
-			() => undefined,
+const cleanupByRoot = new Map<HTMLElement, () => void>();
+
+function initAuthControls(): void {
+	for (const root of document.querySelectorAll<HTMLElement>('[data-auth-controls]')) {
+		if (root.dataset.bound === 'true') continue;
+		root.dataset.bound = 'true';
+		const controller = new AbortController();
+		const options = { signal: controller.signal };
+		const locale = root.dataset.locale === 'en' ? 'en' : 'zh-CN';
+		const trigger = root.querySelector<HTMLButtonElement>('[data-auth-trigger]');
+		const panel = root.querySelector<HTMLElement>('[data-auth-panel]');
+		const close = (): void => {
+			if (!trigger || !panel) return;
+			trigger.ariaExpanded = 'false';
+			panel.hidden = true;
+		};
+		if (trigger) trigger.disabled = false;
+		trigger?.addEventListener(
+			'click',
+			() => {
+				if (!panel) return;
+				const open = panel.hidden;
+				panel.hidden = !open;
+				trigger.ariaExpanded = String(open);
+				if (open && authSnapshot().status === 'booting') void bootAuth();
+			},
+			options,
 		);
-	});
-	root
-		.querySelector('[data-auth-signout]')
-		?.addEventListener('click', () => void signOut().catch(() => undefined));
-	root.querySelector('[data-auth-retry]')?.addEventListener('click', () => void bootAuth());
-	document.addEventListener('keydown', (event) => {
-		if (event.key === 'Escape' && panel && !panel.hidden) {
-			close();
-			trigger?.focus();
-		}
-	});
-	document.addEventListener('click', (event) => {
-		if (event.target instanceof Node && !root.contains(event.target)) close();
-	});
-	subscribeAuth((state) => render(root, state));
+		root.querySelector('[data-auth-login]')?.addEventListener(
+			'click',
+			() => {
+				void signInWithGoogle(
+					`${location.pathname}${location.search}${location.hash}`,
+					locale,
+				).catch(() => undefined);
+			},
+			options,
+		);
+		root
+			.querySelector('[data-auth-signout]')
+			?.addEventListener('click', () => void signOut().catch(() => undefined), options);
+		root
+			.querySelector('[data-auth-retry]')
+			?.addEventListener('click', () => void bootAuth(), options);
+		document.addEventListener(
+			'keydown',
+			(event) => {
+				if (event.key === 'Escape' && panel && !panel.hidden) {
+					close();
+					trigger?.focus();
+				}
+			},
+			options,
+		);
+		document.addEventListener(
+			'click',
+			(event) => {
+				if (event.target instanceof Node && !root.contains(event.target)) close();
+			},
+			options,
+		);
+		const unsubscribe = subscribeAuth((state) => render(root, state));
+		cleanupByRoot.set(root, () => {
+			controller.abort();
+			unsubscribe();
+		});
+	}
 }
+
+document.addEventListener('astro:after-swap', () => {
+	for (const [root, cleanup] of cleanupByRoot) {
+		if (root.isConnected) continue;
+		cleanup();
+		cleanupByRoot.delete(root);
+	}
+});
+document.addEventListener('astro:page-load', initAuthControls);
+initAuthControls();
 
 const scheduleBoot = (): void => void bootAuth();
 if ('requestIdleCallback' in window) {

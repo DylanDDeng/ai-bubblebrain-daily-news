@@ -7,10 +7,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
 	dailyDataDirectory,
 	formatTimelineTime,
+	homepageFeedItems,
 	isDatabaseOwnedDailyDate,
 	loadStructuredDailyReport,
 	orderTimelineBatches,
 	structuredCutoverDate,
+	timelineDisplayText,
 	type StructuredDailyBatch,
 	type StructuredDailyItem,
 } from './structuredDaily';
@@ -152,5 +154,69 @@ describe('timeline batch order', () => {
 			'lateNight',
 		]);
 		expect(batches.map(({ id }) => id)).toEqual(['morning', 'afternoon', 'night', 'lateNight']);
+	});
+
+	it('orders the homepage by latest completed batch, then source publication time', () => {
+		const batches = [
+			batch('morning', 'completed'),
+			batch('afternoon', 'pending'),
+			batch('night', 'completed'),
+			batch('lateNight', 'completed'),
+		];
+		const item = (
+			id: string,
+			batchId: StructuredDailyBatch['id'],
+			publishedAt: string,
+		): StructuredDailyItem =>
+			({
+				id,
+				batch: batchId,
+				published_at: publishedAt,
+				published_date: publishedAt.slice(0, 10),
+				ingested_at: '2026-07-20T03:00:00.000Z',
+			}) as StructuredDailyItem;
+		const items = [
+			item('night-newer-source', 'night', '2026-07-19T22:00:00.000Z'),
+			item('late-night-older-source', 'lateNight', '2026-07-18T06:00:00.000Z'),
+			item('late-night-newer-source', 'lateNight', '2026-07-19T15:00:00.000Z'),
+			item('pending', 'afternoon', '2026-07-20T00:00:00.000Z'),
+		];
+
+		expect(homepageFeedItems(items, batches, 3).map(({ id }) => id)).toEqual([
+			'late-night-newer-source',
+			'late-night-older-source',
+			'night-newer-source',
+		]);
+	});
+});
+
+describe('timeline editorial compatibility', () => {
+	it('compacts legacy social posts and removes their duplicated raw summary', () => {
+		const item = {
+			content_type: 'socialMedia',
+			title:
+				'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token，把企业知识沉淀成 Skills，然后把这些 Skills 内化到模型。',
+			summary:
+				'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token，把企业知识沉淀成 Skills，然后把这些 Skills 内化到模型。接下来企业就不需要那么多人了。',
+		} as StructuredDailyItem;
+
+		expect(timelineDisplayText(item)).toEqual({
+			title: 'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token',
+			summary: '',
+		});
+	});
+
+	it('keeps an AI-edited social headline and concise explanation', () => {
+		const item = {
+			content_type: 'socialMedia',
+			title: 'FDE 的阳谋：借企业落地沉淀模型能力',
+			summary:
+				'模型公司先帮助企业部署 Agent，再将企业经验沉淀为 Skills，最终降低企业对人力的依赖。',
+		} as StructuredDailyItem;
+
+		expect(timelineDisplayText(item)).toEqual({
+			title: item.title,
+			summary: item.summary,
+		});
 	});
 });
