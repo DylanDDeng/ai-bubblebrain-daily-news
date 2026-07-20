@@ -10,20 +10,24 @@ import TwitterDataSource from '../../src/dataSources/twitter.js';
 import TwitterExtraDataSource from '../../src/dataSources/twitter-extra.js';
 import XiaohuDataSource from '../../src/dataSources/xiaohu.js';
 import XinZhiYuanDataSource from '../../src/dataSources/xinzhiyuan.js';
+import KazikeDataSource from '../../src/dataSources/kazike.js';
+import KazikeXDataSource from '../../src/dataSources/kazike-x.js';
 import { ProviderFetchError } from '../../src/daily/providerFailure.js';
 import { STRUCTURED_SOURCE_ADAPTERS } from '../../src/daily/sourceAdapters.js';
 
 const FOLO_ADAPTERS = [
-    ['aibase', AibaseDataSource, 'AIBASE_FEED_ID', 'AIBASE_FETCH_PAGES'],
-    ['xiaohu', XiaohuDataSource, 'XIAOHU_FEED_ID', 'XIAOHU_FETCH_PAGES'],
-    ['qbit', QBitDataSource, 'QBIT_FEED_ID', 'QBIT_FETCH_PAGES'],
-    ['simonwillison', SimonWillisonDataSource, 'SIMONWILLISON_FEED_ID', 'SIMONWILLISON_FETCH_PAGES'],
-    ['xinzhiyuan', XinZhiYuanDataSource, 'XINZHIYUAN_FEED_ID', 'XINZHIYUAN_FETCH_PAGES'],
-    ['openai_newsroom', OpenAInewsroomDataSource, 'OPENAI_NEWSROOM_FEED_ID', 'OPENAI_NEWSROOM_FETCH_PAGES'],
-    ['huggingface_papers', HuggingfacePapersDataSource, 'HGPAPERS_FEED_ID', 'HGPAPERS_FETCH_PAGES'],
-    ['jiqizhixin', JiqizhixinDataSource, 'JIQIZHIXIN_FEED_ID', 'JIQIZHIXIN_FETCH_PAGES'],
-    ['twitter', TwitterDataSource, 'TWITTER_LIST_ID', 'TWITTER_FETCH_PAGES'],
-    ['twitter_extra', TwitterExtraDataSource, 'TWITTER_EXTRA_LIST_ID', 'TWITTER_EXTRA_FETCH_PAGES'],
+    ['aibase', AibaseDataSource, 'AIBASE_FEED_ID', 'AIBASE_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['xiaohu', XiaohuDataSource, 'XIAOHU_FEED_ID', 'XIAOHU_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['qbit', QBitDataSource, 'QBIT_FEED_ID', 'QBIT_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['kazike', KazikeDataSource, 'KAZIKE_FEED_ID', 'KAZIKE_FETCH_PAGES', 'KAZIKE_FILTER_DAYS'],
+    ['simonwillison', SimonWillisonDataSource, 'SIMONWILLISON_FEED_ID', 'SIMONWILLISON_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['xinzhiyuan', XinZhiYuanDataSource, 'XINZHIYUAN_FEED_ID', 'XINZHIYUAN_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['openai_newsroom', OpenAInewsroomDataSource, 'OPENAI_NEWSROOM_FEED_ID', 'OPENAI_NEWSROOM_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['huggingface_papers', HuggingfacePapersDataSource, 'HGPAPERS_FEED_ID', 'HGPAPERS_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['jiqizhixin', JiqizhixinDataSource, 'JIQIZHIXIN_FEED_ID', 'JIQIZHIXIN_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['twitter', TwitterDataSource, 'TWITTER_LIST_ID', 'TWITTER_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['twitter_extra', TwitterExtraDataSource, 'TWITTER_EXTRA_LIST_ID', 'TWITTER_EXTRA_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['kazike_x', KazikeXDataSource, 'KAZIKE_X_FEED_ID', 'KAZIKE_X_FETCH_PAGES', 'KAZIKE_FILTER_DAYS'],
 ];
 
 function envFor(idName, pagesName, overrides = {}) {
@@ -54,7 +58,7 @@ function validFoloEntry() {
             url: 'https://example.test/entry-1',
             title: 'Example',
             content: '<p>Example</p>',
-            publishedAt: '2026-07-16T08:00:00Z',
+            publishedAt: new Date().toISOString(),
             author: 'Author',
         },
         feeds: { title: 'Example feed' },
@@ -71,6 +75,7 @@ describe.each(FOLO_ADAPTERS)('%s structured strict contract', (
     adapter,
     idName,
     pagesName,
+    filterDaysName,
 ) => {
     it('rejects missing and invalid configuration without fetching', async () => {
         const fetchMock = vi.fn();
@@ -86,7 +91,7 @@ describe.each(FOLO_ADAPTERS)('%s structured strict contract', (
         await expect(adapter.fetch(envFor(idName, pagesName, { [pagesName]: '2pages' }), 'cookie', {
             strict: true,
         })).rejects.toMatchObject({ code: 'invalid_config', retryable: false });
-        await expect(adapter.fetch(envFor(idName, pagesName, { FOLO_FILTER_DAYS: 'NaN' }), 'cookie', {
+        await expect(adapter.fetch(envFor(idName, pagesName, { [filterDaysName]: 'NaN' }), 'cookie', {
             strict: true,
         })).rejects.toMatchObject({ code: 'invalid_config', retryable: false });
         expect(fetchMock).not.toHaveBeenCalled();
@@ -150,6 +155,53 @@ describe.each(FOLO_ADAPTERS)('%s structured strict contract', (
             strict: true,
         })).rejects.toMatchObject({ code: 'http_5xx', retryable: true });
         expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+});
+
+it('maps both Kazike feeds to the right content types and keeps the full body', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse(200, { data: [validFoloEntry()] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const rawNews = await KazikeDataSource.fetch(
+        envFor('KAZIKE_FEED_ID', 'KAZIKE_FETCH_PAGES', {
+            KAZIKE_FEED_ID: '187702008971600955',
+            KAZIKE_FILTER_DAYS: '7',
+        }),
+        'cookie',
+        { strict: true },
+    );
+    const rawX = await KazikeXDataSource.fetch(
+        envFor('KAZIKE_X_FEED_ID', 'KAZIKE_X_FETCH_PAGES', {
+            KAZIKE_X_FEED_ID: '66090931808241664',
+            KAZIKE_FILTER_DAYS: '7',
+        }),
+        'cookie',
+        { strict: true },
+    );
+    const [newsItem] = KazikeDataSource.transform(rawNews, 'news');
+    const [xItem] = KazikeXDataSource.transform(rawX, 'socialMedia');
+
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
+        feedId: '187702008971600955',
+        withContent: true,
+    });
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toMatchObject({
+        feedId: '66090931808241664',
+        withContent: true,
+    });
+    expect(newsItem).toMatchObject({
+        id: 'entry-1',
+        type: 'news',
+        source: '数字生命卡兹克',
+        description: 'Example',
+        details: { content_html: '<p>Example</p>' },
+    });
+    expect(xItem).toMatchObject({
+        id: 'entry-1',
+        type: 'socialMedia',
+        source: '数字生命卡兹克',
+        description: 'Example',
+        details: { content_html: '<p>Example</p>' },
     });
 });
 
