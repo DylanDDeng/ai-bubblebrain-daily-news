@@ -64,19 +64,33 @@ function dependencies(overrides = {}) {
 }
 
 describe('structured publication workflow', () => {
-    it('editorializes only fresh items before publishing and skips exact no-ops', async () => {
+    it('editorializes fresh items and same-day legacy social items before publishing', async () => {
         const freshBuild = {
             files: files(),
             noOp: false,
             metrics: { raw_count: 1 },
             report: {
-                items: [{ id: 'existing' }, { id: 'fresh' }],
+                items: [
+                    {
+                        id: 'legacy-social',
+                        content_type: 'socialMedia',
+                        identity_strategy: 'source_id',
+                        title: 'one of the best features of ChatGPT Work is that it runs in the cloud...',
+                    },
+                    {
+                        id: 'edited-social',
+                        content_type: 'socialMedia',
+                        identity_strategy: 'source_id',
+                        title: 'ChatGPT Work 可在云端持续运行并支持手机续接任务',
+                    },
+                    { id: 'fresh' },
+                ],
             },
         };
         const enrich = vi.fn(async (_env, result) => result);
         const existingReport = {
             date: runInput.reportDate,
-            items: [{ id: 'existing' }],
+            items: [{ id: 'legacy-social' }, { id: 'edited-social' }],
         };
         const deps = dependencies({
             createReader: vi.fn(() => ({
@@ -93,7 +107,7 @@ describe('structured publication workflow', () => {
         await runStructuredDailyWorkflow(env, runInput, deps);
 
         expect(enrich).toHaveBeenCalledWith(env, freshBuild, {
-            itemIds: ['fresh'],
+            itemIds: ['legacy-social', 'fresh'],
             cache: expect.any(Map),
         });
 
@@ -106,6 +120,49 @@ describe('structured publication workflow', () => {
         });
         await runStructuredDailyWorkflow(env, runInput, noOpDeps);
         expect(noOpDeps.enrich).not.toHaveBeenCalled();
+    });
+
+    it('repairs a legacy social headline even when the fetch itself is an exact no-op', async () => {
+        const existingReport = {
+            date: runInput.reportDate,
+            items: [{
+                id: 'legacy-social',
+                content_type: 'socialMedia',
+                identity_strategy: 'source_id',
+                title: 'one of the best features of ChatGPT Work is that it runs in the cloud...',
+            }],
+        };
+        const originalFiles = files();
+        const repairedFiles = originalFiles.map(file => ({
+            ...file,
+            content: `${file.content}-repaired`,
+        }));
+        const noOpBuild = {
+            files: originalFiles,
+            noOp: true,
+            metrics: { fresh_count: 0 },
+            report: existingReport,
+        };
+        const enrich = vi.fn(async (_env, result) => ({ ...result, files: repairedFiles }));
+        const deps = dependencies({
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async path => (
+                    path === `data/daily/${runInput.reportDate}.json`
+                        ? JSON.stringify(existingReport)
+                        : originalFiles.find(file => file.path === path)?.content ?? null
+                )),
+            })),
+            build: vi.fn(async () => noOpBuild),
+            enrich,
+        });
+
+        await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(enrich).toHaveBeenCalledWith(env, noOpBuild, {
+            itemIds: ['legacy-social'],
+            cache: expect.any(Map),
+        });
+        expect(deps.commit).toHaveBeenCalledOnce();
     });
 
     it('fails closed unless all write gates and structured inputs are valid', async () => {

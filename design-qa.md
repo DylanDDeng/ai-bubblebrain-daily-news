@@ -67,3 +67,51 @@ No actionable P0, P1, or P2 findings remain.
 - [P3] English copy is longer than Chinese and wraps earlier at mid-size desktop widths; this is expected localization behavior.
 
 final result: passed
+
+---
+
+# Design QA: 首页 X 中文一句话摘要
+
+## Comparison target
+
+- Source visual truth: `/Users/chengshengdeng/Documents/CloudFlare-AI-Insight-Daily/artifacts/design-qa/reference-home-1909x1269.png`
+- Implementation screenshot: `/Users/chengshengdeng/Documents/CloudFlare-AI-Insight-Daily/artifacts/design-qa/chinese-x-home-1907x1269.jpg`
+- Full-view comparison: `/Users/chengshengdeng/Documents/CloudFlare-AI-Insight-Daily/artifacts/design-qa/comparison-full-3814x1269.jpg`
+- Focused stream comparison: `/Users/chengshengdeng/Documents/CloudFlare-AI-Insight-Daily/artifacts/design-qa/comparison-stream-1640x650.jpg`
+- Viewport: 1907 × 1269. The 1909 px source capture was cropped by 2 px on the right for the full-view comparison.
+- State: Chinese homepage, light theme, 2026-07-20 morning batch. The implementation capture uses a local copy of the production report with representative editorial outputs substituted for the seven legacy English X titles; source identity, ordering, times, links, layout, and all other content are unchanged.
+
+## Evidence
+
+The full-view comparison shows that the page composition, information hierarchy, navigation, cards, sidebar, colors, and stream density remain aligned with the source. The focused comparison makes the changed surface readable: every visible X item now uses one complete Chinese statement, remains on one rendered line, and has no duplicate summary underneath.
+
+No additional focused crop was needed for icons or imagery because this change adds no visual asset and preserves the existing X icon. The focused stream comparison is sufficient to inspect typography, wrapping, copy, row spacing, icon placement, and link treatment at native scale.
+
+## Findings
+
+- No actionable P0, P1, or P2 differences.
+- Fonts and typography: existing families, weights, sizes, line heights, and hierarchy are unchanged. Browser measurements reported one rendered line for all eight visible feed titles.
+- Spacing and layout rhythm: row height, separators, time/source alignment, content width, cards, and sidebar spacing remain consistent. Removing the duplicate social summary reduces noise without changing the intended row structure.
+- Colors and visual tokens: paper background, ink colors, rules, blue accents, red lead-story accent, and green live status are unchanged.
+- Image and asset fidelity: no new raster asset is required; the existing icon-library X mark is preserved. No placeholder, CSS-drawn asset, or replacement logo was introduced.
+- Copy and content: seven legacy English fragments are replaced by complete Chinese statements that name the subject and communicate the action, opinion, or result. No visible title ends with an ellipsis or incomplete clause.
+
+## Interaction and runtime checks
+
+- The “查看全部 12 条 →” primary stream link navigated to `/daily/2026/07/2026-07-20/`, and browser back returned to the homepage.
+- All eight visible stream items retained their original X destinations and external-link affordance.
+- Browser console warnings/errors checked: none on the built static preview.
+
+## Comparison history
+
+- Pass 1: no P0/P1/P2 visual mismatch. The requested copy change is visible, all eight titles render on one line, and no follow-up visual fix was required.
+
+## Implementation checklist
+
+- [x] Generate complete Chinese social headlines in the Worker editorial path.
+- [x] Backfill same-day legacy English, RT-prefixed, ellipsized, or overlong social headlines.
+- [x] Retry once when generated output is still untranslated or incomplete.
+- [x] Show only the complete social headline on the homepage.
+- [x] Preserve source identity, link, X icon, ordering, and timestamps.
+
+final result: passed

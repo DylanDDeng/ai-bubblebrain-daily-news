@@ -207,7 +207,7 @@ describe('timeline editorial compatibility', () => {
 		});
 	});
 
-	it('keeps an AI-edited social headline and concise explanation', () => {
+	it('shows only the complete AI-edited sentence for social items', () => {
 		const item = {
 			content_type: 'socialMedia',
 			title: 'FDE 的阳谋：借企业落地沉淀模型能力',
@@ -217,7 +217,7 @@ describe('timeline editorial compatibility', () => {
 
 		expect(timelineDisplayText(item)).toEqual({
 			title: item.title,
-			summary: item.summary,
+			summary: '',
 		});
 	});
 });
