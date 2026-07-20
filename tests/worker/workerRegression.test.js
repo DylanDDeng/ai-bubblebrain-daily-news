@@ -215,6 +215,23 @@ describe('worker regression guards', () => {
         expect(finalBuildIndex).toBeLessThan(uploadIndex);
     });
 
+    it('keeps the comments write UI gate aligned across verification and production builds', async () => {
+        const [verificationWorkflow, productionWorkflow] = await Promise.all([
+            readFile(
+                new URL('../../.github/workflows/build-and-deploy.yml', import.meta.url),
+                'utf8',
+            ),
+            readFile(
+                new URL('../../.github/workflows/content-release.yml', import.meta.url),
+                'utf8',
+            ),
+        ]);
+        const commentsGate =
+            "PUBLIC_COMMENTS_WRITE_UI_ENABLED: ${{ vars.PUBLIC_COMMENTS_WRITE_UI_ENABLED || 'false' }}";
+        expect(verificationWorkflow).toContain(commentsGate);
+        expect(productionWorkflow).toContain(commentsGate);
+    });
+
     it('keeps staging isolated from production resources and triggers', async () => {
         const [production, staging] = await Promise.all([
             readFile(new URL('../../wrangler.toml', import.meta.url), 'utf8'),
