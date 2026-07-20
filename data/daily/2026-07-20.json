@@ -21,7 +21,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-20T09:20:31.243Z",
+      "generated_at": "2026-07-20T09:33:13.046Z",
       "id": "afternoon",
       "item_ids": [
         "n_e7c94469a6d3c4f67f3efbe09e2d79330ec80a0301d4243b2f60e676c0fa9daa",
@@ -88,7 +88,8 @@
         "n_28ec74e57b27637cb06545cacfd925fe73bf8480b205e60560c614797c98c755",
         "n_2a13185f5d5b18d7f803fc409ca9ba59ee2511eb572afb3e8c962b51ba11e305",
         "n_324d936c2e6afe3f0b92af91c62f59b8107ec47e01285895a20f54d42b4b4a50",
-        "n_5e38f77465e76119d7854fec2737b80eb9132af5d168192ed2bb7356a2d848ea"
+        "n_5e38f77465e76119d7854fec2737b80eb9132af5d168192ed2bb7356a2d848ea",
+        "n_ad4d740685d45d0044bcaae5b503643ee2291087b91ea015f71f6137332673c5"
       ],
       "label": "15:00 更新",
       "status": "completed"
@@ -111,7 +112,7 @@
   "classifier_version": 1,
   "date": "2026-07-20",
   "dedupe_version": 1,
-  "generated_at": "2026-07-20T09:20:31.243Z",
+  "generated_at": "2026-07-20T09:33:13.046Z",
   "identity_version": 1,
   "items": [
     {
@@ -184,7 +185,7 @@
       "source_type": "twitter_extra",
       "summary": "RT Yann LeCun Re @hosseeb @deanwball Soooo, releasing Linux was dumping? Apache, MySQL, PHP? HTTP, TCP/IP, OpenSSL, OpenSSH? Libjpeg, VLC? The open source software stack of the mobile communication network? Signal? PyTorch? Llama?",
       "time_precision": "exact",
-      "title": "Re @hosseeb @deanwball Soooo, releasing Linux was dumping? Apache",
+      "title": "@hosseeb @deanwball Soooo, releasing Linux was dumping? Apache",
       "topic_ids": [
         "topic_open_source"
       ],
@@ -1361,7 +1362,7 @@
       "source_type": "twitter_extra",
       "summary": "RT meng shao Kimi K3 和 Claude Fable 5 真实 BUG 修复对比！ @cline 用自己仓库里的一个真实 bug，在完全相同的 Cline CLI harness 下让 Kimi K3 和 Claude Fable 5 两个模型各跑一次修复任务。 结果两个模型都成功修复了 bug，差异在于过程效率： · 速度：Fable 5 用 3.5 分钟、18 次工具调用完成；Kimi K3 用了 12 分钟、34 次工具调用，慢 3.4 倍 · Token 消耗：Kimi 用了 120 万 token，是 Fable（73 万）的 1.7 倍 · 费用：Kimi 反而便宜 2.3 倍（$0.92 vs $2.13），完全靠单价优势——Kimi 定价 $3/$15，Fable $10/$50，每 token 便宜约 3.3 倍 Cline: We tested Kimi K3 and Fable on a real bug from the Cline repo, and found that while both models were able to fix it - Fable wins on speed &#x26; Kimi wins on cost. - Kimi used 1.7x more tokens than Fable (1.2M vs. 730K) - Fable finished 3.4x faster - 3.5 min and 18 tool calls vs.",
       "time_precision": "exact",
-      "title": "Kimi K3 和 Claude Fable 5 真实 BUG 修复对比！ @cline 用自己仓库里的一个真实 bug，在完全相同的",
+      "title": "Kimi K3 和 Claude Fable 5 真实 BUG 修复对比！",
       "topic_ids": [
         "topic_models",
         "topic_products"
@@ -3078,6 +3079,43 @@
         "topic_other"
       ],
       "url": "https://x.com/ezshine/status/2079115504036552777"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/bojieli/ai-agent-book",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_ad4d740685d45d0044bcaae5b503643ee2291087b91ea015f71f6137332673c5",
+      "featured": false,
+      "id": "n_ad4d740685d45d0044bcaae5b503643ee2291087b91ea015f71f6137332673c5",
+      "identity_claims": [
+        "c_0d0448baeb4980b5cd923ed9fdc260aad5bac76f502c9cdc8219fd9d43bc8125",
+        "c_ad4d740685d45d0044bcaae5b503643ee2291087b91ea015f71f6137332673c5"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T09:33:13.046Z",
+      "published_at": null,
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/bojieli/ai-agent-book",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/bojieli/ai-agent-book",
+      "source_type": "github_trending",
+      "summary": "《深入理解 AI Agent：设计原理与工程实践》（李博杰 著）开源主仓库：全书正文、编译版 PDF 与按章配套代码",
+      "time_precision": "date_only",
+      "title": "ai-agent-book",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/bojieli/ai-agent-book"
     }
   ],
   "overview": {
