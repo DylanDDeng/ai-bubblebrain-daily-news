@@ -270,6 +270,9 @@ describe('atomic Git publication', () => {
     it('never releases another owner lock and reconciles a lost release CAS response', async () => {
         const changedOwnerApi = vi.fn(async (_env, path, method = 'GET') => {
             if (path === lockRefPath) return { object: { sha: sha('2') } };
+            if (path === `/git/commits/${sha('2')}`) {
+                return { message: 'Publication lock another-owner', parents: [{ sha: sha('9') }] };
+            }
             throw new Error(`unexpected ${method} ${path}`);
         });
         await expect(
@@ -282,7 +285,7 @@ describe('atomic Git publication', () => {
                 { api: changedOwnerApi },
             ),
         ).rejects.toBeInstanceOf(AtomicGitUncertainError);
-        expect(changedOwnerApi.mock.calls.some((call) => call[1] === '/git/commits')).toBe(false);
+        expect(changedOwnerApi.mock.calls.some((call) => call[1] === `/git/commits/${sha('2')}`)).toBe(true);
 
         let currentSha = sha('1');
         const calls = [];
@@ -321,6 +324,28 @@ describe('atomic Git publication', () => {
             force: false,
         });
         expect(calls.some((call) => call.method === 'DELETE')).toBe(false);
+    });
+
+    it('reconciles an earlier release response loss from the exact owner successor', async () => {
+        const api = vi.fn(async (_env, path, method = 'GET') => {
+            if (path === lockRefPath) return { object: { sha: sha('3') } };
+            if (path === `/git/commits/${sha('3')}`) {
+                return {
+                    message: 'Publication lock released prior-attempt',
+                    parents: [{ sha: sha('1') }],
+                };
+            }
+            throw new Error(`unexpected ${method} ${path}`);
+        });
+
+        await expect(
+            releasePublicationLock(
+                lockEnv,
+                { branch: lockBranch, sha: sha('1') },
+                { api },
+            ),
+        ).resolves.toEqual({ reconciled: true });
+        expect(api.mock.calls.some((call) => call[2] === 'PATCH')).toBe(false);
     });
 
     it('cannot overwrite a stale takeover that wins during release', async () => {
@@ -384,14 +409,19 @@ describe('atomic Git publication', () => {
                         sha: sha('1'),
                     })),
                     releaseLock,
+                    releaseRetryWait: vi.fn(async () => undefined),
                 },
             ),
         ).rejects.toBe(publicationError);
-        expect(releaseLock).toHaveBeenCalledOnce();
+        expect(releaseLock).toHaveBeenCalledTimes(3);
     });
 
-    it('propagates a lock release failure after a successful publication', async () => {
+    it('keeps a successful publication when lock release exhausts its retries', async () => {
         const releaseError = new AtomicGitUncertainError('release failed');
+        const releaseLock = vi.fn(async () => {
+            throw releaseError;
+        });
+        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
         const api = vi.fn(async (_env, path, method = 'GET') => {
             if (path === '/git/blobs') return { sha: sha('c') };
             if (path === '/git/trees') return { sha: sha('d') };
@@ -426,12 +456,67 @@ describe('atomic Git publication', () => {
                         branch: lockBranch,
                         sha: sha('9'),
                     })),
-                    releaseLock: vi.fn(async () => {
-                        throw releaseError;
-                    }),
+                    releaseLock,
+                    releaseRetryWait: vi.fn(async () => undefined),
                 },
             ),
-        ).rejects.toBe(releaseError);
+        ).resolves.toMatchObject({
+            commitSha: sha('1'),
+            lockRelease: {
+                status: 'failed',
+                error_type: 'AtomicGitUncertainError',
+                attempts: 3,
+            },
+        });
+        expect(releaseLock).toHaveBeenCalledTimes(3);
+        expect(consoleSpy).toHaveBeenCalledWith(
+            '[GitPublication] lock release failed after successful publication; continuing',
+            expect.objectContaining({ releaseAttempts: 3 }),
+        );
+    });
+
+    it('retries a transient lock release without changing the publication result', async () => {
+        const api = vi.fn(async (_env, path, method = 'GET') => {
+            if (path === '/git/blobs') return { sha: sha('c') };
+            if (path === '/git/trees') return { sha: sha('d') };
+            if (path === '/git/commits') return { sha: sha('1') };
+            if (path === '/pulls?state=open&base=main&per_page=100') return [];
+            if (path === '/git/refs' && method === 'POST') return {};
+            if (path === '/pulls' && method === 'POST') {
+                return { number: 42, html_url: 'https://example.test/pr/42', state: 'open' };
+            }
+            throw new Error(`unexpected ${method} ${path}`);
+        });
+        const releaseLock = vi
+            .fn()
+            .mockRejectedValueOnce(new AtomicGitUncertainError('temporary'))
+            .mockRejectedValueOnce(new AtomicGitUncertainError('temporary'))
+            .mockResolvedValueOnce({ reconciled: false });
+        const releaseRetryWait = vi.fn(async () => undefined);
+
+        await expect(
+            commitFilesViaPullRequest(
+                lockEnv,
+                {
+                    snapshot,
+                    files: [{ path: 'daily.md', content: 'daily' }],
+                    message: 'publish',
+                    committedAt: '2026-07-14T02:00:00Z',
+                    reportDate: '2026-07-14',
+                    batch: 'morning',
+                    mode: 'structured',
+                },
+                {
+                    api,
+                    acquireLock: vi.fn(async () => ({ branch: lockBranch, sha: sha('9') })),
+                    releaseLock,
+                    releaseRetryWait,
+                },
+            ),
+        ).resolves.toMatchObject({ commitSha: sha('1') });
+        expect(releaseLock).toHaveBeenCalledTimes(3);
+        expect(releaseRetryWait).toHaveBeenNthCalledWith(1, 250);
+        expect(releaseRetryWait).toHaveBeenNthCalledWith(2, 500);
     });
 
     it('resolves an immutable branch head and reads nested files only through its tree', async () => {

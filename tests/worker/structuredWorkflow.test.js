@@ -506,6 +506,36 @@ describe('structured publication workflow', () => {
         expect(mirror).toHaveBeenCalledOnce();
     });
 
+    it('surfaces a non-blocking publication lock release warning', async () => {
+        const mirror = vi.fn(async () => ({ status: 'disabled' }));
+        const deps = dependencies({
+            mirror,
+            commit: vi.fn(async () => ({
+                commitSha: sha('e'),
+                reconciled: false,
+                pending: true,
+                branch: 'automation/daily/candidate',
+                pullRequest: { number: 42, url: 'https://example.test/pr/42' },
+                lockRelease: {
+                    status: 'failed',
+                    error_type: 'AtomicGitUncertainError',
+                    attempts: 3,
+                },
+            })),
+        });
+
+        await expect(runStructuredDailyWorkflow(env, runInput, deps)).resolves.toMatchObject({
+            success: true,
+            commit_sha: sha('e'),
+            lock_release: {
+                status: 'failed',
+                error_type: 'AtomicGitUncertainError',
+                attempts: 3,
+            },
+        });
+        expect(mirror).toHaveBeenCalledOnce();
+    });
+
     it('reconciles a failed mirror from the exact merged commit without refetching providers', async () => {
         const canonicalJson = `${JSON.stringify({ date: runInput.reportDate })}\n`;
         const mirrorEnv = {

@@ -18,6 +18,14 @@ import { SOURCE_REGISTRY } from './daily/sourceRegistry.js';
 const SAFE_PROVIDER_NAMES = new Set(Object.keys(SOURCE_REGISTRY));
 const SAFE_CONTENT_TYPES = new Set(['news', 'project', 'paper', 'socialMedia']);
 const SAFE_FAILURE_STAGES = new Set(['fetch', 'transform']);
+const SAFE_WORKFLOW_FAILURE_STAGES = new Set([
+    'fetch',
+    'build',
+    'git_publish',
+    'lock_release',
+    'database_mirror',
+    'unknown',
+]);
 const SAFE_PROVIDER_ERROR_CODES = new Set([
     'missing_config',
     'invalid_config',
@@ -134,6 +142,13 @@ function scheduledFailureMarker(error, runAt) {
         error_type: error?.name === 'StructuredSourceFetchError'
             ? 'structured_source_fetch_failed'
             : 'scheduled_workflow_failed',
+        failure_stage: SAFE_WORKFLOW_FAILURE_STAGES.has(error?.failureStage)
+            ? error.failureStage
+            : error?.name === 'StructuredSourceFetchError'
+                ? 'fetch'
+                : error?.name === 'AtomicGitConflictError' || error?.name === 'AtomicGitUncertainError'
+                    ? 'git_publish'
+                    : 'unknown',
         ...(sourceErrors.length > 0 ? { source_errors: sourceErrors } : {}),
     };
 }
@@ -241,6 +256,7 @@ export function createWorker({
                     const marker = scheduledFailureMarker(error, runAt);
                     console.error('[Scheduled] workflow failed', {
                         errorType: marker.error_type,
+                        failureStage: marker.failure_stage,
                         sourceErrors: Array.isArray(marker.source_errors)
                             ? marker.source_errors.map(sourceError => ({
                                 provider: sourceError.provider,

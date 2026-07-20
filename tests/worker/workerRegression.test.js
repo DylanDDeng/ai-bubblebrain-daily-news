@@ -57,6 +57,7 @@ describe('worker regression guards', () => {
             trigger_type: 'scheduled',
             run_at: '2026-07-14T00:00:00.000Z',
             error_type: 'structured_source_fetch_failed',
+            failure_stage: 'fetch',
             source_errors: [{
                 provider: 'aibase',
                 content_type: 'news',
@@ -119,6 +120,7 @@ describe('worker regression guards', () => {
         const marker = JSON.parse(DATA_KV.put.mock.calls[0][1]);
         expect(marker).toMatchObject({
             error_type: 'scheduled_workflow_failed',
+            failure_stage: 'unknown',
             source_errors: [{
                 provider: 'unknown',
                 content_type: 'unknown',
