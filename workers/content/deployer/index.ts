@@ -290,6 +290,7 @@ function classifyCodeReleasePath(
       "astro/raw-html-policy.json",
       "astro/route-ownership.json",
       "astro/tsconfig.json",
+      "data/knowledge/taxonomy.json",
       "static/css/daily-timeline.css",
       "static/js/ai-infographic.js",
       "static/js/daily-timeline.js",
