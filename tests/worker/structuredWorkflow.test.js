@@ -165,6 +165,45 @@ describe('structured publication workflow', () => {
         expect(deps.commit).toHaveBeenCalledOnce();
     });
 
+    it('publishes the valid pre-editorial report when enrichment throws', async () => {
+        const originalBuild = {
+            files: files(),
+            noOp: false,
+            metrics: { raw_count: 1 },
+            report: {
+                items: [{
+                    id: 'fresh-social',
+                    content_type: 'socialMedia',
+                    identity_strategy: 'source_id',
+                    title: 'A valid source title that still needs Chinese editorial enrichment',
+                    summary: 'A valid source summary.',
+                }],
+            },
+        };
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const deps = dependencies({
+            build: vi.fn(async () => originalBuild),
+            enrich: vi.fn(async () => { throw new Error('editorial unavailable'); }),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(deps.commit).toHaveBeenCalledWith(
+            env,
+            expect.objectContaining({ files: originalBuild.files }),
+            expect.any(Object),
+        );
+        expect(result.metrics).toMatchObject({
+            editorial_degraded: true,
+            editorial_error_type: 'Error',
+        });
+        expect(warn).toHaveBeenCalledWith(
+            '[StructuredDaily] editorial enrichment failed; publishing valid source data',
+            { errorType: 'Error', itemCount: 1 },
+        );
+        warn.mockRestore();
+    });
+
     it('fails closed unless all write gates and structured inputs are valid', async () => {
         const variants = [
             [{ ...env, EXTERNAL_WRITES_ENABLED: 'false' }, 'External writes'],

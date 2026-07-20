@@ -96,6 +96,59 @@ describe('structured daily editorial enrichment', () => {
             content_type: 'news',
             title: 'English news headline',
         })).toBe(false);
+        expect(editorialNeedsEnrichment({
+            ...base,
+            title: 'https://x.com/i/article/1234567890',
+            summary: 'https://x.com/i/article/1234567890',
+        })).toBe(false);
+    });
+
+    it('rejects URL-only social entries before they can reach editorial generation', async () => {
+        const result = await build([socialItem({
+            id: 'article-url-only',
+            title: 'https://x.com/i/article/1234567890',
+            description: 'https://x.com/i/article/1234567890',
+            url: 'https://x.com/i/article/1234567890',
+        })]);
+
+        expect(result.report.items).toEqual([]);
+        expect(result.rejected).toEqual(['missing_social_content']);
+        expect(result.metrics).toMatchObject({ accepted_count: 0, rejected_count: 1 });
+    });
+
+    it('skips legacy URL-only entries instead of asking the model to invent content', async () => {
+        const original = await build();
+        const url = 'https://x.com/i/article/1234567890';
+        original.report.items[0].title = url;
+        original.report.items[0].summary = url;
+        const generate = vi.fn();
+
+        const result = await applyEditorialEnrichment(
+            { DAILY_EDITORIAL_ENRICHMENT_ENABLED: 'true' },
+            original,
+            { generate },
+        );
+
+        expect(result.report.items[0].title).toBe(url);
+        expect(generate).not.toHaveBeenCalled();
+        expect(result.metrics).toMatchObject({
+            editorial_count: 0,
+            editorial_skipped_no_content_count: 1,
+        });
+    });
+
+    it('never overwrites a valid source title with an empty cached fallback', async () => {
+        const original = await build();
+        const item = original.report.items[0];
+        const cache = new Map([[item.id, { title: '', summary: null, ai: false }]]);
+
+        const result = await applyEditorialEnrichment(
+            { DAILY_EDITORIAL_ENRICHMENT_ENABLED: 'false' },
+            original,
+            { cache },
+        );
+
+        expect(result.report.items[0].title).toBe(item.title);
     });
 
     it('stores AI title and summary without changing stable identity', async () => {
