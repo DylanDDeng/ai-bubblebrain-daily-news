@@ -3,6 +3,7 @@ import { expectedPublicationPaths, parsePublicationCommit, validatePublicationPu
 
 const PUBLICATION_LOCK_TTL_MS = 15 * 60 * 1000;
 const PUBLICATION_LOCK_RELEASE_PREFIX = 'Publication lock released ';
+const PUBLICATION_LOCK_RELEASE_ATTEMPTS = 3;
 
 function refPath(branch) {
     return branch.split('/').map(encodeURIComponent).join('/');
@@ -480,6 +481,10 @@ export async function releasePublicationLock(env, lock, { api, now = new Date() 
     const currentSha = await refShaOrNull(env, lock.branch, { api });
     if (currentSha === null) return { reconciled: true };
     if (currentSha !== lock.sha) {
+        const current = await api(env, `/git/commits/${currentSha}`);
+        const releasedByOwner = String(current?.message || '').startsWith(PUBLICATION_LOCK_RELEASE_PREFIX)
+            && current?.parents?.some(parent => parent?.sha === lock.sha);
+        if (releasedByOwner) return { reconciled: true };
         throw new AtomicGitUncertainError('Publication lock owner changed before release');
     }
     const instant = now instanceof Date ? now : new Date(now);
@@ -855,28 +860,62 @@ export async function commitFilesViaPullRequest(env, input, dependencies = {}) {
     const api = dependencies.api || callGitHubApi;
     const acquireLock = dependencies.acquireLock || acquirePublicationLock;
     const releaseLock = dependencies.releaseLock || releasePublicationLock;
+    const releaseRetryWait = dependencies.releaseRetryWait
+        || (milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)));
     const baseBranch = input?.snapshot?.baseBranch || input?.snapshot?.branch;
     const lock = await acquireLock(env, input.snapshot, baseBranch, {
         api,
         ...(dependencies.lockNow ? { now: dependencies.lockNow } : {}),
     });
     let publicationError = null;
+    let publication = null;
     try {
-        return await commitFilesViaPullRequestLocked(env, input, { api });
+        publication = await commitFilesViaPullRequestLocked(env, input, { api });
     } catch (error) {
         publicationError = error;
-        throw error;
-    } finally {
+    }
+
+    let releaseError = null;
+    let releaseAttempts = 0;
+    for (let attempt = 1; attempt <= PUBLICATION_LOCK_RELEASE_ATTEMPTS; attempt += 1) {
+        releaseAttempts = attempt;
         try {
             await releaseLock(env, lock, { api });
-        } catch (releaseError) {
-            if (!publicationError) throw releaseError;
+            releaseError = null;
+            break;
+        } catch (error) {
+            releaseError = error;
+            if (attempt < PUBLICATION_LOCK_RELEASE_ATTEMPTS) {
+                await releaseRetryWait(attempt * 250);
+            }
+        }
+    }
+
+    if (publicationError) {
+        if (releaseError) {
             console.error('[GitPublication] publication and lock release both failed', {
                 publicationErrorType: publicationError?.name || 'Error',
                 releaseErrorType: releaseError?.name || 'Error',
+                releaseAttempts,
             });
         }
+        throw publicationError;
     }
+    if (releaseError) {
+        console.error('[GitPublication] lock release failed after successful publication; continuing', {
+            releaseErrorType: releaseError?.name || 'Error',
+            releaseAttempts,
+        });
+        return {
+            ...publication,
+            lockRelease: {
+                status: 'failed',
+                error_type: releaseError?.name || 'Error',
+                attempts: releaseAttempts,
+            },
+        };
+    }
+    return publication;
 }
 
 export async function publishFilesAtomically(env, input, dependencies = {}) {

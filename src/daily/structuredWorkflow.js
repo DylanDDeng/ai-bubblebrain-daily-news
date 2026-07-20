@@ -443,6 +443,7 @@ export async function runStructuredDailyWorkflow(
                     publication_status: published.pending === true ? 'pending' : 'published',
                     ...(published.branch ? { publication_branch: published.branch } : {}),
                     ...(published.pullRequest ? { pull_request: published.pullRequest } : {}),
+                    ...(published.lockRelease ? { lock_release: published.lockRelease } : {}),
                     metrics: result.metrics,
                     database_mirror: await mirrorWithoutBlocking(
                         env,
