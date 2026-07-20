@@ -26,6 +26,7 @@
     "huggingface_papers": { "topics": { "paper": ["topic_research"], "research": ["topic_research"] }, "entities": {} },
     "jiqizhixin": { "topics": { "研究": ["topic_research"], "产品": ["topic_products"], "模型": ["topic_models"] }, "entities": {} },
     "openai_newsroom": { "topics": { "product": ["topic_products"], "research": ["topic_research"], "safety": ["topic_policy"] }, "entities": { "openai": ["entity_openai"] } },
+    "anthropic_research": { "topics": { "research": ["topic_research"], "safety": ["topic_policy"], "model": ["topic_models"], "agent": ["topic_agents"] }, "entities": { "anthropic": ["entity_anthropic"], "claude": ["entity_anthropic"] } },
     "github_trending": { "topics": { "github": ["topic_open_source"], "open source": ["topic_open_source"] }, "entities": {} },
     "qbit": { "topics": { "模型": ["topic_models"], "产品": ["topic_products"] }, "entities": {} },
     "kazike": { "topics": { "模型": ["topic_models"], "产品": ["topic_products"], "智能体": ["topic_agents"], "研究": ["topic_research"], "开源": ["topic_open_source"] }, "entities": {} },

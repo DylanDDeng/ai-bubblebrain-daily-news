@@ -176,6 +176,9 @@ describe('worker regression guards', () => {
         expect(config).toContain('KAZIKE_X_FEED_ID = "66090931808241664"');
         expect(config).toContain('KAZIKE_X_FETCH_PAGES = "1"');
         expect(config).toContain('KAZIKE_FILTER_DAYS = "7"');
+        expect(config).toContain('ANTHROPIC_RESEARCH_FEED_ID = "160743780570397696"');
+        expect(config).toContain('ANTHROPIC_RESEARCH_FETCH_PAGES = "1"');
+        expect(config).toContain('ANTHROPIC_RESEARCH_FILTER_DAYS = "14"');
         expect(config).toContain('id = "a8155f35059c4b2faf4b06ef43c30fa3"');
     });
 
@@ -233,6 +236,9 @@ describe('worker regression guards', () => {
         expect(staging).toContain('KAZIKE_X_FEED_ID = "66090931808241664"');
         expect(staging).toContain('KAZIKE_X_FETCH_PAGES = "1"');
         expect(staging).toContain('KAZIKE_FILTER_DAYS = "7"');
+        expect(staging).toContain('ANTHROPIC_RESEARCH_FEED_ID = "160743780570397696"');
+        expect(staging).toContain('ANTHROPIC_RESEARCH_FETCH_PAGES = "1"');
+        expect(staging).toContain('ANTHROPIC_RESEARCH_FILTER_DAYS = "14"');
         expect(staging).not.toMatch(/^\s*\[triggers\]/m);
         expect(staging).not.toMatch(/^\s*crons\s*=/m);
         expect(staging).not.toMatch(/^\s*routes?\s*=/m);
