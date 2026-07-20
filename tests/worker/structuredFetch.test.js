@@ -81,7 +81,7 @@ describe('provider-preserving structured fetch', () => {
         const calls = [];
         const blocked = {
             id: 'blocked',
-            url: 'https://x.com/ezshine/status/2079115504036552777',
+            url: 'https://x.com/GemstoneNicole/status/2079115504036552777',
             published_date: '2026-07-20T08:05:00Z',
         };
         const allowed = {
@@ -91,7 +91,7 @@ describe('provider-preserving structured fetch', () => {
         };
 
         const result = await fetchProviderPreservingData(
-            { X_BLOCKED_HANDLES: ' @EZSHINE, another_blocked_account ' },
+            { X_BLOCKED_HANDLES: ' @EZSHINE, GemstoneNicole ' },
             null,
             { adapters: [adapter('twitter', 'socialMedia', [blocked, allowed], calls)] },
         );
