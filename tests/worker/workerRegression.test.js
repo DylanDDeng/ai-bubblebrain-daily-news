@@ -181,6 +181,7 @@ describe('worker regression guards', () => {
         expect(config).toContain('ANTHROPIC_RESEARCH_FEED_ID = "160743780570397696"');
         expect(config).toContain('ANTHROPIC_RESEARCH_FETCH_PAGES = "1"');
         expect(config).toContain('ANTHROPIC_RESEARCH_FILTER_DAYS = "14"');
+        expect(config).toContain('X_BLOCKED_HANDLES = "ezshine,GemstoneNicole"');
         expect(config).toContain('id = "a8155f35059c4b2faf4b06ef43c30fa3"');
     });
 
