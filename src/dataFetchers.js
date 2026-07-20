@@ -13,6 +13,7 @@ import TwitterExtraDataSource from './dataSources/twitter-extra.js';
 import KazikeDataSource from './dataSources/kazike.js';
 import KazikeXDataSource from './dataSources/kazike-x.js';
 import AnthropicResearchDataSource from './dataSources/anthropic-research.js';
+import { filterBlockedSourceItems } from './sourceFilters.js';
 
 // Register data sources as arrays to support multiple sources per type
 export const dataSources = {
@@ -43,7 +44,11 @@ export async function fetchAndTransformDataForType(sourceType, env, foloCookie) 
         try {
             // Pass foloCookie to the fetch method of the data source
             const rawData = await dataSource.fetch(env, foloCookie);
-            const unifiedData = dataSource.transform(rawData, sourceType);
+            const unifiedData = filterBlockedSourceItems(
+                dataSource.transform(rawData, sourceType),
+                sourceType,
+                env,
+            );
             allUnifiedDataForType = allUnifiedDataForType.concat(unifiedData);
         } catch (error) {
             console.error(`Error fetching or transforming data from source ${dataSource.type} for type ${sourceType}:`, error.message);
