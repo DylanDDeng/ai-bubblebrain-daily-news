@@ -337,7 +337,27 @@ export async function runStructuredDailyWorkflow(
                     .filter(item => !existingIds.has(item.id) || editorialNeedsEnrichment(item))
                     .map(item => item.id);
                 if (editorialIds.length > 0) {
-                    result = await deps.enrich(env, result, { itemIds: editorialIds, cache: editorialCache });
+                    const preEditorialResult = result;
+                    try {
+                        result = await deps.enrich(
+                            env,
+                            preEditorialResult,
+                            { itemIds: editorialIds, cache: editorialCache },
+                        );
+                    } catch (error) {
+                        console.warn('[StructuredDaily] editorial enrichment failed; publishing valid source data', {
+                            errorType: error?.name || 'Error',
+                            itemCount: editorialIds.length,
+                        });
+                        result = {
+                            ...preEditorialResult,
+                            metrics: {
+                                ...preEditorialResult.metrics,
+                                editorial_degraded: true,
+                                editorial_error_type: error?.name || 'Error',
+                            },
+                        };
+                    }
                 }
             }
             const expectedPaths = assertPublicationFiles(result.files, reportDate);

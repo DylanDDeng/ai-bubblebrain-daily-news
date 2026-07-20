@@ -6,6 +6,8 @@ import { classifyKnowledgeItem } from '../knowledge/taxonomy.js';
 
 const BATCHES = new Set(['morning', 'afternoon', 'night', 'lateNight']);
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/;
+const URL_PATTERN = /https?:\/\/\S+|www\.\S+/giu;
+const MEANINGFUL_TEXT_PATTERN = /[\p{L}\p{N}]/u;
 
 function cleanText(value, maxLength) {
     const cleaned = String(value || '')
@@ -26,6 +28,12 @@ function normalizeSourceId(value) {
     const normalized = String(value).normalize('NFC').trim();
     if (!normalized || normalized.length > 512 || CONTROL_CHARACTERS.test(normalized)) return null;
     return normalized;
+}
+
+function hasMeaningfulNonUrlText(...values) {
+    return values.some(value => MEANINGFUL_TEXT_PATTERN.test(
+        String(value || '').replace(URL_PATTERN, ' '),
+    ));
 }
 
 function beijingDate(instant) {
@@ -74,6 +82,17 @@ export async function normalizeSourceItem(raw, { provider, batch, runAt } = {}) 
     const title = cleanText(raw.title, 500);
     if (!title) return { accepted: false, reason: 'missing_title' };
 
+    const summary = sanitizeSummaryText(cleanText(
+        raw.summary || raw.description || raw.content_text || raw.content_html || raw.details?.content_html,
+        5000,
+    ));
+    if (
+        policy.contentType === 'socialMedia'
+        && !hasMeaningfulNonUrlText(title, summary)
+    ) {
+        return { accepted: false, reason: 'missing_social_content' };
+    }
+
     const sourceIdInput = raw.source_id ?? raw.id ?? null;
     const sourceId = normalizeSourceId(sourceIdInput);
     if (sourceIdInput !== null && sourceIdInput !== undefined && sourceIdInput !== '' && sourceId === null) {
@@ -100,10 +119,6 @@ export async function normalizeSourceItem(raw, { provider, batch, runAt } = {}) 
     const sourceName = cleanText(sourceNameInput || provider, 200) || provider;
     const normalizedHomepage = canonicalizeUrl(raw.source?.homepage || raw.source_homepage);
     const homepage = normalizedHomepage?.length <= 8192 ? normalizedHomepage : null;
-    const summary = sanitizeSummaryText(cleanText(
-        raw.summary || raw.description || raw.content_text || raw.content_html || raw.details?.content_html,
-        5000,
-    ));
     const classification = classifyKnowledgeItem(raw, {
         provider,
         title,

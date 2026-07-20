@@ -27,6 +27,13 @@ function cleanEditorialText(value) {
         .trim());
 }
 
+function hasEditorialSourceMaterial(item) {
+    return Boolean(
+        cleanEditorialText(item?.title)
+        || cleanEditorialText(item?.summary),
+    );
+}
+
 function codePoints(value) {
     return Array.from(value);
 }
@@ -158,6 +165,7 @@ export function editorialNeedsEnrichment(item) {
     if (item?.content_type !== SOCIAL_CONTENT_TYPE || item?.identity_strategy === 'fallback') {
         return false;
     }
+    if (!hasEditorialSourceMaterial(item)) return false;
     const title = cleanEditorialText(item.title);
     if (!title) return true;
     return (
@@ -239,12 +247,26 @@ export async function applyEditorialEnrichment(
     { itemIds = null, generate = callChatAPI, cache = new Map() } = {},
 ) {
     const allowedIds = itemIds ? new Set(itemIds) : null;
-    const candidates = buildResult.report.items.filter(item => (
+    const selectedSocialItems = buildResult.report.items.filter(item => (
         item.content_type === SOCIAL_CONTENT_TYPE
         && item.identity_strategy !== 'fallback'
         && (!allowedIds || allowedIds.has(item.id))
     ));
-    if (candidates.length === 0) return buildResult;
+    const candidates = selectedSocialItems.filter(hasEditorialSourceMaterial);
+    const skippedNoContentCount = selectedSocialItems.length - candidates.length;
+    if (candidates.length === 0) {
+        if (skippedNoContentCount === 0) return buildResult;
+        return {
+            ...buildResult,
+            metrics: {
+                ...buildResult.metrics,
+                editorial_count: 0,
+                editorial_ai_count: 0,
+                editorial_fallback_count: 0,
+                editorial_skipped_no_content_count: skippedNoContentCount,
+            },
+        };
+    }
 
     const missingCandidates = candidates.filter(item => !cache.has(item.id));
     let generated = [];
@@ -273,8 +295,10 @@ export async function applyEditorialEnrichment(
         const generatedItem = generatedById.get(item.id);
         const generatedTitle = normalizeEditorialHeadline(generatedItem?.title);
         const generatedSummary = normalizeEditorialSummary(generatedItem?.summary);
+        const fallbackTitle = compactEditorialTitle(item.title, item.summary)
+            || String(item.title || '').trim();
         cache.set(item.id, {
-            title: generatedTitle || compactEditorialTitle(item.title, item.summary),
+            title: generatedTitle || fallbackTitle,
             summary: generatedSummary,
             ai: Boolean(generatedTitle),
         });
@@ -285,8 +309,8 @@ export async function applyEditorialEnrichment(
     for (const item of report.items) {
         if (!candidateIds.has(item.id)) continue;
         const update = cache.get(item.id);
-        item.title = update.title;
-        if (update.summary) item.summary = update.summary;
+        if (update?.title) item.title = update.title;
+        if (update?.summary) item.summary = update.summary;
     }
 
     const aiCount = candidates.filter(item => cache.get(item.id)?.ai).length;
@@ -304,6 +328,7 @@ export async function applyEditorialEnrichment(
             editorial_count: candidates.length,
             editorial_ai_count: aiCount,
             editorial_fallback_count: fallbackCount,
+            editorial_skipped_no_content_count: skippedNoContentCount,
         },
     };
 }
