@@ -158,6 +158,31 @@ describe('daily report v1 deterministic boundary', () => {
         expect(second.report.overview).toEqual(first.report.overview);
     });
 
+    it('repairs an existing report by removing newly blocked X accounts', async () => {
+        const first = await build({
+            rawItems: [rawItem({
+                provider: 'twitter',
+                id: 'blocked-social',
+                url: 'https://x.com/ezshine/status/2079115504036552777',
+                source: 'twitter-大帅老猿',
+                title: 'A social post that was previously accepted',
+            })],
+        });
+        const blockedId = first.report.items[0].id;
+        const second = await build({
+            existingReport: first.report,
+            rawItems: [],
+            runAt: '2026-07-14T15:00:00Z',
+            blockedXHandles: 'ezshine',
+        });
+
+        expect(second.noOp).toBe(true);
+        expect(second.report.items).toEqual([]);
+        expect(second.report.batches.every(batch => !batch.item_ids.includes(blockedId))).toBe(true);
+        expect(second.metrics.blocked_existing_count).toBe(1);
+        expect(second.markdown).not.toContain('大帅老猿');
+    });
+
     it('filters incoming cross-day duplicates for the inclusive seven-day window', async () => {
         const prior = await buildDailyArtifacts({
             rawItems: [rawItem()],

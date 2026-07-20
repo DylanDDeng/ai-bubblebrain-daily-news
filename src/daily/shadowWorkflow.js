@@ -38,6 +38,7 @@ export async function runStructuredShadow(env, {
         batch,
         runAt,
         producer,
+        blockedXHandles: env.X_BLOCKED_HANDLES || '',
         structuredStartDate,
     });
     await writeKv(env.DATA_KV, reportKey(reportDate), result.report, SHADOW_TTL_SECONDS);
