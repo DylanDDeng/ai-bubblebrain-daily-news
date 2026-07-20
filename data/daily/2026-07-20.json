@@ -1,0 +1,518 @@
+{
+  "batches": [
+    {
+      "generated_at": "2026-07-20T02:00:52.000Z",
+      "id": "morning",
+      "item_ids": [
+        "n_3ba2a027be1c6cd5a39b6caddbdc3a58772ae07c58abcc445988402d95a8df1d",
+        "n_5313df84c5cee08aea0db91d6458939340e6bf5ff7bedde6cbdc1059fbb7ef33",
+        "n_8ae2dc99fc26d90c4f8c56f6cdf773e24ab09258f6298448119541463c3cbdc5",
+        "n_945dd4e69b58e31ac45556f0ad89c4d7aea4fec3c3d982cfa01cc72cebe491da",
+        "n_7fe82e0ba3766a3084cd0fdd8cd3e83df1acaa4e127e4ca35243dcc52164590c",
+        "n_91c63d3ba092488211d6973f71350720eaa3b2d04aaac237701307803b24e573",
+        "n_96b9311fc70534e46d83c3bd565c84505264658a56e66c446c13d59259736f6f",
+        "n_89932795c91b593634db826334f0699bff82d4e56fde52e4ee1489075197eaa1",
+        "n_8f7d7ffdaaf9a9ef1ad69dfc9e4fe8ea357c0fc5a5c2f8070f4fc441aabc8d6b",
+        "n_6b6c0ac538e2afb6a45aa3038fa24aa4fe47580fe027e42e4bdc180dccecf8d9",
+        "n_873c647ed946159dcb01ef05d51eeae29229cb1e3ccf5e6c5ecd3a9b7d3127eb",
+        "n_f677580525d97cd6f69fee26e0be4bd6616a9497be789d2bbcf0c0e03cf0f989"
+      ],
+      "label": "10:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "afternoon",
+      "item_ids": [],
+      "label": "15:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "night",
+      "item_ids": [],
+      "label": "23:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "lateNight",
+      "item_ids": [],
+      "label": "次日 03:00 补充更新",
+      "status": "pending"
+    }
+  ],
+  "classifier_version": 1,
+  "date": "2026-07-20",
+  "dedupe_version": 1,
+  "generated_at": "2026-07-20T02:00:52.000Z",
+  "identity_version": 1,
+  "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/vista8/status/2078769333640347660",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_deepseek"
+      ],
+      "event_id": "e_3ba2a027be1c6cd5a39b6caddbdc3a58772ae07c58abcc445988402d95a8df1d",
+      "featured": false,
+      "id": "n_3ba2a027be1c6cd5a39b6caddbdc3a58772ae07c58abcc445988402d95a8df1d",
+      "identity_claims": [
+        "c_3ba2a027be1c6cd5a39b6caddbdc3a58772ae07c58abcc445988402d95a8df1d",
+        "c_d5434d1989072849cd6e2a82093d67d6a4a88140d1a4a89346683abe6a4a1e60"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T09:10:05.048Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207162396779388928",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1207162396779388928",
+      "source_type": "twitter_extra",
+      "summary": "真的吗？除了fable 5 以外最强大的模型？ 据说DeepSeek v4 正式版也很牛，下周热闹了。",
+      "time_precision": "exact",
+      "title": "真的吗？除了fable 5 以外最强大的模型？ 据说DeepSeek v4 正式版也很牛，下周热闹了。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/vista8/status/2078769333640347660"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2078920897549775225",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_meta_ai"
+      ],
+      "event_id": "e_5313df84c5cee08aea0db91d6458939340e6bf5ff7bedde6cbdc1059fbb7ef33",
+      "featured": false,
+      "id": "n_5313df84c5cee08aea0db91d6458939340e6bf5ff7bedde6cbdc1059fbb7ef33",
+      "identity_claims": [
+        "c_5313df84c5cee08aea0db91d6458939340e6bf5ff7bedde6cbdc1059fbb7ef33",
+        "c_6271b79a92fec3ed240ba207bcd717ce8d9a438f5ad87027b24a4e57c4806470"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T11:22:22.976Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207184378472468485",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1207184378472468485",
+      "source_type": "twitter_extra",
+      "summary": "RT Yann LeCun Re @hosseeb @deanwball Soooo, releasing Linux was dumping? Apache, MySQL, PHP? HTTP, TCP/IP, OpenSSL, OpenSSH? Libjpeg, VLC? The open source software stack of the mobile communication network? Signal? PyTorch? Llama?",
+      "time_precision": "exact",
+      "title": "RT Yann LeCun: Re @hosseeb @deanwball Soooo, releasing Linux was dumping? Apache, MySQL, PHP? HTTP, TCP/IP, OpenSSL, OpenSSH? Libjpeg, VLC? The open s...",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/omarsar0/status/2078920897549775225"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2078913744759836775",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8ae2dc99fc26d90c4f8c56f6cdf773e24ab09258f6298448119541463c3cbdc5",
+      "featured": false,
+      "id": "n_8ae2dc99fc26d90c4f8c56f6cdf773e24ab09258f6298448119541463c3cbdc5",
+      "identity_claims": [
+        "c_8ae2dc99fc26d90c4f8c56f6cdf773e24ab09258f6298448119541463c3cbdc5",
+        "c_cef183933fe7886913e75a220dd37ec0d9246b8b5e2aad0c50777752dc20b6d7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T12:23:45.310Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207143670621392897",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1207143670621392897",
+      "source_type": "twitter_extra",
+      "summary": "RT WeZZard 我不认同，这是典型的唯参数论。忽略了模型厂商的战略眼光、模型训练对用户体验的供给以及模型使用人口变迁。 Kimi K3 标注是 Opus 4.8 级别，我个人体验下来其实是基于它的木桶短板标的，而它的长板完全可及 Fable 5。Kimi K3 在长尾数据的训练上面并没有 Fable 5 训练得那么全，会导致在多轮对话的任务中失败一次，然后次次修补，进入一个很差的体验。这和 Opus 4.8 的体验完全一致。 而 2026 年中的顶规模型可以保证状态一直在线。首先 Fable 5 的长尾数据训练非常全面。然后 Fable 5 的急剧性能衰减需要到达上下文长度的 80% 到 90% 才会出现。而 Kimi K3 基本在 40-50% 时就能感受到性能衰减。 上述 Fable 5 的优势对于整体体验来说提升的不只是一点两点，而是四五倍的提升——因为每一步有 5% 的任务失败概率，那么 10 步都成功的概率仅为 60%；而把每一步的失败概率消除一半，那么 10 步都成功的概率将提升至 78%。这个提升对于长程任务来说只会更夸张，比如放大到 50 步则可以将成功率提升接近 4 倍。 这就是 Fable 5 对于从事从 0 到 1 创新的工作者来说体验非常棒的原因——因为从 0 到 1 不可能 one-shot、也极有可能进入数据训练盲区。 那为什么大家会觉得 Kimi K3 好？是因为它的 one-shot 能力真的很强。而 one shot 成功自然会带来成就感。 而早在移动互联网开始时，很多人争相阅读的 Emotional Design 中就强调过「成就感」对用户体验带来的提升。Frog Design 的创始人 Hartmut Esslinger 也提出过 \"Forms follow emotion（形式追随情绪）\" 的设计原则。 所谓「形式追随情绪」就是让情绪成为恰到好处的功能装置。而大部分用户想用最快的速度搞点东西出来，那极高的 one shot 成功率带来的极高情绪满足就是最好的功能装置。 但 one shot 很多 AI IDE 在 2025 年就能做到，为什么 2025 年它的传播效应没有这么高，而 2026 年可以？ 这是因为用户人群发生了改变。在 2025 年的主要适用人群——专业开发者看来，one-shot 能力是非常鸡肋的，因为我们要对工程细节进行打磨。但是 2026 年更多非程序员群体以办公人群的身份加入，导致评价标准发生了变化。 就像在移动互联网时代我们不能说：对于普通人来说想处理照片 Lightroom 足够了，没有必要购入 Photoshop。因为对于普通人来说真正合适的是美图秀秀、醒图、各种风格化相机。 可以说月之暗面在模型训练方面押注前端 one-shot 能力确实是一手好棋。 当然，这些用户会成长，会想做一些个性化的改动、会有创造新东西的需求。最后还是会碰到长 K3 上下文性能衰减和长尾数据不全面的短板。不过我想国产开源大模型应该已经有了第一批国内原住民——这些人没有用过美国头部两家的模型，在他们眼里，Kimi 就是最好的。 Fenng: 其实大多数用户，对他们那点简单的需求而言，给他们一个中等水平的模型已经足够用了，也就是市场上随便哪个几乎都足够用。如果你宣传某个模型有十万亿参数，评测绝对第一，超级无敌。那他们用起来之后，就会真心觉得这模型真的超级超级厉害，用起来心情愉快，还会不停发文狂吹乱夸。 这就是 𝕏 上 AI",
+      "time_precision": "exact",
+      "title": "RT WeZZard: 我不认同，这是典型的唯参数论。忽略了模型厂商的战略眼光、模型训练对用户体验的供给以及模型使用人口变迁。 Kimi K3 标注是 Opus 4.8 级别，我个...",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2078913744759836775"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/9hills/status/2078837085658914906",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_945dd4e69b58e31ac45556f0ad89c4d7aea4fec3c3d982cfa01cc72cebe491da",
+      "featured": false,
+      "id": "n_945dd4e69b58e31ac45556f0ad89c4d7aea4fec3c3d982cfa01cc72cebe491da",
+      "identity_claims": [
+        "c_621c70465b2d1a096d9d5fb43aa0fe3f49c7519b6b56655f049db686aeef249c",
+        "c_945dd4e69b58e31ac45556f0ad89c4d7aea4fec3c3d982cfa01cc72cebe491da"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T13:39:18.673Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207184005481283584",
+        "name": "twitter-九原客"
+      },
+      "source_id": "1207184005481283584",
+      "source_type": "twitter_extra",
+      "summary": "最近看两晋南北朝的书，司马家都是一帮啥垃圾啊。 其中一本如下：",
+      "time_precision": "exact",
+      "title": "最近看两晋南北朝的书，司马家都是一帮啥垃圾啊。 其中一本如下：",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/9hills/status/2078837085658914906"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2078857714483200372",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_7fe82e0ba3766a3084cd0fdd8cd3e83df1acaa4e127e4ca35243dcc52164590c",
+      "featured": false,
+      "id": "n_7fe82e0ba3766a3084cd0fdd8cd3e83df1acaa4e127e4ca35243dcc52164590c",
+      "identity_claims": [
+        "c_54d4a68a38fd9ab18ab6538ec26b0eef308d0cfe252c2162ee2ee9e6ec9984d0",
+        "c_7fe82e0ba3766a3084cd0fdd8cd3e83df1acaa4e127e4ca35243dcc52164590c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T15:01:17.749Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207041638371753984",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1207041638371753984",
+      "source_type": "twitter_extra",
+      "summary": "Kimi订阅现已售罄，暂时不对C端用户开放",
+      "time_precision": "exact",
+      "title": "Kimi订阅现已售罄，暂时不对C端用户开放",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2078857714483200372"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2078860085762408747",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_91c63d3ba092488211d6973f71350720eaa3b2d04aaac237701307803b24e573",
+      "featured": false,
+      "id": "n_91c63d3ba092488211d6973f71350720eaa3b2d04aaac237701307803b24e573",
+      "identity_claims": [
+        "c_896759cc8c41ba91404ec29968fb1edfe31133a486e10261693ab59a1e27354f",
+        "c_91c63d3ba092488211d6973f71350720eaa3b2d04aaac237701307803b24e573"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T15:10:42.265Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207184378472468484",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1207184378472468484",
+      "source_type": "twitter_extra",
+      "summary": "\"Open-weight models are inherently decelerationist.\" Among the most absurd things I have read on X recently. \"Only we should build AI, and you shouldn't\" is a dangerous movement and a huge scam we should be calling out. @TimSweeneyEpic describes it best in his reply: \"Picture an executive a taco company saying this sort of thing about a new brand of tacos coming onto the market, speculating about the geopolitical and societal disruptions they anticipate as a result of advances in tacos.\" I am also convinced these people don't actually use open models seriously or even try to understand their value. If you care about AI sovereignty, you would know how bad the argument is. I have never heard about this person before, but I was surprised to see such a statement given where they work. The reaction to the original post says it all. Dean W. Ball: Some observations on Kimi: 1. It's a very good model! I don't think its performance can be explained away by distillation or anything like that. In agentic coding sessions, it seems pretty much on par with the best public models of Q1 2026. In my fairly limited use, it also",
+      "time_precision": "exact",
+      "title": "\"Open-weight models are inherently decelerationist.\" Among the most absurd things I have read on X recently. \"Only we should build AI, and you shouldn...",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2078860085762408747"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2078883859244921167",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_96b9311fc70534e46d83c3bd565c84505264658a56e66c446c13d59259736f6f",
+      "featured": false,
+      "id": "n_96b9311fc70534e46d83c3bd565c84505264658a56e66c446c13d59259736f6f",
+      "identity_claims": [
+        "c_4f4fc062c6df005f5ff1df646336c3c82e281dfb91ef0016742568f7cb9eba78",
+        "c_96b9311fc70534e46d83c3bd565c84505264658a56e66c446c13d59259736f6f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T16:44:30.721Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207184378472468483",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1207184378472468483",
+      "source_type": "twitter_extra",
+      "summary": "RT DAIR.AI The Top AI Papers of the Week (July 13 - July 19): - LingBot-World 2.0 - Failure as a Process - Tracing Agentic Failure - Metacognition in LLMs - When Is Routing Meaningful - Harness Evolution Rethought - Self-Improving Agents Survey Read on for more: DAIR.AI:",
+      "time_precision": "exact",
+      "title": "RT DAIR.AI: The Top AI Papers of the Week (July 13 - July 19): - LingBot-World 2.0 - Failure as a Process - Tracing Agentic Failure - Metacognition in...",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2078883859244921167"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2078895112172577108",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_89932795c91b593634db826334f0699bff82d4e56fde52e4ee1489075197eaa1",
+      "featured": false,
+      "id": "n_89932795c91b593634db826334f0699bff82d4e56fde52e4ee1489075197eaa1",
+      "identity_claims": [
+        "c_487330843a57eb0f91076d7a3b391a655f4e52f458594a9a3a2122eac29fbc35",
+        "c_89932795c91b593634db826334f0699bff82d4e56fde52e4ee1489075197eaa1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T17:29:53.966Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207184378472468482",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1207184378472468482",
+      "source_type": "twitter_extra",
+      "summary": "Open source and competition are such beautiful things. Why would anyone want to kill those things? The answer is clear. Let's continue to accelerate open source AI. We win when this happens. Guillermo Rauch: Based on internal evals: ▪️ Kimi K3 is top-tier at cybersecurity There is chatter on X that Moonshot benchmark-overfit. These are stealth evals. Model has raw IQ. ▪️ Sol is a leap ahead in cyber capability At a significantly higher cost, but quite remarkable still. ▪️ Fable",
+      "time_precision": "exact",
+      "title": "Open source and competition are such beautiful things. Why would anyone want to kill those things? The answer is clear. Let's continue to accelerate o...",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/omarsar0/status/2078895112172577108"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2078900715922063381",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_qwen"
+      ],
+      "event_id": "e_8f7d7ffdaaf9a9ef1ad69dfc9e4fe8ea357c0fc5a5c2f8070f4fc441aabc8d6b",
+      "featured": false,
+      "id": "n_8f7d7ffdaaf9a9ef1ad69dfc9e4fe8ea357c0fc5a5c2f8070f4fc441aabc8d6b",
+      "identity_claims": [
+        "c_8f7d7ffdaaf9a9ef1ad69dfc9e4fe8ea357c0fc5a5c2f8070f4fc441aabc8d6b",
+        "c_f214098c55a3d16c92e2ac1cef32818468e94c1c7bafeb189355ac8b520c44a5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T17:52:09.444Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207184378472468481",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1207184378472468481",
+      "source_type": "twitter_extra",
+      "summary": "Excited for the Qwen 3.8 open-weight release. I have had real success with Qwen 3.7 for subagent workflows in harnesses like Hermes Agent. They are doing something right around agentic capabilities. If Qwen 3.8 is a significant improvement, you don't want to ignore it. Qwen: Qwen3.8 is launching and going open-weight soon!🌐 With a massive 2.4T parameters, this model is continuously evolving. We believe it’s one of the most powerful model available today, compatible to leading frontier AI models, second only to Fable 5. You don't have to wait to",
+      "time_precision": "exact",
+      "title": "Excited for the Qwen 3.8 open-weight release. I have had real success with Qwen 3.7 for subagent workflows in harnesses like Hermes Agent. They are do...",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2078900715922063381"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2078920879858176120",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_meta_ai"
+      ],
+      "event_id": "e_6b6c0ac538e2afb6a45aa3038fa24aa4fe47580fe027e42e4bdc180dccecf8d9",
+      "featured": false,
+      "id": "n_6b6c0ac538e2afb6a45aa3038fa24aa4fe47580fe027e42e4bdc180dccecf8d9",
+      "identity_claims": [
+        "c_4e1475d4ee7acdbc979df78dcd8492a5eea97e8a7c739479543156d519f1afdf",
+        "c_6b6c0ac538e2afb6a45aa3038fa24aa4fe47580fe027e42e4bdc180dccecf8d9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T19:12:16.204Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207184378472468480",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1207184378472468480",
+      "source_type": "twitter_extra",
+      "summary": "Man, it's baffling to me that people either forget too quickly about the impact of open source or are just too lazy to pick up a book and read about it. Having worked on open-source tools all these years, it's really sad to see such ignorance. Thanks for reminding people, Yann. Yann LeCun: @hosseeb @deanwball Soooo, releasing Linux was dumping? Apache, MySQL, PHP? HTTP, TCP/IP, OpenSSL, OpenSSH? Libjpeg, VLC? The open source software stack of the mobile communication network? Signal? PyTorch? Llama?",
+      "time_precision": "exact",
+      "title": "Man, it's baffling to me that people either forget too quickly about the impact of open source or are just too lazy to pick up a book and read about i...",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/omarsar0/status/2078920879858176120"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/gdb/status/2078922461660533120",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_873c647ed946159dcb01ef05d51eeae29229cb1e3ccf5e6c5ecd3a9b7d3127eb",
+      "featured": false,
+      "id": "n_873c647ed946159dcb01ef05d51eeae29229cb1e3ccf5e6c5ecd3a9b7d3127eb",
+      "identity_claims": [
+        "c_6aa1af2b8d0bfde8483bc2ef873ad63a8f5b8c05ae89fe617c67defe4abcb97c",
+        "c_873c647ed946159dcb01ef05d51eeae29229cb1e3ccf5e6c5ecd3a9b7d3127eb"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T19:18:34.082Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207020628515717120",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1207020628515717120",
+      "source_type": "twitter_extra",
+      "summary": "one of the best features of ChatGPT Work is that it runs in the cloud, meaning that it works from mobile, with your laptop closed. kinda crazy how long the main way to get the magic of agents has been while leaving your laptop cracked open!",
+      "time_precision": "exact",
+      "title": "one of the best features of ChatGPT Work is that it runs in the cloud, meaning that it works from mobile, with your laptop closed. kinda crazy how lon...",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/gdb/status/2078922461660533120"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/gdb/status/2078977720793661459",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f677580525d97cd6f69fee26e0be4bd6616a9497be789d2bbcf0c0e03cf0f989",
+      "featured": false,
+      "id": "n_f677580525d97cd6f69fee26e0be4bd6616a9497be789d2bbcf0c0e03cf0f989",
+      "identity_claims": [
+        "c_75bc765de5864edcd606cef5d1c6bb98a8e07b165c193a91c669d21c878575e1",
+        "c_f677580525d97cd6f69fee26e0be4bd6616a9497be789d2bbcf0c0e03cf0f989"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T02:00:52.000Z",
+      "published_at": "2026-07-19T22:58:08.378Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1207258239377309696",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1207258239377309696",
+      "source_type": "twitter_extra",
+      "summary": "Feels like a watershed moment for advancing mathematics. Scientific and medical advances which can really improve people’s lives feeling very close now. Thomas Bloom: So far GPT 5.6 Sol is the most interesting new model mathematics-wise for me - those of the new proof claims on that I've looked at in detail have all been correct, and moreover contained some interesting ideas. 1/7",
+      "time_precision": "exact",
+      "title": "Feels like a watershed moment for advancing mathematics. Scientific and medical advances which can really improve people’s lives feeling very close n...",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/gdb/status/2078977720793661459"
+    }
+  ],
+  "overview": {
+    "kind": "pending",
+    "provenance": {
+      "method": "template",
+      "model": null,
+      "prompt_version": null
+    },
+    "text": "今日 AI 增量日报正在更新中。"
+  },
+  "producer": {
+    "commit_sha": null,
+    "dedupe_lookback_days": 7,
+    "name": "bubble-brain-worker",
+    "version": "phase1d-production"
+  },
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "timezone": "Asia/Shanghai"
+}
