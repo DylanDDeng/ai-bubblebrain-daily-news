@@ -1,5 +1,6 @@
 import { blake3 } from "@noble/hashes/blake3.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
+import { Buffer } from "node:buffer";
 import { openContentDatabase, type ContentSql } from "../shared/db";
 
 type Env = {
@@ -143,14 +144,11 @@ async function hmacHex(secret: string, bytes: Uint8Array): Promise<string> {
 }
 
 function base64(bytes: Uint8Array): string {
-  let result = "";
-  const chunkSize = 0x8000;
-  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-    result += String.fromCharCode(
-      ...bytes.subarray(offset, offset + chunkSize),
-    );
-  }
-  return btoa(result);
+  return Buffer.from(
+    bytes.buffer,
+    bytes.byteOffset,
+    bytes.byteLength,
+  ).toString("base64");
 }
 
 function tarText(bytes: Uint8Array, start: number, length: number): string {
