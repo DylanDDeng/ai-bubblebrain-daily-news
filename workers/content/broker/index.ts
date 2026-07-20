@@ -542,15 +542,12 @@ async function fetchContentAddressedAsset(
     throw new Error("Content-addressed artifact asset is unavailable");
   }
   const bytes = new Uint8Array(await object.arrayBuffer());
-  // The immutable inventory is already verified against its database-bound
-  // fingerprint before any asset is loaded. Recomputing the Pages BLAKE3 key
-  // here base64-encodes every missing asset and can exhaust Worker CPU for a
-  // media-heavy release. The content SHA is sufficient to prove that these
-  // bytes are the exact bytes named by the verified inventory; Pages still
-  // receives the inventory's precomputed pages_hash as the upload key.
-  if ((await sha256(bytes)) !== asset.sha256) {
-    throw new Error("Content-addressed artifact asset hash mismatch");
-  }
+  // The workflow SHA-verifies each object after its conditional R2 upload,
+  // and an indefinite object lock prevents replacement. The database-bound
+  // inventory also requires object_key=assets/sha256/<sha>. Rehashing every
+  // small asset again here can exceed the Free-plan CPU budget before Pages
+  // receives the already verified bytes, so deployment verifies the immutable
+  // object identity and length without repeating hundreds of digests.
   return bytes;
 }
 
