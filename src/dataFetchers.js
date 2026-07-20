@@ -10,13 +10,16 @@ import XiaohuDataSource from './dataSources/xiaohu.js';
 import OpenAInewsroomDataSource from './dataSources/openai-newsroom.js';
 import TwitterDataSource from './dataSources/twitter.js';
 import TwitterExtraDataSource from './dataSources/twitter-extra.js';
+import KazikeDataSource from './dataSources/kazike.js';
+import KazikeXDataSource from './dataSources/kazike-x.js';
+import AnthropicResearchDataSource from './dataSources/anthropic-research.js';
 
 // Register data sources as arrays to support multiple sources per type
 export const dataSources = {
-    news: { name: '新闻', sources: [AibaseDataSource, XiaohuDataSource, QBitDataSource, SimonWillisonDataSource, XinZhiYuanDataSource, OpenAInewsroomDataSource] },
+    news: { name: '新闻', sources: [AibaseDataSource, XiaohuDataSource, QBitDataSource, KazikeDataSource, SimonWillisonDataSource, XinZhiYuanDataSource, OpenAInewsroomDataSource, AnthropicResearchDataSource] },
     project: { name: '项目', sources: [GithubTrendingDataSource] },
     paper: { name: '论文', sources: [HuggingfacePapersDataSource, JiqizhixinDataSource] },
-    socialMedia: { name: '社交平台', sources: [TwitterDataSource, TwitterExtraDataSource] },
+    socialMedia: { name: '社交平台', sources: [TwitterDataSource, TwitterExtraDataSource, KazikeXDataSource] },
     // Add new data sources here as arrays, e.g.,
     // newType: { name: '新类型', sources: [NewTypeDataSource1, NewTypeDataSource2] },
 };

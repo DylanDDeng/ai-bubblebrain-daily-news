@@ -10,6 +10,7 @@ import {
 	formatTimelineTime,
 	orderTimelineBatches,
 	timelineDisplayText,
+	timelineSourceDisplay,
 	type DailyContentType,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
@@ -221,9 +222,12 @@ const olderKey = hrefDateKey(olderHref);
 						{!pending &&
 							items.map((item, index) => {
 								const displayText = timelineDisplayText(item);
+								const source = timelineSourceDisplay(item);
 								const summary = displayText.summary;
 								const rawSummary = cleanTimelineSummary(item.summary);
-								const sourceName = cleanTimelineSummary(item.source.name) || item.source_type;
+								const sourceSearchTerms = [
+									...new Set([source.name, cleanTimelineSummary(item.source.name)]),
+								];
 								const title =
 									displayText.title || (isEnglish ? 'Open original source' : '查看原文');
 								const topics = item.topic_ids
@@ -235,7 +239,7 @@ const olderKey = hrefDateKey(olderHref);
 								const reason = item.reason ? cleanTimelineSummary(item.reason) : '';
 								const searchText = [
 									title,
-									sourceName,
+									...sourceSearchTerms,
 									rawSummary,
 									item.category,
 									...topics.flatMap((topic) => [taxonomyLabel(topic, locale), ...topic.aliases]),
@@ -259,8 +263,17 @@ const olderKey = hrefDateKey(olderHref);
 										<span class="dot" aria-hidden="true" />
 										<div class="item-body">
 											<div class="meta">
-												<span class="src">{sourceName}</span>
-												<span class="badge">{typeLabels[item.content_type]}</span>
+												<span class:list={['src', { 'src-x': source.isX }]}>
+													{source.isX && (
+														<span class="x-logo" aria-label="X">
+															<i class="ph ph-x-logo" aria-hidden="true" />
+														</span>
+													)}
+													<span>{source.name}</span>
+												</span>
+												{item.content_type !== 'socialMedia' && (
+													<span class="badge">{typeLabels[item.content_type]}</span>
+												)}
 												{item.featured && (
 													<span class="badge featured-badge">
 														{isEnglish ? 'Selected' : '精选'}

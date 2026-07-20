@@ -13,6 +13,7 @@ import {
 	orderTimelineBatches,
 	structuredCutoverDate,
 	timelineDisplayText,
+	timelineSourceDisplay,
 	type StructuredDailyBatch,
 	type StructuredDailyItem,
 } from './structuredDaily';
@@ -206,7 +207,7 @@ describe('timeline editorial compatibility', () => {
 		});
 	});
 
-	it('keeps an AI-edited social headline and concise explanation', () => {
+	it('shows only the complete AI-edited sentence for social items', () => {
 		const item = {
 			content_type: 'socialMedia',
 			title: 'FDE 的阳谋：借企业落地沉淀模型能力',
@@ -216,7 +217,55 @@ describe('timeline editorial compatibility', () => {
 
 		expect(timelineDisplayText(item)).toEqual({
 			title: item.title,
-			summary: item.summary,
+			summary: '',
 		});
+	});
+});
+
+describe('timeline source display', () => {
+	const sourceItem = (overrides: Partial<StructuredDailyItem>): StructuredDailyItem =>
+		({
+			source_type: 'rss',
+			canonical_url: 'https://example.com/post',
+			source: { name: 'Example', homepage: 'https://example.com' },
+			...overrides,
+		}) as StructuredDailyItem;
+
+	it('shows X posts with the twitter prefix removed', () => {
+		expect(
+			timelineSourceDisplay(
+				sourceItem({
+					source_type: 'twitter_extra',
+					canonical_url: 'https://x.com/gdb/status/123',
+					source: { name: 'twitter-Greg Brockman', homepage: 'https://x.com/gdb' },
+				}),
+			),
+		).toEqual({ name: 'Greg Brockman', isX: true });
+	});
+
+	it('recognizes X URLs even when the source metadata is generic', () => {
+		expect(
+			timelineSourceDisplay(
+				sourceItem({
+					canonical_url: 'https://www.x.com/openai/status/123',
+					source: { name: 'OpenAI', homepage: null },
+				}),
+			),
+		).toEqual({ name: 'OpenAI', isX: true });
+	});
+
+	it('keeps regular source names unchanged', () => {
+		expect(timelineSourceDisplay(sourceItem({}))).toEqual({ name: 'Example', isX: false });
+	});
+
+	it('falls back to X when a prefixed source has no author name', () => {
+		expect(
+			timelineSourceDisplay(
+				sourceItem({
+					source_type: 'twitter_extra',
+					source: { name: 'twitter-', homepage: null },
+				}),
+			),
+		).toEqual({ name: 'X', isX: true });
 	});
 });

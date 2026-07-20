@@ -172,6 +172,7 @@ describe('knowledge classification', () => {
         ['qbit', { category: '模型' }, '', 'topic_models'],
         ['xinzhiyuan', { category: '研究' }, '', 'topic_research'],
         ['openai_newsroom', { category: 'product' }, '', 'topic_products'],
+        ['anthropic_research', { category: 'research' }, '', 'topic_research'],
         ['github_trending', { category: 'github' }, '', 'topic_open_source'],
         ['huggingface_papers', { category: 'paper' }, '', 'topic_research'],
         ['jiqizhixin', { category: '研究' }, '', 'topic_research'],

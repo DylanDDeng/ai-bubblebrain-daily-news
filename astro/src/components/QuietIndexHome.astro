@@ -17,6 +17,7 @@ import {
 	isDatabaseOwnedDailyDate,
 	loadStructuredDailyReport,
 	timelineDisplayText,
+	timelineSourceDisplay,
 	type DailyContentType,
 } from '../lib/structuredDaily';
 import '../styles/quiet-index.css';
@@ -85,6 +86,7 @@ const liveLabel =
 const items = report?.items ?? [];
 const lead = items.find((item) => item.featured) ?? items[0] ?? null;
 const leadDisplayText = lead ? timelineDisplayText(lead) : null;
+const leadSource = lead ? timelineSourceDisplay(lead) : null;
 const feedItems = homepageFeedItems(items, report?.batches ?? []);
 
 const categoryCounts = new Map<string, number>();
@@ -175,8 +177,16 @@ const previousDays = (
 								<h2>{leadDisplayText?.title || lead.title}</h2>
 								{leadDisplayText?.summary && <p>{leadDisplayText.summary}</p>}
 								<p class="src">
-									{cleanTimelineSummary(lead.source.name) || lead.source_type} ·{' '}
-									{formatTimelineTime(lead, locale, report.date)}
+									<span class:list={['source-label', { 'src-x': leadSource?.isX }]}>
+										{leadSource?.isX && (
+											<span class="x-logo" aria-label="X">
+												<i class="ph ph-x-logo" aria-hidden="true" />
+											</span>
+										)}
+										<span>{leadSource?.name}</span>
+									</span>
+									<span aria-hidden="true">·</span>
+									<span>{formatTimelineTime(lead, locale, report.date)}</span>
 								</p>
 							</a>
 						)}
@@ -193,6 +203,7 @@ const previousDays = (
 
 						{feedItems.map((item) => {
 							const displayText = timelineDisplayText(item);
+							const source = timelineSourceDisplay(item);
 							const title = displayText.title || (isEnglish ? 'Open original source' : '查看原文');
 							const summary = displayText.summary;
 							return (
@@ -200,10 +211,17 @@ const previousDays = (
 									<span class="time">{formatTimelineTime(item, locale, report.date)}</span>
 									<div>
 										<div class="meta">
-											<span class="src">
-												{cleanTimelineSummary(item.source.name) || item.source_type}
+											<span class:list={['src', { 'src-x': source.isX }]}>
+												{source.isX && (
+													<span class="x-logo" aria-label="X">
+														<i class="ph ph-x-logo" aria-hidden="true" />
+													</span>
+												)}
+												<span>{source.name}</span>
 											</span>
-											<span class="badge">{typeLabels[item.content_type]}</span>
+											{item.content_type !== 'socialMedia' && (
+												<span class="badge">{typeLabels[item.content_type]}</span>
+											)}
 										</div>
 										<h3>
 											{item.canonical_url ? (

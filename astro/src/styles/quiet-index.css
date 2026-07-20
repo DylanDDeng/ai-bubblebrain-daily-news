@@ -171,6 +171,9 @@
 }
 
 .quiet-home .lead-story .src {
+	display: flex;
+	align-items: center;
+	gap: 6px;
 	margin-top: 14px;
 	color: var(--ink-faint);
 	font-family: var(--mono);
@@ -230,8 +233,17 @@
 }
 
 .quiet-home .feed-item .meta .src {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
 	color: var(--ink-soft);
 	font-weight: 600;
+}
+
+.quiet-home .src-x .x-logo {
+	display: inline-flex;
+	font-size: 0.9rem;
+	line-height: 1;
 }
 
 .quiet-home .feed-item .meta .badge {

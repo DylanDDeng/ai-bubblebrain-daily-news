@@ -9,17 +9,23 @@ import HuggingfacePapersDataSource from '../dataSources/huggingface-papers.js';
 import JiqizhixinDataSource from '../dataSources/jiqizhixin.js';
 import TwitterDataSource from '../dataSources/twitter.js';
 import TwitterExtraDataSource from '../dataSources/twitter-extra.js';
+import KazikeDataSource from '../dataSources/kazike.js';
+import KazikeXDataSource from '../dataSources/kazike-x.js';
+import AnthropicResearchDataSource from '../dataSources/anthropic-research.js';
 
 export const STRUCTURED_SOURCE_ADAPTERS = Object.freeze([
     Object.freeze({ provider: 'aibase', contentType: 'news', adapter: AibaseDataSource }),
     Object.freeze({ provider: 'xiaohu', contentType: 'news', adapter: XiaohuDataSource }),
     Object.freeze({ provider: 'qbit', contentType: 'news', adapter: QBitDataSource }),
+    Object.freeze({ provider: 'kazike', contentType: 'news', adapter: KazikeDataSource }),
     Object.freeze({ provider: 'simonwillison', contentType: 'news', adapter: SimonWillisonDataSource }),
     Object.freeze({ provider: 'xinzhiyuan', contentType: 'news', adapter: XinZhiYuanDataSource }),
     Object.freeze({ provider: 'openai_newsroom', contentType: 'news', adapter: OpenAInewsroomDataSource }),
+    Object.freeze({ provider: 'anthropic_research', contentType: 'news', adapter: AnthropicResearchDataSource }),
     Object.freeze({ provider: 'github_trending', contentType: 'project', adapter: GithubTrendingDataSource }),
     Object.freeze({ provider: 'huggingface_papers', contentType: 'paper', adapter: HuggingfacePapersDataSource }),
     Object.freeze({ provider: 'jiqizhixin', contentType: 'paper', adapter: JiqizhixinDataSource }),
     Object.freeze({ provider: 'twitter', contentType: 'socialMedia', adapter: TwitterDataSource }),
     Object.freeze({ provider: 'twitter_extra', contentType: 'socialMedia', adapter: TwitterExtraDataSource }),
+    Object.freeze({ provider: 'kazike_x', contentType: 'socialMedia', adapter: KazikeXDataSource }),
 ]);
