@@ -78,6 +78,7 @@ type VerificationDependencies = {
   fetch?: typeof fetch;
   now?: () => number;
   sleep?: (milliseconds: number) => Promise<void>;
+  maximumAttempts?: number;
 };
 type VerificationProbeResult =
   | { ok: true; evidence: JsonRecord }
@@ -939,6 +940,13 @@ export async function verifyDeployment(
     ((milliseconds: number) =>
       new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
   const fetcher = dependencies.fetch || fetch;
+  const maximumAttempts = dependencies.maximumAttempts;
+  if (
+    maximumAttempts !== undefined &&
+    (!Number.isSafeInteger(maximumAttempts) || maximumAttempts < 1)
+  ) {
+    throw new Error("Maximum verification attempts is invalid");
+  }
   const maximumInconsistencyMs = Number(
     env.MAX_PRODUCTION_INCONSISTENCY_MS || "240000",
   );
@@ -1034,6 +1042,7 @@ export async function verifyDeployment(
       else failures.push(result.failure);
     }
     if (evidenceByOrigin.size === bases.length) break;
+    if (maximumAttempts !== undefined && round + 1 >= maximumAttempts) break;
     const remainingAfterProbe =
       maximumInconsistencyMs - (now() - windowStartedAt);
     if (remainingAfterProbe <= 0) break;
@@ -1494,11 +1503,16 @@ export async function reconcileProduction(
     const deployment = await latestProductionDeployment(env);
     try {
       const targetFiles = await artifactFiles(target, env);
+      // Recovery runs on the Free-plan 50-subrequest budget. Probe the
+      // interrupted target once; if it has not already converged, preserve the
+      // rest of this invocation for restoring and verifying last-known-good.
       const evidence = await verifyDeployment(
         target,
         deployment.url,
         env,
         targetFiles,
+        undefined,
+        { maximumAttempts: 1 },
       );
       await purgeContentCaches(env);
       if (slot.operation === "forward") {

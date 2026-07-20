@@ -613,6 +613,23 @@ describe("production convergence verification", () => {
     expect(value.manifestAttempts.get("https://www.example.test")).toBe(10);
   });
 
+  it("supports one recovery probe so rollback retains the invocation budget", async () => {
+    const value = setup(false, 9);
+    const clock = controlledClock();
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        value.env,
+        { kind: "tar", files },
+        clock.startedAt,
+        { ...clock.dependencies, maximumAttempts: 1 },
+      ),
+    ).rejects.toThrow("did not converge");
+    expect(value.manifestAttempts.get("https://deploy.pages.dev")).toBe(1);
+    expect(value.manifestAttempts.get("https://www.example.test")).toBe(1);
+  });
+
   it("fails closed when a custom-domain search artifact drifts", async () => {
     const value = setup(true);
     const clock = controlledClock();
