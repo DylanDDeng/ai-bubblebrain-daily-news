@@ -329,6 +329,7 @@ export async function runStructuredDailyWorkflow(
                     version: producerVersion,
                     commitSha: env.DAILY_PRODUCER_COMMIT_SHA || null,
                 },
+                blockedXHandles: env.X_BLOCKED_HANDLES || '',
                 structuredStartDate,
             });
             if (Array.isArray(result.report?.items)) {

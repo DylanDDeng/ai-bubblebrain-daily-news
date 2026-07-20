@@ -5,6 +5,7 @@ import { validateDailyReportIdentities, validateDailyReportSemantics } from './s
 import { validateDailyReportSchema } from './schemaValidate.js';
 import { isExplicitInstant, isRealDate, previousReportDates } from './time.js';
 import { taxonomy } from '../knowledge/taxonomy.js';
+import { filterBlockedXItemsFromReport } from '../sourceFilters.js';
 
 const BATCH_LABELS = {
     morning: '10:00 更新',
@@ -39,6 +40,7 @@ export async function buildDailyArtifacts({
     batch,
     runAt,
     producer,
+    blockedXHandles = '',
 }) {
     if (!isRealDate(reportDate)) throw new Error('Invalid report date');
     if (!BATCH_ORDER.includes(batch)) throw new Error('Invalid batch');
@@ -71,6 +73,8 @@ export async function buildDailyArtifacts({
         validateDailyReportSemantics(existingReport, { enforcePhase1: true });
         await validateDailyReportIdentities(existingReport);
     }
+    const filteredExisting = filterBlockedXItemsFromReport(existingReport, blockedXHandles);
+    existingReport = filteredExisting.report;
     for (const report of recentReports) {
         validateDailyReportSchema(report);
         validateDailyReportSemantics(report, { enforcePhase1: true });
@@ -103,6 +107,7 @@ export async function buildDailyArtifacts({
                 fresh_count: 0,
                 history_days_loaded: recentReports.length,
                 cold_start: recentReports.length === 0,
+                blocked_existing_count: filteredExisting.removedCount,
             },
             rejected,
             crossDayDuplicates: crossDay.duplicates,
@@ -158,6 +163,7 @@ export async function buildDailyArtifacts({
             fresh_count: sameDay.freshCount,
             history_days_loaded: recentReports.length,
             cold_start: recentReports.length === 0,
+            blocked_existing_count: filteredExisting.removedCount,
         },
         rejected,
         crossDayDuplicates: crossDay.duplicates,

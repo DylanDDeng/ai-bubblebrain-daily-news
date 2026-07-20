@@ -1,5 +1,6 @@
 import { STRUCTURED_SOURCE_ADAPTERS } from './sourceAdapters.js';
 import { classifyProviderFailure } from './providerFailure.js';
+import { filterBlockedSourceItems } from '../sourceFilters.js';
 
 const CONTENT_TYPE_ORDER = ['news', 'project', 'paper', 'socialMedia'];
 const DEFAULT_FETCH_ATTEMPTS = 2;
@@ -100,7 +101,11 @@ export async function fetchProviderPreservingData(env, foloCookie, {
         }
 
         try {
-            const transformed = entry.adapter.transform(raw, entry.contentType, { strict: true });
+            const transformed = filterBlockedSourceItems(
+                entry.adapter.transform(raw, entry.contentType, { strict: true }),
+                entry.contentType,
+                env,
+            );
             if (!Array.isArray(transformed)) throw new Error('Adapter transform must return an array');
             taggedByType[entry.contentType].push(...transformed.map(item => ({
                 provider: entry.provider,

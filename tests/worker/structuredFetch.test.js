@@ -77,6 +77,47 @@ describe('provider-preserving structured fetch', () => {
         expect(result.sourceCounts).toEqual({ news: 2, project: 0, paper: 0, socialMedia: 0 });
     });
 
+    it('excludes configured X handles before they enter the structured report', async () => {
+        const calls = [];
+        const blocked = {
+            id: 'blocked',
+            url: 'https://x.com/ezshine/status/2079115504036552777',
+            published_date: '2026-07-20T08:05:00Z',
+        };
+        const allowed = {
+            id: 'allowed',
+            url: 'https://x.com/another_account/status/2079115504036552778',
+            published_date: '2026-07-20T08:04:00Z',
+        };
+
+        const result = await fetchProviderPreservingData(
+            { X_BLOCKED_HANDLES: ' @EZSHINE, another_blocked_account ' },
+            null,
+            { adapters: [adapter('twitter', 'socialMedia', [blocked, allowed], calls)] },
+        );
+
+        expect(result.grouped.socialMedia).toEqual([allowed]);
+        expect(result.structuredItems).toEqual([{ ...allowed, provider: 'twitter' }]);
+        expect(result.sourceCounts.socialMedia).toBe(1);
+    });
+
+    it('does not apply X handle exclusions to non-social content', async () => {
+        const calls = [];
+        const linkedNews = {
+            id: 'news',
+            url: 'https://x.com/ezshine/status/2079115504036552777',
+            published_date: '2026-07-20T08:05:00Z',
+        };
+
+        const result = await fetchProviderPreservingData(
+            { X_BLOCKED_HANDLES: 'ezshine' },
+            null,
+            { adapters: [adapter('newsroom', 'news', [linkedNews], calls)] },
+        );
+
+        expect(result.grouped.news).toEqual([linkedNews]);
+    });
+
     it('isolates one provider failure and continues with later providers', async () => {
         const calls = [];
         const broken = adapter('broken', 'news', [], calls);
