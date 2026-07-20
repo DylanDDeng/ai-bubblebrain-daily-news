@@ -8,11 +8,11 @@ import { dataSources } from '../../src/dataFetchers.js';
 import GithubTrendingDataSource from '../../src/dataSources/github-trending.js';
 
 describe('source registry and stable identity v1', () => {
-    it('freezes unique policies for all 12 registered source providers', () => {
+    it('freezes unique policies for all 14 registered source providers', () => {
         expect(Object.keys(SOURCE_REGISTRY)).toEqual([
-            'aibase', 'xiaohu', 'qbit', 'simonwillison', 'xinzhiyuan', 'openai_newsroom',
+            'aibase', 'xiaohu', 'qbit', 'kazike', 'simonwillison', 'xinzhiyuan', 'openai_newsroom',
             'github_trending', 'huggingface_papers', 'jiqizhixin',
-            'twitter', 'twitter_extra', 'reddit',
+            'twitter', 'twitter_extra', 'kazike_x', 'reddit',
         ]);
         for (const policy of Object.values(SOURCE_REGISTRY)) {
             expect(['source_id', 'canonical_url']).toContain(policy.primaryIdentity);
@@ -23,14 +23,14 @@ describe('source registry and stable identity v1', () => {
         // Retired providers (reddit) stay in the registry for historical identity
         // but no longer have an active fetch adapter.
         const retiredProviders = ['reddit'];
-        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(11);
+        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(13);
         expect(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.provider))
             .toEqual(Object.keys(SOURCE_REGISTRY).filter(provider => !retiredProviders.includes(provider)));
         for (const entry of STRUCTURED_SOURCE_ADAPTERS) {
             expect(dataSources[entry.contentType].sources).toContain(entry.adapter);
             expect(SOURCE_REGISTRY[entry.provider].contentType).toBe(entry.contentType);
         }
-        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(11);
+        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(13);
     });
 
     it('canonicalizes conservatively and preserves business-significant URL parts', () => {
