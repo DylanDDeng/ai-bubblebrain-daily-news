@@ -1,0 +1,69 @@
+---
+interface DirectoryItem {
+	id: string;
+	title?: string;
+	name?: string;
+	description?: string;
+	thumb?: string;
+	logo?: string;
+	tags?: string[];
+	url?: string;
+	detailUrl?: string;
+	originalUrl?: string;
+	company?: string;
+	model?: string;
+	author_name?: string;
+	date?: string;
+}
+
+interface Props {
+	item: DirectoryItem;
+	locale: string;
+	knownRoutes: Set<string>;
+}
+
+const { item, locale, knownRoutes } = Astro.props;
+
+const tags = Array.isArray(item.tags) ? item.tags : [];
+const name = item.name ?? item.title ?? '';
+const detail = item.description ?? '';
+const image = item.logo ?? item.thumb;
+let href = item.url ?? item.detailUrl ?? item.originalUrl;
+if (href?.startsWith('/') && !knownRoutes.has(href)) href = item.originalUrl;
+const meta = item.company ?? (item.model || item.date) ?? item.author_name ?? item.date ?? '';
+---
+
+<article
+	data-directory-item
+	data-search={`${name} ${detail} ${tags.join(' ')} ${meta}`.toLocaleLowerCase(locale)}
+>
+	{image && <img src={image} alt="" loading="lazy" referrerpolicy="no-referrer" />}
+	<div>
+		<p class="directory-item-meta">{meta}</p>
+		<h2>
+			{
+				href ? (
+					<a
+						href={href}
+						target={href.startsWith('http') ? '_blank' : undefined}
+						rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+					>
+						{name}
+					</a>
+				) : (
+					name
+				)
+			}
+		</h2>
+		{detail && <p>{detail}</p>}
+		{
+			tags.length > 0 && (
+				<ul>
+					{tags.map((tag) => (
+						<li>{tag}</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+</article>
