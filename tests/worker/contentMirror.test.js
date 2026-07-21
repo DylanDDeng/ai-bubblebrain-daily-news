@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
     mirrorStructuredReport,
     publicationBatchId,
+    resolveForwardBuildCodeSha,
 } from '../../workers/content/ingestion/mirror.ts';
 import { canonicalJsonBytes } from '../../workers/content/shared/canonical.ts';
 
@@ -128,6 +129,42 @@ function input(value = report()) {
 }
 
 describe('structured content database mirror', () => {
+    it('pins a delayed mirror to current main when the source commit is its ancestor', async () => {
+        const mainSha = 'b'.repeat(40);
+        const api = vi
+            .fn()
+            .mockResolvedValueOnce({ object: { sha: mainSha } })
+            .mockResolvedValueOnce({
+                status: 'ahead',
+                base_commit: { sha: codeSha.toLowerCase() },
+                merge_base_commit: { sha: codeSha.toLowerCase() },
+            });
+
+        await expect(resolveForwardBuildCodeSha({}, codeSha, api)).resolves.toBe(mainSha);
+        expect(api).toHaveBeenNthCalledWith(1, expect.anything(), '/git/ref/heads/main');
+        expect(api).toHaveBeenNthCalledWith(
+            2,
+            expect.anything(),
+            `/compare/${codeSha.toLowerCase()}...${mainSha}`,
+        );
+    });
+
+    it('does not replace a source SHA that is not contained by current main', async () => {
+        const mainSha = 'b'.repeat(40);
+        const api = vi
+            .fn()
+            .mockResolvedValueOnce({ object: { sha: mainSha } })
+            .mockResolvedValueOnce({
+                status: 'diverged',
+                base_commit: { sha: codeSha.toLowerCase() },
+                merge_base_commit: { sha: 'c'.repeat(40) },
+            });
+
+        await expect(resolveForwardBuildCodeSha({}, codeSha, api)).resolves.toBe(
+            codeSha.toLowerCase(),
+        );
+    });
+
     it('uses a separate publication fence for the scheduled 03:00 supplement', () => {
         expect(publicationBatchId('lateNight', `scheduled:${Date.parse('2026-07-20T18:00:00.000Z')}`))
             .toBe('lateNight');
@@ -229,10 +266,41 @@ describe('structured content database mirror', () => {
             expect(finalize.values.at(-1)).toMatchObject({
                 mode: expectedMode,
                 code_sha: codeSha.toLowerCase(),
+                source_code_sha: codeSha.toLowerCase(),
             });
             expect(db.sql.end).toHaveBeenCalledWith({ timeout: 2 });
         },
     );
+
+    it('persists the forward-selected build SHA before the immutable outbox is created', async () => {
+        const env = {
+            ...enabledEnv('true'),
+            GITHUB_TOKEN: 'test-token',
+            GITHUB_REPO_OWNER: 'owner',
+            GITHUB_REPO_NAME: 'repo',
+        };
+        const db = database();
+        const mainSha = 'b'.repeat(40);
+        const api = vi
+            .fn()
+            .mockResolvedValueOnce({ object: { sha: mainSha } })
+            .mockResolvedValueOnce({
+                status: 'ahead',
+                base_commit: { sha: codeSha.toLowerCase() },
+                merge_base_commit: { sha: codeSha.toLowerCase() },
+            });
+
+        await mirrorStructuredReport(env, input(), {
+            openDatabase: vi.fn(() => db.sql),
+            api,
+        });
+
+        const finalize = db.calls.find((call) => call.query.includes('finalize_site_release_v1'));
+        expect(finalize.values.at(-1)).toMatchObject({
+            code_sha: mainSha,
+            source_code_sha: codeSha.toLowerCase(),
+        });
+    });
 
     it('reuses exact R2 bytes and the deterministic reservation after a committed finalize loses its response', async () => {
         const env = enabledEnv();
