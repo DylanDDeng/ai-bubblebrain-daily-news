@@ -72,6 +72,24 @@ function resolveBatch(date = new Date(), forcedBatch = null, forcedDate = null) 
     return { reportDate: today, batch: 'morning' };
 }
 
+function nominalBatchContentCutoff(reportDate, batch) {
+    const localInstant = batch === 'lateNight'
+        ? `${getDateDaysAgo(reportDate, -1)}T03:00:00+08:00`
+        : `${reportDate}T${({ morning: '10', afternoon: '15', night: '23' })[batch]}:00:00+08:00`;
+    const cutoff = new Date(localInstant);
+    if (Number.isNaN(cutoff.getTime())) throw new Error('Invalid batch content cutoff');
+    return cutoff;
+}
+
+function resolveContentCutoff(options, reportDate, batch, runAt) {
+    if (options.contentCutoff) return options.contentCutoff;
+    if (!options.date && !options.batch) return runAt;
+    const runDate = new Date(runAt);
+    if (Number.isNaN(runDate.getTime())) throw new Error('Invalid runAt');
+    const nominalCutoff = nominalBatchContentCutoff(reportDate, batch);
+    return new Date(Math.min(runDate.getTime(), nominalCutoff.getTime())).toISOString();
+}
+
 function batchLabel(batch) {
     return ({
         morning: '10:00 更新',
@@ -520,6 +538,7 @@ export async function runIncrementalDailyWorkflow(env, options = {}, dependencie
         ? new Date(`${options.date}T12:00:00+08:00`)
         : new Date(runAt);
     const { reportDate, batch } = resolveBatch(targetClock, options.batch, options.date);
+    const contentCutoff = resolveContentCutoff(options, reportDate, batch, runAt);
 
     if (mode === 'structured') {
         resolveHistoryEpochStartDate(env, reportDate);
@@ -532,6 +551,7 @@ export async function runIncrementalDailyWorkflow(env, options = {}, dependencie
             batch,
             triggerId: options.triggerId || null,
             runAt,
+            contentCutoff,
         });
     }
 
@@ -557,6 +577,7 @@ export async function runIncrementalDailyWorkflow(env, options = {}, dependencie
             reportDate,
             batch,
             runAt,
+            contentCutoff,
             rawItems: fetched.structuredItems,
             structuredStartDate,
             producer: {

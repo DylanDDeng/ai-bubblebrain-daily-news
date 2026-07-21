@@ -185,7 +185,7 @@ describe('daily report v1 deterministic boundary', () => {
 
     it('filters incoming cross-day duplicates for the inclusive seven-day window', async () => {
         const prior = await buildDailyArtifacts({
-            rawItems: [rawItem()],
+            rawItems: [rawItem({ published_date: '2026-07-07T14:20:00+08:00' })],
             reportDate: '2026-07-07',
             batch: 'morning',
             runAt: '2026-07-07T07:00:00Z',
@@ -199,7 +199,7 @@ describe('daily report v1 deterministic boundary', () => {
 
     it('reports the same most-recent cross-day match regardless of history input order', async () => {
         const makePrior = date => buildDailyArtifacts({
-            rawItems: [rawItem()],
+            rawItems: [rawItem({ published_date: `${date}T14:20:00+08:00` })],
             reportDate: date,
             batch: 'morning',
             runAt: `${date}T07:00:00Z`,
@@ -253,7 +253,7 @@ describe('daily report v1 deterministic boundary', () => {
 
     it('fails closed when a provided historical report is semantically invalid', async () => {
         const prior = await buildDailyArtifacts({
-            rawItems: [rawItem()],
+            rawItems: [rawItem({ published_date: '2026-07-13T14:20:00+08:00' })],
             reportDate: '2026-07-13',
             batch: 'morning',
             runAt: '2026-07-13T07:00:00Z',
@@ -366,6 +366,77 @@ describe('daily report v1 deterministic boundary', () => {
             published_date: '2026-07-16',
         });
         expect(result.files[0].path).toBe('data/daily/2026-07-15.json');
+    });
+
+    it('excludes content published after the cutoff during a delayed late-night replay', async () => {
+        const result = await build({
+            reportDate: '2026-07-20',
+            batch: 'lateNight',
+            runAt: '2026-07-21T01:16:00Z',
+            contentCutoff: '2026-07-20T19:00:00Z',
+            rawItems: [
+                rawItem({
+                    id: 'before-cutoff',
+                    url: 'https://example.com/before-cutoff',
+                    published_date: '2026-07-21T02:30:00+08:00',
+                }),
+                rawItem({
+                    id: 'at-cutoff',
+                    url: 'https://example.com/at-cutoff',
+                    published_date: '2026-07-21T03:00:00+08:00',
+                }),
+                rawItem({
+                    id: 'after-cutoff',
+                    url: 'https://example.com/after-cutoff',
+                    published_date: '2026-07-21T03:24:00+08:00',
+                }),
+                rawItem({
+                    id: 'hours-after-cutoff',
+                    url: 'https://example.com/hours-after-cutoff',
+                    published_date: '2026-07-21T08:37:00+08:00',
+                }),
+            ],
+        });
+
+        expect(result.report.items.map(item => item.source_id))
+            .toEqual(['before-cutoff', 'at-cutoff']);
+        expect(result.metrics).toMatchObject({
+            raw_count: 4,
+            accepted_count: 2,
+            rejected_count: 0,
+            after_cutoff_count: 2,
+            after_cutoff_existing_count: 0,
+            content_cutoff: '2026-07-20T19:00:00.000Z',
+        });
+    });
+
+    it('removes previously misattributed future items when replaying the same batch', async () => {
+        const original = await build({
+            reportDate: '2026-07-20',
+            batch: 'lateNight',
+            runAt: '2026-07-21T01:16:00Z',
+            rawItems: [rawItem({
+                id: 'historical-future-item',
+                url: 'https://example.com/historical-future-item',
+                published_date: '2026-07-21T08:37:00+08:00',
+            })],
+        });
+
+        const repaired = await build({
+            reportDate: '2026-07-20',
+            batch: 'lateNight',
+            runAt: '2026-07-21T01:16:00Z',
+            contentCutoff: '2026-07-20T19:00:00Z',
+            existingReport: original.report,
+            rawItems: [],
+        });
+
+        expect(repaired.report.items).toEqual([]);
+        expect(repaired.metrics).toMatchObject({
+            after_cutoff_count: 0,
+            after_cutoff_existing_count: 1,
+            content_cutoff: '2026-07-20T19:00:00.000Z',
+        });
     });
 
     it('reruns the same reportDate and lateNight batch idempotently, appending only new items', async () => {
