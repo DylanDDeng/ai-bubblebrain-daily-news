@@ -332,7 +332,7 @@ describe("content-addressed Pages upload", () => {
     };
   }
 
-  it("fetches and verifies only missing R2 assets before direct upload", async () => {
+  it("fetches only missing immutable R2 assets before direct upload", async () => {
     const value = setup();
     await expect(
       uploadPages(value.bundle, context, value.env as never),
@@ -352,13 +352,11 @@ describe("content-addressed Pages upload", () => {
     ]);
   });
 
-  it("stops before Pages upload when an R2 asset fails byte verification", async () => {
-    const corrupt = pageBytes.slice();
-    corrupt[0] ^= 1;
-    const value = setup(corrupt);
+  it("stops before Pages upload when an immutable R2 asset length drifts", async () => {
+    const value = setup(pageBytes.slice(1));
     await expect(
       uploadPages(value.bundle, context, value.env as never),
-    ).rejects.toThrow("asset hash mismatch");
+    ).rejects.toThrow("asset is unavailable");
     expect(
       value.requests.some(({ url }) => url.endsWith("/assets/upload")),
     ).toBe(false);
@@ -611,6 +609,23 @@ describe("production convergence verification", () => {
     });
     expect(value.manifestAttempts.get("https://deploy.pages.dev")).toBe(1);
     expect(value.manifestAttempts.get("https://www.example.test")).toBe(10);
+  });
+
+  it("supports one recovery probe so rollback retains the invocation budget", async () => {
+    const value = setup(false, 9);
+    const clock = controlledClock();
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        value.env,
+        { kind: "tar", files },
+        clock.startedAt,
+        { ...clock.dependencies, maximumAttempts: 1 },
+      ),
+    ).rejects.toThrow("did not converge");
+    expect(value.manifestAttempts.get("https://deploy.pages.dev")).toBe(1);
+    expect(value.manifestAttempts.get("https://www.example.test")).toBe(1);
   });
 
   it("fails closed when a custom-domain search artifact drifts", async () => {

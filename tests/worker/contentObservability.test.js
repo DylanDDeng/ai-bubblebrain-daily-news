@@ -33,6 +33,10 @@ function healthyInput() {
     },
     cacheHitMinimum: 0.5,
     cacheSampleMinimum: 100,
+    scheduledOutcomes: due.map((batch) => ({
+      scheduled_at: batch.scheduled_at,
+      status: "succeeded",
+    })),
     currentEndpoints: [
       { url: "https://api-one.invalid/v1/current", body: CURRENT },
       { url: "https://api-two.invalid/v1/current", body: CURRENT },
@@ -70,12 +74,18 @@ function healthyInput() {
 }
 
 describe("content observability evaluator", () => {
-  it("maps the four canonical UTC schedules to their report dates", () => {
+  it("maps all five production UTC schedules to their report dates", () => {
     expect(dueContentBatches(NOW)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           report_date: "2026-07-17",
           batch_id: "lateNight",
+          scheduled_at: "2026-07-17T18:00:00.000Z",
+        }),
+        expect.objectContaining({
+          report_date: "2026-07-17",
+          batch_id: "lateNight",
+          scheduled_at: "2026-07-17T19:00:00.000Z",
         }),
         expect.objectContaining({
           report_date: "2026-07-18",
@@ -113,6 +123,7 @@ describe("content observability evaluator", () => {
       server_errors: 20,
     };
     input.database.outbox.dead_letter_count = 1;
+    input.scheduledOutcomes[0].status = "failed";
     const result = evaluateContentObservability(input, NOW);
     expect(result.healthy).toBe(false);
     expect(result.reasons).toEqual(
@@ -124,6 +135,7 @@ describe("content observability evaluator", () => {
         expect.stringMatching(/^api_5xx_ratio:/),
         expect.stringMatching(/^api_cache_hit_ratio:/),
         "outbox_dead_letter:1",
+        expect.stringMatching(/^scheduled_run_failed:/),
       ]),
     );
   });
@@ -137,6 +149,9 @@ describe("content observability production identity", () => {
     CLOUDFLARE_ACCOUNT_ID: "a".repeat(32),
     CLOUDFLARE_ZONE_ID: "b".repeat(32),
     CLOUDFLARE_ANALYTICS_API_TOKEN: "c".repeat(32),
+    CONTENT_SCHEDULE_HEALTH_TOKEN: "d".repeat(32),
+    CONTENT_SCHEDULE_HEALTH_URL:
+      "https://ai-daily.example.workers.dev/health/scheduled",
     CONTENT_CURRENT_URLS:
       "https://content-api.example.com/v1/current,https://content-api-alt.example.com/v1/current",
     CONTENT_STATIC_MANIFEST_URLS:

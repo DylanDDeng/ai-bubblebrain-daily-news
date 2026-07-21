@@ -21,6 +21,21 @@ import { applyEditorialEnrichment, editorialNeedsEnrichment } from './editorial.
 
 const MAX_PUBLICATION_ATTEMPTS = 3;
 
+export function scheduledFetchPageCap(env, batch, runAt) {
+    if (batch !== 'lateNight') return null;
+    const hour = Number(new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Shanghai',
+        hour: '2-digit',
+        hour12: false,
+    }).format(new Date(runAt)));
+    if (hour < 3 || hour >= 5) return null;
+    const cap = Number.parseInt(env.LATE_NIGHT_SUPPLEMENT_FETCH_PAGE_CAP || '1', 10);
+    if (!Number.isInteger(cap) || cap < 1 || cap > 3) {
+        throw new Error('LATE_NIGHT_SUPPLEMENT_FETCH_PAGE_CAP must be between one and three');
+    }
+    return cap;
+}
+
 export class StructuredRunLockedError extends Error {
     constructor() {
         super('A structured run is already in progress');
@@ -305,20 +320,26 @@ export async function runStructuredDailyWorkflow(
     });
     if (!lease.acquired) throw new StructuredRunLockedError();
 
+    let failureStage = 'unknown';
     try {
+        failureStage = 'git_publish';
         const confirmed = await confirmedTriggerResult(env, triggerId, reportDate, batch, deps);
         if (confirmed) return confirmed;
 
+        failureStage = 'fetch';
         const foloCookie = await deps.getFoloCookie(env);
-        const fetched = await deps.fetchData(env, foloCookie);
+        const fetchPageCap = scheduledFetchPageCap(env, batch, runAt);
+        const fetched = await deps.fetchData(env, foloCookie, { fetchPageCap });
         if (fetched.errors.length > 0) {
             throw new StructuredSourceFetchError(fetched.errors);
         }
 
         const editorialCache = new Map();
         for (let attempt = 1; attempt <= MAX_PUBLICATION_ATTEMPTS; attempt += 1) {
+            failureStage = 'git_publish';
             const snapshot = await deps.resolveSnapshot(env, { api: deps.api });
             const { reader, ...reports } = await loadReports(env, snapshot, reportDate, structuredStartDate, deps);
+            failureStage = 'build';
             let result = await deps.build({
                 ...reports,
                 rawItems: fetched.structuredItems,
@@ -364,6 +385,7 @@ export async function runStructuredDailyWorkflow(
             const expectedPaths = assertPublicationFiles(result.files, reportDate);
 
             if (result.noOp) {
+                failureStage = 'git_publish';
                 const artifactsMatch = (
                     await Promise.all(
                         expectedPaths.map(async (path) => {
@@ -417,6 +439,7 @@ export async function runStructuredDailyWorkflow(
             }
 
             try {
+                failureStage = 'git_publish';
                 const published = await deps.commit(
                     env,
                     {
@@ -472,6 +495,15 @@ export async function runStructuredDailyWorkflow(
             }
         }
         throw new AtomicGitConflictError('Git branch kept moving during structured publication');
+    } catch (error) {
+        if (error && typeof error === 'object' && !error.failureStage) {
+            try {
+                error.failureStage = failureStage;
+            } catch {
+                // Preserve the original failure even when an exotic error object is immutable.
+            }
+        }
+        throw error;
     } finally {
         try {
             await deps.releaseLease(env.DATA_KV, lease);

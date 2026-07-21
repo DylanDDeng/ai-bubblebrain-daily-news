@@ -7,7 +7,8 @@ describe('worker regression guards', () => {
         const workflowPromise = Promise.resolve({ success: true });
         const scheduledWorkflow = vi.fn(() => workflowPromise);
         const waitUntil = vi.fn();
-        const env = { marker: 'production-env', EXTERNAL_WRITES_ENABLED: 'true' };
+        const DATA_KV = { put: vi.fn(async () => undefined) };
+        const env = { marker: 'production-env', EXTERNAL_WRITES_ENABLED: 'true', DATA_KV };
         const worker = createWorker({ scheduledWorkflow });
 
         await worker.scheduled({ scheduledTime: Date.UTC(2026, 6, 14) }, env, { waitUntil });
@@ -19,6 +20,15 @@ describe('worker regression guards', () => {
         });
         expect(waitUntil).toHaveBeenCalledOnce();
         await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({ success: true });
+        expect(DATA_KV.put).toHaveBeenCalledOnce();
+        expect(DATA_KV.put.mock.calls[0][0]).toBe(
+            'scheduled:outcome:2026-07-14T00:00:00.000Z',
+        );
+        expect(JSON.parse(DATA_KV.put.mock.calls[0][1])).toEqual({
+            scheduled_at: '2026-07-14T00:00:00.000Z',
+            status: 'succeeded',
+            run_at: '2026-07-14T00:00:00.000Z',
+        });
     });
 
     it('persists sanitized scheduled failures without converting them to success', async () => {
@@ -48,8 +58,10 @@ describe('worker regression guards', () => {
 
         expect(waitUntil).toHaveBeenCalledOnce();
         await expect(waitUntil.mock.calls[0][0]).rejects.toBe(error);
-        expect(DATA_KV.put).toHaveBeenCalledOnce();
-        const [markerKey, rawMarker, options] = DATA_KV.put.mock.calls[0];
+        expect(DATA_KV.put).toHaveBeenCalledTimes(2);
+        const [markerKey, rawMarker, options] = DATA_KV.put.mock.calls.find(
+            ([key]) => key.startsWith('structured:attempt-failure:'),
+        );
         const marker = JSON.parse(rawMarker);
         expect(marker).toEqual({
             success: false,
@@ -68,6 +80,14 @@ describe('worker regression guards', () => {
         });
         expect(markerKey).toMatch(/^structured:attempt-failure:[a-f0-9]{64}$/);
         expect(options).toEqual({ expirationTtl: 14 * 24 * 60 * 60 });
+        const outcome = DATA_KV.put.mock.calls.find(
+            ([key]) => key === 'scheduled:outcome:2026-07-14T00:00:00.000Z',
+        );
+        expect(JSON.parse(outcome[1])).toMatchObject({
+            scheduled_at: '2026-07-14T00:00:00.000Z',
+            status: 'failed',
+            failure_stage: 'fetch',
+        });
         expect(rawMarker).not.toContain('secret upstream detail');
         expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('secret upstream detail');
     });
@@ -117,7 +137,10 @@ describe('worker regression guards', () => {
         );
         await expect(waitUntil.mock.calls[0][0]).rejects.toBe(error);
 
-        const marker = JSON.parse(DATA_KV.put.mock.calls[0][1]);
+        const failureCall = DATA_KV.put.mock.calls.find(
+            ([key]) => key.startsWith('structured:attempt-failure:'),
+        );
+        const marker = JSON.parse(failureCall[1]);
         expect(marker).toMatchObject({
             error_type: 'scheduled_workflow_failed',
             failure_stage: 'unknown',
@@ -162,6 +185,46 @@ describe('worker regression guards', () => {
         expect(consoleSpy).toHaveBeenCalled();
     });
 
+    it('exposes only authenticated scheduled outcomes to the production monitor', async () => {
+        const values = new Map([[
+            'scheduled:outcome:2026-07-20T19:00:00.000Z',
+            JSON.stringify({
+                scheduled_at: '2026-07-20T19:00:00.000Z',
+                status: 'failed',
+                run_at: '2026-07-20T19:00:45.000Z',
+                error_type: 'scheduled_workflow_failed',
+                failure_stage: 'git_publish',
+                secret_detail: 'must-not-leak',
+            }),
+        ]]);
+        const env = {
+            DATA_KV: { get: vi.fn(async key => values.get(key) ?? null) },
+            SCHEDULE_HEALTH_TOKEN: 'monitor-secret',
+        };
+        const worker = createWorker();
+        const url = 'https://example.test/health/scheduled?scheduled_at=2026-07-20T19%3A00%3A00.000Z';
+
+        const unauthorized = await worker.fetch(new Request(url), env);
+        expect(unauthorized.status).toBe(401);
+
+        const response = await worker.fetch(new Request(url, {
+            headers: { Authorization: 'Bearer monitor-secret' },
+        }), env);
+        const body = await response.json();
+        expect(response.status).toBe(200);
+        expect(body).toEqual({
+            success: true,
+            slots: [{
+                scheduled_at: '2026-07-20T19:00:00.000Z',
+                status: 'failed',
+                run_at: '2026-07-20T19:00:45.000Z',
+                error_type: 'scheduled_workflow_failed',
+                failure_stage: 'git_publish',
+            }],
+        });
+        expect(JSON.stringify(body)).not.toContain('must-not-leak');
+    });
+
     it('preserves the production cron and GitHub main branch configuration', async () => {
         const config = await readFile(new URL('../../wrangler.toml', import.meta.url), 'utf8');
         expect(config).toContain('GITHUB_BRANCH = "main"');
@@ -181,6 +244,13 @@ describe('worker regression guards', () => {
         expect(config).toContain('ANTHROPIC_RESEARCH_FEED_ID = "160743780570397696"');
         expect(config).toContain('ANTHROPIC_RESEARCH_FETCH_PAGES = "1"');
         expect(config).toContain('ANTHROPIC_RESEARCH_FILTER_DAYS = "14"');
+        expect(config).toContain('AIBASE_FETCH_PAGES = "2"');
+        expect(config).toContain('OPENAI_NEWSROOM_FETCH_PAGES = "1"');
+        expect(config).toContain('XIAOHU_FETCH_PAGES = "1"');
+        expect(config).toContain('HGPAPERS_FETCH_PAGES = "1"');
+        expect(config).toContain('TWITTER_EXTRA_FETCH_PAGES = "1"');
+        expect(config).toContain('LATE_NIGHT_SUPPLEMENT_FETCH_PAGE_CAP = "1"');
+        expect(config).toContain('DAILY_SOURCE_RETRY_BUDGET = "2"');
         expect(config).toContain('X_BLOCKED_HANDLES = "ezshine,GemstoneNicole"');
         expect(config).toContain('id = "a8155f35059c4b2faf4b06ef43c30fa3"');
     });
@@ -213,6 +283,23 @@ describe('worker regression guards', () => {
         expect(parityIndex).toBeGreaterThan(-1);
         expect(parityIndex).toBeLessThan(finalBuildIndex);
         expect(finalBuildIndex).toBeLessThan(uploadIndex);
+    });
+
+    it('keeps the comments write UI gate aligned across verification and production builds', async () => {
+        const [verificationWorkflow, productionWorkflow] = await Promise.all([
+            readFile(
+                new URL('../../.github/workflows/build-and-deploy.yml', import.meta.url),
+                'utf8',
+            ),
+            readFile(
+                new URL('../../.github/workflows/content-release.yml', import.meta.url),
+                'utf8',
+            ),
+        ]);
+        const commentsGate =
+            "PUBLIC_COMMENTS_WRITE_UI_ENABLED: ${{ vars.PUBLIC_COMMENTS_WRITE_UI_ENABLED || 'false' }}";
+        expect(verificationWorkflow).toContain(commentsGate);
+        expect(productionWorkflow).toContain(commentsGate);
     });
 
     it('keeps staging isolated from production resources and triggers', async () => {

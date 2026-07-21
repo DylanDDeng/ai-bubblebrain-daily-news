@@ -1,5 +1,6 @@
 import { blake3 } from "@noble/hashes/blake3.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
+import { Buffer } from "node:buffer";
 import { openContentDatabase, type ContentSql } from "../shared/db";
 
 type Env = {
@@ -78,6 +79,7 @@ type VerificationDependencies = {
   fetch?: typeof fetch;
   now?: () => number;
   sleep?: (milliseconds: number) => Promise<void>;
+  maximumAttempts?: number;
 };
 type VerificationProbeResult =
   | { ok: true; evidence: JsonRecord }
@@ -142,14 +144,11 @@ async function hmacHex(secret: string, bytes: Uint8Array): Promise<string> {
 }
 
 function base64(bytes: Uint8Array): string {
-  let result = "";
-  const chunkSize = 0x8000;
-  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-    result += String.fromCharCode(
-      ...bytes.subarray(offset, offset + chunkSize),
-    );
-  }
-  return btoa(result);
+  return Buffer.from(
+    bytes.buffer,
+    bytes.byteOffset,
+    bytes.byteLength,
+  ).toString("base64");
 }
 
 function tarText(bytes: Uint8Array, start: number, length: number): string {
@@ -541,15 +540,12 @@ async function fetchContentAddressedAsset(
     throw new Error("Content-addressed artifact asset is unavailable");
   }
   const bytes = new Uint8Array(await object.arrayBuffer());
-  // The immutable inventory is already verified against its database-bound
-  // fingerprint before any asset is loaded. Recomputing the Pages BLAKE3 key
-  // here base64-encodes every missing asset and can exhaust Worker CPU for a
-  // media-heavy release. The content SHA is sufficient to prove that these
-  // bytes are the exact bytes named by the verified inventory; Pages still
-  // receives the inventory's precomputed pages_hash as the upload key.
-  if ((await sha256(bytes)) !== asset.sha256) {
-    throw new Error("Content-addressed artifact asset hash mismatch");
-  }
+  // The workflow SHA-verifies each object after its conditional R2 upload,
+  // and an indefinite object lock prevents replacement. The database-bound
+  // inventory also requires object_key=assets/sha256/<sha>. Rehashing every
+  // small asset again here can exceed the Free-plan CPU budget before Pages
+  // receives the already verified bytes, so deployment verifies the immutable
+  // object identity and length without repeating hundreds of digests.
   return bytes;
 }
 
@@ -939,6 +935,13 @@ export async function verifyDeployment(
     ((milliseconds: number) =>
       new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
   const fetcher = dependencies.fetch || fetch;
+  const maximumAttempts = dependencies.maximumAttempts;
+  if (
+    maximumAttempts !== undefined &&
+    (!Number.isSafeInteger(maximumAttempts) || maximumAttempts < 1)
+  ) {
+    throw new Error("Maximum verification attempts is invalid");
+  }
   const maximumInconsistencyMs = Number(
     env.MAX_PRODUCTION_INCONSISTENCY_MS || "240000",
   );
@@ -1034,6 +1037,7 @@ export async function verifyDeployment(
       else failures.push(result.failure);
     }
     if (evidenceByOrigin.size === bases.length) break;
+    if (maximumAttempts !== undefined && round + 1 >= maximumAttempts) break;
     const remainingAfterProbe =
       maximumInconsistencyMs - (now() - windowStartedAt);
     if (remainingAfterProbe <= 0) break;
@@ -1494,11 +1498,16 @@ export async function reconcileProduction(
     const deployment = await latestProductionDeployment(env);
     try {
       const targetFiles = await artifactFiles(target, env);
+      // Recovery runs on the Free-plan 50-subrequest budget. Probe the
+      // interrupted target once; if it has not already converged, preserve the
+      // rest of this invocation for restoring and verifying last-known-good.
       const evidence = await verifyDeployment(
         target,
         deployment.url,
         env,
         targetFiles,
+        undefined,
+        { maximumAttempts: 1 },
       );
       await purgeContentCaches(env);
       if (slot.operation === "forward") {

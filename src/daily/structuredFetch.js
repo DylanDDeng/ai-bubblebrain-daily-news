@@ -4,9 +4,30 @@ import { filterBlockedSourceItems } from '../sourceFilters.js';
 
 const CONTENT_TYPE_ORDER = ['news', 'project', 'paper', 'socialMedia'];
 const DEFAULT_FETCH_ATTEMPTS = 2;
+export const DEFAULT_RETRY_BUDGET = 2;
 const DEFAULT_RETRY_DELAY_MS = 1000;
 // Folo pagination plus the chat client's own 60-second translation deadline must fit in one attempt.
 export const DEFAULT_FETCH_TIMEOUT_MS = 90_000;
+
+function cappedProviderEnvironment(env, fetchPageCap) {
+    if (fetchPageCap === null || fetchPageCap === undefined) return env;
+    if (!Number.isInteger(fetchPageCap) || fetchPageCap < 1 || fetchPageCap > 10) {
+        throw new Error('Structured fetch page cap must be between one and ten');
+    }
+    return new Proxy(env, {
+        get(target, property, receiver) {
+            const value = Reflect.get(target, property, receiver);
+            if (typeof property !== 'string' || !property.endsWith('_FETCH_PAGES')) {
+                return value;
+            }
+            const configured = Number.parseInt(String(value || fetchPageCap), 10);
+            return String(Math.min(
+                Number.isInteger(configured) && configured > 0 ? configured : fetchPageCap,
+                fetchPageCap,
+            ));
+        },
+    });
+}
 
 function wait(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -35,13 +56,21 @@ async function fetchWithDeadline(adapter, env, foloCookie, timeoutMs) {
 
 export async function fetchProviderPreservingData(env, foloCookie, {
     adapters = STRUCTURED_SOURCE_ADAPTERS,
+    fetchPageCap = null,
     fetchAttempts = DEFAULT_FETCH_ATTEMPTS,
+    retryBudget = Number.parseInt(
+        String(env.DAILY_SOURCE_RETRY_BUDGET ?? DEFAULT_RETRY_BUDGET),
+        10,
+    ),
     retryDelayMs = DEFAULT_RETRY_DELAY_MS,
     fetchTimeoutMs = DEFAULT_FETCH_TIMEOUT_MS,
     sleep = wait,
 } = {}) {
     if (!Number.isInteger(fetchAttempts) || fetchAttempts < 1 || fetchAttempts > 3) {
         throw new Error('Structured fetch attempts must be between one and three');
+    }
+    if (!Number.isInteger(retryBudget) || retryBudget < 0 || retryBudget > DEFAULT_RETRY_BUDGET) {
+        throw new Error(`Structured retry budget must be between zero and ${DEFAULT_RETRY_BUDGET}`);
     }
     if (!Number.isFinite(retryDelayMs) || retryDelayMs < 0 || retryDelayMs > 30_000) {
         throw new Error('Structured retry delay must be between zero and thirty seconds');
@@ -52,6 +81,9 @@ export async function fetchProviderPreservingData(env, foloCookie, {
 
     const taggedByType = Object.fromEntries(CONTENT_TYPE_ORDER.map(type => [type, []]));
     const errors = [];
+    const providerEnv = cappedProviderEnvironment(env, fetchPageCap);
+    const retryProviderEnv = cappedProviderEnvironment(providerEnv, 1);
+    let retriesRemaining = retryBudget;
 
     for (const entry of adapters) {
         if (!taggedByType[entry.contentType]) {
@@ -66,7 +98,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
             try {
                 raw = await fetchWithDeadline(
                     entry.adapter,
-                    env,
+                    attempt === 1 ? providerEnv : retryProviderEnv,
                     foloCookie,
                     fetchTimeoutMs,
                 );
@@ -83,7 +115,12 @@ export async function fetchProviderPreservingData(env, foloCookie, {
                     errorCode: failure.code,
                     retryable: failure.retryable,
                 });
-                if (!failure.retryable || attempt >= fetchAttempts) break;
+                if (
+                    !failure.retryable ||
+                    attempt >= fetchAttempts ||
+                    retriesRemaining < 1
+                ) break;
+                retriesRemaining -= 1;
                 await sleep(retryDelayMs * attempt);
             }
         }

@@ -14,6 +14,7 @@ const BATCHES = [
   [2, "morning"],
   [7, "afternoon"],
   [15, "night"],
+  [18, "lateNight"],
   [19, "lateNight"],
 ];
 
@@ -99,6 +100,27 @@ export function validateContentObservabilityEnvironment(env) {
   );
   if (apiToken.length < 32)
     throw new Error("Cloudflare analytics token is too short");
+  const scheduleHealthToken = required(
+    "CONTENT_SCHEDULE_HEALTH_TOKEN",
+    env.CONTENT_SCHEDULE_HEALTH_TOKEN,
+  );
+  if (scheduleHealthToken.length < 32)
+    throw new Error("content schedule health token is too short");
+  const scheduleHealthUrl = new URL(
+    required("CONTENT_SCHEDULE_HEALTH_URL", env.CONTENT_SCHEDULE_HEALTH_URL),
+  );
+  if (
+    scheduleHealthUrl.protocol !== "https:" ||
+    scheduleHealthUrl.username ||
+    scheduleHealthUrl.password ||
+    scheduleHealthUrl.pathname !== "/health/scheduled" ||
+    scheduleHealthUrl.search ||
+    scheduleHealthUrl.hash
+  ) {
+    throw new Error(
+      "CONTENT_SCHEDULE_HEALTH_URL must be an exact HTTPS /health/scheduled endpoint",
+    );
+  }
   const currentUrls = urls("CONTENT_CURRENT_URLS", env.CONTENT_CURRENT_URLS);
   if (currentUrls.some((url) => url.pathname !== "/v1/current" || url.search))
     throw new Error(
@@ -154,6 +176,8 @@ export function validateContentObservabilityEnvironment(env) {
     databaseUrl,
     manifestUrls,
     projectRef,
+    scheduleHealthToken,
+    scheduleHealthUrl,
     startedAt,
     topology,
     zoneId,
@@ -276,7 +300,20 @@ export function evaluateContentObservability(input, now = Date.now()) {
   const dueBatches = dueContentBatches(now).filter(
     (batch) => Date.parse(batch.scheduled_at) >= (input.startedAt ?? -Infinity),
   );
+  const scheduledOutcomes = new Map(
+    (input.scheduledOutcomes || []).map((outcome) => [
+      String(outcome?.scheduled_at || ""),
+      outcome,
+    ]),
+  );
   for (const due of dueBatches) {
+    const scheduledOutcome = scheduledOutcomes.get(due.scheduled_at);
+    const scheduledKey = `${due.report_date}:${due.batch_id}:${due.scheduled_at}`;
+    if (!scheduledOutcome || scheduledOutcome.status === "missing") {
+      reasons.push(`scheduled_run_missing:${scheduledKey}`);
+    } else if (scheduledOutcome.status !== "succeeded") {
+      reasons.push(`scheduled_run_failed:${scheduledKey}`);
+    }
     const attempt = attempts.get(`${due.report_date}:${due.batch_id}`);
     if (!attempt || !["succeeded", "failed"].includes(attempt.status)) {
       reasons.push(`batch_terminal_missing:${due.report_date}:${due.batch_id}`);
@@ -419,6 +456,22 @@ async function cloudflareAnalytics(input, now) {
   );
 }
 
+async function scheduledRunHealth(input, now) {
+  const due = dueContentBatches(now).filter(
+    (batch) => Date.parse(batch.scheduled_at) >= input.startedAt,
+  );
+  if (!due.length) return [];
+  const url = new URL(input.scheduleHealthUrl);
+  for (const batch of due) url.searchParams.append("scheduled_at", batch.scheduled_at);
+  const body = await fetchJson(url, {
+    headers: { Authorization: `Bearer ${input.scheduleHealthToken}` },
+  });
+  if (body?.success !== true || !Array.isArray(body.slots)) {
+    throw new Error("scheduled run health response is malformed");
+  }
+  return body.slots;
+}
+
 async function run(env = process.env, now = Date.now()) {
   const input = validateContentObservabilityEnvironment(env);
   const sql = postgres(input.databaseUrl, {
@@ -429,7 +482,7 @@ async function run(env = process.env, now = Date.now()) {
   try {
     const rows =
       await sql`select private.get_content_observability_v1() as result`;
-    const [currentEndpoints, staticManifests, analytics] = await Promise.all([
+    const [currentEndpoints, staticManifests, analytics, scheduledOutcomes] = await Promise.all([
       Promise.all(
         input.currentUrls.map(async (url) => ({
           body: await fetchJson(url, {
@@ -447,6 +500,7 @@ async function run(env = process.env, now = Date.now()) {
         })),
       ),
       cloudflareAnalytics(input, now),
+      scheduledRunHealth(input, now),
     ]);
     const result = evaluateContentObservability(
       {
@@ -455,6 +509,7 @@ async function run(env = process.env, now = Date.now()) {
         cacheSampleMinimum: input.cacheSampleMinimum,
         currentEndpoints,
         database: rows[0]?.result,
+        scheduledOutcomes,
         staticManifests,
         startedAt: input.startedAt,
       },
