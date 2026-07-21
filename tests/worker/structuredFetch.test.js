@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
     DEFAULT_FETCH_TIMEOUT_MS,
+    DEFAULT_RETRY_BUDGET,
     fetchProviderPreservingData,
 } from '../../src/daily/structuredFetch.js';
 import { classifyProviderFailure, ProviderFetchError } from '../../src/daily/providerFailure.js';
@@ -193,6 +194,73 @@ describe('provider-preserving structured fetch', () => {
         expect(flaky.adapter.transform).toHaveBeenCalledOnce();
         expect(sleep).toHaveBeenCalledOnce();
         expect(result.structuredItems).toHaveLength(1);
+        expect(result.errors).toEqual([]);
+    });
+
+    it('shares one bounded retry budget across all providers', async () => {
+        const calls = [];
+        const adapters = ['first', 'second', 'third'].map(provider => {
+            const source = adapter(provider, 'news', [], calls);
+            source.adapter.fetch.mockRejectedValue(new TypeError('temporary'));
+            return source;
+        });
+        const sleep = vi.fn(async () => undefined);
+
+        const result = await fetchProviderPreservingData({}, null, {
+            adapters,
+            retryDelayMs: 0,
+            sleep,
+        });
+
+        expect(DEFAULT_RETRY_BUDGET).toBe(2);
+        expect(adapters.map(source => source.adapter.fetch.mock.calls.length)).toEqual([2, 2, 1]);
+        expect(sleep).toHaveBeenCalledTimes(2);
+        expect(result.errors.map(error => error.attempts)).toEqual([2, 2, 1]);
+    });
+
+    it('does not retry after an explicitly disabled retry budget', async () => {
+        const calls = [];
+        const broken = adapter('broken', 'news', [], calls);
+        broken.adapter.fetch.mockRejectedValue(new TypeError('temporary'));
+        const sleep = vi.fn(async () => undefined);
+
+        const result = await fetchProviderPreservingData({}, null, {
+            adapters: [broken],
+            retryBudget: 0,
+            retryDelayMs: 0,
+            sleep,
+        });
+
+        expect(broken.adapter.fetch).toHaveBeenCalledOnce();
+        expect(sleep).not.toHaveBeenCalled();
+        expect(result.errors[0].attempts).toBe(1);
+    });
+
+    it('limits retry pagination to one page without changing the first attempt', async () => {
+        const seen = [];
+        const source = {
+            provider: 'flaky',
+            contentType: 'news',
+            adapter: {
+                fetch: vi.fn(async providerEnv => {
+                    seen.push([
+                        providerEnv.AIBASE_FETCH_PAGES,
+                        providerEnv.TWITTER_FETCH_PAGES,
+                    ]);
+                    if (seen.length === 1) throw new TypeError('temporary');
+                    return [];
+                }),
+                transform: vi.fn(raw => raw),
+            },
+        };
+
+        const result = await fetchProviderPreservingData(
+            { AIBASE_FETCH_PAGES: '2', TWITTER_FETCH_PAGES: '3' },
+            null,
+            { adapters: [source], retryDelayMs: 0, sleep: vi.fn(async () => undefined) },
+        );
+
+        expect(seen).toEqual([['2', '3'], ['1', '1']]);
         expect(result.errors).toEqual([]);
     });
 
