@@ -6,10 +6,11 @@ on:
       - main
     paths:
       - 'daily/*.md'
+      - 'content/daily/*.md'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   sync-daily:
@@ -21,20 +22,37 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Sync daily content to Hugo
-      run: bash scripts/sync-daily-to-hugo.sh
-
-    - name: Commit and push changes
+    - name: Verify changed daily files were published atomically
+      env:
+        EVENT_BEFORE: ${{ github.event.before }}
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-        # 检查是否有更改
-        if [ -n "$(git status --porcelain content/daily/)" ]; then
-          git add content/daily/
-          git commit -m "Auto sync: 同步每日内容到 Hugo [skip ci]"
-          git push
-          echo "✅ 更改已推送"
-        else
-          echo "ℹ️  没有需要同步的内容"
+        before="$EVENT_BEFORE"
+        if [[ ! "$before" =~ ^[0-9a-f]{40}$ ]] || [[ "$before" =~ ^0+$ ]]; then
+          before="$(git rev-parse "$GITHUB_SHA^")"
         fi
+
+        changed_dates="$(
+          git diff --name-only "$before" "$GITHUB_SHA" -- \
+            'daily/*.md' 'content/daily/*.md' \
+            | sed -E 's#^(daily|content/daily)/##' \
+            | sort -u
+        )"
+
+        if [[ -z "$changed_dates" ]]; then
+          echo "No daily files changed in the selected commit range."
+          exit 0
+        fi
+
+        while IFS= read -r filename; do
+          source_file="daily/$filename"
+          hugo_file="content/daily/$filename"
+          if [[ ! -f "$source_file" || ! -f "$hugo_file" ]]; then
+            echo "::error::Daily publication must contain both $source_file and $hugo_file"
+            exit 1
+          fi
+          if ! cmp --silent "$source_file" "$hugo_file"; then
+            echo "::error::Daily publication pair differs for $filename"
+            exit 1
+          fi
+          echo "Verified atomic daily publication pair: $filename"
+        done <<< "$changed_dates"
