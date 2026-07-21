@@ -1,9 +1,12 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-21T02:00:37.000Z",
+      "generated_at": "2026-07-21T07:07:30.904Z",
       "id": "morning",
       "item_ids": [
+        "n_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
+        "n_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+        "n_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
         "n_81d66d261a66451a67eb0ceb017bccbe3982c2ce87a44b27738ead2e2d0610aa"
       ],
       "label": "10:00 更新",
@@ -71,9 +74,120 @@
   "classifier_version": 1,
   "date": "2026-07-21",
   "dedupe_version": 1,
-  "generated_at": "2026-07-21T07:00:11.000Z",
+  "generated_at": "2026-07-21T07:07:30.904Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/20/cheap-reverse-engineering/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
+      "featured": false,
+      "id": "n_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
+      "identity_claims": [
+        "c_3f091aede0915fffc6ccc1c69ba90295d61548300eccc850121e184c65e6a4cf",
+        "c_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T07:07:30.904Z",
+      "published_at": "2026-07-20T19:24:05.751Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208472771806265344",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1208472771806265344",
+      "source_type": "simonwillison",
+      "summary": "I keep hearing anecdotes from people who used coding agents to reverse-engineer and automate devices in their homes. I think this is an interesting illustration of the impact of the reduced cost of writing code. Prior to agents, it was entirely possible to reverse-engineer home devices. The problem was the ROI - was it really worth all of that effort? More importantly, any experienced programmer knows that undocumented, unstable APIs like that may well change or break in the future. Is that initial work worth the effort if you're committing yourself to a frustrating cycle of maintenance in the future? Coding agents change that equation entirely. The effort to get a simple automation working has dropped, as has the cost of trying and failing to get it to work. Since the code is so cheap, the idea of having to maintain it in the future - or throw it away and start again - carries way less psychological baggage. Tags: reverse-engineering, coding-agents, ai-assisted-programming, generative-ai, ai, llms",
+      "time_precision": "exact",
+      "title": "Reverse-engineering is cheap now",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/20/cheap-reverse-engineering/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2079317901085941976",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+      "featured": false,
+      "id": "n_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+      "identity_claims": [
+        "c_002de1e84d3997f92268a45519cbd2e14e6d081c62ee1b1fc64f29b4cdc1c1c1",
+        "c_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T07:07:30.904Z",
+      "published_at": "2026-07-20T21:29:54.069Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208679129918984192",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1208679129918984192",
+      "source_type": "twitter_extra",
+      "summary": "启用后，终端界面转为纯文本逐行输出并配有 you:、claude: 等文本标签，菜单改为编号列表交互，权限确认支持 y/n 输入，完成或有请求时会有响铃提醒。可通过 --ax-screen-reader 参数、环境变量或配置文件开启，需要 v2.1.181 或更高版本。",
+      "time_precision": "exact",
+      "title": "Claude Code 更新加入了屏幕阅读器模式（Screen Reader Mode）",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2079317901085941976"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/vista8/status/2079365033440764193",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
+      "featured": false,
+      "id": "n_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
+      "identity_claims": [
+        "c_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
+        "c_7dd37627dbd9d955a1c322ec75927293539f0f0722514814af607b690bd7f5a9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T07:07:30.904Z",
+      "published_at": "2026-07-21T00:37:11.582Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208785914566713344",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1208785914566713344",
+      "source_type": "twitter_extra",
+      "summary": "该设计避免好友回复在时间线刷屏，用户将不再因担心打扰他人而克制回复，预期推动平台整体互动量上升。",
+      "time_precision": "exact",
+      "title": "X 推荐时间线更新，只显示关注好友的回复而隐藏具体内容，以减少刷屏并有望提高互动率。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2079365033440764193"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://x.com/Gorden_Sun/status/2079372960683683857",
