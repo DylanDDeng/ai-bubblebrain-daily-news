@@ -1,5 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mirrorStructuredReport } from '../../workers/content/ingestion/mirror.ts';
+import {
+    mirrorStructuredReport,
+    publicationBatchId,
+} from '../../workers/content/ingestion/mirror.ts';
 import { canonicalJsonBytes } from '../../workers/content/shared/canonical.ts';
 
 const decode = (bytes) => new TextDecoder().decode(bytes);
@@ -35,9 +38,11 @@ function database({
     loseFirstFinalizeResponse = false,
     rejectFinalize = false,
     reserveError = null,
+    reserveFailureCount = Number.POSITIVE_INFINITY,
 } = {}) {
     const calls = [];
     let finalized = false;
+    let reserveFailures = 0;
     let attemptStatus = 'started';
     const release = {
         site_release_id: '22222222-2222-4222-8222-222222222222',
@@ -69,7 +74,10 @@ function database({
             ];
         }
         if (query.includes('reserve_ingestion_site_release_v1')) {
-            if (reserveError) throw reserveError;
+            if (reserveError && reserveFailures < reserveFailureCount) {
+                reserveFailures += 1;
+                throw reserveError;
+            }
             return [{ result: { ...reservation, idempotent: finalized } }];
         }
         if (query.includes('finalize_site_release_v1')) {
@@ -120,6 +128,32 @@ function input(value = report()) {
 }
 
 describe('structured content database mirror', () => {
+    it('uses a separate publication fence for the scheduled 03:00 supplement', () => {
+        expect(publicationBatchId('lateNight', `scheduled:${Date.parse('2026-07-20T18:00:00.000Z')}`))
+            .toBe('lateNight');
+        expect(publicationBatchId('lateNight', `scheduled:${Date.parse('2026-07-20T19:00:00.000Z')}`))
+            .toBe('lateNightSupplement');
+        expect(publicationBatchId('lateNight', 'manual:repair')).toBe('lateNight');
+        expect(publicationBatchId('morning', `scheduled:${Date.parse('2026-07-20T19:00:00.000Z')}`))
+            .toBe('morning');
+    });
+
+    it('passes the 03:00 supplement identity to the database without changing report batches', async () => {
+        const env = enabledEnv();
+        const db = database();
+        await mirrorStructuredReport(
+            env,
+            {
+                ...input(),
+                batch: 'lateNight',
+                triggerId: `scheduled:${Date.parse('2026-07-20T19:00:00.000Z')}`,
+            },
+            { openDatabase: vi.fn(() => db.sql) },
+        );
+        const reserve = db.calls.find((call) => call.query.includes('reserve_ingestion_site_release_v1'));
+        expect(reserve.values[1]).toBe('lateNightSupplement');
+    });
+
     it('does not touch R2 or Postgres while the mirror gate is disabled', async () => {
         const openDatabase = vi.fn();
 
@@ -251,6 +285,28 @@ describe('structured content database mirror', () => {
     });
 
     it.each(['55P03', '40001'])(
+        'retries transient database contention with bounded backoff %s',
+        async (code) => {
+            const env = enabledEnv();
+            const contention = Object.assign(new Error('Release head is busy'), { code });
+            const db = database({ reserveError: contention, reserveFailureCount: 1 });
+            const sleep = vi.fn(async () => undefined);
+
+            await expect(
+                mirrorStructuredReport(env, input(), {
+                    openDatabase: vi.fn(() => db.sql),
+                    sleep,
+                }),
+            ).resolves.toMatchObject({ status: 'mirrored' });
+
+            expect(
+                db.calls.filter((call) => call.query.includes('reserve_ingestion_site_release_v1')),
+            ).toHaveLength(2);
+            expect(sleep).toHaveBeenCalledWith(100);
+        },
+    );
+
+    it.each(['55P03', '40001'])(
         'does not permanently fail a publication attempt for transient database contention %s',
         async (code) => {
             const env = enabledEnv();
@@ -262,9 +318,13 @@ describe('structured content database mirror', () => {
             await expect(
                 mirrorStructuredReport(env, input(), {
                     openDatabase: vi.fn(() => db.sql),
+                    sleep: vi.fn(async () => undefined),
                 }),
             ).rejects.toBe(contention);
 
+            expect(
+                db.calls.filter((call) => call.query.includes('reserve_ingestion_site_release_v1')),
+            ).toHaveLength(3);
             expect(
                 db.calls.some((call) => call.query.includes('fail_ingestion_publication_attempt_v1')),
             ).toBe(false);
