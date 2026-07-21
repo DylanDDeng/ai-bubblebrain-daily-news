@@ -8,6 +8,26 @@ const DEFAULT_RETRY_DELAY_MS = 1000;
 // Folo pagination plus the chat client's own 60-second translation deadline must fit in one attempt.
 export const DEFAULT_FETCH_TIMEOUT_MS = 90_000;
 
+function cappedProviderEnvironment(env, fetchPageCap) {
+    if (fetchPageCap === null || fetchPageCap === undefined) return env;
+    if (!Number.isInteger(fetchPageCap) || fetchPageCap < 1 || fetchPageCap > 10) {
+        throw new Error('Structured fetch page cap must be between one and ten');
+    }
+    return new Proxy(env, {
+        get(target, property, receiver) {
+            const value = Reflect.get(target, property, receiver);
+            if (typeof property !== 'string' || !property.endsWith('_FETCH_PAGES')) {
+                return value;
+            }
+            const configured = Number.parseInt(String(value || fetchPageCap), 10);
+            return String(Math.min(
+                Number.isInteger(configured) && configured > 0 ? configured : fetchPageCap,
+                fetchPageCap,
+            ));
+        },
+    });
+}
+
 function wait(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
@@ -35,6 +55,7 @@ async function fetchWithDeadline(adapter, env, foloCookie, timeoutMs) {
 
 export async function fetchProviderPreservingData(env, foloCookie, {
     adapters = STRUCTURED_SOURCE_ADAPTERS,
+    fetchPageCap = null,
     fetchAttempts = DEFAULT_FETCH_ATTEMPTS,
     retryDelayMs = DEFAULT_RETRY_DELAY_MS,
     fetchTimeoutMs = DEFAULT_FETCH_TIMEOUT_MS,
@@ -52,6 +73,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
 
     const taggedByType = Object.fromEntries(CONTENT_TYPE_ORDER.map(type => [type, []]));
     const errors = [];
+    const providerEnv = cappedProviderEnvironment(env, fetchPageCap);
 
     for (const entry of adapters) {
         if (!taggedByType[entry.contentType]) {
@@ -66,7 +88,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
             try {
                 raw = await fetchWithDeadline(
                     entry.adapter,
-                    env,
+                    providerEnv,
                     foloCookie,
                     fetchTimeoutMs,
                 );

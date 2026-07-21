@@ -1,5 +1,6 @@
 const LEASE_TTL_SECONDS = 10 * 60;
 const MARKER_TTL_SECONDS = 14 * 24 * 60 * 60;
+const SCHEDULED_SLOT_PREFIX = 'scheduled:outcome:';
 
 async function digest(value) {
     const bytes = new TextEncoder().encode(value);
@@ -15,6 +16,33 @@ async function readJson(kv, key) {
     } catch {
         return null;
     }
+}
+
+export function scheduledSlotInstant(value) {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return null;
+    parsed.setUTCSeconds(0, 0);
+    return parsed.toISOString();
+}
+
+export function scheduledOutcomeKey(value) {
+    const instant = scheduledSlotInstant(value);
+    return instant ? `${SCHEDULED_SLOT_PREFIX}${instant}` : null;
+}
+
+export async function readScheduledOutcome(kv, scheduledAt) {
+    const key = scheduledOutcomeKey(scheduledAt);
+    return key ? readJson(kv, key) : null;
+}
+
+export async function storeScheduledOutcome(kv, scheduledAt, marker) {
+    const key = scheduledOutcomeKey(scheduledAt);
+    if (!key) return false;
+    await kv.put(key, JSON.stringify({
+        scheduled_at: scheduledSlotInstant(scheduledAt),
+        ...marker,
+    }), { expirationTtl: MARKER_TTL_SECONDS });
+    return true;
 }
 
 export async function acquireAdvisoryLease(kv, { reportDate, batch, now }) {

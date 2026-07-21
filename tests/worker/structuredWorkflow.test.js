@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { AtomicGitConflictError, AtomicGitUncertainError } from '../../src/daily/gitAtomic.js';
-import { runStructuredDailyWorkflow, StructuredSourceFetchError } from '../../src/daily/structuredWorkflow.js';
+import {
+    runStructuredDailyWorkflow,
+    scheduledFetchPageCap,
+    StructuredSourceFetchError,
+} from '../../src/daily/structuredWorkflow.js';
 
 const sha = (character) => character.repeat(40);
 const runInput = {
@@ -64,6 +68,27 @@ function dependencies(overrides = {}) {
 }
 
 describe('structured publication workflow', () => {
+    it('uses a one-page source cap only for the 03:00 late-night supplement', () => {
+        expect(scheduledFetchPageCap({}, 'lateNight', '2026-07-20T19:00:45.000Z')).toBe(1);
+        expect(scheduledFetchPageCap({}, 'lateNight', '2026-07-20T18:00:45.000Z')).toBeNull();
+        expect(scheduledFetchPageCap({}, 'night', '2026-07-20T19:00:45.000Z')).toBeNull();
+        expect(() => scheduledFetchPageCap(
+            { LATE_NIGHT_SUPPLEMENT_FETCH_PAGE_CAP: '0' },
+            'lateNight',
+            '2026-07-20T19:00:45.000Z',
+        )).toThrow(/between one and three/);
+    });
+
+    it('passes the late-night supplement page cap into the provider fetcher', async () => {
+        const deps = dependencies();
+        await runStructuredDailyWorkflow(env, {
+            reportDate: runInput.reportDate,
+            batch: 'lateNight',
+            runAt: '2026-07-14T19:00:45.000Z',
+        }, deps);
+        expect(deps.fetchData).toHaveBeenCalledWith(env, 'cookie', { fetchPageCap: 1 });
+    });
+
     it('editorializes fresh items and same-day legacy social items before publishing', async () => {
         const freshBuild = {
             files: files(),

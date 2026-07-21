@@ -436,6 +436,22 @@ function validateObservabilityEnvironment(env) {
     env.CLOUDFLARE_ANALYTICS_API_TOKEN,
     32,
   );
+  secret(
+    "CONTENT_SCHEDULE_HEALTH_TOKEN",
+    env.CONTENT_SCHEDULE_HEALTH_TOKEN,
+    32,
+  );
+  const scheduleHealthUrl = httpsUrl(
+    "CONTENT_SCHEDULE_HEALTH_URL",
+    env.CONTENT_SCHEDULE_HEALTH_URL,
+  );
+  if (
+    scheduleHealthUrl.pathname !== "/health/scheduled" ||
+    scheduleHealthUrl.search ||
+    scheduleHealthUrl.hash
+  ) {
+    fail("CONTENT_SCHEDULE_HEALTH_URL must be the exact /health/scheduled endpoint");
+  }
   const validateEndpoints = (label, value, expectedPath) => {
     const entries = required(label, value)
       .split(",")

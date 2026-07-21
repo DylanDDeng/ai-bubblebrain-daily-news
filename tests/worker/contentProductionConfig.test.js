@@ -257,6 +257,9 @@ describe("content production preflight", () => {
       CLOUDFLARE_ACCOUNT_ID: "a".repeat(32),
       CLOUDFLARE_ZONE_ID: "b".repeat(32),
       CLOUDFLARE_ANALYTICS_API_TOKEN: "c".repeat(32),
+      CONTENT_SCHEDULE_HEALTH_TOKEN: "d".repeat(32),
+      CONTENT_SCHEDULE_HEALTH_URL:
+        "https://ai-daily.example.workers.dev/health/scheduled",
       CONTENT_CURRENT_URLS:
         "https://content-api.example.com/v1/current,https://content-api-alt.example.com/v1/current",
       CONTENT_STATIC_MANIFEST_URLS:
