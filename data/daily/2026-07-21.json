@@ -1,13 +1,14 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-21T07:07:30.904Z",
+      "generated_at": "2026-07-21T07:27:52.389Z",
       "id": "morning",
       "item_ids": [
         "n_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
         "n_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
         "n_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
-        "n_81d66d261a66451a67eb0ceb017bccbe3982c2ce87a44b27738ead2e2d0610aa"
+        "n_81d66d261a66451a67eb0ceb017bccbe3982c2ce87a44b27738ead2e2d0610aa",
+        "n_5732b9b34743f07e1fd473ee042c42e7f849168ba9d866b83c7fce6fc9b9785b"
       ],
       "label": "10:00 更新",
       "status": "completed"
@@ -74,7 +75,7 @@
   "classifier_version": 1,
   "date": "2026-07-21",
   "dedupe_version": 1,
-  "generated_at": "2026-07-21T07:07:30.904Z",
+  "generated_at": "2026-07-21T07:27:52.389Z",
   "identity_version": 1,
   "items": [
     {
@@ -225,6 +226,42 @@
         "topic_other"
       ],
       "url": "https://x.com/Gorden_Sun/status/2079372960683683857"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/vista8/status/2079375409888838008",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5732b9b34743f07e1fd473ee042c42e7f849168ba9d866b83c7fce6fc9b9785b",
+      "featured": false,
+      "id": "n_5732b9b34743f07e1fd473ee042c42e7f849168ba9d866b83c7fce6fc9b9785b",
+      "identity_claims": [
+        "c_5732b9b34743f07e1fd473ee042c42e7f849168ba9d866b83c7fce6fc9b9785b",
+        "c_6635c4443567a513a0b20c7e6acd1c4b666f2ca4e42c1df29812262b11c2a819"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T07:27:52.389Z",
+      "published_at": "2026-07-21T01:18:25.018Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209171680090300417",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1209171680090300417",
+      "source_type": "twitter_extra",
+      "summary": "VibeLoft推出“手推车”功能，用户对VibeCoding产品给出30字建设性意见或夸赞，与多数观点一致可加里程分，不一致则扣分，选择“拿不准”可跳过。",
+      "time_precision": "exact",
+      "title": "VibeLoft上线手推车功能，用美团陪审团机制为产品获取真实反馈",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/vista8/status/2079375409888838008"
     },
     {
       "batch": "afternoon",
