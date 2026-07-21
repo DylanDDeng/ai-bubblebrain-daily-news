@@ -1,4 +1,5 @@
 import { canonicalJsonBytes, equalBytes, sha256Hex } from "../shared/canonical";
+import { callGitHubApi } from "../../../src/github.js";
 import {
   databaseErrorCode,
   failIngestionPublicationAttempt,
@@ -24,6 +25,10 @@ type MirrorEnv = {
   DAILY_SERIALIZER_VERSION?: string;
   DAILY_PRODUCER_VERSION?: string;
   SEARCH_CONTRACT_VERSION?: string;
+  GITHUB_TOKEN?: string;
+  GITHUB_REPO_OWNER?: string;
+  GITHUB_REPO_NAME?: string;
+  GITHUB_BRANCH?: string;
 };
 
 type DailyReport = Record<string, unknown> & {
@@ -43,6 +48,35 @@ export type MirrorResult = {
 
 const MAX_CONTENTION_ATTEMPTS = 3;
 const CONTENTION_RETRY_BASE_MS = 100;
+
+export async function resolveForwardBuildCodeSha(
+  env: MirrorEnv,
+  sourceCodeSha: string,
+  api: typeof callGitHubApi = callGitHubApi,
+): Promise<string> {
+  if (!/^[a-f0-9]{40}$/i.test(sourceCodeSha))
+    throw new Error("Mirror requires an exact source code SHA");
+  const branch = env.GITHUB_BRANCH || "main";
+  const ref = await api(
+    env,
+    `/git/ref/heads/${branch.split("/").map(encodeURIComponent).join("/")}`,
+  );
+  const mainSha = String(ref?.object?.sha || "").toLowerCase();
+  const normalizedSource = sourceCodeSha.toLowerCase();
+  if (!/^[a-f0-9]{40}$/.test(mainSha))
+    throw new Error("GitHub main ref is malformed");
+  if (mainSha === normalizedSource) return normalizedSource;
+
+  const comparison = await api(
+    env,
+    `/compare/${normalizedSource}...${mainSha}`,
+  );
+  const sourceIsAncestor =
+    comparison?.status === "ahead" &&
+    comparison?.base_commit?.sha === normalizedSource &&
+    comparison?.merge_base_commit?.sha === normalizedSource;
+  return sourceIsAncestor ? mainSha : normalizedSource;
+}
 
 export function publicationBatchId(
   batch: string,
@@ -96,6 +130,7 @@ export async function mirrorStructuredReport(
   dependencies: {
     openDatabase?: typeof openContentDatabase;
     sleep?: (milliseconds: number) => Promise<void>;
+    api?: typeof callGitHubApi;
   } = {},
 ): Promise<MirrorResult> {
   if (String(env.CONTENT_DATABASE_MIRROR_ENABLED).toLowerCase() !== "true") {
@@ -115,6 +150,15 @@ export async function mirrorStructuredReport(
   if (!equalBytes(canonicalJsonBytes(input.report), reportBytes)) {
     throw new Error("Canonical report bytes do not match the in-memory report");
   }
+  const sourceCodeSha = input.codeSha.toLowerCase();
+  const buildCodeSha =
+    env.GITHUB_TOKEN && env.GITHUB_REPO_OWNER && env.GITHUB_REPO_NAME
+      ? await resolveForwardBuildCodeSha(
+          env,
+          sourceCodeSha,
+          dependencies.api || callGitHubApi,
+        )
+      : sourceCodeSha;
   const reportObject = await putVerifiedImmutable(
     env.REPORT_SNAPSHOTS,
     "report-snapshots",
@@ -208,7 +252,8 @@ export async function mirrorStructuredReport(
       site_release_sequence: reservation.site_release_sequence,
       expected_predecessor_id: reservation.expected_predecessor_id,
       expected_content_sha: contentRootSha256,
-      code_sha: input.codeSha.toLowerCase(),
+      code_sha: buildCodeSha,
+      source_code_sha: sourceCodeSha,
       build_environment_version:
         env.BUILD_ENVIRONMENT_VERSION || "node22.17-astro7-hugo0.147.9-v1",
       mode:
