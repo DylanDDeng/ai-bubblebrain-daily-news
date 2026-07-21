@@ -171,12 +171,54 @@
 	font-size: 0.6rem;
 }
 
-/* Highlights: plain ledger rows inside collapsible year groups, mirroring
+/* Highlights top section: drop the stacked hairlines — the hero ends with
+   whitespace instead of a rule, and the search becomes a quiet boxed field
+   with the icon inside, so the first month heading is the only rule left. */
+.directory-page[data-directory-page='highlights'] .directory-hero {
+	padding-bottom: 8px;
+	border-bottom: 0;
+}
+
+.directory-page[data-directory-page='highlights'] .directory-toolbar {
+	margin-top: 10px;
+	padding: 0;
+	border-block: 0;
+}
+
+.directory-page[data-directory-page='highlights'] .directory-toolbar > div {
+	position: relative;
+	display: block;
+	max-width: 320px;
+}
+
+.directory-page[data-directory-page='highlights'] .directory-toolbar i {
+	position: absolute;
+	top: 50%;
+	left: 10px;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+.directory-page[data-directory-page='highlights'] .directory-toolbar input {
+	min-height: 38px;
+	padding: 4px 10px 4px 32px;
+	border: 1px solid var(--rule);
+	border-radius: 2px;
+	background: var(--paper-raised);
+}
+
+.directory-page[data-directory-page='highlights'] .directory-toolbar input:focus {
+	outline: 1px solid var(--blue);
+	outline-offset: 0;
+}
+
+/* Highlights: plain ledger rows inside collapsible month groups, mirroring
    the daily archive. The `daily-archive` class on the list container supplies
    the month-group/summary styling; these rules cover the rows themselves.
    Scoped so the other directory sections keep the shared card layout. */
 .content-directory--highlights {
 	display: block;
+	margin-top: 22px;
 	border-left: 0;
 }
 
