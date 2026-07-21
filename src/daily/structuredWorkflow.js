@@ -267,7 +267,13 @@ async function confirmedTriggerResult(env, triggerId, reportDate, batch, deps) {
 
 export async function runStructuredDailyWorkflow(
     env,
-    { reportDate, batch, triggerId = null, runAt = new Date().toISOString() },
+    {
+        reportDate,
+        batch,
+        triggerId = null,
+        runAt = new Date().toISOString(),
+        contentCutoff = runAt,
+    },
     dependencies = {},
 ) {
     const deps = {
@@ -311,6 +317,12 @@ export async function runStructuredDailyWorkflow(
     if (!isRealDate(reportDate)) throw new Error('Invalid report date');
     if (!BATCH_ORDER.includes(batch)) throw new Error('Invalid batch');
     if (!isExplicitInstant(runAt)) throw new Error('runAt must include an explicit timezone');
+    if (!isExplicitInstant(contentCutoff)) {
+        throw new Error('contentCutoff must include an explicit timezone');
+    }
+    if (new Date(contentCutoff).getTime() > new Date(runAt).getTime()) {
+        throw new Error('contentCutoff cannot be after runAt');
+    }
     if (!producerVersion) throw new Error('DAILY_PRODUCER_VERSION is required');
 
     const lease = await deps.acquireLease(env.DATA_KV, {
@@ -346,6 +358,7 @@ export async function runStructuredDailyWorkflow(
                 reportDate,
                 batch,
                 runAt,
+                contentCutoff,
                 producer: {
                     version: producerVersion,
                     commitSha: env.DAILY_PRODUCER_COMMIT_SHA || null,

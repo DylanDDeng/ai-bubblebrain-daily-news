@@ -60,6 +60,7 @@ describe('daily publication mode resolver', () => {
             batch: 'morning',
             triggerId: null,
             runAt: options.runAt,
+            contentCutoff: '2026-07-14T02:00:00.000Z',
         });
     });
 
@@ -82,10 +83,32 @@ describe('daily publication mode resolver', () => {
                 batch: 'morning',
                 triggerId: 'scheduled:1784016000000',
                 runAt: '2026-07-14T02:00:00.000Z',
+                contentCutoff: '2026-07-14T02:00:00.000Z',
             });
         } finally {
             vi.useRealTimers();
         }
+    });
+
+    it('pins a delayed manual replay to the nominal batch cutoff', async () => {
+        const runStructured = vi.fn(async (_env, target) => ({ success: true, target }));
+        const structuredEnv = {
+            ...baseEnv,
+            DAILY_PUBLISH_MODE: 'structured',
+            DAILY_STRUCTURED_WRITES_ENABLED: 'true',
+        };
+        const result = await runIncrementalDailyWorkflow(structuredEnv, {
+            date: '2026-07-20',
+            batch: 'lateNight',
+            runAt: '2026-07-21T01:16:00.000Z',
+        }, { runStructured });
+
+        expect(result.target).toMatchObject({
+            reportDate: '2026-07-20',
+            batch: 'lateNight',
+            runAt: '2026-07-21T01:16:00.000Z',
+            contentCutoff: '2026-07-20T19:00:00.000Z',
+        });
     });
 
     it('fetches once in shadow mode, runs legacy fully, then runs isolated shadow', async () => {
