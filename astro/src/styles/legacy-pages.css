@@ -171,6 +171,62 @@
 	font-size: 0.6rem;
 }
 
+/* Highlights: plain ledger rows inside collapsible year groups, mirroring
+   the daily archive. The `daily-archive` class on the list container supplies
+   the month-group/summary styling; these rules cover the rows themselves.
+   Scoped so the other directory sections keep the shared card layout. */
+.content-directory--highlights {
+	display: block;
+	border-left: 0;
+}
+
+.content-directory--highlights article {
+	display: block;
+	min-height: 0;
+	padding: 18px 8px;
+	border-right: 0;
+	transition: background 0.12s ease;
+}
+
+.content-directory--highlights article > img {
+	display: none;
+}
+
+.content-directory--highlights article > div {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: baseline;
+	gap: 3px 18px;
+}
+
+.content-directory--highlights article > div > :not(ul) {
+	grid-column: 1;
+}
+
+.content-directory--highlights article > div > ul {
+	grid-column: 2;
+	grid-row: 1 / -1;
+	margin: 0;
+}
+
+.content-directory--highlights h2 {
+	margin: 0;
+	font-size: 1.02rem;
+}
+
+.content-directory--highlights h2 + p {
+	margin-top: 2px;
+	-webkit-line-clamp: 1;
+}
+
+.content-directory--highlights article:hover {
+	background: var(--paper-raised);
+}
+
+.content-directory--highlights article:hover h2 a {
+	color: var(--blue);
+}
+
 .directory-empty,
 .article-empty {
 	padding: 64px 0;
@@ -402,6 +458,16 @@
 
 	.content-directory {
 		grid-template-columns: 1fr;
+	}
+
+	.content-directory--highlights article > div {
+		grid-template-columns: 1fr;
+	}
+
+	.content-directory--highlights article > div > ul {
+		grid-column: 1;
+		grid-row: auto;
+		margin-top: 8px;
 	}
 
 	.editorial-archive article {
