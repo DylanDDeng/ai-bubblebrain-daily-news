@@ -65,9 +65,14 @@ jobs:
             --table='private.report_*'
             --table='private.site_*'
           )
-          pg_dump "$CONTENT_BACKUP_DATABASE_URL" \
-            --format=custom --compress=9 --no-owner --no-acl --strict-names \
-            "${content_tables[@]}" --file=content.dump
+          docker run --rm \
+            --user "$(id -u):$(id -g)" \
+            --volume "$PWD:/backup" \
+            --workdir /backup \
+            postgres:17 \
+            pg_dump "$CONTENT_BACKUP_DATABASE_URL" \
+              --format=custom --compress=9 --no-owner --no-acl --strict-names \
+              "${content_tables[@]}" --file=content.dump
           plain_sha="$(sha256sum content.dump | awk '{print $1}')"
           age --recipient "$AGE_RECIPIENT" --output content.dump.age content.dump
           cipher_sha="$(sha256sum content.dump.age | awk '{print $1}')"
@@ -75,7 +80,7 @@ jobs:
           object_date="$(date -u +%Y/%m/%d)"
           object_key="database/$object_date/$cipher_sha.dump.age"
           backup_completed_at="$(date -u +%FT%TZ)"
-          pg_dump_version="$(pg_dump --version)"
+          pg_dump_version="$(docker run --rm postgres:17 pg_dump --version)"
           printf 'BACKUP_STARTED_AT=%s\nBACKUP_COMPLETED_AT=%s\nPG_DUMP_VERSION=%s\nPLAIN_SHA256=%s\nCIPHER_SHA256=%s\nCIPHER_BYTES=%s\nBACKUP_OBJECT_KEY=%s\n' \
             "$backup_started_at" "$backup_completed_at" "$pg_dump_version" "$plain_sha" "$cipher_sha" "$cipher_bytes" "$object_key" >> "$GITHUB_ENV"
           rm content.dump
