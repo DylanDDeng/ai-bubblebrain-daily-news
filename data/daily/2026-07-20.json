@@ -123,9 +123,19 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-20T19:00:00.000Z",
+      "generated_at": "2026-07-21T06:59:56.882Z",
       "id": "lateNight",
       "item_ids": [
+        "n_3f6c0015e1c3900e51e9b8cc4d6678f6933870845157deda4cbf3c51f986c1ee",
+        "n_b36f1c80234152c4088f594f4978b58e38993864cfd331876f65422312cd0983",
+        "n_16ca15549602d66993ea48c6684bc82422d867b15983dcc32e5a3120c699b877",
+        "n_eee91ef9465e7cf8279bfae90e81f098a1b905b24f96beef360af30c20c05c44",
+        "n_a7e05bfd6550468b0506e1e3bc743e296ba83982cbdbc3e06841e00609c7ff80",
+        "n_472f2d9e4182ae10136994c67ff1ef92a554349ce84521b38859dd60c8c79e74",
+        "n_bb5bfa4e37d3246cb907334ea9ea21a35ff2bcd09004e4b2c0d41345e5cfe588",
+        "n_ef7c26fe6308d3187a3231bef7793cbcb4ee994dd5b73fbe55128614b73c502b",
+        "n_af2d652f1e63156defe245637a1e8a76f0a87309e2fb0405f0d9e64cd3f541fe",
+        "n_138a7d7068ed57b7f82ab3a218015cf08db4c4e9ad4946bf53b5091683c490ee",
         "n_3a6f277cbdca2be7cd3a9dfd21e4f1f2eed137425faddc88186be4f461f6d599",
         "n_7361fe2a99825379b7860e1707c3f08b729294aaa82a872d3f54984e66651758",
         "n_c2fc0c1b99273c5b5a0f9611268e6801670e60059636fba33423bbb960baab0f",
@@ -135,6 +145,7 @@
         "n_172a75f2dfab7d31ed458e5c6c50d32e1e147f7d5bb01c0e77d1a0a06a5d403c",
         "n_5170b832c27810b17eddfa68a60cb2628f47cb1247be8cada66ed477e4c34864",
         "n_7453b9dc9ec6a480636b71557f56d090dc85aebaeba64e6b4ff4960c59a19cea",
+        "n_c3420ed9275641123f9d020e1ee0911ed66e3c36f3ee7a2b5940dc6b43eef04f",
         "n_90373faedda140a8556b4532330b98ff669e9e8f06fddf912a8158aff7eb2937",
         "n_e015b54c82bc49edceeea88cd9b509d91ffcde4e63fc815d1856bb2ca07c3e9d",
         "n_259cfc31d005ac2e7a113ad94de9df9bb6e9ee4ac28086d78868004793f56d7d",
@@ -142,9 +153,7 @@
         "n_5a2a882510fd153b3f999266a18085be80b90b820e72d72e6e0f1029b5ea435d",
         "n_32a4d1d6cb42841152bce4c1df25b9ddf08be915f5ac675c8743426e8c900e87",
         "n_b88e8536b3d400ff97a9049a070f166ca7a01da343f5c4c554dfa19fda49523a",
-        "n_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
-        "n_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
-        "n_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64"
+        "n_ac14edd6f708fd6b43a1a5fbdab0f65e4cc0f7f6a65ab65bf05e82fd96050e3b"
       ],
       "label": "次日 03:00 补充更新",
       "status": "completed"
@@ -153,7 +162,7 @@
   "classifier_version": 1,
   "date": "2026-07-20",
   "dedupe_version": 1,
-  "generated_at": "2026-07-20T19:00:00.000Z",
+  "generated_at": "2026-07-21T06:59:56.882Z",
   "identity_version": 1,
   "items": [
     {
@@ -2063,7 +2072,7 @@
       "source_type": "twitter_extra",
       "summary": "Kimi 和 Qwen 是中国 AI 公司中仅有的两家在 YouTube 正规运营账号的企业，多数发布产品 PR 短视频。该演讲是 Kimi 账号唯一长视频，播放量 30 万，而 Kimi K3 预告片播放量达 1600 万。作者期待杨植麟再做一次关于 K3 的演讲。",
       "time_precision": "exact",
-      "title": "Kimi 创始人杨植麟的 GTC 2026 演讲是官方频道唯一长视频，作者期待他再做一期 Kimi K3 深度分享",
+      "title": "Kimi 创始人杨植麟的 GTC 2026 演讲是官方频道唯一长视频",
       "topic_ids": [
         "topic_products"
       ],
@@ -3934,6 +3943,380 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.17247",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_3f6c0015e1c3900e51e9b8cc4d6678f6933870845157deda4cbf3c51f986c1ee",
+      "featured": false,
+      "id": "n_3f6c0015e1c3900e51e9b8cc4d6678f6933870845157deda4cbf3c51f986c1ee",
+      "identity_claims": [
+        "c_134aa595b86eb2a9db38f5ad510f03d1be39a03f2a455cd32b4ce3bb702cab8f",
+        "c_3f6c0015e1c3900e51e9b8cc4d6678f6933870845157deda4cbf3c51f986c1ee"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-18T20:00:00.327Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208962729344221190",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1208962729344221190",
+      "source_type": "huggingface_papers",
+      "summary": "Large language model (LLM) post-training is essential for improving reasoning, adaptation, and alignment. Existing methods mainly follow two paradigms: reinforcement learning (RL) and on-policy distillation (OPD). However, RL relies on coarse-grained outcome supervision, resulting in difficult credit assignment and limited capability to acquire new knowledge. OPD, meanwhile, unconditionally matches teacher logits through KL divergence, which creates a dilemma: similar teachers provide little new knowledge, while substantially different teachers often yield ineffective guidance, largely restricting OPD to within-family distillation. We propose Distilled Reinforcement Learning (Distilled RL), which integrates teacher supervision into the RL objective to provide fine-grained guidance, selectively transfer new knowledge and avoid unconditional imitation. Distilled RL contains three components: reverse importance sampling with clipping, negative sample reset, and sequence-level geometric normalization. Through a concise and interpretable case study, we demonstrate that Distilled RL can effectively transfer previously unavailable knowledge from a teacher model to a student model. Extensive experiments across both within-family and cross-family distillation settings show that Distilled RL substantially outperforms standard RL and OPD in terms of both pass@1 and pass@k. Our code is available at",
+      "time_precision": "exact",
+      "title": "面向LLM后训练的蒸馏强化学习",
+      "topic_ids": [
+        "topic_models",
+        "topic_policy"
+      ],
+      "url": "https://arxiv.org/abs/2607.17247"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.17250",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_b36f1c80234152c4088f594f4978b58e38993864cfd331876f65422312cd0983",
+      "featured": false,
+      "id": "n_b36f1c80234152c4088f594f4978b58e38993864cfd331876f65422312cd0983",
+      "identity_claims": [
+        "c_2b9f6c118e2e0af617556f37e9d063dc12e764b6f1fc560a1198f808e399561b",
+        "c_b36f1c80234152c4088f594f4978b58e38993864cfd331876f65422312cd0983"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-18T20:00:00.360Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209135623839924231",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1209135623839924231",
+      "source_type": "huggingface_papers",
+      "summary": "This paper introduces EvolvingWorld, a framework and benchmark for character and world co-evolution in interactive literary worlds. Existing systems either treat interactive literary simulation as static persona imitation or isolated scene generation, failing to capture how characters and worlds evolve together over time. To address this, EvolvingWorld models literary simulation as a long-horizon process where characters interact, scenes progress, and character and world states are persistently updated. Unlike prior systems relying on fixed schemas, EvolvingWorld adopts an open-schema framework to support simulation across diverse literary worlds. The framework consists of two coupled modules: a Character Agent for multi-character role-play and persistent profile evolution, and an LLM-based World Model for global and location/entity-level state maintenance and scene progression. Based on this architecture, we formulate 7 trainable tasks for scene initialization, interaction generation, and state update. We construct a dataset from 57 books, producing 138,596 supervised training samples and 222 snapshots for testing. Furthermore, we introduce a trajectory-level LLM-as-Judge evaluation protocol spanning 10 dimensions and 20 metrics. Experiments show that EvolvingWorld can improve long-horizon simulation by effectively maintaining persistent, coherent character and world development.",
+      "time_precision": "exact",
+      "title": "EvolvingWorld：用于交互式文学世界中角色扮演智能体与世界模型协同演化的开放模式框架",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.17250"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.17423",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_16ca15549602d66993ea48c6684bc82422d867b15983dcc32e5a3120c699b877",
+      "featured": false,
+      "id": "n_16ca15549602d66993ea48c6684bc82422d867b15983dcc32e5a3120c699b877",
+      "identity_claims": [
+        "c_16ca15549602d66993ea48c6684bc82422d867b15983dcc32e5a3120c699b877",
+        "c_eced9b3607c9a907357e04c70c8abb312d5f9b58526da300a86be5456813cca0"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-18T20:00:00.759Z",
+      "published_date": "2026-07-19",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209135623839924232",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1209135623839924232",
+      "source_type": "huggingface_papers",
+      "summary": "Video multimodal large language models (MLLMs) can describe what happens in a video, but rarely identify when the supporting evidence occurs. We study generalist video temporal grounding, in which one model predicts a variable-cardinality set of evidence intervals across video lengths, domains, query forms, and viewpoints. Existing training strategies are misaligned with this set-valued task: long-video labels often rely on brittle one-pass annotation, while reinforcement-learning rewards either fail to distinguish non-overlapping predictions or require fragile segment matching. TimeLens2 treats temporal evidence as an interval set throughout supervision and optimization. TimeLens2-93K constructs reliable multi-span supervision through caption-derived proposals, independent localization, cross-agent consensus, semantic verification, and boundary refinement. Our temporal Wasserstein reward computes exact one-dimensional \\(W_1\\) between uniform distributions over merged interval supports, providing dense, matching-free feedback under unequal cardinalities and equivalent fragmentation; temporal IoU complements it with precise-overlap feedback. Across seven benchmarks, TimeLens2-2B outperforms all size-matched baselines on every benchmark, while the 4B and 8B variants achieve state-of-the-art performance, surpassing open-source models with up to 397B parameters. The 2B, 4B, and 8B variants improve over their Qwen3-VL backbones by 14.2, 13.0, and 18.1 mIoU points, respectively.",
+      "time_precision": "exact",
+      "title": "TimeLens2：基于多模态LLM的通用视频时序定位",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://arxiv.org/abs/2607.17423"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.17972",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_eee91ef9465e7cf8279bfae90e81f098a1b905b24f96beef360af30c20c05c44",
+      "featured": false,
+      "id": "n_eee91ef9465e7cf8279bfae90e81f098a1b905b24f96beef360af30c20c05c44",
+      "identity_claims": [
+        "c_d71c3ae41ba96f222329c7608e65e8746a596db6cf4b2451af0a988b81d6e2a0",
+        "c_eee91ef9465e7cf8279bfae90e81f098a1b905b24f96beef360af30c20c05c44"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-19T20:00:00.071Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208962729344221189",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1208962729344221189",
+      "source_type": "huggingface_papers",
+      "summary": "The prevailing inference framework for diffusion models formulates generation fundamentally as a problem of numerical integration. This perspective casts the model as an exact estimator, neglecting the inherent statistical uncertainty of the denoising process. In this work, we propose Forward-Process Aligned Diffusion prediction (DiFA), a training-free framework that reframes inference-time data prediction refinement as a sequential state estimation problem. Rather than reusing past outputs solely for numerical integration, DiFA treats iterative data predictions along the reverse trajectory as correlated observations to build a forward-aligned temporal consensus. Inspired by Kalman filtering, this consensus aggregates historical predictions according to structural consistency and noise-level compatibility. To counteract the over-smoothing tendency of temporal consensus, we introduce a deviation guidance mechanism to adaptively preserve residual details. Empirically, DiFA yields significant improvements on CIFAR-10 and ImageNet across the evaluated metrics, including FID, IS, and FD-DINOv2, demonstrating that aligning inference with the forward statistical structure substantially improves generative fidelity.",
+      "time_precision": "exact",
+      "title": "DiFA：扩散模型的推理时前向过程对齐",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://arxiv.org/abs/2607.17972"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.18213",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_a7e05bfd6550468b0506e1e3bc743e296ba83982cbdbc3e06841e00609c7ff80",
+      "featured": false,
+      "id": "n_a7e05bfd6550468b0506e1e3bc743e296ba83982cbdbc3e06841e00609c7ff80",
+      "identity_claims": [
+        "c_8033948bf071990d3acfbf610168ab24afe8211d45f69fe13632a16bdeb09cf3",
+        "c_a7e05bfd6550468b0506e1e3bc743e296ba83982cbdbc3e06841e00609c7ff80"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-19T20:00:00.275Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208962729344221188",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1208962729344221188",
+      "source_type": "huggingface_papers",
+      "summary": "Pruning long context for coding agents has been a vital technology for efficient context management. While existing context pruning methods such as SWE-Pruner realize this by attaching a separate code classifier, we find the agent itself encodes internal representations indicating the relevance of code context when reading tool output. Based on this finding, we propose SWE-Pruner Pro, which prunes tool outputs directly inside the agent. Concretely, a small head turns the agent's own internal representations into a keep-or-prune label for each line, with a length-aware embedding keyed to each tool output's line count. Across two open-weight backbones and four multi-turn benchmarks, SWE-Pruner Pro saves up to 39% of prompt and completion tokens while preserving task quality, with bounded inference overhead. Notably, on MiMo-V2-Flash SWE-Pruner Pro additionally raises the SWE-Bench Verified resolve rate by +3.8% and the long-context Oolong accuracy by +2.2 points.",
+      "time_precision": "exact",
+      "title": "SWE-Pruner Pro：代码LLM已经知道该修剪什么",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://arxiv.org/abs/2607.18213"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.18217",
+      "category": "other",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_472f2d9e4182ae10136994c67ff1ef92a554349ce84521b38859dd60c8c79e74",
+      "featured": false,
+      "id": "n_472f2d9e4182ae10136994c67ff1ef92a554349ce84521b38859dd60c8c79e74",
+      "identity_claims": [
+        "c_3bfbaf29a4453a71dd115c2a5b02a0203bfb1586c6926bfa853d2b36d072b1a8",
+        "c_472f2d9e4182ae10136994c67ff1ef92a554349ce84521b38859dd60c8c79e74"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-19T20:00:00.329Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208962729344221184",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1208962729344221184",
+      "source_type": "huggingface_papers",
+      "summary": "Human-object centric video personalization (HOCVP) is a core task within subject-driven video generation. However, existing methods suffer from two key limitations. First, most approaches focusing on inter-subject personalization still struggle to strike a balance between high subject fidelity and accurate interaction patterns between humans and diverse objects, especially when objects represent abstract concepts such as logos. Second, while intra-subject references (e.g., OCR maps, multi-view inputs) are expected to enhance subject fidelity, most existing works lack mechanisms to understand such latent correspondence. To address both challenges, we propose HOMIE, an HOCVP framework that tackles both inter- and intra-subject input settings in a unified manner. Compared to previous approaches, HOMIE proposes a better MLLM integration strategy to extract knowledge of reference-level relationships without compromising the controllability of text encoders or incurring costly re-alignment. Specifically, we introduce global multimodal guidance within self-attention to better align MLLM-derived semantic features with VAE tokens. Furthermore, we propose modality-reference embedding to differentiate tokens from MLLM features and VAE tokens and associate intra-subject reference image tokens. Extensive experiments validate that our method achieves state-of-the-art performance across various HOCVP tasks. Project Page:",
+      "time_precision": "exact",
+      "title": "HOMIE：通过多模态智能增强实现以人物和物体为中心的视频个性化",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://arxiv.org/abs/2607.18217"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.17977",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [
+        "entity_qwen"
+      ],
+      "event_id": "e_bb5bfa4e37d3246cb907334ea9ea21a35ff2bcd09004e4b2c0d41345e5cfe588",
+      "featured": false,
+      "id": "n_bb5bfa4e37d3246cb907334ea9ea21a35ff2bcd09004e4b2c0d41345e5cfe588",
+      "identity_claims": [
+        "c_bb5bfa4e37d3246cb907334ea9ea21a35ff2bcd09004e4b2c0d41345e5cfe588",
+        "c_e69a0044e4a2b0ee69403d060c379782fc0d6b7cbeefcb223f7488d39e26a14c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-19T20:00:00.430Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208962729344221185",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1208962729344221185",
+      "source_type": "huggingface_papers",
+      "summary": "We present RynnBrain 1.1, a family of embodied foundation models spanning 2B, 9B, and 122B-A10B scales. Trained with a unified spatio-temporal and physically grounded framework, RynnBrain 1.1 supports embodied perception, spatial reasoning, localization, and planning. Compared with RynnBrain 1.0, it further introduces contact-point prediction across the model family and native 3D grounding for the 2B and 9B models, yielding representations and outputs that are more directly aligned with robot manipulation. We also develop RynnBrain-VLA with a unified cross-embodiment action space and embodiment-specific masking, and deploy it on Unitree G1, Astribot-S1, and Tianji-Wuji. RynnBrain 1.1 achieves strong results on embodied cognition, localization, and 3D grounding, with the 122B-A10B model outperforming all evaluated proprietary and open-source models on VSI-Bench, MMSI, and RefSpatial-Bench. Real-robot experiments show that RynnBrain-initialized policies outperform Qwen-based and representative generalist VLAs, while joint multi-task and multi-embodiment training improves process scores and success rates over per-task training.",
+      "time_precision": "exact",
+      "title": "RynnBrain 1.1：迈向更强大且具泛化能力的具身基础模型",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://arxiv.org/abs/2607.17977"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.17524",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_ef7c26fe6308d3187a3231bef7793cbcb4ee994dd5b73fbe55128614b73c502b",
+      "featured": false,
+      "id": "n_ef7c26fe6308d3187a3231bef7793cbcb4ee994dd5b73fbe55128614b73c502b",
+      "identity_claims": [
+        "c_89743987b2dbd27a4f4ba31cd791c6644688e9f5b81319502d6d2739afe22bd3",
+        "c_ef7c26fe6308d3187a3231bef7793cbcb4ee994dd5b73fbe55128614b73c502b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-19T20:00:00.609Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209135623839924228",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1209135623839924228",
+      "source_type": "huggingface_papers",
+      "summary": "We propose Token-Level Off-Policy Labeling (TOPL), an off-policy training paradigm that reframes post-training as a token-level correctness prediction task. Our key intuition is that by training the model to distinguish good and bad tokens in a response, we naturally guide the model towards generating good tokens, while avoiding the pitfalls that come with directly training the model to generate off-policy tokens. Experiments on document summarization tasks show that TOPL achieves strong out-of-distribution generalization across 11 datasets against a diverse set of sequence-level and token-level baselines. We further demonstrate that TOPL transfers effectively to machine translation, suggesting that its benefits generalize across different faithful generation tasks. Through ablation studies, we confirm that our token-level learning signal is critical to good performance; sequence-level analogues do not confer similar benefits. Finally, we show that TOPL induces interpretable model updates: the LoRA adapters learned through TOPL function as linear classification heads and steering vectors.",
+      "time_precision": "exact",
+      "title": "分布偏移下用于忠实生成的令牌级离策略学习",
+      "topic_ids": [
+        "topic_models",
+        "topic_policy"
+      ],
+      "url": "https://arxiv.org/abs/2607.17524"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.18110",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_af2d652f1e63156defe245637a1e8a76f0a87309e2fb0405f0d9e64cd3f541fe",
+      "featured": false,
+      "id": "n_af2d652f1e63156defe245637a1e8a76f0a87309e2fb0405f0d9e64cd3f541fe",
+      "identity_claims": [
+        "c_af2d652f1e63156defe245637a1e8a76f0a87309e2fb0405f0d9e64cd3f541fe",
+        "c_d80279c09330125e51f01a8e71c09503bcbcd0e633f6e858252367f4f12cf169"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-19T20:00:00.738Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208962729344221186",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1208962729344221186",
+      "source_type": "huggingface_papers",
+      "summary": "Reinforcement learning (RL) on open-ended tasks compresses an LLM's rubric-based evaluation into a scalar reward, discarding rich textual feedback and conflating responses with distinct quality profiles. We propose Experiential Learning (EL), which repurposes the feedback model from an LLM-as-a-Judge into an LLM-as-a-Coach. The coach distills its assessment of each on-policy response into transferable experiential knowledge, which conditions a teacher model and is internalized by the policy through on-policy context distillation. Compared with scalar rewards, this higher-bandwidth feedback channel provides dense supervision and preserves fine-grained preferences among high-quality responses. Across two policy families, with feedback from the policy itself or a proprietary model, EL consistently outperforms rubric-based RL on held-out and unseen open-ended tasks. Notably, EL generalizes better beyond the training distribution, and mitigates reward hacking. These findings establish experiential knowledge as a richer and more generalizable learning signal for post-training on non-verifiable tasks.",
+      "time_precision": "exact",
+      "title": "LLM作为教练：面向不可验证任务的体验式学习",
+      "topic_ids": [
+        "topic_models",
+        "topic_policy"
+      ],
+      "url": "https://arxiv.org/abs/2607.18110"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://arxiv.org/abs/2607.18171",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_138a7d7068ed57b7f82ab3a218015cf08db4c4e9ad4946bf53b5091683c490ee",
+      "featured": false,
+      "id": "n_138a7d7068ed57b7f82ab3a218015cf08db4c4e9ad4946bf53b5091683c490ee",
+      "identity_claims": [
+        "c_138a7d7068ed57b7f82ab3a218015cf08db4c4e9ad4946bf53b5091683c490ee",
+        "c_bb463eb6e34dd32277f1eb8f893caa6f7dc4dc499bc35ca0eaec4f3405731f5a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-19T20:00:00.900Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208962729344221187",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1208962729344221187",
+      "source_type": "huggingface_papers",
+      "summary": "Real-time multimodal applications, including voice agents and interactive video generation, compose heterogeneous models into pipelines whose efficient deployment requires application-specific decisions about placement, streaming, and intra-model parallelism. Existing serving systems and auto-parallelism compilers commit to limited transformations and fixed workload assumptions, so achieving high performance on a new application requires hand-crafting an efficient implementation. We present FlashRT, an agent harness that guides coding agents to lift simple developer-written reference implementations into optimized multi-GPU deployments that flexibly weigh target metrics like latency and throughput. Using a new chain-of-program paradigm, FlashRT directs a generic coding agent through a multi-pass transformation process where an agent transforms the reference into an intermediate representation (IR) to capture data dependencies and persistent-state scopes, validates this IR via a sequential interpreter, and performs static analyses to identify candidate transformations. Then, the agent iteratively implements, verifies, and benchmarks each candidate under a measurement-gated optimization loop to produce effective deployments that span different hardware budgets. Across various applications, including video world models and multimodal LLMs, FlashRT converts reference implementations into highly efficient deployments, delivering up to ~70x latency reduction and 2.8x throughput improvement on NVIDIA B200 GPUs. On AMD MI355X GPUs, FlashRT matches the peak latency reduction while increasing peak throughput improvement to 3.6x, demonstrating that agent-driven optimization can be more scalable on platforms with less mature expert optimization. In fact, for Qwen3-Omni text-to-audio inference, FlashRT reduces response latency by 65% compared to the expert vLLM-Omni implementation on AMD MI355X.",
+      "time_precision": "exact",
+      "title": "FlashRT：用于引导智能体部署实时多模态应用的智能体驾驭工具",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://arxiv.org/abs/2607.18171"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://openai.com/index/safety-alignment-long-horizon-models",
       "category": "policy",
       "content_type": "news",
@@ -4192,7 +4575,7 @@
       "source_type": "twitter_extra",
       "summary": "RT Sumanth Stop prompting AI agents. Design the loops that prompt them instead. This is the core idea behind Loop Engineering, a methodology for building automated systems that orchestrate your AI coding agents instead of prompting them manually. Boris Cherny, Head of Claude Code at Anthropic, puts it directly: \"I don't prompt Claude anymore. I have loops running that prompt Claude and figure out what to do. My job is to write loops.\" A loop is an automated pipeline that runs on a schedule. It checks what needs to be done, prompts your AI coding agent with the right context, verifies the result, and either commits the fix or escalates to you. Then it runs again. This repo is a starter kit and reference guide for building these loops. Seven production-ready patterns, CLI tools to scaffold your setup, and documentation covering failure modes, anti-patterns, safety, and multi-loop coordination. The seven patterns: Daily Triage, PR Babysitter, CI Sweeper, Dependency Sweeper, Changelog Drafter, Post-Merge Cleanup, and Issue Triage. Each one ships with a starter kit, cadence recommendation, and token cost estimate. Three CLI tools handle setup. \"loop-init\" scaffolds skills, state, and budget files and prints your Loop Ready score. \"loop-audit\" checks how ready your setup is and suggests improvements. \"loop-cost\" estimates token spend before you run anything. Works with Claude Code, Codex, Grok, OpenCode, Cursor, and GitHub Actions. Key capabilities: • 7 production loop patterns with starters and token cost estimates • loop-init scaffolds your setup and prints a Loop Ready score • loop-audit scores readiness and suggests improvements • loop-cost estimates token spend per cadence • Failure modes, anti-patterns, and safety documentation included • Works with Claude Code, Codex, Grok, OpenCode, Cursor 100% open source. I've shared the link in the replies! Sumanth:",
       "time_precision": "exact",
-      "title": "Stop prompting AI agents. Design the loops that prompt them instead.",
+      "title": "RT Sumanth Stop prompting AI agents. Design the loops that prompt them",
       "topic_ids": [
         "topic_models",
         "topic_agents",
@@ -4275,6 +4658,44 @@
         "topic_models"
       ],
       "url": "https://x.com/9hills/status/2079215862775791886"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Khazix0918/status/2079221234718630178",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_c3420ed9275641123f9d020e1ee0911ed66e3c36f3ee7a2b5940dc6b43eef04f",
+      "featured": false,
+      "id": "n_c3420ed9275641123f9d020e1ee0911ed66e3c36f3ee7a2b5940dc6b43eef04f",
+      "identity_claims": [
+        "c_a8183d546d209ffad3f6a565c8cf64c131577576faefd27e483262e84e8517f8",
+        "c_c3420ed9275641123f9d020e1ee0911ed66e3c36f3ee7a2b5940dc6b43eef04f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-20T15:05:47.799Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209061812025073666",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1209061812025073666",
+      "source_type": "kazike_x",
+      "summary": "可能很多人不知道，其实现在做代码Review最牛逼的，是ChatGPT网页版上的GPT-5.6 Sol Pro模式。 其Review水平和深度，让Fable 5都甘拜下风。。。",
+      "time_precision": "exact",
+      "title": "可能很多人不知道，其实现在做代码Review最牛逼的",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Khazix0918/status/2079221234718630178"
     },
     {
       "batch": "lateNight",
@@ -4539,114 +4960,39 @@
     },
     {
       "batch": "lateNight",
-      "canonical_url": "https://simonwillison.net/2026/Jul/20/cheap-reverse-engineering/",
+      "canonical_url": "https://x.com/dotey/status/2079279979175530886",
       "category": "other",
-      "content_type": "news",
-      "entity_ids": [],
-      "event_id": "e_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
-      "featured": false,
-      "id": "n_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
-      "identity_claims": [
-        "c_3f091aede0915fffc6ccc1c69ba90295d61548300eccc850121e184c65e6a4cf",
-        "c_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a"
-      ],
-      "identity_strategy": "source_id",
-      "identity_version": 1,
-      "ingested_at": "2026-07-20T19:00:00.000Z",
-      "published_at": "2026-07-20T19:24:05.751Z",
-      "published_date": "2026-07-21",
-      "reason": null,
-      "related_source_ids": [],
-      "score": null,
-      "source": {
-        "homepage": null,
-        "id": "1208472771806265344",
-        "name": "Simon Willison's Weblog"
-      },
-      "source_id": "1208472771806265344",
-      "source_type": "simonwillison",
-      "summary": "I keep hearing anecdotes from people who used coding agents to reverse-engineer and automate devices in their homes. I think this is an interesting illustration of the impact of the reduced cost of writing code. Prior to agents, it was entirely possible to reverse-engineer home devices. The problem was the ROI - was it really worth all of that effort? More importantly, any experienced programmer knows that undocumented, unstable APIs like that may well change or break in the future. Is that initial work worth the effort if you're committing yourself to a frustrating cycle of maintenance in the future? Coding agents change that equation entirely. The effort to get a simple automation working has dropped, as has the cost of trying and failing to get it to work. Since the code is so cheap, the idea of having to maintain it in the future - or throw it away and start again - carries way less psychological baggage. Tags: reverse-engineering, coding-agents, ai-assisted-programming, generative-ai, ai, llms",
-      "time_precision": "exact",
-      "title": "Reverse-engineering is cheap now",
-      "topic_ids": [
-        "topic_other"
-      ],
-      "url": "https://simonwillison.net/2026/Jul/20/cheap-reverse-engineering/"
-    },
-    {
-      "batch": "lateNight",
-      "canonical_url": "https://x.com/dotey/status/2079317901085941976",
-      "category": "models",
       "content_type": "socialMedia",
-      "entity_ids": [
-        "entity_anthropic"
-      ],
-      "event_id": "e_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+      "entity_ids": [],
+      "event_id": "e_ac14edd6f708fd6b43a1a5fbdab0f65e4cc0f7f6a65ab65bf05e82fd96050e3b",
       "featured": false,
-      "id": "n_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+      "id": "n_ac14edd6f708fd6b43a1a5fbdab0f65e4cc0f7f6a65ab65bf05e82fd96050e3b",
       "identity_claims": [
-        "c_002de1e84d3997f92268a45519cbd2e14e6d081c62ee1b1fc64f29b4cdc1c1c1",
-        "c_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8"
+        "c_a55d794832d0db370baf5d4d4a41b6d640621fb0a1afd2acec62b222bf2c90bb",
+        "c_ac14edd6f708fd6b43a1a5fbdab0f65e4cc0f7f6a65ab65bf05e82fd96050e3b"
       ],
       "identity_strategy": "source_id",
       "identity_version": 1,
-      "ingested_at": "2026-07-20T19:00:00.000Z",
-      "published_at": "2026-07-20T21:29:54.069Z",
+      "ingested_at": "2026-07-21T06:59:56.882Z",
+      "published_at": "2026-07-20T18:59:12.714Z",
       "published_date": "2026-07-21",
       "reason": null,
       "related_source_ids": [],
       "score": null,
       "source": {
         "homepage": null,
-        "id": "1208679129918984192",
+        "id": "1209083458391887876",
         "name": "twitter-宝玉"
       },
-      "source_id": "1208679129918984192",
+      "source_id": "1209083458391887876",
       "source_type": "twitter_extra",
-      "summary": "Claude Code 更新加入了屏幕阅读器模式（Screen Reader Mode），让使用 VoiceOver、NVDA 等辅助工具的视障开发者也能用上 AI 编程助手。 启用屏幕阅读器模式后，会把 Claude Code 原来那套终端界面，进度动画、方框边框、实时刷新，全部替换成纯文本逐行输出。屏幕阅读器可以按顺序读出每一行内容，包括你的输入、Claude 的回复、工具调用状态、权限请求，每种内容都有明确的文本标签（you:、claude:、tool:、Permission Required: 等），方便跳转和检索。 原来的菜单和权限确认也做了适配。箭头键选择的菜单变成了编号列表，输入数字回车就行；是否确认变成输入 y/n。Claude 需要你注意的时候，比如回复完成或者等你授权，终端会响铃提醒，不用一直盯着屏幕。 开启方式有三种： 1. 启动时加 --ax-screen-reader 参数(claude --ax-screen-reader) 2. 设置环境变量 CLAUDE_AX_SCREEN_READER=1 3. 或者在配置文件里写 \"axScreenReader\": true。 需要 v2.1.181 或更高版本。 除了屏幕阅读器模式，这次还加了几个相关的无障碍设置：屏幕放大镜用户可以设置环境变量保持原生光标可见，prefersReducedMotion 可以关掉动画，还有专门的色盲友好主题（dark-daltonized 和 light-daltonized）。 ClaudeDevs: Claude Code now has a screen reader mode. Running `claude --ax-screen-reader` swaps the visual terminal UI for plain, linear text that screen readers (like VoiceOver and NVDA) can follow.",
+      "summary": "Re 情绪价值也是价值 Yangyi: 能不能赚钱取决于 人们幻想中这东西有没有价值 而不是实际价值 只要人能塑造一份幻梦说服自己 那么就会购买 但只有品尝之后 才知道原来这并非美味佳肴 有一些食之无味 弃之可惜的 就得过且过 有一些吃出来屎味儿了 就跑去客诉了 还有一些压根没有品尝 但是大家都说这东西就是屎",
       "time_precision": "exact",
-      "title": "Claude Code 更新加入了屏幕阅读器模式（Screen Reader Mode）",
-      "topic_ids": [
-        "topic_models",
-        "topic_products"
-      ],
-      "url": "https://x.com/dotey/status/2079317901085941976"
-    },
-    {
-      "batch": "lateNight",
-      "canonical_url": "https://x.com/vista8/status/2079365033440764193",
-      "category": "other",
-      "content_type": "socialMedia",
-      "entity_ids": [],
-      "event_id": "e_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
-      "featured": false,
-      "id": "n_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
-      "identity_claims": [
-        "c_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
-        "c_7dd37627dbd9d955a1c322ec75927293539f0f0722514814af607b690bd7f5a9"
-      ],
-      "identity_strategy": "source_id",
-      "identity_version": 1,
-      "ingested_at": "2026-07-20T19:00:00.000Z",
-      "published_at": "2026-07-21T00:37:11.582Z",
-      "published_date": "2026-07-21",
-      "reason": null,
-      "related_source_ids": [],
-      "score": null,
-      "source": {
-        "homepage": null,
-        "id": "1208785914566713344",
-        "name": "twitter-向阳乔木"
-      },
-      "source_id": "1208785914566713344",
-      "source_type": "twitter_extra",
-      "summary": "x改版了，推荐时间线上只显示关注好友的回复，不显示内容。 这样好处是避免刷屏，以前自己回复很克制，就怕这个，现在就没有顾虑了。 预计这个改动会大大提升x的互动率。",
-      "time_precision": "exact",
-      "title": "x改版了，推荐时间线上只显示关注好友的回复，不显示内容。",
+      "title": "情绪价值也是价值 Yangyi: 能不能赚钱取决于 人们幻想中这东西有没有价值 而不是实际价值",
       "topic_ids": [
         "topic_other"
       ],
-      "url": "https://x.com/vista8/status/2079365033440764193"
+      "url": "https://x.com/dotey/status/2079279979175530886"
     }
   ],
   "overview": {
