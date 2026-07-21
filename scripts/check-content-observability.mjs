@@ -15,7 +15,7 @@ const BATCHES = [
   [7, "afternoon"],
   [15, "night"],
   [18, "lateNight"],
-  [19, "lateNight"],
+  [19, "lateNightSupplement"],
 ];
 
 function required(label, value) {
@@ -336,6 +336,9 @@ export function evaluateContentObservability(input, now = Date.now()) {
 
   const deadLetterCount = Number(database.outbox?.dead_letter_count || 0);
   const staleQueuedCount = Number(database.outbox?.stale_queued_count || 0);
+  const releaseHeadStaleCount = Number(
+    database.outbox?.release_head_stale_count || 0,
+  );
   if (
     !Number.isSafeInteger(deadLetterCount) ||
     deadLetterCount < 0 ||
@@ -348,6 +351,14 @@ export function evaluateContentObservability(input, now = Date.now()) {
       reasons.push(`outbox_dead_letter:${deadLetterCount}`);
     if (staleQueuedCount > 0)
       reasons.push(`outbox_stale_queued:${staleQueuedCount}`);
+  }
+  if (
+    !Number.isSafeInteger(releaseHeadStaleCount) ||
+    releaseHeadStaleCount < 0
+  ) {
+    reasons.push("release_head_state_invalid");
+  } else if (releaseHeadStaleCount > 0) {
+    reasons.push(`release_head_stale:${releaseHeadStaleCount}`);
   }
 
   const requests = Number(input.analytics?.requests || 0);
@@ -392,6 +403,7 @@ export function evaluateContentObservability(input, now = Date.now()) {
     healthy: reasons.length === 0,
     outbox: {
       dead_letter_count: deadLetterCount,
+      release_head_stale_count: releaseHeadStaleCount,
       stale_queued_count: staleQueuedCount,
     },
     reasons,

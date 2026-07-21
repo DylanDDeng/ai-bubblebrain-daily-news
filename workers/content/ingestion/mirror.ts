@@ -1,5 +1,6 @@
 import { canonicalJsonBytes, equalBytes, sha256Hex } from "../shared/canonical";
 import {
+  databaseErrorCode,
   failIngestionPublicationAttempt,
   finalizeSiteRelease,
   ingestReportSnapshot,
@@ -40,6 +41,49 @@ export type MirrorResult = {
   manifestSha256?: string;
 };
 
+const MAX_CONTENTION_ATTEMPTS = 3;
+const CONTENTION_RETRY_BASE_MS = 100;
+
+export function publicationBatchId(
+  batch: string,
+  triggerId?: string | null,
+): string {
+  if (batch !== "lateNight") return batch;
+  const scheduledAt = String(triggerId || "").match(/^scheduled:(\d{13})$/)?.[1];
+  if (!scheduledAt) return batch;
+  const timestamp = Number(scheduledAt);
+  const hour = Number(
+    new Intl.DateTimeFormat("en-US", {
+      hour: "2-digit",
+      hour12: false,
+      timeZone: "Asia/Shanghai",
+    }).format(new Date(timestamp)),
+  );
+  return hour === 3 ? "lateNightSupplement" : batch;
+}
+
+async function withContentionRetry<T>(
+  operation: () => Promise<T>,
+  label: string,
+  sleep: (milliseconds: number) => Promise<void>,
+): Promise<T> {
+  for (let attempt = 1; attempt <= MAX_CONTENTION_ATTEMPTS; attempt += 1) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (!isRetryableReleaseContention(error) || attempt === MAX_CONTENTION_ATTEMPTS) {
+        throw error;
+      }
+      console.warn("[ContentMirror] transient database contention; retrying", {
+        attempt,
+        operation: label,
+      });
+      await sleep(CONTENTION_RETRY_BASE_MS * 2 ** (attempt - 1));
+    }
+  }
+  throw new Error("Content mirror retry loop exhausted");
+}
+
 export async function mirrorStructuredReport(
   env: MirrorEnv,
   input: {
@@ -49,7 +93,10 @@ export async function mirrorStructuredReport(
     batch: string;
     triggerId?: string | null;
   },
-  dependencies: { openDatabase?: typeof openContentDatabase } = {},
+  dependencies: {
+    openDatabase?: typeof openContentDatabase;
+    sleep?: (milliseconds: number) => Promise<void>;
+  } = {},
 ): Promise<MirrorResult> {
   if (String(env.CONTENT_DATABASE_MIRROR_ENABLED).toLowerCase() !== "true") {
     return { status: "disabled" };
@@ -78,6 +125,7 @@ export async function mirrorStructuredReport(
   const triggerKind =
     input.triggerId ||
     `structured:${input.report.date}:${input.batch}:${input.codeSha.toLowerCase()}`;
+  const publicationBatch = publicationBatchId(input.batch, input.triggerId);
   const workerVersion =
     env.DAILY_PRODUCER_VERSION ||
     env.BUILD_ENVIRONMENT_VERSION ||
@@ -87,6 +135,10 @@ export async function mirrorStructuredReport(
     env,
     "content-ingestor",
   );
+  const sleep =
+    dependencies.sleep ||
+    ((milliseconds: number) =>
+      new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
   try {
     const snapshot = await ingestReportSnapshot(sql, {
       document: parsed,
@@ -96,14 +148,19 @@ export async function mirrorStructuredReport(
       serializerVersion: env.DAILY_SERIALIZER_VERSION || "daily-json-c14n-v1",
       provenanceKind: "live_ingestion",
     });
-    const reservation = await reserveIngestionSiteRelease(sql, {
-      reportSnapshotId: String(snapshot.report_snapshot_id),
-      batchId: input.batch,
-      inputSha256: reportObject.sha256,
-      contentSha256: reportObject.sha256,
-      triggerKind,
-      workerVersion,
-    });
+    const reservation = await withContentionRetry(
+      () =>
+        reserveIngestionSiteRelease(sql, {
+          reportSnapshotId: String(snapshot.report_snapshot_id),
+          batchId: publicationBatch,
+          inputSha256: reportObject.sha256,
+          contentSha256: reportObject.sha256,
+          triggerKind,
+          workerVersion,
+        }),
+      "reserve",
+      sleep,
+    );
     const reports = Array.isArray(reservation.reports)
       ? reservation.reports
       : [];
@@ -160,22 +217,27 @@ export async function mirrorStructuredReport(
           ? "production"
           : "shadow",
     };
-    const release = await finalizeSiteRelease(sql, {
-      reservationId: String(reservation.reservation_id),
-      manifestObjectKey: manifestObject.key,
-      manifestByteLength: manifestObject.byteLength,
-      manifestSha256: manifestObject.sha256,
-      contentRootSha256,
-      schemaVersion: input.report.schema_version,
-      taxonomyVersion: input.report.taxonomy_version,
-      serializerVersion: contract.serializer_version,
-      searchContractVersion: contract.search_contract_version,
-      sourceContractVersion: contract.source_contract_version,
-      structuredCutoverDate: contract.structured_cutover_date,
-      noReportDays: contract.no_report_days,
-      dispatchId,
-      dispatchPayload,
-    });
+    const release = await withContentionRetry(
+      () =>
+        finalizeSiteRelease(sql, {
+          reservationId: String(reservation.reservation_id),
+          manifestObjectKey: manifestObject.key,
+          manifestByteLength: manifestObject.byteLength,
+          manifestSha256: manifestObject.sha256,
+          contentRootSha256,
+          schemaVersion: input.report.schema_version,
+          taxonomyVersion: input.report.taxonomy_version,
+          serializerVersion: contract.serializer_version,
+          searchContractVersion: contract.search_contract_version,
+          sourceContractVersion: contract.source_contract_version,
+          structuredCutoverDate: contract.structured_cutover_date,
+          noReportDays: contract.no_report_days,
+          dispatchId,
+          dispatchPayload,
+        }),
+      "finalize",
+      sleep,
+    );
     return {
       status: "mirrored",
       reportSnapshotId: String(snapshot.report_snapshot_id),
@@ -187,13 +249,14 @@ export async function mirrorStructuredReport(
   } catch (error) {
     if (isRetryableReleaseContention(error)) {
       console.warn(
-        "[ContentMirror] production release head is busy; retry later",
+        "[ContentMirror] database contention retries exhausted",
+        { errorCode: databaseErrorCode(error) },
       );
     } else {
       try {
         await failIngestionPublicationAttempt(sql, {
           reportDate: input.report.date,
-          batchId: input.batch,
+          batchId: publicationBatch,
           inputSha256: reportObject.sha256,
           triggerKind,
           workerVersion,
