@@ -31,6 +31,46 @@ function baseOverview() {
     };
 }
 
+function partitionAfterContentCutoff(items, contentCutoff) {
+    const cutoffMs = contentCutoff.getTime();
+    const eligible = [];
+    const afterCutoff = [];
+    for (const item of items) {
+        const publishedMs = item.published_at ? new Date(item.published_at).getTime() : NaN;
+        if (Number.isFinite(publishedMs) && publishedMs > cutoffMs) afterCutoff.push(item);
+        else eligible.push(item);
+    }
+    return { eligible, afterCutoff };
+}
+
+function removeExistingItemsAfterCutoff(report, batch, contentCutoff) {
+    if (!report) return { report, removedCount: 0 };
+    const cutoffMs = contentCutoff.getTime();
+    const removedIds = new Set(report.items
+        .filter(item => (
+            item.batch === batch
+            && item.published_at
+            && new Date(item.published_at).getTime() > cutoffMs
+        ))
+        .map(item => item.id));
+    if (removedIds.size === 0) return { report, removedCount: 0 };
+    return {
+        report: {
+            ...report,
+            items: report.items.filter(item => !removedIds.has(item.id)),
+            batches: report.batches.map(existingBatch => (
+                existingBatch.id === batch
+                    ? {
+                          ...existingBatch,
+                          item_ids: existingBatch.item_ids.filter(id => !removedIds.has(id)),
+                      }
+                    : existingBatch
+            )),
+        },
+        removedCount: removedIds.size,
+    };
+}
+
 export async function buildDailyArtifacts({
     existingReport = null,
     recentReports = [],
@@ -39,6 +79,7 @@ export async function buildDailyArtifacts({
     reportDate,
     batch,
     runAt,
+    contentCutoff = runAt,
     producer,
     blockedXHandles = '',
 }) {
@@ -57,6 +98,15 @@ export async function buildDailyArtifacts({
     }
     const runDate = new Date(runAt);
     if (Number.isNaN(runDate.getTime())) throw new Error('Invalid runAt');
+    if (!isExplicitInstant(contentCutoff)) {
+        if (Number.isNaN(new Date(contentCutoff).getTime())) throw new Error('Invalid contentCutoff');
+        throw new Error('contentCutoff must include an explicit timezone');
+    }
+    const contentCutoffDate = new Date(contentCutoff);
+    if (Number.isNaN(contentCutoffDate.getTime())) throw new Error('Invalid contentCutoff');
+    if (contentCutoffDate.getTime() > runDate.getTime()) {
+        throw new Error('contentCutoff cannot be after runAt');
+    }
     if (!producer?.version) throw new Error('Producer version is required');
 
     if (existingReport?.date !== undefined && existingReport.date !== reportDate) {
@@ -75,6 +125,12 @@ export async function buildDailyArtifacts({
     }
     const filteredExisting = filterBlockedXItemsFromReport(existingReport, blockedXHandles);
     existingReport = filteredExisting.report;
+    const cutoffFilteredExisting = removeExistingItemsAfterCutoff(
+        existingReport,
+        batch,
+        contentCutoffDate,
+    );
+    existingReport = cutoffFilteredExisting.report;
     for (const report of recentReports) {
         validateDailyReportSchema(report);
         validateDailyReportSemantics(report, { enforcePhase1: true });
@@ -87,8 +143,12 @@ export async function buildDailyArtifacts({
         batch,
         runAt: runDate.toISOString(),
     })));
-    const accepted = normalizedResults.filter(result => result.accepted).map(result => result.item);
+    const normalizedAccepted = normalizedResults
+        .filter(result => result.accepted)
+        .map(result => result.item);
     const rejected = normalizedResults.filter(result => !result.accepted).map(result => result.reason);
+    const cutoffPartition = partitionAfterContentCutoff(normalizedAccepted, contentCutoffDate);
+    const accepted = cutoffPartition.eligible;
     const crossDay = partitionCrossDayDuplicates(accepted, recentReports, reportDate, 7);
     const sameDay = deduplicateSameDay(existingReport?.items || [], crossDay.fresh);
 
@@ -102,6 +162,9 @@ export async function buildDailyArtifacts({
                 raw_count: rawItems.length,
                 accepted_count: accepted.length,
                 rejected_count: rejected.length,
+                after_cutoff_count: cutoffPartition.afterCutoff.length,
+                after_cutoff_existing_count: cutoffFilteredExisting.removedCount,
+                content_cutoff: contentCutoffDate.toISOString(),
                 same_day_duplicate_count: sameDay.duplicateCount,
                 cross_day_duplicate_count: crossDay.duplicates.length,
                 fresh_count: 0,
@@ -158,6 +221,9 @@ export async function buildDailyArtifacts({
             raw_count: rawItems.length,
             accepted_count: accepted.length,
             rejected_count: rejected.length,
+            after_cutoff_count: cutoffPartition.afterCutoff.length,
+            after_cutoff_existing_count: cutoffFilteredExisting.removedCount,
+            content_cutoff: contentCutoffDate.toISOString(),
             same_day_duplicate_count: sameDay.duplicateCount,
             cross_day_duplicate_count: crossDay.duplicates.length,
             fresh_count: sameDay.freshCount,

@@ -21,6 +21,9 @@ on:
       code_sha:
         required: true
         type: string
+      source_code_sha:
+        required: false
+        type: string
       build_environment_version:
         required: true
         type: string
@@ -50,6 +53,7 @@ jobs:
       EXPECTED_PREDECESSOR_ID: ${{ github.event.inputs.expected_predecessor_id }}
       CONTENT_ROOT_SHA256: ${{ github.event.inputs.expected_content_sha }}
       EXACT_CODE_SHA: ${{ github.event.inputs.code_sha }}
+      SOURCE_CODE_SHA: ${{ github.event.inputs.source_code_sha }}
       BUILD_ENVIRONMENT_VERSION: ${{ github.event.inputs.build_environment_version }}
       DEPLOYMENT_MODE: ${{ github.event.inputs.mode }}
       CONTENT_BUILD_API_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
@@ -75,6 +79,9 @@ jobs:
           [[ "$CONTENT_RELEASE_SEQUENCE" =~ ^[1-9][0-9]*$ ]]
           [[ "$CONTENT_ROOT_SHA256" =~ ^[0-9a-f]{64}$ ]]
           [[ "$EXACT_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          if [[ -n "$SOURCE_CODE_SHA" ]]; then
+            [[ "$SOURCE_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          fi
           [[ "$BUILD_ENVIRONMENT_VERSION" == "node22.17-astro7-hugo0.147.9-v1" ]]
 
       - name: Checkout exact code SHA
@@ -84,7 +91,11 @@ jobs:
           fetch-depth: 0
 
       - name: Verify checkout identity
-        run: test "$(git rev-parse HEAD)" = "$EXACT_CODE_SHA"
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXACT_CODE_SHA"
+          if [[ -n "$SOURCE_CODE_SHA" ]]; then
+            git merge-base --is-ancestor "$SOURCE_CODE_SHA" "$EXACT_CODE_SHA"
+          fi
 
       - name: Setup Node.js 22.17.0
         uses: actions/setup-node@v4
@@ -212,7 +223,7 @@ jobs:
         run: |
           artifact_fingerprint="$(jq -r '.build.artifact_sha256' astro/dist/release-manifests/site-route-manifest.json)"
           [[ "$artifact_fingerprint" =~ ^[0-9a-f]{64}$ ]]
-          evidence="$(jq -nc --arg object_key "$ARTIFACT_OBJECT_KEY" --arg hash "$ARTIFACT_SHA256" --arg fingerprint "$artifact_fingerprint" --arg algorithm "$ARTIFACT_HASH_ALGORITHM" --arg code "$EXACT_CODE_SHA" --arg env "$BUILD_ENVIRONMENT_VERSION" --argjson bytes "$ARTIFACT_BYTES" '{object_key:$object_key,byte_length:$bytes,artifact_sha256:$hash,artifact_fingerprint_sha256:$fingerprint,hash_algorithm:$algorithm,code_sha:$code,build_environment_version:$env}')"
+          evidence="$(jq -nc --arg object_key "$ARTIFACT_OBJECT_KEY" --arg hash "$ARTIFACT_SHA256" --arg fingerprint "$artifact_fingerprint" --arg algorithm "$ARTIFACT_HASH_ALGORITHM" --arg code "$EXACT_CODE_SHA" --arg source_code "$SOURCE_CODE_SHA" --arg env "$BUILD_ENVIRONMENT_VERSION" --argjson bytes "$ARTIFACT_BYTES" '{object_key:$object_key,byte_length:$bytes,artifact_sha256:$hash,artifact_fingerprint_sha256:$fingerprint,hash_algorithm:$algorithm,code_sha:$code,source_code_sha:($source_code | if length > 0 then . else null end),build_environment_version:$env}')"
           node scripts/send-content-deployment-callback.mjs artifact_registered "$evidence"
 
       - name: Deploy exact files to Pages Preview

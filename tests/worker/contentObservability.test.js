@@ -43,7 +43,11 @@ function healthyInput() {
     ],
     database: {
       current: CURRENT,
-      outbox: { dead_letter_count: 0, stale_queued_count: 0 },
+      outbox: {
+        dead_letter_count: 0,
+        release_head_stale_count: 0,
+        stale_queued_count: 0,
+      },
       publication_attempts: due.map((batch) => ({
         ...batch,
         status: "succeeded",
@@ -84,7 +88,7 @@ describe("content observability evaluator", () => {
         }),
         expect.objectContaining({
           report_date: "2026-07-17",
-          batch_id: "lateNight",
+          batch_id: "lateNightSupplement",
           scheduled_at: "2026-07-17T19:00:00.000Z",
         }),
         expect.objectContaining({
@@ -199,6 +203,14 @@ describe("content observability production identity", () => {
     const result = evaluateContentObservability(input, NOW);
     expect(result.healthy).toBe(false);
     expect(result.reasons).toContain("api_analytics_sample_invalid");
+  });
+
+  it("alerts when a production release-head claim remains occupied", () => {
+    const input = healthyInput();
+    input.database.outbox.release_head_stale_count = 1;
+    const result = evaluateContentObservability(input, NOW);
+    expect(result.healthy).toBe(false);
+    expect(result.reasons).toContain("release_head_stale:1");
   });
 
   it("does not alert on a valid zero-traffic analytics window", () => {

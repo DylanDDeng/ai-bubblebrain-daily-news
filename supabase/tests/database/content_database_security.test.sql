@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(112);
+select plan(114);
 
 select cmp_ok(
   (select count(*) from information_schema.tables where table_schema = 'private' and table_name like '%content%' or table_schema = 'private' and table_name like '%release%'),
@@ -176,6 +176,22 @@ select ok(
 select ok(has_function_privilege('content_ingestor', 'private.ingest_report_snapshot_v1(jsonb,text,bigint,text,text,text,text)', 'execute'), 'ingestor can ingest snapshots');
 select ok(has_function_privilege('content_ingestor', 'private.reserve_site_release_v1(uuid)', 'execute'), 'ingestor can reserve releases');
 select ok(has_function_privilege('content_ingestor', 'private.reserve_ingestion_site_release_v1(uuid,text,text,text,text,text)', 'execute'), 'ingestor can reserve deterministic publication slots');
+select ok(
+  position('lateNightSupplement' in (
+    select p.prosrc
+    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'private' and p.proname = 'reserve_ingestion_site_release_v1'
+  )) > 0,
+  '03:00 supplement has an independent deterministic publication slot'
+);
+select ok(
+  position('lateNightSupplement' in (
+    select p.prosrc
+    from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'private' and p.proname = 'fail_ingestion_publication_attempt_v1'
+  )) > 0,
+  '03:00 supplement failures retain independent attempt history'
+);
 select ok(not has_function_privilege('content_editor', 'private.reserve_ingestion_site_release_v1(uuid,text,text,text,text,text)', 'execute'), 'routine editor cannot reserve ingestion publication slots');
 select ok(has_function_privilege('content_ingestor', 'private.fail_ingestion_publication_attempt_v1(date,text,text,text,text,text,text)', 'execute'), 'ingestor can record a failed publication attempt');
 select ok(not has_function_privilege('content_editor', 'private.fail_ingestion_publication_attempt_v1(date,text,text,text,text,text,text)', 'execute'), 'routine editor cannot record ingestion publication attempts');

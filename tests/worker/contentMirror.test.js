@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mirrorStructuredReport } from '../../workers/content/ingestion/mirror.ts';
+import {
+    mirrorStructuredReport,
+    publicationBatchId,
+    resolveForwardBuildCodeSha,
+} from '../../workers/content/ingestion/mirror.ts';
 import { canonicalJsonBytes } from '../../workers/content/shared/canonical.ts';
 
 const decode = (bytes) => new TextDecoder().decode(bytes);
@@ -35,9 +39,11 @@ function database({
     loseFirstFinalizeResponse = false,
     rejectFinalize = false,
     reserveError = null,
+    reserveFailureCount = Number.POSITIVE_INFINITY,
 } = {}) {
     const calls = [];
     let finalized = false;
+    let reserveFailures = 0;
     let attemptStatus = 'started';
     const release = {
         site_release_id: '22222222-2222-4222-8222-222222222222',
@@ -69,7 +75,10 @@ function database({
             ];
         }
         if (query.includes('reserve_ingestion_site_release_v1')) {
-            if (reserveError) throw reserveError;
+            if (reserveError && reserveFailures < reserveFailureCount) {
+                reserveFailures += 1;
+                throw reserveError;
+            }
             return [{ result: { ...reservation, idempotent: finalized } }];
         }
         if (query.includes('finalize_site_release_v1')) {
@@ -120,6 +129,68 @@ function input(value = report()) {
 }
 
 describe('structured content database mirror', () => {
+    it('pins a delayed mirror to current main when the source commit is its ancestor', async () => {
+        const mainSha = 'b'.repeat(40);
+        const api = vi
+            .fn()
+            .mockResolvedValueOnce({ object: { sha: mainSha } })
+            .mockResolvedValueOnce({
+                status: 'ahead',
+                base_commit: { sha: codeSha.toLowerCase() },
+                merge_base_commit: { sha: codeSha.toLowerCase() },
+            });
+
+        await expect(resolveForwardBuildCodeSha({}, codeSha, api)).resolves.toBe(mainSha);
+        expect(api).toHaveBeenNthCalledWith(1, expect.anything(), '/git/ref/heads/main');
+        expect(api).toHaveBeenNthCalledWith(
+            2,
+            expect.anything(),
+            `/compare/${codeSha.toLowerCase()}...${mainSha}`,
+        );
+    });
+
+    it('does not replace a source SHA that is not contained by current main', async () => {
+        const mainSha = 'b'.repeat(40);
+        const api = vi
+            .fn()
+            .mockResolvedValueOnce({ object: { sha: mainSha } })
+            .mockResolvedValueOnce({
+                status: 'diverged',
+                base_commit: { sha: codeSha.toLowerCase() },
+                merge_base_commit: { sha: 'c'.repeat(40) },
+            });
+
+        await expect(resolveForwardBuildCodeSha({}, codeSha, api)).resolves.toBe(
+            codeSha.toLowerCase(),
+        );
+    });
+
+    it('uses a separate publication fence for the scheduled 03:00 supplement', () => {
+        expect(publicationBatchId('lateNight', `scheduled:${Date.parse('2026-07-20T18:00:00.000Z')}`))
+            .toBe('lateNight');
+        expect(publicationBatchId('lateNight', `scheduled:${Date.parse('2026-07-20T19:00:00.000Z')}`))
+            .toBe('lateNightSupplement');
+        expect(publicationBatchId('lateNight', 'manual:repair')).toBe('lateNight');
+        expect(publicationBatchId('morning', `scheduled:${Date.parse('2026-07-20T19:00:00.000Z')}`))
+            .toBe('morning');
+    });
+
+    it('passes the 03:00 supplement identity to the database without changing report batches', async () => {
+        const env = enabledEnv();
+        const db = database();
+        await mirrorStructuredReport(
+            env,
+            {
+                ...input(),
+                batch: 'lateNight',
+                triggerId: `scheduled:${Date.parse('2026-07-20T19:00:00.000Z')}`,
+            },
+            { openDatabase: vi.fn(() => db.sql) },
+        );
+        const reserve = db.calls.find((call) => call.query.includes('reserve_ingestion_site_release_v1'));
+        expect(reserve.values[1]).toBe('lateNightSupplement');
+    });
+
     it('does not touch R2 or Postgres while the mirror gate is disabled', async () => {
         const openDatabase = vi.fn();
 
@@ -195,10 +266,41 @@ describe('structured content database mirror', () => {
             expect(finalize.values.at(-1)).toMatchObject({
                 mode: expectedMode,
                 code_sha: codeSha.toLowerCase(),
+                source_code_sha: codeSha.toLowerCase(),
             });
             expect(db.sql.end).toHaveBeenCalledWith({ timeout: 2 });
         },
     );
+
+    it('persists the forward-selected build SHA before the immutable outbox is created', async () => {
+        const env = {
+            ...enabledEnv('true'),
+            GITHUB_TOKEN: 'test-token',
+            GITHUB_REPO_OWNER: 'owner',
+            GITHUB_REPO_NAME: 'repo',
+        };
+        const db = database();
+        const mainSha = 'b'.repeat(40);
+        const api = vi
+            .fn()
+            .mockResolvedValueOnce({ object: { sha: mainSha } })
+            .mockResolvedValueOnce({
+                status: 'ahead',
+                base_commit: { sha: codeSha.toLowerCase() },
+                merge_base_commit: { sha: codeSha.toLowerCase() },
+            });
+
+        await mirrorStructuredReport(env, input(), {
+            openDatabase: vi.fn(() => db.sql),
+            api,
+        });
+
+        const finalize = db.calls.find((call) => call.query.includes('finalize_site_release_v1'));
+        expect(finalize.values.at(-1)).toMatchObject({
+            code_sha: mainSha,
+            source_code_sha: codeSha.toLowerCase(),
+        });
+    });
 
     it('reuses exact R2 bytes and the deterministic reservation after a committed finalize loses its response', async () => {
         const env = enabledEnv();
@@ -251,6 +353,28 @@ describe('structured content database mirror', () => {
     });
 
     it.each(['55P03', '40001'])(
+        'retries transient database contention with bounded backoff %s',
+        async (code) => {
+            const env = enabledEnv();
+            const contention = Object.assign(new Error('Release head is busy'), { code });
+            const db = database({ reserveError: contention, reserveFailureCount: 1 });
+            const sleep = vi.fn(async () => undefined);
+
+            await expect(
+                mirrorStructuredReport(env, input(), {
+                    openDatabase: vi.fn(() => db.sql),
+                    sleep,
+                }),
+            ).resolves.toMatchObject({ status: 'mirrored' });
+
+            expect(
+                db.calls.filter((call) => call.query.includes('reserve_ingestion_site_release_v1')),
+            ).toHaveLength(2);
+            expect(sleep).toHaveBeenCalledWith(100);
+        },
+    );
+
+    it.each(['55P03', '40001'])(
         'does not permanently fail a publication attempt for transient database contention %s',
         async (code) => {
             const env = enabledEnv();
@@ -262,9 +386,13 @@ describe('structured content database mirror', () => {
             await expect(
                 mirrorStructuredReport(env, input(), {
                     openDatabase: vi.fn(() => db.sql),
+                    sleep: vi.fn(async () => undefined),
                 }),
             ).rejects.toBe(contention);
 
+            expect(
+                db.calls.filter((call) => call.query.includes('reserve_ingestion_site_release_v1')),
+            ).toHaveLength(3);
             expect(
                 db.calls.some((call) => call.query.includes('fail_ingestion_publication_attempt_v1')),
             ).toBe(false);
