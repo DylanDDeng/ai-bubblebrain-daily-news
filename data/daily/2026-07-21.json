@@ -1,0 +1,97 @@
+{
+  "batches": [
+    {
+      "generated_at": "2026-07-21T02:00:37.000Z",
+      "id": "morning",
+      "item_ids": [
+        "n_81d66d261a66451a67eb0ceb017bccbe3982c2ce87a44b27738ead2e2d0610aa"
+      ],
+      "label": "10:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "afternoon",
+      "item_ids": [],
+      "label": "15:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "night",
+      "item_ids": [],
+      "label": "23:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "lateNight",
+      "item_ids": [],
+      "label": "次日 03:00 补充更新",
+      "status": "pending"
+    }
+  ],
+  "classifier_version": 1,
+  "date": "2026-07-21",
+  "dedupe_version": 1,
+  "generated_at": "2026-07-21T02:00:37.000Z",
+  "identity_version": 1,
+  "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2079372960683683857",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_81d66d261a66451a67eb0ceb017bccbe3982c2ce87a44b27738ead2e2d0610aa",
+      "featured": false,
+      "id": "n_81d66d261a66451a67eb0ceb017bccbe3982c2ce87a44b27738ead2e2d0610aa",
+      "identity_claims": [
+        "c_67e788ea875956e0ffdb0f0c9fa4ca85ff9f6aeeab7214b4a668bfda636033ea",
+        "c_81d66d261a66451a67eb0ceb017bccbe3982c2ce87a44b27738ead2e2d0610aa"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T02:00:37.000Z",
+      "published_at": "2026-07-21T01:08:41.256Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208808882021924864",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1208808882021924864",
+      "source_type": "twitter_extra",
+      "summary": "据彭博社消息，智谱已完成一座大型数据中心的建设，1GW的电力规模（这电力足以给75万家庭供电），里面全部采用国产的芯片，目的是逐渐替代英伟达显卡。 作为对比，SpaceXAI租给Anthropic的Colossus 1代是0.3GW（包含22万英伟达显卡），Colossus 2代是1GW，跟智谱建的规模相同。",
+      "time_precision": "exact",
+      "title": "据彭博社消息，智谱已完成一座大型数据中心的建设，1GW的电力规模（这电力足以给75万家庭供电）",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2079372960683683857"
+    }
+  ],
+  "overview": {
+    "kind": "pending",
+    "provenance": {
+      "method": "template",
+      "model": null,
+      "prompt_version": null
+    },
+    "text": "今日 AI 增量日报正在更新中。"
+  },
+  "producer": {
+    "commit_sha": null,
+    "dedupe_lookback_days": 7,
+    "name": "bubble-brain-worker",
+    "version": "phase1d-production"
+  },
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "timezone": "Asia/Shanghai"
+}
