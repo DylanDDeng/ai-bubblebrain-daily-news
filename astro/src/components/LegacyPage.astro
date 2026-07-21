@@ -14,6 +14,7 @@ import {
 import ImageCompressTool from './tools/ImageCompressTool.astro';
 import AIInfographicTool from './tools/AIInfographicTool.astro';
 import Discussion from './Discussion.astro';
+import DirectoryItemRow from './DirectoryItemRow.astro';
 import { commentThreadId } from '../lib/comments/threadId';
 import '../styles/legacy-pages.css';
 import '../styles/ai-infographic.css';
@@ -31,6 +32,7 @@ interface HighlightItem {
 	tags?: string[];
 	originalUrl?: string;
 	detailUrl?: string;
+	date?: string;
 }
 
 interface ModelEvalItem {
@@ -89,6 +91,11 @@ type DirectoryKind =
 
 const { record, markdownId } = Astro.props;
 const isEnglish = record.locale === 'en';
+const monthFormatter = new Intl.DateTimeFormat(record.locale, {
+	year: 'numeric',
+	month: 'long',
+	timeZone: 'Asia/Shanghai',
+});
 const allRecords = await loadLegacyContent();
 const alternate = legacyAlternate(record, allRecords);
 const children = legacyChildren(record, allRecords);
@@ -118,6 +125,7 @@ let directoryItems: Array<
 	HighlightItem | PromptItem | ModelEvalItem | XTrendingItem | AiToolItem | CurationItem
 > = [];
 let directoryKind: DirectoryKind | null = null;
+let highlightGroups: Array<{ monthKey: string | null; items: HighlightItem[] }> = [];
 if (
 	record.isIndex &&
 	['highlights', 'prompts', 'model-evals', 'x-trending', 'ai-tools', 'curations'].includes(
@@ -143,6 +151,39 @@ if (
 				? `model-evals-${yearMatch[1]}.json`
 				: `${record.section}.json`;
 		directoryItems = JSON.parse(await readFile(resolve(staticRoot, dataPrefix, filename), 'utf8'));
+		if (record.section === 'highlights') {
+			// Highlights carry no explicit date. Recover one from dated detail
+			// routes (/highlights/YYYY-MM-DD-slug/), falling back to the cover
+			// upload timestamp in the thumb URL (/.../YYYYmmddHHMMSSsss.png),
+			// which marks when the entry was curated.
+			const dateOf = (item: HighlightItem): string | null => {
+				const fromDetail = /\/highlights\/(\d{4}-\d{2}-\d{2})/.exec(item.detailUrl ?? '');
+				if (fromDetail) return fromDetail[1];
+				const fromThumb = /\/(\d{4})(\d{2})(\d{2})\d{9}\.png/.exec(item.thumb ?? '');
+				return fromThumb ? `${fromThumb[1]}-${fromThumb[2]}-${fromThumb[3]}` : null;
+			};
+			directoryItems = directoryItems.map((item) => {
+				const date = dateOf(item as HighlightItem);
+				return date ? { ...item, date } : item;
+			});
+			const byMonth = new Map<string | null, HighlightItem[]>();
+			for (const item of directoryItems as HighlightItem[]) {
+				const monthKey = dateOf(item)?.slice(0, 7) ?? null;
+				const group = byMonth.get(monthKey);
+				if (group) group.push(item);
+				else byMonth.set(monthKey, [item]);
+			}
+			highlightGroups = [...byMonth.entries()]
+				.sort((a, b) => {
+					if (a[0] === null) return 1;
+					if (b[0] === null) return -1;
+					return b[0].localeCompare(a[0]);
+				})
+				.map(([monthKey, items]) => ({
+					monthKey,
+					items: items.sort((a, b) => (dateOf(b) ?? '').localeCompare(dateOf(a) ?? '')),
+				}));
+		}
 	}
 }
 const knownRoutes = new Set(allRecords.map((entry) => entry.route));
@@ -247,72 +288,52 @@ const libraryApi =
 							</div>
 						</div>
 						<div
-							class={`content-directory content-directory--${directoryKind}`}
+							class:list={[
+								`content-directory content-directory--${directoryKind}`,
+								{ 'daily-archive': directoryKind === 'highlights' },
+							]}
 							data-directory-list
 							data-source={`${directoryKind}.json`}
 						>
-							{directoryItems.map((item) => {
-								const tags = 'tags' in item && Array.isArray(item.tags) ? item.tags : [];
-								const name = 'name' in item ? item.name : item.title;
-								const detail = 'description' in item ? item.description : '';
-								const image = 'logo' in item ? item.logo : 'thumb' in item ? item.thumb : undefined;
-								let href =
-									'url' in item
-										? item.url
-										: 'detailUrl' in item
-											? item.detailUrl
-											: 'originalUrl' in item
-												? item.originalUrl
-												: undefined;
-								if (href?.startsWith('/') && !knownRoutes.has(href))
-									href = 'originalUrl' in item ? item.originalUrl : undefined;
-								const meta =
-									'company' in item
-										? item.company
-										: 'model' in item
-											? item.model || item.date
-											: 'author_name' in item
-												? item.author_name
-												: 'date' in item
-													? item.date
-													: '';
-								return (
-									<article
-										data-directory-item
-										data-search={`${name} ${detail ?? ''} ${tags.join(' ')} ${meta ?? ''}`.toLocaleLowerCase(
-											record.locale,
-										)}
-									>
-										{image && (
-											<img src={image} alt="" loading="lazy" referrerpolicy="no-referrer" />
-										)}
-										<div>
-											<p class="directory-item-meta">{meta}</p>
-											<h2>
-												{href ? (
-													<a
-														href={href}
-														target={href.startsWith('http') ? '_blank' : undefined}
-														rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-													>
-														{name}
-													</a>
-												) : (
-													name
+							{directoryKind === 'highlights' && highlightGroups.length > 0
+								? highlightGroups.map((group, index) => (
+										<details
+											class="month-group"
+											open={(group.monthKey !== null && index < 3) || undefined}
+										>
+											<summary class="month-heading">
+												<h2>
+													{group.monthKey
+														? monthFormatter.format(new Date(`${group.monthKey}-01T00:00:00+08:00`))
+														: isEnglish
+															? 'Undated'
+															: '未注明日期'}
+												</h2>
+												<span class="count">
+													{isEnglish ? `${group.items.length} items` : `${group.items.length} 条`}
+												</span>
+												{group.monthKey && (
+													<span class="range">
+														{`${group.items.at(-1)!.date!.slice(5)} — ${group.items[0].date!.slice(5)}`}
+													</span>
 												)}
-											</h2>
-											{detail && <p>{detail}</p>}
-											{tags.length > 0 && (
-												<ul>
-													{tags.map((tag) => (
-														<li>{tag}</li>
-													))}
-												</ul>
-											)}
-										</div>
-									</article>
-								);
-							})}
+											</summary>
+											{group.items.map((item) => (
+												<DirectoryItemRow
+													item={item}
+													locale={record.locale}
+													knownRoutes={knownRoutes}
+												/>
+											))}
+										</details>
+									))
+								: directoryItems.map((item) => (
+										<DirectoryItemRow
+											item={item}
+											locale={record.locale}
+											knownRoutes={knownRoutes}
+										/>
+									))}
 						</div>
 						<p class="directory-empty" data-directory-empty hidden>
 							{isEnglish ? 'No matching records.' : '没有匹配的记录。'}
