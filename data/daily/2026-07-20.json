@@ -123,18 +123,28 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-20T18:00:45.000Z",
+      "generated_at": "2026-07-20T19:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_3a6f277cbdca2be7cd3a9dfd21e4f1f2eed137425faddc88186be4f461f6d599",
         "n_7361fe2a99825379b7860e1707c3f08b729294aaa82a872d3f54984e66651758",
+        "n_c2fc0c1b99273c5b5a0f9611268e6801670e60059636fba33423bbb960baab0f",
         "n_13e63c5af0c54e7d66c88056e964dbcbc3078bf22f737401678c8efb265eb26f",
         "n_5254011594b85335e4c9fba4dddd55ce2b6b846d12d5d04e8bdfd80654193d13",
+        "n_5ca5181dca07b75087cea5aec4a986af7d23b483712473533b9534125699af68",
+        "n_172a75f2dfab7d31ed458e5c6c50d32e1e147f7d5bb01c0e77d1a0a06a5d403c",
+        "n_5170b832c27810b17eddfa68a60cb2628f47cb1247be8cada66ed477e4c34864",
         "n_7453b9dc9ec6a480636b71557f56d090dc85aebaeba64e6b4ff4960c59a19cea",
         "n_90373faedda140a8556b4532330b98ff669e9e8f06fddf912a8158aff7eb2937",
+        "n_e015b54c82bc49edceeea88cd9b509d91ffcde4e63fc815d1856bb2ca07c3e9d",
         "n_259cfc31d005ac2e7a113ad94de9df9bb6e9ee4ac28086d78868004793f56d7d",
         "n_c52016bd1cbe2aad461cae156500648ccd2fcb614e02089863e9c296833e02b1",
-        "n_32a4d1d6cb42841152bce4c1df25b9ddf08be915f5ac675c8743426e8c900e87"
+        "n_5a2a882510fd153b3f999266a18085be80b90b820e72d72e6e0f1029b5ea435d",
+        "n_32a4d1d6cb42841152bce4c1df25b9ddf08be915f5ac675c8743426e8c900e87",
+        "n_b88e8536b3d400ff97a9049a070f166ca7a01da343f5c4c554dfa19fda49523a",
+        "n_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
+        "n_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+        "n_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64"
       ],
       "label": "次日 03:00 补充更新",
       "status": "completed"
@@ -143,7 +153,7 @@
   "classifier_version": 1,
   "date": "2026-07-20",
   "dedupe_version": 1,
-  "generated_at": "2026-07-20T18:00:45.000Z",
+  "generated_at": "2026-07-20T19:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4000,6 +4010,46 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2079189476451209625",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic",
+        "entity_deepseek"
+      ],
+      "event_id": "e_c2fc0c1b99273c5b5a0f9611268e6801670e60059636fba33423bbb960baab0f",
+      "featured": false,
+      "id": "n_c2fc0c1b99273c5b5a0f9611268e6801670e60059636fba33423bbb960baab0f",
+      "identity_claims": [
+        "c_0d02f57e67d888190aaef456ac132ecd138a83f2ea4e8ecf3aa1dbf58164bb4b",
+        "c_c2fc0c1b99273c5b5a0f9611268e6801670e60059636fba33423bbb960baab0f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T12:59:35.853Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208772208889982977",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1208772208889982977",
+      "source_type": "twitter_extra",
+      "summary": "看一次笑一次 😂 Anthropic 这是要万人捶了吗 😄？！ OpenAI 应该贡献两把大锤，一把 GPT，一把 Tibo！ 可能过了今晚，会再多一把：DeepSeek V4 正式版！ Venkatesh: for real 😂",
+      "time_precision": "exact",
+      "title": "看一次笑一次 😂 Anthropic 这是要万人捶了吗 😄？！",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/shao__meng/status/2079189476451209625"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/tuturetom/status/2079193607286796600",
       "category": "agents",
       "content_type": "socialMedia",
@@ -4072,6 +4122,120 @@
         "topic_products"
       ],
       "url": "https://x.com/tuturetom/status/2079193587921637610"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2079204156699820541",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5ca5181dca07b75087cea5aec4a986af7d23b483712473533b9534125699af68",
+      "featured": false,
+      "id": "n_5ca5181dca07b75087cea5aec4a986af7d23b483712473533b9534125699af68",
+      "identity_claims": [
+        "c_5ca5181dca07b75087cea5aec4a986af7d23b483712473533b9534125699af68",
+        "c_90d24eb36a08012e1a63b636fc70d2c70b1de9559ada50676a3ed3cba28e4507"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T13:57:55.432Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208632570342866944",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1208632570342866944",
+      "source_type": "twitter_extra",
+      "summary": "转手把这个资格号卖了600 Gorden Sun: 买了，来试试。49那档用不了K3，99那档上下文只有256，至少要买199这档。",
+      "time_precision": "exact",
+      "title": "转手把这个资格号卖了600 Gorden Sun: 买了，来试试。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2079204156699820541"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2079208883332268181",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_xai"
+      ],
+      "event_id": "e_172a75f2dfab7d31ed458e5c6c50d32e1e147f7d5bb01c0e77d1a0a06a5d403c",
+      "featured": false,
+      "id": "n_172a75f2dfab7d31ed458e5c6c50d32e1e147f7d5bb01c0e77d1a0a06a5d403c",
+      "identity_claims": [
+        "c_172a75f2dfab7d31ed458e5c6c50d32e1e147f7d5bb01c0e77d1a0a06a5d403c",
+        "c_1957544193f35d8a72004530395f184648571516a307e0154dab80f58a463a85"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T14:12:27.707Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208772208889982976",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1208772208889982976",
+      "source_type": "twitter_extra",
+      "summary": "RT Sumanth Stop prompting AI agents. Design the loops that prompt them instead. This is the core idea behind Loop Engineering, a methodology for building automated systems that orchestrate your AI coding agents instead of prompting them manually. Boris Cherny, Head of Claude Code at Anthropic, puts it directly: \"I don't prompt Claude anymore. I have loops running that prompt Claude and figure out what to do. My job is to write loops.\" A loop is an automated pipeline that runs on a schedule. It checks what needs to be done, prompts your AI coding agent with the right context, verifies the result, and either commits the fix or escalates to you. Then it runs again. This repo is a starter kit and reference guide for building these loops. Seven production-ready patterns, CLI tools to scaffold your setup, and documentation covering failure modes, anti-patterns, safety, and multi-loop coordination. The seven patterns: Daily Triage, PR Babysitter, CI Sweeper, Dependency Sweeper, Changelog Drafter, Post-Merge Cleanup, and Issue Triage. Each one ships with a starter kit, cadence recommendation, and token cost estimate. Three CLI tools handle setup. \"loop-init\" scaffolds skills, state, and budget files and prints your Loop Ready score. \"loop-audit\" checks how ready your setup is and suggests improvements. \"loop-cost\" estimates token spend before you run anything. Works with Claude Code, Codex, Grok, OpenCode, Cursor, and GitHub Actions. Key capabilities: • 7 production loop patterns with starters and token cost estimates • loop-init scaffolds your setup and prints a Loop Ready score • loop-audit scores readiness and suggests improvements • loop-cost estimates token spend per cadence • Failure modes, anti-patterns, and safety documentation included • Works with Claude Code, Codex, Grok, OpenCode, Cursor 100% open source. I've shared the link in the replies! Sumanth:",
+      "time_precision": "exact",
+      "title": "Stop prompting AI agents. Design the loops that prompt them instead.",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2079208883332268181"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/vista8/status/2079208964248506534",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5170b832c27810b17eddfa68a60cb2628f47cb1247be8cada66ed477e4c34864",
+      "featured": false,
+      "id": "n_5170b832c27810b17eddfa68a60cb2628f47cb1247be8cada66ed477e4c34864",
+      "identity_claims": [
+        "c_5170b832c27810b17eddfa68a60cb2628f47cb1247be8cada66ed477e4c34864",
+        "c_da51c8e77bc87fdb5ea07f8afc5e0887e81d6c52c9ef461d42aad72df6d665db"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T14:17:01.627Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208478309797502976",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1208478309797502976",
+      "source_type": "twitter_extra",
+      "summary": "learnui 网站更新了，把getdesign的74个知名网站都用k3生成了预览。 如果以后不知道网站用什么风格，可以学习参考。 另外技巧，要求AI给网站增加PWA支持，这样能把网站安装为MacOS应用，提升打开率。 网站地址：",
+      "time_precision": "exact",
+      "title": "learnui 网站更新了，把getdesign的74个知名网站都用k3生成了预览。",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/vista8/status/2079208964248506534"
     },
     {
       "batch": "lateNight",
@@ -4150,6 +4314,43 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/oran_ge/status/2079325651090448621",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e015b54c82bc49edceeea88cd9b509d91ffcde4e63fc815d1856bb2ca07c3e9d",
+      "featured": false,
+      "id": "n_e015b54c82bc49edceeea88cd9b509d91ffcde4e63fc815d1856bb2ca07c3e9d",
+      "identity_claims": [
+        "c_59edd8a5abfa46c8bf3f97ca4ac8b30ef2fcfe82fb7abbc7a8e6898761f658c8",
+        "c_e015b54c82bc49edceeea88cd9b509d91ffcde4e63fc815d1856bb2ca07c3e9d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T16:34:26.661Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208700237703602176",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1208700237703602176",
+      "source_type": "twitter_extra",
+      "summary": "RT Design Arena BREAKING: Kimi K3 by @Kimi_Moonshot is officially 1st on Frontend Web App Arena by DesignArena With an Elo of 1326, this open-weight model leads the way, ahead of Fable 5, Sonnet 5, and Opus 4.8 by @AnthropicAI Huge congrats to the @Kimi_Moonshot team for this achievement!",
+      "time_precision": "exact",
+      "title": "Kimi K3 by @Kimi_Moonshot is officially 1st on Frontend Web App Arena by",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/oran_ge/status/2079325651090448621"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/dotey/status/2079245017491640534",
       "category": "models",
       "content_type": "socialMedia",
@@ -4224,6 +4425,45 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://simonwillison.net/2026/Jul/20/afraid-of-chinese-models/",
+      "category": "policy",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_qwen"
+      ],
+      "event_id": "e_5a2a882510fd153b3f999266a18085be80b90b820e72d72e6e0f1029b5ea435d",
+      "featured": false,
+      "id": "n_5a2a882510fd153b3f999266a18085be80b90b820e72d72e6e0f1029b5ea435d",
+      "identity_claims": [
+        "c_5a2a882510fd153b3f999266a18085be80b90b820e72d72e6e0f1029b5ea435d",
+        "c_a4587f29a7d8d04e27911f01340f6450ea3a28aa0d434c7336fa92a0af0df50a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T17:09:19.026Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208472771806265345",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1208472771806265345",
+      "source_type": "simonwillison",
+      "summary": "Who’s Afraid of Chinese Models? Interesting proposal from Ben Thompson that both addresses the hypocrisy of labs outlawing distillation against their models despite training on unlicensed data, and could help US open models compete more effectively with their Chinese counterparts: The U.S. should pass a law that (1) makes explicit that collecting data for training models is fair use, and (2) bars terms of service that forbid distillation, for U.S. companies at a minimum. Stopping distillation — which is literally just querying the API — is nearly impossible; the U.S. should go the other way and lean into a new copyright policy that both indemnifies the labs and also guarantees that what they learned fuels further innovation for everyone else. Ben also theorizes that Alibaba's decision to release Qwen 3.8 Max as open weights - a reversal from their decision not to release Qwen 3.7 Max in May - may have been influenced by a recent speech by Xi Jinping, who said: We should seize this rare, historic opportunity to encourage open source, openness, collaboration and sharing. Via John Gruber Tags: ai, generative-ai, llms, training-data, qwen, ai-ethics, ai-in-china",
+      "time_precision": "exact",
+      "title": "Who’s Afraid of Chinese Models?",
+      "topic_ids": [
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/20/afraid-of-chinese-models/"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/dotey/status/2079253422348419078",
       "category": "agents",
       "content_type": "socialMedia",
@@ -4258,6 +4498,155 @@
         "topic_open_source"
       ],
       "url": "https://x.com/dotey/status/2079253422348419078"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/sama/status/2079258683884917013",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_b88e8536b3d400ff97a9049a070f166ca7a01da343f5c4c554dfa19fda49523a",
+      "featured": false,
+      "id": "n_b88e8536b3d400ff97a9049a070f166ca7a01da343f5c4c554dfa19fda49523a",
+      "identity_claims": [
+        "c_b5e1a9e6955b54a6234ddfe588baf3ebd8b4957f6809e7c0000a7031d6deca09",
+        "c_b88e8536b3d400ff97a9049a070f166ca7a01da343f5c4c554dfa19fda49523a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T17:34:35.765Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208388097113296896",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1208388097113296896",
+      "source_type": "twitter_extra",
+      "summary": "it is good now! samir: throughout june we rolled out major updates to chatgpt memory it can be hard to tell the difference initially but alot of folks are clearly feeling the improvements now",
+      "time_precision": "exact",
+      "title": "it is good now! samir: throughout june we rolled out major updates to",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/sama/status/2079258683884917013"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://simonwillison.net/2026/Jul/20/cheap-reverse-engineering/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
+      "featured": false,
+      "id": "n_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a",
+      "identity_claims": [
+        "c_3f091aede0915fffc6ccc1c69ba90295d61548300eccc850121e184c65e6a4cf",
+        "c_6414a71cf4010746a9005ee45af1ad2fca82a9bc97a6f3162abc45219e96ca6a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T19:24:05.751Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208472771806265344",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1208472771806265344",
+      "source_type": "simonwillison",
+      "summary": "I keep hearing anecdotes from people who used coding agents to reverse-engineer and automate devices in their homes. I think this is an interesting illustration of the impact of the reduced cost of writing code. Prior to agents, it was entirely possible to reverse-engineer home devices. The problem was the ROI - was it really worth all of that effort? More importantly, any experienced programmer knows that undocumented, unstable APIs like that may well change or break in the future. Is that initial work worth the effort if you're committing yourself to a frustrating cycle of maintenance in the future? Coding agents change that equation entirely. The effort to get a simple automation working has dropped, as has the cost of trying and failing to get it to work. Since the code is so cheap, the idea of having to maintain it in the future - or throw it away and start again - carries way less psychological baggage. Tags: reverse-engineering, coding-agents, ai-assisted-programming, generative-ai, ai, llms",
+      "time_precision": "exact",
+      "title": "Reverse-engineering is cheap now",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/20/cheap-reverse-engineering/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2079317901085941976",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+      "featured": false,
+      "id": "n_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8",
+      "identity_claims": [
+        "c_002de1e84d3997f92268a45519cbd2e14e6d081c62ee1b1fc64f29b4cdc1c1c1",
+        "c_e3fb208116ba56584833c058b97924297f497adad7199927d5aba360a5ce9ff8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-20T21:29:54.069Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208679129918984192",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1208679129918984192",
+      "source_type": "twitter_extra",
+      "summary": "Claude Code 更新加入了屏幕阅读器模式（Screen Reader Mode），让使用 VoiceOver、NVDA 等辅助工具的视障开发者也能用上 AI 编程助手。 启用屏幕阅读器模式后，会把 Claude Code 原来那套终端界面，进度动画、方框边框、实时刷新，全部替换成纯文本逐行输出。屏幕阅读器可以按顺序读出每一行内容，包括你的输入、Claude 的回复、工具调用状态、权限请求，每种内容都有明确的文本标签（you:、claude:、tool:、Permission Required: 等），方便跳转和检索。 原来的菜单和权限确认也做了适配。箭头键选择的菜单变成了编号列表，输入数字回车就行；是否确认变成输入 y/n。Claude 需要你注意的时候，比如回复完成或者等你授权，终端会响铃提醒，不用一直盯着屏幕。 开启方式有三种： 1. 启动时加 --ax-screen-reader 参数(claude --ax-screen-reader) 2. 设置环境变量 CLAUDE_AX_SCREEN_READER=1 3. 或者在配置文件里写 \"axScreenReader\": true。 需要 v2.1.181 或更高版本。 除了屏幕阅读器模式，这次还加了几个相关的无障碍设置：屏幕放大镜用户可以设置环境变量保持原生光标可见，prefersReducedMotion 可以关掉动画，还有专门的色盲友好主题（dark-daltonized 和 light-daltonized）。 ClaudeDevs: Claude Code now has a screen reader mode. Running `claude --ax-screen-reader` swaps the visual terminal UI for plain, linear text that screen readers (like VoiceOver and NVDA) can follow.",
+      "time_precision": "exact",
+      "title": "Claude Code 更新加入了屏幕阅读器模式（Screen Reader Mode）",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2079317901085941976"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/vista8/status/2079365033440764193",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
+      "featured": false,
+      "id": "n_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
+      "identity_claims": [
+        "c_43b0b9e7cbe3f37a44b9f1f69ec72b619b98221bfa639bd6f7dbc9ae6da3be64",
+        "c_7dd37627dbd9d955a1c322ec75927293539f0f0722514814af607b690bd7f5a9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-20T19:00:00.000Z",
+      "published_at": "2026-07-21T00:37:11.582Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1208785914566713344",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1208785914566713344",
+      "source_type": "twitter_extra",
+      "summary": "x改版了，推荐时间线上只显示关注好友的回复，不显示内容。 这样好处是避免刷屏，以前自己回复很克制，就怕这个，现在就没有顾虑了。 预计这个改动会大大提升x的互动率。",
+      "time_precision": "exact",
+      "title": "x改版了，推荐时间线上只显示关注好友的回复，不显示内容。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2079365033440764193"
     }
   ],
   "overview": {
