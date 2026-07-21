@@ -12,8 +12,9 @@ import { handleIncrementalDailyWorkflow, runIncrementalDailyWorkflow } from './h
 import { debugFoloCookie, storeFoloCookieToKV } from './folo.js';
 import { handleAdminRoute, isAdminRoute } from './routes/adminRoutes.js';
 import { logMissingConfig } from './logging.js';
-import { storeFailureMarker } from './daily/runState.js';
+import { storeFailureMarker, storeScheduledOutcome } from './daily/runState.js';
 import { SOURCE_REGISTRY } from './daily/sourceRegistry.js';
+import { handleScheduledHealth } from './routes/scheduledHealth.js';
 
 const SAFE_PROVIDER_NAMES = new Set(Object.keys(SOURCE_REGISTRY));
 const SAFE_CONTENT_TYPES = new Set(['news', 'project', 'paper', 'socialMedia']);
@@ -113,6 +114,9 @@ function appendSessionCookie(response, cookie) {
 }
 
 function scheduledFailureMarker(error, runAt) {
+    const subrequestBudgetExceeded = /too many subrequests|subrequest(?:s)? limit/i.test(
+        String(error?.message || ''),
+    );
     const sourceErrors = Array.isArray(error?.sourceErrors)
         ? error.sourceErrors.slice(0, 16).map(sourceError => ({
             provider: SAFE_PROVIDER_NAMES.has(sourceError?.provider)
@@ -139,9 +143,11 @@ function scheduledFailureMarker(error, runAt) {
         status: 'failed',
         trigger_type: 'scheduled',
         run_at: runAt,
-        error_type: error?.name === 'StructuredSourceFetchError'
-            ? 'structured_source_fetch_failed'
-            : 'scheduled_workflow_failed',
+        error_type: subrequestBudgetExceeded
+            ? 'subrequest_budget_exceeded'
+            : error?.name === 'StructuredSourceFetchError'
+                ? 'structured_source_fetch_failed'
+                : 'scheduled_workflow_failed',
         failure_stage: SAFE_WORKFLOW_FAILURE_STAGES.has(error?.failureStage)
             ? error.failureStage
             : error?.name === 'StructuredSourceFetchError'
@@ -164,6 +170,17 @@ async function recordScheduledFailure(env, triggerId, marker) {
     }
 }
 
+async function recordScheduledOutcome(env, scheduledAt, marker) {
+    if (!env.DATA_KV || typeof env.DATA_KV.put !== 'function') return;
+    try {
+        await storeScheduledOutcome(env.DATA_KV, scheduledAt, marker);
+    } catch (markerError) {
+        console.warn('[Scheduled] outcome marker write failed', {
+            errorType: markerError?.name || 'Error',
+        });
+    }
+}
+
 export function createWorker({
     adminHandlers = defaultAdminHandlers,
     scheduledWorkflow = runIncrementalDailyWorkflow,
@@ -173,6 +190,10 @@ export function createWorker({
             const url = new URL(request.url);
             const path = url.pathname;
             console.log(`Request received: ${request.method} ${path}`);
+
+            if (path === '/health/scheduled') {
+                return handleScheduledHealth(request, env);
+            }
 
             if (isAdminRoute(path)) {
                 return handleAdminRoute(request, env, adminHandlers);
@@ -252,6 +273,13 @@ export function createWorker({
             const runAt = new Date(event.scheduledTime).toISOString();
             const workflow = Promise.resolve()
                 .then(() => scheduledWorkflow(env, { triggerId, runAt }))
+                .then(async result => {
+                    await recordScheduledOutcome(env, runAt, {
+                        status: 'succeeded',
+                        run_at: runAt,
+                    });
+                    return result;
+                })
                 .catch(async error => {
                     const marker = scheduledFailureMarker(error, runAt);
                     console.error('[Scheduled] workflow failed', {
@@ -268,6 +296,7 @@ export function createWorker({
                             : [],
                     });
                     await recordScheduledFailure(env, triggerId, marker);
+                    await recordScheduledOutcome(env, runAt, marker);
                     throw error;
                 });
             ctx.waitUntil(workflow);

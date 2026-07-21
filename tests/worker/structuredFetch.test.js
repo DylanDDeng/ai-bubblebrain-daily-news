@@ -50,6 +50,37 @@ describe('provider-preserving structured fetch', () => {
         expect(result.errors).toEqual([]);
     });
 
+    it('caps provider pagination without mutating the production environment', async () => {
+        const seen = [];
+        const env = { AIBASE_FETCH_PAGES: '3', TWITTER_FETCH_PAGES: '2', OTHER: 'kept' };
+        const adapters = [{
+            provider: 'source',
+            contentType: 'news',
+            adapter: {
+                fetch: vi.fn(async providerEnv => {
+                    seen.push(providerEnv.AIBASE_FETCH_PAGES, providerEnv.TWITTER_FETCH_PAGES, providerEnv.OTHER);
+                    return [];
+                }),
+                transform: vi.fn(raw => raw),
+            },
+        }];
+
+        await fetchProviderPreservingData(env, null, { adapters, fetchPageCap: 1 });
+
+        expect(seen).toEqual(['1', '1', 'kept']);
+        expect(env).toEqual({ AIBASE_FETCH_PAGES: '3', TWITTER_FETCH_PAGES: '2', OTHER: 'kept' });
+    });
+
+    it('rejects an invalid provider page cap before issuing requests', async () => {
+        const calls = [];
+        const source = adapter('source', 'news', [], calls);
+        await expect(fetchProviderPreservingData({}, null, {
+            adapters: [source],
+            fetchPageCap: 0,
+        })).rejects.toThrow(/page cap/);
+        expect(source.adapter.fetch).not.toHaveBeenCalled();
+    });
+
     it('preserves legacy items while projecting provider only onto structured clones', async () => {
         const calls = [];
         const old = { id: 1, title: 'old', published_date: '2026-07-13T00:00:00Z' };

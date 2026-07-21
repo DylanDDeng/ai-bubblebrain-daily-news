@@ -2,8 +2,12 @@ import { describe, expect, it, vi } from 'vitest';
 import {
     acquireAdvisoryLease,
     failureMarkerKey,
+    readScheduledOutcome,
     releaseAdvisoryLease,
+    scheduledOutcomeKey,
+    scheduledSlotInstant,
     storeFailureMarker,
+    storeScheduledOutcome,
     storeTriggerMarker,
     triggerMarkerKey,
 } from '../../src/daily/runState.js';
@@ -56,5 +60,28 @@ describe('structured advisory run state', () => {
 
         expect(kv.values.get(successKey)).toBe(successBytes);
         expect(kv.values.get(failureKey)).toBe(JSON.stringify({ success: false }));
+    });
+
+    it('normalizes cron jitter to a stable minute slot and stores terminal outcomes', async () => {
+        const kv = fakeKv();
+        const runAt = '2026-07-20T19:00:45.000Z';
+
+        expect(scheduledSlotInstant(runAt)).toBe('2026-07-20T19:00:00.000Z');
+        expect(scheduledOutcomeKey(runAt)).toBe(
+            'scheduled:outcome:2026-07-20T19:00:00.000Z',
+        );
+        await storeScheduledOutcome(kv, runAt, {
+            status: 'failed',
+            run_at: runAt,
+            error_type: 'scheduled_workflow_failed',
+        });
+
+        await expect(readScheduledOutcome(kv, '2026-07-20T19:00:00.000Z')).resolves.toEqual({
+            scheduled_at: '2026-07-20T19:00:00.000Z',
+            status: 'failed',
+            run_at: runAt,
+            error_type: 'scheduled_workflow_failed',
+        });
+        expect(kv.put.mock.calls[0][2]).toEqual({ expirationTtl: 14 * 24 * 60 * 60 });
     });
 });
