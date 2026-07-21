@@ -19,14 +19,6 @@
       if (match) visible += 1;
     }
     if (empty instanceof HTMLElement) empty.hidden = visible !== 0;
-    // Grouped lists (highlights year groups) collapse a group once every
-    // row inside it has been filtered out.
-    for (const group of root.querySelectorAll("details.month-group")) {
-      const anyVisible = [
-        ...group.querySelectorAll("[data-directory-item]"),
-      ].some((item) => !item.hidden);
-      group.hidden = !anyVisible;
-    }
   };
   input.addEventListener("input", apply);
 
@@ -48,20 +40,6 @@
     Array.isArray(value)
       ? value.filter((tag) => typeof tag === "string" && tag)
       : [];
-
-  // Highlights carry no explicit date. Recover one from dated detail routes,
-  // falling back to the cover upload timestamp in the thumb URL, which marks
-  // when the entry was curated.
-  const highlightDate = (record) => {
-    const fromDetail = /\/highlights\/(\d{4}-\d{2}-\d{2})/.exec(
-      text(record.detailUrl),
-    );
-    if (fromDetail) return fromDetail[1];
-    const fromThumb = /\/(\d{4})(\d{2})(\d{2})\d{9}\.png/.exec(
-      text(record.thumb),
-    );
-    return fromThumb ? `${fromThumb[1]}-${fromThumb[2]}-${fromThumb[3]}` : null;
-  };
 
   const addImage = (article, value, contain = false) => {
     const imageUrl = safeHref(value);
@@ -106,9 +84,7 @@
     let meta = "";
     let href = null;
     if (kind === "highlights") {
-      meta =
-        highlightDate(record) ??
-        (record.kind === "highlight_article" ? "ARTICLE" : "BOOKMARK");
+      meta = record.kind === "highlight_article" ? "ARTICLE" : "BOOKMARK";
       href = safeHref(record.detailUrl) || safeHref(record.originalUrl);
       addImage(article, record.thumb);
     } else if (kind === "prompts") {
@@ -152,74 +128,7 @@
     return article;
   };
 
-  // Highlights are grouped into collapsible year sections, mirroring the
-  // server-rendered daily-archive markup.
-  const renderHighlights = (records) => {
-    const isZh = locale.toLowerCase().startsWith("zh");
-    const monthFormatter = new Intl.DateTimeFormat(locale, {
-      year: "numeric",
-      month: "long",
-      timeZone: "Asia/Shanghai",
-    });
-    const byMonth = new Map();
-    let rendered = 0;
-    for (const record of records) {
-      const article = renderRecord(record);
-      if (!article) continue;
-      const monthKey = (highlightDate(record) || "").slice(0, 7) || null;
-      if (!byMonth.has(monthKey)) byMonth.set(monthKey, []);
-      byMonth
-        .get(monthKey)
-        .push({ article, date: highlightDate(record) || "" });
-      rendered += 1;
-    }
-    const monthKeys = [...byMonth.keys()].sort((a, b) => {
-      if (a === null) return 1;
-      if (b === null) return -1;
-      return b.localeCompare(a);
-    });
-    const fragment = document.createDocumentFragment();
-    monthKeys.forEach((monthKey, index) => {
-      const group = document.createElement("details");
-      group.className = "month-group";
-      if (monthKey !== null && index < 3) group.open = true;
-      const summary = document.createElement("summary");
-      summary.className = "month-heading";
-      const heading = document.createElement("h2");
-      heading.textContent = monthKey
-        ? monthFormatter.format(new Date(`${monthKey}-01T00:00:00+08:00`))
-        : isZh
-          ? "未注明日期"
-          : "Undated";
-      const counter = document.createElement("span");
-      counter.className = "count";
-      const entries = byMonth
-        .get(monthKey)
-        .sort((a, b) => b.date.localeCompare(a.date));
-      counter.textContent = isZh
-        ? `${entries.length} 条`
-        : `${entries.length} items`;
-      summary.append(heading, counter);
-      if (monthKey !== null) {
-        const range = document.createElement("span");
-        range.className = "range";
-        range.textContent = `${entries.at(-1).date.slice(5)} — ${entries[0].date.slice(5)}`;
-        summary.append(range);
-      }
-      group.append(summary);
-      for (const entry of entries) group.append(entry.article);
-      fragment.append(group);
-    });
-    list.replaceChildren(fragment);
-    if (count) count.textContent = String(rendered);
-    apply();
-  };
-
   const render = (records) => {
-    if (kind === "highlights") {
-      renderHighlights(records);
-      return;
-    }
     const fragment = document.createDocumentFragment();
     let rendered = 0;
     for (const record of records) {

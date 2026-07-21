@@ -419,4 +419,11 @@ const libraryApi =
 	}
 </BaseLayout>
 
-{directoryKind && <script is:inline src="/js/legacy-directory.js" />}
+{
+	/* Bundled from astro/src/scripts (see the header note there); the script
+    no-ops on pages without [data-directory-page], so it can load on every
+    legacy page. */
+}
+<script>
+	import '../scripts/legacy-directory.js';
+</script>
