@@ -101,8 +101,8 @@ for (const row of rows) {
 	else groups.push({ monthKey, rows: [row] });
 }
 
-// Months within the latest three stay expanded; older ones collapse into a
-// <details> summary line so the archive stays a single static page.
+// Every month renders as a <details> group so it can be collapsed/expanded;
+// the latest three default to open, older ones start collapsed.
 const shiftMonth = (monthKey: string, delta: number): string => {
 	const [year, month] = monthKey.split('-').map(Number);
 	const total = year * 12 + (month - 1) + delta;
@@ -191,16 +191,8 @@ const expandedCutoff = latestRow ? shiftMonth(latestRow.identity.dateKey.slice(0
 					</a>
 				);
 			});
-			return expanded ? (
-				<section class="month-group">
-					<div class="month-heading">
-						<h2>{monthLabel}</h2>
-						<span class="count">{countLabel}</span>
-					</div>
-					{dayRows}
-				</section>
-			) : (
-				<details class="month-group">
+			return (
+				<details class="month-group" open={expanded || undefined}>
 					<summary class="month-heading">
 						<h2>{monthLabel}</h2>
 						<span class="count">{countLabel}</span>
