@@ -136,7 +136,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-21T18:00:11.000Z",
+      "generated_at": "2026-07-21T19:00:11.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_b371e83669a56f428a953744b334ba40700141d1d570c760e1e33372b7645a6f",
@@ -144,15 +144,20 @@
         "n_f07e5be5369b29381965571a017b254610ce09c65909adce5ab69c8b30ed5aac",
         "n_55760c06ccb79ef193eb410e1480750aafb48aa90ea9e37113e6cbdc753d4a8e",
         "n_92a4cf67240e6be065c848d8dd0c02d822d14a660c0d2f34e99d9a58fbf7e72b",
+        "n_ce501f50e5529d9cde2ada8920d41e853ed89bd5fb941ab29f0ab08bcd0cb3cd",
         "n_a065ad06e067edcc29fa23937fe2254eb2f95690f28fe311a7efdfbbfda5aecb",
         "n_09ccfd0e8bc508e6e68663e31ad21253097d6dede1fff1bb3d5fb79b473624fa",
         "n_af0979235d2b2de38ab131e2f392595052b3a5829665794a1268b8b8c14d70de",
         "n_867b4db14da95a9203041c651675848b6c2524e5732d15ee5ba6d3bb16eb0d60",
+        "n_7b3f8799f073a3c95e340697f074e39c615b6059181a681c83fcb87b1dfae187",
         "n_b1f1809b1cc37f3fb627b682d661585a8c410d42f5c8673411b0afd84245c7c1",
         "n_2ea6c73df15144ed78dcfb9a1134d390ec4ddfb0eb93b5e35b90a107d6cd13e7",
+        "n_99f9c38c80eb2389be623fef080a4b739c911d79a42506c3e694b6f49139c31f",
         "n_6be05609559e9d2270af301c28c8012dbd9ea5bff2477e2807cc6947f10ce4aa",
         "n_83b69a9c85e9ef1595cbf831f69722447b421f5457b3cbbe8bd3536c23b07552",
-        "n_550d2b34f94f2ad00a61a522ce4532b549d1ed8ffba90563b21e2b5f9f036e29"
+        "n_550d2b34f94f2ad00a61a522ce4532b549d1ed8ffba90563b21e2b5f9f036e29",
+        "n_ef22970d8c04a62b52bcec7f85607f623f2f52218a1c673ae49ab02fc9c79b61",
+        "n_c62ea6b9e2fc1642b5ec548ea326e2dea352bff7ce2153cd5ffcc1bced2fde3b"
       ],
       "label": "次日 03:00 补充更新",
       "status": "completed"
@@ -161,7 +166,7 @@
   "classifier_version": 1,
   "date": "2026-07-21",
   "dedupe_version": 1,
-  "generated_at": "2026-07-21T18:00:11.000Z",
+  "generated_at": "2026-07-21T19:00:11.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4615,6 +4620,43 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2079628148837142841",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ce501f50e5529d9cde2ada8920d41e853ed89bd5fb941ab29f0ab08bcd0cb3cd",
+      "featured": false,
+      "id": "n_ce501f50e5529d9cde2ada8920d41e853ed89bd5fb941ab29f0ab08bcd0cb3cd",
+      "identity_claims": [
+        "c_8bc25d39dce90e784ecbc417769b6b0b26932ce3332c0acfd7e6aa62970b3c07",
+        "c_ce501f50e5529d9cde2ada8920d41e853ed89bd5fb941ab29f0ab08bcd0cb3cd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T19:00:11.000Z",
+      "published_at": "2026-07-21T06:11:00.669Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209831023219560449",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1209831023219560449",
+      "source_type": "twitter_extra",
+      "summary": "教程覆盖Agent Loop、工具系统、消息系统等，提供Web、Markdown和PDF三种阅读方式。",
+      "time_precision": "exact",
+      "title": "10 章把 Agent Loop、工具系统、消息系统、事件驱动、会话管理和上下文工程全部拆了一遍。",
+      "topic_ids": [
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2079628148837142841"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw%3D%3D&idx=2&mid=2247905505&sn=95e90d0c54a87e3434569e4abdad7a61",
       "category": "models",
       "content_type": "news",
@@ -4772,6 +4814,44 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2079570332713689434",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_7b3f8799f073a3c95e340697f074e39c615b6059181a681c83fcb87b1dfae187",
+      "featured": false,
+      "id": "n_7b3f8799f073a3c95e340697f074e39c615b6059181a681c83fcb87b1dfae187",
+      "identity_claims": [
+        "c_17144a2e890d162376845c888fce83e13acdae134daf73894dfef3935161d733",
+        "c_7b3f8799f073a3c95e340697f074e39c615b6059181a681c83fcb87b1dfae187"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T19:00:11.000Z",
+      "published_at": "2026-07-21T11:19:07.715Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209846462033145857",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1209846462033145857",
+      "source_type": "twitter_extra",
+      "summary": "该项目完全以开放方式构建，自 4 月 28 日发布以来增长迅速。",
+      "time_precision": "exact",
+      "title": "Open Design 项目在 GitHub 上线 84 天即获得超过 8 万颗星标",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2079570332713689434"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://simonwillison.net/2026/Jul/21/cat-and-thariq/",
       "category": "models",
       "content_type": "news",
@@ -4845,6 +4925,43 @@
         "topic_agents"
       ],
       "url": "https://x.com/9hills/status/2079564305352282128"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2079570547608842360",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_99f9c38c80eb2389be623fef080a4b739c911d79a42506c3e694b6f49139c31f",
+      "featured": false,
+      "id": "n_99f9c38c80eb2389be623fef080a4b739c911d79a42506c3e694b6f49139c31f",
+      "identity_claims": [
+        "c_48f1d926d764b85735ef2aaa76b64b0421e87426c978d1097e8bad8ffeca6927",
+        "c_99f9c38c80eb2389be623fef080a4b739c911d79a42506c3e694b6f49139c31f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T19:00:11.000Z",
+      "published_at": "2026-07-21T13:55:44.345Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209846462033145856",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1209846462033145856",
+      "source_type": "twitter_extra",
+      "summary": "项目吸引438名贡献者提交3200多次PR，影响全球60多个国家的设计师和独立开发者。",
+      "time_precision": "exact",
+      "title": "太强了 一开始不会用 现在非常有用",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2079570547608842360"
     },
     {
       "batch": "lateNight",
@@ -4955,6 +5072,88 @@
         "topic_other"
       ],
       "url": "https://openai.com/index/introducing-chatgpt-small-business-program"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2079618788140482647",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_google_deepmind",
+        "entity_microsoft",
+        "entity_xai"
+      ],
+      "event_id": "e_ef22970d8c04a62b52bcec7f85607f623f2f52218a1c673ae49ab02fc9c79b61",
+      "featured": false,
+      "id": "n_ef22970d8c04a62b52bcec7f85607f623f2f52218a1c673ae49ab02fc9c79b61",
+      "identity_claims": [
+        "c_7294807926f21312afc88d65c28fc693f2572d2683d907e09f2ca25de43f0163",
+        "c_ef22970d8c04a62b52bcec7f85607f623f2f52218a1c673ae49ab02fc9c79b61"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T19:00:11.000Z",
+      "published_at": "2026-07-21T17:25:31.362Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1209831023219560448",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1209831023219560448",
+      "source_type": "twitter_extra",
+      "summary": "3.6 Flash 输出价格从每百万 token 9 美元降至 7.5 美元，生成速度升至 304 tokens/s，知识截止于 2026 年 3 月，已集成至 GitHub Copilot 和 Google AI Studio。",
+      "time_precision": "exact",
+      "title": "Google 发布 Gemini 3.6 Flash 等三款新模型，输出费用降低且速度翻倍",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2079618788140482647"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://github.com/agegr/pi-web",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_c62ea6b9e2fc1642b5ec548ea326e2dea352bff7ce2153cd5ffcc1bced2fde3b",
+      "featured": false,
+      "id": "n_c62ea6b9e2fc1642b5ec548ea326e2dea352bff7ce2153cd5ffcc1bced2fde3b",
+      "identity_claims": [
+        "c_828374d0cb65daa80a6faa8111aa6a33b0434469d836514894dd60ed2502efd1",
+        "c_c62ea6b9e2fc1642b5ec548ea326e2dea352bff7ce2153cd5ffcc1bced2fde3b"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-21T19:00:11.000Z",
+      "published_at": null,
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/agegr/pi-web",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/agegr/pi-web",
+      "source_type": "github_trending",
+      "summary": "pi 编码代理的 Web 用户界面。",
+      "time_precision": "date_only",
+      "title": "pi-web",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/agegr/pi-web"
     }
   ],
   "overview": {
