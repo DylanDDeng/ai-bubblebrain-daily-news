@@ -141,20 +141,28 @@ function parseEditorialResponse(value) {
     return Array.isArray(parsed) ? parsed : Array.isArray(parsed?.items) ? parsed.items : [];
 }
 
-export function normalizeEditorialHeadline(value) {
+function editorialHeadlineRejectReasons(value) {
     const cleaned = cleanEditorialText(value)
         .replace(/^(?:标题|headline)\s*[:：]\s*/iu, '')
         .replace(/^[“”"']+|[“”"']+$/gu, '')
         .trim();
     const length = codePoints(cleaned).length;
+    const reasons = [];
     // No display-driven length cap (49-char Chinese headlines are fine), only
     // a schema guard: the report bounds titles at 500 chars, so pathological
     // output beyond the safety rail falls back to the deterministic path.
-    if (length < 10 || length > MAX_SOURCE_HEADLINE_LENGTH) return null;
-    if (!HAN_PATTERN.test(cleaned)) return null;
-    if (/^(?:RT|Re)\s+/iu.test(cleaned)) return null;
-    if (ELLIPSIS_PATTERN.test(cleaned) || INCOMPLETE_HEADLINE_ENDING.test(cleaned)) return null;
-    return cleaned;
+    if (length < 10) reasons.push('too_short');
+    if (length > MAX_SOURCE_HEADLINE_LENGTH) reasons.push('too_long');
+    if (!HAN_PATTERN.test(cleaned)) reasons.push('no_han');
+    if (/^(?:RT|Re)\s+/iu.test(cleaned)) reasons.push('rt_prefix');
+    if (ELLIPSIS_PATTERN.test(cleaned)) reasons.push('ellipsis');
+    if (INCOMPLETE_HEADLINE_ENDING.test(cleaned)) reasons.push('incomplete_ending');
+    return { cleaned, reasons };
+}
+
+export function normalizeEditorialHeadline(value) {
+    const { cleaned, reasons } = editorialHeadlineRejectReasons(value);
+    return reasons.length === 0 ? cleaned : null;
 }
 
 export function normalizeEditorialSummary(value) {
@@ -305,6 +313,20 @@ export async function applyEditorialEnrichment(
         const generatedItem = generatedById.get(item.id);
         const generatedTitle = normalizeEditorialHeadline(generatedItem?.title);
         const generatedSummary = normalizeEditorialSummary(generatedItem?.summary);
+        if (!generatedTitle) {
+            // Per-item validation failures are otherwise silent: log exactly
+            // which rule rejected the model's headline so production fallbacks
+            // can be diagnosed from worker logs.
+            const diagnosis = generatedItem
+                ? editorialHeadlineRejectReasons(generatedItem.title)
+                : { cleaned: '', reasons: ['missing_from_response'] };
+            console.warn('[StructuredDaily] editorial headline rejected; using deterministic fallback', {
+                itemId: item.id,
+                reasons: diagnosis.reasons,
+                rejectedTitle: codePoints(diagnosis.cleaned).slice(0, 160).join(''),
+                summaryAccepted: Boolean(generatedSummary),
+            });
+        }
         const fallbackTitle = compactEditorialTitle(item.title, item.summary)
             || String(item.title || '').trim();
         cache.set(item.id, {
