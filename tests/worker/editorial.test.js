@@ -271,4 +271,37 @@ describe('structured daily editorial enrichment', () => {
         expect(bySource.aibase.title).toBe('A concise news headline');
         expect(result.metrics).toMatchObject({ editorial_ai_count: 0, editorial_fallback_count: 1 });
     });
+
+    it('logs the rejection reasons and the rejected headline on fallback', async () => {
+        const original = await build();
+        const id = original.report.items[0].id;
+        const generate = vi.fn(async () => JSON.stringify({
+            items: [{
+                id,
+                title: 'ChatGPT Work runs in the cloud from mobile',
+                summary: '任务在云端持续运行，用户合上电脑后仍能从手机继续处理。',
+            }],
+        }));
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        try {
+            const result = await applyEditorialEnrichment(
+                { DAILY_EDITORIAL_ENRICHMENT_ENABLED: 'true' },
+                original,
+                { itemIds: [id], generate },
+            );
+
+            expect(result.metrics).toMatchObject({ editorial_ai_count: 0, editorial_fallback_count: 1 });
+            expect(warn).toHaveBeenCalledWith(
+                '[StructuredDaily] editorial headline rejected; using deterministic fallback',
+                expect.objectContaining({
+                    itemId: id,
+                    reasons: ['no_han'],
+                    rejectedTitle: 'ChatGPT Work runs in the cloud from mobile',
+                    summaryAccepted: true,
+                }),
+            );
+        } finally {
+            warn.mockRestore();
+        }
+    });
 });
