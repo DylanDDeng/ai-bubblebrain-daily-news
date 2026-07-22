@@ -9,6 +9,7 @@ import {
 	type DailyEntryIdentity,
 	type DailyLocale,
 } from '../lib/daily';
+import { buildMonthGrid, heatScale, longestIssueStreak, pad2 } from '../lib/dailyCalendar';
 import { taxonomyLabel, topicsById } from '../lib/knowledge';
 import {
 	cleanTimelineSummary,
@@ -49,7 +50,7 @@ await Promise.all(
 		}),
 );
 
-const topTopicLabels = (report: StructuredDailyReport, limit: number): string[] => {
+const topTopicIds = (report: StructuredDailyReport, limit: number): string[] => {
 	const counts = new Map<string, number>();
 	for (const item of report.items) {
 		for (const topicId of item.topic_ids) {
@@ -58,15 +59,11 @@ const topTopicLabels = (report: StructuredDailyReport, limit: number): string[] 
 	}
 	return [...counts.entries()]
 		.sort((a, b) => b[1] - a[1])
-		.map(([id]) => topicsById.get(id))
-		.filter((topic) => topic !== undefined)
-		.slice(0, limit)
-		.map((topic) => taxonomyLabel(topic, locale));
+		.map(([id]) => id)
+		.filter((id) => topicsById.has(id))
+		.slice(0, limit);
 };
 
-const latestRow = rows[0] ?? null;
-const latestReport = latestRow ? (reportByDate.get(latestRow.identity.dateKey) ?? null) : null;
-const latestDate = latestRow ? dailyDateFromKey(latestRow.identity.dateKey) : null;
 const monthDayFormatter = new Intl.DateTimeFormat(locale, {
 	month: 'long',
 	day: 'numeric',
@@ -77,17 +74,107 @@ const monthFormatter = new Intl.DateTimeFormat(locale, {
 	month: 'long',
 	timeZone: 'Asia/Shanghai',
 });
+const shortMonthFormatter = new Intl.DateTimeFormat(locale, {
+	month: 'short',
+	timeZone: 'Asia/Shanghai',
+});
+const numberFormatter = new Intl.NumberFormat(locale);
 
-const heroTopics = latestReport ? topTopicLabels(latestReport, 4) : [];
-const heroLead = latestReport
-	? (latestReport.items.find((item) => item.featured) ?? latestReport.items[0] ?? null)
-	: null;
-const firstCompletedAt = latestReport
-	? (latestReport.batches
-			.filter((batch) => batch.status === 'completed' && batch.generated_at)
-			.map((batch) => batch.generated_at!)
-			.sort()[0] ?? latestReport.generated_at)
-	: null;
+/* ---------- per-day view model ---------- */
+
+interface DayInfo {
+	dateKey: string;
+	href: string;
+	count: number | null;
+	topicIds: string[];
+	topicLabels: string[];
+	headline: string;
+	meta: string | null;
+	dateLabel: string;
+	weekdayLong: string;
+}
+
+const infoByDate = new Map<string, DayInfo>();
+for (const row of rows) {
+	const { dateKey } = row.identity;
+	const report = reportByDate.get(dateKey) ?? null;
+	const date = dailyDateFromKey(dateKey);
+	const lead = report ? (report.items.find((item) => item.featured) ?? report.items[0] ?? null) : null;
+	const topicIds = report ? topTopicIds(report, 4) : [];
+	const firstCompletedAt = report
+		? (report.batches
+				.filter((batch) => batch.status === 'completed' && batch.generated_at)
+				.map((batch) => batch.generated_at!)
+				.sort()[0] ?? report.generated_at)
+		: null;
+	infoByDate.set(dateKey, {
+		dateKey,
+		href: row.href,
+		count: report ? report.items.length : null,
+		topicIds,
+		topicLabels: topicIds.map((id) => taxonomyLabel(topicsById.get(id)!, locale)),
+		headline:
+			report && lead ? cleanTimelineSummary(lead.title) || lead.title : row.entry.data.title,
+		meta: report
+			? isEnglish
+				? `${report.items.length} items · published ${formatDailyTime(firstCompletedAt!, locale)}`
+				: `${report.items.length} 条收录 · ${formatDailyTime(firstCompletedAt!, locale)} 发布`
+			: null,
+		dateLabel: monthDayFormatter.format(date),
+		weekdayLong: formatDailyWeekday(date, locale, 'long'),
+	});
+}
+
+/* ---------- calendar models ---------- */
+
+const todayKey =
+	process.env.SITE_DISPLAY_DATE && /^\d{4}-\d{2}-\d{2}$/.test(process.env.SITE_DISPLAY_DATE)
+		? process.env.SITE_DISPLAY_DATE
+		: null;
+const latestKey = rows[0]?.identity.dateKey ?? null;
+const selectedKey = latestKey;
+const initialMonthKey = latestKey ? latestKey.slice(0, 7) : null;
+const initialYear = initialMonthKey ? initialMonthKey.slice(0, 4) : null;
+
+interface CellVM {
+	kind: 'adjacent' | 'day';
+	day: number;
+	dateKey: string | null;
+	info: DayInfo | null;
+	heat: number;
+	isToday: boolean;
+	isFuture: boolean;
+	isSelected: boolean;
+}
+
+const cellVM = (dateKey: string | null, day: number, kind: CellVM['kind'], heat: number): CellVM => ({
+	kind,
+	day,
+	dateKey,
+	info: dateKey ? (infoByDate.get(dateKey) ?? null) : null,
+	heat,
+	isToday: dateKey !== null && dateKey === todayKey,
+	isFuture: todayKey !== null && dateKey !== null && dateKey > todayKey,
+	isSelected: dateKey !== null && dateKey === selectedKey,
+});
+
+const statsLabel = (issueCount: number, total: number | null): string => {
+	if (isEnglish) {
+		return total !== null
+			? `${issueCount} issues · ${numberFormatter.format(total)} items`
+			: `${issueCount} issues`;
+	}
+	return total !== null
+		? `${issueCount} 期 · 共 ${numberFormatter.format(total)} 条`
+		: `${issueCount} 期`;
+};
+
+// Rows are newest-first; totals are only meaningful when every issue in the
+// scope has a structured count (the pre-cutover archive has none).
+const countedTotal = (infos: DayInfo[]): number | null =>
+	infos.length > 0 && infos.every((info) => info.count !== null)
+		? infos.reduce((sum, info) => sum + (info.count ?? 0), 0)
+		: null;
 
 interface MonthGroup {
 	monthKey: string;
@@ -101,17 +188,165 @@ for (const row of rows) {
 	else groups.push({ monthKey, rows: [row] });
 }
 
-// Every month renders as a <details> group so it can be collapsed/expanded;
-// the latest three default to open, older ones start collapsed.
-const shiftMonth = (monthKey: string, delta: number): string => {
-	const [year, month] = monthKey.split('-').map(Number);
-	const total = year * 12 + (month - 1) + delta;
-	return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}`;
+interface MonthVM {
+	key: string;
+	title: string;
+	stats: string;
+	cells: CellVM[];
+	hidden: boolean;
+}
+
+// Month view normalizes heat within each month so a slow month still reads.
+const monthVMs: MonthVM[] = groups.map((group) => {
+	const [year, month] = group.monthKey.split('-').map(Number);
+	const infos = group.rows.map((row) => infoByDate.get(row.identity.dateKey)!);
+	const heat = heatScale(infos.map((info) => info.count));
+	return {
+		key: group.monthKey,
+		title: monthFormatter.format(dailyDateFromKey(`${group.monthKey}-01`)),
+		stats: statsLabel(infos.length, countedTotal(infos)),
+		cells: buildMonthGrid(year, month).map((cell) =>
+			cellVM(cell.dateKey, cell.day, cell.kind, cell.dateKey ? heat(infoByDate.get(cell.dateKey)?.count ?? null) : 0),
+		),
+		hidden: group.monthKey !== initialMonthKey,
+	};
+});
+
+interface MiniVM {
+	key: string;
+	name: string;
+	issueCount: number;
+	hasData: boolean;
+	cells: CellVM[];
+}
+
+interface YearVM {
+	year: string;
+	title: string;
+	stats: string;
+	minis: MiniVM[];
+	longestStreak: number;
+	biggestCount: number | null;
+	biggestLabel: string | null;
+	hidden: boolean;
+}
+
+// Year view uses one scale per year so months stay comparable (the "global
+// ruler" rule from the design notes; month view uses per-month scaling).
+const yearKeys = [...new Set(groups.map((group) => group.monthKey.slice(0, 4)))];
+const yearVMs: YearVM[] = yearKeys.map((year) => {
+	const yearInfos = rows
+		.filter((row) => row.identity.dateKey.startsWith(`${year}-`))
+		.map((row) => infoByDate.get(row.identity.dateKey)!);
+	const heat = heatScale(yearInfos.map((info) => info.count));
+	const minis: MiniVM[] = [];
+	for (let month = 1; month <= 12; month++) {
+		const key = `${year}-${pad2(month)}`;
+		const issueCount = yearInfos.filter((info) => info.dateKey.startsWith(key)).length;
+		minis.push({
+			key,
+			name: shortMonthFormatter.format(dailyDateFromKey(`${key}-01`)),
+			issueCount,
+			hasData: issueCount > 0,
+			cells: buildMonthGrid(Number(year), month).map((cell) =>
+				cellVM(
+					cell.dateKey,
+					cell.day,
+					cell.kind,
+					cell.dateKey ? heat(infoByDate.get(cell.dateKey)?.count ?? null) : 0,
+				),
+			),
+		});
+	}
+	let biggest: { count: number; label: string } | null = null;
+	for (const info of yearInfos) {
+		if (info.count !== null && (biggest === null || info.count > biggest.count)) {
+			biggest = { count: info.count, label: info.dateLabel };
+		}
+	}
+	return {
+		year,
+		title: isEnglish ? year : `${year}年`,
+		stats: statsLabel(yearInfos.length, countedTotal(yearInfos)),
+		minis,
+		longestStreak: longestIssueStreak(yearInfos.map((info) => info.dateKey)),
+		biggestCount: biggest?.count ?? null,
+		biggestLabel: biggest?.label ?? null,
+		hidden: year !== initialYear,
+	};
+});
+
+/* ---------- topic colors + JSON payload ---------- */
+
+const TOPIC_DOT_CLASS: Record<string, string> = {
+	topic_models: 'cat-models',
+	topic_agents: 'cat-agents',
+	topic_research: 'cat-research',
+	topic_products: 'cat-products',
+	topic_business: 'cat-business',
+	topic_policy: 'cat-policy',
+	topic_open_source: 'cat-oss',
+	topic_other: 'cat-other',
 };
-const expandedCutoff = latestRow ? shiftMonth(latestRow.identity.dateKey.slice(0, 7), -2) : null;
+const dotClass = (topicId: string): string => TOPIC_DOT_CLASS[topicId] ?? 'cat-other';
+const legendTopics = [...topicsById.values()].filter((topic) => topic.status === 'active');
+
+const dowLabels = isEnglish
+	? ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+	: ['一', '二', '三', '四', '五', '六', '日'];
+
+const labels = isEnglish
+	? {
+			latestKicker: 'Latest issue',
+			issueKicker: 'Selected issue',
+			noIssueKicker: 'Selected date',
+			topStory: 'Top story',
+			readIssue: 'Read this issue →',
+			noIssue: 'No issue was published on this day.',
+			goLatest: 'View the latest issue →',
+		}
+	: {
+			latestKicker: '最新一期 · Latest',
+			issueKicker: '所选一期 · Issue',
+			noIssueKicker: '所选日期',
+			topStory: '今日头条',
+			readIssue: '阅读本期 →',
+			noIssue: '这一天没有发布日报。',
+			goLatest: '查看最近一期 →',
+		};
+
+const payload = {
+	today: todayKey,
+	latest: latestKey,
+	selected: selectedKey,
+	initialMonth: initialMonthKey,
+	initialYear,
+	labels,
+	months: Object.fromEntries(monthVMs.map((vm) => [vm.key, { title: vm.title, stats: vm.stats }])),
+	years: Object.fromEntries(yearVMs.map((vm) => [vm.year, { title: vm.title, stats: vm.stats }])),
+	issues: Object.fromEntries(
+		[...infoByDate.values()].map((info) => [
+			info.dateKey,
+			{
+				href: info.href,
+				dateLabel: info.dateLabel,
+				weekday: info.weekdayLong,
+				topics: info.topicLabels,
+				headline: info.headline,
+				meta: info.meta,
+			},
+		]),
+	),
+};
+// `</script>` inside headlines must not be able to close the data block.
+const payloadJson = JSON.stringify(payload).replace(/</g, '\\u003c');
+
+const selectedInfo = selectedKey ? (infoByDate.get(selectedKey) ?? null) : null;
+const countTitle = (count: number): string =>
+	isEnglish ? `${count} items` : `${count} 条收录`;
 ---
 
-<section class="page-shell daily-archive">
+<section class="page-shell daily-archive" data-daily-calendar data-locale={locale}>
 	<header class="page-heading">
 		<h1>{isEnglish ? 'Daily Brief' : '资讯日报'}</h1>
 		<p>
@@ -123,86 +358,224 @@ const expandedCutoff = latestRow ? shiftMonth(latestRow.identity.dateKey.slice(0
 		</p>
 	</header>
 
-	{
-		latestRow && latestDate && (
-			<a class="archive-hero" href={latestRow.href}>
-				<p class="archive-hero-label">{isEnglish ? 'Latest issue' : '最新一期 · Latest'}</p>
-				<p class="archive-hero-date">
-					{monthDayFormatter.format(latestDate)}
-					<span class="weekday">{formatDailyWeekday(latestDate, locale)}</span>
-				</p>
-				{latestReport ? (
-					<>
-						{heroTopics.length > 0 && (
-							<ul class="archive-hero-topics">
-								{heroTopics.map((label) => (
-									<li>{label}</li>
-								))}
-							</ul>
-						)}
-						{heroLead && (
-							<p class="archive-hero-headline">
-								<strong>{isEnglish ? 'Top story: ' : '今日头条：'}</strong>
-								{cleanTimelineSummary(heroLead.title) || heroLead.title}
-							</p>
-						)}
-						<p class="archive-hero-meta">
-							{isEnglish
-								? `${latestReport.items.length} items · published ${formatDailyTime(firstCompletedAt!, locale)}`
-								: `${latestReport.items.length} 条收录 · ${formatDailyTime(firstCompletedAt!, locale)} 发布`}
-						</p>
-					</>
-				) : (
-					<p class="archive-hero-headline">{latestRow.entry.data.title}</p>
-				)}
-			</a>
-		)
-	}
-
-	{
-		groups.map((group) => {
-			const expanded = expandedCutoff !== null && group.monthKey >= expandedCutoff;
-			const monthLabel = monthFormatter.format(dailyDateFromKey(`${group.monthKey}-01`));
-			const countLabel = isEnglish
-				? `${group.rows.length} issues`
-				: `${group.rows.length} 期`;
-			const dayRows = group.rows.map((row) => {
-				const report = reportByDate.get(row.identity.dateKey) ?? null;
-				const date = dailyDateFromKey(row.identity.dateKey);
-				const summary = report ? topTopicLabels(report, 3).join(' · ') : '';
-				return (
-					<a
-						class:list={['day-row', { today: row === latestRow }]}
-						href={row.href}
+	<div class="archive-layout">
+		<div class="archive-main">
+			<div class="cal-head">
+				<div class="cal-title">
+					<h2 data-cal-title>{monthVMs.find((vm) => !vm.hidden)?.title ?? ''}</h2>
+					<span class="cal-stats" data-cal-stats>
+						{monthVMs.find((vm) => !vm.hidden)?.stats ?? ''}
+					</span>
+				</div>
+				<div class="cal-nav">
+					<div class="cal-seg" role="group" aria-label={isEnglish ? 'View' : '视图'}>
+						<button type="button" data-view="month" aria-pressed="true">
+							{isEnglish ? 'Month' : '月'}
+						</button>
+						<button type="button" data-view="year" aria-pressed="false">
+							{isEnglish ? 'Year' : '年'}
+						</button>
+					</div>
+					<button
+						type="button"
+						class="cal-arrow"
+						data-nav="prev"
+						aria-label={isEnglish ? 'Previous' : '上一页'}>‹</button
 					>
-						<span class="day-num">{row.identity.dateKey.slice(8)}</span>
-						<span class="weekday">
-							{formatDailyWeekday(date, locale, 'short')}
-							{row === latestRow && (
-								<span class="today-pill">{isEnglish ? 'Today' : '今天'}</span>
-							)}
-						</span>
-						<span class="topics">{summary || row.entry.data.title}</span>
-						{report && (
-							<span class="items">
-								{isEnglish ? `${report.items.length} items` : `${report.items.length} 条`}
+					<button
+						type="button"
+						class="cal-arrow"
+						data-nav="next"
+						aria-label={isEnglish ? 'Next' : '下一页'}
+						disabled>›</button
+					>
+					<button type="button" class="cal-today" data-nav="today">
+						{isEnglish ? 'Today' : '回到今天'}
+					</button>
+				</div>
+			</div>
+
+			<div class="cal-months" data-cal-months>
+				{
+					monthVMs.map((vm) => (
+						<section class="cal-month" data-month={vm.key} hidden={vm.hidden}>
+							<div class="dow-row">
+								{dowLabels.map((label, index) => (
+									<span class:list={[{ wknd: index >= 5 }]}>{label}</span>
+								))}
+							</div>
+							<div class="cal-grid">
+								{vm.cells.map((cell) =>
+									cell.kind === 'adjacent' ? (
+										<span class="cell adjacent">
+											<span class="day">{cell.day}</span>
+										</span>
+									) : cell.info ? (
+										<a
+											class:list={[
+												'cell',
+												'has-issue',
+												{ today: cell.isToday, selected: cell.isSelected },
+											]}
+											href={cell.info.href}
+											data-date={cell.dateKey}
+											style={`--heat:${cell.heat.toFixed(2)}`}
+											title={cell.info.count !== null ? countTitle(cell.info.count) : undefined}
+										>
+											<span class="day">{cell.day}</span>
+											{cell.isToday && (
+												<span class="today-flag">{isEnglish ? 'Today' : '今天'}</span>
+											)}
+											{(cell.info.topicIds.length > 0 || cell.info.count !== null) && (
+												<span class="cell-meta">
+													<span class="dots">
+														{cell.info.topicIds.map((id) => (
+															<i class:list={['dot', dotClass(id)]} />
+														))}
+													</span>
+													{cell.info.count !== null && (
+														<span class="count">
+															{isEnglish ? cell.info.count : `${cell.info.count} 条`}
+														</span>
+													)}
+												</span>
+											)}
+										</a>
+									) : (
+										<span
+											class:list={['cell', { future: cell.isFuture, today: cell.isToday }]}
+											data-date={cell.dateKey}
+										>
+											<span class="day">{cell.day}</span>
+											{cell.isToday && (
+												<span class="today-flag">{isEnglish ? 'Today' : '今天'}</span>
+											)}
+										</span>
+									),
+								)}
+							</div>
+						</section>
+					))
+				}
+			</div>
+
+			<div class="cal-years" data-cal-years hidden>
+				{
+					yearVMs.map((vm) => (
+						<section class="cal-year" data-year={vm.year} hidden={vm.hidden}>
+							<div class="year-grid">
+								{vm.minis.map((mini) => (
+									<div
+										class:list={['mini-month', { empty: !mini.hasData }]}
+										data-month={mini.key}
+									>
+										<div class="mm-title">
+											<span class="mm-name">{mini.name}</span>
+											<span class="mm-stat">
+												{mini.issueCount > 0 &&
+													(isEnglish ? `${mini.issueCount} issues` : `${mini.issueCount} 期`)}
+											</span>
+										</div>
+										<div class="mini-cells">
+											{mini.cells.map((cell) =>
+												cell.kind === 'adjacent' ? (
+													<span class="mc slot" />
+												) : cell.info ? (
+													<a
+														class:list={['mc', 'has', { today: cell.isToday }]}
+														href={cell.info.href}
+														data-date={cell.dateKey}
+														style={`--heat:${cell.heat.toFixed(2)}`}
+														title={
+															cell.info.count !== null
+																? `${cell.dateKey} · ${countTitle(cell.info.count)}`
+																: (cell.dateKey ?? undefined)
+														}
+													/>
+												) : (
+													<span
+														class:list={['mc', { future: cell.isFuture, today: cell.isToday }]}
+													/>
+												),
+											)}
+										</div>
+									</div>
+								))}
+							</div>
+							<div class="year-stats">
+								<span>
+									{isEnglish ? 'Longest streak ' : '最长连发 '}
+									<b>{vm.longestStreak}</b>
+									{isEnglish ? ' days' : ' 天'}
+								</span>
+								{
+									vm.biggestCount !== null && (
+										<span>
+											{isEnglish ? 'Biggest issue ' : '最厚一期 '}
+											<b>{vm.biggestCount}</b>
+											{isEnglish ? ' items' : ' 条'}（{vm.biggestLabel}）
+										</span>
+									)
+								}
+							</div>
+						</section>
+					))
+				}
+			</div>
+
+			<div class="cal-legend">
+				<div class="legend-cats">
+					{
+						legendTopics.map((topic) => (
+							<span>
+								<i class:list={['dot', dotClass(topic.id)]} />
+								{taxonomyLabel(topic, locale)}
 							</span>
-						)}
-					</a>
-				);
-			});
-			return (
-				<details class="month-group" open={expanded || undefined}>
-					<summary class="month-heading">
-						<h2>{monthLabel}</h2>
-						<span class="count">{countLabel}</span>
-						<span class="range">
-							{`${group.rows.at(-1)!.identity.dateKey.slice(5)} — ${group.rows[0].identity.dateKey.slice(5)}`}
-						</span>
-					</summary>
-					{dayRows}
-				</details>
-			);
-		})
-	}
+						))
+					}
+				</div>
+				<div class="legend-note">
+					{isEnglish ? 'Cell depth follows the day’s item count' : '底色深浅对应当日收录量'}
+				</div>
+			</div>
+		</div>
+
+		<aside class="archive-rail">
+			<div class="detail-card" data-detail-card>
+				{
+					selectedInfo ? (
+						<>
+							<p class="detail-kicker">{labels.latestKicker}</p>
+							<p class="detail-date">
+								{selectedInfo.dateLabel}
+								<span class="weekday">{selectedInfo.weekdayLong}</span>
+							</p>
+							{selectedInfo.topicLabels.length > 0 && (
+								<ul class="detail-topics">
+									{selectedInfo.topicLabels.map((label) => (
+										<li>{label}</li>
+									))}
+								</ul>
+							)}
+							<div class="detail-body">
+								<p class="detail-label">{labels.topStory}</p>
+								<p class="detail-headline">{selectedInfo.headline}</p>
+								{selectedInfo.meta && <p class="detail-meta">{selectedInfo.meta}</p>}
+								<a class="detail-cta" href={selectedInfo.href}>
+									{labels.readIssue}
+								</a>
+							</div>
+						</>
+					) : (
+						<p class="detail-empty">{isEnglish ? 'No issues yet.' : '暂无期刊。'}</p>
+					)
+				}
+			</div>
+		</aside>
+	</div>
+	<script is:inline type="application/json" data-calendar-json set:html={payloadJson} />
 </section>
+
+<script>
+	import '../scripts/dailyCalendar';
+</script>

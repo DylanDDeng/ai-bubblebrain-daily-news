@@ -82,7 +82,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-22T15:00:53.000Z",
+      "generated_at": "2026-07-22T15:54:12.525Z",
       "id": "night",
       "item_ids": [
         "n_7f0fd66a6f9b5bb6dc0a604730fad7e327f6ddc0c91171c413bf34ef19b9e7c5",
@@ -130,6 +130,7 @@
         "n_16fbd5b1cf6f1f2029689888647ce6310e48719fa6796b748e4757ad4396d473",
         "n_4d2fa17d2c826adfcf6e7bbcace3d17cdb510b6c17fc6da046cf395ad6a189b1",
         "n_109b5ed5d77ba54d35d968d1cd7bd2aefb3d404fc12ab24d74440861932e8d68",
+        "n_4e2acd4eaf9a60a794e553f9aa2d7b0af2e4a97710f19e5c4454fef512e1be16",
         "n_7a8d9b32be87c9cdc4d5fa4e1e95a38376de656033006920fc9671fed7621930",
         "n_38012b4d968e292d05e1645a9a87b8cbfc957e1327783d4b19510783078e48fc",
         "n_61fdcb48b1a9857eff59852c03d1cdc4e95f2ba0346f106522a5f479bd93a34c",
@@ -152,7 +153,7 @@
   "classifier_version": 1,
   "date": "2026-07-22",
   "dedupe_version": 1,
-  "generated_at": "2026-07-22T15:00:53.000Z",
+  "generated_at": "2026-07-22T15:54:12.525Z",
   "identity_version": 1,
   "items": [
     {
@@ -495,9 +496,9 @@
       },
       "source_id": "1210008677478637568",
       "source_type": "twitter_extra",
-      "summary": "这款编辑器让笔记始终保存在本地Markdown文件中，Mac端改进了安全切换和智能粘贴，iPhone端新增语法高亮、图片粘贴与云端文件夹支持。",
+      "summary": "笔记始终保存在本地Markdown文件中，iPhone端还加入图片粘贴与云端文件夹支持。",
       "time_precision": "exact",
-      "title": "MiaoYan is a local-first Markdown editor for Mac and iPhone. Notes stay",
+      "title": "MiaoYan编辑器更新后Mac端增强安全切换与智能粘贴，iPhone端新增语法高亮等",
       "topic_ids": [
         "topic_other"
       ],
@@ -644,9 +645,9 @@
       },
       "source_id": "1210189658860781568",
       "source_type": "twitter_extra",
-      "summary": "双方在调查中分享初步发现，以帮助防御者了解模型组合漏洞可能造成的实际危害。",
+      "summary": "双方分享初步结果，帮助防御者理解模型入侵可能造成的损害。",
       "time_precision": "exact",
-      "title": "OpenAI cyber-capable models compromised @huggingface production by",
+      "title": "OpenAI与HuggingFace联合调查模型组合漏洞，初步发现揭示实际危害",
       "topic_ids": [
         "topic_research"
       ],
@@ -1328,9 +1329,9 @@
       },
       "source_id": "1210438268764590080",
       "source_type": "twitter_extra",
-      "summary": "作者认为虽然发布略早，但内容打包了两个重要理念，现在正被越来越多人关注。",
+      "summary": "创作者推荐阅读，指出内容虽早但正被越来越多人重视。",
       "time_precision": "exact",
-      "title": "I was a bit too early on this. But I highly recommend reading it. It",
+      "title": "作者认为其发布过早的文章打包了两个重要理念，现获更多关注",
       "topic_ids": [
         "topic_models"
       ],
@@ -2296,9 +2297,9 @@
       },
       "source_id": "1210458886000062466",
       "source_type": "twitter_extra",
-      "summary": "短片展现了Open Design走向全球过程中经历的风浪、怀疑和坚持，以及团队如何相互支持。",
+      "summary": "短片描绘了Open Design发展中的风浪、怀疑及团队相互支持。",
       "time_precision": "exact",
-      "title": "Used @pyang1235005’s B-roll skill to turn @OpenDesignHQ 's climb to 80K",
+      "title": "使用B-roll技巧制作的短片展现Open Design走向全球的历程与团队坚持",
       "topic_ids": [
         "topic_products",
         "topic_open_source"
@@ -3876,9 +3877,9 @@
       },
       "source_id": "1210950534731579393",
       "source_type": "twitter_extra",
-      "summary": "RT はるか",
+      "summary": "该条消息只包含“RT はるか”转发标记，未提供正文、链接或其他可解读的内容。",
       "time_precision": "exact",
-      "title": "RT はるか",
+      "title": "原内容仅为转发标记，无任何实质信息可供提取。",
       "topic_ids": [
         "topic_other"
       ],
@@ -4221,9 +4222,9 @@
       },
       "source_id": "1210973327888162816",
       "source_type": "twitter_extra",
-      "summary": "so cool Recent Design: Infinite Rolling Paper Strip by @thebuggeddev",
+      "summary": "设计作品名为Infinite Rolling Paper Strip，近期发布后受到赞赏。",
       "time_precision": "exact",
-      "title": "so cool Recent Design: Infinite Rolling Paper Strip by @thebuggeddev",
+      "title": "开发者thebuggeddev展示无穷滚动纸带设计，获评价“太酷了",
       "topic_ids": [
         "topic_research"
       ],
@@ -4344,6 +4345,44 @@
         "topic_other"
       ],
       "url": "https://x.com/oran_ge/status/2079891204305735944"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://openai.com/index/advancing-the-next-era-of-national-science",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_4e2acd4eaf9a60a794e553f9aa2d7b0af2e4a97710f19e5c4454fef512e1be16",
+      "featured": false,
+      "id": "n_4e2acd4eaf9a60a794e553f9aa2d7b0af2e4a97710f19e5c4454fef512e1be16",
+      "identity_claims": [
+        "c_4e2acd4eaf9a60a794e553f9aa2d7b0af2e4a97710f19e5c4454fef512e1be16",
+        "c_ff96b73a82f5b997a95aa368d7bb04990991a42a7f942479ca804fb08d10e94d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-22T15:54:12.525Z",
+      "published_at": "2026-07-22T12:00:00.629Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211112230469218305",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1211112230469218305",
+      "source_type": "openai_newsroom",
+      "summary": "OpenAI outlines its commitment to advancing American science working with the U.S. Department of Energy and national labs to use frontier AI to accelerate discovery.",
+      "time_precision": "exact",
+      "title": "Advancing the next era of national science",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://openai.com/index/advancing-the-next-era-of-national-science"
     },
     {
       "batch": "night",
