@@ -192,7 +192,7 @@ describe('timeline batch order', () => {
 });
 
 describe('timeline editorial compatibility', () => {
-	it('compacts legacy social posts and removes their duplicated raw summary', () => {
+	it('keeps Chinese social posts whole and removes their duplicated raw summary', () => {
 		const item = {
 			content_type: 'socialMedia',
 			title:
@@ -202,7 +202,8 @@ describe('timeline editorial compatibility', () => {
 		} as StructuredDailyItem;
 
 		expect(timelineDisplayText(item)).toEqual({
-			title: 'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token',
+			title:
+				'FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token，把企业知识沉淀成 Skills，然后把这些 Skills 内化到模型。接下来企业就不需要那么多人了。',
 			summary: '',
 		});
 	});
