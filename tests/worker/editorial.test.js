@@ -37,11 +37,20 @@ async function build(rawItems = [socialItem()]) {
 }
 
 describe('structured daily editorial enrichment', () => {
-    it('turns a long social post into a complete one-line fallback', () => {
+    it('keeps Chinese social posts whole instead of truncating them', () => {
         const title = compactEditorialTitle(socialItem().title, socialItem().description);
-        expect(title).toBe('FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token');
-        expect(Array.from(title).length).toBeLessThanOrEqual(48);
+        expect(title).toBe(socialItem().description);
         expect(title).not.toMatch(/[…,.，]$/u);
+    });
+
+    it('bounds extreme long-form sources within the schema title budget', () => {
+        const sentence = '这一句话用来填充长文内容，验证截断行为是否合规。';
+        const longText = `${sentence.repeat(20)}${'尾巴'.repeat(200)}`;
+        const title = compactEditorialTitle('', longText);
+        expect(Array.from(title).length).toBeLessThanOrEqual(480);
+        expect(title).toContain('验证截断行为是否合规');
+        expect(normalizeEditorialHeadline(`${'长'.repeat(481)}`)).toBeNull();
+        expect(normalizeEditorialHeadline(`${'长'.repeat(480)}`)).toBe('长'.repeat(480));
     });
 
     it('cleans RT prefixes, links, boilerplate, and long summaries', () => {
@@ -63,11 +72,15 @@ describe('structured daily editorial enrichment', () => {
     it('accepts complete Chinese output and rejects untranslated or teaser-shaped output', () => {
         expect(normalizeEditorialHeadline('FDE 的阳谋：借企业落地沉淀模型能力'))
             .toBe('FDE 的阳谋：借企业落地沉淀模型能力');
+        // Long Chinese headlines are accepted — no upper length cap.
+        expect(normalizeEditorialHeadline(
+            'OpenAI具备网络能力的模型通过发现并利用多个零日漏洞成功入侵了Hugging Face生产环境',
+        )).toBe('OpenAI具备网络能力的模型通过发现并利用多个零日漏洞成功入侵了Hugging Face生产环境');
+        expect(normalizeEditorialHeadline(`${'过'.repeat(73)}`)).toBe('过'.repeat(73));
         expect(normalizeEditorialHeadline('RT 作者：这是一条仍带转发前缀的标题')).toBeNull();
         expect(normalizeEditorialHeadline('ChatGPT Work runs in the cloud from mobile')).toBeNull();
         expect(normalizeEditorialHeadline('ChatGPT Work 可在云端运行…')).toBeNull();
         expect(normalizeEditorialHeadline('ChatGPT Work 的主要优势是：')).toBeNull();
-        expect(normalizeEditorialHeadline(`${'过'.repeat(73)}`)).toBeNull();
         expect(normalizeEditorialSummary('ChatGPT Work runs in the cloud from mobile.')).toBeNull();
         expect(normalizeEditorialSummary('ChatGPT Work 可在云端持续运行，用户合上电脑后仍能从手机继续任务。'))
             .not.toBeNull();
@@ -254,8 +267,41 @@ describe('structured daily editorial enrichment', () => {
         );
         const bySource = Object.fromEntries(result.report.items.map(item => [item.source_type, item]));
 
-        expect(bySource.twitter.title).toBe('FDE 就是模型公司的阳谋：先让人去帮企业落地 Agent 卖 Token');
+        expect(bySource.twitter.title).toBe(socialItem().description);
         expect(bySource.aibase.title).toBe('A concise news headline');
         expect(result.metrics).toMatchObject({ editorial_ai_count: 0, editorial_fallback_count: 1 });
+    });
+
+    it('logs the rejection reasons and the rejected headline on fallback', async () => {
+        const original = await build();
+        const id = original.report.items[0].id;
+        const generate = vi.fn(async () => JSON.stringify({
+            items: [{
+                id,
+                title: 'ChatGPT Work runs in the cloud from mobile',
+                summary: '任务在云端持续运行，用户合上电脑后仍能从手机继续处理。',
+            }],
+        }));
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        try {
+            const result = await applyEditorialEnrichment(
+                { DAILY_EDITORIAL_ENRICHMENT_ENABLED: 'true' },
+                original,
+                { itemIds: [id], generate },
+            );
+
+            expect(result.metrics).toMatchObject({ editorial_ai_count: 0, editorial_fallback_count: 1 });
+            expect(warn).toHaveBeenCalledWith(
+                '[StructuredDaily] editorial headline rejected; using deterministic fallback',
+                expect.objectContaining({
+                    itemId: id,
+                    reasons: ['no_han'],
+                    rejectedTitle: 'ChatGPT Work runs in the cloud from mobile',
+                    summaryAccepted: true,
+                }),
+            );
+        } finally {
+            warn.mockRestore();
+        }
     });
 });

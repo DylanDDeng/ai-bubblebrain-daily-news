@@ -8,6 +8,11 @@ const SOCIAL_CONTENT_TYPE = 'socialMedia';
 const DEFAULT_BATCH_SIZE = 30;
 const MAX_BATCH_SIZE = 40;
 const MAX_HEADLINE_LENGTH = 48;
+// Safety rail, not a display limit: the report schema bounds titles at 500
+// chars, so fallback titles derived from long-form sources (X articles with
+// multi-thousand-char summaries) must stay inside that budget. Real AI
+// headlines are ~50 chars and never reach this.
+const MAX_SOURCE_HEADLINE_LENGTH = 480;
 const MAX_SUMMARY_LENGTH = 160;
 const MAX_EDITORIAL_CONCURRENCY = 3;
 const URL_PATTERN = /https?:\/\/\S+|www\.\S+/giu;
@@ -78,8 +83,10 @@ function compactLatinText(value, maxLength) {
 
 /**
  * Rendering-safe fallback for legacy social posts and model failures.
- * It deliberately chooses a complete leading clause instead of adding an
- * ellipsis, so the visible headline reads as a statement rather than a teaser.
+ * Latin-heavy (untranslated) text is clipped to a complete leading clause so
+ * the visible headline reads as a statement rather than a teaser; Chinese
+ * text passes through whole — validated AI headlines are complete statements
+ * and must not be cut mid-thought.
  */
 export function compactEditorialTitle(title, summary = '') {
     const source = sourceTextForHeadline(title, summary);
@@ -88,20 +95,21 @@ export function compactEditorialTitle(title, summary = '') {
 
     const mostlyLatin = (source.match(/[\u0000-\u024f]/gu)?.length || 0) / points.length > 0.72;
     if (mostlyLatin) return compactLatinText(source, 72);
-
-    const window = points.slice(0, MAX_HEADLINE_LENGTH + 1).join('');
+    if (points.length <= MAX_SOURCE_HEADLINE_LENGTH) return source;
+    // Extreme long-form sources: clip at the last full sentence in the window
+    // to stay within the schema's 500-char title budget.
+    const window = points.slice(0, MAX_SOURCE_HEADLINE_LENGTH + 1).join('');
     const sentenceBoundaries = [...window.matchAll(/[。！？!?]/gu)]
         .map(match => match.index + match[0].length)
         .filter(index => index >= 14);
     if (sentenceBoundaries.length > 0) {
         return window.slice(0, sentenceBoundaries.at(-1)).trim();
     }
-
-    const clauseBoundaries = [...window.matchAll(/[，,；;]/gu)]
-        .map(match => match.index)
-        .filter(index => index >= 24);
-    const end = clauseBoundaries.at(-1) || MAX_HEADLINE_LENGTH;
-    return points.slice(0, end).join('').replace(/[，,：:；;\s]+$/u, '').trim();
+    return points
+        .slice(0, MAX_SOURCE_HEADLINE_LENGTH)
+        .join('')
+        .replace(/[，,：:；;\s]+$/u, '')
+        .trim();
 }
 
 export function compactEditorialSummary(summary, maxLength = MAX_SUMMARY_LENGTH) {
@@ -133,17 +141,28 @@ function parseEditorialResponse(value) {
     return Array.isArray(parsed) ? parsed : Array.isArray(parsed?.items) ? parsed.items : [];
 }
 
-export function normalizeEditorialHeadline(value) {
+function editorialHeadlineRejectReasons(value) {
     const cleaned = cleanEditorialText(value)
         .replace(/^(?:标题|headline)\s*[:：]\s*/iu, '')
         .replace(/^[“”"']+|[“”"']+$/gu, '')
         .trim();
     const length = codePoints(cleaned).length;
-    if (length < 10 || length > MAX_HEADLINE_LENGTH) return null;
-    if (!HAN_PATTERN.test(cleaned)) return null;
-    if (/^(?:RT|Re)\s+/iu.test(cleaned)) return null;
-    if (ELLIPSIS_PATTERN.test(cleaned) || INCOMPLETE_HEADLINE_ENDING.test(cleaned)) return null;
-    return cleaned;
+    const reasons = [];
+    // No display-driven length cap (49-char Chinese headlines are fine), only
+    // a schema guard: the report bounds titles at 500 chars, so pathological
+    // output beyond the safety rail falls back to the deterministic path.
+    if (length < 10) reasons.push('too_short');
+    if (length > MAX_SOURCE_HEADLINE_LENGTH) reasons.push('too_long');
+    if (!HAN_PATTERN.test(cleaned)) reasons.push('no_han');
+    if (/^(?:RT|Re)\s+/iu.test(cleaned)) reasons.push('rt_prefix');
+    if (ELLIPSIS_PATTERN.test(cleaned)) reasons.push('ellipsis');
+    if (INCOMPLETE_HEADLINE_ENDING.test(cleaned)) reasons.push('incomplete_ending');
+    return { cleaned, reasons };
+}
+
+export function normalizeEditorialHeadline(value) {
+    const { cleaned, reasons } = editorialHeadlineRejectReasons(value);
+    return reasons.length === 0 ? cleaned : null;
 }
 
 export function normalizeEditorialSummary(value) {
@@ -173,7 +192,6 @@ export function editorialNeedsEnrichment(item) {
         || /^(?:RT|Re)\s+/iu.test(title)
         || ELLIPSIS_PATTERN.test(title)
         || INCOMPLETE_HEADLINE_ENDING.test(title)
-        || codePoints(title).length > MAX_HEADLINE_LENGTH
     );
 }
 
@@ -295,6 +313,20 @@ export async function applyEditorialEnrichment(
         const generatedItem = generatedById.get(item.id);
         const generatedTitle = normalizeEditorialHeadline(generatedItem?.title);
         const generatedSummary = normalizeEditorialSummary(generatedItem?.summary);
+        if (!generatedTitle) {
+            // Per-item validation failures are otherwise silent: log exactly
+            // which rule rejected the model's headline so production fallbacks
+            // can be diagnosed from worker logs.
+            const diagnosis = generatedItem
+                ? editorialHeadlineRejectReasons(generatedItem.title)
+                : { cleaned: '', reasons: ['missing_from_response'] };
+            console.warn('[StructuredDaily] editorial headline rejected; using deterministic fallback', {
+                itemId: item.id,
+                reasons: diagnosis.reasons,
+                rejectedTitle: codePoints(diagnosis.cleaned).slice(0, 160).join(''),
+                summaryAccepted: Boolean(generatedSummary),
+            });
+        }
         const fallbackTitle = compactEditorialTitle(item.title, item.summary)
             || String(item.title || '').trim();
         cache.set(item.id, {
