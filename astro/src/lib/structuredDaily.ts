@@ -13,6 +13,16 @@ import { validateDailyReportSchemaForAstro } from './dailySchema';
 export type DailyBatchId = 'morning' | 'afternoon' | 'night' | 'lateNight';
 export type DailyContentType = 'news' | 'project' | 'paper' | 'socialMedia';
 
+// Display-level taxonomy: socialMedia merges into news (X posts are largely news
+// content), so the site only distinguishes news / project / paper.
+export type DailyDisplayContentType = 'news' | 'project' | 'paper';
+
+export function displayContentType(
+	item: Pick<StructuredDailyItem, 'content_type'>,
+): DailyDisplayContentType {
+	return item.content_type === 'socialMedia' ? 'news' : item.content_type;
+}
+
 export interface StructuredDailyItem {
 	id: string;
 	event_id: string;
