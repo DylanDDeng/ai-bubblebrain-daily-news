@@ -1,4 +1,4 @@
-const VALID_TYPES = new Set(["all", "news", "project", "paper", "socialMedia"]);
+const VALID_TYPES = new Set(["all", "news", "project", "paper"]);
 
 export function parseTimelineState(search = "") {
   const params = new URLSearchParams(search);

@@ -11,6 +11,7 @@ import {
 import { taxonomyLabel, topicsById } from '../lib/knowledge';
 import {
 	cleanTimelineSummary,
+	displayContentType,
 	formatDailyTime,
 	formatTimelineTime,
 	homepageFeedItems,
@@ -217,7 +218,7 @@ const previousDays = (
 												)}
 												<span>{source.name}</span>
 											</span>
-											{item.content_type !== 'socialMedia' && (
+											{displayContentType(item) !== 'news' && (
 												<span class="badge">{typeLabels[item.content_type]}</span>
 											)}
 										</div>

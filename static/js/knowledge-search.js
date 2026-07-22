@@ -1,4 +1,4 @@
-const VALID_TYPES = new Set(["all", "news", "project", "paper", "socialMedia"]);
+const VALID_TYPES = new Set(["all", "news", "project", "paper"]);
 
 function normalized(value) {
   return String(value || "").normalize("NFKC").trim().toLocaleLowerCase();
@@ -45,6 +45,7 @@ export function normalizeHistoricalSearchResult(result) {
   const sourceName = String(item.source?.name || item.source_name || "");
   const topicIds = Array.isArray(item.topic_ids) ? item.topic_ids.map(String) : [];
   const entityIds = Array.isArray(item.entity_ids) ? item.entity_ids.map(String) : [];
+  const rawContentType = String(item.content_type || "news");
   return {
     id,
     date,
@@ -52,7 +53,8 @@ export function normalizeHistoricalSearchResult(result) {
     title: String(item.title || ""),
     summary: String(item.summary || ""),
     sourceName,
-    contentType: String(item.content_type || "news"),
+    // socialMedia merges into news at display level.
+    contentType: rawContentType === "socialMedia" ? "news" : rawContentType,
     topicIds,
     entityIds,
     searchText: [item.title, item.summary, sourceName].map(String).join(" "),
@@ -140,7 +142,6 @@ function initKnowledgeSearch(root) {
       news: "资讯",
       project: "项目",
       paper: "论文",
-      socialMedia: "社交",
     };
     for (const value of values) {
       const article = document.createElement("article");
