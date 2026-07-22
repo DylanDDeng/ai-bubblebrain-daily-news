@@ -6,12 +6,14 @@ import { resolve } from 'node:path';
 import { dailyDateFromKey, formatDailyWeekday, type DailyLocale } from '../lib/daily';
 import {
 	cleanTimelineSummary,
+	displayContentType,
 	formatDailyTime,
 	formatTimelineTime,
 	orderTimelineBatches,
 	timelineDisplayText,
 	timelineSourceDisplay,
 	type DailyContentType,
+	type DailyDisplayContentType,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
 import { entitiesById, taxonomyLabel, topicsById } from '../lib/knowledge';
@@ -42,16 +44,11 @@ const itemById = new Map(report.items.map((item) => [item.id, item]));
 const typeLabels: Record<'all' | DailyContentType, string> = isEnglish
 	? { all: 'All', news: 'News', project: 'Projects', paper: 'Papers', socialMedia: 'Social' }
 	: { all: '全部', news: '资讯', project: '项目', paper: '论文', socialMedia: '社交' };
-const typeOrder: Array<'all' | DailyContentType> = [
-	'all',
-	'news',
-	'project',
-	'paper',
-	'socialMedia',
-];
-const typeCounts = new Map<DailyContentType, number>();
+const typeOrder: Array<'all' | DailyDisplayContentType> = ['all', 'news', 'project', 'paper'];
+const typeCounts = new Map<DailyDisplayContentType, number>();
 for (const item of report.items) {
-	typeCounts.set(item.content_type, (typeCounts.get(item.content_type) ?? 0) + 1);
+	const displayType = displayContentType(item);
+	typeCounts.set(displayType, (typeCounts.get(displayType) ?? 0) + 1);
 }
 
 const orderedBatches = orderTimelineBatches(report.batches);
@@ -223,6 +220,7 @@ const olderKey = hrefDateKey(olderHref);
 							items.map((item, index) => {
 								const displayText = timelineDisplayText(item);
 								const source = timelineSourceDisplay(item);
+								const displayType = displayContentType(item);
 								const summary = displayText.summary;
 								const rawSummary = cleanTimelineSummary(item.summary);
 								const sourceSearchTerms = [
@@ -256,7 +254,7 @@ const olderKey = hrefDateKey(olderHref);
 										class={`timeline-item item${item.featured ? ' featured' : ''}`}
 										data-timeline-item
 										data-item-id={item.id}
-										data-content-type={item.content_type}
+										data-content-type={displayType}
 										data-search={searchText}
 										style={`--timeline-index: ${Math.min(index, 10)}`}
 									>
@@ -271,8 +269,8 @@ const olderKey = hrefDateKey(olderHref);
 													)}
 													<span>{source.name}</span>
 												</span>
-												{item.content_type !== 'socialMedia' && (
-													<span class="badge">{typeLabels[item.content_type]}</span>
+												{displayType !== 'news' && (
+													<span class="badge">{typeLabels[displayType]}</span>
 												)}
 												{item.featured && (
 													<span class="badge featured-badge">

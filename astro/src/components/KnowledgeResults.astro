@@ -1,6 +1,7 @@
 ---
 import type { KnowledgeSearchItem } from '../lib/searchIndex';
 import { entitiesById, taxonomyLabel, topicsById } from '../lib/knowledge';
+import { displayContentType } from '../lib/structuredDaily';
 
 interface Props {
 	items: KnowledgeSearchItem[];
@@ -12,7 +13,7 @@ const typeLabels = {
 	news: '资讯',
 	project: '项目',
 	paper: '论文',
-	socialMedia: '社交',
+	socialMedia: '资讯',
 };
 ---
 
@@ -29,7 +30,7 @@ const typeLabels = {
 				<article
 					class="knowledge-result"
 					data-knowledge-search-item={filterable ? '' : undefined}
-					data-content-type={filterable ? item.content_type : undefined}
+					data-content-type={filterable ? displayContentType(item) : undefined}
 					data-topics={filterable ? item.topic_ids.join(' ') : undefined}
 					data-entities={filterable ? item.entity_ids.join(' ') : undefined}
 					data-search={filterable ? item.search_text : undefined}
