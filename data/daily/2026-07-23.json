@@ -117,11 +117,15 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-23T18:00:56.000Z",
+      "generated_at": "2026-07-23T20:00:56.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
         "n_c8c53e5cdeb0a7b8e4719eaac96921af70b8e311dab31f19cdd4f2913266cca4",
+        "n_923aa97fd14d8b36654be1f00be5c8674f38b52fb468ca50c0b27f1f232e76e3",
+        "n_81ad5d40cd3d133c508696393c06291e7736a8334405d8d7085129d82d4f59e0",
+        "n_893d1364b03160cd7602b834929bdb1cfddad0546e8c5e7c1ddf49d769fcfa8c",
+        "n_974bbd578a614fce2dd690a7901c1f2b8dea41274b8fd3e86996a7acb8f74397",
         "n_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
         "n_7d8edb70d1b9642767b1a87cb63bb0d843c039c79bc08eb2c97f712d4739dc43",
         "n_e575f5ad160d35945dff0a1d2eca836d5c37032a4211a270ba67e7a37afcdf31",
@@ -135,7 +139,7 @@
   "classifier_version": 1,
   "date": "2026-07-23",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T18:00:56.000Z",
+  "generated_at": "2026-07-23T20:00:56.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -3703,6 +3707,168 @@
         "topic_other"
       ],
       "url": "https://openai.com/index/health-in-chatgpt"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=2&mid=2652714514&sn=821d99b44f0440868bc13b3e16dbd9da",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_923aa97fd14d8b36654be1f00be5c8674f38b52fb468ca50c0b27f1f232e76e3",
+      "featured": false,
+      "id": "n_923aa97fd14d8b36654be1f00be5c8674f38b52fb468ca50c0b27f1f232e76e3",
+      "identity_claims": [
+        "c_923aa97fd14d8b36654be1f00be5c8674f38b52fb468ca50c0b27f1f232e76e3",
+        "c_e8f3ae3d7f47eaf0e5c234f22d1df8c5797b4a9210d0bd0a81262a90c0cf987b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T20:00:56.000Z",
+      "published_at": "2026-07-23T04:02:00.828Z",
+      "published_date": "2026-07-23",
+      "reason": "Anthropic一次性发布六项CMA更新，技能上限从20暴涨至500、引入五档思考调节，对开发者工作流有实质影响，信息量大但非颠覆性变革。",
+      "related_source_ids": [],
+      "score": 8,
+      "source": {
+        "homepage": null,
+        "id": "1212808226685231105",
+        "name": "新智元"
+      },
+      "source_id": "1212808226685231105",
+      "source_type": "xinzhiyuan",
+      "summary": "ASI启示录 2026-07-23 12:02 北京 新智元报道 过去45天，Anthropic几乎没停过手。 Fable 5和Mythos 5同时落地，Sonnet 5降价抢市场，Claude Code几乎日更。 昨天Cowork刚迭代完，今天Anthropic又在托管智能体平台（CMA）上一口气推出了六项更新： 技能上限从20拉到500： 一个会话装下整座企业知识库 思考力度五档调速：简单路由省token，深度推理拉满 种子会话一步创建： 直接带50条初始事件，冷启动归零 子agent实时流下探到线程级： 每个子agent跑到哪、想到哪，实时可见 7种新webhook覆盖环境与记忆存储全生命周期： 轮询可以退环境了 agent更新版本字段变可选： 单流程省掉版本管理开销 一个会话能挂500个技能、跑一整座企业知识库，Anthropic这是要给agent装操作系统啊！ 技能上限暴涨到500 一个会话装下整个业务部门 CMA的技能（Skills）是给agent注入专业指令的知识包，之前上限只有20个。 然而，一个金融客服agent，光覆盖开户、KYC、反洗钱、投诉处理、合规免责、多语言切换就七八个了。再加上监管差异和AB测试版本，直接撞上天花板。 现在这个数字直接拉到了500。 这500个技能位由一个会话里的所有agent共享，跑在统一的托管沙盒里，agent之间共享内存和环境变量，由协调器统一调度——足以对应一个完整的业务单元。 甚至，还可以直接把整套代码库规范、CI流水线配置、部署目标全塞进一个会话，让agent从写代码到上线一条龙全知道。 思考力度五档调速 简单题不烧满血token 思考力度（effort）参数在API层面早就有了，但CMA里的agent以前不能单独设。 也就是说，整个session统一跑默认档位，问「今天几号」和「审计500页财报」用同一套深度。简单问题的过度推理，纯粹在烧token。 现在思考力度可以直接写进每个agent的模型配置里，五个档位：low / medium / high / xhigh / max。 你跑一个多agent客服系统：分流coordinator用low，产品答疑用medium，投诉升级用high，法律合规用max。 同一个session里，不同agent可以按任务难度跑在不同档位上。成本和质量之间，终于有了一个连续的旋钮。 冷启动归零 子agent黑盒也拆了 创建CMA会话以前要两步：先POST一个空壳，再逐条塞初始事件。高并发场景下，往返延迟一层层叠上去，冷启动拖得很慢。 现在一步到位。POST /v1/sessions 直接带initial_events，最多50条初始事件，会话生下来就知道自己要干什么。 同一批更新里，agent更新接口的version字段也变成了可选。 以前每次更新都得传版本号做并发控制，版本不匹配直接返回409错误。现在单流程场景可以直接省掉这一步。 子agent的可观测性也迈了一大步。 6月底CMA刚上线会话级的event_deltas，能实时预览主agent的文本输出。但子agent还是黑盒，不管是跑偏了，还是卡死了，只能得等超时才知道。 这次直接下探到线程级。订阅子agent的独立线程流，想到哪里、写到哪里，实时看得见。 7种新webhook补位 轮询时代结束了 CMA在6月底已经上线了agent和部署生命周期的webhook。 这次补上了剩下的两大块：4种环境事件 + 3种记忆存储事件。 至此，CMA的整个生命周期——环境搭建、agent部署、运行状态、记忆管理，全部可以事件驱动地跟外部系统打通。 环境暂停时自动触发告警，记忆存储更新时同步到自家数据库，新环境创建时自动挂上监控。 从「API产品」到「可运维平台」，这是最后一块拼图。",
+      "time_precision": "exact",
+      "title": "Claude Agent突然大更新！狂塞500个技能，网友直呼疯狂",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_policy"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=2&mid=2652714514&sn=821d99b44f0440868bc13b3e16dbd9da"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=3&mid=2652714514&sn=5bb9b83e8925752ce4d72877c010b9e3",
+      "category": "agents",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_81ad5d40cd3d133c508696393c06291e7736a8334405d8d7085129d82d4f59e0",
+      "featured": false,
+      "id": "n_81ad5d40cd3d133c508696393c06291e7736a8334405d8d7085129d82d4f59e0",
+      "identity_claims": [
+        "c_123d67dcc9719133c5d70fa85e57c8e7e5a79befc8dc07e87acbdecffb60ae35",
+        "c_81ad5d40cd3d133c508696393c06291e7736a8334405d8d7085129d82d4f59e0"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T20:00:56.000Z",
+      "published_at": "2026-07-23T04:02:00.935Z",
+      "published_date": "2026-07-23",
+      "reason": "MemSlides登顶HF每日论文，结合用户画像解决多轮改稿一致性，属细分工具创新，受众面有限，主要面向PPT自动化场景的开发者。",
+      "related_source_ids": [],
+      "score": 6.2,
+      "source": {
+        "homepage": null,
+        "id": "1212808226685231106",
+        "name": "新智元"
+      },
+      "source_id": "1212808226685231106",
+      "source_type": "xinzhiyuan",
+      "summary": "新智元 2026-07-23 12:02 北京 新智元报道 最尴尬的一刻，往往不是AI PPT生成失败。 而是它明明已经生成了一套还不错的slides，你只是说：「把第 8 页右下角那块改得更像流程图。」 下一秒，第8页可能确实改了，但第3页标题层级变了，第12页配色也漂了，前面反复调好的风格又被打散。 这才是真实PPT工作流里更常见的痛点。 第一版只是草稿，改稿才是主战场。 从「生成一套」到「生成得像这个用户」 过去几年，自动幻灯片生成进步很快。很多系统已经可以从论文、产品说明或一句主题出发，生成结构完整、视觉上也不算粗糙的初稿。 但在真实使用里，第一版slides的关键不只是「有没有生成出来」，而是它是不是已经贴近某个用户的表达习惯。 同一篇Transformer论文，可以被讲成基础教学课，也可以被组织成组会汇报、论文精读或技术培训。不同用户关心的页面角色、内容密度、证据边界和机制展开方式都不一样。有人希望先给结论和takeaways，有人更希望把定义、机制、边界条件拆清楚。 这正是用户画像记忆在round-0阶段的作用。 由北京邮电大学、清华大学、上海交通大学合作完成MemSlides 不是等到用户反复修改之后才开始「记住」，而是在首轮生成时就会根据当前任务意图检索用户画像，将兼容的长期偏好路由到当前工作记忆里，用来影响页面组织和表达方式。 论文链接: 项目主页: 演示链接: 代码链接: HF链接: 该工作登顶Hugging Face Daily Papers #1 Paper of the Day，GitHub已获400+ stars；Demo website上线后也已吸引 100+ verified users试用。 图1展示的不是一个泛泛的「生成效果图」。它更像是在说明：系统如何把论文材料拆成定义、核心机制、实验依据、常见误区和边界条件等页面。这些选择背后，对应的就是用户画像中关于内容结构、信息密度和证据导向表达的偏好。 图1：首轮生成不仅体现完整性，也体现用户画像记忆对页面组织、内容密度和证据边界的影响。 项目也提供了在线Demo。用户可以上传材料、选择memory profile或模板，生成初稿后继续进入revision，并下载当前版本的PPTX、HTML或PDF。 也就是说，MemSlides面向的是从个性化初稿到后续持续修改的完整流程。 而一旦第一版已经开始贴近用户，后续问题就变得更尖锐：系统能否在多轮修改中继续保留这些偏好？当前会话里临时提出的要求，会不会过几轮就失效？用户只想改一个局部区域时，系统能不能避免把已经对齐的页面重新打散？ 让记忆分工 很多人一听到「Agent memory」，会自然想到：那就把历史对话放进更长的上下文里。 MemSlides 没这么做。 原因很简单：历史越长，里面的冲突也越多。今天用户说「这套报告用蓝色标题」，不代表他以后所有 PPT 都要蓝色标题；用户在某次编辑里遇到的工具错误，也不应该和「他喜欢什么风格」混在一起。 因此，MemSlides 把个性化幻灯片生成建模成一个有状态的 authoring process：系统先根据源材料、用户画像记忆和可选模板生成 round-0 初稿；之后每一轮反馈都会更新当前 session state，再围绕当前 deck 做局部编辑。 它的记忆组织有两个视角。 从生命周期看，有长期记忆和工作记忆。长期记忆保存跨任务稳定存在的信息，工作记忆保存当前 deck 中仍然有效的临时约束、修改目标和执行状态。 从功能角色看，有用户画像记忆和工具记忆。前者回答「这套 slides 应该体现什么偏好」，后者回答「Agent 应该怎么改得更稳」。 换句话说，MemSlides 不是让 Agent 记住更多废话，而是让它知道哪些信息该长期保留，哪些只在当前任务里生效，哪些属于用户偏好，哪些属于工具经验。 图2：MemSlides 将长期记忆、工作记忆、用户画像记忆和工具记忆组织到同一个多轮改稿流程中。 用户画像 真正的个性化，通常不是一句 role prompt 能解决的。 同样是学术汇报，有人喜欢每页只放一个核心结论，有人会保留公式和实验细节；同样是商业路演，有人偏好高密度表格，有人更依赖趋势图和对比图。 这些差异不是一次 prompt 里的标签，而是用户在长期写作和修改中慢慢暴露出来的习惯。 MemSlides 用用户画像记忆来保存这类跨任务偏好。它不是把 profile 整块贴到 prompt 前面，而是在任务开始时根据当前 intent 检索相关偏好，再与本轮请求做协调。 如果长期偏好和当前明确指令兼容，它们会一起进入工作记忆；如果发生冲突，当前这套 slides 的明确要求优先。 这一步很重要。否则，系统很容易把「这次临时想要蓝色标题」误当成「用户永远喜欢蓝色标题」。 任务结束后，MemSlides 也不会把每一句反馈都写回长期画像。它只沉淀稳定、可迁移的交互信号，让下一次生成更贴近用户，而不是更混乱。 图3：用户画像记忆会经历检索、路由、当前任务使用和任务结束后的稳定信号沉淀。 工作记忆 多轮",
+      "time_precision": "exact",
+      "title": "AI PPT一改就崩？MemSlides登顶抱抱脸，让Agent记住你的改稿习惯",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_business",
+        "topic_open_source"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=3&mid=2652714514&sn=5bb9b83e8925752ce4d72877c010b9e3"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=1&mid=2652714514&sn=faf9f325fe985a7ac5d43b26da8dc19d",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_893d1364b03160cd7602b834929bdb1cfddad0546e8c5e7c1ddf49d769fcfa8c",
+      "featured": false,
+      "id": "n_893d1364b03160cd7602b834929bdb1cfddad0546e8c5e7c1ddf49d769fcfa8c",
+      "identity_claims": [
+        "c_1e693d3198bf0dd420481e0967ea7ddce70e82b1a9e0e8ba6d5c69667344fcab",
+        "c_893d1364b03160cd7602b834929bdb1cfddad0546e8c5e7c1ddf49d769fcfa8c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T20:00:56.000Z",
+      "published_at": "2026-07-23T04:02:00.941Z",
+      "published_date": "2026-07-23",
+      "reason": "美团LongCat-2.0实现国产芯片训练万亿参数模型的业界首例，同时推出高力度人才计划，对国内AI自主算力生态和人才竞争格局有信号意义，但报道含招聘宣传成分。",
+      "related_source_ids": [],
+      "score": 7.5,
+      "source": {
+        "homepage": null,
+        "id": "1212808226685231104",
+        "name": "新智元"
+      },
+      "source_id": "1212808226685231104",
+      "source_type": "xinzhiyuan",
+      "summary": "ASI启示录 2026-07-23 12:02 北京 新智元报道 业界首个国产芯片上跑出的万亿参数模型LongCat-2.0于近日发布。 和LongCat-2.0同月发布的，还有一份独立升级的——美团LongCat顶尖人才校招计划。这两个动作背后，美团争夺顶尖AI人才的决心，逐渐浮出水面。 大模型竞速，争夺AI顶尖人才 又一家大厂正面加入日益激烈的顶尖AI人才争夺战。 6月，美团发布一项全新人才计划—— LongCat顶尖人才校招。该计划从美团运行近10年的北斗计划中独立出来，意在以 更快的速度、更大的投入力度 招揽顶尖AI人才。 两项人才计划的区别是： LongCat顶尖人才校招计划为LongCat大模型团队在全球范围内吸引顶尖人才，目标是搭建一支高人才密度的基座大模型团队， 攀登模型能力的最前沿。岗位包括基础模型、AI Infra、Agentic模型训练、多模态交互与Embodied AI、模型评测等。 北斗计划延续此前定位，除基座大模型相关岗位单独拆分出来之外，顶尖技术人才依然在北斗计划的框架内：面向全球校园精尖人才，覆盖大模型应用、自动驾驶、无人机、具身智能、智能决策等。 美团招聘团队制定了一系列与市场匹配的人才策略： 提供行业领先的薪酬激励、提供行业TOP人均算力、精简组织层级、团队间不赛马。 AI竞赛变化速度极快，要争夺顶尖人才，这支招聘团队必须对市场的变化做出更灵活、更敏捷的反应。 薪酬是反映市场行情波动的一个显性指标。对于招聘团队而言，这也是一项确定性的、可调节的砝码。LongCat顶尖人才校招对于薪酬的策略是：以能力、价值贡献定薪，不设绝对值限制。 如今，头部公司都在为同一批年轻人下重注。 顶尖人才，是AI竞赛中最关键的资源，这几乎是所有AI公司的共识。 LongCat业务负责人频频出现在各大顶会，与学生们兴奋地交流技术路线、下一代模型与未来的技术愿景。 聊天中，这些候选人同样在意这些问题，在LongCat： 算力是不是充足？ 有没有研究自由？ 研究成果能否快速落地？ 争夺顶尖人才，不仅仅是薪酬单一因素的比拼，要留住人才，组织土壤同样重要。 LongCat组织 扁平、目标第一、内部创业 AI时代的组织范式究竟是什么？没有标准答案。 但可以肯定的是，各家必须要以全新的组织形态，为顶尖人才创造「让创新易于发生」的土壤。 LongCat团队试图创建一个这样的技术氛围： 弱化职级、目标第一、紧密协作、不内部赛马。 「像在公司内部创业。」 多位LongCat团队成员分享。 LongCat团队讨论和决策的第一原则是： 先看目标。 团队的长期目标是 「 构建从数字世界到物理世界的全球标杆AGI 」。在这一目标之下，怎么分配资源、怎么做决策、意见不合时怎么达成共识，都会回归到目标本身。 LongCat大模型家族 团队相信，设立一个正确的目标，这件事就已经成功了一半。 至于「研究自由」，LongCat提供行业TOP的人均算力， 有想法，就去验证 ——即使这个想法是有争议的。 LongCat-Next提出最初的想法时，有不少内部质疑的声音认为这一技术路线会造成「视觉上对微小感知任务的明显损失」。 这是因为模型训练思路采用了一个不太常规的技术选择：用纯离散的方案，去统一表达文本、语音和视觉。 但团队还是决定放手一试。结果超出预期：在OCR这类视觉感知任务上，在同样的训练条件下，纯离散表达做到了和连续表达一样好。 但如果验证结果恰恰相反，LongCat团队会给到容错空间。 因为， 大模型是一门实验科学。 成功或失败，都会帮助团队将拿到更清晰的关键认知。 大模型也是一个系统工程。 这意味着，不断提升模型能力的上限，需要一群优秀的人紧密协同。 在LongCat，大家都在一个团队里做事，而不是「A团队给B团队提需求」。这使得工程与算法团队紧密协同，能够在很多技术点上做深入的联合设计。 国产卡适配、模型架构创新——团队的诸多技术突破都在这样的协作模式下诞生。 这个团队的做事风格是： 把事情做得很扎实、把关键认知拿得很清晰、把基建搭得很牢固。 在此基础上，还有一个关键点是：执行力要快。模型更新速度日新月异，LongCat团队始终面临着外部竞争带来的紧迫感。 在一个「内部创业」的土壤中，会长出什么？ 成长的速度。 一位通过AI顶尖人才计划入职美团的校招生，加入LongCat团队后参与预训练工作，毕业两年多成为模型预训练主要负责人之一，负责最新万亿参数模型LongCat-2.0的预训练工作。 人才的决心，战略的决心 人才的决心，也是战略的决心。 美团早在2023年布局大模型，组建LongCat大模型团队，并在此后的三年，不断提升模型能力。 「在AI领域，我们的策略是进攻，而不是防守。」美团CEO王兴在2026年3月的美团财报会议中说。 这背后有一个关键认知——底层模型能力，是最关键的事。 因此，美团做大模型的起点并不局限于和已有商业生态结合，而在于 攀登模型能力的最前沿。 决心自研大模型的这一年，LongCat大模型团队还有一个战略选择：提前布局国产算力集群。 如果只是短期试试水，LongCat团队完全可以在生态更成熟、即拿即用的算力上进行模型训练，这样更快。 但要在长期竞争中赢得优势，保障训练资源，这一看似「慢」的选择势在必行。 这也有利于吸引人才： 充足的算力资源，意味着让好想法得到充分验证的可能性。 明确战略之后，LongCat团队的每一年都有明确的主线： 2023年，快速构建千亿模型的Infra能力，从0到1跑通模型训练流程； 2024年，LongCat团队已经规模化地将国产卡用起来，跑出更先进、更高效的MoE模型架构； 2025年，进一步上推模型训练规模至数千亿； 2026年，继续上推模型训练规模参数至万亿水平，探索SOTA水平的Agent和Coding模型…… 今年6月底，LongCat-2.0发布并开源，成为业界首个在五万卡国产算力集群上完成全流程训练与推理的万亿参数模型。 正式版发布前，LongCat-2.0预览版本已通过OpenRouter平台和longcat.ai面向全球开发者开放调用——该模型一度 跻身OpenRouter全球大模型调用量前三。 首个在国产算力集群上跑出来的大模型让外界意识到，美团对于自研大模型的决心被低估了。 LongCat团队每发布一个新模型，都站在一个新的起点上，重新划定起跑线。 模型能力还在飞速发展期，谁来定义下一代模型，谁能走在模型能力的「最前沿」，谁能真正抓住这个影响整个世界的机会…… 一切都是未知数。 但毫无疑问，顶尖人才，是这场竞赛中最关键的变量。 美团必须拿出诚意。这家大厂用一份顶尖人才计划，向全球有志于探索大模型前沿的人才发出邀请—— 共同构建从数字世界到物理世界",
+      "time_precision": "exact",
+      "title": "业界首个！5万国产卡跑出万亿模型，这家大厂抢人决心藏不住了",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_business",
+        "topic_open_source"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=1&mid=2652714514&sn=faf9f325fe985a7ac5d43b26da8dc19d"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2080372088821449158",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_974bbd578a614fce2dd690a7901c1f2b8dea41274b8fd3e86996a7acb8f74397",
+      "featured": false,
+      "id": "n_974bbd578a614fce2dd690a7901c1f2b8dea41274b8fd3e86996a7acb8f74397",
+      "identity_claims": [
+        "c_974bbd578a614fce2dd690a7901c1f2b8dea41274b8fd3e86996a7acb8f74397",
+        "c_dfd75ba0f2f834a3ede21aa2ca9141a1047f4d4d237f78d88c77a5ea4397bc52"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T20:00:56.000Z",
+      "published_at": "2026-07-23T06:09:06.650Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212825787967721472",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1212825787967721472",
+      "source_type": "twitter_extra",
+      "summary": "claude-tap 是 Claude Code、Codex 等编程代理的本地可观测性平台，能可视化请求流、Token 用量和结构化差异，适合将源代码与真实跟踪对照理解，加速掌握代理运行时系统。",
+      "time_precision": "exact",
+      "title": "工具 claude-tap 通过展示系统提示、工具调用与上下文演化等完整运行时轨迹，帮助学习编码代理的底层机制。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2080372088821449158"
     },
     {
       "batch": "lateNight",
