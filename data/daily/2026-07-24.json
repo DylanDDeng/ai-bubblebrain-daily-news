@@ -1,0 +1,139 @@
+{
+  "batches": [
+    {
+      "generated_at": null,
+      "id": "morning",
+      "item_ids": [],
+      "label": "08:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "afternoon",
+      "item_ids": [],
+      "label": "14:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": "2026-07-23T16:00:56.000Z",
+      "id": "night",
+      "item_ids": [
+        "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+        "n_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe"
+      ],
+      "label": "22:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "lateNight",
+      "item_ids": [],
+      "label": "次日 02:00 补充更新",
+      "status": "pending"
+    }
+  ],
+  "classifier_version": 1,
+  "date": "2026-07-24",
+  "dedupe_version": 1,
+  "generated_at": "2026-07-23T16:00:56.000Z",
+  "identity_version": 1,
+  "items": [
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/Khazix0918/status/2080022092498768176",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+      "featured": false,
+      "id": "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+      "identity_claims": [
+        "c_3392f2a489cbb38dfcf2836eb2e4c48465aac7aa0dacb93c3d1024b9e37b2b71",
+        "c_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T16:00:56.000Z",
+      "published_at": "2026-07-22T20:08:06.995Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212566253697146882",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1212566253697146882",
+      "source_type": "kazike_x",
+      "summary": "AIHOT创始人表示，该AI资讯站每月活跃用户已超过60万。后端系统每5分钟抓取数百个信源，并经由数据清洗、大模型预筛、自研聚类算法等十余项流程处理。网站对所有用户和AI Agent均提供最佳体验，且永久免费。",
+      "time_precision": "exact",
+      "title": "AIHOT月度活跃用户突破60万，开发者完成优化并承诺网站永久免费",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/Khazix0918/status/2080022092498768176"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/Khazix0918/status/2080307371159830548",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe",
+      "featured": false,
+      "id": "n_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe",
+      "identity_claims": [
+        "c_31d250bbea7440ae59b1f024ba2c6e2c12e4878f1b3949d11583ac420ac07f88",
+        "c_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T16:00:56.000Z",
+      "published_at": "2026-07-23T15:01:42.987Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212566253697146880",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1212566253697146880",
+      "source_type": "kazike_x",
+      "summary": "Seed推出STEM计划，面向数学、物理、化学、生物等领域招募约100位研究者，以科学家顾问或博士实习生身份加入，首期6个月并提供算力和有竞争力的薪酬。作者认为这一趋势表明AI正成为所有学科的公共基础设施，未来重大突破可能体现为新药或新材料。",
+      "time_precision": "exact",
+      "title": "字节跳动Seed发起STEM科学家计划，将邀请百位多学科研究者在AI环境中工作",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/Khazix0918/status/2080307371159830548"
+    }
+  ],
+  "overview": {
+    "kind": "pending",
+    "provenance": {
+      "method": "template",
+      "model": null,
+      "prompt_version": null
+    },
+    "text": "今日 AI 增量日报正在更新中。"
+  },
+  "producer": {
+    "commit_sha": null,
+    "dedupe_lookback_days": 7,
+    "name": "bubble-brain-worker",
+    "version": "phase1d-production"
+  },
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "timezone": "Asia/Shanghai"
+}
