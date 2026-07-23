@@ -365,6 +365,16 @@ if (pinnedContentBuild) {
 const expectedSearchDates = dailyDataNames.map((name) =>
   name.slice(0, -".json".length),
 );
+// The static search index intentionally covers only the most recent report
+// days (STATIC_SEARCH_MAX_REPORT_DAYS in astro/src/lib/searchIndex.ts — keep
+// this value in sync). Search coverage invariants below apply to that window;
+// JSON route and rendered-HTML checks still cover every published day.
+const STATIC_SEARCH_MAX_REPORT_DAYS = 7;
+const expectedSearchWindow = new Set(
+  [...expectedSearchDates]
+    .sort((left, right) => right.localeCompare(left))
+    .slice(0, STATIC_SEARCH_MAX_REPORT_DAYS),
+);
 const pinnedEnglishDailyRssIdentities = new Set(
   pinnedContentBuild
     ? expectedSearchDates.map((date) => {
@@ -392,34 +402,36 @@ for (const name of dailyDataNames) {
   );
   const report = JSON.parse(source.toString("utf8"));
   const date = name.slice(0, -".json".length);
-  expectedSearchItemCount += report.items.length;
-  const searchItems = searchIndex.items.filter((item) => item.date === date);
-  const expectedSearchItems = new Map(
-    report.items.map((item) => [
-      `${date}:${item.id}`,
-      `/daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/#news-${item.id}`,
-    ]),
-  );
-  invariant(
-    searchIndex.report_dates.includes(date) &&
-      searchItems.length === report.items.length &&
-      expectedSearchItems.size === report.items.length,
-    `Structured daily search coverage drifted: ${date}`,
-  );
-  const seenSearchKeys = new Set();
-  for (const item of searchItems) {
-    invariant(
-      !seenSearchKeys.has(item.key) &&
-        expectedSearchItems.get(item.key) === item.href,
-      `Structured daily search item drifted: ${item.key}`,
+  if (expectedSearchWindow.has(date)) {
+    expectedSearchItemCount += report.items.length;
+    const searchItems = searchIndex.items.filter((item) => item.date === date);
+    const expectedSearchItems = new Map(
+      report.items.map((item) => [
+        `${date}:${item.id}`,
+        `/daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/#news-${item.id}`,
+      ]),
     );
-    seenSearchKeys.add(item.key);
+    invariant(
+      searchIndex.report_dates.includes(date) &&
+        searchItems.length === report.items.length &&
+        expectedSearchItems.size === report.items.length,
+      `Structured daily search coverage drifted: ${date}`,
+    );
+    const seenSearchKeys = new Set();
+    for (const item of searchItems) {
+      invariant(
+        !seenSearchKeys.has(item.key) &&
+          expectedSearchItems.get(item.key) === item.href,
+        `Structured daily search item drifted: ${item.key}`,
+      );
+      seenSearchKeys.add(item.key);
+    }
+    invariant(
+      seenSearchKeys.size === expectedSearchItems.size &&
+        [...expectedSearchItems.keys()].every((key) => seenSearchKeys.has(key)),
+      `Structured daily search keys drifted: ${date}`,
+    );
   }
-  invariant(
-    seenSearchKeys.size === expectedSearchItems.size &&
-      [...expectedSearchItems.keys()].every((key) => seenSearchKeys.has(key)),
-    `Structured daily search keys drifted: ${date}`,
-  );
   const [year, month] = date.split("-");
   const dailyHtml = await readFile(
     resolve(distRoot, "daily", year, month, date, "index.html"),
@@ -434,8 +446,8 @@ for (const name of dailyDataNames) {
 }
 invariant(
   new Set(searchIndex.report_dates).size === searchIndex.report_dates.length &&
-    searchIndex.report_dates.length === expectedSearchDates.length &&
-    expectedSearchDates.every((date) =>
+    searchIndex.report_dates.length === expectedSearchWindow.size &&
+    [...expectedSearchWindow].every((date) =>
       searchIndex.report_dates.includes(date),
     ),
   "Structured daily search report dates drifted",
