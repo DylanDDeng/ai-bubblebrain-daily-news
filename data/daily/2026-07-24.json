@@ -1,11 +1,13 @@
 {
   "batches": [
     {
-      "generated_at": null,
+      "generated_at": "2026-07-23T21:00:56.000Z",
       "id": "morning",
-      "item_ids": [],
+      "item_ids": [
+        "n_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc"
+      ],
       "label": "08:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -36,9 +38,48 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T17:00:56.000Z",
+  "generated_at": "2026-07-23T21:00:56.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/aigclink/status/2080171699056877779",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
+      "featured": false,
+      "id": "n_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
+      "identity_claims": [
+        "c_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
+        "c_a1473afb57d4e77e20ed8ea6cd4b239adeefe842afcc417af6f17f7ba28554e4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T21:00:56.000Z",
+      "published_at": "2026-07-23T06:02:35.533Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212852560629645312",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1212852560629645312",
+      "source_type": "twitter_extra",
+      "summary": "一位用户在社交媒体抱怨Codex一天升级多次，不稳定且影响Mac存储寿命，其任务完成时间比Claude多1-2倍，并建议改为每日更新一个版本。",
+      "time_precision": "exact",
+      "title": "OpenAI Codex因每日多次更新被指不稳定且执行缓慢，耗时达Claude两倍",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/aigclink/status/2080171699056877779"
+    },
     {
       "batch": "night",
       "canonical_url": "https://x.com/Khazix0918/status/2080022092498768176",
