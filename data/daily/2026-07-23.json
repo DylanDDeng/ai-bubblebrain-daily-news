@@ -108,11 +108,13 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-23T14:00:05.000Z",
       "id": "night",
-      "item_ids": [],
+      "item_ids": [
+        "n_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516"
+      ],
       "label": "23:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -125,7 +127,7 @@
   "classifier_version": 1,
   "date": "2026-07-23",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T12:00:05.000Z",
+  "generated_at": "2026-07-23T14:00:05.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -3579,6 +3581,43 @@
         "topic_products"
       ],
       "url": "https://www.aibase.com/zh/news/29835"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/gdb/status/2080149982359831017",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516",
+      "featured": false,
+      "id": "n_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516",
+      "identity_claims": [
+        "c_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516",
+        "c_d6ea915141cf7318d438f0c7c533eb0b0f42b4692f8aaf3d1e69c3503bcb0160"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T14:00:05.000Z",
+      "published_at": "2026-07-23T04:36:17.163Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212438040937463808",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1212438040937463808",
+      "source_type": "twitter_extra",
+      "summary": "Vaibhav Srivastav重新推出Codex Security插件，指向代码库或差异即可构建威胁模型、映射攻击路径、验证发现并生成修复，结果可导出至SARIF、GitHub等，全部开源。",
+      "time_precision": "exact",
+      "title": "Codex Security插件重新推出，可对代码库构建威胁模型、生成修复并导出结果",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/gdb/status/2080149982359831017"
     }
   ],
   "overview": {
