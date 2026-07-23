@@ -21,7 +21,7 @@ const HAN_PATTERN = /\p{Script=Han}/u;
 const INCOMPLETE_HEADLINE_ENDING = /[，,：:；;、/—-]$/u;
 const ELLIPSIS_PATTERN = /(?:\.\.\.|…)/u;
 
-function cleanEditorialText(value) {
+export function cleanEditorialText(value) {
     return sanitizeSummaryText(String(value || '')
         .normalize('NFC')
         .replace(/<[^>]*>/g, ' ')

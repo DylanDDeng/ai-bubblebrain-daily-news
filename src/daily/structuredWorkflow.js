@@ -18,6 +18,7 @@ import { resolveFoloCookie } from '../folo.js';
 import { callGitHubApi } from '../github.js';
 import { mirrorStructuredReport } from '../../workers/content/ingestion/mirror.ts';
 import { applyEditorialEnrichment, editorialNeedsEnrichment } from './editorial.js';
+import { applyTopStorySelection } from './topStory.js';
 
 const MAX_PUBLICATION_ATTEMPTS = 3;
 
@@ -301,6 +302,7 @@ export async function runStructuredDailyWorkflow(
         releaseLease: dependencies.releaseLease || releaseAdvisoryLease,
         mirror: dependencies.mirror || mirrorStructuredReport,
         enrich: dependencies.enrich || applyEditorialEnrichment,
+        scoreTopStory: dependencies.scoreTopStory || applyTopStorySelection,
     };
     if (String(env.EXTERNAL_WRITES_ENABLED).toLowerCase() !== 'true') {
         throw new Error('External writes are disabled');
@@ -347,6 +349,7 @@ export async function runStructuredDailyWorkflow(
         }
 
         const editorialCache = new Map();
+        const topStoryCache = new Map();
         for (let attempt = 1; attempt <= MAX_PUBLICATION_ATTEMPTS; attempt += 1) {
             failureStage = 'git_publish';
             const snapshot = await deps.resolveSnapshot(env, { api: deps.api });
@@ -390,6 +393,34 @@ export async function runStructuredDailyWorkflow(
                                 ...preEditorialResult.metrics,
                                 editorial_degraded: true,
                                 editorial_error_type: error?.name || 'Error',
+                            },
+                        };
+                    }
+                }
+            }
+            if (Array.isArray(result.report?.items)) {
+                const topStoryIds = result.report.items
+                    .filter(item => item.content_type === 'news' && item.score === null)
+                    .map(item => item.id);
+                if (topStoryIds.length > 0) {
+                    const preTopStoryResult = result;
+                    try {
+                        result = await deps.scoreTopStory(
+                            env,
+                            preTopStoryResult,
+                            { itemIds: topStoryIds, cache: topStoryCache },
+                        );
+                    } catch (error) {
+                        console.warn('[StructuredDaily] top-story scoring failed; publishing valid source data', {
+                            errorType: error?.name || 'Error',
+                            itemCount: topStoryIds.length,
+                        });
+                        result = {
+                            ...preTopStoryResult,
+                            metrics: {
+                                ...preTopStoryResult.metrics,
+                                top_story_degraded: true,
+                                top_story_error_type: error?.name || 'Error',
                             },
                         };
                     }
