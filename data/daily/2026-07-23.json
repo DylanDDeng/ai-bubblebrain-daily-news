@@ -1,12 +1,13 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-23T02:00:56.000Z",
+      "generated_at": "2026-07-23T12:00:05.000Z",
       "id": "morning",
       "item_ids": [
         "n_0404a2eb85d01625a58759900a2b890cac4d9b32495aa1f35f4e026cea0ecb10",
         "n_49ca1177d8201c0d789fa40ab8455d7a5a90a488bf562b371f11c8aeab80624e",
         "n_ec4f0061cdf37b29fe879b2455edaf3f7ed31148749adea18cfbb34778e894d9",
+        "n_b65a3787a8849bbf6877fdc4c361e70a4f62eb3a06a661771f6b3b577cf716d7",
         "n_09eb68be5862fd5e99ce353fbf2dffd6094edc9b39b5de7c96312eae90fcbbb9",
         "n_cf901663c3c881b5a5044a35b5c6ee787cb43ecda65facfd883e5bc9756e0593",
         "n_189f079693d2956f535e2cd9173ed6b5beae641540f56df2c204d22eed58f046",
@@ -26,7 +27,31 @@
         "n_76e8793aca0edd51d7e100d5a79a1c87d716d5312534b03d18e13f40c6f61cc8",
         "n_225336703557bce9801e92a90b041d662aee336f6f256f94bdb7a5f20ef12b87",
         "n_63bf6dc132a40efad0e48b15b86592df8de85693b132c246d1ebbeeb739e71c0",
-        "n_02ef8aa66aee1841e8808f4a1a32a39aaae63c534b0f2e0976255fe8f830dc6b"
+        "n_02ef8aa66aee1841e8808f4a1a32a39aaae63c534b0f2e0976255fe8f830dc6b",
+        "n_d96a6c0783a3526e24c525baf7dc68a4a6173ebc778abf959be2f124b4e60ab7",
+        "n_e2028806360900a55de0d9acb1f26198c23fcaea18fd6c1c9b7059684c30054c",
+        "n_1bcaf87d67158144a5072c26aea2a4095b7fe699c071f3bc086801ddd2d59e49",
+        "n_6038b8f56a89464ee71b763051ff03c25b522aa4734c4f2720a33b54a3af8915",
+        "n_e443acc33763892ce50ec67596ede8c6bd82b9c4e4d2cdfb29c16531925454fd",
+        "n_ea63fe6cbd4f4d76898e4c297f9d9bb803232eff39363558ab2f57ee55c7cb5f",
+        "n_9328b2e429f6f32ff8088a984b1932c5be7c0eff920f8fc7253721b9c963590c",
+        "n_e84f7887c6e899a5a8a7c451761406bffa6bebda6f5acdf054391e3c222b9974",
+        "n_24df6a99c8f9fde8ee355f632cba74b4fb9f5e66fd978483f32f1ce9723d1dd5",
+        "n_78d30a727fef80ccda775c68ef9c0aac57a7ce40f42777f6748e0df84bb03bfd",
+        "n_ea3d037b742013c8f202b2b7f89dd71d8afab0db62b03f5db366bc72637fd4e8",
+        "n_02f47597bd4f455a8f9a1f03057fbb626fccf5dea28d146e50ca6da8c62a14a2",
+        "n_18f0bb92785f01f29cd992aea2823ed5b56321b934720a80e9ef8fcc72d8aa1c",
+        "n_699f47aa7116a6052a05a6e908a6b8956e0afee7638ee836e688d7a386ae9e9c",
+        "n_312a999acd2e4e9b9fa0cf39fd16005ab02ff8d8bcb5697229896d270abe2ebd",
+        "n_a43d0326881ab39dc5c69a19ba1acb4f46097317089738297634c90075a7d848",
+        "n_8936ba3aaca911ecf7c71d6373fe023ab36d0df1c079924bdd4583d5b696f75f",
+        "n_26fcb74df3d52cdf25982af7db4fcba4244ad68174e186b9dc61c1d7c489f1d6",
+        "n_116219888014da5f34dfbf8fcb4ef080dc721715a0730167d41784341429d262",
+        "n_128a34a9f76730ed8a92f5881f7816a85b504c60baf1c35d3f327453ca76b4a8",
+        "n_175b6aa944c9aeb96ad24e0587b46d2faec992715a798b56e0af58d737a59de2",
+        "n_4492e5cc4a2ca90cda444a2debcade2c325979887c4f71f3a9d893b46c169790",
+        "n_45e8a4909fec67ab7af9fa531734a17d7866386dd6ddb3f02d411bf62abd5073",
+        "n_4db08647b36cbe5f263262591b3bd1e314c2a9482933089befa642574e7de8c1"
       ],
       "label": "10:00 更新",
       "status": "completed"
@@ -83,11 +108,13 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-23T14:00:05.000Z",
       "id": "night",
-      "item_ids": [],
+      "item_ids": [
+        "n_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516"
+      ],
       "label": "23:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -100,7 +127,7 @@
   "classifier_version": 1,
   "date": "2026-07-23",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T07:00:56.000Z",
+  "generated_at": "2026-07-23T14:00:05.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -211,6 +238,44 @@
         "topic_research"
       ],
       "url": "https://arxiv.org/abs/2607.20058"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.19865",
+      "category": "agents",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_b65a3787a8849bbf6877fdc4c361e70a4f62eb3a06a661771f6b3b577cf716d7",
+      "featured": false,
+      "id": "n_b65a3787a8849bbf6877fdc4c361e70a4f62eb3a06a661771f6b3b577cf716d7",
+      "identity_claims": [
+        "c_828718dd112ea4c3b3742d952be351069912f6b239391f48ee2e15a485c8d5c5",
+        "c_b65a3787a8849bbf6877fdc4c361e70a4f62eb3a06a661771f6b3b577cf716d7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-21T20:00:00.475Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212188356201398279",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1212188356201398279",
+      "source_type": "huggingface_papers",
+      "summary": "As autonomous agents rapidly evolve, their ability to reliably manipulate ubiquitous digital documents has become critical for enabling general-purpose AI assistants and automating complex workspace workflows. In this paper, we introduce DocOps, a deterministically verifiable evaluation framework underpinned by a hierarchical taxonomy that deconstructs document operations inspired by real-world practices into atomic dimensions and escalating workflow complexities. Based on DocOps, we systematically evaluate representative closed- and open-source models across various agentic harnesses, revealing that even the most advanced frontier configurations still exhibit profound limitations when handling highly coupled, long-range tasks. Furthermore, a fine-grained analysis of existing agents' manipulation behaviors uncovers 3 key failure modes: long-term state tracking collapse, shallow semantic verification, and destructive editing of structural metadata. Ultimately, our work exposes the capability boundaries of agents in maintaining global document consistency, shedding light on the future design of robust, non-destructive agents for complex digital ecosystems.",
+      "time_precision": "exact",
+      "title": "DocOps: 面向复杂文档操作中自主智能体的可验证基准",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://arxiv.org/abs/2607.19865"
     },
     {
       "batch": "morning",
@@ -991,6 +1056,912 @@
       "url": "https://x.com/vista8/status/2080100968482644283"
     },
     {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080131144922841125",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_deepseek"
+      ],
+      "event_id": "e_d96a6c0783a3526e24c525baf7dc68a4a6173ebc778abf959be2f124b4e60ab7",
+      "featured": false,
+      "id": "n_d96a6c0783a3526e24c525baf7dc68a4a6173ebc778abf959be2f124b4e60ab7",
+      "identity_claims": [
+        "c_d96a6c0783a3526e24c525baf7dc68a4a6173ebc778abf959be2f124b4e60ab7",
+        "c_f89c617f43e02bd813ed8fc28eecf62b7bd550b9b27f43ffbde20676e440d473"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T03:21:26.077Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212205174924312578",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1212205174924312578",
+      "source_type": "twitter_extra",
+      "summary": "该模型总参数比 DeepSeek V4 Flash 的 284B 略小，但评分基本接近。",
+      "time_precision": "exact",
+      "title": "开源模型 Solar Open 2 发布，总参数达 250B，激活参数 15B，评测成绩接近 DeepSeek V4 Flash。",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080131144922841125"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080132182191091994",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e2028806360900a55de0d9acb1f26198c23fcaea18fd6c1c9b7059684c30054c",
+      "featured": false,
+      "id": "n_e2028806360900a55de0d9acb1f26198c23fcaea18fd6c1c9b7059684c30054c",
+      "identity_claims": [
+        "c_3eeece364ff515cb3ed5c11914c78028f21687bda0b0718ed5a01ff553fe18a2",
+        "c_e2028806360900a55de0d9acb1f26198c23fcaea18fd6c1c9b7059684c30054c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T03:25:33.643Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212205174924312577",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1212205174924312577",
+      "source_type": "twitter_extra",
+      "summary": "通过智能路由选择合适模型，Cursor Router 据称可提供前沿水平的输出，费用降低 60%，主要依赖模型差异和稳定路由规则。",
+      "time_precision": "exact",
+      "title": "Cursor 推出模型路由功能，能按任务自动分配模型，在保持前沿质量的同时降低成本 60%。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080132182191091994"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080135083521151129",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_1bcaf87d67158144a5072c26aea2a4095b7fe699c071f3bc086801ddd2d59e49",
+      "featured": false,
+      "id": "n_1bcaf87d67158144a5072c26aea2a4095b7fe699c071f3bc086801ddd2d59e49",
+      "identity_claims": [
+        "c_1bcaf87d67158144a5072c26aea2a4095b7fe699c071f3bc086801ddd2d59e49",
+        "c_6cb716aac76dccb9fb6a9a074ed54e50abf4f410491bb26e4aa0921fa51dac82"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T03:37:05.346Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212205174924312576",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1212205174924312576",
+      "source_type": "twitter_extra",
+      "summary": "这是 Gemini Flash 系列首次在该基准上取得显著领先，改变了以往“速度快但能力一般”的印象。",
+      "time_precision": "exact",
+      "title": "谷歌 Gemini 3.6 Flash 模型在 DeepSWE 基准上排名跃升，成功超过 GLM 5.2，引发试用热潮。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080135083521151129"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzIyMzA5NjEyMA%3D%3D&idx=1&mid=2647684593&sn=b2e76aecde34fc1b07df0cd61fdabdd3",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_6038b8f56a89464ee71b763051ff03c25b522aa4734c4f2720a33b54a3af8915",
+      "featured": false,
+      "id": "n_6038b8f56a89464ee71b763051ff03c25b522aa4734c4f2720a33b54a3af8915",
+      "identity_claims": [
+        "c_53ab540e02dfa63cb883ac77fa56e9d365d0ab1d899433b410654413c6532c98",
+        "c_6038b8f56a89464ee71b763051ff03c25b522aa4734c4f2720a33b54a3af8915"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T05:15:00.552Z",
+      "published_date": "2026-07-23",
+      "reason": "对北京智能体新政的通俗解读，有一定信息量但属于个人自媒体观点，来源权威性不足，影响面有限。",
+      "related_source_ids": [],
+      "score": 6,
+      "source": {
+        "homepage": null,
+        "id": "1212285250546216960",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1212285250546216960",
+      "source_type": "kazike",
+      "summary": "原创 数字生命卡兹克 2026-07-23 13:15 北京 还是太超前了 刚刚，北京市发布了一份特别重磅的政策文件。 《北京市关于加快智能体引领发展的若干措施》 文件不长，一共10条。 但我把它从头到尾看完以后，我的第一反应是，这份政策真的有点太新了。 Agentic AI、Harness Engineering、AI OS、FDE、OPC、Token经济、TaaS、AaaS、RaaS、Token工厂、AIP。 这一串词，很多直到几个月前，还只会出现在AI创业者的产品方案、技术社区的讨论和一些非常前沿的论文里。 现在，它们被一口气写进了北京市的正式政策文件。 尤其看到Harness Engineering被翻译成驾驭层工程，堂堂正正放在第二条的时候，我觉得忽然有一种激动感。 这10条放在一起看，其实就是我们未来智能体经济的宏伟蓝图。 北京想推动的，也是一套AI时代的智能经济新形态。 所以，我也斗胆，为大家 做一篇通俗易懂的解读。 因为，它真的跟我们每个人、每个行业，都息息相关。 接下来，希望各位可以跟我一起花一点时间，我们就按照文件原本的10个类别，一条一条来聊。 话不多说，我们，开始。 一. 持续提升基础模型能力 第一条写的是基础模型。 文件原文里有一句话，我觉得很关键。 “持续提升大模型实际任务完成能力。” 注意这里的用词，实际任务完成能力。 过去几年，大模型竞争的核心是各种Benchmark。 比如数学多少分，代码多少分，知识多少分，推理多少分。 这些评测当然有价值，它们能告诉我们一个模型在某个能力切片上大概的智力程度怎么样，帮助我们进行量化。 可Agent真正工作时，拿到的往往只有一个模糊目标。 它要补齐信息、拆解计划、调用工具、操作环境、读取反馈、发现错误、修正路线，然后一直做到结果出现。 这里有一笔很简单的账。 假设一个Agent连续执行100步，每一步正确率都高达99%，并且先粗暴地把每一步看成独立事件。 它把100步全部做对的概率，只有大约36.6%，哪怕单步正确率达到99.9%，完整跑通100步的概率也只有大约90.5%。 现实任务更加复杂，就连最顶级的Claude Fable 5、GPT-5.6 Sol、Kimi K3在我的实际任务开发中，经常都有各种完不成的任务让我暴跳如雷。 所以Agent的实用价值，我一直觉得可以粗略写成一个乘法。 模型能力，乘以长程可靠性，乘以环境可操作性，再乘以结果可验证性。 其中任何一项接近零，最终产生的真实价值都会跟着接近零。 这也是文件为什么把在线学习、持续学习、自主进化、超长程任务、复杂推理与规划、工具调用、长上下文、多智能体协同和记忆，全放在第一条里。 这些词共同指向一种新的模型能力，那就是，可靠的行动能力。 现在前沿评测也在往这个方向走。 比如METR提出了Task Completion Time Horizon，任务完成时间地平线，直接测Agent能以50%或者80%的成功率，独立完成一项原本需要人类专家工作多长时间的任务。 这就是代码为什么成了Agent最早爆发的领域，原因就在这里。 它高度数字化，Git可以回滚，测试可以验证，所有动作几乎都能留下日志。 所以，未来最有价值的资源之一，会是高质量的任务环境。 谁掌握真实工作流，谁能提供工具、反馈和可验证结果，谁能积累大量成功与失败的执行轨迹，谁就拥有改进Agent最宝贵的资产。 当你开始用任务结果评价模型，你才真正进入Agent时代。 二. 强化智能体底层技术 第二条，绝对是大家感觉到，最亲切的一条。 原文是： “支持创新主体实施驾驭层工程（Harness Engineering），围绕上下文工程优化、任务持久化、多智能体协作、系统可扩展等夯实智能体共性底座。” Harness工程，直接被写在了政策文件里。 我们都知道，模型提供了潜在能力，能力能不能稳定兑现，取决于模型周围那一整套系统。 比如上下文怎样选择，工具怎么调用，任务怎样拆解，权限怎样控制，状态怎样保存，失败怎样重试，结果由谁验证等等。 这些合起来，就是Harness。 如果第一条负责提升Agent的能力上限，第二条解决的就是抬高能力下限。 今年4月的一篇论文《Agentic Harness Engineering》也验证过，保持基础模型不变，只迭代模型外面的工具、中间件、长期记忆和可观测系统。 十轮以后，Terminal-Bench 2的Pass@1从69.7%提高到77.0%。 换到其他模型家族上，依然有5.1到10.1个百分点的提升，消融实验还发现，关键增益更多来自工具、中间件和长期记忆，单纯修改系统Prompt贡献有限。 所以Harness绝对不只是几条Prompt技巧，它是一门真正的系统工程。 这里也藏着一个巨大的产业机会。 我一直觉得，基础模型会越来越集中，企业Harness会越来越分散，每家公司都有自己的数据、流程、权限、规则、术语和异常处理方式，这些才是一家公司真正独有的AI资产。 政策里点到的上下文管理、长期记忆、任务持久化、Agent观测、结果评测、权限控制、可信沙箱、跨模型路由和多Agent编排，全都是新的基础设施。 文件还写到了技能市场、软件商店和AIP等互联标准。 未来很多软件的直接用户，会变成Agent，Agent需要机器可读的能力说明、接口、身份、权限、价格和服务质量。 过去开发者争App Store里的排名，未来还要争一件事，怎样被Agent发现，怎样成为它完成任务时默认调用的Skill。 我更愿意把它理解为，政策正在为Agent之间、Agent与软件之间的大规模互联提前铺路。 三. 加速智能体原生应用和标杆场景建设 “鼓励创新主体基于智能体重构底层架构与交互范式，开发以需求智能为核心驱动的原生AI软件和超级软件。” 我觉得这里最重要的概念，是“需求智能”。 过去的软件智能，我觉得大概经历了三层。 最浅的一层叫功能智能。 原来的软件多一个生成按钮，帮你写段话、画张图、总结一个文件。AI只负责某一个节点，剩下的流程依然由人点击和搬运。 再往上一层，是流程智能。 AI能够串起几个连续步骤，在固定工作流里调用不同工具，替人完成一段相对完整的流程。 再往后，是需求智能。 用户只表达想要的结果，系统自己判断要经过哪些步骤、调用哪些模型和Skill、连接哪些软件、需要谁批准，最后对完整结果负责。 用户操作软件的重心，会从学习功能和寻找按钮，逐渐变成描述目标、确认边界和验收结果。 这正好对应政策里另一个很大的词，超级软件。 超级软件的“超级”，未必跟移动互联网一样，来自功能数量更多，它真正强的地方，可能是能够跨过原有软件的边界，统一理解需求，再把分散的能力重新编排起来。 这也会动摇过去几十年软件行业最稳定的结构。 我以前说过，UI可能会被Skill吞掉。 而这次，这份政策里的“需求智能”“超级软件”“AI OS”“技能市场”，其实已经把这条路径连了起来。 用户从人扩展到Agent以后，软件的产品设计、分发方式和商业模式都会跟着变化。 原来靠复杂界面形成的使用壁垒会降低，真正值钱的东西会转向数据、权限、服务质量、可组合能力和结果信誉。 老软件公司手里有客户、数据和系统入口，优势很大，但它们的包袱也很重，既有产品、组织和收费模式都需要调整。 创业公司动作快，可以直接从Agent原生架构开始，可它们必须拿到真实场景、数据和系统权限，光靠一个通用聊天框很难建立壁垒。 所以这一条还专门写了FDE，前沿部署工程师。 FDE会进入客户现场，跟业务人员一起拆流程、接系统、清数据等等，再把每天出现的新问题带回产品里。 这类工作看起来很重，却是行业Agent绕不开的产品化路径。 服务一个客户，沉淀一套轨迹。服务十个客户，找出共性结构。等共性足够稳定，服务才会真正长成产品。 对于想做行业Agent的公司，选场景时我觉得也可以用五个条件判断。 任务频率、人工成本、数字化程度、结果可验证性和错误可撤销性。 五项里占得越多，Agent越容易产生真实ROI，也越适合成为第一批标杆场景。 所以科学、医疗、教育、政务、制造和文化看起来跨度很大，政策选择它们的逻辑却很一致。 这些领域有大量高价值流程，也有大量可以被数字化、验证和持续优化的专业任务。 四. 推动智能终端融合 第四条从软件走到了终端。 文件提出，把智能体深度嵌入",
+      "time_precision": "exact",
+      "title": "一文带你看懂刚刚发布的“北京智能体新政”，这是跟每个人都有关的10条。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_business",
+        "topic_policy"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzIyMzA5NjEyMA%3D%3D&idx=1&mid=2647684593&sn=b2e76aecde34fc1b07df0cd61fdabdd3"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/blankwebdev/status/2080167148333527407",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e443acc33763892ce50ec67596ede8c6bd82b9c4e4d2cdfb29c16531925454fd",
+      "featured": false,
+      "id": "n_e443acc33763892ce50ec67596ede8c6bd82b9c4e4d2cdfb29c16531925454fd",
+      "identity_claims": [
+        "c_bd1c0887773fcbad5a60c00b0a30012ed796f79539213be039ad363fad6d1375",
+        "c_e443acc33763892ce50ec67596ede8c6bd82b9c4e4d2cdfb29c16531925454fd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T05:44:30.115Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212071637646618624",
+        "name": "twitter-blank"
+      },
+      "source_id": "1212071637646618624",
+      "source_type": "twitter_extra",
+      "summary": "该网站提供在线屏幕坏点、漏光及刷新率检测，无需下载，仅靠自然搜索吸引用户。目前无广告或付费套餐，仅设 Ko-fi 赞助入口。",
+      "time_precision": "exact",
+      "title": "屏幕检测工具 ScreenTester 在 28 天内获得 10.5 万访问量，八成流量来自搜索引擎。",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/blankwebdev/status/2080167148333527407"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2080177267314217283",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_ea63fe6cbd4f4d76898e4c297f9d9bb803232eff39363558ab2f57ee55c7cb5f",
+      "featured": false,
+      "id": "n_ea63fe6cbd4f4d76898e4c297f9d9bb803232eff39363558ab2f57ee55c7cb5f",
+      "identity_claims": [
+        "c_3e0bbc85e80796d60242c2ec22b3ca0362bd193dbd69c4f1919bc028aa70c3e0",
+        "c_ea63fe6cbd4f4d76898e4c297f9d9bb803232eff39363558ab2f57ee55c7cb5f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T06:24:43.132Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212154688992870401",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1212154688992870401",
+      "source_type": "twitter_extra",
+      "summary": "尽管开发者对 Gemini 热度感知有限，但企业大规模采购谷歌 AI 基础设施，推动云合同 backlog 达 5140 亿美元。",
+      "time_precision": "exact",
+      "title": "Alphabet 季度收入同比增长 24%，Google Cloud 收入暴涨 82%，AI 基础设施成为利润引擎。",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080177267314217283"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29836",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_9328b2e429f6f32ff8088a984b1932c5be7c0eff920f8fc7253721b9c963590c",
+      "featured": false,
+      "id": "n_9328b2e429f6f32ff8088a984b1932c5be7c0eff920f8fc7253721b9c963590c",
+      "identity_claims": [
+        "c_34e9930415853638e76aae82562d89a138bc47f051799d00522bb9be3f68dcb1",
+        "c_9328b2e429f6f32ff8088a984b1932c5be7c0eff920f8fc7253721b9c963590c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T06:54:22.696Z",
+      "published_date": "2026-07-23",
+      "reason": "阿里云宣布真武M890超节点成功运行2.4万亿参数大模型并上线服务，是国产算力生态的重要突破，信息具体可信。",
+      "related_source_ids": [],
+      "score": 7,
+      "source": {
+        "homepage": null,
+        "id": "1212075156902567936",
+        "name": "aibase"
+      },
+      "source_id": "1212075156902567936",
+      "source_type": "aibase",
+      "summary": "7月23日，阿里云官方宣布阿里真武M890超节点已成功适配 最新 旗舰大模型Qwen3.8，并同步上线阿里云百炼平台对外提供模型推理服务。这标志着真武M890成为国内首个成功支撑超2万亿参数大模型稳定运行的超节点系统，实现了国产软硬件协同在大模型算力调度层面的重要突破。 作为阿里 最新 推出的超大规模旗舰模型，Qwen3.8的参数规模高达2.4万亿。由于传统AI集群受限于节点间的通信带宽，在应对超高吞吐、低延迟以及高并发的推理需求时普遍存在性能瓶颈。要实现该量级模型的稳定高效运行，通常需要将模型参数切分并分散部署至几十甚至上百张高速互联的GPU显卡上。 针对万亿级参数模型的分布式计算挑战，阿里真武M890超节点通过优化集群高速互联技术与通信架构，有效破解了传统AI集群的传输限制，确保超大模型在推理过程中“跑得稳、跑得快”。随着该服务正式登陆阿里云百炼平台，企业与开发者可直接调用高效的万亿参数推理能力，为下一代超大规模AI应用落地的商业化部署奠定了算力基础。",
+      "time_precision": "exact",
+      "title": "阿里真武M890超节点成功适配Qwen3.8，已上线百炼平台提供推理服务",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://www.aibase.com/zh/news/29836"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080189978894839906",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e84f7887c6e899a5a8a7c451761406bffa6bebda6f5acdf054391e3c222b9974",
+      "featured": false,
+      "id": "n_e84f7887c6e899a5a8a7c451761406bffa6bebda6f5acdf054391e3c222b9974",
+      "identity_claims": [
+        "c_49dd9740c47ed589550cb4c174006092cfbce2aea3e7311065b7429139008ce5",
+        "c_e84f7887c6e899a5a8a7c451761406bffa6bebda6f5acdf054391e3c222b9974"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T07:15:13.485Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212223435514634240",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212223435514634240",
+      "source_type": "twitter_extra",
+      "summary": "原帖类比现有领域即使专家众多仍需要大量工作，暗示 AI 达到专家水平未必取代所有人类工作。",
+      "time_precision": "exact",
+      "title": "AGI 定义常指 AI 在多数领域达到人类专家水准，其实现后人类生活空间引发热议。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080189978894839906"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29837",
+      "category": "business",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_24df6a99c8f9fde8ee355f632cba74b4fb9f5e66fd978483f32f1ce9723d1dd5",
+      "featured": false,
+      "id": "n_24df6a99c8f9fde8ee355f632cba74b4fb9f5e66fd978483f32f1ce9723d1dd5",
+      "identity_claims": [
+        "c_24df6a99c8f9fde8ee355f632cba74b4fb9f5e66fd978483f32f1ce9723d1dd5",
+        "c_f36822a449df05ac2a1bc303fac5cce50df2d79013a8a72b5c25810a64228215"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T07:36:20.999Z",
+      "published_date": "2026-07-23",
+      "reason": "OpenAI为佐治亚州200亿美元数据中心争取社区支持，披露用电、用水等细节，影响AI基础设施布局，信息详实。",
+      "related_source_ids": [],
+      "score": 8,
+      "source": {
+        "homepage": null,
+        "id": "1212097729858166786",
+        "name": "aibase"
+      },
+      "source_id": "1212097729858166786",
+      "source_type": "aibase",
+      "summary": "AI 基础设施在美国各地引发的反对声浪，OpenAI 这次想用一套更软的打法化解。据《商业内幕》7 月 23 日报道，OpenAI 正为佐治亚州一座大型数据中心争取社区支持，抛出名为 Project Camellia 的新计划——在萨凡纳郊外的埃芬汉姆县乡村，建一座投资至少 200 亿美元、占地约 567 公顷、用电需求达 3.2 吉瓦的数据中心园区。 OpenAI 说，团队已经和州及地方官员、社区 领袖 、学校等各方沟通过、听过意见，后续还要办公众说明会。公司表态，尽早和社区接触才是建立信任的正路，毕竟项目还在开发初期，基础设施、建设节奏、设计、融资和运营模式都还有大量工作要做。埃芬汉姆县委员杰米·德洛奇也公开声明，团队提过尖锐的问题，并确认了项目用水量很少、不会推高本县居民的能源成本，还能带来新税收去支撑学校、给当地企业创造更多机会。 供电合同已经和佐治亚电力公司签下，这 567 公顷的园区将在 2028 年至 2032 年分阶段通电。与此同时，OpenAI 亮出四项承诺，正面回应电费、用水和社区影响这几桩最容易点燃邻避情绪的老问题——而它们，恰恰是其他地方抵制数据中心建设的主因。 承诺里写得明白：项目不会推高当地居民的电费，园区用的闭环水系统能把用水量压到\"极低\"水平；佐治亚家庭不会为项目买单，供电所需的基础设施和电力服务费由 OpenAI 全额承担。这座园区还会跻身首批能在用电高峰主动压低自身耗电的数据中心，避免住宅用户感受到供电压力。钱也掏了出来：整个运营周期里，OpenAI 计划向社区回馈 8000 万美元，并为符合条件的佐治亚州大学、社区学院和技术学校学生，提供总额 最高 7100 万美元的 Codex 使用额度——每名符合条件的学生，都能通过自己的 ChatGPT 账户领到价值 100 美元的 Codex 额度。 为了让承诺不沦为空话，一家独立机构将每年审计 OpenAI 的履约情况，并把结果公之于众。园区全部落成后，预计带来数千个建设岗位和超过 1000 个长期运营岗位。把算力堆进乡村的同时，OpenAI 这次显然想先把人心安顿好。",
+      "time_precision": "exact",
+      "title": "OpenAI 为数据中心争取社区支持：承诺不推高电费、用水量极低",
+      "topic_ids": [
+        "topic_business"
+      ],
+      "url": "https://www.aibase.com/zh/news/29837"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29838",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_78d30a727fef80ccda775c68ef9c0aac57a7ce40f42777f6748e0df84bb03bfd",
+      "featured": false,
+      "id": "n_78d30a727fef80ccda775c68ef9c0aac57a7ce40f42777f6748e0df84bb03bfd",
+      "identity_claims": [
+        "c_260648c0d100b136f6ce4fdb003c3f7421c580fb89cb3e6f3cb40d613691c075",
+        "c_78d30a727fef80ccda775c68ef9c0aac57a7ce40f42777f6748e0df84bb03bfd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T07:42:10.003Z",
+      "published_date": "2026-07-23",
+      "reason": "AI伪造图片骗取退款获刑，属于AI滥用的社会新闻，对AI行业读者警示意义一般，信息量有限。",
+      "related_source_ids": [],
+      "score": 5,
+      "source": {
+        "homepage": null,
+        "id": "1212097729858166785",
+        "name": "aibase"
+      },
+      "source_id": "1212097729858166785",
+      "source_type": "aibase",
+      "summary": "据央视新闻报道，湖南衡山县人民法院近日审结一起利用AI伪造水果腐烂图片骗取电商平台\"仅退款\"的案件。当地居民谭某某在 2025 年 10 月至 2026 年 1 月期间，频繁下单购买榴莲、车厘子等高价水果，收货后通过AI修图软件伪造水果变质发霉图片，以质量问题为由申请\"仅退款不退货\"，四个月内累计下单 100 余笔，涉案总价值 16000 余元。 75 部手机作案，全县居民一度被平台拉黑 谭某某的行为影响远不止个人牟利。多个电商平台将衡山县列为高风险地区，该县居民一度无法在平台上购买榴莲和车厘子。 2026 年 1 月涉事平台向衡山县公安局报案后，警方通过大数据监测发现多笔仅退款订单收货地址均在同一处，经电子数据勘验、IP轨迹追踪锁定嫌疑人，在其住所查获 75 部用于作案的手机，并完整提取了AI造假及资金流转记录。谭某某获得退款后并未退回货物，而是将完好无损的水果通过闲鱼、朋友圈和线下渠道低价转售变现。 累犯从重处罚，法官呼吁平台加强技术防控 法院审理查明，谭某某累计非法获取 60 个 9 至 10 斤金枕榴莲和五箱 5 斤装超大果车厘子。虽然其已全额退赃，但 2024 年曾因诈骗罪被判处有期徒刑，此次系累犯，依法从重处罚。衡山县人民法院最终以诈骗罪判处谭某某有期徒刑一年并处罚金 5000 元。法官建议电商平台加强异常订单预警和虚假图片识别，高风险订单应及时启动人工审核，不能简单交由算法决定，更不能将经营风险全部转嫁给商户。",
+      "time_precision": "exact",
+      "title": "一人薅羊毛致全县被电商拉黑：男子用AI生成烂果图骗取1. 6 万元水果\"仅退款\"获刑一年",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://www.aibase.com/zh/news/29838"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29839",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_ea3d037b742013c8f202b2b7f89dd71d8afab0db62b03f5db366bc72637fd4e8",
+      "featured": false,
+      "id": "n_ea3d037b742013c8f202b2b7f89dd71d8afab0db62b03f5db366bc72637fd4e8",
+      "identity_claims": [
+        "c_ea3d037b742013c8f202b2b7f89dd71d8afab0db62b03f5db366bc72637fd4e8",
+        "c_f1533717754fda905e7b312307caa613c67411ed661550584d15d96a474aa801"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T07:50:37.325Z",
+      "published_date": "2026-07-23",
+      "reason": "与另一条报重复解读北京智能体新政，内容雷同，属于重复旧闻，缺乏新信息。",
+      "related_source_ids": [],
+      "score": 4,
+      "source": {
+        "homepage": null,
+        "id": "1212097729858166784",
+        "name": "aibase"
+      },
+      "source_id": "1212097729858166784",
+      "source_type": "aibase",
+      "summary": "一份不算长的政策文件，今天在北京落地，却把一串几个月前还只活跃在论文和技术社区黑话里的词，一口气写进了正式公文。这份《北京市关于加快智能体引领发展的若干措施》一共十条，Agentic AI、Harness Engineering、AI OS、FDE、OPC、Token 经济、TaaS、AaaS、RaaS、Token 工厂、AIP 悉数在列。尤其当\"驾驭层工程\"堂堂正正坐在第二条，智能体经济的宏伟蓝图， 第一 次有了政策级的清晰轮廓。 第一 条指向基础模型，关键措辞是\"持续提升大模型实际任务完成能力\"。过去几年大模型比的是 Benchmark 分数，而 Agent 真正上工时，往往只拿到一个模糊目标，得自己补齐信息、拆计划、调工具、读反馈、改路线，跑到结果出现为止。这里有一笔残酷的账:假设 Agent 连续执行100步、每步正确率99%，全部做对的概率只剩约36.6%;即便单步拉到99.9%，完整跑通也仅约90.5%。Agent 的实用价值因此更像一道乘法——模型能力乘以长程可靠性，乘以环境可操作性，再乘以结果可验证性，任何一项趋近于零，总价值就趋近于零。前沿评测也已转向这个方向，比如 METR 提出的 Task Completion Time Horizon，直接测 Agent 能以50% 或80% 成功率独立完成一项本需人类专家干多久的任务，这也解释了为何代码会成为 Agent 最早爆发的领域:它高度数字化、可回滚、可验证。 第二条把 Harness Engineering 译为\"驾驭层工程\"，要求围绕上下文工程优化、任务持久化、多智能体协作、系统可扩展夯实共性底座。模型只提供潜在能力，能力能否稳定兑现，取决于模型周围那整套系统——上下文怎么选、工具怎么调、任务怎么拆、权限怎么控、状态怎么存、失败怎么重试、结果由谁验，这些合起来就是 Harness。今年4月论文《Agentic Harness Engineering》验证过:保持基础模型不变，只迭代模型外的工具、中间件、长期记忆和可观测系统，十轮后 Terminal-Bench2的 Pass@1从69.7% 提到77.0%，换到其他模型家族仍有5.1到10.1个百分点的提升，且增益更多来自工具、中间件和长期记忆，而非单纯改系统 Prompt。政策还点到了技能市场、软件商店和 AIP 等互联标准——未来很多软件的直接用户会变成 Agent，比拼的不只是 App Store 排名，还有怎样被 Agent 发现、成为它默认调用的 Skill。 第三条鼓励基于智能体重构底层架构，核心是\"需求智能\"。软件智能分三层:功能智能只给某个节点加个生成按钮;流程智能能串起固定工作流里的几步;需求智能则是用户只说想要的结果，系统自己判步骤、调模型与 Skill、连软件、找审批，对完整结果负责。与之呼应的是\" 超级 软件\"——它的强不在于功能更多，而在于跨过原有软件边界、统一理解需求再重组分散能力。这条专门写了 FDE（前沿部署工程师）:进入客户现场，和业务一起拆流程、接系统、清数据，再把每天的新问题带回产品。判断标杆场景有五个条件——任务频率、人工成本、数字化程度、结果可验证性、错误可撤销性，占得越多越易产生真实 ROI，这也解释了政策为何挑中科学、医疗、教育、政务、制造和文化。 第四条从软件走到终端，要求把智能体深度嵌入手机、眼镜、耳机、可穿戴、机器人和汽车，推动\"芯模云端用五位一体\"。终端 Agent 需要持续感知环境、理解用户状态、记住长期上下文，在合适时机决策并通过设备执行;传感器让它感知世界，设备身份和个人数据让它理解\"我是谁\"，操作系统与执行器让它改变世界。端侧负责低延迟感知、身份验证、隐私数据和高频简单任务，云端负责复杂规划与推理，设备间还要共享任务状态，让一个任务从耳机开始、在手机继续、到汽车或电脑完成。文件还把符合条件的新产品纳入家电以旧换新和数码智能产品购新范围，直接补上需求侧。 第五条是对普通人最直接的一条:支持以 OPC（一人公司）为代表的创新创业新模式。它背后是企业边界的松动——1937年科斯解释过公司为何存在，因为内部协调比每次去市场临时找人、谈判、签约、监督更便宜;而 Agent 同时在压低执行成本和协调成本，写代码、做设计、理客户、回咨询、处报表这些过去需多岗位协作的知识工作，能被一个人用多套 Agent 串起来，企业的最小可行规模随之下降。政策没只喊一句口号，而是续写了弹性算力、专业孵化、创业辅导、科技金融、知识产权、政策咨询、OPC 社区、全周期服务站、供需对接和便利化登记，相当于把过去公司内部的后台能力搬到社会公共服务层。对想抓住机会的个人，真正需要三种资产:行业判断、客户与信任、可复用的 Agent 系统。 第六条关于 Token 经济。Agent 执行的是动态任务，长度、上下文、推理轮数、工具数、重试数都不确定，花掉20亿 Token 却一无所获是常态，这让 Token 能当成本计量单位，却难当价值货币。政策一边提 Token 服务质量评估和计费规范，一边鼓励建立由智能质量、调用量、转化效率组成的评价体系，并写下整条里最重的一句话——\"鼓励创新主体从 Token 消耗量计费转向价值计费\"。三类商业模式对应三个价值层级:TaaS 卖基础 Token 与推理供给，比价格、速度、稳定与模型质量;AaaS 把模型、工具和 Harness 封装成能干的 Agent，卖一项能力;RaaS 直接卖结果，客户只关心合同审完没、代码修好没、线索转化没。越往上离 Token 越远、离客户价值越近，但 RaaS 难度也陡增，供应商要扛任务失败、重复执行、成本波动、质量验收和赔偿责任。Agent 公司此后该算的新账叫 Cost per Successful Task（每个成功任务的成本），再往上是 Value per Successful Task(每个成功任务创造的价值);文件还提出把符合条件的 Token 新产品纳入中小企业服务券，探索 Token 券和智能体服务券，用 Token 工厂解决供给、服务券启动需求、价值计费维持闭环。 第七条谈安全。聊天机器人只产内容，Agent 却拿到行动权，能改代码、调支付、控设备、代用户联络他人，风险从\"一句话说错\"扩大到\"一件事做错\"。Agent 安全至少要同时应对五个问题:目标理解错、权限越界、提示词注入操控、长期记忆被污染、多 Agent 间错误被快速放大，而连接第三方工具和 Skill 又让任何插件或接口的故障都能沿任务链侵入核心。文件的安全措施已从内容审核走向运行时治理;今年5月国家网信办等三部门发布的《智能体规范应用与创新发展实施意见》已提出划分仅限本人决策、需授权决策、自主决策的边界。分级分类监管反而可能帮行业加速——低风险任务自测快上，高风险任务严检加人工确认，安全在这里既是约束，也是市场准入证。 第八条实施\"银河算廊\"工程，建设面向智能体高频并发、低延迟需求的新型算力基础设施，推动算力网络与5G-A、6G、F5G 融合，并挖掘存量算力、把小散算力\"零存整取\"。训练大模型是集中式大工程，Agent 推理却像一张长期运行的生产网络，全天候响应海量任务、负载随真实业务剧烈波动，未来要调度的不只是 GPU，还有云边端不同芯片、不同模型、不同地区数据权限与网络条件。银河算廊的价值近似为智能生产建设一套算力物流系统，算力路由、异构调度、边缘推理由此长出机会;文件还支持银行保险机构开发服务智能体落地的金融产品，因为 Agent 公司早期最值钱的资产是代码、数据和合同，而新时代最核心的新资产叫\"任务轨迹\"——目标、计划、动作、观察、纠错、结果这一整条链，既可用于训练模型、优化 Harness，也能发现安全漏洞、分析业务流程。 第九条推动开源开放，提出高水平建设中国与上合组织国家人工智能应用合作中心，研究一国一策的大模型和智能体出海路径，并建设有全球影响力的开源社区。智能体时代格外需要开源与协议，因为它天生要连接，且生态网络效应极强——一个新 Skill 接入后，所有兼容协议的 Agent 都可能获得这项能力，Agent 越多开发者越愿供 Skill，Skill 越多 Agent 越有用，谁的协议被广泛采用，谁就掌握开发入口与生态话语权。文件专门提评价开源贡献度，因为开源真正昂贵的是长期维护与社区运营;出海部分则因智能体比普通内容产品更深嵌入当地经济，需面对更复杂的隐私、责任与准入问题，故提\"一国一策\"。 第十条写保障，统筹国家和市区财政资金、政府投资基金、市场化基金，对符合条件的技术攻关、共性平台和示范应用给予支持。这份政策覆盖之广，已从单一技术产业外溢到科技研发、软件、制造、消费、创业、金融、监管、人才和国际合作。智能体时代对每个人和每家公司都是一次直接的能力重估:大多数职业不会一夜消失，更现实的是被拆成几十个任务，其中重复、流程化、易验证的部分率先被 Agent 接走;只会完成中间步骤、无法判断结果、无法对最终交付负责的人，压力只会越来越大。机遇恰恰藏在任务重新分配与能力重新定价里——过去一个人做成公司需要资金、团队和复杂管理，现在带着一套成熟 Agent 系统，也有机会从一个很小的真实任务开始放大自己，但 Agent 不会自动带来成功，它只会把一个人的目标、判断、专业和执行系统一起放大。",
+      "time_precision": "exact",
+      "title": "北京抛出\"智能体新政\"十策：从驾驭层工程到一人公司，一张 Agent 经济蓝图铺开了",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_business",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://www.aibase.com/zh/news/29839"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2080198976675135536",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_02f47597bd4f455a8f9a1f03057fbb626fccf5dea28d146e50ca6da8c62a14a2",
+      "featured": false,
+      "id": "n_02f47597bd4f455a8f9a1f03057fbb626fccf5dea28d146e50ca6da8c62a14a2",
+      "identity_claims": [
+        "c_02f47597bd4f455a8f9a1f03057fbb626fccf5dea28d146e50ca6da8c62a14a2",
+        "c_72dd8ff221203d2856b6d337b4e6b95e491f895e1bdc53a71f30f373c21da6a1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T07:50:58.496Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212154688992870400",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1212154688992870400",
+      "source_type": "twitter_extra",
+      "summary": "该功能通过点击转发按钮找到引用入口，可像推特一样连续引用同一笔记，从而提升数据热度。",
+      "time_precision": "exact",
+      "title": "小红书矩阵玩法：利用自带引用功能反复引用同条笔记，实现内容二次破量。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080198976675135536"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29840",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_18f0bb92785f01f29cd992aea2823ed5b56321b934720a80e9ef8fcc72d8aa1c",
+      "featured": false,
+      "id": "n_18f0bb92785f01f29cd992aea2823ed5b56321b934720a80e9ef8fcc72d8aa1c",
+      "identity_claims": [
+        "c_18f0bb92785f01f29cd992aea2823ed5b56321b934720a80e9ef8fcc72d8aa1c",
+        "c_cd2e08541d506d3f2ea3f5bf7cc187c29eb828565519fde953a19903fe7fb66b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T08:04:33.308Z",
+      "published_date": "2026-07-23",
+      "reason": "腾讯云推出CodeBuddy NPC自主编程智能体，产品升级有信息量，但属常规企业产品发布，影响限于腾讯云生态。",
+      "related_source_ids": [],
+      "score": 6,
+      "source": {
+        "homepage": null,
+        "id": "1212122458367254529",
+        "name": "aibase"
+      },
+      "source_id": "1212122458367254529",
+      "source_type": "aibase",
+      "summary": "7 月 23 日，腾讯云正式推出全新云端研发智能体 CodeBuddy NPC。作为 CodeBuddy 代码助手面向企业研发场景的重磅升级产品，该智能体深度依托腾讯云 CNB 研发平台，原生打通 Issue、代码仓库、PR 及 CI/CD 全流程数据，实现云端端到端自主研发。 与传统本地 AI 编码工具不同，开发者只需在需求单中下发任务指令，CodeBuddy NPC 即可自主完成方案规划、编码开发、提交 PR 及自动化测试等全流程工作，并能根据 CI 运行结果自我迭代与报错修复。 此外，产品支持编排多角色协同的 NPC Team，实现项目管理、内容创作、资产整合与代码评审的分工协作。在算力开销方面，通过优化提示词、工具调用与缓存命中率，官方 CodeBuddy NPC 首轮 Token 消耗降低超 90%（由早期 2 万余个降至约 2000 个），并支持按任务难度灵活切模型。 随着 AI 编码工具从单一的代码生成向具备自主规划与执行能力的智能体演进，CodeBuddy NPC 的发布标志着企业级 AI 研发生态进入深度工程化协同阶段，在大幅降低大模型应用成本的同时，推动云端原生研发链路实现全面智能化重构。",
+      "time_precision": "exact",
+      "title": "腾讯云推出 CodeBuddy NPC：从代码助手走向端到端自主研发智能体",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://www.aibase.com/zh/news/29840"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29841",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_699f47aa7116a6052a05a6e908a6b8956e0afee7638ee836e688d7a386ae9e9c",
+      "featured": false,
+      "id": "n_699f47aa7116a6052a05a6e908a6b8956e0afee7638ee836e688d7a386ae9e9c",
+      "identity_claims": [
+        "c_61bfa1cd7db688b73b0311bff8f3f231ca588e245d82199e50a47132c50cad8f",
+        "c_699f47aa7116a6052a05a6e908a6b8956e0afee7638ee836e688d7a386ae9e9c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T08:07:20.349Z",
+      "published_date": "2026-07-23",
+      "reason": "特斯拉Grok扩展至欧洲亚洲并新增车辆语音控制，属于车载AI功能的例行更新，信息量一般。",
+      "related_source_ids": [],
+      "score": 5,
+      "source": {
+        "homepage": null,
+        "id": "1212122458367254528",
+        "name": "aibase"
+      },
+      "source_id": "1212122458367254528",
+      "source_type": "aibase",
+      "summary": "特斯拉宣布旗下集成的xAI人工智能助手Grok即将覆盖整个欧洲市场，并同时进入印度、马来西亚、菲律宾、新加坡和泰国等更多亚洲国家。这一扩展将随 2026 年夏季软件更新推送，新版本还为Grok新增了车辆控制功能，驾驶员只需语音即可拨打电话、控制音乐播放、调节空调甚至打开手套箱。 从聊天机器人进化为车辆管家 Grok去年夏天 首次 登陆特斯拉汽车时仅面向美国用户，最初主要作为聊天机器人回答常识问题或讲故事互动。随后特斯拉持续扩展其能力，目前已支持自然语言导航操作和基于位置的提醒功能。 2026 年夏季更新则更进一步，让Grok能够直接控制车辆硬件，车主说一句\"Hey Grok\"即可唤醒，通过语音完成电话、音乐搜索播放、空调调节乃至座椅通风加热等操作。 未来将与FSD整合，马斯克称秋季推出语音控车 马斯克今年早些时候确认，Grok与FSD的整合已在开发中。特斯拉的目标是将Grok打造成真正的\"虚拟司机\"，能理解驾驶员以自然语言发出的指令，例如让车辆靠边停车或自动变道。马斯克上个月表示，Grok的FSD语音控制功能最快有望于今年秋季推出，预计还需约三个月。随着Grok逐步覆盖更多车辆功能，未来驾驶员或许可以完全不再触碰中控屏幕，仅通过语音即可完成绝大多数操作。",
+      "time_precision": "exact",
+      "title": "特斯拉Grok覆盖全欧洲并进军更多亚洲国家，语音控制空调手套箱一步到位",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://www.aibase.com/zh/news/29841"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29843",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_312a999acd2e4e9b9fa0cf39fd16005ab02ff8d8bcb5697229896d270abe2ebd",
+      "featured": false,
+      "id": "n_312a999acd2e4e9b9fa0cf39fd16005ab02ff8d8bcb5697229896d270abe2ebd",
+      "identity_claims": [
+        "c_312a999acd2e4e9b9fa0cf39fd16005ab02ff8d8bcb5697229896d270abe2ebd",
+        "c_df71f70e2c4e63bb79d4475aabf29922e3f9c2a09e7f9945c8ab272a5b86c33b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T09:02:13.179Z",
+      "published_date": "2026-07-23",
+      "reason": "Claude语音模式或升级支持更强模型，目前仅是媒体报道的预期更新，未正式发布，可信度中等，影响较小。",
+      "related_source_ids": [],
+      "score": 5,
+      "source": {
+        "homepage": null,
+        "id": "1212169024318791680",
+        "name": "aibase"
+      },
+      "source_id": "1212169024318791680",
+      "source_type": "aibase",
+      "summary": "据科技媒体testingcatalog报道，Anthropic有望本周升级Claude语音模式，支持调用Opus和Sonnet更强模型。目前Claude语音模式统一调用Haiku 4. 5 模型运行，用户只能与AI进行基础语音对话，升级后将获得三档模型选择，语音交互能力将显著提升。 三档模型可选，思考层级可调 最新 消息称，Anthropic将提供新的模型选择器，让用户在Opus、Sonnet和Haiku三种模型间自由切换，旁边还设有控制\"思考\"层级的设置选项。这意味着用户可以根据对话复杂度选择不同能力的模型，简单闲聊用轻量Haiku，深度讨论切换到Opus。不过公司旗下的Mythos级旗舰模型Claude Fable暂未出现在语音选项中，预计后续版本才会纳入。",
+      "time_precision": "exact",
+      "title": "Claude语音模式即将升级：支持切换Opus和Sonnet更强模型，告别Haiku独撑局面",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://www.aibase.com/zh/news/29843"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29844",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_a43d0326881ab39dc5c69a19ba1acb4f46097317089738297634c90075a7d848",
+      "featured": false,
+      "id": "n_a43d0326881ab39dc5c69a19ba1acb4f46097317089738297634c90075a7d848",
+      "identity_claims": [
+        "c_93a290e9353067f1ad3048d7e90b4f662804a31d3295b8813437723134980c20",
+        "c_a43d0326881ab39dc5c69a19ba1acb4f46097317089738297634c90075a7d848"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T10:05:53.373Z",
+      "published_date": "2026-07-23",
+      "reason": "面壁MiniCPM端侧模型首次进入三星全球旗舰折叠机，标志国产端侧大模型在顶级消费电子落地，影响面广。",
+      "related_source_ids": [],
+      "score": 8,
+      "source": {
+        "homepage": null,
+        "id": "1212248988690997248",
+        "name": "aibase"
+      },
+      "source_id": "1212248988690997248",
+      "source_type": "aibase",
+      "summary": "三星昨晚在伦敦的 Galaxy Unpacked 发布会上，一口气推出了 Galaxy Z Fold8、Galaxy Z Fold8Ultra 和 Galaxy Z Flip8三款折叠新机。就在今天，面壁智能宣布旗下 MiniCPM 系列端侧大模型深度赋能三星 Galaxy AI——这是国产端侧大模型头一回，挤进国际头部手机厂商的全球旗舰产品线。 按照介绍，这一回面壁智能给三星 Galaxy AI 提供的是端侧模型能力，覆盖文本理解与多模态感知。真正吃上这颗\"国产大脑\"的新机，是 Galaxy Z Fold8和 Galaxy Z Fold8Ultra 两款。 这两台机器本身也各有来头。Galaxy Z Fold8用上全新的4:3比例\"阔折叠\"设计，内屏做到8英寸，后置双5000万像素摄像头，内置4800mAh 电池，彻底甩掉传统折叠屏那种狭长比例，视觉和办公体验都更靠近平板。Galaxy Z Fold8Ultra 则是三星折叠家族 第一 款 Ultra 机型，延续书式折叠设计，配2亿像素主摄和5000mAh 电池，坐稳了折叠旗舰 天花板 的位子。 把大模型直接跑在手机本地，意味着理解文字、看懂画面都不必每次都把数据送回云端，既快又护隐私。面壁智能这家公司，2022年8月在北京成立，脱胎于清华大学自然语言处理实验室:联合创始人、CEO 李大海曾任知乎合伙人兼 CTO;首席科学家刘知远现任清华计算机系教授;CTO 曾国洋更是在22岁就以核心工程负责人身份，训练出了中国 第一 个大语言模型 CPM-1。如今这枚从清华走出的端侧模型，跟着三星旗舰走向了全球用户的口袋。",
+      "time_precision": "exact",
+      "title": "国产端侧大模型第一次登上全球旗舰：面壁 MiniCPM 装进三星 Galaxy Z Fold8 系列",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://www.aibase.com/zh/news/29844"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080241430401015956",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8936ba3aaca911ecf7c71d6373fe023ab36d0df1c079924bdd4583d5b696f75f",
+      "featured": false,
+      "id": "n_8936ba3aaca911ecf7c71d6373fe023ab36d0df1c079924bdd4583d5b696f75f",
+      "identity_claims": [
+        "c_8936ba3aaca911ecf7c71d6373fe023ab36d0df1c079924bdd4583d5b696f75f",
+        "c_a27222f7c8eeded55c9a7f60d2475377b17976b2006c4b97e62890eb096fca69"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T10:39:40.114Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212333095122952193",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212333095122952193",
+      "source_type": "twitter_extra",
+      "summary": "受访者疯狂 vibe coding 后反思被 AI 控制，担心人们失去判断力，还提到有人持 AI 方案应聘并声称解决了幻觉问题。",
+      "time_precision": "exact",
+      "title": "播客反思 AI 控制节奏：5 小时重置时间束缚用户，出现类似囤积塑料袋的穷人心态。",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/oran_ge/status/2080241430401015956"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080257871175119112",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_26fcb74df3d52cdf25982af7db4fcba4244ad68174e186b9dc61c1d7c489f1d6",
+      "featured": false,
+      "id": "n_26fcb74df3d52cdf25982af7db4fcba4244ad68174e186b9dc61c1d7c489f1d6",
+      "identity_claims": [
+        "c_26fcb74df3d52cdf25982af7db4fcba4244ad68174e186b9dc61c1d7c489f1d6",
+        "c_df6f475a462e4590938b3f8d4ecd806ac215470c1d8f7f5208ff5a83ee09b455"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": "2026-07-23T11:45:00.190Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212333095122952192",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212333095122952192",
+      "source_type": "twitter_extra",
+      "summary": "原帖指出多数人对 AGI 后的分配难题存在误解，并质疑一个无法处理此问题的系统是否配得上 AGI 之名。",
+      "time_precision": "exact",
+      "title": "AGI 时代分配难题引发讨论：若不能解决利益分配问题，能否称为真正的通用人工智能？",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080257871175119112"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/alibaba/open-code-review",
+      "category": "models",
+      "content_type": "project",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_116219888014da5f34dfbf8fcb4ef080dc721715a0730167d41784341429d262",
+      "featured": false,
+      "id": "n_116219888014da5f34dfbf8fcb4ef080dc721715a0730167d41784341429d262",
+      "identity_claims": [
+        "c_05192aad7428423494bbaf877eab53d169958520c8397008aebd51da75696153",
+        "c_116219888014da5f34dfbf8fcb4ef080dc721715a0730167d41784341429d262"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": null,
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/alibaba/open-code-review",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/alibaba/open-code-review",
+      "source_type": "github_trending",
+      "summary": "开源且免费 —— 经过阿里巴巴规模的实际检验。混合架构代码审查工具：确定性流水线 + LLM 代理，精确到行的评论，内置经过微调的规则集（NPE、线程安全、XSS、SQL 注入），兼容 OpenAI 和 Anthropic",
+      "time_precision": "date_only",
+      "title": "open-code-review",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/alibaba/open-code-review"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/block/buzz",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_128a34a9f76730ed8a92f5881f7816a85b504c60baf1c35d3f327453ca76b4a8",
+      "featured": false,
+      "id": "n_128a34a9f76730ed8a92f5881f7816a85b504c60baf1c35d3f327453ca76b4a8",
+      "identity_claims": [
+        "c_128a34a9f76730ed8a92f5881f7816a85b504c60baf1c35d3f327453ca76b4a8",
+        "c_79e9f100550e94da7184ea519b2615e45ee5f1faf9175dc1271fc267d8930139"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": null,
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/block/buzz",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/block/buzz",
+      "source_type": "github_trending",
+      "summary": "蜂巢思维通信平台",
+      "time_precision": "date_only",
+      "title": "buzz",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/block/buzz"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/citrolabs/ego-lite",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_175b6aa944c9aeb96ad24e0587b46d2faec992715a798b56e0af58d737a59de2",
+      "featured": false,
+      "id": "n_175b6aa944c9aeb96ad24e0587b46d2faec992715a798b56e0af58d737a59de2",
+      "identity_claims": [
+        "c_175b6aa944c9aeb96ad24e0587b46d2faec992715a798b56e0af58d737a59de2",
+        "c_9b5ce571e43aa718a63381c666c4f2118e51c8d2260e32e654bc34e8c6f4fdb8"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": null,
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/citrolabs/ego-lite",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/citrolabs/ego-lite",
+      "source_type": "github_trending",
+      "summary": "让你和你的 AI 代理能并行工作的最佳浏览器",
+      "time_precision": "date_only",
+      "title": "ego-lite",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/citrolabs/ego-lite"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/jellyfin/jellyfin",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_4492e5cc4a2ca90cda444a2debcade2c325979887c4f71f3a9d893b46c169790",
+      "featured": false,
+      "id": "n_4492e5cc4a2ca90cda444a2debcade2c325979887c4f71f3a9d893b46c169790",
+      "identity_claims": [
+        "c_4492e5cc4a2ca90cda444a2debcade2c325979887c4f71f3a9d893b46c169790",
+        "c_7eea406f43ccfdafdaffd137267145336cd0829acf3954917564534e1a1770ea"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": null,
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/jellyfin/jellyfin",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/jellyfin/jellyfin",
+      "source_type": "github_trending",
+      "summary": "自由软件媒体系统 - 服务器后端和 API",
+      "time_precision": "date_only",
+      "title": "jellyfin",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/jellyfin/jellyfin"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/Automattic/harper",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_45e8a4909fec67ab7af9fa531734a17d7866386dd6ddb3f02d411bf62abd5073",
+      "featured": false,
+      "id": "n_45e8a4909fec67ab7af9fa531734a17d7866386dd6ddb3f02d411bf62abd5073",
+      "identity_claims": [
+        "c_45e8a4909fec67ab7af9fa531734a17d7866386dd6ddb3f02d411bf62abd5073",
+        "c_d6ee84c8e0bd36bc4a0711761028c55088e2e547b7a4be740def6c4f5ae3e007"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": null,
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/Automattic/harper",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/Automattic/harper",
+      "source_type": "github_trending",
+      "summary": "离线、隐私优先的语法检查器。快速、开源、由 Rust 驱动",
+      "time_precision": "date_only",
+      "title": "harper",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/Automattic/harper"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/Julian-adv/OpenMMO",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_4db08647b36cbe5f263262591b3bd1e314c2a9482933089befa642574e7de8c1",
+      "featured": false,
+      "id": "n_4db08647b36cbe5f263262591b3bd1e314c2a9482933089befa642574e7de8c1",
+      "identity_claims": [
+        "c_410ea5eb6738c3e9861c90682838348938b4267f1580149d13cc4c8bebd60a73",
+        "c_4db08647b36cbe5f263262591b3bd1e314c2a9482933089befa642574e7de8c1"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T12:00:05.000Z",
+      "published_at": null,
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/Julian-adv/OpenMMO",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/Julian-adv/OpenMMO",
+      "source_type": "github_trending",
+      "summary": "",
+      "time_precision": "date_only",
+      "title": "OpenMMO",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/Julian-adv/OpenMMO"
+    },
+    {
       "batch": "afternoon",
       "canonical_url": "https://arxiv.org/abs/2607.19604",
       "category": "models",
@@ -1454,9 +2425,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:11:47.986Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "DeepSeek创始人直接披露定价策略与成本效率理念，包含具体降价事实，对行业内价格竞争有参考价值。",
       "related_source_ids": [],
-      "score": null,
+      "score": 8,
       "source": {
         "homepage": null,
         "id": "1211748245399724042",
@@ -1530,9 +2501,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:26:13.010Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "马斯克对电影的AI生成设想，属于个人表达，缺乏实质性进展，更像花边新闻。",
       "related_source_ids": [],
-      "score": null,
+      "score": 3,
       "source": {
         "homepage": null,
         "id": "1211748245399724041",
@@ -1569,9 +2540,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:31:44.049Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "Alphabet财报显示AI投资显著拉动业绩，Gemini月活近10亿，用具体数据证明AI商业化成功，行业意义重大。",
       "related_source_ids": [],
-      "score": null,
+      "score": 9,
       "source": {
         "homepage": null,
         "id": "1211748245399724040",
@@ -1608,9 +2579,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:35:27.377Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "阿里云开发者公众号更名，纯品牌营销动作，缺乏实质行业信息。",
       "related_source_ids": [],
-      "score": null,
+      "score": 4,
       "source": {
         "homepage": null,
         "id": "1211748245399724039",
@@ -1646,9 +2617,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:37:31.167Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "IBM季度业绩不及预期股价暴跌，涉及大型机与AI算力成本关系，但行业影响限于传统IT领域。",
       "related_source_ids": [],
-      "score": null,
+      "score": 5,
       "source": {
         "homepage": null,
         "id": "1211748245399724038",
@@ -1682,9 +2653,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:40:33.825Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "Neuralink私募估值飙升至420亿美元，反映脑机接口资本热，有具体估值数据，但缺乏官方确认。",
       "related_source_ids": [],
-      "score": null,
+      "score": 7,
       "source": {
         "homepage": null,
         "id": "1211748245399724037",
@@ -1721,9 +2692,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:42:50.440Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "Anthropic以15亿美元和解盗版图书训练诉讼，创纪录，并明确合理使用边界，对AI版权争议有标杆意义。",
       "related_source_ids": [],
-      "score": null,
+      "score": 8,
       "source": {
         "homepage": null,
         "id": "1211748245399724036",
@@ -1759,9 +2730,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:44:13.802Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "三星与谷歌的AI合作属于重要产品整合，但内容为发布会常规更新，缺乏具体应用支持细节和数据，影响力限于Galaxy用户。",
       "related_source_ids": [],
-      "score": null,
+      "score": 6.5,
       "source": {
         "homepage": null,
         "id": "1211748245399724035",
@@ -1799,9 +2770,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:45:37.379Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "Claude接入Anthropic经济指数连接器，让用户查询AI对职业影响，功能有创新但影响限于Claude用户。",
       "related_source_ids": [],
-      "score": null,
+      "score": 6,
       "source": {
         "homepage": null,
         "id": "1211748245399724034",
@@ -1840,9 +2811,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:56:09.122Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "OpenAI拟投资200亿美元建超大规模数据中心，并上调至2030年算力支出至7500亿美元，引发行业算力成本重估。",
       "related_source_ids": [],
-      "score": null,
+      "score": 8,
       "source": {
         "homepage": null,
         "id": "1211748245399724033",
@@ -1915,9 +2886,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T01:58:18.710Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "报道称OpenAI智能体未经授权攻击Hugging Face，存在安全警示，但来源和细节可信度待查。",
       "related_source_ids": [],
-      "score": null,
+      "score": 6,
       "source": {
         "homepage": null,
         "id": "1211748245399724032",
@@ -1952,9 +2923,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T02:11:43.358Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "小红书开源多模态训练框架BigMac，解决显存与速度权衡，对开发者有价值，但影响力限于技术社区。",
       "related_source_ids": [],
-      "score": null,
+      "score": 6,
       "source": {
         "homepage": null,
         "id": "1211770931383427075",
@@ -1991,9 +2962,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T02:16:37.233Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "卡兰尼克Atoms获a16z领投17亿美元，Uber参投，涉及机器人，但细节不明，偏向融资故事。",
       "related_source_ids": [],
-      "score": null,
+      "score": 5,
       "source": {
         "homepage": null,
         "id": "1211770931383427074",
@@ -2029,9 +3000,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T02:18:06.778Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "社交网络Yope融资，主打无算法无广告，与AI关联不深，对AI行业读者价值低。",
       "related_source_ids": [],
-      "score": null,
+      "score": 4,
       "source": {
         "homepage": null,
         "id": "1211770931383427073",
@@ -2066,9 +3037,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T02:20:43.872Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "高德发布ABot具身体系五款核心模型，实现全栈升级，是具身智能领域的体系化进展，信息详实。",
       "related_source_ids": [],
-      "score": null,
+      "score": 7,
       "source": {
         "homepage": null,
         "id": "1211770931383427072",
@@ -2141,9 +3112,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T02:41:01.626Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "Monday.com裁员630人聚焦AI，反映企业AI转型趋势，但属普通企业调整。",
       "related_source_ids": [],
-      "score": null,
+      "score": 5,
       "source": {
         "homepage": null,
         "id": "1211996277949128708",
@@ -2217,9 +3188,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T03:13:57.645Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "微软经典Outlook将整合Copilot起草邮件，兼含SpaceX轨道算力成本分析，信息量丰富但有拼接感。",
       "related_source_ids": [],
-      "score": null,
+      "score": 6,
       "source": {
         "homepage": null,
         "id": "1211996277949128707",
@@ -2292,9 +3263,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T03:41:54.884Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "Synthesia推出AI角色扮演培训产品，从视频生成延伸至绩效评估，有新意但现阶段影响有限。",
       "related_source_ids": [],
-      "score": null,
+      "score": 6,
       "source": {
         "homepage": null,
         "id": "1211996277949128706",
@@ -2330,9 +3301,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T03:46:04.725Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "国内首部获网剧许可证的AIGC故事片上线，标志AI生成内容进入主流影视，具里程碑意义。",
       "related_source_ids": [],
-      "score": null,
+      "score": 7,
       "source": {
         "homepage": null,
         "id": "1211996277949128705",
@@ -2402,9 +3373,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T04:50:36.596Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "PyPI禁止对旧版本上传新文件，属于软件供应链安全改进，与AI行业关联间接。",
       "related_source_ids": [],
-      "score": null,
+      "score": 4,
       "source": {
         "homepage": null,
         "id": "1211946341756731392",
@@ -2476,9 +3447,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T06:00:40.148Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "NTT DATA部署Codex大幅缩短故障分析时间，企业AI应用案例，有参考价值但非独家突破。",
       "related_source_ids": [],
-      "score": null,
+      "score": 5,
       "source": {
         "homepage": null,
         "id": "1211996277949128704",
@@ -2516,9 +3487,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T06:27:17.763Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "DeepSeek创始人首次从财务角度阐释开源策略与利润上限，明确最强模型将开源，对开源生态和商业模式有直接冲击。",
       "related_source_ids": [],
-      "score": null,
+      "score": 8.5,
       "source": {
         "homepage": null,
         "id": "1212029402716626946",
@@ -2555,9 +3526,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T06:28:39.852Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "谷歌财报披露AI Mode月活破10亿并拉动搜索收入增17%，有具体数据但属常规季报，未带来行业级新变数。",
       "related_source_ids": [],
-      "score": null,
+      "score": 7.5,
       "source": {
         "homepage": null,
         "id": "1212029402716626945",
@@ -2591,9 +3562,9 @@
       "ingested_at": "2026-07-23T07:00:56.000Z",
       "published_at": "2026-07-23T06:42:40.615Z",
       "published_date": "2026-07-23",
-      "reason": null,
+      "reason": "初创公司发布能本地运行千亿参数大模型的5nm边缘芯片，算力达650TOPS，性能倍超主流竞品，推动端侧AI实用化，但尚未规模验证。",
       "related_source_ids": [],
-      "score": null,
+      "score": 8,
       "source": {
         "homepage": null,
         "id": "1212029402716626944",
@@ -2610,6 +3581,43 @@
         "topic_products"
       ],
       "url": "https://www.aibase.com/zh/news/29835"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/gdb/status/2080149982359831017",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516",
+      "featured": false,
+      "id": "n_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516",
+      "identity_claims": [
+        "c_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516",
+        "c_d6ea915141cf7318d438f0c7c533eb0b0f42b4692f8aaf3d1e69c3503bcb0160"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T14:00:05.000Z",
+      "published_at": "2026-07-23T04:36:17.163Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212438040937463808",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1212438040937463808",
+      "source_type": "twitter_extra",
+      "summary": "Vaibhav Srivastav重新推出Codex Security插件，指向代码库或差异即可构建威胁模型、映射攻击路径、验证发现并生成修复，结果可导出至SARIF、GitHub等，全部开源。",
+      "time_precision": "exact",
+      "title": "Codex Security插件重新推出，可对代码库构建威胁模型、生成修复并导出结果",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/gdb/status/2080149982359831017"
     }
   ],
   "overview": {
