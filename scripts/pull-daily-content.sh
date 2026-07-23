@@ -46,10 +46,4 @@ cd "$ORIGINAL_DIR"
 # 清理临时目录
 rm -rf "$TEMP_DIR"
 
-# 同步到 Hugo
-if [ -f "scripts/sync-daily-to-hugo.sh" ]; then
-    echo "🔄 同步内容到 Hugo..."
-    bash scripts/sync-daily-to-hugo.sh
-fi
-
-echo "✨ 完成！现在可以运行 'hugo server -D' 查看内容"
+echo "✨ 完成！现在可以运行 'npm run dev --prefix astro' 查看内容"

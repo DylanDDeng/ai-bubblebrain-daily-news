@@ -13,8 +13,8 @@ import {
 import {
 	dailyDataDirectory,
 	loadStructuredDailyReport,
-	type StructuredDailyItem,
-} from './structuredDaily';
+} from './structuredDailyLocal';
+import type { StructuredDailyItem } from './structuredDaily';
 
 export interface KnowledgeSearchItem {
 	key: string;

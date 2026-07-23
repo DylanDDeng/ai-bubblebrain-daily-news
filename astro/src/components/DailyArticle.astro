@@ -4,28 +4,36 @@ import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DailyTimeline from './DailyTimeline.astro';
 import Discussion from './Discussion.astro';
-import { formatDailyDate, parseDailyEntryId, type DailyLocale } from '../lib/daily';
+import { formatDailyDate, type DailyLocale } from '../lib/daily';
 import { commentThreadId } from '../lib/comments/threadId';
 import { sanitizeLegacyDailyHtml } from '../lib/legacyDailyHtml';
-import { isDatabaseOwnedDailyDate, loadStructuredDailyReport } from '../lib/structuredDaily';
+import type { StructuredDailyReport } from '../lib/structuredDaily';
 
 interface Props {
-	entry: CollectionEntry<'daily'>;
+	entry?: CollectionEntry<'daily'> | null;
+	report?: StructuredDailyReport | null;
+	dateKey: string;
 	locale: DailyLocale;
 	newerHref?: string | null;
 	olderHref?: string | null;
 	alternateHref?: string | null;
 }
 
-const { entry, locale, newerHref = null, olderHref = null, alternateHref = null } = Astro.props;
-const { Content } = await render(entry);
+const {
+	entry = null,
+	report = null,
+	dateKey,
+	locale,
+	newerHref = null,
+	olderHref = null,
+	alternateHref = null,
+} = Astro.props;
+
 const archiveHref = locale === 'en' ? '/en/daily/' : '/daily/';
-const identity = parseDailyEntryId(entry.id);
-const report =
-	identity && isDatabaseOwnedDailyDate(identity.dateKey)
-		? await loadStructuredDailyReport(identity.dateKey)
-		: null;
-const legacyHtml = entry.rendered?.html ? sanitizeLegacyDailyHtml(entry.rendered.html) : null;
+const title = entry?.data.title ?? `${dateKey} ${locale === 'en' ? 'Daily Brief' : '资讯日报'}`;
+const description = entry?.data.description ?? `${title} · Bubble's Brain`;
+const rendered = entry ? await render(entry) : null;
+const legacyHtml = entry?.rendered?.html ? sanitizeLegacyDailyHtml(entry.rendered.html) : null;
 const currentRoute = Astro.url.pathname;
 const threadId = commentThreadId({
 	route: currentRoute,
@@ -35,15 +43,15 @@ const threadId = commentThreadId({
 ---
 
 <BaseLayout
-	title={`${entry.data.title} · Bubble's Brain`}
-	description={entry.data.description}
+	title={`${title} · Bubble's Brain`}
+	description={description}
 	lang={locale}
 	alternateHref={alternateHref}
 >
 	{
 		report ? (
 			<DailyTimeline report={report} locale={locale} newerHref={newerHref} olderHref={olderHref} />
-		) : (
+		) : entry ? (
 			<article class="article-shell" data-legacy-daily>
 				<header class="article-header">
 					<p class="eyebrow">{locale === 'en' ? 'DAILY BRIEF' : '资讯日报'}</p>
@@ -55,13 +63,13 @@ const threadId = commentThreadId({
 					</p>
 				</header>
 				<div class="legacy-content">
-					{legacyHtml === null ? <Content /> : <Fragment set:html={legacyHtml} />}
+					{legacyHtml === null && rendered ? <rendered.Content /> : <Fragment set:html={legacyHtml!} />}
 				</div>
 				<p>
 					<a href={archiveHref}>{locale === 'en' ? '← Back to archive' : '← 返回日报归档'}</a>
 				</p>
 			</article>
-		)
+		) : null
 	}
 	<Discussion threadId={threadId} locale={locale} />
 </BaseLayout>

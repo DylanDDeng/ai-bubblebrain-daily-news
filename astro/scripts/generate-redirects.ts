@@ -5,8 +5,8 @@ import { knowledgeTaxonomy } from '../src/lib/knowledge';
 import { loadLegacyContent } from '../src/lib/legacyContent';
 import { renderCloudflareRedirects } from '../src/lib/redirectManifest';
 
-const outputPath = resolve(process.cwd(), 'dist', '_redirects');
-await mkdir(resolve(process.cwd(), 'dist'), { recursive: true });
+const outputPath = resolve(process.cwd(), 'dist', 'client', '_redirects');
+await mkdir(resolve(process.cwd(), 'dist', 'client'), { recursive: true });
 await writeFile(
 	outputPath,
 	renderCloudflareRedirects(knowledgeTaxonomy, await loadLegacyContent()),

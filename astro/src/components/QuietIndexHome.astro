@@ -1,23 +1,16 @@
 ---
-import { getCollection } from 'astro:content';
-
-import {
-	dailyDateFromKey,
-	dailyPermalink,
-	filterDailyEntries,
-	formatDailyWeekday,
-	parseDailyEntryId,
-} from '../lib/daily';
+import { fetchLatestReport } from '../lib/contentApi';
+import { dailyDateFromKey, formatDailyWeekday } from '../lib/daily';
 import {
 	cleanTimelineSummary,
 	displayContentType,
 	formatDailyTime,
 	formatTimelineTime,
 	homepageFeedItems,
-	loadStructuredDailyReport,
 	timelineDisplayText,
 	timelineSourceDisplay,
 	type DailyContentType,
+	type StructuredDailyReport,
 } from '../lib/structuredDaily';
 import '../styles/quiet-index.css';
 
@@ -27,18 +20,21 @@ interface Props {
 
 const { locale } = Astro.props;
 const isEnglish = locale === 'en';
-const dailyEntries = await getCollection('daily');
-const entries = filterDailyEntries(dailyEntries, locale);
-const latest = entries[0];
-const latestIdentity = latest ? parseDailyEntryId(latest.id) : null;
-const report = latestIdentity ? await loadStructuredDailyReport(latestIdentity.dateKey) : null;
-const latestHref = latest ? dailyPermalink(latest.id) : isEnglish ? '/en/daily/' : '/daily/';
+
+const latest = await fetchLatestReport();
+const report = latest?.report as StructuredDailyReport | undefined ?? null;
+const dateKey = latest?.dateKey ?? null;
+const latestHref = dateKey
+	? `/daily/${dateKey.slice(0, 4)}/${dateKey.slice(5, 7)}/${dateKey}/`
+	: isEnglish
+		? '/en/daily/'
+		: '/daily/';
 
 const typeLabels: Record<DailyContentType, string> = isEnglish
 	? { news: 'News', project: 'Project', paper: 'Paper', socialMedia: 'Social' }
 	: { news: '资讯', project: '项目', paper: '论文', socialMedia: '社交' };
 
-const latestDate = latestIdentity ? dailyDateFromKey(latestIdentity.dateKey) : null;
+const latestDate = dateKey ? dailyDateFromKey(dateKey) : null;
 const monthDay = latestDate
 	? new Intl.DateTimeFormat(locale, {
 			month: 'long',

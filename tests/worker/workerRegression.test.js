@@ -265,7 +265,7 @@ describe('worker regression guards', () => {
         ]);
         expect(workflow).toContain('promote-publication:');
         expect(workflow).toContain(
-            'needs: [worker-security, renderer-parity, database-security]',
+            'needs: [worker-security, astro-verify, database-security]',
         );
         expect(workflow).toContain("startsWith(github.head_ref, 'automation/daily/')");
         expect(workflow).toContain('github.event.pull_request.head.repo.full_name == github.repository');
@@ -277,11 +277,9 @@ describe('worker regression guards', () => {
         expect(siteWorkflow).toContain('npm run verify --prefix astro');
         expect(siteWorkflow).toContain('path: astro/dist');
         expect(siteWorkflow).not.toContain('actions/deploy-pages');
-        const parityIndex = siteWorkflow.indexOf('run: npm run verify:renderers');
         const finalBuildIndex = siteWorkflow.indexOf('run: npm run verify --prefix astro');
         const uploadIndex = siteWorkflow.indexOf('uses: actions/upload-artifact');
-        expect(parityIndex).toBeGreaterThan(-1);
-        expect(parityIndex).toBeLessThan(finalBuildIndex);
+        expect(finalBuildIndex).toBeGreaterThan(-1);
         expect(finalBuildIndex).toBeLessThan(uploadIndex);
     });
 

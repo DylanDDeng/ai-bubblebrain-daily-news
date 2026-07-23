@@ -1,0 +1,25 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "bubble-brain-astro",
+	"compatibility_date": "2026-04-15",
+	"compatibility_flags": ["nodejs_compat"],
+	"routes": [
+		{
+			"pattern": "astro-preview.bubblenews.today",
+			"custom_domain": true
+		},
+		{
+			"pattern": "bubblenews.today/*",
+			"zone_name": "bubblenews.today"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "872017b50309456caae4f4b3e50c1938"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}
