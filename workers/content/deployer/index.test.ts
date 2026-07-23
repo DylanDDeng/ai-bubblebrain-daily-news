@@ -195,6 +195,10 @@ describe("automatic code release boundary", () => {
             status: "modified",
           },
           {
+            filename: "scripts/verify-site.mjs",
+            status: "modified",
+          },
+          {
             filename: "supabase/migrations/20260719000100_release.sql",
             status: "added",
           },
@@ -213,7 +217,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(21);
+    ).toHaveLength(22);
   });
 
   it.each([
