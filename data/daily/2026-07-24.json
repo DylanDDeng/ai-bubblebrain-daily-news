@@ -15,10 +15,11 @@
       "status": "pending"
     },
     {
-      "generated_at": "2026-07-23T16:00:56.000Z",
+      "generated_at": "2026-07-23T17:00:56.000Z",
       "id": "night",
       "item_ids": [
         "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+        "n_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
         "n_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe"
       ],
       "label": "22:00 更新",
@@ -35,7 +36,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T16:00:56.000Z",
+  "generated_at": "2026-07-23T17:00:56.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -76,6 +77,42 @@
         "topic_products"
       ],
       "url": "https://x.com/Khazix0918/status/2080022092498768176"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/oran_ge/status/2080196444074705006",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+      "featured": false,
+      "id": "n_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+      "identity_claims": [
+        "c_443f78c4a91a8a8faafd3c29b4524906d8a8b39dd6c97872ffbf8c41d1c4a1d0",
+        "c_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T17:00:56.000Z",
+      "published_at": "2026-07-23T07:40:55.616Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212647888644005889",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212647888644005889",
+      "source_type": "twitter_extra",
+      "summary": "强调应将有限的时间投入真正稀缺的资产，即时间本身、人际关系和声誉。",
+      "time_precision": "exact",
+      "title": "时间、人际关系和声誉才是真正稀缺的资源，应把时间花在其上",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080196444074705006"
     },
     {
       "batch": "night",
