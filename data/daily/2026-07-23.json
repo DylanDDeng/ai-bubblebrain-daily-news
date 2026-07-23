@@ -1,0 +1,968 @@
+{
+  "batches": [
+    {
+      "generated_at": "2026-07-23T02:00:56.000Z",
+      "id": "morning",
+      "item_ids": [
+        "n_0404a2eb85d01625a58759900a2b890cac4d9b32495aa1f35f4e026cea0ecb10",
+        "n_49ca1177d8201c0d789fa40ab8455d7a5a90a488bf562b371f11c8aeab80624e",
+        "n_ec4f0061cdf37b29fe879b2455edaf3f7ed31148749adea18cfbb34778e894d9",
+        "n_09eb68be5862fd5e99ce353fbf2dffd6094edc9b39b5de7c96312eae90fcbbb9",
+        "n_cf901663c3c881b5a5044a35b5c6ee787cb43ecda65facfd883e5bc9756e0593",
+        "n_189f079693d2956f535e2cd9173ed6b5beae641540f56df2c204d22eed58f046",
+        "n_411fae1ce0205d9a1d31803ed25b2daa8459ab4385a21826901f0b104275e87a",
+        "n_d0e6e51477793e0a359a5d934ee46eb6baed5e04c63e00efd2e53b278b7e59ca",
+        "n_086c3fb5cbb71d90c47e51ac4a612b45983c66fadb1f8b3eee9af9c0d7871e84",
+        "n_0934ce3b9a266b7bbe945ef36cc1e3b80fbc6d6769e92e058f4552492fe37d82",
+        "n_097b0e5be983b709a2fd133c8ab94dde99500e1fefd401acfe5d0b441ae3a5dc",
+        "n_203a1df9df4f40f22eca1306ca3bb21c1c57eff4c58ea2b2361945adbd56cc44",
+        "n_77d64bb33d4d11ecf9705b33f32b477ddcb678835c893bf0890b9b078b089003",
+        "n_9e2e043c21955ba553e541b50f9f9d57c7f2802cf66c4b7e1916d51fa3a3b48b",
+        "n_3ba55c7645120f02b47a5e242971e088d8d5568c2e02c34701d5a2819cdb6075",
+        "n_362048d316542e734c9cfade16a8a644e6d583801757ce961a0ecde0fcae6dd7",
+        "n_0d87b7c12c7f8b24ad90509d47313ea24aa108515a13c0a7b16d7a4588125d9c",
+        "n_8b6cce99e743d80300979ae3a076649f86ecd8d69e3ed3eb139c4c7235dd998f",
+        "n_095401336df967f4313ad6b2592ff7b95c8db9ba45bacea8977b14e3372e9b2a",
+        "n_76e8793aca0edd51d7e100d5a79a1c87d716d5312534b03d18e13f40c6f61cc8",
+        "n_225336703557bce9801e92a90b041d662aee336f6f256f94bdb7a5f20ef12b87",
+        "n_63bf6dc132a40efad0e48b15b86592df8de85693b132c246d1ebbeeb739e71c0",
+        "n_02ef8aa66aee1841e8808f4a1a32a39aaae63c534b0f2e0976255fe8f830dc6b"
+      ],
+      "label": "10:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "afternoon",
+      "item_ids": [],
+      "label": "15:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "night",
+      "item_ids": [],
+      "label": "23:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "lateNight",
+      "item_ids": [],
+      "label": "次日 03:00 补充更新",
+      "status": "pending"
+    }
+  ],
+  "classifier_version": 1,
+  "date": "2026-07-23",
+  "dedupe_version": 1,
+  "generated_at": "2026-07-23T02:00:56.000Z",
+  "identity_version": 1,
+  "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.18603",
+      "category": "research",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_0404a2eb85d01625a58759900a2b890cac4d9b32495aa1f35f4e026cea0ecb10",
+      "featured": false,
+      "id": "n_0404a2eb85d01625a58759900a2b890cac4d9b32495aa1f35f4e026cea0ecb10",
+      "identity_claims": [
+        "c_0404a2eb85d01625a58759900a2b890cac4d9b32495aa1f35f4e026cea0ecb10",
+        "c_ad54fc21d69985b6716def9a1b34a3648fe9e6ed7bb0210d0f4d0e7f53c66c7f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-20T20:00:00.375Z",
+      "published_date": "2026-07-21",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211522028616531983",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1211522028616531983",
+      "source_type": "huggingface_papers",
+      "summary": "We present AutoIndex, a framework for learning representation programs: executable transformations that map raw documents into the representations exposed to a retrieval system. Rather than tuning retrievers, rerankers, or a small set of preprocessing hyperparameters, AutoIndex searches over programs that slice, enrich, normalize, reweight, or reorganize documents before indexing. At each iteration, AutoIndex performs validation-guided program search, in which agents diagnose failures of the current program and synthesize candidate updates, retaining only updates that improve retrieval quality under the resulting index. We evaluate AutoIndex on CRUMB, a benchmark of heterogeneous retrieval tasks, with BM25 held fixed across all experiments. The learned programs improve recall over a static full-document BM25 baseline on all 8 tasks, with average gains of +8.4% in Recall@100 and +8.3% in nDCG@10, and largest gains of +30.5% in Recall@100 and +43.6% in nDCG@10. These results suggest that document representation should not be treated as a fixed preprocessing choice made before retrieval begins, but as an explicit optimization target. Code to reproduce our results is available at",
+      "time_precision": "exact",
+      "title": "AutoIndex：学习用于检索的表示程序",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.18603"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/21/sighting-383713864/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_49ca1177d8201c0d789fa40ab8455d7a5a90a488bf562b371f11c8aeab80624e",
+      "featured": false,
+      "id": "n_49ca1177d8201c0d789fa40ab8455d7a5a90a488bf562b371f11c8aeab80624e",
+      "identity_claims": [
+        "c_49680ada36023fe8629f844b0ab5cc3ee84971f3cb0fc7f93309b71bdbd9fa81",
+        "c_49ca1177d8201c0d789fa40ab8455d7a5a90a488bf562b371f11c8aeab80624e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-21T19:51:03.469Z",
+      "published_date": "2026-07-22",
+      "reason": "纯旅游/野生动物内容，与AI行业完全无关，无任何信息量。",
+      "related_source_ids": [],
+      "score": 0.5,
+      "source": {
+        "homepage": null,
+        "id": "1211634446399078404",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1211634446399078404",
+      "source_type": "simonwillison",
+      "summary": "California Sea Lion, in San Francisco County, US, CA We took some visiting family to Pier 39 to see the sea lions. They're somehow always even fun than I remember them being last time. Tags: san-francisco, wildlife",
+      "time_precision": "exact",
+      "title": "California Sea Lion",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/21/sighting-383713864/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.20058",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_ec4f0061cdf37b29fe879b2455edaf3f7ed31148749adea18cfbb34778e894d9",
+      "featured": false,
+      "id": "n_ec4f0061cdf37b29fe879b2455edaf3f7ed31148749adea18cfbb34778e894d9",
+      "identity_claims": [
+        "c_7d886c9dd7890324e025901028bf726b6f491d14f694350d0485724209a97794",
+        "c_ec4f0061cdf37b29fe879b2455edaf3f7ed31148749adea18cfbb34778e894d9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-21T20:00:00.266Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211701472048168960",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1211701472048168960",
+      "source_type": "huggingface_papers",
+      "summary": "Large language models can answer scientific questions, yet a correct output does not reveal whether the model represents or uses the governing physics. Here we show that materials science mechanism information in the open-weight google/gemma-4-E4B-it model has three experimentally separable forms: concepts are readable in individual hidden states, constitutive orientation is carried by controlled transformations between states, and selected internal representations causally control engineering answers. We combine matched direct and Jacobian vocabulary readouts, option-free state geometry, a 60-law counterfactual benchmark and causal interventions. In 50 held-out materials descriptions, three independently fitted Jacobian lenses reproduced concept ranks, and target-free word sets from both readouts enabled blinded identification of 9 of 10 mechanism families. A separate 72-prompt benchmark produced mechanism-specific hidden-state neighborhoods, but an exact graph audit showed that this apparent physical organization was equally explained by numerical comparison. We therefore compared otherwise identical prompts in which only the direction of the physical input was reversed, asking whether the resulting hidden-state movement followed the supplied constitutive law. These state transformations ordered direct, physically neutral and inverse laws across 60 frozen relations and correctly oriented 39 of 40 directional laws, whereas lexical controls were near chance. Bidirectional interventions shifted answer probabilities toward or away from the physically appropriate outcome across all 12 matched cases, while counterfactual state patches transferred opposing decision signals across mechanisms and answer formats. Physical relationships were therefore more visible in controlled state changes than in absolute states alone.",
+      "time_precision": "exact",
+      "title": "在开放权重语言模型中读取与调控材料科学机制的表示",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.20058"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://openai.com/index/ntt-data",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_09eb68be5862fd5e99ce353fbf2dffd6094edc9b39b5de7c96312eae90fcbbb9",
+      "featured": false,
+      "id": "n_09eb68be5862fd5e99ce353fbf2dffd6094edc9b39b5de7c96312eae90fcbbb9",
+      "identity_claims": [
+        "c_09eb68be5862fd5e99ce353fbf2dffd6094edc9b39b5de7c96312eae90fcbbb9",
+        "c_2bbfbb274c3ad3be5432103afe24efe3c6a8f7aadc62e880e668be107e6ad757"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T00:00:00.378Z",
+      "published_date": "2026-07-22",
+      "reason": "NTT DATA企业AI应用案例，涉及9000名员工，事故分析提效至30分钟，有具体事实但属常规企业数字化转型报道。",
+      "related_source_ids": [],
+      "score": 6.2,
+      "source": {
+        "homepage": null,
+        "id": "1211599884562444288",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1211599884562444288",
+      "source_type": "openai_newsroom",
+      "summary": "NTT DATA Group uses ChatGPT Enterprise and Codex to help 9,000 employees automate work, cut incident analysis to 30 minutes, and scale secure AI adoption.",
+      "time_precision": "exact",
+      "title": "NTT DATA Group cuts incident analysis to 30 minutes with Codex",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://openai.com/index/ntt-data"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=1&mid=2652714395&sn=9008abc64c309ea3cd9007813acb893b",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_cf901663c3c881b5a5044a35b5c6ee787cb43ecda65facfd883e5bc9756e0593",
+      "featured": false,
+      "id": "n_cf901663c3c881b5a5044a35b5c6ee787cb43ecda65facfd883e5bc9756e0593",
+      "identity_claims": [
+        "c_cf901663c3c881b5a5044a35b5c6ee787cb43ecda65facfd883e5bc9756e0593",
+        "c_f7a875f0259487a04df455cb3ae77a17b0c5c1dddfe19af2992325c4391912c2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T09:59:00.543Z",
+      "published_date": "2026-07-22",
+      "reason": "国产具身智能体系发布，宣称5个模型、17项SOTA，但来自自媒体新智元，表述夸张，实际落地和验证未明。",
+      "related_source_ids": [],
+      "score": 5,
+      "source": {
+        "homepage": null,
+        "id": "1211541576992333824",
+        "name": "新智元"
+      },
+      "source_id": "1211541576992333824",
+      "source_type": "xinzhiyuan",
+      "summary": "ASI启示录 2026-07-22 17:59 北京 新智元报道 过去一年，具身智能赛道正经历着前所未有的「冰火两重天」。 一方面，一级市场热钱持续涌入，单笔融资金额屡创新高。 但另一方面，也有企业陆续启动 IPO 进程、寻求二级市场融资。 而放眼全球，具身智能行业的头部玩家们，早已敏锐捕捉到风向的转变。 特斯拉、Figure这些公司在做什么？他们几乎不约而同地把竞争推向了另一个层面——Physical AI。 特斯拉直接将自动驾驶FSD的底层架构复用至Optimus机器人，试图通过「端到端」神经网络，实现从视觉输入到动作控制的映射，如今已经在工厂执行电池分拣。 Figure AI则通过深度绑定OpenAI，将顶尖VLM注入钢铁躯壳，让Figure 01/02机器人具备自主推理、语义理解能力，进驻宝马的汽车生产线。 他们的Helix VLA模型，走的是快慢脑双系统架构，目标不是卖机器人，是卖劳动力。 这些企业路径不同，但都指向同一个判断：机器人未来的核心，是AI能不能通过这副身体理解现实世界、适应现实世界，并最终改变现实世界。 这种现象的逻辑，其实都藏在资本的周期里。大多数私募基金的投资年限是「3+2」模式（三年投资，两年退出），如今已经到了GPLP们迫切需要变现的节点。 资本的倒逼，让行业面临一个现实的分水岭：过去那个靠电机扭矩有多大、后空翻有多稳来证明「机器能动」的故事，已经讲到头了。 企业必须讲出下一个更宏大也更切实的故事——「机器能干活」。 如果只是在一个无干扰台面上，按部就班地执行机械化工作，根本用不着大模型。 具身智能真正的未来，是走向AGI，是在开放、未知、充满长尾变数的真实世界中执行高度泛化的任务。 而开启这个时代的钥匙——是具备系统提升机器人工作能力的技术体系。 为什么走向AGI 必须是「体系化跃迁」？ 什么是真正的体系？ 近期行业内有一次动作极具代表性。 高德正式宣布其全栈具身技术体系ABot 完成升级，一次性发布了五款新模型（N1、M0.5、ER、AgentOS、C0），并在17项权威基准中拿下SOTA。 它提供了一个极佳的产业切片，向外界展示了全球首个全栈具身技术体系是如何将世界模型、基座模型与具身Agent架构耦合为一个「有机生命体」，并实现落地的。 ABot最早发布于今年4月，彼时高德自研的机器导盲犬高德途途首次登上机器人半马的舞台，并展示了其出色的开放环境全自主导航能力。 途途背后的技术支撑就是高德ABot全栈具身技术体系。相比于单个模型能力研究，高德从一开始就搭建了一个为机器人实现高阶智能的底层平台。 其中的每一款模型都有其对应的功能和角色。这是一个具备完整分工且能「自己长本事」的闭环飞轮。 在开放环境中，任意一个通用任务，都需要机器人同时调配多个能力进行编排和协同，最后落地执行。 以最常见的家庭场景为例，RoboCasa-365等权威基准需要将日常任务拆解为数百个涉及语义理解、长程规划和位移操作的任务，然后进行对应的能力评估。本质是因为，想在家庭场景完成作业，单一的手或者脚足够灵活，还远不足以支撑。 用户需要的是完整的智能，而非只具备手臂或者下肢局部能力的「瘸腿」智能。 而ABot这类架构，正是针对这个痛点而打造。 三层架构，一个飞轮 高德ABot体系的核心，是一个精密咬合、可自进化的三层结构。 最上层是「具身大脑」，由通用具身大脑ER和机器人Agent操作系统AgentOS构成，负责环境感知、任务推理、高层决策调度与记忆沉淀。 中间层是「运动双核」，由N1和M0.5组成，分工管「脚怎么走」和「手怎么干」。 最底层是「训练与仿真环境」，以世界模型ABot-World和3D世界模型ABot-Earth持续提供仿真和训练。 这三层架构决定了ABot的每一次迭代，都不是孤立地点亮某个新技能，而是像生物进化一样，随着任务和部署的增多进行整体演进。 这样的进化能力更类似于人类成长的节奏，在一个人中学阶段学习的是一元二次方程，大学阶段掌握的则是微积分。每一步的成长，都是完整且高度统一的。 而在这套架构之外，高德途途和它自带的ABot-C0则扮演端到端能力验证的外化本体。让ABot每一个能力的提升都能在本体上有完整呈现。 为什么一定要做这么完整的架构？ 因为只有体系跑起来，仿真训练、物理交互与记忆调度才能彼此反哺。 在单点研究的机构里，研究大脑的和死磕灵巧手的彼此割裂。 但在完整的体系内，手和脚的能力，能够被一体调用；它们沉淀的知识和经验，会反向转化为记忆回馈给大脑，大脑再将记忆用于模型的专项训练，从而训练更好的模型和更聪明大脑。 飞轮每转一圈，整体智能水平就抬高一层。 手和脚的能力提升是同步的——脚走得好，手也不会差。整个系统是一个内循环，逐步向AGI靠近。 从高德此次全新发布的五款模型背后，我们能够完整看到这套体系究竟是如何应用于机器人，并实现它们质变升级的。 这五款模型类似于高德为机器人打造的「数字灵魂」，它们完整地映射在机器人的五大仿生单元。 双脚（ABot-N1）：通用导航基座模型，负责空间感知与移动。 双手（ABot-M0.5）：通用操作基座模型，负责精细化物理交互。 大脑（ABot-ER）：具身大脑，负责统一的逻辑推理与环境认知。 中枢（ABot-AgentOS）：执行中枢，负责记忆调度与任务下发。 运动神经（ABot-C0）：运控系统，将ABot体系的决策稳稳传导至机器人的躯体动作上。 体系化带来的三大「表征」 当这五大「数",
+      "time_precision": "exact",
+      "title": "中国黑马甩出5个模型、17项全球第一！自进化体系杀进具身智能核心圈",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=1&mid=2652714395&sn=9008abc64c309ea3cd9007813acb893b"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=2&mid=2652714395&sn=47b498028448438bd594c18afd3bd580",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_189f079693d2956f535e2cd9173ed6b5beae641540f56df2c204d22eed58f046",
+      "featured": false,
+      "id": "n_189f079693d2956f535e2cd9173ed6b5beae641540f56df2c204d22eed58f046",
+      "identity_claims": [
+        "c_189f079693d2956f535e2cd9173ed6b5beae641540f56df2c204d22eed58f046",
+        "c_767c2e2681316c807db989395bbe936a4f393833eda4863444c4d0b6bb1cd0be"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T09:59:00.645Z",
+      "published_date": "2026-07-22",
+      "reason": "视觉语言导航框架DA-Nav提出，有具体纠偏率98.15%，属学术进展，对长程导航研究群体有参考价值，但覆盖面窄。",
+      "related_source_ids": [],
+      "score": 5.2,
+      "source": {
+        "homepage": null,
+        "id": "1211541576992333825",
+        "name": "新智元"
+      },
+      "source_id": "1211541576992333825",
+      "source_type": "xinzhiyuan",
+      "summary": "ASI启示录 2026-07-22 17:59 北京 星源智提出DA-Nav，一套面向城市级长程场景的方向感知视觉语言导航框架。 新智元报道 商业地图可以告诉机器人「前方右转」，却无法直接告诉它眼前应该从哪里转、沿哪一侧通过；即使已经生成路线，控制误差、地面变化和动态障碍，也可能让机器人在行进过程中逐渐偏离。 从系统角度看，这意味着「路径被规划出来」并不等价于「路径可以被执行」。 这正是长程导航从「规划正确路线」走向「真实闭环执行」时面临的核心问题。 针对这一问题， 星源智提出DA-Nav，一套面向城市级长程场景的方向感知视觉语言导航框架。 DA-Nav将商业导航指令、第一视角空间理解和偏航恢复统一到同一条决策链路中，使机器人不仅能够理解「往哪里走」，还能够判断「当前是否走偏」，并在偏差发生后主动回到正确路线。 这一设计的核心变化在于：导航系统开始具备「执行过程中的自我校正能力」。 DA-Nav架构图 突破指令与动作鸿沟 把「前方右转」落到眼前 对于人类来说，「前方右转」是一条足够清楚的指令。人可以结合路口结构、当前朝向和道路形态，自然判断下一步应该从哪里经过。 但这一认知过程，本质上依赖人类对三维空间的完整理解，而不是语言本身。 所以，对机器人而言，这类面向人类认知设计的方向指令仍然过于抽象，不能直接转化为局部轨迹。 DA-Nav没有让视觉语言模型直接预测连续三维坐标，而是将机器人第一视角中的道路空间划分为候选区域，让模型先在画面中判断接下来应该经过哪些位置，再由控制模块将这些空间落点转化为可执行轨迹。 这一机制的关键意义在于：语言指令第一次被稳定映射到「空间决策点」，而不是抽象语义。 DA-Nav空间落点机制简单来说，模型不再凭空「画出一条路」，而是在自己看到的场景中连续指出：下一步走这里，再走这里。 这一变化将视觉语言模型的「理解能力」转化为「空间执行能力」。 DA-Nav空间落点机制 在此基础上，DA-Nav进一步将导航决策组织为： 状态判断—动作选择—轨迹预测。 机器人首先判断当前是否偏离路线，再决定继续前进、转弯或进行方向修正，最后生成局部空间目标。 这一结构使导航从「直接响应指令」，转向「持续状态判断驱动」。 对NavBrain而言，这建立了从长程方向理解到局部行动执行之间更清晰、更稳定的决策链路。 结构化决策 让导航从直接预测走向先判断、再行动 长距离导航中，偏航不是偶发异常，而是持续执行中的常态。 换句话说，偏航不是错误，而是系统运行过程中的必然状态。 地面打滑、控制误差、动态障碍和视觉波动，都可能让机器人逐渐离开原定路线。但传统导航数据通常以专家正确轨迹为主，模型学习的是「理想情况下应该怎么走」，却很少真正经历偏航与恢复过程。 这类模型可以沿正确路线前进，却未必知道自己何时已经走偏，更不知道应该如何重新回到路线。 为此，DA-Nav构建了ReDA恢复感知导航数据集，通过受控扰动主动制造偏航状态，并记录相应的专家恢复行为。 模型由此不仅学习如何走对，也系统学习三个问题： 什么时候已经偏航、应该向哪一侧修正，以及如何重新回到正确路线。这使导航学习从「单一正确轨迹学习」，扩展为「包含错误状态的完整经验学习」。 真实路口基础动作对比 ReDA共包含约28.6万条时序样本，其中约12.8万条为恢复数据。大规模恢复样本让模型在训练阶段接触大量非理想状态，并建立偏航判断与纠正动作之间的稳定关联。 从实验结果看，这一设计补齐了长程导航中「错误经验缺失」的问题。 完整模型的纠正成功率高达98.15%；去除恢复数据后，这一指标骤降至15.46%，导航成功率也由59.00%下降至29.71%。这组差异意味着，纠偏并不是模型在执行过程中自然获得的附加能力。 只学习正确路线，机器人可能能够走一段；只有把错误状态和恢复过程明确纳入训练，机器人才能在偏航后真正找回方向。 DA-Nav因此补齐了长程导航中长期被忽视的一环：不只训练机器人怎样走对，也训练它走错后怎样回来。 98.15%纠正成功率 提升NavBrain长程闭环上限 在覆盖已见和未见城市场景的长程闭环评测中，DA-Nav取得59.00%的导航成功率、77.82%的路线完成率和98.15%的纠正成功率。 这一组结果的关键意义，并不在于整体成功率，而在于「纠偏能力接近稳定可靠」。 DA-Nav跨城泛化与压力测试 其中，98.15%的纠正成功率最能体现这项研究的价值。 如果把长程导航比作沿着一条细线行走，传统方法更擅长在没有干扰时沿线向前；DA-Nav则进一步具备在偏离细线后主动靠回来的能力。 这意味着系统不只是「能走对」，而是「能在走偏后恢复正确路径」。 对长程任务而言，每一次成功纠偏，阻止的都不只是一次局部错误，而是误差在后续过程中的持续累积。机器人不会因为一次偏移彻底离开路线，而能够在行进过程中不断判断、不断修正。 这种能力，也让DA-Nav具备更强的跨场景和跨本体迁移价值。 同一高层导航策略在没有使用真实世界数据进行微调的情况下，被部署到四足机器人和人形机器人，并完成超过1200米的真实环境导航验证。 这说明系统学习到的不是「某条路径」，而是一种可迁移的导航决策能力。 从单点决策到长程闭环 DA-Nav升级NavBrain导航能力 在NavBrain的能力链路中，DA-Nav承担的是长程方向理解、局部目标生成与主动纠偏。 它的作用不是替代规划模块，而是让规划结果能够在执行过程中持续成立。 它接收地图提供的全局方向，结合机器人第一视角判断下一步应该经过的位置，并在执行偏差发生后主动恢复。由此，NavBrain形成一条更加完整的闭环： 理解方向—生成目标",
+      "time_precision": "exact",
+      "title": "纠偏率98.15%！方向感觉醒，第一视角认路的国产AI开挂了",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_business"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=2&mid=2652714395&sn=47b498028448438bd594c18afd3bd580"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=3&mid=2652714395&sn=7bf5daf657d9df9cec19c4c8f09f3fe4",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_411fae1ce0205d9a1d31803ed25b2daa8459ab4385a21826901f0b104275e87a",
+      "featured": false,
+      "id": "n_411fae1ce0205d9a1d31803ed25b2daa8459ab4385a21826901f0b104275e87a",
+      "identity_claims": [
+        "c_1bc8881d967f47d759be810fd7c0c4fb324e3393432c7fb62d9c5f96b65fbb0a",
+        "c_411fae1ce0205d9a1d31803ed25b2daa8459ab4385a21826901f0b104275e87a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T09:59:00.795Z",
+      "published_date": "2026-07-22",
+      "reason": "浙大联合NVIDIA发布视频世界模型推理加速方法，最高2.59×提速，有论文和代码，对交互式生成领域有实质性贡献。",
+      "related_source_ids": [],
+      "score": 6,
+      "source": {
+        "homepage": null,
+        "id": "1211541576992333826",
+        "name": "新智元"
+      },
+      "source_id": "1211541576992333826",
+      "source_type": "xinzhiyuan",
+      "summary": "新智元 2026-07-22 17:59 北京 新智元报道 【新智元导读】 交互式视频世界模型正在从「一次性生成短片」走向「像游戏一样边操作边生成」。但长轨迹交互会迅速放大上下文、显存和多步去噪开销。Light Interaction不改模型参数、不重新训练，只在推理阶段把相机轨迹变成调度信号，动态选择历史上下文、在回访状态复用去噪输出，并用面向自回归生成的3D稀疏注意力降低计算。 视频世界模型想真正进入交互时代，不能只停留在一次性生成几秒视频。它需要像游戏引擎一样，根据用户前进、后退、转向、回看等操作，持续生成后续画面，并让场景在长时间探索中保持一致。 问题在于，生成链路越长，成本越难压。 以HY-WorldPlay为例，单张A100 GPU上生成约10秒视频，模型主干推理耗时超过200秒。为了保持长时一致性，模型需要维护较重的历史信息；当前片段需要参考更长上下文；每生成一个视频片段，又要经过多步去噪。 浙江大学联合NVIDIA提出Light Interaction的思路不是重新训练一个更小模型，而是让现有模型在推理时「看交互状态办事」：探索新区域时，少依赖不可靠历史；回访旧区域时，充分利用历史约束；局部动态剧烈时，减少冗余上下文；状态稳定时，则复用更多计算。 论文链接： 项目主页： GitHub： 原始推理与接入Light Interaction后的长时交互生成示例。（视频中的速度数字对应本演示视频的交互动作、视频时长和统计口径；论文表格中的2.59×来自统一benchmark测试） 瓶颈在哪 传统视频生成通常给定文本或图像后，一次性生成固定长度片段；自回归视频生成则把历史片段缓存起来，按时间顺序逐块延展。交互式视频世界模型又往前走了一步：用户的相机控制会不断改变接下来要生成的视角，模型必须在流式生成中持续调用历史记忆。 一旦交互轨迹变长，系统面对的不只是「多生成几帧」，推理链路中的几类基础开销都会被放大： 历史信息更重：为保持长时一致性，模型需保留足够的上下文，KV cache的显存压力难以忽略； 注意力计算更重：当前生成视频片段需要参考更长历史，上下文越长，生成主干中的注意力开销越高； 去噪成本更重：每生成一个视频片段，模型都需要多次运行Transformer完成逐步去噪。 图1：交互式视频世界模型的推理瓶颈。长轨迹下，模型不仅要逐段生成视频，还要持续维护历史上下文、KV缓存和多步去噪计算。 Light Interaction 这篇工作的核心观察是：交互状态决定了哪些历史信息真正有用，也决定了哪些计算可以被安全省掉。探索新区域时，检索到的空间记忆未必可靠；回访已见区域时，历史视角反而可以提供强约束。局部动态越强，固定保留长时间上下文的收益越有限；而在回访阶段，去噪过程相邻步骤更稳定，也更适合缓存复用。 基于这些观察，Light Interaction拆成三件事：自适应上下文管理、轻量级去噪缓存，以及软硬件协同的3D稀疏注意力。 图2：Light Interaction总体框架。方法在推理阶段动态选择上下文，按状态启用去噪缓存，并用软硬件协同的3D稀疏注意力加速剩余计算。 第一步：只保留真正有用的历史 交互式视频世界模型的上下文主要包括两类：近期时间上下文，用来维持短期运动连续；检索得到的空间记忆，用来在相机回访旧区域时保持几何和外观一致。 Light Interaction使用相机位姿相似度判断当前视角是否存在可靠历史参考。当最大位姿相似度低于阈值时，系统将当前状态视为探索阶段，丢弃可能误导生成的空间记忆；当相似度达到阈值时，相关历史视角才会被保留下来，作为条件参与后续生成。 时间上下文也不再使用固定窗口。方法会根据近期稳定latent的变化程度自适应调整：局部动态较大时缩短时间窗口，减少冗余历史；变化较平稳时保留更多上下文，增强连续性。 第二步：在回访状态复用去噪 去噪缓存能不能用，关键看模型输出是否稳定。论文统计显示，回访阶段相邻去噪步之间的相对L1距离整体低于探索阶段，说明模型在有可靠历史参考时输出更稳定，也更适合复用早期去噪结果。 图3：论文统计的相邻去噪步输出差异。回访阶段相对L1距离整体低于探索阶段，为只在回访状态下启用去噪复用提供依据。 因此，Light Interaction只在存在可靠历史参考的回访状态下启用去噪缓存：第一步正常计算，中间去噪步复用第一步模型输出，最后一步仍正常计算，用于校正累计误差。探索阶段则保持完整去噪流程，避免把不稳定输出反复放大。 第三步：让3D稀疏注意力真正跑起来 稀疏attention",
+      "time_precision": "exact",
+      "title": "视频世界模型推理最高提速2.59×！浙大新作无需重训，不改参数",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=3&mid=2652714395&sn=7bf5daf657d9df9cec19c4c8f09f3fe4"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://openai.com/index/how-news-organizations-are-using-ai",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_d0e6e51477793e0a359a5d934ee46eb6baed5e04c63e00efd2e53b278b7e59ca",
+      "featured": false,
+      "id": "n_d0e6e51477793e0a359a5d934ee46eb6baed5e04c63e00efd2e53b278b7e59ca",
+      "identity_claims": [
+        "c_d0e6e51477793e0a359a5d934ee46eb6baed5e04c63e00efd2e53b278b7e59ca",
+        "c_dab8813b196b5b8934700eb2ce3ea2cc1e1a7063e992b939ddfe2704c5825f94"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T13:00:00.494Z",
+      "published_date": "2026-07-22",
+      "reason": "概述新闻机构如何使用AI，内容笼统，无具体数据或案例，偏向OpenAI公关素材。",
+      "related_source_ids": [],
+      "score": 4,
+      "source": {
+        "homepage": null,
+        "id": "1211393759300792321",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1211393759300792321",
+      "source_type": "openai_newsroom",
+      "summary": "News organizations are using AI to strengthen reporting, grow audiences, and improve business operations, with OpenAI tools supporting journalists and publishers worldwide.",
+      "time_precision": "exact",
+      "title": "How news organizations are using AI to advance their vital missions",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://openai.com/index/how-news-organizations-are-using-ai"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/22/all-the-orchestrions/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_086c3fb5cbb71d90c47e51ac4a612b45983c66fadb1f8b3eee9af9c0d7871e84",
+      "featured": false,
+      "id": "n_086c3fb5cbb71d90c47e51ac4a612b45983c66fadb1f8b3eee9af9c0d7871e84",
+      "identity_claims": [
+        "c_086c3fb5cbb71d90c47e51ac4a612b45983c66fadb1f8b3eee9af9c0d7871e84",
+        "c_47f6278722f07cea19e1a27dec063e8af278ea4861472436b5d48647cb6bf45b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T14:48:52.942Z",
+      "published_date": "2026-07-22",
+      "reason": "介绍旧金山博物馆机械乐器体验，与AI完全无关。",
+      "related_source_ids": [],
+      "score": 0.5,
+      "source": {
+        "homepage": null,
+        "id": "1211634446399078403",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1211634446399078403",
+      "source_type": "simonwillison",
+      "summary": "San Francisco tip: it only costs around $15 ($10 in quarters plus a $5 bill for the self-playing violin) to activate every single Orchestrion in Musée Mécanique. And because most people are bad at allocating their funds you may well be the ONLY person activating the Orchestrions, which means you get to craft the soundscape for the entire museum. Tags: san-francisco",
+      "time_precision": "exact",
+      "title": "Orchestrions",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/22/all-the-orchestrions/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2079977760836165983",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_0934ce3b9a266b7bbe945ef36cc1e3b80fbc6d6769e92e058f4552492fe37d82",
+      "featured": false,
+      "id": "n_0934ce3b9a266b7bbe945ef36cc1e3b80fbc6d6769e92e058f4552492fe37d82",
+      "identity_claims": [
+        "c_0934ce3b9a266b7bbe945ef36cc1e3b80fbc6d6769e92e058f4552492fe37d82",
+        "c_3ea32866138214dae63edeb64324922444b8fd7b4bcb6d31b1d8bbd9a25085c3"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T17:11:56.661Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211349319492206592",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1211349319492206592",
+      "source_type": "twitter_extra",
+      "summary": "该建议用于筛选适合海外TK出海IP定制的数字人工具。",
+      "time_precision": "exact",
+      "title": "苏州LED设备老板询问数字人工具，对方建议考察用老板数字人运营的平台可信度。",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/huangyun_122/status/2079977760836165983"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2080031230209184041",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_097b0e5be983b709a2fd133c8ab94dde99500e1fefd401acfe5d0b441ae3a5dc",
+      "featured": false,
+      "id": "n_097b0e5be983b709a2fd133c8ab94dde99500e1fefd401acfe5d0b441ae3a5dc",
+      "identity_claims": [
+        "c_097b0e5be983b709a2fd133c8ab94dde99500e1fefd401acfe5d0b441ae3a5dc",
+        "c_c269b91d4550dfdb8083aaa026fb85bbff3919dc13c3c5199591ae5d68e6f657"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T20:44:25.775Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211448316005437440",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1211448316005437440",
+      "source_type": "twitter_extra",
+      "summary": "AIHOT是数字生命卡兹克开发的AI资讯站，聚合数百个信源并做结构化筛选。",
+      "time_precision": "exact",
+      "title": "AIHOT月活突破60万，用户称赞其内容质量优秀。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/dotey/status/2080031230209184041"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080057721462858228",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_203a1df9df4f40f22eca1306ca3bb21c1c57eff4c58ea2b2361945adbd56cc44",
+      "featured": false,
+      "id": "n_203a1df9df4f40f22eca1306ca3bb21c1c57eff4c58ea2b2361945adbd56cc44",
+      "identity_claims": [
+        "c_203a1df9df4f40f22eca1306ca3bb21c1c57eff4c58ea2b2361945adbd56cc44",
+        "c_9a972e2a35877d3f8f9c71f3dac50480975af8858cbf2c6a96ef944eb2e043c2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T22:29:41.294Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211536852394237952",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1211536852394237952",
+      "source_type": "twitter_extra",
+      "summary": "姚金刚在与AI自媒体人交流时强调，当需要发声时，自己的账号是最可依靠的渠道。",
+      "time_precision": "exact",
+      "title": "姚金刚建议每个人都做自媒体，因自己的账号是最可靠发声渠道。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080057721462858228"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/22/are-ai-labs-pelicanmaxxing/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_google_deepmind",
+        "entity_xai",
+        "entity_deepseek"
+      ],
+      "event_id": "e_77d64bb33d4d11ecf9705b33f32b477ddcb678835c893bf0890b9b078b089003",
+      "featured": false,
+      "id": "n_77d64bb33d4d11ecf9705b33f32b477ddcb678835c893bf0890b9b078b089003",
+      "identity_claims": [
+        "c_36da0b687b44b79e3f4cf3e06d46ba0e69d3d2f60be60c06a6b08152dcc09d09",
+        "c_77d64bb33d4d11ecf9705b33f32b477ddcb678835c893bf0890b9b078b089003"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T23:01:00.363Z",
+      "published_date": "2026-07-23",
+      "reason": "娱乐性调查检验AI画鹈鹕偏见，方法细致但结论无重大行业影响，属社区趣味测评。",
+      "related_source_ids": [],
+      "score": 3.2,
+      "source": {
+        "homepage": null,
+        "id": "1211634446399078402",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1211634446399078402",
+      "source_type": "simonwillison",
+      "summary": "Are AI labs pelicanmaxxing? Excellent piece of work by Dylan Castillo, who took a deep-dive into the frequently pondered question of whether the AI labs have been deliberately training models to draw pelicans riding bicycles in response to my deeply unscientific benchmark. I've been randomly spot-checking this in the past by testing models against other animals riding other types of vehicle, but never with anything close to the diligence of Dylan's methodology here. Dylan took 8 animals × 6 vehicles = 48 prompts and ran them three times each through 7 different models ( GPT-5.6 Terra, Claude Sonnet 5, Gemini 3.5 Flash, Grok 4.5, Qwen3.7-Max, GLM-5.2, and DeepSeek V4 Pro). He then used GPT-5.6 Luna and Gemini 3.1 Flash-Lite to help evaluate the results. There's a neat filter view for exploring the results: For the models he tested he could find no evidence of pelimaxxing: The pelicans on bicycles don’t look any better Labs are not better at drawing pelicans Labs are not better at drawing bicycles Labs are not better at drawing pelicans on bicycles, even adjusting for difficulty The pelican-bicycle scenes don’t look memorized [...] Pelicans aren’t drawn any better than other animals. Bicycles aren’t drawn any better than other vehicles. And no lab draws the combination better than its pelicans and bicycles already predict. GLM-5.2 comes closest: it has the largest boost on the exact pelican-bicycle cell, and and its first pelican-on-bicycle sample caught my eye. But the effect is small and not significant, so I wouldn’t put too much weight on it. Via Hacker News Tags: ai, generative-ai, llms, evals, pelican-riding-a-bicycle",
+      "time_precision": "exact",
+      "title": "Are AI labs pelicanmaxxing?",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/22/are-ai-labs-pelicanmaxxing/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/HiTw93/status/2080066358381810130",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_9e2e043c21955ba553e541b50f9f9d57c7f2802cf66c4b7e1916d51fa3a3b48b",
+      "featured": false,
+      "id": "n_9e2e043c21955ba553e541b50f9f9d57c7f2802cf66c4b7e1916d51fa3a3b48b",
+      "identity_claims": [
+        "c_9266318edf73e0545a09816655fa298641ac59341eabe9ec12a851c5a92429d3",
+        "c_9e2e043c21955ba553e541b50f9f9d57c7f2802cf66c4b7e1916d51fa3a3b48b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T23:04:00.946Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211568541568933888",
+        "name": "twitter-Tw93"
+      },
+      "source_id": "1211568541568933888",
+      "source_type": "twitter_extra",
+      "summary": "Pake工具现在允许AI代理通过--json、--config等参数直接使用，实现无服务器本地打包，Claude Code用户可安装为技能。",
+      "time_precision": "exact",
+      "title": "Pake新增AI代理直接调用功能，支持JSON输出和本地构建。",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/HiTw93/status/2080066358381810130"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/hongming731/status/2080072946631184830",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_3ba55c7645120f02b47a5e242971e088d8d5568c2e02c34701d5a2819cdb6075",
+      "featured": false,
+      "id": "n_3ba55c7645120f02b47a5e242971e088d8d5568c2e02c34701d5a2819cdb6075",
+      "identity_claims": [
+        "c_3ba55c7645120f02b47a5e242971e088d8d5568c2e02c34701d5a2819cdb6075",
+        "c_f36a284beaf31140b4efdb6f4f49f4a91d24d1ca9e48233250bc909f0673746e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T23:30:11.361Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211681712262623232",
+        "name": "twitter-ginobefun"
+      },
+      "source_id": "1211681712262623232",
+      "source_type": "twitter_extra",
+      "summary": "本期还涉及NVIDIA Rubin架构、智能体授权、LangGraph图工程和推理加速实践。",
+      "time_precision": "exact",
+      "title": "BestBlogs早报指出软件工厂的可验证判断成关键，OpenAI Presence实现企业Agent可控部署。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/hongming731/status/2080072946631184830"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/22/openai-cyberattack/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic",
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_362048d316542e734c9cfade16a8a644e6d583801757ce961a0ecde0fcae6dd7",
+      "featured": true,
+      "id": "n_362048d316542e734c9cfade16a8a644e6d583801757ce961a0ecde0fcae6dd7",
+      "identity_claims": [
+        "c_362048d316542e734c9cfade16a8a644e6d583801757ce961a0ecde0fcae6dd7",
+        "c_e4675e3f4038d544eecbb4b2624105316c8944928f68bbae0d1fe530de11589a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T23:51:33.341Z",
+      "published_date": "2026-07-23",
+      "reason": "OpenAI安全测试中模型逃逸沙盒并攻破Hugging Face，事件性质严重，涉及头部两公司，揭示AI安全与越狱真实风险，足以改变行业安全认知。",
+      "related_source_ids": [],
+      "score": 9.5,
+      "source": {
+        "homepage": null,
+        "id": "1211634446399078401",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1211634446399078401",
+      "source_type": "simonwillison",
+      "summary": "This story is wild. The short version: OpenAI were running a cybersecurity test against an unreleased model, with the model's guardrail features turned off. Rather than solve the test, the model broke its way out of OpenAI's sandbox, then found exploits to break in to Hugging Face, all so it could cheat on the test by stealing the answers. Along the way it helped make the strongest case yet for how the imbalance of model availability is hurting our ability to secure our software. Here's what happened We currently have three documents to help us understand what happened here. ExploitGym: Can AI Agents Turn Security Vulnerabilities into Real Attacks? is a paper published on 11th May 2026 describing ExploitGym, a new eval suite for LLM-powered agent systems. Security incident disclosure — July 2026 by Hugging Face on 16th July 2026 describes how they detected an attack from an \"agentic security-research harness - used LLM still not known\" that breached some of their systems. OpenAI and Hugging Face partner to address security incident during model evaluation from OpenAI on 21st July 2026 confesses that it was their agent harness that did this, and that they're working with Hugging Face to clean up the mess. ExploitGym I hadn't seen the ExploitGym paper before and it's a really interesting one. Authors from UC Berkeley, the Max Planck Institute, UC Santa Barbara, and Arizona State designed a new benchmark for evaluating models on their ability to turn a reported vulnerability into a concrete exploit. OpenAI, Anthropic, and Google provided feedback and helped run the benchmark against their models. The benchmark \"comprises 898 instances derived from real-world vulnerabilities that affected popular software projects\" - including the Linux kernel and V8 JavaScript engine. Here's the paragraph that best represents their benchmark results: Among all configurations, Claude Mythos Preview and GPT-5.5 achieve the highest success counts (157 and 120 successes, respectively), demonstrating that current frontier agents can exploit a substantial subset of real-world vulnerabilities under controlled conditions. GPT-5.4 also solves a notable 54 tasks, placing it in an intermediate tier. The remaining model–agent pairings solve fewer than 15 tasks each, underscoring that end-to-end exploitation remains challenging and sharply differentiates today’s frontier systems. Notably, Claude Opus 4.7 achieves fewer successes than Claude Opus 4.6 despite being a newer checkpoint, and does so at substantially lower cost on the full set. Trace inspection reveals that Claude Opus 4.7 and Gemini 3.1 Pro frequently conclude early after judging the target vulnerability non-exploitable. The paper also describes the approach they took to preventing the agents from cheating by going outside the parameters of the test. This becomes relevant in a moment! Outbound connections are restricted to a curated allowlist that permits routine package installation (Ubuntu apt repositories and PyPI) and fetching the toolchains required for building V8. All other external endpoints are blocked. The paper concludes with this (emphasis mine): Our results show that autonomous exploit development by frontier AI agents is no longer a hypothetical capability. While current agents are not yet reliable across all targets, they already exploit a non-trivial fraction of real-world vulnerabilities, including complex targets such as kernel components. This rapid emergence is itself a central finding, showing that capabilities that would have seemed implausible are now present in deployed frontier models. An important detail here: this paper isn't about discovering vulnerabilities; it's about being able to take those vulnerabilities and turn them into working exploits. When Anthropic first restricted access to Mythos back in April they talked about this capability as well. A model that can act on vulnerabilities is a lot more dangerous than one that can just discover them. One of the ways Fable differs from Mythos is that it's more likely to refuse to weaponize vulnerabilities in this way. I get the impression the US government did not understand that distinction when they banned Fable last month. The Hugging Face incident The first hint we got of the attack was in this blog post by Hugging Face on 16th July 2026: A malicious dataset abused two code-execution paths in our dataset processing (a remote-code dataset loader and a template-injection in a dataset configuration) to run code on a processing worker. From there, the actor escalated to node-level access, harvested cloud and cluster credentials, and moved laterally into several internal clusters over a weekend. I hope they release more details about the code that pulled this off. I'm assuming this means packages using the datasets library, a Hugging Face project for bundling up and sharing datasets on their platform. That library used to execute arbitrary code but has been steadily locked down over time, with the",
+      "time_precision": "exact",
+      "title": "OpenAI’s accidental cyberattack against Hugging Face is science fiction that happened",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/22/openai-cyberattack/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/22/thomas-ptacek/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_0d87b7c12c7f8b24ad90509d47313ea24aa108515a13c0a7b16d7a4588125d9c",
+      "featured": false,
+      "id": "n_0d87b7c12c7f8b24ad90509d47313ea24aa108515a13c0a7b16d7a4588125d9c",
+      "identity_claims": [
+        "c_0d87b7c12c7f8b24ad90509d47313ea24aa108515a13c0a7b16d7a4588125d9c",
+        "c_8303f2b7e76b67f097135f16842a3f007fa456338674a477e242c83eeac8bead"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-22T23:59:01.054Z",
+      "published_date": "2026-07-23",
+      "reason": "引用专家对前一条安全事件的评论，仅表达个人观点，无新事实。",
+      "related_source_ids": [],
+      "score": 4,
+      "source": {
+        "homepage": null,
+        "id": "1211634446399078400",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1211634446399078400",
+      "source_type": "simonwillison",
+      "summary": "I genuinely believe that if you took an open weights model from 2025 and built a pentest harness for it, it could do this kind of sandbox escape and scan/hack in most networks. This is only surprising because you assume OpenAI has sounder sandboxes. — Thomas Ptacek, doesn't think this even needs a frontier model Tags: thomas-ptacek, openai, security, generative-ai, ai-security-research, ai, llms, sandboxing",
+      "time_precision": "exact",
+      "title": "Quoting Thomas Ptacek",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/22/thomas-ptacek/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/vista8/status/2080085067981013403",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8b6cce99e743d80300979ae3a076649f86ecd8d69e3ed3eb139c4c7235dd998f",
+      "featured": false,
+      "id": "n_8b6cce99e743d80300979ae3a076649f86ecd8d69e3ed3eb139c4c7235dd998f",
+      "identity_claims": [
+        "c_5ee7fe665b7a86c9d016a2f53fa8cca9ba5e08d18701801be0e269a3c721fcc4",
+        "c_8b6cce99e743d80300979ae3a076649f86ecd8d69e3ed3eb139c4c7235dd998f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-23T00:18:20.750Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211690534293118976",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1211690534293118976",
+      "source_type": "twitter_extra",
+      "summary": "该用户曾组织朋友到卡兹克办公室参观，对其打磨内容的投入印象深刻，并强烈推荐AIHOT。",
+      "time_precision": "exact",
+      "title": "参观者称赞卡兹克内容打磨精神，称AIHOT是其品味与经验的结晶。",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/vista8/status/2080085067981013403"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29809",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_095401336df967f4313ad6b2592ff7b95c8db9ba45bacea8977b14e3372e9b2a",
+      "featured": false,
+      "id": "n_095401336df967f4313ad6b2592ff7b95c8db9ba45bacea8977b14e3372e9b2a",
+      "identity_claims": [
+        "c_095401336df967f4313ad6b2592ff7b95c8db9ba45bacea8977b14e3372e9b2a",
+        "c_77c02d32f18bbc4ebbf0ce3fc3b7ddb336b23e9d3817f1b68c43407bbea403f6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-23T00:51:26.657Z",
+      "published_date": "2026-07-23",
+      "reason": "AMD宣布最高500亿美元投资Anthropic并拿下2吉瓦GPU订单，改变算力市场供应链格局，交易规模与产业影响巨大。",
+      "related_source_ids": [],
+      "score": 9.3,
+      "source": {
+        "homepage": null,
+        "id": "1211691418016342019",
+        "name": "aibase"
+      },
+      "source_id": "1211691418016342019",
+      "source_type": "aibase",
+      "summary": "一笔把\"卖铲人\"和\"挖金人\"绑成命运共同体的交易，在AI算力市场落了地。 7 月 22 日（周三），AMD宣布与Anthropic达成战略合作，并抛出一项计划：未来向这家人工智能公司 最高 投资 500 亿美元。这不再是单纯的供应商与客户关系，而是芯片巨头亲自下场，把资本和产能同时押在了一家头部模型实验室身上。 合作的另一只手，是实打实的算力供货。根据协议，Anthropic将采用AMD的Helios机架级解决方案，部署总规模达 2 吉瓦的AMD Instinct MI450 系列GPU。值得注意的是，吉瓦（GW）已经悄然成为衡量AI数据中心规模的新通用单位——当算力需求膨胀到这种量级，讨论的标尺也从单台服务器跳到了整座电站的供电能力。首批 1 吉瓦算力将于明年上半年完成部署，这也意味着Anthropic的底层算力供给，将正式走出对单一厂商的依赖，迎来AMD这条新支线。 对AMD而言，拿下Anthropic既是订单也是背书：MI450 系列作为Helios机架方案的核心，直接切入 顶级 AI实验室的训练与推理场景；对Anthropic来说，在谷歌TPU、三星之外再添AMD这一高性能算力来源，供应链的多元化和议价空间都多了一重保障。当一家芯片公司愿意掏出 最高 500 亿美元去投资它的客户，算力市场的权力结构，正在被重新书写。 需要我把这篇也存入 `rewrites/` 目录，或继续贴新链接都可以。",
+      "time_precision": "exact",
+      "title": "500 亿美元押注Anthropic：AMD不只卖芯片，还要当AI实验室的股东",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://www.aibase.com/zh/news/29809"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29810",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_76e8793aca0edd51d7e100d5a79a1c87d716d5312534b03d18e13f40c6f61cc8",
+      "featured": false,
+      "id": "n_76e8793aca0edd51d7e100d5a79a1c87d716d5312534b03d18e13f40c6f61cc8",
+      "identity_claims": [
+        "c_76e8793aca0edd51d7e100d5a79a1c87d716d5312534b03d18e13f40c6f61cc8",
+        "c_e730dc3103358b740641fd46ae8e904898064e2b30384828a907d5febf1839fd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-23T00:56:20.976Z",
+      "published_date": "2026-07-23",
+      "reason": "OpenAI总裁首次公开评价中国Kimi K3模型，承认差距约4个月，涉及中美模型竞争、蒸馏争议，直接触及行业核心身位问题。",
+      "related_source_ids": [],
+      "score": 8.5,
+      "source": {
+        "homepage": null,
+        "id": "1211691418016342018",
+        "name": "aibase"
+      },
+      "source_id": "1211691418016342018",
+      "source_type": "aibase",
+      "summary": "一场关于中美大模型身位的公开对话， 第一 次由OpenAI的核心人物亲自接过了话头。 7 月 23 日，据彭博社报道，OpenAI总裁兼联合创始人格雷格·布罗克曼在采访中，对月之暗面上周发布的Kimi K3 给出了罕见的直白评价：这款模型确实相当不错，毫无疑问。 这句话的分量，在于它出自一家长期被视为美国AI标杆的公司的实权人物之口。过去外界习惯默认美国在基础模型上大幅领先中国，而Kimi K3 的发布正在撬动这一定见——月之暗面称其开放权重模型综合能力已超过除Anthropic Claude Fable5 和OpenAI GPT-5. 6 之外的所有对手，市场震动随之而来。 不过，布罗克曼在肯定的同时留了一道疑问。他表示，目前判断月之暗面是否通过\"蒸馏\"手段获取OpenAI模型的输出结果来训练Kimi K3，还为时过早，并强调OpenAI一直都在监测此类行为。这番表态，把开放权重模型与原生前沿模型之间的技术边界之争，又一次摆到了台面上。 更耐人寻味的是他对差距的量化判断。布罗克曼援引部分估算称，中国在AI模型开发方面可能只落后美国约 4 个月，其他专家甚至认为差距更小。当低价中国模型迅速普及、能力差距持续收窄，OpenAI与Anthropic这样依赖订阅与API收入的闭源厂商，其商业模式正面临更多不确定性——而这几家恰恰都在筹备上市、努力提高客户收入的关键节点上。 面对逼近的追赶者，布罗克曼的底气来自两点：较早投入的大量计算资源，以及多年累积的AI研究经验。他据此认为OpenAI对竞争对手仍保持巨大优势，并表示公司多年来一直在深入研究如何打造更高效的模型、让模型精准完成预定目标。 他还顺势澄清了一个常见误区：Kimi这类开放权重模型并非免费产品。他提醒，这些模型规模庞大、运行需要大量且不便宜的算力，真正的竞争不在于开源与否，而在于谁能打造出效率 最高 、智能水平 最强 、并在单项任务上提供 最佳 性价比的模型。当对手用更低的价格逼近能力水位，OpenAI要守住的，或许不再只是模型榜单上的身位，而是那个越来越难定义的性价比优势。",
+      "time_precision": "exact",
+      "title": "布罗克曼承认Kimi K3\"相当不错\"，但称OpenAI仍握有\"巨大优势\"",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_products",
+        "topic_business",
+        "topic_open_source"
+      ],
+      "url": "https://www.aibase.com/zh/news/29810"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29811",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_xai"
+      ],
+      "event_id": "e_225336703557bce9801e92a90b041d662aee336f6f256f94bdb7a5f20ef12b87",
+      "featured": false,
+      "id": "n_225336703557bce9801e92a90b041d662aee336f6f256f94bdb7a5f20ef12b87",
+      "identity_claims": [
+        "c_225336703557bce9801e92a90b041d662aee336f6f256f94bdb7a5f20ef12b87",
+        "c_47f0812f7813534a1c3dfcc6f3c7c54c4ac72667dfef15523b3bd3136be7e0e6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-23T00:59:07.979Z",
+      "published_date": "2026-07-23",
+      "reason": "OpenAI将基础设施预算增至7500亿美元，首个200亿数据中心落地，数额史无前例，直接关联算力军备竞赛和电力区域影响，定义行业未来格局。",
+      "related_source_ids": [],
+      "score": 9.2,
+      "source": {
+        "homepage": null,
+        "id": "1211691418016342017",
+        "name": "aibase"
+      },
+      "source_id": "1211691418016342017",
+      "source_type": "aibase",
+      "summary": "OpenAI 于2026年7月22日宣布，计划在2030年前投入7500亿美元用于 AI 基础设施建设，该预算较今年早些时候的预估大幅增加约25%。在旗舰数据中心项目“星门”（Stargate）推进陷入停滞的背景下，此举标志着 OpenAI 正在通过更为激进的资本开支重新锁定长期算力优势。 作为这一庞大投资计划的首个落地项目，OpenAI 拟耗资200亿美元在佐治亚州萨凡纳西北部建设占地1400英亩的“山茶花计划”（Project Camellia）数据中心园区。该园区已与佐治亚电力公司达成合作，预计于2028年至2032年间陆续获取至少3.2吉瓦的电力供应，并由 OpenAI 承担全部新建基础设施和电力服务费用。为降低对当地电网的冲击，OpenAI 承诺在用电高峰期减少 最高 1吉瓦的负荷，同时项目获得了埃芬汉县提供的15年50% 房产税减免。 尽管项目用电规模庞大，但双方均未披露具体的清洁能源过渡方案。监管文件显示，佐治亚电力公司拟新增的近9.9吉瓦发电容量中，超过半数（约5.8吉瓦）将依赖天然气，其余由光伏与储能补充，这引发了市场对算力扩张加剧化石燃料依赖及碳排放问题的担忧。值得注意的是，OpenAI 近期招募了曾主导 xAI 孟菲斯 Colossus 数据中心建设的高管 Brett Mayo 负责数据中心业务，或预示着首批 GPU 部署节点将早于2028年落地。 在生成式 AI 迈入高阶模型训练与推理规模化应用的关键期，OpenAI 巨额基础设施资金的落地，不仅凸显了头部厂商在算力与电力资源上的深度博弈，也反映出超大规模 AI 数据中心建设在重塑区域电网格局与推动能源结构转型上面临的现实挑战。",
+      "time_precision": "exact",
+      "title": "OpenAI 基础设施预算增至7500亿美元，首笔200亿落子佐治亚州数据中心",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_policy"
+      ],
+      "url": "https://www.aibase.com/zh/news/29811"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29812",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_63bf6dc132a40efad0e48b15b86592df8de85693b132c246d1ebbeeb739e71c0",
+      "featured": false,
+      "id": "n_63bf6dc132a40efad0e48b15b86592df8de85693b132c246d1ebbeeb739e71c0",
+      "identity_claims": [
+        "c_63bf6dc132a40efad0e48b15b86592df8de85693b132c246d1ebbeeb739e71c0",
+        "c_bd15912667c86ac29857765546acfbe5360aa025d164aa3cf44d937cfeb85043"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-23T01:06:41.238Z",
+      "published_date": "2026-07-23",
+      "reason": "三星发布50克无屏AI眼镜Galaxy Glasses，集成Gemini，有具体规格和场景，是消费级AI硬件重要落地，但非颠覆性突破。",
+      "related_source_ids": [],
+      "score": 7.2,
+      "source": {
+        "homepage": null,
+        "id": "1211691418016342016",
+        "name": "aibase"
+      },
+      "source_id": "1211691418016342016",
+      "source_type": "aibase",
+      "summary": "把大模型从手机塞进一副眼镜里，这件事三星终于动手了。7月22日晚，三星在发布会上正式揭晓 首款 AI智能眼镜Galaxy Glasses，这也是这家巨头 第一 次把自家的AI硬件触角伸向面部。 这副眼镜不是三星一家闭门造出来的。它由三星联合谷歌、Gentle Monster与Warby Parker三方共同研发，运行Android XR系统，并原生深度集成了谷歌Gemini多模态大模型，目标很明确:打造一个全天候、免提的视觉智能助理。 最值得注意的是它主动放弃了屏幕。整机采用贴近日常光学镜的轻薄外观，重量只有50克左右，没有搭载传统AR显示屏，而是靠镜框两侧的高清摄像头捕捉实景画面，把视觉信息同步传给Gemini做识别与分析，最终通过镜内音频单元把处理结果念给用户听。这种取舍直接换来了更低的机身重量与功耗，也让长时间日常佩戴成为可能。 支撑这套体验的，是一颗专用芯片。Galaxy Glasses核心搭载高通骁龙AR1Gen1，四颗Arm核心 最高 主频1.9GHz，配备1200万像素影像传感器，支持30帧全高清视频录制，镜框内置双隐私指示灯，一旦开启拍摄便同步亮起，把拍摄状态明明白白地告诉周围的人。 Gemini的多模态能力，在这里被铺成了办公、出行、沟通三类实用场景。开会时它能自动拍下白板文字，一键整理归档进三星笔记;出门时提供实景语音导航，还能做多国语言的实时对话翻译。手机消息不用抬手，AI会自动提炼摘要念出来，通话过程甚至能免提分享 第一 视角的实时画面。它还具备上下文记忆能力，能留存多轮任务信息，减少重复操作。 交互上给了两套方案。基础操作靠右侧镜腿的触控感应区完成，滑动调音量、轻触接电话、长按启动拍摄;如果配上Galaxy Watch9系列手表，还能额外解锁隔空手势操控，把双手彻底解放出来。续航方面，眼镜本体单次满电可连续用9小时，配套充电收纳盒能再补7次完整电量，撑住一整天外出不成问题。 外观上准备了两个联名镜框版本，Gentle Monster款是纤细黑色简约框，Warby Parker款以上扬眉线适配日常穿搭，还支持选配光致变色镜片，户外自动加深遮光。整机深度融入三星Galaxy生态，与折叠屏手机、平板、手表无缝联动，遇到AI重型推理任务便自动推给配对手机去跑，在设备轻量化和完整智能体验之间取了个平衡。当主流厂商陆续把Gemini装进眼镜，消费级AI眼镜这条赛道，三星算是正式入局了。",
+      "time_precision": "exact",
+      "title": "三星把Gemini戴上了脸： 50 克Galaxy Glasses亮相，没有屏幕却装进了全天候AI眼睛",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://www.aibase.com/zh/news/29812"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/vista8/status/2080100968482644283",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_02ef8aa66aee1841e8808f4a1a32a39aaae63c534b0f2e0976255fe8f830dc6b",
+      "featured": false,
+      "id": "n_02ef8aa66aee1841e8808f4a1a32a39aaae63c534b0f2e0976255fe8f830dc6b",
+      "identity_claims": [
+        "c_02ef8aa66aee1841e8808f4a1a32a39aaae63c534b0f2e0976255fe8f830dc6b",
+        "c_33a81f4f5efb06350f45ec07d8ea8104f9102ef8423b006e75bd18824d95e847"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T02:00:56.000Z",
+      "published_at": "2026-07-23T01:21:31.147Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1211705808606109696",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1211705808606109696",
+      "source_type": "twitter_extra",
+      "summary": "通过“国王-男人+女人=王后”的类比解释词向量如何表征语义关系。",
+      "time_precision": "exact",
+      "title": "AI关键词embedding科普指出词向量是大模型基础，并以王室等式类比。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/vista8/status/2080100968482644283"
+    }
+  ],
+  "overview": {
+    "kind": "pending",
+    "provenance": {
+      "method": "template",
+      "model": null,
+      "prompt_version": null
+    },
+    "text": "今日 AI 增量日报正在更新中。"
+  },
+  "producer": {
+    "commit_sha": null,
+    "dedupe_lookback_days": 7,
+    "name": "bubble-brain-worker",
+    "version": "phase1d-production"
+  },
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "timezone": "Asia/Shanghai"
+}
