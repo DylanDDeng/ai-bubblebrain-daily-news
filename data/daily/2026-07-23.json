@@ -53,7 +53,7 @@
         "n_45e8a4909fec67ab7af9fa531734a17d7866386dd6ddb3f02d411bf62abd5073",
         "n_4db08647b36cbe5f263262591b3bd1e314c2a9482933089befa642574e7de8c1"
       ],
-      "label": "10:00 更新",
+      "label": "08:00 更新",
       "status": "completed"
     },
     {
@@ -104,7 +104,7 @@
         "n_4be653e20727726a60b33aac50eb016f405f5ebeef126c81b5d93fa302b39581",
         "n_984ebd78a6fc9244e0762d18770f0e17fc4277c4ddd9973c120c792fa95b8f4a"
       ],
-      "label": "15:00 更新",
+      "label": "14:00 更新",
       "status": "completed"
     },
     {
@@ -113,21 +113,29 @@
       "item_ids": [
         "n_1380741f49844843dcb51fddeff04234aced4bf026843c0967fbc2eb48303516"
       ],
-      "label": "23:00 更新",
+      "label": "22:00 更新",
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-23T18:00:56.000Z",
       "id": "lateNight",
-      "item_ids": [],
-      "label": "次日 03:00 补充更新",
-      "status": "pending"
+      "item_ids": [
+        "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+        "n_c8c53e5cdeb0a7b8e4719eaac96921af70b8e311dab31f19cdd4f2913266cca4",
+        "n_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+        "n_7d8edb70d1b9642767b1a87cb63bb0d843c039c79bc08eb2c97f712d4739dc43",
+        "n_e575f5ad160d35945dff0a1d2eca836d5c37032a4211a270ba67e7a37afcdf31",
+        "n_6679d96432418d01d1315b15d0f6f2b82b4cedc8456f52a1e3ec1e24e48c666d",
+        "n_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe"
+      ],
+      "label": "次日 02:00 补充更新",
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-23",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T14:00:05.000Z",
+  "generated_at": "2026-07-23T18:00:56.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -3618,6 +3626,273 @@
         "topic_open_source"
       ],
       "url": "https://x.com/gdb/status/2080149982359831017"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Khazix0918/status/2080022092498768176",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+      "featured": false,
+      "id": "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+      "identity_claims": [
+        "c_3392f2a489cbb38dfcf2836eb2e4c48465aac7aa0dacb93c3d1024b9e37b2b71",
+        "c_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T18:00:56.000Z",
+      "published_at": "2026-07-22T20:08:06.995Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212566253697146882",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1212566253697146882",
+      "source_type": "kazike_x",
+      "summary": "该站经过数百信源实时抓取、清洗、聚类等复杂后端流程优化，被作者称为对人类和Agent体验最好的AI资讯网站，未来还有新功能推出。",
+      "time_precision": "exact",
+      "title": "AI资讯站AIHOT月活跃用户突破60万，创始人完成全面优化后公开发布并承诺永久免费。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/Khazix0918/status/2080022092498768176"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://openai.com/index/health-in-chatgpt",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_c8c53e5cdeb0a7b8e4719eaac96921af70b8e311dab31f19cdd4f2913266cca4",
+      "featured": false,
+      "id": "n_c8c53e5cdeb0a7b8e4719eaac96921af70b8e311dab31f19cdd4f2913266cca4",
+      "identity_claims": [
+        "c_7d674587238433044ace3c6bf70e2ba312b280be4c37753f73a2a17d81ee770e",
+        "c_c8c53e5cdeb0a7b8e4719eaac96921af70b8e311dab31f19cdd4f2913266cca4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T18:00:56.000Z",
+      "published_at": "2026-07-23T00:00:00.367Z",
+      "published_date": "2026-07-23",
+      "reason": "ChatGPT推出健康功能，连接病历与Apple Health，但仅限美国用户，且依赖隐私合规，影响面有限。",
+      "related_source_ids": [],
+      "score": 7,
+      "source": {
+        "homepage": null,
+        "id": "1212661366368743424",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1212661366368743424",
+      "source_type": "openai_newsroom",
+      "summary": "Health in ChatGPT now lets eligible U.S. users securely connect medical records and Apple Health to get more personalized insights and better understand their health.",
+      "time_precision": "exact",
+      "title": "Launching Health in ChatGPT",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://openai.com/index/health-in-chatgpt"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/oran_ge/status/2080196444074705006",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+      "featured": false,
+      "id": "n_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+      "identity_claims": [
+        "c_443f78c4a91a8a8faafd3c29b4524906d8a8b39dd6c97872ffbf8c41d1c4a1d0",
+        "c_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T18:00:56.000Z",
+      "published_at": "2026-07-23T07:40:55.616Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212647888644005889",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212647888644005889",
+      "source_type": "twitter_extra",
+      "summary": "该分享强调这三种资源不可再生，值得优先分配精力。",
+      "time_precision": "exact",
+      "title": "有观点指出，个人应把有限时间投入真正稀缺的资源，即时间、人际关系和声誉。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080196444074705006"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2080259982776524904",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_deepseek"
+      ],
+      "event_id": "e_7d8edb70d1b9642767b1a87cb63bb0d843c039c79bc08eb2c97f712d4739dc43",
+      "featured": false,
+      "id": "n_7d8edb70d1b9642767b1a87cb63bb0d843c039c79bc08eb2c97f712d4739dc43",
+      "identity_claims": [
+        "c_7d8edb70d1b9642767b1a87cb63bb0d843c039c79bc08eb2c97f712d4739dc43",
+        "c_d68dc69ac1944d4cf4d1655dafb8fc0e6faba5ffadd8516adf166a536f10b8c5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T18:00:56.000Z",
+      "published_at": "2026-07-23T11:53:23.455Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212686888490528770",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1212686888490528770",
+      "source_type": "twitter_extra",
+      "summary": "作者指出普通创业者难以效仿不抢C端、持续免费的模式，应先确保现金流和可付费能力再谈格局。",
+      "time_precision": "exact",
+      "title": "创业者阅读DeepSeek创始人梁文锋会议实录后认为，顶尖团队的克制与开源策略对面临现金流和抄袭压力的普通创业者并不适用。",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2080259982776524904"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2080292182154768594",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e575f5ad160d35945dff0a1d2eca836d5c37032a4211a270ba67e7a37afcdf31",
+      "featured": false,
+      "id": "n_e575f5ad160d35945dff0a1d2eca836d5c37032a4211a270ba67e7a37afcdf31",
+      "identity_claims": [
+        "c_96844488eb546493d2db203fea307d18fecc464cfdd18f149e857b076a74fbf7",
+        "c_e575f5ad160d35945dff0a1d2eca836d5c37032a4211a270ba67e7a37afcdf31"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T18:00:56.000Z",
+      "published_at": "2026-07-23T13:57:24.886Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212686888490528769",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1212686888490528769",
+      "source_type": "twitter_extra",
+      "summary": "该工具可绕过JS渲染、反爬机制和登录墙，通过稳定API支持大规模网站内容抓取，为自主Agent提供可靠信息源。",
+      "time_precision": "exact",
+      "title": "Anakin推出URL Scraper工具，能将任意网站页面转化为干净Markdown或结构化数据供大模型使用。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/shao__meng/status/2080292182154768594"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2080294994842419657",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_6679d96432418d01d1315b15d0f6f2b82b4cedc8456f52a1e3ec1e24e48c666d",
+      "featured": false,
+      "id": "n_6679d96432418d01d1315b15d0f6f2b82b4cedc8456f52a1e3ec1e24e48c666d",
+      "identity_claims": [
+        "c_6679d96432418d01d1315b15d0f6f2b82b4cedc8456f52a1e3ec1e24e48c666d",
+        "c_7bf0f4551d25c2ba28956749813fc74c095995766647b46ccb2bc4d4603fb696"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T18:00:56.000Z",
+      "published_at": "2026-07-23T14:12:31.010Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212686888490528768",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1212686888490528768",
+      "source_type": "twitter_extra",
+      "summary": "尽管AI Agent架构快速演进，但创业公司仍面临高额投放与Token成本压力，实现盈利依旧困难。",
+      "time_precision": "exact",
+      "title": "某海外Agent产品每日订阅收入约7万美元，但日均广告投放成本高达20万美元，盈利难题突出。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/shao__meng/status/2080294994842419657"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Khazix0918/status/2080307371159830548",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe",
+      "featured": false,
+      "id": "n_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe",
+      "identity_claims": [
+        "c_31d250bbea7440ae59b1f024ba2c6e2c12e4878f1b3949d11583ac420ac07f88",
+        "c_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T18:00:56.000Z",
+      "published_at": "2026-07-23T15:01:42.987Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212566253697146880",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1212566253697146880",
+      "source_type": "kazike_x",
+      "summary": "该计划面向数学、物理、化学等学科，提供算力与薪酬，趋势显示AI实验室正吸纳各领域科学家，用AI加速科研突破。",
+      "time_precision": "exact",
+      "title": "字节跳动Seed团队发起STEM科学家计划，将邀请百名前沿科学领域研究者加入，与AI团队合作推进跨学科研究。",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/Khazix0918/status/2080307371159830548"
     }
   ],
   "overview": {
