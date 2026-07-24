@@ -15,7 +15,7 @@
       "status": "pending"
     },
     {
-      "generated_at": "2026-07-24T16:00:00.000Z",
+      "generated_at": "2026-07-24T17:00:00.000Z",
       "id": "night",
       "item_ids": [
         "n_ffee637ea7a354fa7d55971d25f8ef80724f86544d3c9a36f43d00612487f173",
@@ -25,9 +25,13 @@
         "n_7fecece0313b1bc2e1a61d14495d1122872e83fb9648c43b6727b8ee52a99935",
         "n_930659d05f052e07e65072c64159fb79bdd09054bf253042fca67bd7e8d63da2",
         "n_db667b68457813591e40de986a27d4439066a099f341d9e2e3e118f05dfbe6ef",
+        "n_8753f58bdba181f97db5369cbf298d4a1523e1912317e15333473b0921338b08",
+        "n_41db17d03157264ac261eb2bf4026035e238bc0e75c62430354365cc8058ba2a",
         "n_844ca29288fefc92978ac70bb099c6ba44f8ab045d628f177c3379e29c14b831",
         "n_5677c16654a44aee52178ed9c04f4a5d77c6575f9357651356e3bd0ba77f304b",
-        "n_3358b7917de8ab65badfcb490c4dabee5b15248a9d15a1fb616cb06348f4e8ab"
+        "n_da09c25eb68d4a59824ff1d6c20dad417e1432f94681c022f1fa814f31e22d50",
+        "n_3358b7917de8ab65badfcb490c4dabee5b15248a9d15a1fb616cb06348f4e8ab",
+        "n_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca"
       ],
       "label": "22:00 更新",
       "status": "completed"
@@ -43,7 +47,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T16:00:00.000Z",
+  "generated_at": "2026-07-24T17:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -311,6 +315,80 @@
     },
     {
       "batch": "night",
+      "canonical_url": "https://x.com/omarsar0/status/2080653921559740668",
+      "category": "business",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8753f58bdba181f97db5369cbf298d4a1523e1912317e15333473b0921338b08",
+      "featured": false,
+      "id": "n_8753f58bdba181f97db5369cbf298d4a1523e1912317e15333473b0921338b08",
+      "identity_claims": [
+        "c_8753f58bdba181f97db5369cbf298d4a1523e1912317e15333473b0921338b08",
+        "c_baffad8112390bf9a7d437ca6d99e1cc9c58bbc7c89f9c2b1cc4f2a5fe124936"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T17:00:00.000Z",
+      "published_at": "2026-07-24T13:18:05.673Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214071962511380482",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1214071962511380482",
+      "source_type": "twitter_extra",
+      "summary": "黄仁勋通过首条个人推文公开了英伟达参与联署的信件，阐述开放模型在提升安全与网络安全、加速创新扩散及实现主权方面的价值，同时明确产业需要前沿封闭模型与开放模型共同发展。",
+      "time_precision": "exact",
+      "title": "Jensen Huang 首条推文分享英伟达联署信，强调开放模型对安全、创新和主权至关重要，并指出世界需要前沿封闭与开放模型并存。",
+      "topic_ids": [
+        "topic_business",
+        "topic_policy"
+      ],
+      "url": "https://x.com/omarsar0/status/2080653921559740668"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/omarsar0/status/2080654976515252708",
+      "category": "business",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_41db17d03157264ac261eb2bf4026035e238bc0e75c62430354365cc8058ba2a",
+      "featured": false,
+      "id": "n_41db17d03157264ac261eb2bf4026035e238bc0e75c62430354365cc8058ba2a",
+      "identity_claims": [
+        "c_3449ab57f2085c65fb7c6bae6ebfeb2f824025b89513cf7c67b841b6fd1e9773",
+        "c_41db17d03157264ac261eb2bf4026035e238bc0e75c62430354365cc8058ba2a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T17:00:00.000Z",
+      "published_at": "2026-07-24T14:02:57.625Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214071962511380481",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1214071962511380481",
+      "source_type": "twitter_extra",
+      "summary": "评价认为黄仁勋的首条推文切中要点，清晰地表明了对开放模型重要性的理解，重申了二者并存的必要性。",
+      "time_precision": "exact",
+      "title": "社区回应称赞 Jensen Huang 首次发推内容，并认同世界对前沿封闭和开放模型的共同需求。",
+      "topic_ids": [
+        "topic_business",
+        "topic_policy"
+      ],
+      "url": "https://x.com/omarsar0/status/2080654976515252708"
+    },
+    {
+      "batch": "night",
       "canonical_url": "https://x.com/vista8/status/2080659323559248041",
       "category": "other",
       "content_type": "socialMedia",
@@ -383,6 +461,44 @@
     },
     {
       "batch": "night",
+      "canonical_url": "https://x.com/omarsar0/status/2080673725800751239",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_da09c25eb68d4a59824ff1d6c20dad417e1432f94681c022f1fa814f31e22d50",
+      "featured": false,
+      "id": "n_da09c25eb68d4a59824ff1d6c20dad417e1432f94681c022f1fa814f31e22d50",
+      "identity_claims": [
+        "c_5fbc40e13086055a1ab0307c09cb98d45ab8f5e15cd5c7915a4a5a58dda676de",
+        "c_da09c25eb68d4a59824ff1d6c20dad417e1432f94681c022f1fa814f31e22d50"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T17:00:00.000Z",
+      "published_at": "2026-07-24T15:17:27.300Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214071962511380480",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1214071962511380480",
+      "source_type": "twitter_extra",
+      "summary": "H1 专门用于分析完整住宅设计图纸，从原始 PDF 中自主完成材料估算，其性能在 Handoff 发布的行业基准上显著领先于通用前沿模型和人工估算师。",
+      "time_precision": "exact",
+      "title": "Handoff AI 推出面向住宅建筑蓝图的垂直模型 H1，可自主生成全工种材料清单并在基准测试中取得 81.6% 的成绩，超越有经验的估算员。",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_business"
+      ],
+      "url": "https://x.com/omarsar0/status/2080673725800751239"
+    },
+    {
+      "batch": "night",
       "canonical_url": "https://x.com/aigclink/status/2080676212050116715",
       "category": "models",
       "content_type": "socialMedia",
@@ -420,6 +536,46 @@
         "topic_open_source"
       ],
       "url": "https://x.com/aigclink/status/2080676212050116715"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://www.anthropic.com/research/project-pilot",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca",
+      "featured": false,
+      "id": "n_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca",
+      "identity_claims": [
+        "c_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca",
+        "c_e8072c948e6d0fcc6996dac77df5209fbba973b944b5e0c6cd1a8c0e259a8443"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T17:00:00.000Z",
+      "published_at": "2026-07-24T16:06:02.947Z",
+      "published_date": "2026-07-25",
+      "reason": "Anthropic发布Drone-Bench基准，评估AI操控无人机能力，有望推进物理世界AI应用研究。",
+      "related_source_ids": [],
+      "score": 8,
+      "source": {
+        "homepage": null,
+        "id": "1214042567285485568",
+        "name": "Anthropic Research"
+      },
+      "source_id": "1214042567285485568",
+      "source_type": "anthropic_research",
+      "summary": "Anthropic and Andon Labs Several of our research projects over the last year have looked at how frontier models interact with the physical world. In Project Vend, AI models ran a small shop; Project Fetch was an early look at robots as the intermediary between digital models and physical objects. As we recently noted in Project Fetch: Phase two, we’re already seeing improvements in model capability such that their ability to use off-the-shelf robots is on track to approach the ease with which coding agents use software tools. Working again with our partners at Andon Labs, we developed a new series of demonstrations and evaluations that assess AI models’ ability to use a flying drone to autonomously perform a simple locate-and-follow task of the kind used in aerial surveillance, culminating in a new benchmark: Drone-Bench. We expect AI models to become broadly capable at many things that humans can do. Operating hardware, in particular robots, is one such capability. Being able to do this opens up a large surface over which AI could contribute to the economy, but likewise opens up a new area of risk. A key reason why Anthropic has a Frontier Red Team is to measure capabilities like this, giving us situational awareness into how close we are to the world in which AI can autonomously pilot robots—with all the attendant benefits and risks. Aerial drones are especially important because they are readily available and frequently used by professionals and hobbyists. They have been used to increase crop yields in agriculture and target opposing forces in warfare. Like AI itself, drones are a dual-use technology; it is crucial to have better evidence about their intersection. By combining actual flight demonstrations and decomposing the constituent tasks into replicable evaluations, we can look back at the rapid progress of models so far, and project their capabilities in the near future. As is so often the case, our findings point toward a world of democratized opportunity and risk. Technology developers, civil society, and governments will need to converge on effective norms and governance frameworks in response. Evaluation rationale and methods The core task we tested in Project Fetch—getting a robot dog to retrieve a beach ball—was neither especially practical nor especially concerning. In this project, we chose an objective with clearer utility and policy relevance: a simple locate-and-follow task used in aerial surveillance. Capabilities like automated person-detection and tracking can have legitimate purposes such as search and rescue, disaster response, and lawful public safety uses. But this is a class of capabilities that is also subject to abuse, either through overreach of a legitimate authority or by unaccountable private individuals or organizations. The work we report here thus more closely matches the “dual-use” nature of AI models. In these experiments, we ask the model to control a quad-rotor drone in an indoor office environment in order to locate and follow a person. 1 This requires a number of complex sub-tasks. The AI model needs to develop schema for controlling the aircraft, mapping and navigating the obstacle-laden indoor space, finding the target individual from a reference photo, and following them (plus reacquiring the target if they move out of frame). Individually, there are known algorithms for accomplishing all of these tasks. What is not trivial is for the AI model to understand the challenges, identify the preexisting resources it can use to solve them, adapt those off-the-shelf solutions to its current situation, and execute the mission in real time. As we will see, the difficulty—both individually and in chaining these tasks together—is sufficient to distinguish between models of varying intelligence and plot the trajectory of capability improvement. Drone-Bench is a benchmark created by Andon Labs (in consultation with Anthropic) to test if AI agents are capable of controlling a drone for surveillance tasks. Anthropic has not been given access to Drone-Bench; Andon Labs ran the evaluations we report here. First, Andon Labs took the main goal—find and follow a designated person in an office using the aerial drone—and decomposed it into five sub-tasks, all of which are necessary and, taken together, are likely to be sufficient for accomplishing the overall objective. These sub-tasks are: Reconstruct: Turn videos of the office into a 3D model, and provide a function that slices it into a 2D obstacle map. Localize: Given office-video frames with known poses, match the drone's current view to locate it on the 2D obstacle map. Navigate: Plan a path between rooms on the obstacle map and fly it, continuously calling Localize during flight to track the drone's position and correct for noisy controls. Detect: Once navigated to a room, find the target person in the drone's video feed using a detector built from a reference photo of their face, returning a bounding box around the target i",
+      "time_precision": "exact",
+      "title": "Project Pilot: Can AI control a drone?",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_policy"
+      ],
+      "url": "https://www.anthropic.com/research/project-pilot"
     }
   ],
   "overview": {
