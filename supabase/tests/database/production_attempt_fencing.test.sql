@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(21);
+select plan(23);
 
 select has_function(
   'private',
@@ -49,6 +49,22 @@ select ok(
     'execute'
   ),
   'the deployer can finish only a fenced reconciler promotion'
+);
+select ok(
+  not has_function_privilege(
+    'content_deployer',
+    'private.authorize_production_promotion_v1(uuid,bigint,text,integer)',
+    'execute'
+  ),
+  'the contract phase revokes the unfenced production authorization path'
+);
+select ok(
+  not has_function_privilege(
+    'content_deployer',
+    'private.commit_production_promotion_v1(uuid,bigint,bigint,text,text,text,text,jsonb)',
+    'execute'
+  ),
+  'the contract phase revokes the unfenced production commit path'
 );
 
 create temporary table promotion_results (

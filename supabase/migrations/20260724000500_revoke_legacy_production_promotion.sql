@@ -1,10 +1,8 @@
 -- Contract phase for the attempt-fenced Broker rollout.
 --
--- Do not run this with the expand migration. Apply it only after every
--- production Broker instance is confirmed to call
--- authorize_attempt_production_promotion_v1. Keeping this outside
--- supabase/migrations prevents an automatic db push from breaking an older
--- Broker during the DB-to-Worker deployment window.
+-- The expand migrations and fenced Broker must be deployed before this
+-- migration. Once applied, runtime code can authorize and commit forward
+-- production promotions only through the attempt-fenced wrappers.
 
 begin;
 

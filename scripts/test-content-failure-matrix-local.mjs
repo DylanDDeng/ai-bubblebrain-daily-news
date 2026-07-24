@@ -294,12 +294,39 @@ async function prepareRelease(release) {
 }
 
 async function authorizeForward(release, generation) {
+  const attemptToken = randomUUID();
+  const attemptRows = await admin`
+    update private.content_outbox
+    set status = 'preview_verified',
+        attempt_token = ${attemptToken}::uuid,
+        execution_generation = execution_generation + 1,
+        locked_by = ${`failure-matrix:${release.label}`},
+        locked_at = clock_timestamp(),
+        lease_expires_at = clock_timestamp() + interval '30 minutes',
+        updated_at = clock_timestamp()
+    where site_release_id = ${release.site_release_id}::uuid
+      and dispatch_id = ${release.dispatchId}::uuid
+    returning execution_generation
+  `;
+  assert(
+    attemptRows.length === 1,
+    `Could not prepare a fenced promotion attempt for ${release.label}`,
+  );
+  const executionGeneration = Number(attemptRows[0].execution_generation);
+  const lockedBy = `broker:${release.dispatchId}:${attemptToken}`;
   return rpc(
     await asRole(
       "content_deployer",
       (sql) => sql`
-			select private.authorize_production_promotion_v1(
-				${release.site_release_id}::uuid, ${generation}, ${`failure-matrix:${release.label}`}, 600
+			select private.authorize_attempt_production_promotion_v1(
+				${release.site_release_id}::uuid,
+				${release.dispatchId}::uuid,
+				${attemptToken}::uuid,
+				${executionGeneration},
+				${generation},
+				${lockedBy},
+				900,
+				600
 			) as result
 		`,
     ),
@@ -325,8 +352,13 @@ async function commitForward(
     await asRole(
       "content_deployer",
       (sql) => sql`
-			select private.commit_production_promotion_v1(
-				${release.site_release_id}::uuid, ${fencingToken}, ${expectedGeneration},
+			select private.commit_attempt_production_promotion_v1(
+				${release.site_release_id}::uuid,
+				${authorization.dispatch_id}::uuid,
+				${authorization.attempt_token}::uuid,
+				${authorization.execution_generation},
+				${fencingToken},
+				${expectedGeneration},
 				${`pages-${release.label}`}, ${manifestSha256}, ${artifactSha256},
 				${buildEnvironment}, ${sql.json(evidence)}
 			) as result
@@ -1349,12 +1381,12 @@ try {
   await expectRejected(
     "late C promotion commit",
     () => commitForward(releaseC, authC, 2),
-    /Stale production fencing token|Pointer generation conflict/,
+    /Stale production deployment attempt|Stale production fencing token|Pointer generation conflict/,
   );
   await expectRejected(
     "late B promotion commit",
     () => commitForward(releaseB, promotedB.authorization, 1),
-    /Stale production fencing token|Pointer generation conflict/,
+    /Stale production deployment attempt|Stale production fencing token|Pointer generation conflict/,
   );
 
   const releaseD = await createRelease(snapshotA, "D-after-rollback");
