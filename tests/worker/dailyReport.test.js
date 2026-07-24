@@ -588,8 +588,8 @@ describe('daily report v1 deterministic boundary', () => {
     it('locks JSON and Markdown bytes with golden SHA-256 checksums', async () => {
         const result = await build();
         const digest = value => createHash('sha256').update(value).digest('hex');
-        expect(digest(result.json)).toBe('32fe9efc6b4ea941a811be5afb3edbc08342ad16a61839ecc811b0e715882cfc');
-        expect(digest(result.markdown)).toBe('b16d1f684594f328127c79ed42bc1ebc1dfb3fac1a84f06f03eb0352327fcdd4');
+        expect(digest(result.json)).toBe('7f4ea933951302c33dfce1db198ee51933f1ddae74b5a0d247e773139259eb38');
+        expect(digest(result.markdown)).toBe('e29309605e415380890cd22d0b60ffada3c628850ac8f121685142dbf058301f');
     });
 
     it('recomputes primary identity from source fields and fails closed on tampering', async () => {

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const dist = path.join(root, 'dist');
+const dist = path.join(root, 'dist', 'client');
 
 async function walk(directory) {
 	const files = [];
@@ -17,7 +17,10 @@ async function walk(directory) {
 }
 
 const headers = await readFile(path.join(dist, '_headers'), 'utf8');
-const globalHeaders = headers.split(/\n\s*\n/, 1)[0];
+const globalHeaders = headers
+	.split(/\n\s*\n/)
+	.find((block) => block.trimStart().startsWith('/*\n'));
+assert(globalHeaders, 'global /* header block is missing');
 assert.match(globalHeaders, /^\s*Content-Security-Policy:/m, 'global enforced CSP is missing');
 assert.doesNotMatch(
 	globalHeaders,

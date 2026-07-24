@@ -1,18 +1,14 @@
 import { createHash } from "node:crypto";
-import { execFile } from "node:child_process";
-import { access, mkdtemp, readFile, readdir, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { access, readFile, readdir } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 
 import { XMLParser } from "fast-xml-parser";
 import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
 
-const execFileAsync = promisify(execFile);
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const astroRoot = resolve(repoRoot, "astro");
-const distRoot = resolve(astroRoot, "dist");
+const distRoot = resolve(astroRoot, "dist", "client");
 const siteOrigin = "https://bubblenews.today";
 
 function invariant(condition, message) {
@@ -67,14 +63,6 @@ async function walk(directory) {
   return files;
 }
 
-function routeFromPath(path) {
-  const normalized = path.replaceAll("\\", "/");
-  if (normalized === "index.html") return "/";
-  if (normalized.endsWith("/index.html"))
-    return `/${normalized.slice(0, -"index.html".length)}`;
-  return `/${normalized}`;
-}
-
 function pathFromRoute(route, contentType) {
   if (route === "/") return "index.html";
   if (contentType === "text/html" && route.endsWith("/"))
@@ -82,13 +70,9 @@ function pathFromRoute(route, contentType) {
   return route.slice(1);
 }
 
-function relevantOutput(path) {
-  return /\.(?:html|xml|json)$/.test(path) || path === "robots.txt";
-}
-
 function releaseOutput(path) {
   return (
-    ![".DS_Store", "_headers", "_redirects"].includes(path) &&
+    ![".DS_Store", "_headers", "_redirects", ".assetsignore"].includes(path) &&
     !path.endsWith("/.DS_Store")
   );
 }
@@ -294,18 +278,22 @@ for (const file of await walk(distRoot)) {
   );
 }
 
+const serverRenderedRoute =
+  /^\/(?:en\/)?(?:$|daily\/\d{4}\/\d{2}\/\d{4}-\d{2}-\d{2}\/$)/;
+
 for (const record of contract.records.filter(
   (entry) => entry.status === 301 || entry.status === 308,
 )) {
   invariant(
-    byRoute.get(record.target)?.status === 200,
+    byRoute.get(record.target)?.status === 200 ||
+      serverRenderedRoute.test(record.target),
     `Redirect target is not a 200 route: ${record.route} -> ${record.target}`,
   );
 }
 
+// "/", "/en/", and structured daily pages are server-rendered and therefore
+// absent from the static route contract.
 const requiredRoutes = [
-  "/",
-  "/en/",
   "/daily/",
   "/en/daily/",
   "/search/",
@@ -430,17 +418,6 @@ for (const name of dailyDataNames) {
       seenSearchKeys.size === expectedSearchItems.size &&
         [...expectedSearchItems.keys()].every((key) => seenSearchKeys.has(key)),
       `Structured daily search keys drifted: ${date}`,
-    );
-  }
-  const [year, month] = date.split("-");
-  const dailyHtml = await readFile(
-    resolve(distRoot, "daily", year, month, date, "index.html"),
-    "utf8",
-  );
-  for (const item of report.items) {
-    invariant(
-      dailyHtml.includes(`id="news-${item.id}"`),
-      `Structured daily item is missing from rendered HTML: ${date}:${item.id}`,
     );
   }
 }
@@ -631,7 +608,8 @@ for (const record of contract.records.filter(
     const path = decoded.replace(/^\//, "");
     const routeExists =
       contractRoutes.has(decoded) ||
-      contractRoutes.has(decoded.endsWith("/") ? decoded : `${decoded}/`);
+      contractRoutes.has(decoded.endsWith("/") ? decoded : `${decoded}/`) ||
+      serverRenderedRoute.test(decoded.endsWith("/") ? decoded : `${decoded}/`);
     const fileExists =
       allOutputPaths.has(path) ||
       allOutputPaths.has(`${path.replace(/\/$/, "")}/index.html`);
@@ -764,69 +742,26 @@ invariant(
   "Executable demos are not explicitly noindex",
 );
 
-const temporaryRoot = await mkdtemp(resolve(tmpdir(), "bubble-site-verify-"));
-try {
-  const { stdout: version } = await execFileAsync("hugo", ["version"]);
-  invariant(
-    version.includes("v0.147.9"),
-    `Hugo parity requires 0.147.9; received ${version.trim()}`,
-  );
-  await execFileAsync(
-    "hugo",
-    [
-      "--source",
-      repoRoot,
-      "--destination",
-      temporaryRoot,
-      "--minify",
-      "--panicOnWarning",
-      "--printPathWarnings",
-    ],
-    { maxBuffer: 16 * 1024 * 1024 },
-  );
-  for (const record of xmlRecords.filter(
-    (entry) => entry.route.endsWith("/rss.xml") || entry.route === "/rss.xml",
-  )) {
-    const outputPath =
-      record.output_path ?? pathFromRoute(record.route, record.content_type);
-    const hugoPath = resolve(temporaryRoot, outputPath);
-    invariant(
-      await exists(hugoPath),
-      `Hugo RSS counterpart is missing: ${record.route}`,
+for (const record of xmlRecords.filter(
+  (entry) => entry.route.endsWith("/rss.xml") || entry.route === "/rss.xml",
+)) {
+  const outputPath =
+    record.output_path ?? pathFromRoute(record.route, record.content_type);
+  const astroRss = await readFile(resolve(distRoot, outputPath), "utf8");
+  const astroSet = rssIdentitySet(astroRss, record.route);
+  if (
+    pinnedContentBuild &&
+    (record.route === "/en/daily/rss.xml" || record.route === "/en/rss.xml")
+  ) {
+    const astroIdentities = new Set(astroSet);
+    const missingPinned = [...pinnedEnglishDailyRssIdentities].filter(
+      (identity) => !astroIdentities.has(identity),
     );
-    const [astroRss, hugoRss] = await Promise.all([
-      readFile(resolve(distRoot, outputPath), "utf8"),
-      readFile(hugoPath, "utf8"),
-    ]);
-    const astroSet = rssIdentitySet(astroRss, record.route);
-    const hugoSet = rssIdentitySet(hugoRss, record.route);
-    const expectedSet = new Set(hugoSet);
-    if (
-      pinnedContentBuild &&
-      (record.route === "/en/daily/rss.xml" || record.route === "/en/rss.xml")
-    ) {
-      for (const identity of pinnedEnglishDailyRssIdentities)
-        expectedSet.add(identity);
-    }
-    const expectedIdentities = [...expectedSet].sort();
     invariant(
-      JSON.stringify(astroSet) === JSON.stringify(expectedIdentities),
-      `RSS accepted-set drift for ${record.route}: Astro ${astroSet.length}, expected ${expectedIdentities.length}`,
+      missingPinned.length === 0,
+      `RSS pinned-identity drift for ${record.route}: missing ${missingPinned.length} identities`,
     );
   }
-  const missingLegacyRoutes = [];
-  for (const file of await walk(temporaryRoot)) {
-    const path = relative(temporaryRoot, file).replaceAll("\\", "/");
-    if (!relevantOutput(path)) continue;
-    const route = routeFromPath(path);
-    if (!byRoute.has(route)) missingLegacyRoutes.push(route);
-  }
-  invariant(
-    missingLegacyRoutes.length === 0,
-    `Hugo routes missing from Astro release contract:\n${missingLegacyRoutes.join("\n")}`,
-  );
-} finally {
-  await rm(temporaryRoot, { recursive: true, force: true });
 }
 
 console.log(

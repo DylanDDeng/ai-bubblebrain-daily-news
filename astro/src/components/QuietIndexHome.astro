@@ -1,25 +1,16 @@
 ---
-import { getCollection } from 'astro:content';
-
-import {
-	dailyDateFromKey,
-	dailyPermalink,
-	filterDailyEntries,
-	formatDailyWeekday,
-	parseDailyEntryId,
-} from '../lib/daily';
-import { taxonomyLabel, topicsById } from '../lib/knowledge';
+import { fetchLatestReport } from '../lib/contentApi';
+import { dailyDateFromKey, formatDailyWeekday } from '../lib/daily';
 import {
 	cleanTimelineSummary,
 	displayContentType,
 	formatDailyTime,
 	formatTimelineTime,
 	homepageFeedItems,
-	isDatabaseOwnedDailyDate,
-	loadStructuredDailyReport,
 	timelineDisplayText,
 	timelineSourceDisplay,
 	type DailyContentType,
+	type StructuredDailyReport,
 } from '../lib/structuredDaily';
 import '../styles/quiet-index.css';
 
@@ -29,40 +20,21 @@ interface Props {
 
 const { locale } = Astro.props;
 const isEnglish = locale === 'en';
-const dailyEntries = await getCollection('daily');
-const entries = filterDailyEntries(dailyEntries, locale);
-const latest = entries[0];
-const latestIdentity = latest ? parseDailyEntryId(latest.id) : null;
-const report = latestIdentity ? await loadStructuredDailyReport(latestIdentity.dateKey) : null;
-const latestHref = latest ? dailyPermalink(latest.id) : isEnglish ? '/en/daily/' : '/daily/';
-const archiveHref = isEnglish ? '/en/daily/' : '/daily/';
+
+const latest = await fetchLatestReport();
+const report = latest?.report as StructuredDailyReport | undefined ?? null;
+const dateKey = latest?.dateKey ?? null;
+const latestHref = dateKey
+	? `/daily/${dateKey.slice(0, 4)}/${dateKey.slice(5, 7)}/${dateKey}/`
+	: isEnglish
+		? '/en/daily/'
+		: '/daily/';
 
 const typeLabels: Record<DailyContentType, string> = isEnglish
 	? { news: 'News', project: 'Project', paper: 'Paper', socialMedia: 'Social' }
 	: { news: '资讯', project: '项目', paper: '论文', socialMedia: '社交' };
-const categoryLabels: Record<string, string> = isEnglish
-	? {
-			models: 'Models',
-			research: 'Research',
-			open_source: 'Open source',
-			agents: 'Agents',
-			products: 'Products',
-			business: 'Business',
-			policy: 'Policy',
-			other: 'Other',
-		}
-	: {
-			models: '大模型',
-			research: '研究论文',
-			open_source: '开源项目',
-			agents: '智能体',
-			products: '产品',
-			business: '商业',
-			policy: '政策',
-			other: '其他动态',
-		};
 
-const latestDate = latestIdentity ? dailyDateFromKey(latestIdentity.dateKey) : null;
+const latestDate = dateKey ? dailyDateFromKey(dateKey) : null;
 const monthDay = latestDate
 	? new Intl.DateTimeFormat(locale, {
 			month: 'long',
@@ -90,39 +62,6 @@ const leadDisplayText = lead ? timelineDisplayText(lead) : null;
 const leadSource = lead ? timelineSourceDisplay(lead) : null;
 const feedItems = homepageFeedItems(items, report?.batches ?? []);
 
-const categoryCounts = new Map<string, number>();
-const topicCounts = new Map<string, number>();
-for (const item of items) {
-	categoryCounts.set(item.category, (categoryCounts.get(item.category) ?? 0) + 1);
-	for (const topicId of item.topic_ids) {
-		topicCounts.set(topicId, (topicCounts.get(topicId) ?? 0) + 1);
-	}
-}
-const categoryRows = [...categoryCounts.entries()].sort((a, b) => b[1] - a[1]);
-const hotTopics = [...topicCounts.entries()]
-	.sort((a, b) => b[1] - a[1])
-	.map(([id]) => topicsById.get(id))
-	.filter((topic) => topic !== undefined)
-	.slice(0, 8);
-
-const previousDays = (
-	await Promise.all(
-		entries.slice(1, 4).map(async (entry) => {
-			const identity = parseDailyEntryId(entry.id);
-			const href = dailyPermalink(entry.id);
-			if (!identity || !href) return null;
-			const dayReport = isDatabaseOwnedDailyDate(identity.dateKey)
-				? await loadStructuredDailyReport(identity.dateKey)
-				: null;
-			return {
-				href,
-				count: dayReport?.items.length ?? null,
-				dateKey: identity.dateKey,
-				date: dailyDateFromKey(identity.dateKey),
-			};
-		}),
-	)
-).filter((day) => day !== null);
 ---
 
 <section class="quiet-home">
@@ -242,61 +181,6 @@ const previousDays = (
 						</a>
 					</div>
 
-					<aside class="side">
-						<div class="side-card">
-							<h3>{isEnglish ? 'TODAY AT A GLANCE' : '今日概览'}</h3>
-							<div class="stat-row">
-								<span>{isEnglish ? 'Total items' : '收录总数'}</span>
-								<b>{items.length}</b>
-							</div>
-							{categoryRows.map(([category, count]) => (
-								<Fragment>
-									<div class="stat-row">
-										<span>{categoryLabels[category] ?? category}</span>
-										<b>{count}</b>
-									</div>
-									<div class="stat-row">
-										<div class="bar">
-											<i style={`width:${Math.round((count / items.length) * 100)}%`} />
-										</div>
-									</div>
-								</Fragment>
-							))}
-						</div>
-
-						{hotTopics.length > 0 && (
-							<div class="side-card">
-								<h3>{isEnglish ? 'TRENDING TOPICS' : '今日热点'}</h3>
-								<div class="topic-chips">
-									{hotTopics.map((topic) => (
-										<a href={`/topics/${topic.slug}/`}>{taxonomyLabel(topic, locale)}</a>
-									))}
-								</div>
-							</div>
-						)}
-
-						{previousDays.length > 0 && (
-							<div class="side-card yesterday">
-								<h3>{isEnglish ? 'PREVIOUS DAYS' : '往期'}</h3>
-								{previousDays.map((day) => (
-									<a class="y-link" href={day.href}>
-										<span>
-											<span class="y-date">{day.dateKey.slice(5)}</span>{' '}
-											{formatDailyWeekday(day.date, locale, 'short')}
-										</span>
-										{day.count !== null && (
-											<span class="y-count">
-												{isEnglish ? `${day.count} items` : `${day.count} 条`}
-											</span>
-										)}
-									</a>
-								))}
-								<a class="archive-link" href={archiveHref}>
-									{isEnglish ? 'Full archive →' : '全部归档 →'}
-								</a>
-							</div>
-						)}
-					</aside>
 				</div>
 			</>
 		) : (

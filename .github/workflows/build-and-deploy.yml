@@ -33,12 +33,6 @@ jobs:
             package-lock.json
             astro/package-lock.json
 
-      - name: Setup Hugo 0.147.9
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: "0.147.9"
-          extended: true
-
       - name: Install dependencies
         run: |
           npm ci
@@ -46,9 +40,6 @@ jobs:
 
       - name: Verify Worker and data contracts
         run: npm test
-
-      - name: Verify Hugo and Astro daily parity
-        run: npm run verify:renderers
 
       - name: Build and verify the final Astro release artifact
         run: npm run verify --prefix astro

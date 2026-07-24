@@ -5,11 +5,9 @@ import { join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
-	dailyDataDirectory,
 	formatTimelineTime,
 	homepageFeedItems,
 	isDatabaseOwnedDailyDate,
-	loadStructuredDailyReport,
 	orderTimelineBatches,
 	structuredCutoverDate,
 	timelineDisplayText,
@@ -17,6 +15,7 @@ import {
 	type StructuredDailyBatch,
 	type StructuredDailyItem,
 } from './structuredDaily';
+import { dailyDataDirectory, loadStructuredDailyReport } from './structuredDailyLocal';
 
 const fixturePath = resolve(import.meta.dirname, '../../tests/fixtures/daily-report.valid.json');
 const temporaryRoots: string[] = [];

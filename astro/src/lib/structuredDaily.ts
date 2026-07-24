@@ -1,14 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
-
 import { sanitizeSummaryText } from '../../../src/daily/summary.js';
-import { compactEditorialTitle } from '../../../src/daily/editorial.js';
-import {
-	validateDailyReportIdentities,
-	validateDailyReportSemantics,
-	validateReportFilename,
-} from '../../../src/daily/semanticValidate.js';
-import { validateDailyReportSchemaForAstro } from './dailySchema';
+import { compactEditorialTitle } from './textUtils';
 
 export type DailyBatchId = 'morning' | 'afternoon' | 'night' | 'lateNight';
 export type DailyContentType = 'news' | 'project' | 'paper' | 'socialMedia';
@@ -107,11 +98,25 @@ export function homepageFeedItems(
 		.slice(0, Math.max(0, Math.trunc(limit)));
 }
 
-const reportCache = new Map<string, Promise<StructuredDailyReport | null>>();
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
 export const DEFAULT_STRUCTURED_CUTOVER_DATE = '2026-07-16';
 
-export function structuredCutoverDate(value = process.env.STRUCTURED_CUTOVER_DATE): string {
+declare const __STRUCTURED_CUTOVER_DATE__: string;
+
+// process.env is honored where it exists (Node builds, tests) so the cutover
+// can be overridden at runtime; the Workers runtime has no process.env, so SSR
+// falls back to the build-time injected global.
+function envCutoverDate(): string | undefined {
+	const fromProcess =
+		typeof process !== 'undefined' ? process.env?.STRUCTURED_CUTOVER_DATE : undefined;
+	if (fromProcess && fromProcess.trim()) return fromProcess;
+	if (typeof __STRUCTURED_CUTOVER_DATE__ === 'string' && __STRUCTURED_CUTOVER_DATE__) {
+		return __STRUCTURED_CUTOVER_DATE__;
+	}
+	return undefined;
+}
+
+export function structuredCutoverDate(value = envCutoverDate()): string {
 	const cutoverDate = value?.trim() || DEFAULT_STRUCTURED_CUTOVER_DATE;
 	if (!dateKeyPattern.test(cutoverDate)) {
 		throw new Error('STRUCTURED_CUTOVER_DATE must use YYYY-MM-DD');
@@ -128,46 +133,6 @@ export function isDatabaseOwnedDailyDate(
 		throw new Error('STRUCTURED_CUTOVER_DATE must use YYYY-MM-DD');
 	}
 	return dateKey >= cutoverDate;
-}
-
-export function dailyDataDirectory(directory?: string): string {
-	if (directory) return resolve(directory);
-	if (process.env.DAILY_DATA_DIR) return resolve(process.env.DAILY_DATA_DIR);
-	return resolve(process.cwd(), '..', 'data', 'daily');
-}
-
-async function readStructuredReport(
-	dateKey: string,
-	directory?: string,
-): Promise<StructuredDailyReport | null> {
-	if (!dateKeyPattern.test(dateKey)) throw new Error(`Invalid structured daily date: ${dateKey}`);
-	const path = resolve(dailyDataDirectory(directory), `${dateKey}.json`);
-	let source: string;
-	try {
-		source = await readFile(path, 'utf8');
-	} catch (error) {
-		if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
-		throw error;
-	}
-
-	const report: unknown = JSON.parse(source);
-	await validateDailyReportSchemaForAstro(report);
-	validateDailyReportSemantics(report, { enforcePhase1: true });
-	await validateDailyReportIdentities(report);
-	validateReportFilename(report, path);
-	return report as StructuredDailyReport;
-}
-
-export function loadStructuredDailyReport(
-	dateKey: string,
-	options: { directory?: string } = {},
-): Promise<StructuredDailyReport | null> {
-	const directory = dailyDataDirectory(options.directory);
-	const cacheKey = `${directory}\0${dateKey}`;
-	if (!reportCache.has(cacheKey)) {
-		reportCache.set(cacheKey, readStructuredReport(dateKey, directory));
-	}
-	return reportCache.get(cacheKey)!;
 }
 
 export function cleanTimelineSummary(value: string): string {

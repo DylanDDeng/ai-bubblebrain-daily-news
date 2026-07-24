@@ -15,9 +15,9 @@ import {
 	cleanTimelineSummary,
 	formatDailyTime,
 	isDatabaseOwnedDailyDate,
-	loadStructuredDailyReport,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
+import { loadStructuredDailyReport } from '../lib/structuredDailyLocal';
 
 interface Props {
 	entries: CollectionEntry<'daily'>[];

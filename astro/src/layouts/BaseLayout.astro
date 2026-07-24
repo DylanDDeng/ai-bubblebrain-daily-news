@@ -3,6 +3,8 @@ import '../styles/migration.css';
 import { ClientRouter } from 'astro:transitions';
 import AuthControls from '../components/AuthControls.astro';
 
+declare const __SITE_DISPLAY_DATE__: string;
+
 interface Props {
 	title: string;
 	description?: string;
@@ -28,7 +30,10 @@ const dailyHref = isEnglish ? '/en/daily/' : '/daily/';
 const languageHref = alternateHref ?? (isEnglish ? '/' : '/en/');
 const canonicalUrl = new URL(canonicalPath, Astro.site);
 const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
-const indexDate = process.env.SITE_DISPLAY_DATE;
+const indexDate =
+	typeof __SITE_DISPLAY_DATE__ === 'string' && __SITE_DISPLAY_DATE__
+		? __SITE_DISPLAY_DATE__
+		: process.env.SITE_DISPLAY_DATE;
 if (!/^\d{4}-\d{2}-\d{2}$/.test(indexDate ?? '')) {
 	throw new Error('SITE_DISPLAY_DATE must be a deterministic source date');
 }

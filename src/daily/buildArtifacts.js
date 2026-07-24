@@ -8,10 +8,10 @@ import { taxonomy } from '../knowledge/taxonomy.js';
 import { filterBlockedXItemsFromReport } from '../sourceFilters.js';
 
 const BATCH_LABELS = {
-    morning: '10:00 更新',
-    afternoon: '15:00 更新',
-    night: '23:00 更新',
-    lateNight: '次日 03:00 补充更新',
+    morning: '08:00 更新',
+    afternoon: '14:00 更新',
+    night: '22:00 更新',
+    lateNight: '次日 02:00 补充更新',
 };
 
 function assertHistoryCompleteness(recentReports, reportDate, structuredStartDate) {

@@ -1,7 +1,7 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-23T22:00:56.000Z",
+      "generated_at": "2026-07-23T23:00:56.000Z",
       "id": "morning",
       "item_ids": [
         "n_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8",
@@ -14,7 +14,8 @@
         "n_21c7feac7fb8cd919cb085a2660ea92c4111749b790b382b98453bc9331d9421",
         "n_771a257185d7c7890e14bfc79ceecce1177c6152e5c7db273ce610d78ed8508e",
         "n_1c577fec6c7153940d36d824d0b7cceb93c4717a282b77bc1d5d71ba68d611d1",
-        "n_326bad14f9c44f7a0834d2494f37adb3bb7f2806a3028c20e3f19a962fa89f7d"
+        "n_326bad14f9c44f7a0834d2494f37adb3bb7f2806a3028c20e3f19a962fa89f7d",
+        "n_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -48,7 +49,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T22:00:56.000Z",
+  "generated_at": "2026-07-23T23:00:56.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -466,6 +467,45 @@
         "topic_other"
       ],
       "url": "https://x.com/oran_ge/status/2080407780738125931"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/gdb/status/2080414383352529085",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3",
+      "featured": false,
+      "id": "n_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3",
+      "identity_claims": [
+        "c_0953d020dc28c251445fb2880ddd675dca81090d0732c9fbf28f6da56f475bcf",
+        "c_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T23:00:56.000Z",
+      "published_at": "2026-07-23T22:06:55.007Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212976471291691008",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1212976471291691008",
+      "source_type": "twitter_extra",
+      "summary": "该功能由GPT-Live驱动，可以同步说话、聆听并协调应用内工作，今日全球上线。",
+      "time_precision": "exact",
+      "title": "ChatGPT语音功能登陆桌面端，支持用户语音控制电脑并指挥多个代理",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/gdb/status/2080414383352529085"
     },
     {
       "batch": "night",

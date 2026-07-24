@@ -1,4 +1,4 @@
-name: Auto Sync Daily to Hugo
+name: Verify Daily Publication Pairs
 
 on:
   push:
@@ -45,12 +45,12 @@ jobs:
 
         while IFS= read -r filename; do
           source_file="daily/$filename"
-          hugo_file="content/daily/$filename"
-          if [[ ! -f "$source_file" || ! -f "$hugo_file" ]]; then
-            echo "::error::Daily publication must contain both $source_file and $hugo_file"
+          mirror_file="content/daily/$filename"
+          if [[ ! -f "$source_file" || ! -f "$mirror_file" ]]; then
+            echo "::error::Daily publication must contain both $source_file and $mirror_file"
             exit 1
           fi
-          if ! cmp --silent "$source_file" "$hugo_file"; then
+          if ! cmp --silent "$source_file" "$mirror_file"; then
             echo "::error::Daily publication pair differs for $filename"
             exit 1
           fi
