@@ -1,7 +1,7 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-24T04:47:14.000Z",
+      "generated_at": "2026-07-24T10:00:46.000Z",
       "id": "morning",
       "item_ids": [
         "n_62db572edfca9bb2325c37624b37ba3e08993c5a546e753cbcabb774ccf49b65",
@@ -9,7 +9,9 @@
         "n_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8",
         "n_af6245d9fa73ced0a1468838e00c356460ee6300f99ee1ad8a037210dae3af17",
         "n_d13d33b43eb58e2f5f8e5711c63377f7c2177d0c8dbfaab4c6a3490bec119129",
+        "n_cb99eef88125c6a60280cfa48e9bff68ee00aaa5d5de9aeb8635767668a229a6",
         "n_de7b607577ea364ab4cb670924cbe32c48a7db0592f11ac0f6d761660e136aba",
+        "n_1d06bd5d2d05051147ee08aa6a346bbacd7c0a6169ff42a48b34739b06420425",
         "n_b5327590ad68662d575f9f67b9edca342f4a09bea1e2edd6717a3567a16ee26a",
         "n_5fb7608dc56a2ecce21a671d1560ce188a77edfca7546c267f2f574a26809928",
         "n_616864f3e02f8c41c5d804e21b48be29748d8721bf7917abd8b41783f909426e",
@@ -37,7 +39,12 @@
         "n_4f488c51090c56522dc080f203afb269ef688ae7e0ff4f326c05af0fe3bd0514",
         "n_56b25cd5522987eec8e1458745b424251ac4f4e881fbb191a2d82332f4f8d125",
         "n_e49ca95ad0f0690bcf8f8aa26d475f57f58ff647af9238238945a7669003485b",
-        "n_fd3498c38b2b7821760641938b39de4909834a0e286404aeaaf9f69aef2208c1"
+        "n_fd3498c38b2b7821760641938b39de4909834a0e286404aeaaf9f69aef2208c1",
+        "n_995ef796a274ba49b69b049351bdc33ab8202f2ad163a2fa76c482e99dad3371",
+        "n_1b32ee9c38f4ab9159f9fa636c6025325e58a4893ba972c6beec6625ece9b1d9",
+        "n_99a52f3f6b14725db4b412ffac51b7ffad36b6b5d8b67545cd648ac24f8003e0",
+        "n_7692e3b08b03d2c1fb79ca3e2177d24ab0ce427221dff09ab73c7902089f2543",
+        "n_6d78b8722ae8e1bb8fa9bed5f951786b8df4cbca2a431f9029ed667cb42781f0"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -119,7 +126,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T08:00:46.000Z",
+  "generated_at": "2026-07-24T10:00:46.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -311,6 +318,43 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21051",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_cb99eef88125c6a60280cfa48e9bff68ee00aaa5d5de9aeb8635767668a229a6",
+      "featured": false,
+      "id": "n_cb99eef88125c6a60280cfa48e9bff68ee00aaa5d5de9aeb8635767668a229a6",
+      "identity_claims": [
+        "c_cb99eef88125c6a60280cfa48e9bff68ee00aaa5d5de9aeb8635767668a229a6",
+        "c_e867a5f1753342e2d6e650281c2e20f68489b52f4127d247c866b19241a3fd5f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T10:00:46.000Z",
+      "published_at": "2026-07-22T20:00:00.160Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213597363474513925",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213597363474513925",
+      "source_type": "huggingface_papers",
+      "summary": "Real-world agent learning is often constrained by costly environment interactions, such as running time-consuming experiments or obtaining human feedback. In-context learning offers a highly sample-efficient way for agents to learn from their own interaction histories, but its gains disappear once that experience is removed from the context. Separately, context distillation provides a mechanism for internalizing contextual information into model weights. However, applying it to agents' interaction histories without sacrificing environment sample efficiency remains underexplored. We term this problem Experience Distillation and develop an implementation that requires no further environment interaction beyond the collected experience. Experiments on 749 curated software-engineering tasks and six text-adventure games show that it retains at least 64.8\\% of the gains from in-context learning across both domains, whereas direct supervised fine-tuning on the collected experience recovers only 3.8\\%. Compared with classical reinforcement-learning baselines, in-context learning from trial-and-error experience followed by Experience Distillation matches their performance with at least \\(9.6\\times\\) fewer environment samples.",
+      "time_precision": "exact",
+      "title": "基于智能体经验的样本高效学习",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://arxiv.org/abs/2607.21051"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://arxiv.org/abs/2607.21580",
       "category": "models",
       "content_type": "paper",
@@ -344,6 +388,45 @@
         "topic_models"
       ],
       "url": "https://arxiv.org/abs/2607.21580"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2605.09635",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_1d06bd5d2d05051147ee08aa6a346bbacd7c0a6169ff42a48b34739b06420425",
+      "featured": false,
+      "id": "n_1d06bd5d2d05051147ee08aa6a346bbacd7c0a6169ff42a48b34739b06420425",
+      "identity_claims": [
+        "c_1d06bd5d2d05051147ee08aa6a346bbacd7c0a6169ff42a48b34739b06420425",
+        "c_1fa14eb346850971765672b438d8f315e10cf28d6f9a324f1f24e43d90e00f7a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T10:00:46.000Z",
+      "published_at": "2026-07-22T20:00:00.414Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213597363474513921",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213597363474513921",
+      "source_type": "huggingface_papers",
+      "summary": "Large language models are increasingly used in K-12 education, but existing benchmarks mainly test exam question answering rather than understanding how curriculum knowledge is structured and visually presented. We call this capability curriculum cognition. It covers prerequisite chains, concept taxonomies, experiment-concept links, pedagogical sequencing, and visual grounding. We introduce K12-KGraph, a curriculum-aligned knowledge graph extracted from official People's Education Press textbooks in mathematics, physics, chemistry, and biology across primary, middle, and high school. It contains nine node types and fourteen relation types covering curriculum structure and visual grounding. From this graph, we derive K12-Bench, a 23,640-question multi-select benchmark with five task families: Ground, Prereq, Neighbor, Evidence, and Locate. We also build K12-Train, a graph-guided supervised fine-tuning corpus of 7,335 samples, including 2,267 text-only QA pairs and 5,068 multimodal VQA pairs. On K12-Bench, Gemini-3-Flash achieves only 57 percent exact match and Gemma-4-31B-IT reaches 46 percent, with Prereq and Neighbor being the hardest tasks. Our training experiments show that domain-specific supervision can reduce this gap. Under a matched 2,300-sample budget, K12-Train-Text consistently outperforms equally sized subsets of eight mainstream instruction-tuning corpora on GaokaoBench and EduEval. For vision-language models, K12-Train-Full achieves the best overall results on Gaokao-MM, MDK12-medium, and K12Vista among all compared training configurations, despite using fewer samples than the full DataFlow and WizardLM baselines. It also surpasses both text-only and multimodal-only variants, showing that textual and visual supervision are complementary. We release the graph, benchmark, training data, and complete construction pipeline.",
+      "time_precision": "exact",
+      "title": "K12-KGraph：面向基准测试和训练教育大语言模型的课程对齐知识图谱",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2605.09635"
     },
     {
       "batch": "morning",
@@ -1405,6 +1488,196 @@
         "topic_open_source"
       ],
       "url": "https://x.com/Gorden_Sun/status/2080494477307940915"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/gdb/status/2080494474287780286",
+      "category": "policy",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_995ef796a274ba49b69b049351bdc33ab8202f2ad163a2fa76c482e99dad3371",
+      "featured": false,
+      "id": "n_995ef796a274ba49b69b049351bdc33ab8202f2ad163a2fa76c482e99dad3371",
+      "identity_claims": [
+        "c_995ef796a274ba49b69b049351bdc33ab8202f2ad163a2fa76c482e99dad3371",
+        "c_9cd42fa50674c4993e4df2fb9f2ddd799d1bed92e047f18627cef64431a34b8b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T10:00:46.000Z",
+      "published_at": "2026-07-24T03:25:11.271Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213555455364661249",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1213555455364661249",
+      "source_type": "twitter_extra",
+      "summary": "他在国际数学家大会上宣布这一决定，表示将把研究重心转向人工智能安全领域并很快加入OpenAI。",
+      "time_precision": "exact",
+      "title": "菲尔兹奖得主Jacob Tsimerman宣布转向AI安全并将加入OpenAI",
+      "topic_ids": [
+        "topic_policy"
+      ],
+      "url": "https://x.com/gdb/status/2080494474287780286"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/gdb/status/2080524965514723414",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_1b32ee9c38f4ab9159f9fa636c6025325e58a4893ba972c6beec6625ece9b1d9",
+      "featured": false,
+      "id": "n_1b32ee9c38f4ab9159f9fa636c6025325e58a4893ba972c6beec6625ece9b1d9",
+      "identity_claims": [
+        "c_1b32ee9c38f4ab9159f9fa636c6025325e58a4893ba972c6beec6625ece9b1d9",
+        "c_e888034b4bab5087b7030ca40e428859c2b3bb8d6ca9ef837daa249c499138a3"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T10:00:46.000Z",
+      "published_at": "2026-07-24T05:26:20.953Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213555455364661248",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1213555455364661248",
+      "source_type": "twitter_extra",
+      "summary": "Max Weinbach在体验后表示，开启该功能后坐下随口说一些想法，模型就能自动梳理并创建线索和工作树，持续跟进更新。",
+      "time_precision": "exact",
+      "title": "用户称赞桌面版ChatGPT语音功能可边聊边自动整理工作思路",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/gdb/status/2080524965514723414"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080557894286917974",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_99a52f3f6b14725db4b412ffac51b7ffad36b6b5d8b67545cd648ac24f8003e0",
+      "featured": false,
+      "id": "n_99a52f3f6b14725db4b412ffac51b7ffad36b6b5d8b67545cd648ac24f8003e0",
+      "identity_claims": [
+        "c_7dedac7b220b3da44ae0f28428ed74124a6a972e9229472659d943399fb1480e",
+        "c_99a52f3f6b14725db4b412ffac51b7ffad36b6b5d8b67545cd648ac24f8003e0"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T10:00:46.000Z",
+      "published_at": "2026-07-24T07:37:11.353Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213557519616630784",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1213557519616630784",
+      "source_type": "twitter_extra",
+      "summary": "两个平台同步推出了该模型，并上线图像编辑功能，支持指哪儿改哪儿地局部修复图片。",
+      "time_precision": "exact",
+      "title": "ListenHub与Labnana上架图像模型Seedream 5.0 Pro，动漫美学超越GPT Image 2",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/oran_ge/status/2080557894286917974"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29877",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_7692e3b08b03d2c1fb79ca3e2177d24ab0ce427221dff09ab73c7902089f2543",
+      "featured": false,
+      "id": "n_7692e3b08b03d2c1fb79ca3e2177d24ab0ce427221dff09ab73c7902089f2543",
+      "identity_claims": [
+        "c_7692e3b08b03d2c1fb79ca3e2177d24ab0ce427221dff09ab73c7902089f2543",
+        "c_acfc01aca1e3a6fcaa5e9a5ec97ddef6b8ad7dbf77982753256baec4197cabe4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T10:00:46.000Z",
+      "published_at": "2026-07-24T08:08:35.445Z",
+      "published_date": "2026-07-24",
+      "reason": "Runway推出自动模型路由功能，可优化生成流程的成本与速度，属于实用功能更新但非行业级突破。",
+      "related_source_ids": [],
+      "score": 7,
+      "source": {
+        "homepage": null,
+        "id": "1213621013393235969",
+        "name": "aibase"
+      },
+      "source_id": "1213621013393235969",
+      "source_type": "aibase",
+      "summary": "Runway公司宣布推出Runway Media Router，在生成图像、视频、音频时可根据使用场景灵活切换所用AI模型。系统将模型选择标准归纳为质量、处理速度和成本三项，依据单次请求的优先级自动切换模型，大幅减少开发者逐一比较和手动切换模型的负担。 三大场景智能匹配，省钱省时两不误 Runway将模型调用场景分为三类：高速生成适用于创意验证阶段，快速出稿比精致更重要；低速但高质量适用于成片环节，画面细节和精度是 第一 优先级；质量中等但成本较低则适用于预算敏感的日常生产任务。例如用于创意验证的视频生成更重速度，而成片环节更重质量，系统会自动为每个环节匹配最合适的模型。 开发者无需再为\"用哪个模型最划算\"反复纠结，Media Router会根据当前任务的实际需求自动做出 最优 选择。这种按需切换的模式不仅能有效降低Token消耗，还能让创作流程更加顺畅高效。 已接入Seedance、GPT Image2 等多家模型 目前Runway Media Router已在开发者平台Runway Dev上线，支持生成图片、视频和音频三种内容类型，可调用Seedance、GPT Image2 和ElevenLabs等多家公司的模型。这意味着开发者通过统一接口即可接入不同厂商的 顶尖 模型，无需分别对接各家API。这一产品的推出，标志着AI内容生成正从\"单模型打天下\"走向\"多模型协同调度\"的新阶段。",
+      "time_precision": "exact",
+      "title": "Runway推出Media Router：自动切换AI模型帮你省Token，创意验证到成片一条龙搞定",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://www.aibase.com/zh/news/29877"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.aibase.com/zh/news/29878",
+      "category": "research",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_microsoft"
+      ],
+      "event_id": "e_6d78b8722ae8e1bb8fa9bed5f951786b8df4cbca2a431f9029ed667cb42781f0",
+      "featured": false,
+      "id": "n_6d78b8722ae8e1bb8fa9bed5f951786b8df4cbca2a431f9029ed667cb42781f0",
+      "identity_claims": [
+        "c_6d78b8722ae8e1bb8fa9bed5f951786b8df4cbca2a431f9029ed667cb42781f0",
+        "c_8baec57289883f96473d6d3b09a78b9524cf93135cb49ddc9952b2c134413672"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T10:00:46.000Z",
+      "published_at": "2026-07-24T08:42:41.619Z",
+      "published_date": "2026-07-24",
+      "reason": "新晋菲尔兹奖得主高调加入OpenAI专攻AI安全，顶尖数学人才转向释放强烈信号，引发业内对安全议题的广泛关注。",
+      "related_source_ids": [],
+      "score": 8.2,
+      "source": {
+        "homepage": null,
+        "id": "1213621013393235968",
+        "name": "aibase"
+      },
+      "source_id": "1213621013393235968",
+      "source_type": "aibase",
+      "summary": "2026 年国际数学家大会在费城开幕，本年度菲尔兹奖四位得主揭晓——邓煜、约翰·帕登、雅各布·齐默尔曼与王虹。其中邓煜、王虹成为菲尔兹奖自设立以来首批获此殊荣的中国籍数学家，而另一位新科得主齐默尔曼则在赛后新闻发布会上宣布，将转向AI安全领域研究并即将加入OpenAI。 核心猜想被攻克，数学天赋获OpenAI高度评价 齐默尔曼此番摘奖的核心资本，是把o-极小性理论重塑为算术几何与复代数几何的基础研究工具，并成功证明多项学界核心猜想，包括格里菲斯周期图像的代数性猜想和西格尔模簇相关的安德烈-奥尔特猜想，为数论发展落下重笔。OpenAI首席研究官马克·陈与前微软AI副总裁、现OpenAI研究员布贝克均发声确认并表达欢迎。马克·陈评价齐默尔曼拥有 顶尖 数学天赋，而其对待AI安全议题那份严谨审慎的态度与深刻独到的思考同样令人钦佩。 *MO两度摘金，师从数论名家萨纳克 齐默尔曼是加拿大籍数学家，主攻数论、算术几何与超越数论， 1988 年出生。少年时期曾代表加拿大出征2003、 2004 两届国际数学奥林匹克（IMO），两度摘金且 2004 年拿下一满分。他本科就读多伦多大学， 2011 年获普林斯顿数学博士学位，师从数论名家彼得·萨纳克，此后在哈佛学者协会做博士后，自 2014 年起任教于多伦多大学数学系至今。一位刚站在数学界 巅峰 的学者选择跨界投身AI安全，这一决定本身就传递出强烈信号——在AI能力飞速跃升的当下，安全治理对 顶尖 人才的吸引力正在与纯学术研究比肩。",
+      "time_precision": "exact",
+      "title": "菲尔兹奖新得主齐默尔曼官宣加入OpenAI，数学最高荣誉得主转向AI安全",
+      "topic_ids": [
+        "topic_research",
+        "topic_products",
+        "topic_policy"
+      ],
+      "url": "https://www.aibase.com/zh/news/29878"
     },
     {
       "batch": "afternoon",
