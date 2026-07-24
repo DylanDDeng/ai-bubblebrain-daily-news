@@ -1,11 +1,14 @@
 {
   "batches": [
     {
-      "generated_at": null,
+      "generated_at": "2026-07-24T21:00:00.000Z",
       "id": "morning",
-      "item_ids": [],
+      "item_ids": [
+        "n_6fb884d603bf7fc06845c9e855ff1c64aa2d61be80aaac28e50921e276e22747",
+        "n_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2"
+      ],
       "label": "08:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -47,9 +50,84 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T17:00:00.000Z",
+  "generated_at": "2026-07-24T21:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080717869877473764",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_6fb884d603bf7fc06845c9e855ff1c64aa2d61be80aaac28e50921e276e22747",
+      "featured": false,
+      "id": "n_6fb884d603bf7fc06845c9e855ff1c64aa2d61be80aaac28e50921e276e22747",
+      "identity_claims": [
+        "c_6fb884d603bf7fc06845c9e855ff1c64aa2d61be80aaac28e50921e276e22747",
+        "c_d82689c71658d187b490b56ca79d9d7572742e0eb90c8c6fa9d93610ed48548b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T21:00:00.000Z",
+      "published_at": "2026-07-24T18:12:52.899Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214310650956779521",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1214310650956779521",
+      "source_type": "twitter_extra",
+      "summary": "该缓存感知型路由器仅在真正节省成本时才切换模型，可接入 Claude Code 等现有工具。",
+      "time_precision": "exact",
+      "title": "开发者发布开源自动路由模型，实现编程代理成本降低70%且性能相近",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2080717869877473764"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080736027694510260",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2",
+      "featured": false,
+      "id": "n_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2",
+      "identity_claims": [
+        "c_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2",
+        "c_528c1ba96ccac8e0a29695ced98df3790ae3149ee8610ea4927b674f1316d079"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T21:00:00.000Z",
+      "published_at": "2026-07-24T19:25:01.575Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214310650956779520",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1214310650956779520",
+      "source_type": "twitter_extra",
+      "summary": "扎克伯格、纳德拉、皮查伊等人近期也在X上频繁发文和互动，平台集聚效应显著。",
+      "time_precision": "exact",
+      "title": "黄仁勋等科技领袖齐聚X平台，推动其成为科技行业发声核心",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/omarsar0/status/2080736027694510260"
+    },
     {
       "batch": "night",
       "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=2&mid=2652714734&sn=d76e2af830ff4f46324629ec4f78d179",
