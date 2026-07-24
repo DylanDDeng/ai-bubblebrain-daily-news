@@ -138,7 +138,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-24T18:00:00.000Z",
+      "generated_at": "2026-07-24T19:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_ffee637ea7a354fa7d55971d25f8ef80724f86544d3c9a36f43d00612487f173",
@@ -150,12 +150,18 @@
         "n_db667b68457813591e40de986a27d4439066a099f341d9e2e3e118f05dfbe6ef",
         "n_8753f58bdba181f97db5369cbf298d4a1523e1912317e15333473b0921338b08",
         "n_41db17d03157264ac261eb2bf4026035e238bc0e75c62430354365cc8058ba2a",
+        "n_57c15a02d8f4e79e35b4850e8c30392c5e399cc1a7e005bde7af81e3d5fdce19",
         "n_844ca29288fefc92978ac70bb099c6ba44f8ab045d628f177c3379e29c14b831",
         "n_5677c16654a44aee52178ed9c04f4a5d77c6575f9357651356e3bd0ba77f304b",
         "n_da09c25eb68d4a59824ff1d6c20dad417e1432f94681c022f1fa814f31e22d50",
         "n_3358b7917de8ab65badfcb490c4dabee5b15248a9d15a1fb616cb06348f4e8ab",
+        "n_9f13f5df280364cf8f1a7fb616efdf2c2c78707027b3d6080facde9fd400c16f",
+        "n_7a00f9905eb33924eb0a2bd43937a23950ec37f0e45be4e11bc3b99a93eaf51e",
         "n_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca",
-        "n_198ca8a21ba19384749d2db0f38ac73bcfd9965ad9d02559552e4b228d042d4d"
+        "n_f3219a4883c3341953f3d02fb82c6cd592b00ddb14a4e1b21a768f18ca1ee259",
+        "n_66ab08d306b42aa7818ea3f3dd1ee4052dd5be8401f985578ad0bf4781706a22",
+        "n_198ca8a21ba19384749d2db0f38ac73bcfd9965ad9d02559552e4b228d042d4d",
+        "n_548c74c708194ca17c2fc7a9f93df947f84a35bb4ef045a067d9382f518eb575"
       ],
       "label": "次日 02:00 补充更新",
       "status": "completed"
@@ -164,7 +170,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T18:00:00.000Z",
+  "generated_at": "2026-07-24T19:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4833,6 +4839,43 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080658786570871010",
+      "category": "business",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_57c15a02d8f4e79e35b4850e8c30392c5e399cc1a7e005bde7af81e3d5fdce19",
+      "featured": false,
+      "id": "n_57c15a02d8f4e79e35b4850e8c30392c5e399cc1a7e005bde7af81e3d5fdce19",
+      "identity_claims": [
+        "c_57c15a02d8f4e79e35b4850e8c30392c5e399cc1a7e005bde7af81e3d5fdce19",
+        "c_9a76f05254e7518ba52613b8b94a26dbe6345a2fea1ed818c74170f6e81c950f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T19:00:00.000Z",
+      "published_at": "2026-07-24T14:18:06.580Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214169756114944001",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1214169756114944001",
+      "source_type": "twitter_extra",
+      "summary": "他分享了英伟达签署的公开信，指出开放模型能增强安全与网络安全、加速创新扩散并保障国家主权。",
+      "time_precision": "exact",
+      "title": "黄仁勋首次在X平台发文强调开放模型将推动AI行业创新与安全",
+      "topic_ids": [
+        "topic_business",
+        "topic_policy"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080658786570871010"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/vista8/status/2080659323559248041",
       "category": "other",
       "content_type": "socialMedia",
@@ -4983,6 +5026,80 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/sama/status/2080683119959757243",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_9f13f5df280364cf8f1a7fb616efdf2c2c78707027b3d6080facde9fd400c16f",
+      "featured": false,
+      "id": "n_9f13f5df280364cf8f1a7fb616efdf2c2c78707027b3d6080facde9fd400c16f",
+      "identity_claims": [
+        "c_9f13f5df280364cf8f1a7fb616efdf2c2c78707027b3d6080facde9fd400c16f",
+        "c_ec72d318af912cd14322cc9cf23bcf697c3447d8544433c99df3d7f7e91a7034"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T19:00:00.000Z",
+      "published_at": "2026-07-24T15:54:47.935Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214189888841158657",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1214189888841158657",
+      "source_type": "twitter_extra",
+      "summary": "在极度困难的问题上，GPT-5.6 Sol Pro优于Fable 5 Ultracode，再优于GPT-5.6 Sol Ultra，而仅通过聊天机器人可用的GPT-5.6 Pro是当前最聪明的模型。",
+      "time_precision": "exact",
+      "title": "伊桑·莫里克对比各大模型后指出GPT-5.6 Pro在困难任务中表现最优",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/sama/status/2080683119959757243"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/sama/status/2080683363174945065",
+      "category": "business",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_7a00f9905eb33924eb0a2bd43937a23950ec37f0e45be4e11bc3b99a93eaf51e",
+      "featured": false,
+      "id": "n_7a00f9905eb33924eb0a2bd43937a23950ec37f0e45be4e11bc3b99a93eaf51e",
+      "identity_claims": [
+        "c_7a00f9905eb33924eb0a2bd43937a23950ec37f0e45be4e11bc3b99a93eaf51e",
+        "c_912391c77f34536376938493f538c601007590cf7ccb7038744ae0ccc01aa600"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T19:00:00.000Z",
+      "published_at": "2026-07-24T15:55:45.921Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214189888841158656",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1214189888841158656",
+      "source_type": "twitter_extra",
+      "summary": "他分享了英伟达签署的信函，指出开放模型能增强安全与网络安全、加速创新扩散并实现主权，认为AI将改变每个行业、驱动每家公司、由每个国家构建。",
+      "time_precision": "exact",
+      "title": "黄仁勋在X首次发文表达希望美国在开源和闭源AI领域获胜，并分享开放模型公开信",
+      "topic_ids": [
+        "topic_business",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/sama/status/2080683363174945065"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://www.anthropic.com/research/project-pilot",
       "category": "models",
       "content_type": "news",
@@ -5023,6 +5140,79 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/huangyun_122/status/2080686496806522884",
+      "category": "business",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f3219a4883c3341953f3d02fb82c6cd592b00ddb14a4e1b21a768f18ca1ee259",
+      "featured": false,
+      "id": "n_f3219a4883c3341953f3d02fb82c6cd592b00ddb14a4e1b21a768f18ca1ee259",
+      "identity_claims": [
+        "c_caca6297c74e0f7b53456b5542b8b5cd6a445859a35e2ac0a861c15696b043b8",
+        "c_f3219a4883c3341953f3d02fb82c6cd592b00ddb14a4e1b21a768f18ca1ee259"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T19:00:00.000Z",
+      "published_at": "2026-07-24T16:08:12.576Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214186719943753728",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1214186719943753728",
+      "source_type": "twitter_extra",
+      "summary": "他在这封公开信中强调开放模型能增强安全与网络安全、加速创新扩散并保障国家主权，认为AI将深刻改变每一个行业。",
+      "time_precision": "exact",
+      "title": "黄仁勋入驻X平台并首度发文，分享了英伟达签署的开放模型重要性公开信",
+      "topic_ids": [
+        "topic_business",
+        "topic_policy"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080686496806522884"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/9hills/status/2080700353734127622",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_66ab08d306b42aa7818ea3f3dd1ee4052dd5be8401f985578ad0bf4781706a22",
+      "featured": false,
+      "id": "n_66ab08d306b42aa7818ea3f3dd1ee4052dd5be8401f985578ad0bf4781706a22",
+      "identity_claims": [
+        "c_5e018bac61583df86c0d30ba029c5cabb36b1367cb53e731c83a40f20366b774",
+        "c_66ab08d306b42aa7818ea3f3dd1ee4052dd5be8401f985578ad0bf4781706a22"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T19:00:00.000Z",
+      "published_at": "2026-07-24T17:03:16.006Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214192444464087040",
+        "name": "twitter-九原客"
+      },
+      "source_id": "1214192444464087040",
+      "source_type": "twitter_extra",
+      "summary": "大量阅读由智能体编写的设计文档时，Markdown格式使眼睛疲劳，而HTML版本被评价为更容易阅读。",
+      "time_precision": "exact",
+      "title": "开发者集中审查智能体生成的设计文档后感到HTML格式比Markdown可读性更好",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/9hills/status/2080700353734127622"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/omarsar0/status/2080701556425400427",
       "category": "models",
       "content_type": "socialMedia",
@@ -5058,6 +5248,45 @@
         "topic_models"
       ],
       "url": "https://x.com/omarsar0/status/2080701556425400427"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080704214603588050",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_548c74c708194ca17c2fc7a9f93df947f84a35bb4ef045a067d9382f518eb575",
+      "featured": false,
+      "id": "n_548c74c708194ca17c2fc7a9f93df947f84a35bb4ef045a067d9382f518eb575",
+      "identity_claims": [
+        "c_548c74c708194ca17c2fc7a9f93df947f84a35bb4ef045a067d9382f518eb575",
+        "c_ca8c0cad7d542b71fc116eed1b822b65ba86d7b0fd6445060691d35996c33a3b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T19:00:00.000Z",
+      "published_at": "2026-07-24T17:18:37.826Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214169756114944000",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1214169756114944000",
+      "source_type": "twitter_extra",
+      "summary": "Claude Opus 5是一款考虑周全且主动的模型，以Fable 5一半的成本实现了接近其前沿水平的智能。",
+      "time_precision": "exact",
+      "title": "Claude发布Opus 5模型以一半价格提供接近前沿智能，或将促使Codex重置",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080704214603588050"
     }
   ],
   "overview": {
