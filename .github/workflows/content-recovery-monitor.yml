@@ -16,6 +16,7 @@ on:
           - inspect
           - dead_letter_superseded
           - reset_dead_letter_slot
+          - apply_slot_rollover_migration
       site_release_id:
         description: Exact superseded site release UUID
         required: false

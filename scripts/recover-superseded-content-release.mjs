@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const GIT_SHA = /^[0-9a-f]{40}$/i;
@@ -6,6 +8,7 @@ const ACTIONS = new Set([
   "inspect",
   "dead_letter_superseded",
   "reset_dead_letter_slot",
+  "apply_slot_rollover_migration",
 ]);
 
 function required(name) {
@@ -47,6 +50,57 @@ async function query(sql) {
   const parsed = JSON.parse(body);
   if (!Array.isArray(parsed)) throw new Error("Unexpected database query result");
   return parsed;
+}
+
+if (action === "apply_slot_rollover_migration") {
+  const migrationUrl = new URL(
+    "../supabase/migrations/20260724000100_terminal_publication_slot_rollover.sql",
+    import.meta.url,
+  );
+  const migration = await readFile(migrationUrl, "utf8");
+  await query(migration);
+  const rows = await query(`
+    select jsonb_build_object(
+      'owner', pg_get_userbyid(procedure.proowner),
+      'ingestor_execute', has_function_privilege(
+        'content_ingestor',
+        'private.prepare_ingestion_publication_slot_v1(uuid,text,text)',
+        'execute'
+      ),
+      'editor_execute', has_function_privilege(
+        'content_editor',
+        'private.prepare_ingestion_publication_slot_v1(uuid,text,text)',
+        'execute'
+      ),
+      'backup_execute', has_function_privilege(
+        'content_backup',
+        'private.prepare_ingestion_publication_slot_v1(uuid,text,text)',
+        'execute'
+      ),
+      'terminal_guard', position(
+        'Publication slot release is still active'
+        in pg_get_functiondef(procedure.oid)
+      ) > 0
+    ) as result
+    from pg_proc procedure
+    join pg_namespace namespace on namespace.oid = procedure.pronamespace
+    where namespace.nspname = 'private'
+      and procedure.proname = 'prepare_ingestion_publication_slot_v1'
+  `);
+  if (rows.length !== 1 || !rows[0]?.result)
+    throw new Error("Slot rollover migration verification returned no function");
+  const verification = rows[0].result;
+  if (
+    verification.owner !== "content_rpc_owner" ||
+    verification.ingestor_execute !== true ||
+    verification.editor_execute !== false ||
+    verification.backup_execute !== false ||
+    verification.terminal_guard !== true
+  ) {
+    throw new Error("Slot rollover migration verification failed");
+  }
+  console.log(JSON.stringify({ phase: "migration_verified", ...verification }));
+  process.exit(0);
 }
 
 if (action === "inspect_latest") {
