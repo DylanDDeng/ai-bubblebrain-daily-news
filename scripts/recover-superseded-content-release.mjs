@@ -118,14 +118,14 @@ if (action === "inspect_latest") {
         'last_error', outbox.last_error,
         'updated_at', outbox.updated_at,
         'release_sequence', release.sequence,
-        'code_sha', artifact.code_sha,
+        'code_sha', coalesce(artifact.code_sha, outbox.payload ->> 'code_sha'),
         'source_code_sha', outbox.payload ->> 'source_code_sha',
         'mode', outbox.payload ->> 'mode',
         'head_claimed', head.reservation_id is not null
       ) as item
       from private.content_outbox outbox
       join private.site_releases release on release.id = outbox.site_release_id
-      join private.release_artifacts artifact on artifact.site_release_id = release.id
+      left join private.release_artifacts artifact on artifact.site_release_id = release.id
       left join private.release_head_claims head
         on head.reservation_id = release.id
       order by outbox.updated_at desc
