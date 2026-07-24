@@ -16,7 +16,7 @@ VERIFY_MIN_EXACT_ENDPOINTS = "2"
 # From production upload start through exact multi-origin convergence. Pending
 # origins are probed in parallel until this hard limit; exceeding it restores
 # the last-known-good release while leaving the database pointer unchanged.
-MAX_PRODUCTION_INCONSISTENCY_MS = "240000"
+MAX_PRODUCTION_INCONSISTENCY_MS = "300000"
 # Configure at least two independently routed verifier origins before enabling publication.
 PRODUCTION_VERIFY_URLS = "https://bubblenews.today,https://ai-bubblebrain-daily-news.pages.dev"
 # Cloudflare Email Address Obfuscation intentionally rewrites HTML on the
