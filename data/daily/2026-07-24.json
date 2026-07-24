@@ -1,7 +1,7 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-24T10:00:46.000Z",
+      "generated_at": "2026-07-24T12:00:46.000Z",
       "id": "morning",
       "item_ids": [
         "n_62db572edfca9bb2325c37624b37ba3e08993c5a546e753cbcabb774ccf49b65",
@@ -14,6 +14,8 @@
         "n_1d06bd5d2d05051147ee08aa6a346bbacd7c0a6169ff42a48b34739b06420425",
         "n_b5327590ad68662d575f9f67b9edca342f4a09bea1e2edd6717a3567a16ee26a",
         "n_5fb7608dc56a2ecce21a671d1560ce188a77edfca7546c267f2f574a26809928",
+        "n_765df0250dfe2ef50144c1760d6174506e50a10632276f794f907a23c904f967",
+        "n_af8c40845ed9d9daad5507e191ef760f6af0a231356c09aaef338625ba0d7173",
         "n_616864f3e02f8c41c5d804e21b48be29748d8721bf7917abd8b41783f909426e",
         "n_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
         "n_39cfd834766c497900f9ea67a439686fc5324a48720306dbbdd80aec356ed8ef",
@@ -44,7 +46,15 @@
         "n_1b32ee9c38f4ab9159f9fa636c6025325e58a4893ba972c6beec6625ece9b1d9",
         "n_99a52f3f6b14725db4b412ffac51b7ffad36b6b5d8b67545cd648ac24f8003e0",
         "n_7692e3b08b03d2c1fb79ca3e2177d24ab0ce427221dff09ab73c7902089f2543",
-        "n_6d78b8722ae8e1bb8fa9bed5f951786b8df4cbca2a431f9029ed667cb42781f0"
+        "n_850d3b7f6eb4427e6ab788aec8a3458d278e9e5387099497e8032e1619aeab89",
+        "n_6d78b8722ae8e1bb8fa9bed5f951786b8df4cbca2a431f9029ed667cb42781f0",
+        "n_7ade6a2847272b99d79068c6a69b98b5f80febd4998f5ae9fc7a018f0bd852e4",
+        "n_732b0bee623fbb4e228e0f06fa184fede6f02de7a472ca0f1fa56778a62297a9",
+        "n_31de4b54509fc7417476fac00d5805685a76633ebac1b9b7b00b4e57f8ff5c8b",
+        "n_839329a96ab061da5829ddaca56627236e831b7ba2a5206b6e54d1dae9fbab83",
+        "n_a2ab727a0cf573d0fa0cd4ef3313d1c1284bb9e5fc6ee69d9b833f308c2977ac",
+        "n_c8a799d143b89717b32af9945f60fb64bf5c009e753054386ba364f7d1694977",
+        "n_ed58cdf375e4d75e37462500c93a642b947cfae84d47d2093aec616b19106e59"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -126,7 +136,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T10:00:46.000Z",
+  "generated_at": "2026-07-24T12:00:46.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -500,6 +510,78 @@
         "topic_agents"
       ],
       "url": "https://arxiv.org/abs/2607.21594"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21576",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_765df0250dfe2ef50144c1760d6174506e50a10632276f794f907a23c904f967",
+      "featured": false,
+      "id": "n_765df0250dfe2ef50144c1760d6174506e50a10632276f794f907a23c904f967",
+      "identity_claims": [
+        "c_3796474efc1ee808653cc07830d62d1a3d66b638182047aa3402718bde8ff23d",
+        "c_765df0250dfe2ef50144c1760d6174506e50a10632276f794f907a23c904f967"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": "2026-07-22T20:00:00.760Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213780808188280837",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213780808188280837",
+      "source_type": "huggingface_papers",
+      "summary": "Understanding motion in video is a fundamental challenge for visual learning, as frame-to-frame change entangles two sources of dynamics: camera motion and object motion. This decomposition has remained underexplored in representation learning, partly because these factors are tightly coupled in natural videos and difficult to supervise separately. Yet recovering it is important for learning robust motion representations that separate meaningful object dynamics from camera-induced variation. We study whether such structured motion representations can be recovered from frozen features of a pretrained image vision transformer. We propose the Structured Dynamics Model (SDM), which explicitly separates the dominant source of temporal change from residual dynamics through future-feature prediction, rather than representing video change with a single entangled latent or with unstructured, spatially dense transition tokens. Training combines self-supervised learning on real video with weak supervision of scene dynamics on synthetic Kubric data. We evaluate SDM on ProbeMotion, a new evaluation suite spanning synthetic and real videos with camera motion, object motion, and combined dynamics. SDM outperforms backbone baselines using global CLS or average-pooled features, and compares favorably to strongly supervised representations such as VGGT on several probes, despite using substantially weaker supervision. These results suggest that pretrained image models can be readily repurposed into structured video-dynamics representations, providing a useful inductive bias for learning and analyzing latent video dynamics.",
+      "time_precision": "exact",
+      "title": "从视频中自监督学习结构化动力学",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://arxiv.org/abs/2607.21576"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21553",
+      "category": "other",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_af8c40845ed9d9daad5507e191ef760f6af0a231356c09aaef338625ba0d7173",
+      "featured": false,
+      "id": "n_af8c40845ed9d9daad5507e191ef760f6af0a231356c09aaef338625ba0d7173",
+      "identity_claims": [
+        "c_85dab1b2cd66e3410978bae5e7f92781bed2e90daec01c33fb7c686954ede698",
+        "c_af8c40845ed9d9daad5507e191ef760f6af0a231356c09aaef338625ba0d7173"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": "2026-07-22T20:00:00.815Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213780808188280841",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213780808188280841",
+      "source_type": "huggingface_papers",
+      "summary": "We introduce SANA-Video 2.0, a hybrid video diffusion transformer instantiated at 5B and 14B scales under a unified architecture. Designed to generate high-quality video up to 720p on a single GPU, SANA-Video 2.0 matches full-softmax video DiTs in quality while retaining the favorable long-sequence scaling of linear attention. To avoid quadratic attention throughout, Hybrid Linear-Softmax Attention combines gated linear attention for O(N)-dominated mixing with periodic gated-softmax anchors at a 3:1 ratio, restoring the full-rank token interactions that pure linear attention lacks. To propagate these refreshed representations across depth, Block Attention Residuals (AttnRes) route completed block summaries into later linear layers, enabling anchor-feature reuse and boosting deep-layer effective rank by ~12%. Through from-scratch training, SANA-Video 2.0 learns the complete hybrid directly rather than linearizing pretrained models, with reduced-resolution proxy studies establishing 25% softmax as the optimal quality-efficiency trade-off. With 40-step sampling, SANA-Video 2.0 achieves a VBench score of 84.30 in 13.2s at 480p on a single H100, remaining competitive with far larger softmax video DiTs at a fraction of the latency. Its compiled DiT forward pass is 3.2x faster than a matched full-softmax baseline at 720p/60s, a gap that expands with video duration. Furthermore, full-stack Sol-Engine optimization (kernel fusion, caching, and sparse attention) accelerates this hardware-friendly backbone by a further 3.58x, bringing the 5B pipeline to 13.06s at 720p/5s and making it 120x faster than Wan 2.2-A14B on one H100. Overall, our hybrid design recovers softmax-level expressiveness at substantially reduced cost, unlocking scalable long, high resolution video generation.",
+      "time_precision": "exact",
+      "title": "SANA-Video 2.0：用于高效视频生成的混合线性注意力与注意力残差",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://arxiv.org/abs/2607.21553"
     },
     {
       "batch": "morning",
@@ -1640,6 +1722,42 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2080572564833992724",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_850d3b7f6eb4427e6ab788aec8a3458d278e9e5387099497e8032e1619aeab89",
+      "featured": false,
+      "id": "n_850d3b7f6eb4427e6ab788aec8a3458d278e9e5387099497e8032e1619aeab89",
+      "identity_claims": [
+        "c_850d3b7f6eb4427e6ab788aec8a3458d278e9e5387099497e8032e1619aeab89",
+        "c_ea1d8d2ab9f783a478379c57906a4c705b2ab859ed1b14853ee468fc14061047"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": "2026-07-24T08:35:29.777Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213785397662744578",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1213785397662744578",
+      "source_type": "twitter_extra",
+      "summary": "微信内置的截图工具现已支持滚动截长图，方便用户一次性截取聊天记录或网页等长内容，操作更便捷。",
+      "time_precision": "exact",
+      "title": "微信截图工具新增滚动截长图功能，用户无需第三方软件即可截取完整页面。",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080572564833992724"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://www.aibase.com/zh/news/29878",
       "category": "research",
       "content_type": "news",
@@ -1678,6 +1796,266 @@
         "topic_policy"
       ],
       "url": "https://www.aibase.com/zh/news/29878"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2080581557312778403",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_7ade6a2847272b99d79068c6a69b98b5f80febd4998f5ae9fc7a018f0bd852e4",
+      "featured": false,
+      "id": "n_7ade6a2847272b99d79068c6a69b98b5f80febd4998f5ae9fc7a018f0bd852e4",
+      "identity_claims": [
+        "c_4e52a00052e49c91396eb8bdb0062233e47fc7b6ce95d2c1f5cf735374daf025",
+        "c_7ade6a2847272b99d79068c6a69b98b5f80febd4998f5ae9fc7a018f0bd852e4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": "2026-07-24T09:11:13.284Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213785397662744577",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1213785397662744577",
+      "source_type": "twitter_extra",
+      "summary": "用户从《图解 Skill》中学到母子Agent架构，母Agent负责对话和任务分派，子Agent执行具体工作，多个Agent可形成协作群组。",
+      "time_precision": "exact",
+      "title": "开发者通过“母子Agent”概念协调多智能体协作，让任务执行自动完成沟通与进度汇报。",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080581557312778403"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2080600242274406679",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_732b0bee623fbb4e228e0f06fa184fede6f02de7a472ca0f1fa56778a62297a9",
+      "featured": false,
+      "id": "n_732b0bee623fbb4e228e0f06fa184fede6f02de7a472ca0f1fa56778a62297a9",
+      "identity_claims": [
+        "c_5979b10cf4344bc0d9c1f36cfc7d881d2b1dff48b8f60c0221cd884f2aff66dc",
+        "c_732b0bee623fbb4e228e0f06fa184fede6f02de7a472ca0f1fa56778a62297a9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": "2026-07-24T10:25:28.649Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213785397662744576",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1213785397662744576",
+      "source_type": "twitter_extra",
+      "summary": "用户让Codex主导任务并启用母子Agent，两个AI经过多轮互相纠错后达成一致并完成系统搭建，意识到自身约束曾是瓶颈。",
+      "time_precision": "exact",
+      "title": "开发者让Codex与Claude自主协商并共同完成任务，发现减少人工干预可让AI跑得更远。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080600242274406679"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/mattpocock/skills",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_31de4b54509fc7417476fac00d5805685a76633ebac1b9b7b00b4e57f8ff5c8b",
+      "featured": false,
+      "id": "n_31de4b54509fc7417476fac00d5805685a76633ebac1b9b7b00b4e57f8ff5c8b",
+      "identity_claims": [
+        "c_31de4b54509fc7417476fac00d5805685a76633ebac1b9b7b00b4e57f8ff5c8b",
+        "c_73c0c9836324a04908f19afde690f4a4395c217013aeb2844ded2c50960fd383"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": null,
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/mattpocock/skills",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/mattpocock/skills",
+      "source_type": "github_trending",
+      "summary": "给真正工程师的技能。直接来自我的.agents 目录。",
+      "time_precision": "date_only",
+      "title": "skills",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/mattpocock/skills"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/CoreBunch/Instatic",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_839329a96ab061da5829ddaca56627236e831b7ba2a5206b6e54d1dae9fbab83",
+      "featured": false,
+      "id": "n_839329a96ab061da5829ddaca56627236e831b7ba2a5206b6e54d1dae9fbab83",
+      "identity_claims": [
+        "c_839329a96ab061da5829ddaca56627236e831b7ba2a5206b6e54d1dae9fbab83",
+        "c_a584f80c83bdf2afdca3a4fb58553e607a58f8614937a7e48e593d0fa09330fd"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": null,
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/CoreBunch/Instatic",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/CoreBunch/Instatic",
+      "source_type": "github_trending",
+      "summary": "Webflow、Framer 和 WordPress 的开源替代品。代理式自托管可视化 CMS，输出纯净的静态页面。用户、角色、插件、内容、数据库，一应俱全。",
+      "time_precision": "date_only",
+      "title": "Instatic",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/CoreBunch/Instatic"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/yorukot/superfile",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_a2ab727a0cf573d0fa0cd4ef3313d1c1284bb9e5fc6ee69d9b833f308c2977ac",
+      "featured": false,
+      "id": "n_a2ab727a0cf573d0fa0cd4ef3313d1c1284bb9e5fc6ee69d9b833f308c2977ac",
+      "identity_claims": [
+        "c_2c4230671188bfb2546e5af5bcf6f26978170715c3dbfe812bbf687ea8289e19",
+        "c_a2ab727a0cf573d0fa0cd4ef3313d1c1284bb9e5fc6ee69d9b833f308c2977ac"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": null,
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/yorukot/superfile",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/yorukot/superfile",
+      "source_type": "github_trending",
+      "summary": "一款华丽而现代的终端文件管理器。",
+      "time_precision": "date_only",
+      "title": "superfile",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/yorukot/superfile"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/OtterMind/Chat2DB",
+      "category": "products",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_c8a799d143b89717b32af9945f60fb64bf5c009e753054386ba364f7d1694977",
+      "featured": false,
+      "id": "n_c8a799d143b89717b32af9945f60fb64bf5c009e753054386ba364f7d1694977",
+      "identity_claims": [
+        "c_c8a799d143b89717b32af9945f60fb64bf5c009e753054386ba364f7d1694977",
+        "c_e7eb36af6e96d4f735aaae3d166d3c7f13b5af7cac80301bea26ef9d172ed999"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": null,
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/OtterMind/Chat2DB",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/OtterMind/Chat2DB",
+      "source_type": "github_trending",
+      "summary": "🔥🔥🔥 人工智能驱动的数据库工具和 SQL 客户端，最热门的 GUI 客户端，支持 MySQL、Oracle、PostgreSQL、DB2、SQL Server、DB2、SQLite、H2、ClickHouse 等。",
+      "time_precision": "date_only",
+      "title": "Chat2DB",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/OtterMind/Chat2DB"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/Lordog/dive-into-llms",
+      "category": "models",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_ed58cdf375e4d75e37462500c93a642b947cfae84d47d2093aec616b19106e59",
+      "featured": false,
+      "id": "n_ed58cdf375e4d75e37462500c93a642b947cfae84d47d2093aec616b19106e59",
+      "identity_claims": [
+        "c_5df93d67c0a6669a99d1acd282ad9479db889b1175891f88533c179204b2aa07",
+        "c_ed58cdf375e4d75e37462500c93a642b947cfae84d47d2093aec616b19106e59"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T12:00:46.000Z",
+      "published_at": null,
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/Lordog/dive-into-llms",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/Lordog/dive-into-llms",
+      "source_type": "github_trending",
+      "summary": "《动手学大模型Dive into LLMs》系列编程实践教程",
+      "time_precision": "date_only",
+      "title": "dive-into-llms",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/Lordog/dive-into-llms"
     },
     {
       "batch": "afternoon",
