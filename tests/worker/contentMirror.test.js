@@ -74,6 +74,9 @@ function database({
                 },
             ];
         }
+        if (query.includes('prepare_ingestion_publication_slot_v1')) {
+            return [{ result: { reset: false, reason: 'slot_absent' } }];
+        }
         if (query.includes('reserve_ingestion_site_release_v1')) {
             if (reserveError && reserveFailures < reserveFailureCount) {
                 reserveFailures += 1;
@@ -255,6 +258,14 @@ describe('structured content database mirror', () => {
             });
             expect(siteManifest).not.toHaveProperty('daily_source_contract_version');
             const reserve = db.calls.find((call) => call.query.includes('reserve_ingestion_site_release_v1'));
+            const prepare = db.calls.find((call) =>
+                call.query.includes('prepare_ingestion_publication_slot_v1'),
+            );
+            expect(prepare.values).toEqual([
+                '11111111-1111-4111-8111-111111111111',
+                'morning',
+                result.contentSha256,
+            ]);
             expect(reserve.values.slice(1)).toEqual([
                 'morning',
                 result.contentSha256,
