@@ -8,7 +8,11 @@ import { handleWriteRssData } from './handlers/writeRssData.js';
 import { dataSources } from './dataFetchers.js';
 import { handleLogin, isAuthenticated, handleLogout } from './auth.js';
 import { handleAutoWorkflow } from './handlers/autoWorkflow.js';
-import { handleIncrementalDailyWorkflow, runIncrementalDailyWorkflow } from './handlers/incrementalDailyWorkflow.js';
+import {
+    handleIncrementalDailyWorkflow,
+    handleReconcileDailyWorkflow,
+    runIncrementalDailyWorkflow,
+} from './handlers/incrementalDailyWorkflow.js';
 import { debugFoloCookie, storeFoloCookieToKV } from './folo.js';
 import { handleAdminRoute, isAdminRoute } from './routes/adminRoutes.js';
 import { logMissingConfig } from './logging.js';
@@ -17,6 +21,8 @@ import { resolveScheduledRun } from './daily/scheduleContract.js';
 import { SOURCE_REGISTRY } from './daily/sourceRegistry.js';
 import { handleScheduledHealth } from './routes/scheduledHealth.js';
 import { recordScheduledRunTrace } from '../workers/content/ingestion/mirror.ts';
+import { replayOldestStructuredBacklog } from './daily/structuredWorkflow.js';
+import { tokensMatch } from './security/adminAuth.js';
 
 const SAFE_PROVIDER_NAMES = new Set(Object.keys(SOURCE_REGISTRY));
 const SAFE_CONTENT_TYPES = new Set(['news', 'project', 'paper', 'socialMedia']);
@@ -53,6 +59,7 @@ function jsonResponse(value, init = {}) {
 const defaultAdminHandlers = {
     auto: (input, env) => handleAutoWorkflow(input, env),
     incrementalDaily: (input, env) => handleIncrementalDailyWorkflow(input, env),
+    reconcileDaily: (input, env) => handleReconcileDailyWorkflow(input, env),
     writeRssData: (input, env) => handleWriteRssData(input, env),
     async updateFoloCookie({ cookie }, env) {
         const success = await storeFoloCookieToKV(env, cookie);
@@ -282,6 +289,7 @@ async function recordScheduledDatabaseTrace(
 
 export function createWorker({
     adminHandlers = defaultAdminHandlers,
+    backlogReplay = replayOldestStructuredBacklog,
     scheduledWorkflow = runIncrementalDailyWorkflow,
     scheduledTrace = recordScheduledRunTrace,
 } = {}) {
@@ -293,6 +301,24 @@ export function createWorker({
 
             if (path === '/health/scheduled') {
                 return handleScheduledHealth(request, env);
+            }
+
+            if (path === '/internal/backlog/replay') {
+                const receivedSecret = request.headers.get('X-Content-Backlog-Secret') || '';
+                if (
+                    request.method !== 'POST' ||
+                    !env.CONTENT_BACKLOG_REPLAY_SECRET ||
+                    !(await tokensMatch(receivedSecret, env.CONTENT_BACKLOG_REPLAY_SECRET))
+                ) {
+                    return jsonResponse({ success: false, error: 'Unauthorized' }, {
+                        status: 401,
+                    });
+                }
+                const result = await backlogReplay(env);
+                const retryable = ['blocked', 'locked', 'deferred'].includes(result.status);
+                return jsonResponse({ success: !retryable, retryable, ...result }, {
+                    status: retryable ? 409 : 200,
+                });
             }
 
             if (isAdminRoute(path)) {

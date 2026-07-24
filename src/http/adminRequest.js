@@ -89,6 +89,23 @@ function validateBody(route, body) {
         return { date: body.date, batch: body.batch };
     }
 
+    if (route === '/reconcileDaily') {
+        assertExactFields(body, ['scheduled_at']);
+        const scheduledAt = body.scheduled_at;
+        const parsed = typeof scheduledAt === 'string' ? new Date(scheduledAt) : null;
+        if (
+            typeof scheduledAt !== 'string' ||
+            !/^\d{4}-\d{2}-\d{2}T\d{2}:00:00\.000Z$/.test(scheduledAt) ||
+            Number.isNaN(parsed.getTime()) ||
+            parsed.toISOString() !== scheduledAt ||
+            !new Set([0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23])
+                .has(parsed.getUTCHours())
+        ) {
+            throw new AdminRequestError(400, 'Invalid scheduled_at');
+        }
+        return { scheduled_at: body.scheduled_at };
+    }
+
     if (route === '/writeRssData') {
         assertExactFields(body, ['date']);
         validateDate(body.date, true);

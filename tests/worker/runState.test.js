@@ -2,11 +2,15 @@ import { describe, expect, it, vi } from 'vitest';
 import {
     acquireAdvisoryLease,
     failureMarkerKey,
+    listMirrorBacklogEntries,
+    readMirrorBacklogEntry,
     readScheduledOutcome,
+    removeMirrorBacklogEntry,
     releaseAdvisoryLease,
     scheduledOutcomeKey,
     scheduledSlotInstant,
     storeFailureMarker,
+    storeMirrorBacklogEntry,
     storeScheduledOutcome,
     storeTriggerMarker,
     triggerMarkerKey,
@@ -83,5 +87,33 @@ describe('structured advisory run state', () => {
             error_type: 'scheduled_workflow_failed',
         });
         expect(kv.put.mock.calls[0][2]).toEqual({ expirationTtl: 14 * 24 * 60 * 60 });
+    });
+
+    it('indexes failed scheduled mirrors for the full marker lifetime', async () => {
+        const kv = fakeKv();
+        kv.list = vi.fn(async () => ({
+            keys: [...kv.values.keys()].map(name => ({ name })),
+            list_complete: true,
+        }));
+        const first = 'scheduled:1783994400000';
+        const second = 'scheduled:1784001600000';
+
+        await expect(storeMirrorBacklogEntry(
+            kv,
+            second,
+            { database_mirror: { status: 'failed' } },
+        )).resolves.toBe(true);
+        await expect(storeMirrorBacklogEntry(kv, first)).resolves.toBe(true);
+        expect(kv.put.mock.calls[0][2]).toEqual({
+            expirationTtl: 14 * 24 * 60 * 60,
+        });
+        await expect(listMirrorBacklogEntries(kv)).resolves.toEqual([first, second]);
+        await expect(readMirrorBacklogEntry(kv, second)).resolves.toEqual({
+            run_id: second,
+            marker: { database_mirror: { status: 'failed' } },
+        });
+        await expect(removeMirrorBacklogEntry(kv, first)).resolves.toBe(true);
+        await expect(listMirrorBacklogEntries(kv)).resolves.toEqual([second]);
+        await expect(storeMirrorBacklogEntry(kv, 'manual:invalid')).resolves.toBe(false);
     });
 });

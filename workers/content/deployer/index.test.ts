@@ -9,6 +9,7 @@ import {
   handleDeploymentPlanRequest,
   handleRecoveryHealthCallback,
   outboxAlertReasons,
+  replayContentBacklog,
   runRetentionMaintenance,
   validateCodeReleaseChangeSet,
   validateDispatchPayload,
@@ -124,6 +125,64 @@ describe("content release dispatcher input", () => {
     expect(() =>
       validateDispatchPayload({ ...valid, mode: "production-now" }),
     ).toThrow();
+  });
+});
+
+describe("content backlog replay trigger", () => {
+  it("is a no-op unless the feature, binding, and secret are all configured", async () => {
+    const fetch = vi.fn();
+    await expect(replayContentBacklog({} as never)).resolves.toBeUndefined();
+    await expect(replayContentBacklog({
+      CONTENT_BACKLOG_REPLAY_ENABLED: "true",
+      CONTENT_INGESTOR: { fetch },
+    } as never)).resolves.toBeUndefined();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("calls the ingestion service binding with the dedicated secret", async () => {
+    const fetch = vi.fn(async () => new Response(
+      JSON.stringify({ success: true, status: "empty" }),
+      { status: 200 },
+    ));
+    await replayContentBacklog({
+      CONTENT_BACKLOG_REPLAY_ENABLED: "true",
+      CONTENT_BACKLOG_REPLAY_SECRET: "backlog-secret",
+      CONTENT_INGESTOR: { fetch },
+    } as never, new Date("2026-07-14T02:30:00.000Z"));
+
+    expect(fetch).toHaveBeenCalledOnce();
+    const [url, init] = fetch.mock.calls[0];
+    expect(url).toBe("https://ai-daily.internal/internal/backlog/replay");
+    expect(init).toMatchObject({
+      method: "POST",
+      headers: { "X-Content-Backlog-Secret": "backlog-secret" },
+    });
+  });
+
+  it("surfaces non-success responses for the cron isolation boundary to catch", async () => {
+    await expect(replayContentBacklog({
+      CONTENT_BACKLOG_REPLAY_ENABLED: "true",
+      CONTENT_BACKLOG_REPLAY_SECRET: "backlog-secret",
+      CONTENT_INGESTOR: {
+        fetch: vi.fn(async () => new Response("unavailable", { status: 503 })),
+      },
+    } as never, new Date("2026-07-14T02:30:00.000Z"))).rejects.toThrow(/503/);
+  });
+
+  it("does not replay around the top of hour reserved for fresh ingestion", async () => {
+    const fetch = vi.fn();
+    const replayEnv = {
+      CONTENT_BACKLOG_REPLAY_ENABLED: "true",
+      CONTENT_BACKLOG_REPLAY_SECRET: "backlog-secret",
+      CONTENT_INGESTOR: { fetch },
+    } as never;
+    for (const minute of [55, 59, 0, 5]) {
+      await replayContentBacklog(
+        replayEnv,
+        new Date(`2026-07-14T02:${String(minute).padStart(2, "0")}:00.000Z`),
+      );
+    }
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
 

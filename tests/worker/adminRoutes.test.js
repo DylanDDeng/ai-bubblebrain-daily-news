@@ -9,10 +9,14 @@ const COOKIE_SECRET = 'canary-folo-cookie-do-not-log';
 const ROUTES = [
     ['/auto', 'auto', {}],
     ['/incrementalDaily', 'incrementalDaily', {}],
+    ['/reconcileDaily', 'reconcileDaily', { scheduled_at: '2026-07-14T02:00:00.000Z' }],
     ['/writeRssData', 'writeRssData', { date: '2026-07-14' }],
     ['/updateFoloCookie', 'updateFoloCookie', { cookie: COOKIE_SECRET }],
     ['/debugFoloCookie', 'debugFoloCookie', {}],
 ];
+const SESSION_ROUTES = ROUTES.filter(([path]) => (
+    path === '/updateFoloCookie' || path === '/debugFoloCookie'
+));
 
 function makeKv() {
     return {
@@ -146,6 +150,11 @@ describe('admin route security boundary', () => {
         ['invalid date format', '/auto', '{"date":"14-07-2026"}', {}, 400],
         ['invalid calendar date', '/auto', '{"date":"2026-02-30"}', {}, 400],
         ['invalid batch', '/incrementalDaily', '{"batch":"midday"}', {}, 400],
+        ['missing scheduled slot', '/reconcileDaily', '{}', {}, 400],
+        ['non-hour scheduled slot', '/reconcileDaily', '{"scheduled_at":"2026-07-14T02:01:00.000Z"}', {}, 400],
+        ['non-production scheduled slot', '/reconcileDaily', '{"scheduled_at":"2026-07-14T03:00:00.000Z"}', {}, 400],
+        ['invalid scheduled date', '/reconcileDaily', '{"scheduled_at":"2026-02-30T02:00:00.000Z"}', {}, 400],
+        ['extra reconcile field', '/reconcileDaily', '{"scheduled_at":"2026-07-14T02:00:00.000Z","commit":"latest"}', {}, 400],
         ['missing RSS date', '/writeRssData', '{}', {}, 400],
         ['blank cookie', '/updateFoloCookie', '{"cookie":"   "}', {}, 400],
         ['cookie with a newline', '/updateFoloCookie', '{"cookie":"one\\ntwo"}', {}, 400],
@@ -204,7 +213,7 @@ describe('admin route security boundary', () => {
 
     it('allows same-origin authenticated sessions for Folo routes', async () => {
         const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
-        for (const [path, handlerName, body] of ROUTES.slice(3)) {
+        for (const [path, handlerName, body] of SESSION_ROUTES) {
             const handlers = makeHandlers();
             const response = await handleAdminRoute(request(path, {
                 body: JSON.stringify(body),
@@ -224,7 +233,7 @@ describe('admin route security boundary', () => {
         expect(output).not.toContain(COOKIE_SECRET);
     });
 
-    it.each(ROUTES.slice(3))('rejects cross-origin session requests for %s', async (path, handlerName, body) => {
+    it.each(SESSION_ROUTES)('rejects cross-origin session requests for %s', async (path, handlerName, body) => {
         const handlers = makeHandlers();
         const response = await handleAdminRoute(request(path, {
             body: JSON.stringify(body),
@@ -239,7 +248,7 @@ describe('admin route security boundary', () => {
         expect(handlers[handlerName]).not.toHaveBeenCalled();
     });
 
-    it.each(ROUTES.slice(3))('does not require Origin for Bearer requests to %s', async (path, handlerName, body) => {
+    it.each(SESSION_ROUTES)('does not require Origin for Bearer requests to %s', async (path, handlerName, body) => {
         const handlers = makeHandlers();
         const response = await handleAdminRoute(request(path, {
             body: JSON.stringify(body),

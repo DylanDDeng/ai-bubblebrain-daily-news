@@ -15,6 +15,7 @@ import {
 } from '../daily/gitAtomic.js';
 import { readTriggerMarker, storeTriggerMarker } from '../daily/runState.js';
 import {
+    reconcileStructuredTrigger,
     resolveHistoryEpochStartDate,
     runStructuredDailyWorkflow,
 } from '../daily/structuredWorkflow.js';
@@ -619,6 +620,21 @@ export async function runIncrementalDailyWorkflow(env, options = {}, dependencie
 export async function handleIncrementalDailyWorkflow({ date, batch }, env) {
     const result = await runIncrementalDailyWorkflow(env, { date, batch });
     return new Response(JSON.stringify(result, null, 2), {
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    });
+}
+
+export async function handleReconcileDailyWorkflow({ scheduled_at }, env) {
+    const result = await reconcileStructuredTrigger(env, {
+        scheduledAt: scheduled_at,
+    });
+    const status = result.status === 'not_found'
+        ? 404
+        : ['blocked', 'locked', 'not_confirmed', 'superseded'].includes(result.status)
+            ? 409
+            : 200;
+    return new Response(JSON.stringify(result, null, 2), {
+        status,
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
     });
 }
