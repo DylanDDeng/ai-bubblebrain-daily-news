@@ -35,7 +35,7 @@ if (!baseArgument) {
 
 const localManifestPath =
   manifestPathArgument ??
-  "astro/dist/release-manifests/site-route-manifest.json";
+  "astro/dist/client/release-manifests/site-route-manifest.json";
 const localManifestText = await readFile(localManifestPath, "utf8");
 const localDistRoot = resolve(dirname(resolve(localManifestPath)), "..");
 const localManifest = JSON.parse(localManifestText);

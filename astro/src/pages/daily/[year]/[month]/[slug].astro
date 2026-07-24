@@ -1,54 +1,67 @@
 ---
-export const prerender = false;
-
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 
 import DailyArticle from '../../../../components/DailyArticle.astro';
-import { fetchDailyReport } from '../../../../lib/contentApi';
-import { filterDailyEntries, parseDailyEntryId } from '../../../../lib/daily';
-import { isDatabaseOwnedDailyDate, type StructuredDailyReport } from '../../../../lib/structuredDaily';
+import { dailyPermalink, filterDailyEntries, parseDailyEntryId } from '../../../../lib/daily';
+import {
+	isDatabaseOwnedDailyDate,
+	type StructuredDailyReport,
+} from '../../../../lib/structuredDaily';
+import { loadStructuredDailyReport } from '../../../../lib/structuredDailyLocal';
 
-const { year, month, slug } = Astro.params;
-const dateKey = slug ?? `${year}-${month}`;
-const locale = 'zh-CN' as const;
-
-if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey) || dateKey !== `${year}-${month}${dateKey.slice(7)}`) {
-	return Astro.redirect('/daily/');
-}
-
-let report: StructuredDailyReport | null = null;
-let entry = null;
-
-if (isDatabaseOwnedDailyDate(dateKey)) {
-	const raw = await fetchDailyReport(dateKey);
-	report = raw as StructuredDailyReport | null;
-} else {
+export async function getStaticPaths() {
 	const allEntries = await getCollection('daily');
-	const entries = filterDailyEntries(allEntries, locale);
-	entry = entries.find((e) => parseDailyEntryId(e.id)?.dateKey === dateKey) ?? null;
+	const entries = filterDailyEntries(allEntries, 'zh-CN');
+	const englishDates = new Set(
+		filterDailyEntries(allEntries, 'en')
+			.map((entry) => parseDailyEntryId(entry.id)?.dateKey)
+			.filter((date): date is string => date !== undefined),
+	);
+
+	return entries.flatMap((entry, index) => {
+		const identity = parseDailyEntryId(entry.id);
+		if (!identity) return [];
+
+		return [
+			{
+				params: {
+					year: identity.year,
+					month: identity.month,
+					slug: identity.dateKey,
+				},
+				props: {
+					entry,
+					dateKey: identity.dateKey,
+					newerHref: index > 0 ? dailyPermalink(entries[index - 1].id) : null,
+					olderHref: index < entries.length - 1 ? dailyPermalink(entries[index + 1].id) : null,
+					alternateHref: englishDates.has(identity.dateKey)
+						? `/en/daily/${identity.year}/${identity.month}/${identity.dateKey}/`
+						: null,
+				},
+			},
+		];
+	});
 }
 
-if (!report && !entry) {
-	return Astro.redirect('/daily/');
+interface Props {
+	entry: CollectionEntry<'daily'>;
+	dateKey: string;
+	newerHref: string | null;
+	olderHref: string | null;
+	alternateHref: string | null;
 }
 
-const allEntries = await getCollection('daily');
-const entries = filterDailyEntries(allEntries, locale);
-const currentIndex = entries.findIndex((e) => parseDailyEntryId(e.id)?.dateKey === dateKey);
-const newerHref = currentIndex > 0
-	? `/daily/${entries[currentIndex - 1].id.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1/$2/$1-$2-$3')}/`
+const { entry, dateKey, newerHref, olderHref, alternateHref } = Astro.props;
+const report: StructuredDailyReport | null = isDatabaseOwnedDailyDate(dateKey)
+	? await loadStructuredDailyReport(dateKey)
 	: null;
-const olderHref = currentIndex >= 0 && currentIndex < entries.length - 1
-	? `/daily/${entries[currentIndex + 1].id.replace(/(\d{4})-(\d{2})-(\d{2})/, '$1/$2/$1-$2-$3')}/`
-	: null;
-const alternateHref = `/en/daily/${year}/${month}/${dateKey}/`;
 ---
 
 <DailyArticle
 	entry={entry}
 	report={report}
 	dateKey={dateKey}
-	locale={locale}
+	locale="zh-CN"
 	newerHref={newerHref}
 	olderHref={olderHref}
 	alternateHref={alternateHref}
