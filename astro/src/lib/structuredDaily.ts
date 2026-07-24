@@ -83,19 +83,30 @@ export function homepageFeedItems(
 	batches: readonly StructuredDailyBatch[],
 	limit = 8,
 ): StructuredDailyItem[] {
-	const completedBatchRank = new Map(
-		orderTimelineBatches(batches)
-			.filter((batch) => batch.status === 'completed')
-			.map((batch, index) => [batch.id, index]),
+	const completedBatchIds = new Set(
+		batches.filter((batch) => batch.status === 'completed').map((batch) => batch.id),
 	);
 
 	return items
-		.filter((item) => completedBatchRank.has(item.batch))
-		.sort((a, b) => {
-			const batchOrder = completedBatchRank.get(a.batch)! - completedBatchRank.get(b.batch)!;
-			return batchOrder || itemPublishedTimestamp(b) - itemPublishedTimestamp(a);
-		})
+		.filter((item) => completedBatchIds.has(item.batch))
+		.sort(
+			(a, b) => itemPublishedTimestamp(b) - itemPublishedTimestamp(a) || a.id.localeCompare(b.id),
+		)
 		.slice(0, Math.max(0, Math.trunc(limit)));
+}
+
+const homepageBatchLabels: Record<StructuredDailyBatch['id'], Record<'zh-CN' | 'en', string>> = {
+	morning: { 'zh-CN': '早间累计', en: 'Morning total' },
+	afternoon: { 'zh-CN': '午后累计', en: 'Afternoon total' },
+	night: { 'zh-CN': '晚间累计', en: 'Evening total' },
+	lateNight: { 'zh-CN': '深夜补充', en: 'Overnight supplement' },
+};
+
+export function homepageBatchLabel(
+	batch: Pick<StructuredDailyBatch, 'id'>,
+	locale: 'zh-CN' | 'en',
+): string {
+	return homepageBatchLabels[batch.id][locale];
 }
 
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
