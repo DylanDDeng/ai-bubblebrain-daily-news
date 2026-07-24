@@ -37,6 +37,14 @@ bucket_name = "bubble-content-artifacts"
 binding = "CONTENT_DB"
 id = "136110d1dbf246d8b655e047cb4a8f0d"
 
+[[durable_objects.bindings]]
+name = "PRODUCTION_COORDINATOR"
+class_name = "ProductionCoordinator"
+
+[[migrations]]
+tag = "production-coordinator-v1"
+new_sqlite_classes = ["ProductionCoordinator"]
+
 [observability]
 enabled = true
 head_sampling_rate = 1

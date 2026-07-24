@@ -13,8 +13,10 @@ import { debugFoloCookie, storeFoloCookieToKV } from './folo.js';
 import { handleAdminRoute, isAdminRoute } from './routes/adminRoutes.js';
 import { logMissingConfig } from './logging.js';
 import { storeFailureMarker, storeScheduledOutcome } from './daily/runState.js';
+import { resolveScheduledRun } from './daily/scheduleContract.js';
 import { SOURCE_REGISTRY } from './daily/sourceRegistry.js';
 import { handleScheduledHealth } from './routes/scheduledHealth.js';
+import { recordScheduledRunTrace } from '../workers/content/ingestion/mirror.ts';
 
 const SAFE_PROVIDER_NAMES = new Set(Object.keys(SOURCE_REGISTRY));
 const SAFE_CONTENT_TYPES = new Set(['news', 'project', 'paper', 'socialMedia']);
@@ -113,7 +115,56 @@ function appendSessionCookie(response, cookie) {
     });
 }
 
-function scheduledFailureMarker(error, runAt) {
+function safeSourceCounts(value) {
+    const counts = {};
+    for (const contentType of SAFE_CONTENT_TYPES) {
+        const count = Number(value?.[contentType] || 0);
+        counts[contentType] = Number.isSafeInteger(count) && count >= 0 ? count : 0;
+    }
+    return counts;
+}
+
+function scheduledSuccessMarker(result, scheduled, startedAt, finishedAt) {
+    const sourceResult = result?.source_result;
+    const mirror = result?.database_mirror;
+    return {
+        success: true,
+        status: 'succeeded',
+        stage: String(result?.stage || 'workflow_completed'),
+        trigger_type: 'scheduled',
+        run_id: scheduled.run_id,
+        run_at: scheduled.scheduled_at,
+        started_at: startedAt,
+        finished_at: finishedAt,
+        source_result: {
+            status: sourceResult?.status === 'succeeded' ? 'succeeded' : 'unknown',
+            completed_at: sourceResult?.completed_at || null,
+            counts: safeSourceCounts(sourceResult?.counts),
+        },
+        content_sha256: /^[a-f0-9]{64}$/.test(String(result?.content_sha256 || ''))
+            ? result.content_sha256
+            : null,
+        no_op: result?.no_op === true || result?.noOp === true,
+        database_mirror: {
+            status: ['mirrored', 'disabled', 'failed'].includes(mirror?.status)
+                ? mirror.status
+                : 'unknown',
+        },
+        site_release_id: /^[0-9a-f-]{36}$/i.test(String(result?.site_release_id || ''))
+            ? result.site_release_id
+            : null,
+        site_release_sequence: Number.isSafeInteger(result?.site_release_sequence)
+            ? result.site_release_sequence
+            : null,
+        dispatch_id: /^[0-9a-f-]{36}$/i.test(String(result?.dispatch_id || ''))
+            ? result.dispatch_id
+            : null,
+        stable_verified_at: result?.stable_verified_at || null,
+    };
+}
+
+function scheduledFailureMarker(error, scheduled, startedAt) {
+    const runAt = scheduled.scheduled_at;
     const subrequestBudgetExceeded = /too many subrequests|subrequest(?:s)? limit/i.test(
         String(error?.message || ''),
     );
@@ -138,15 +189,27 @@ function scheduledFailureMarker(error, runAt) {
                 : 1,
         }))
         : [];
+    const evidence = error?.runEvidence || {};
+    const sourceCounts = safeSourceCounts(
+        error?.sourceCounts || evidence?.source_result?.counts,
+    );
     return {
         success: false,
         status: 'failed',
+        stage: error?.name === 'ScheduledDatabaseMirrorError'
+            ? 'database_mirror_failed'
+            : 'failed',
         trigger_type: 'scheduled',
+        run_id: scheduled.run_id,
         run_at: runAt,
+        started_at: startedAt,
+        finished_at: new Date().toISOString(),
         error_type: subrequestBudgetExceeded
             ? 'subrequest_budget_exceeded'
             : error?.name === 'StructuredSourceFetchError'
                 ? 'structured_source_fetch_failed'
+                : error?.name === 'ScheduledDatabaseMirrorError'
+                    ? 'database_mirror_failed'
                 : 'scheduled_workflow_failed',
         failure_stage: SAFE_WORKFLOW_FAILURE_STAGES.has(error?.failureStage)
             ? error.failureStage
@@ -155,6 +218,20 @@ function scheduledFailureMarker(error, runAt) {
                 : error?.name === 'AtomicGitConflictError' || error?.name === 'AtomicGitUncertainError'
                     ? 'git_publish'
                     : 'unknown',
+        source_result: {
+            status: 'failed',
+            completed_at: evidence?.source_result?.completed_at || null,
+            counts: sourceCounts,
+            error_count: sourceErrors.length,
+        },
+        content_sha256: /^[a-f0-9]{64}$/.test(String(evidence?.content_sha256 || ''))
+            ? evidence.content_sha256
+            : null,
+        no_op: evidence?.no_op === true,
+        site_release_id: evidence?.site_release_id || null,
+        site_release_sequence: evidence?.site_release_sequence || null,
+        dispatch_id: evidence?.dispatch_id || null,
+        stable_verified_at: null,
         ...(sourceErrors.length > 0 ? { source_errors: sourceErrors } : {}),
     };
 }
@@ -181,9 +258,32 @@ async function recordScheduledOutcome(env, scheduledAt, marker) {
     }
 }
 
+async function recordScheduledDatabaseTrace(
+    env,
+    scheduledAt,
+    eventType,
+    marker,
+    recorder,
+) {
+    try {
+        await recorder(env, {
+            runId: marker.run_id,
+            scheduledAt,
+            eventType,
+            evidence: marker,
+        });
+    } catch (traceError) {
+        console.warn('[Scheduled] database trace write failed', {
+            errorType: traceError?.name || 'Error',
+            eventType,
+        });
+    }
+}
+
 export function createWorker({
     adminHandlers = defaultAdminHandlers,
     scheduledWorkflow = runIncrementalDailyWorkflow,
+    scheduledTrace = recordScheduledRunTrace,
 } = {}) {
     return {
         async fetch(request, env) {
@@ -269,19 +369,64 @@ export function createWorker({
                 console.warn('[Scheduled] external writes are disabled; workflow skipped');
                 return;
             }
-            const triggerId = `scheduled:${event.scheduledTime}`;
-            const runAt = new Date(event.scheduledTime).toISOString();
+            const scheduled = resolveScheduledRun(event.scheduledTime);
+            const triggerId = scheduled.run_id;
+            const runAt = scheduled.scheduled_at;
+            const startedAt = new Date().toISOString();
             const workflow = Promise.resolve()
+                .then(async () => {
+                    const started = {
+                        success: null,
+                        status: 'started',
+                        stage: 'started',
+                        trigger_type: 'scheduled',
+                        run_id: triggerId,
+                        run_at: runAt,
+                        started_at: startedAt,
+                        finished_at: null,
+                        stable_verified_at: null,
+                    };
+                    await Promise.all([
+                        recordScheduledOutcome(env, runAt, started),
+                        recordScheduledDatabaseTrace(
+                            env,
+                            runAt,
+                            'started',
+                            started,
+                            scheduledTrace,
+                        ),
+                    ]);
+                })
                 .then(() => scheduledWorkflow(env, { triggerId, runAt }))
                 .then(async result => {
-                    await recordScheduledOutcome(env, runAt, {
-                        status: 'succeeded',
-                        run_at: runAt,
-                    });
+                    const terminal = scheduledSuccessMarker(
+                        result,
+                        scheduled,
+                        startedAt,
+                        new Date().toISOString(),
+                    );
+                    if (
+                        String(env.CONTENT_DATABASE_MIRROR_ENABLED).toLowerCase() === 'true' &&
+                        terminal.database_mirror.status !== 'mirrored'
+                    ) {
+                        const error = new Error('Scheduled database mirror did not complete');
+                        error.name = 'ScheduledDatabaseMirrorError';
+                        error.failureStage = 'database_mirror';
+                        error.runEvidence = terminal;
+                        throw error;
+                    }
+                    await recordScheduledDatabaseTrace(
+                        env,
+                        runAt,
+                        'succeeded',
+                        terminal,
+                        scheduledTrace,
+                    );
+                    await recordScheduledOutcome(env, runAt, terminal);
                     return result;
                 })
                 .catch(async error => {
-                    const marker = scheduledFailureMarker(error, runAt);
+                    const marker = scheduledFailureMarker(error, scheduled, startedAt);
                     console.error('[Scheduled] workflow failed', {
                         errorType: marker.error_type,
                         failureStage: marker.failure_stage,
@@ -295,6 +440,13 @@ export function createWorker({
                             }))
                             : [],
                     });
+                    await recordScheduledDatabaseTrace(
+                        env,
+                        runAt,
+                        'failed',
+                        marker,
+                        scheduledTrace,
+                    );
                     await recordScheduledFailure(env, triggerId, marker);
                     await recordScheduledOutcome(env, runAt, marker);
                     throw error;

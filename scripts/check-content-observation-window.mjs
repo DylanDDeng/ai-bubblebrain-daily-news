@@ -5,19 +5,13 @@ import { fileURLToPath } from "node:url";
 import postgres from "postgres";
 
 import { validateContentObservabilityDatabaseEnvironment } from "./check-content-observability.mjs";
+import { scheduledRunsForReportDate } from "../src/daily/scheduleContract.js";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256 = /^[a-f0-9]{64}$/;
 const SHA1 = /^[a-f0-9]{40}$/;
-const BATCHES = [
-  [2, "morning"],
-  [7, "afternoon"],
-  [15, "night"],
-  [19, "lateNight"],
-];
-
 function validDate(value) {
   if (!DATE.test(String(value || ""))) return false;
   const parsed = new Date(`${value}T00:00:00.000Z`);
@@ -39,20 +33,21 @@ export function expectedObservationSlots(startDate) {
   const slots = [];
   for (let day = 0; day < 2; day += 1) {
     const reportDate = addDays(startDate, day);
-    for (const [hour, batchId] of BATCHES) {
-      const scheduledAt = Date.parse(
-        `${reportDate}T${String(hour).padStart(2, "0")}:00:00.000Z`,
-      );
+    for (const run of scheduledRunsForReportDate(reportDate)) {
       slots.push({
-        batch_id: batchId,
-        deadline: new Date(scheduledAt + 10 * 60 * 1000).toISOString(),
-        expected_trigger_kind: `scheduled:${scheduledAt}`,
+        batch_id: run.batch_id,
+        deadline: run.deadline,
+        expected_trigger_kind: run.run_id,
+        publication_batch_id: run.publication_batch_id,
         report_date: reportDate,
-        scheduled_at: new Date(scheduledAt).toISOString(),
+        run_id: run.run_id,
+        scheduled_at: run.scheduled_at,
       });
     }
   }
-  return slots;
+  return slots.sort(
+    (left, right) => Date.parse(left.scheduled_at) - Date.parse(right.scheduled_at),
+  );
 }
 
 function identityMatches(current, slot) {
@@ -116,12 +111,45 @@ function checkCoversSlot(check, slot, expected, upperBound) {
         Number(check.current?.site_release_sequence) >
           Number(slot.site_release_sequence) &&
         check.current?.content_sha256 === slot.site_content_sha256)) &&
-    Array.isArray(check.due_batches) &&
-    check.due_batches.some(
-      (batch) =>
-        batch?.report_date === expected.report_date &&
-        batch?.batch_id === expected.batch_id,
-    )
+    checkReferencesRun(check, expected)
+  );
+}
+
+function checkReferencesRun(check, expected) {
+  const dueRuns = Array.isArray(check?.due_runs)
+    ? check.due_runs
+    : Array.isArray(check?.due_batches)
+      ? check.due_batches
+      : [];
+  return dueRuns.some((run) => run?.run_id === expected.run_id);
+}
+
+function checkCoversNoOp(check, expected, upperBound) {
+  const checkedAt = Date.parse(String(check?.checked_at || ""));
+  return (
+    check?.healthy === true &&
+    Array.isArray(check.reasons) &&
+    check.reasons.length === 0 &&
+    Number.isFinite(checkedAt) &&
+    checkedAt >= Date.parse(expected.deadline) &&
+    checkedAt < upperBound &&
+    checkReferencesRun(check, expected)
+  );
+}
+
+function scheduledRunComplete(run, expected) {
+  const startedAt = Date.parse(String(run?.started_at || ""));
+  const finishedAt = Date.parse(String(run?.finished_at || ""));
+  return (
+    run?.run_id === expected.run_id &&
+    run?.scheduled_at === expected.scheduled_at &&
+    run?.status === "succeeded" &&
+    Number.isFinite(startedAt) &&
+    Number.isFinite(finishedAt) &&
+    finishedAt >= startedAt &&
+    run?.source_result?.status === "succeeded" &&
+    SHA256.test(String(run?.content_sha256 || "")) &&
+    run?.database_mirror?.status === "mirrored"
   );
 }
 
@@ -140,10 +168,13 @@ export function evaluateContentObservationWindow(input, now = Date.now()) {
     };
   }
   const readyAt = Date.parse(String(input?.ready_at || ""));
+  const latestDeadline = Date.parse(expectedSlots.at(-1)?.deadline || "");
   if (
     input?.window_complete !== true ||
     !Number.isFinite(readyAt) ||
-    now < readyAt
+    !Number.isFinite(latestDeadline) ||
+    readyAt < latestDeadline ||
+    now < Math.max(readyAt, latestDeadline)
   ) {
     reasons.push("observation_window_not_complete");
   }
@@ -152,6 +183,12 @@ export function evaluateContentObservationWindow(input, now = Date.now()) {
     ? input.publication_attempts
     : [];
   const slots = Array.isArray(input?.slots) ? input.slots : [];
+  const scheduledRuns = Array.isArray(input?.scheduled_runs)
+    ? input.scheduled_runs
+    : [];
+  const scheduledRunsById = new Map(
+    scheduledRuns.map((run) => [String(run?.run_id || ""), run]),
+  );
   const checks = Array.isArray(input?.checks) ? input.checks : [];
   if (checks.some((check) => check?.healthy !== true))
     reasons.push("observation_contains_unhealthy_check");
@@ -164,37 +201,50 @@ export function evaluateContentObservationWindow(input, now = Date.now()) {
 
   for (let index = 0; index < expectedSlots.length; index += 1) {
     const expected = expectedSlots[index];
-    const key = `${expected.report_date}:${expected.batch_id}`;
+    const key = expected.run_id;
+    const scheduledRun = scheduledRunsById.get(expected.run_id);
+    if (!scheduledRun) {
+      reasons.push(`scheduled_run_evidence_missing:${key}`);
+      continue;
+    }
+    if (!scheduledRunComplete(scheduledRun, expected)) {
+      reasons.push(`scheduled_run_evidence_invalid:${key}`);
+    }
+    const nextScheduledAt = expectedSlots[index + 1]?.scheduled_at;
+    const upperBound = nextScheduledAt
+      ? Date.parse(nextScheduledAt)
+      : Math.max(readyAt, latestDeadline) + 6 * 60 * 60 * 1000;
+    if (scheduledRun.no_op === true) {
+      if (!checks.some((check) => checkCoversNoOp(check, expected, upperBound))) {
+        reasons.push(`scheduled_run_healthy_observation_missing:${key}`);
+      }
+      continue;
+    }
     const matchingAttempts = attempts
-      .filter(
-        (attempt) =>
-          attempt?.report_date === expected.report_date &&
-          attempt?.batch_id === expected.batch_id,
-      )
+      .filter((attempt) => attempt?.trigger_kind === expected.run_id)
       .sort(
         (left, right) =>
           Number(left.attempt_number) - Number(right.attempt_number),
       );
     if (!matchingAttempts.length) {
-      reasons.push(`slot_attempt_missing:${key}`);
+      reasons.push(`scheduled_run_attempt_missing:${key}`);
     } else {
-      if (
-        matchingAttempts.some(
-          (attempt) => attempt.trigger_kind !== expected.expected_trigger_kind,
-        )
-      ) {
-        reasons.push(`slot_noncanonical_trigger:${key}`);
-      }
       if (matchingAttempts.at(-1)?.status !== "succeeded")
-        reasons.push(`slot_final_attempt_not_succeeded:${key}`);
+        reasons.push(`scheduled_run_final_attempt_not_succeeded:${key}`);
       if (matchingAttempts.some((attempt) => attempt.status === "started"))
-        reasons.push(`slot_attempt_unfinished:${key}`);
+        reasons.push(`scheduled_run_attempt_unfinished:${key}`);
+    }
+    if (
+      !UUID.test(String(scheduledRun.site_release_id || "")) ||
+      !UUID.test(String(scheduledRun.dispatch_id || "")) ||
+      !scheduledRun.stable_verified_at
+    ) {
+      reasons.push(`scheduled_run_release_identity_invalid:${key}`);
+      continue;
     }
 
     const matchingSlots = slots.filter(
-      (slot) =>
-        slot?.report_date === expected.report_date &&
-        slot?.batch_id === expected.batch_id,
+      (slot) => slot?.site_release_id === scheduledRun.site_release_id,
     );
     if (matchingSlots.length !== 1) {
       reasons.push(`slot_semantic_result_count:${key}:${matchingSlots.length}`);
@@ -227,10 +277,6 @@ export function evaluateContentObservationWindow(input, now = Date.now()) {
     if (!slot.edge_verified_at || !verifierIdentityComplete(slot))
       reasons.push(`slot_edge_evidence_invalid:${key}`);
 
-    const nextScheduledAt = expectedSlots[index + 1]?.scheduled_at;
-    const upperBound = nextScheduledAt
-      ? Date.parse(nextScheduledAt)
-      : readyAt + 6 * 60 * 60 * 1000;
     if (
       !checks.some((check) =>
         checkCoversSlot(check, slot, expected, upperBound),

@@ -14,6 +14,11 @@ crons = ["* * * * *"]
 [vars]
 GITHUB_REPOSITORY = "DylanDDeng/ai-bubblebrain-daily-news"
 GITHUB_WORKFLOW_REF = "main"
+CONTENT_RELEASE_RESUME_ENABLED = "false"
+CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED = "false"
+# Keep legacy callbacks compatible during the drain phase. Set this to "true"
+# only after all workflows dispatched before the fenced rollout have finished.
+CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS = "false"
 
 [[hyperdrive]]
 binding = "CONTENT_DB"

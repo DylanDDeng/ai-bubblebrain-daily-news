@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { SHARED_CONTENT_PROJECT_ACK } from "../../scripts/content-database-topology.mjs";
 import {
   dueContentBatches,
   evaluateContentObservability,
+  scheduledRunHealth,
   validateContentObservabilityEnvironment,
 } from "../../scripts/check-content-observability.mjs";
 import {
@@ -24,6 +25,23 @@ const CURRENT = {
 
 function healthyInput() {
   const due = dueContentBatches(NOW);
+  const dispatchId = "33333333-3333-4333-8333-333333333333";
+  const scheduledOutcomes = due.map((batch) => ({
+    run_id: batch.run_id,
+    scheduled_at: batch.scheduled_at,
+    status: "succeeded",
+    started_at: batch.scheduled_at,
+    finished_at: new Date(
+      Date.parse(batch.scheduled_at) + 60_000,
+    ).toISOString(),
+    source_result: { status: "succeeded" },
+    content_sha256: "e".repeat(64),
+    no_op: false,
+    database_mirror: { status: "mirrored" },
+    site_release_id: CURRENT.site_release_id,
+    site_release_sequence: CURRENT.site_release_sequence,
+    dispatch_id: dispatchId,
+  }));
   return {
     analytics: {
       cache_hits: 900,
@@ -33,10 +51,7 @@ function healthyInput() {
     },
     cacheHitMinimum: 0.5,
     cacheSampleMinimum: 100,
-    scheduledOutcomes: due.map((batch) => ({
-      scheduled_at: batch.scheduled_at,
-      status: "succeeded",
-    })),
+    scheduledOutcomes,
     currentEndpoints: [
       { url: "https://api-one.invalid/v1/current", body: CURRENT },
       { url: "https://api-two.invalid/v1/current", body: CURRENT },
@@ -50,7 +65,16 @@ function healthyInput() {
       },
       publication_attempts: due.map((batch) => ({
         ...batch,
+        trigger_kind: batch.run_id,
         status: "succeeded",
+      })),
+      scheduled_runs: scheduledOutcomes.map((outcome) => ({
+        ...outcome,
+        scheduled_at: outcome.scheduled_at.replace(".000Z", "+00:00"),
+        started_at: outcome.started_at.replace(".000Z", "+00:00"),
+        finished_at: outcome.finished_at.replace(".000Z", "+00:00"),
+        database_mirror: { ...outcome.database_mirror },
+        source_result: { ...outcome.source_result },
       })),
       search_latest_report_date: due.at(-1).report_date,
     },
@@ -78,8 +102,11 @@ function healthyInput() {
 }
 
 describe("content observability evaluator", () => {
-  it("maps all five production UTC schedules to their report dates", () => {
-    expect(dueContentBatches(NOW)).toEqual(
+  it("maps every due production run through the shared sixteen-slot contract", () => {
+    const due = dueContentBatches(NOW);
+    expect(due).toHaveLength(19);
+    expect(new Set(due.map((run) => run.run_id)).size).toBe(due.length);
+    expect(due).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           report_date: "2026-07-17",
@@ -88,7 +115,8 @@ describe("content observability evaluator", () => {
         }),
         expect.objectContaining({
           report_date: "2026-07-17",
-          batch_id: "lateNightSupplement",
+          batch_id: "lateNight",
+          publication_batch_id: "lateNightSupplement",
           scheduled_at: "2026-07-17T19:00:00.000Z",
         }),
         expect.objectContaining({
@@ -111,9 +139,92 @@ describe("content observability evaluator", () => {
     expect(result.analytics.cache_hit_ratio).toBe(0.9);
   });
 
+  it("fails when KV is healthy but the database current run trace is missing", () => {
+    const input = healthyInput();
+    const missing = input.database.scheduled_runs.shift();
+    const result = evaluateContentObservability(input, NOW);
+    expect(result.healthy).toBe(false);
+    expect(result.reasons).toContain(
+      `scheduled_run_database_trace_missing:${missing.run_id}:${dueContentBatches(NOW)[0].report_date}:${dueContentBatches(NOW)[0].batch_id}`,
+    );
+  });
+
+  it("requires a publication attempt for every changed run", () => {
+    const input = healthyInput();
+    const missing = input.database.publication_attempts.shift();
+    const due = dueContentBatches(NOW).find(
+      (run) => run.run_id === missing.trigger_kind,
+    );
+    const result = evaluateContentObservability(input, NOW);
+    expect(result.healthy).toBe(false);
+    expect(result.reasons).toContain(
+      `scheduled_run_database_attempt_missing:${due.run_id}:${due.report_date}:${due.batch_id}`,
+    );
+  });
+
+  it("allows a no-op without a new attempt but still requires its database trace", () => {
+    const input = healthyInput();
+    const noOpRun = input.database.scheduled_runs[0];
+    noOpRun.no_op = true;
+    input.scheduledOutcomes[0].no_op = true;
+    input.database.publication_attempts =
+      input.database.publication_attempts.filter(
+        (attempt) => attempt.trigger_kind !== noOpRun.run_id,
+      );
+
+    expect(evaluateContentObservability(input, NOW).healthy).toBe(true);
+
+    input.database.scheduled_runs.shift();
+    const result = evaluateContentObservability(input, NOW);
+    expect(result.healthy).toBe(false);
+    expect(result.reasons).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/^scheduled_run_database_trace_missing:/),
+      ]),
+    );
+  });
+
+  it("fails when KV and database terminal identities diverge", () => {
+    const input = healthyInput();
+    input.database.scheduled_runs[0].dispatch_id =
+      "44444444-4444-4444-8444-444444444444";
+    const result = evaluateContentObservability(input, NOW);
+    expect(result.healthy).toBe(false);
+    expect(result.reasons).toEqual(
+      expect.arrayContaining([
+        expect.stringMatching(/^scheduled_run_database_trace_mismatch:/),
+      ]),
+    );
+  });
+
+  it("paginates a thirty-hour health query without exceeding sixteen slots", async () => {
+    const fetcher = vi.fn(async (url) => ({
+      success: true,
+      slots: url.searchParams.getAll("scheduled_at").map((scheduled_at) => ({
+        scheduled_at,
+        status: "succeeded",
+      })),
+    }));
+    const runs = await scheduledRunHealth(
+      {
+        scheduleHealthUrl: new URL("https://schedule.example.test/health/scheduled"),
+        scheduleHealthToken: "x".repeat(32),
+        startedAt: -Infinity,
+      },
+      NOW,
+      fetcher,
+    );
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(fetcher.mock.calls.every(([url]) =>
+      url.searchParams.getAll("scheduled_at").length <= 16
+    )).toBe(true);
+    expect(runs).toHaveLength(dueContentBatches(NOW).length);
+  });
+
   it("fails closed on missing batches, manifest drift, stale search and bad API signals", () => {
     const input = healthyInput();
-    input.database.publication_attempts.pop();
+    input.scheduledOutcomes.pop();
     input.database.search_latest_report_date = "2026-07-16";
     input.currentEndpoints[0].body = { ...CURRENT, site_release_sequence: 41 };
     input.staticManifests[0].body.build = {
@@ -132,7 +243,7 @@ describe("content observability evaluator", () => {
     expect(result.healthy).toBe(false);
     expect(result.reasons).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/^batch_terminal_missing:/),
+        expect.stringMatching(/^scheduled_run_missing:/),
         expect.stringMatching(/^current_manifest_drift:/),
         expect.stringMatching(/^static_manifest_drift:/),
         expect.stringMatching(/^search_stale:/),
@@ -245,7 +356,7 @@ describe("content observability production identity", () => {
 });
 
 const WINDOW_START = "2026-07-17";
-const WINDOW_NOW = Date.parse("2026-07-18T20:00:00.000Z");
+const WINDOW_NOW = Date.parse("2026-07-18T21:00:00.000Z");
 
 function healthyWindowInput() {
   const expected = expectedObservationSlots(WINDOW_START);
@@ -262,6 +373,9 @@ function healthyWindowInput() {
       code_sha: "f".repeat(40),
       edge_verified_at: new Date(
         Date.parse(entry.deadline) + 60_000,
+      ).toISOString(),
+      stable_verified_at: new Date(
+        Date.parse(entry.deadline) + 90_000,
       ).toISOString(),
       input_sha256: "e".repeat(64),
       outbox_active_leases: 0,
@@ -312,6 +426,7 @@ function healthyWindowInput() {
         site_release_sequence: slot.site_release_sequence,
       },
       due_batches: [expected[index]],
+      due_runs: [expected[index]],
       healthy: true,
       outbox: {},
       reasons: [],
@@ -326,7 +441,23 @@ function healthyWindowInput() {
       status: "succeeded",
       trigger_kind: entry.expected_trigger_kind,
     })),
-    ready_at: "2026-07-18T19:10:00.000Z",
+    scheduled_runs: expected.map((entry, index) => ({
+      run_id: entry.run_id,
+      scheduled_at: entry.scheduled_at,
+      started_at: entry.scheduled_at,
+      finished_at: new Date(
+        Date.parse(entry.scheduled_at) + 60_000,
+      ).toISOString(),
+      status: "succeeded",
+      source_result: { status: "succeeded" },
+      content_sha256: "e".repeat(64),
+      database_mirror: { status: "mirrored" },
+      no_op: false,
+      site_release_id: slots[index].site_release_id,
+      dispatch_id: `33333333-3333-4333-8${String(index).padStart(3, "0")}-${String(index + 1).padStart(12, "0")}`,
+      stable_verified_at: slots[index].stable_verified_at,
+    })),
+    ready_at: "2026-07-18T20:10:00.000Z",
     slots,
     start_at: "2026-07-16T16:00:00.000Z",
     start_date: WINDOW_START,
@@ -335,18 +466,19 @@ function healthyWindowInput() {
 }
 
 describe("two-day production observation gate", () => {
-  it("derives eight real canonical scheduled triggers including lateNight", () => {
+  it("derives all thirty-two real scheduled triggers including lateNight", () => {
     const slots = expectedObservationSlots(WINDOW_START);
-    expect(slots).toHaveLength(8);
-    expect(slots[3]).toMatchObject({
+    expect(slots).toHaveLength(32);
+    expect(slots).toContainEqual(expect.objectContaining({
       batch_id: "lateNight",
+      publication_batch_id: "lateNightSupplement",
       expected_trigger_kind: `scheduled:${Date.parse("2026-07-17T19:00:00.000Z")}`,
       report_date: "2026-07-17",
-    });
-    expect(slots[7].deadline).toBe("2026-07-18T19:10:00.000Z");
+    }));
+    expect(slots.at(-1).deadline).toBe("2026-07-18T20:10:00.000Z");
   });
 
-  it("passes only when all eight releases have immutable, edge and monitor evidence", () => {
+  it("passes only when all thirty-two runs have immutable, edge and monitor evidence", () => {
     const result = evaluateContentObservationWindow(
       healthyWindowInput(),
       WINDOW_NOW,
@@ -390,9 +522,9 @@ describe("two-day production observation gate", () => {
         "observation_contains_unhealthy_check",
         "manual_repair_actions:1",
         "production_failure_or_rollback_events:1",
-        "slot_noncanonical_trigger:2026-07-17:morning",
-        "slot_edge_evidence_invalid:2026-07-17:afternoon",
-        "slot_healthy_observation_missing:2026-07-17:night",
+        expect.stringMatching(/^scheduled_run_attempt_missing:/),
+        expect.stringMatching(/^slot_edge_evidence_invalid:/),
+        expect.stringMatching(/^slot_healthy_observation_missing:/),
       ]),
     );
   });

@@ -45,9 +45,10 @@ export class StructuredRunLockedError extends Error {
 }
 
 export class StructuredSourceFetchError extends Error {
-    constructor(sourceErrors) {
+    constructor(sourceErrors, sourceCounts = {}) {
         super(`Structured source fetch failed for ${sourceErrors.length} provider(s)`);
         this.name = 'StructuredSourceFetchError';
+        this.sourceCounts = sourceCounts;
         this.sourceErrors = sourceErrors.map((error) => ({
             provider: error.provider,
             content_type: error.content_type,
@@ -56,6 +57,60 @@ export class StructuredSourceFetchError extends Error {
             attempts: Number.isInteger(error.attempts) ? error.attempts : 1,
         }));
     }
+}
+
+async function sha256Text(value) {
+    if (typeof value !== 'string') return null;
+    const bytes = new TextEncoder().encode(value);
+    const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+    return Array.from(digest, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function safeSourceCounts(value) {
+    const counts = {};
+    for (const key of ['news', 'project', 'paper', 'socialMedia']) {
+        const count = Number(value?.[key] || 0);
+        counts[key] = Number.isSafeInteger(count) && count >= 0 ? count : 0;
+    }
+    return counts;
+}
+
+async function attachScheduledRunEvidence(response, {
+    databaseMirror,
+    fetched,
+    result,
+    runAt,
+    sourceCompletedAt,
+    triggerId,
+}) {
+    const contentSha256 =
+        databaseMirror?.contentSha256 || await sha256Text(result?.json);
+    const mirrorStatus = String(databaseMirror?.status || 'disabled');
+    return {
+        ...response,
+        run_id: /^scheduled:\d{13}$/.test(String(triggerId || ''))
+            ? triggerId
+            : null,
+        scheduled_at: runAt,
+        source_result: {
+            status: 'succeeded',
+            completed_at: sourceCompletedAt,
+            counts: safeSourceCounts(fetched?.sourceCounts),
+        },
+        content_sha256: contentSha256,
+        no_op: result?.noOp === true,
+        site_release_id: databaseMirror?.siteReleaseId || null,
+        site_release_sequence: Number.isSafeInteger(databaseMirror?.siteReleaseSequence)
+            ? databaseMirror.siteReleaseSequence
+            : null,
+        dispatch_id: databaseMirror?.dispatchId || null,
+        stage: mirrorStatus === 'failed'
+            ? 'database_mirror_failed'
+            : mirrorStatus === 'mirrored'
+                ? 'release_registered'
+                : 'content_published',
+        stable_verified_at: null,
+    };
 }
 
 function parseReport(text, path) {
@@ -344,8 +399,12 @@ export async function runStructuredDailyWorkflow(
         const foloCookie = await deps.getFoloCookie(env);
         const fetchPageCap = scheduledFetchPageCap(env, batch, runAt);
         const fetched = await deps.fetchData(env, foloCookie, { fetchPageCap });
+        const sourceCompletedAt = new Date().toISOString();
         if (fetched.errors.length > 0) {
-            throw new StructuredSourceFetchError(fetched.errors);
+            throw new StructuredSourceFetchError(
+                fetched.errors,
+                safeSourceCounts(fetched.sourceCounts),
+            );
         }
 
         const editorialCache = new Map();
@@ -450,7 +509,7 @@ export async function runStructuredDailyWorkflow(
                         triggerId,
                         deps.mirror,
                     );
-                    const response = {
+                    const response = await attachScheduledRunEvidence({
                         success: true,
                         mode: 'structured',
                         reportDate,
@@ -468,7 +527,14 @@ export async function runStructuredDailyWorkflow(
                             : {}),
                         metrics: result.metrics,
                         database_mirror: databaseMirror,
-                    };
+                    }, {
+                        databaseMirror,
+                        fetched,
+                        result,
+                        runAt,
+                        sourceCompletedAt,
+                        triggerId,
+                    });
                     await storeConfirmedMarker(
                         env,
                         triggerId,
@@ -497,7 +563,15 @@ export async function runStructuredDailyWorkflow(
                     },
                     { api: deps.api },
                 );
-                const response = {
+                const databaseMirror = await mirrorWithoutBlocking(
+                    env,
+                    result,
+                    published.commitSha,
+                    batch,
+                    triggerId,
+                    deps.mirror,
+                );
+                const response = await attachScheduledRunEvidence({
                     success: true,
                     mode: 'structured',
                     reportDate,
@@ -512,15 +586,15 @@ export async function runStructuredDailyWorkflow(
                     ...(published.pullRequest ? { pull_request: published.pullRequest } : {}),
                     ...(published.lockRelease ? { lock_release: published.lockRelease } : {}),
                     metrics: result.metrics,
-                    database_mirror: await mirrorWithoutBlocking(
-                        env,
-                        result,
-                        published.commitSha,
-                        batch,
-                        triggerId,
-                        deps.mirror,
-                    ),
-                };
+                    database_mirror: databaseMirror,
+                }, {
+                    databaseMirror,
+                    fetched,
+                    result,
+                    runAt,
+                    sourceCompletedAt,
+                    triggerId,
+                });
                 await storeConfirmedMarker(
                     env,
                     triggerId,

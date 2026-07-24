@@ -42,10 +42,12 @@ jobs:
       - name: Bundle isolated staging Worker
         run: npm run worker:check:staging
 
-      - name: Bundle Community API and Access admin Workers
+      - name: Bundle Community, admin and production release Workers
         run: |
           npm run community:check
           npm run admin:check
+          npm run content:deployer:check
+          npm run content:broker:check
 
   astro-verify:
     runs-on: ubuntu-latest
@@ -76,11 +78,20 @@ jobs:
 
   database-security:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Node.js 22.17
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
 
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1

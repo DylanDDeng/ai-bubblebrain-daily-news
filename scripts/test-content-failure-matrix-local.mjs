@@ -980,17 +980,18 @@ try {
     callbackState[0].last_error === null,
     "Late failure callback mutated terminal error state",
   );
+  const unknownDispatchId = randomUUID();
   const wrongTupleMessage = await expectRejected(
     "wrong deployment callback tuple",
     () =>
       asRole(
         "content_deployer",
         (sql) => sql`
-				select private.record_deployment_event_v1(
-					${releaseA.site_release_id}::uuid, ${claimFixtures[0].dispatchId}::uuid,
-					'building', '{}'::jsonb
-				)
-			`,
+					select private.record_deployment_event_v1(
+						${releaseA.site_release_id}::uuid, ${unknownDispatchId}::uuid,
+						'building', '{}'::jsonb
+					)
+				`,
       ),
     /Deployment event identity mismatch/,
   );
@@ -1253,12 +1254,29 @@ try {
       releaseB.site_release_id,
     "Rollback authorization moved pointer",
   );
-  const reconcile = rpc(
+  const activeLeaseReconcile = rpc(
     await asRole(
       "content_deployer",
       (sql) => sql`
 			select private.begin_production_reconcile_v1() as result
 		`,
+    ),
+  );
+  assert(
+    activeLeaseReconcile === null,
+    "Active rollback lease was incorrectly claimable by reconciler",
+  );
+  await admin`
+    update private.production_promotion_slot
+    set lease_expires_at = clock_timestamp() - interval '1 second'
+    where project_key = 'bubble-brain-pages'
+  `;
+  const reconcile = rpc(
+    await asRole(
+      "content_deployer",
+      (sql) => sql`
+        select private.begin_production_reconcile_v1() as result
+      `,
     ),
   );
   assert(
@@ -1270,10 +1288,10 @@ try {
     "Reconcile did not identify B as current",
   );
   await asRole(
-    "content_deployer",
-    (sql) => sql`
+      "content_deployer",
+      (sql) => sql`
 		select private.finish_production_recovery_v1(
-			${releaseA.site_release_id}::uuid, ${rollbackAuth.fencing_token}, 2, true,
+			${releaseA.site_release_id}::uuid, ${reconcile.slot.fencing_token}, 2, true,
 			'{"restored_site_release":"B","multi_edge_verified":true}'::jsonb
 		)
 	`,
@@ -2069,6 +2087,15 @@ try {
     staged_global_overrides: 0,
     finalize_audit_rows: 1,
   };
+  await asRole(
+    "content_deployer",
+    (sql) => sql`
+      select private.record_deployment_event_v1(
+        ${hideRelease.site_release_id}::uuid, ${hideDispatchId}::uuid,
+        'edge_verified', '{"synthetic_cleanup":true}'::jsonb
+      )
+    `,
+  );
 
   const controlBody = sha256("routine-control-denial");
   await expectRejected(
@@ -2439,6 +2466,17 @@ try {
         `,
       ),
     /permission denied for function retry_content_outbox_v1/,
+  );
+  await asRole(
+    "content_deployer",
+    (sql) => sql`
+      select private.record_deployment_event_v1(
+        ${suppressionRelease.site_release_id}::uuid,
+        ${suppressionDispatchId}::uuid,
+        'failed',
+        ${sql.json({ error: "failure_matrix_retry_exhausted_fixture" })}
+      )
+    `,
   );
 
   const rebuildBodyHash = sha256("operations-same-release-rebuild");
