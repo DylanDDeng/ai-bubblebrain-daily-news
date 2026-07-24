@@ -75,6 +75,23 @@ if (action === "inspect_latest") {
         on head.reservation_id = release.id
       order by outbox.updated_at desc
       limit 12
+    ),
+    attempts as (
+      select jsonb_build_object(
+        'id', attempt.id,
+        'report_date', attempt.report_date,
+        'batch_id', attempt.batch_id,
+        'attempt_number', attempt.attempt_number,
+        'trigger_kind', attempt.trigger_kind,
+        'status', attempt.status,
+        'error_code', attempt.error_code,
+        'error_detail', attempt.error_detail,
+        'started_at', attempt.started_at,
+        'finished_at', attempt.finished_at
+      ) as item
+      from private.publication_attempts attempt
+      order by coalesce(attempt.finished_at, attempt.started_at) desc
+      limit 12
     )
     select jsonb_build_object(
       'current', jsonb_build_object(
@@ -84,6 +101,10 @@ if (action === "inspect_latest") {
       ),
       'latest_outbox', coalesce(
         (select jsonb_agg(item) from latest),
+        '[]'::jsonb
+      ),
+      'latest_attempts', coalesce(
+        (select jsonb_agg(item) from attempts),
         '[]'::jsonb
       )
     ) as result
