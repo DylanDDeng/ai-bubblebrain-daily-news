@@ -17,7 +17,7 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 const astroRoot = process.cwd();
 const repoRoot = resolve(astroRoot, '..');
-const distRoot = resolve(astroRoot, 'dist');
+const distRoot = resolve(astroRoot, 'dist', 'client');
 const ownershipPath = resolve(astroRoot, 'route-ownership.json');
 const ownershipBytes = await readFile(ownershipPath);
 const ownership = JSON.parse(ownershipBytes.toString('utf8'));

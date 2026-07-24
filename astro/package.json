@@ -23,6 +23,7 @@
 		"verify": "npm run validate:data && npm run check && npm run lint && npm run test && npm run build && npm run verify:csp && npm run verify:site"
 	},
 	"dependencies": {
+		"@astrojs/cloudflare": "^14.1.4",
 		"@phosphor-icons/web": "^2.1.2",
 		"@supabase/supabase-js": "2.110.7",
 		"astro": "^7.0.9",

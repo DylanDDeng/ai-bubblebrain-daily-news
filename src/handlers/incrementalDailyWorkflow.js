@@ -92,10 +92,10 @@ function resolveContentCutoff(options, reportDate, batch, runAt) {
 
 function batchLabel(batch) {
     return ({
-        morning: '10:00 更新',
-        afternoon: '15:00 更新',
-        night: '23:00 更新',
-        lateNight: '次日 03:00 补充更新'
+        morning: '08:00 更新',
+        afternoon: '14:00 更新',
+        night: '22:00 更新',
+        lateNight: '次日 02:00 补充更新'
     })[batch] || `${batch} 更新`;
 }
 

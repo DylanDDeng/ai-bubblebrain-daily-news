@@ -106,17 +106,10 @@ jobs:
             package-lock.json
             astro/package-lock.json
 
-      - name: Setup Hugo 0.147.9
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: "0.147.9"
-          extended: true
-
       - name: Verify pinned build toolchain
         run: |
           test "$(node --version)" = "v22.17.0"
           test "$(npm --version)" = "10.9.2"
-          hugo version | grep -Eq '^hugo v0\.147\.9([+-]|[[:space:]])'
 
       - name: Fail closed on unresolved production configuration
         env:

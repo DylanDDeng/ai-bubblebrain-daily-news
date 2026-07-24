@@ -230,7 +230,7 @@ describe('worker regression guards', () => {
         expect(config).toContain('GITHUB_BRANCH = "main"');
         expect(config).toContain('GITHUB_PUBLISH_STRATEGY = "pull_request"');
         expect(config).toContain('GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"');
-        expect(config).toContain('crons = ["0 2,7,15,18,19 * * *"]');
+        expect(config).toContain('crons = ["0 0,2,4,6,8,10,12,14,16,17,18,19,20,21,22,23 * * *"]');
         expect(config).toContain('DAILY_PUBLISH_MODE = "structured"');
         expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "true"');
         expect(config).toContain('DAILY_STRUCTURED_START_DATE = "2026-07-16"');
@@ -265,7 +265,7 @@ describe('worker regression guards', () => {
         ]);
         expect(workflow).toContain('promote-publication:');
         expect(workflow).toContain(
-            'needs: [worker-security, renderer-parity, database-security]',
+            'needs: [worker-security, astro-verify, database-security]',
         );
         expect(workflow).toContain("startsWith(github.head_ref, 'automation/daily/')");
         expect(workflow).toContain('github.event.pull_request.head.repo.full_name == github.repository');
@@ -277,11 +277,9 @@ describe('worker regression guards', () => {
         expect(siteWorkflow).toContain('npm run verify --prefix astro');
         expect(siteWorkflow).toContain('path: astro/dist');
         expect(siteWorkflow).not.toContain('actions/deploy-pages');
-        const parityIndex = siteWorkflow.indexOf('run: npm run verify:renderers');
         const finalBuildIndex = siteWorkflow.indexOf('run: npm run verify --prefix astro');
         const uploadIndex = siteWorkflow.indexOf('uses: actions/upload-artifact');
-        expect(parityIndex).toBeGreaterThan(-1);
-        expect(parityIndex).toBeLessThan(finalBuildIndex);
+        expect(finalBuildIndex).toBeGreaterThan(-1);
         expect(finalBuildIndex).toBeLessThan(uploadIndex);
     });
 

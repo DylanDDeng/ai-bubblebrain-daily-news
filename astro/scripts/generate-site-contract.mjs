@@ -13,7 +13,7 @@ import {
 } from '../../scripts/content-route-build-contract.mjs';
 
 const astroRoot = process.cwd();
-const distRoot = resolve(astroRoot, 'dist');
+const distRoot = resolve(astroRoot, 'dist', 'client');
 const manifestRelativePath = 'release-manifests/site-route-manifest.json';
 const ownership = JSON.parse(await readFile(resolve(astroRoot, 'route-ownership.json'), 'utf8'));
 const legacyManifest = JSON.parse(
@@ -160,7 +160,7 @@ const records = [];
 for (const file of await walk(distRoot)) {
 	const path = relative(distRoot, file).replaceAll('\\', '/');
 	if (path.startsWith('release-manifests/')) continue;
-	if (path === '_headers' || path === '_redirects') continue;
+	if (path === '_headers' || path === '_redirects' || path === '.assetsignore') continue;
 	const fileRoute = routeFromPath(path);
 	let owner;
 	if (legacyPaths.has(path)) owner = 'hugo_compat';
