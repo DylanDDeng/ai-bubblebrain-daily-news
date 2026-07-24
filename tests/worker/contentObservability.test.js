@@ -102,9 +102,9 @@ function healthyInput() {
 }
 
 describe("content observability evaluator", () => {
-  it("maps every due production run through the shared sixteen-slot contract", () => {
+  it("maps every due production run through the shared paginated schedule contract", () => {
     const due = dueContentBatches(NOW);
-    expect(due).toHaveLength(19);
+    expect(due).toHaveLength(20);
     expect(new Set(due.map((run) => run.run_id)).size).toBe(due.length);
     expect(due).toEqual(
       expect.arrayContaining([
@@ -126,6 +126,11 @@ describe("content observability evaluator", () => {
         expect.objectContaining({
           report_date: "2026-07-18",
           batch_id: "afternoon",
+        }),
+        expect.objectContaining({
+          report_date: "2026-07-17",
+          batch_id: "night",
+          scheduled_at: "2026-07-17T15:00:00.000Z",
         }),
       ]),
     );
@@ -466,9 +471,14 @@ function healthyWindowInput() {
 }
 
 describe("two-day production observation gate", () => {
-  it("derives all thirty-two real scheduled triggers including lateNight", () => {
+  it("derives all thirty-four real scheduled triggers including 23:00 and lateNight", () => {
     const slots = expectedObservationSlots(WINDOW_START);
-    expect(slots).toHaveLength(32);
+    expect(slots).toHaveLength(34);
+    expect(slots).toContainEqual(expect.objectContaining({
+      batch_id: "night",
+      expected_trigger_kind: `scheduled:${Date.parse("2026-07-17T15:00:00.000Z")}`,
+      report_date: "2026-07-17",
+    }));
     expect(slots).toContainEqual(expect.objectContaining({
       batch_id: "lateNight",
       publication_batch_id: "lateNightSupplement",
@@ -478,7 +488,7 @@ describe("two-day production observation gate", () => {
     expect(slots.at(-1).deadline).toBe("2026-07-18T20:10:00.000Z");
   });
 
-  it("passes only when all thirty-two runs have immutable, edge and monitor evidence", () => {
+  it("passes only when all thirty-four runs have immutable, edge and monitor evidence", () => {
     const result = evaluateContentObservationWindow(
       healthyWindowInput(),
       WINDOW_NOW,

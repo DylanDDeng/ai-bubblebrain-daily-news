@@ -3,7 +3,7 @@ const DAY_MS = 24 * HOUR_MS;
 const TERMINAL_GRACE_MS = 10 * 60 * 1000;
 
 export const SCHEDULE_UTC_HOURS = Object.freeze([
-    0, 2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 19, 20, 21, 22, 23,
+    0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
 ]);
 export const SCHEDULE_HEALTH_PAGE_SIZE = 16;
 
@@ -134,7 +134,7 @@ export function scheduledRunsForReportDate(reportDate) {
         run => run.report_date === reportDate,
     );
     if (runs.length !== SCHEDULE_UTC_HOURS.length) {
-        throw new Error('Report date does not resolve to sixteen scheduled runs');
+        throw new Error('Report date does not resolve to the production schedule');
     }
     return runs;
 }
