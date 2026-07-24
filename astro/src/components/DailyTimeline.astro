@@ -3,7 +3,6 @@ import { dailyDateFromKey, formatDailyWeekday, type DailyLocale } from '../lib/d
 import {
 	cleanTimelineSummary,
 	displayContentType,
-	formatDailyTime,
 	formatTimelineTime,
 	orderTimelineBatches,
 	timelineDisplayText,
@@ -51,16 +50,6 @@ const dateTitle = new Intl.DateTimeFormat(locale, {
 }).format(reportDate);
 const weekday = formatDailyWeekday(reportDate, locale);
 const archiveHref = isEnglish ? '/en/daily/' : '/daily/';
-
-const updateTimes = report.batches
-	.filter((batch) => batch.status === 'completed' && batch.generated_at)
-	.map((batch) => batch.generated_at!)
-	.sort()
-	.map((iso) => formatDailyTime(iso, locale));
-const updatesStat = isEnglish
-	? `${updateTimes.length} updates${updateTimes.length > 0 ? ` (${updateTimes.join(' / ')})` : ''}`
-	: `${updateTimes.length} 次更新${updateTimes.length > 0 ? `（${updateTimes.join(' / ')}）` : ''}`;
-const topicCount = new Set(report.items.flatMap((item) => item.topic_ids)).size;
 
 const hrefDateKey = (href: string | null): string | null =>
 	href?.match(/(\d{4}-\d{2}-\d{2})\/?$/)?.[1] ?? null;
@@ -115,11 +104,6 @@ const olderKey = hrefDateKey(olderHref);
 			<time datetime={report.date}>{dateTitle}</time>
 			<span class="weekday">{weekday}</span>
 		</h1>
-		<div class="stats">
-			<span>{isEnglish ? `${report.items.length} items` : `${report.items.length} 条收录`}</span>
-			<span>{updatesStat}</span>
-			<span>{isEnglish ? `${topicCount} topics` : `${topicCount} 个主题`}</span>
-		</div>
 	</header>
 
 	<section
