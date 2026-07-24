@@ -9,10 +9,10 @@ import {
 	parseDailyEntryId,
 } from '../lib/daily';
 import {
-	cleanTimelineSummary,
 	displayContentType,
 	formatDailyTime,
 	formatTimelineTime,
+	homepageBatchLabel,
 	homepageFeedItems,
 	timelineDisplayText,
 	timelineSourceDisplay,
@@ -98,7 +98,7 @@ const feedItems = homepageFeedItems(items, report?.batches ?? []);
 					<div class="schedule">
 						{report.batches.map((batch) => (
 							<div class={`slot ${batch.status === 'completed' ? 'done' : 'waiting'}`}>
-								<span class="t">{cleanTimelineSummary(batch.label)}</span>
+								<span class="t">{homepageBatchLabel(batch, locale)}</span>
 								<span class="s">
 									{batch.status === 'completed'
 										? isEnglish
