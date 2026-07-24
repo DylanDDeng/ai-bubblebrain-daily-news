@@ -47,7 +47,7 @@ describe("fenced content release workflow", () => {
       'node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA"',
     );
     expect(deployerConfig).toContain(
-      'CONTENT_RELEASE_RESUME_ENABLED = "false"',
+      'CONTENT_RELEASE_RESUME_ENABLED = "true"',
     );
     expect(deployerConfig).toContain(
       'CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED = "false"',
