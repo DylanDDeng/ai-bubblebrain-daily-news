@@ -22,9 +22,13 @@ const response = await fetch(new URL("/v1/promote", brokerUrl), {
   },
   body,
 });
+const responseBody = await response.text();
 if (!response.ok) {
+  const diagnosticBody = responseBody.trim().slice(0, 4096);
   throw new Error(
-    `Production Broker rejected promotion with ${response.status}`,
+    `Production Broker rejected promotion with ${response.status}${
+      diagnosticBody ? `: ${diagnosticBody}` : ""
+    }`,
   );
 }
-process.stdout.write(await response.text());
+process.stdout.write(responseBody);

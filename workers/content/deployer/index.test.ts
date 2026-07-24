@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
 import {
   dispatchOne,
+  diffGitHubTrees,
   handleBuildContentRequest,
   handleCodeReleaseRequest,
   handleRecoveryHealthCallback,
@@ -195,6 +196,22 @@ describe("automatic code release boundary", () => {
             status: "modified",
           },
           {
+            filename: "scripts/request-production-promotion.mjs",
+            status: "modified",
+          },
+          {
+            filename: "scripts/create-content-addressed-artifact.mjs",
+            status: "modified",
+          },
+          {
+            filename: "scripts/upload-content-addressed-artifact.mjs",
+            status: "modified",
+          },
+          {
+            filename: "scripts/verify-preview.mjs",
+            status: "modified",
+          },
+          {
             filename: "supabase/migrations/20260719000100_release.sql",
             status: "added",
           },
@@ -206,6 +223,20 @@ describe("automatic code release boundary", () => {
             filename: "data/daily/2026-07-19.json",
             status: "modified",
           },
+          {
+            filename: "astro/scripts/generate-site-contract.mjs",
+            status: "modified",
+          },
+          { filename: "astro/wrangler.jsonc", status: "added" },
+          { filename: "cloudflare-pages.toml", status: "modified" },
+          { filename: "themes/hextra/theme.toml", status: "removed" },
+          { filename: "layouts/index.html", status: "removed" },
+          { filename: "i18n/en.toml", status: "removed" },
+          { filename: "hugo.toml", status: "removed" },
+          {
+            filename: "scripts/sync-daily-to-hugo.sh",
+            status: "removed",
+          },
         ]),
         {
           baseCodeSha,
@@ -213,11 +244,105 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(21);
+    ).toHaveLength(33);
   });
 
   it.each([
-    "astro/scripts/generate-static-data.mjs",
+    "themes/hextra/theme.toml",
+    "layouts/index.html",
+    "i18n/en.toml",
+    "hugo.toml",
+    "scripts/sync-daily-to-hugo.sh",
+  ])("rejects reintroducing retired Hugo path %s", (retiredPath) => {
+    expect(() =>
+      validateCodeReleaseChangeSet(
+        comparison([
+          { filename: "astro/src/pages/index.astro", status: "modified" },
+          { filename: retiredPath, status: "added" },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toThrow(`Code release may only remove retired Hugo path: ${retiredPath}`);
+  });
+
+  it("accepts a complete classified change set above the compare API file cap", () => {
+    const files = Array.from({ length: 301 }, (_, index) => ({
+      filename: `workers/generated/file-${String(index).padStart(3, "0")}.ts`,
+      status: "modified",
+    }));
+    expect(
+      validateCodeReleaseChangeSet(comparison(files), {
+        baseCodeSha,
+        targetCodeSha,
+        structuredCutoverDate: "2026-07-16",
+      }),
+    ).toHaveLength(301);
+  });
+
+  it("derives a complete deterministic change set from Git trees", () => {
+    const unchanged = {
+      path: "workers/unchanged.ts",
+      mode: "100644",
+      type: "blob",
+      sha: "1".repeat(40),
+    };
+    expect(
+      diffGitHubTrees(
+        [
+          unchanged,
+          {
+            path: "workers/removed.ts",
+            mode: "100644",
+            type: "blob",
+            sha: "2".repeat(40),
+          },
+          {
+            path: "workers/modified.ts",
+            mode: "100644",
+            type: "blob",
+            sha: "3".repeat(40),
+          },
+        ],
+        [
+          unchanged,
+          {
+            path: "workers/added.ts",
+            mode: "100644",
+            type: "blob",
+            sha: "4".repeat(40),
+          },
+          {
+            path: "workers/modified.ts",
+            mode: "100755",
+            type: "blob",
+            sha: "5".repeat(40),
+          },
+        ],
+      ),
+    ).toEqual([
+      {
+        filename: "workers/added.ts",
+        status: "added",
+        sha: "4".repeat(40),
+      },
+      {
+        filename: "workers/modified.ts",
+        status: "modified",
+        sha: "5".repeat(40),
+      },
+      {
+        filename: "workers/removed.ts",
+        status: "removed",
+        sha: "2".repeat(40),
+      },
+    ]);
+  });
+
+  it.each([
     "static/highlights.json",
     "content/about/index.md",
     "data/daily/2026-07-15.json",
@@ -386,6 +511,18 @@ describe("automatic code release boundary", () => {
               filename: "data/daily/2026-07-19.json",
               status: "modified",
             },
+            {
+              filename: "scripts/create-content-addressed-artifact.mjs",
+              status: "modified",
+            },
+            {
+              filename: "scripts/upload-content-addressed-artifact.mjs",
+              status: "modified",
+            },
+            {
+              filename: "scripts/verify-preview.mjs",
+              status: "modified",
+            },
           ],
           changeSetSha256: "e".repeat(64),
         })),
@@ -397,7 +534,7 @@ describe("automatic code release boundary", () => {
       ok: true,
       status: "no_changes",
       code_sha: targetCodeSha,
-      changed_file_count: 2,
+      changed_file_count: 5,
     });
     expect(getCurrentMainSha).toHaveBeenCalledTimes(1);
     expect(sql).toHaveBeenCalledTimes(1);

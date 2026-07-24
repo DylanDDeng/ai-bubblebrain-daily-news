@@ -1,21 +1,26 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-23T23:00:56.000Z",
+      "generated_at": "2026-07-24T02:00:56.000Z",
       "id": "morning",
       "item_ids": [
         "n_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8",
         "n_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
         "n_39cfd834766c497900f9ea67a439686fc5324a48720306dbbdd80aec356ed8ef",
+        "n_046dc3596e38bc00dd92676b54e180485d56abb3392e149fb3d4d800e51082ac",
         "n_affa1c438780abdf783e94701a580b53fb4d4318877621229e8ba87f1202a3d6",
         "n_08fea0029cc7302b9d11c7ff49d04b5f69a2b43bff89804a7cba75e9602ca10a",
         "n_789f606eb6e02927c8ba2da182233fa36c7542f3fe6dbdf1a78710b0a7b72b4e",
+        "n_a579fa3978f929648de53123d89caec8bff81375dccb3a64ee7ee618ab33dfff",
         "n_347db7b084043833648e532e1bf49849530de329a4b66fb8955df0e2ea52e8c7",
         "n_21c7feac7fb8cd919cb085a2660ea92c4111749b790b382b98453bc9331d9421",
         "n_771a257185d7c7890e14bfc79ceecce1177c6152e5c7db273ce610d78ed8508e",
         "n_1c577fec6c7153940d36d824d0b7cceb93c4717a282b77bc1d5d71ba68d611d1",
         "n_326bad14f9c44f7a0834d2494f37adb3bb7f2806a3028c20e3f19a962fa89f7d",
-        "n_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3"
+        "n_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3",
+        "n_d2ba8cd615980871a76ae9e84b1bc5b6dec6eeafc7b151ee956d70d8f7dbe73b",
+        "n_eab77aa842440e656974ef4743baf7dbcad8f5f2c4029a2d1f4ed542fb71e381",
+        "n_03911902d13e2d2ceca8abb3bd0dcd8e43fd4cacc666a28a25c8929fa8156d52"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -49,7 +54,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-23T23:00:56.000Z",
+  "generated_at": "2026-07-24T02:00:56.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -166,6 +171,44 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/tuturetom/status/2080287203331289335",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_046dc3596e38bc00dd92676b54e180485d56abb3392e149fb3d4d800e51082ac",
+      "featured": false,
+      "id": "n_046dc3596e38bc00dd92676b54e180485d56abb3392e149fb3d4d800e51082ac",
+      "identity_claims": [
+        "c_046dc3596e38bc00dd92676b54e180485d56abb3392e149fb3d4d800e51082ac",
+        "c_59295eaec916765f15724e1a888bd3400ae92be07b251e75a5a49da18eaf9173"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T02:00:56.000Z",
+      "published_at": "2026-07-23T12:48:12.640Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213171558705508352",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1213171558705508352",
+      "source_type": "twitter_extra",
+      "summary": "由 Tom Huang 发布的 Codex Slides 能将 repo、PDF、研究文档等内容直接生成演示文稿，无需手动寻找模板或调整版式。",
+      "time_precision": "exact",
+      "title": "Codex Slides 正式开源，可将文档和想法一键转为PPT",
+      "topic_ids": [
+        "topic_research",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2080287203331289335"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/Gorden_Sun/status/2080290365735899326",
       "category": "models",
       "content_type": "socialMedia",
@@ -276,6 +319,42 @@
         "topic_research"
       ],
       "url": "https://x.com/omarsar0/status/2080385954120892852"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/wwwgoubuli/status/2080309841449701833",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a579fa3978f929648de53123d89caec8bff81375dccb3a64ee7ee618ab33dfff",
+      "featured": false,
+      "id": "n_a579fa3978f929648de53123d89caec8bff81375dccb3a64ee7ee618ab33dfff",
+      "identity_claims": [
+        "c_a579fa3978f929648de53123d89caec8bff81375dccb3a64ee7ee618ab33dfff",
+        "c_c7a0f4aeffd4503ca2d1ff06e4c9b07f8f2fe24edb51a15be30cc2f196d0cd06"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T02:00:56.000Z",
+      "published_at": "2026-07-23T15:11:31.082Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213114275518685184",
+        "name": "twitter-wwwgoubuli"
+      },
+      "source_id": "1213114275518685184",
+      "source_type": "twitter_extra",
+      "summary": "许多后端曾认为跨域是边缘问题而忽视处理，导致前端自行搭建中间层，这反映出部分后端在协作中的傲慢态度。",
+      "time_precision": "exact",
+      "title": "前端因后端长期不解决跨域问题而被迫自建API，推动了BFF架构兴起",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/wwwgoubuli/status/2080309841449701833"
     },
     {
       "batch": "morning",
@@ -506,6 +585,129 @@
         "topic_products"
       ],
       "url": "https://x.com/gdb/status/2080414383352529085"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/23/the-first-known-runaway-ai-agent/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_d2ba8cd615980871a76ae9e84b1bc5b6dec6eeafc7b151ee956d70d8f7dbe73b",
+      "featured": true,
+      "id": "n_d2ba8cd615980871a76ae9e84b1bc5b6dec6eeafc7b151ee956d70d8f7dbe73b",
+      "identity_claims": [
+        "c_061673c4838521ec417a63024aa2a1a6bb62d5d82b9e854251f8884b5dcb71e4",
+        "c_d2ba8cd615980871a76ae9e84b1bc5b6dec6eeafc7b151ee956d70d8f7dbe73b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T02:00:56.000Z",
+      "published_at": "2026-07-23T22:53:08.005Z",
+      "published_date": "2026-07-24",
+      "reason": "疑似营销炒作，内容仅为个人评论，无确凿事件细节，可信度低，信息量极少。",
+      "related_source_ids": [],
+      "score": 3,
+      "source": {
+        "homepage": null,
+        "id": "1213141872965222400",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1213141872965222400",
+      "source_type": "simonwillison",
+      "summary": "The first known runaway AI agent - or a very bad marketing stunt? Martin Alderson's commentary on the OpenAI accidental cyberattack against Hugging Face includes a couple of details I hadn't considered. First, Hugging Face offers a truly rich target if you're trying to find potential vulnerabilities that require executing arbitrary code: Hugging Face has an enormous attack surface. They have more interfaces than I can count which run untrusted models and code. While they definitely have invested in defences, by nature of their operating model they do have many more opportunities to be attacked than many other services. I certainly don't envy their cybersecurity teams. Secondly, one of the things that has puzzled me is how OpenAI didn't notice that their sandbox had been so thoroughly breached by the agent. Surely they'd be monitoring network traffic closely? Martin points out that: It's also likely they were running a huge amount of benchmarks simultaneously with ~unlimited token budgets - you want as many samples as possible to figure out how good a model is at a certain benchmark. It may also be they are testing various different checkpoints of the model too, understanding how the model is improving as it goes through the various training stages. The mistakes made by the OpenAI team running this benchmark are easier to imagine when you think about the scale at which benchmarks of this kind usually operate. For all we know they could have been subjecting a new model to dozens of benchmarks at the same time, in dozens of different environments. Via Lobste.rs Tags: security, ai, openai, generative-ai, llms, hugging-face, ai-security-research",
+      "time_precision": "exact",
+      "title": "The first known runaway AI agent - or a very bad marketing stunt?",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/23/the-first-known-runaway-ai-agent/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/hongming731/status/2080438882143981928",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_deepseek"
+      ],
+      "event_id": "e_eab77aa842440e656974ef4743baf7dbcad8f5f2c4029a2d1f4ed542fb71e381",
+      "featured": false,
+      "id": "n_eab77aa842440e656974ef4743baf7dbcad8f5f2c4029a2d1f4ed542fb71e381",
+      "identity_claims": [
+        "c_8ffe15a2b1854741e80c94c0a981698ee902269a4a5f793ac9a4436e9df278aa",
+        "c_eab77aa842440e656974ef4743baf7dbcad8f5f2c4029a2d1f4ed542fb71e381"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T02:00:56.000Z",
+      "published_at": "2026-07-23T23:44:16.449Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213140723877031936",
+        "name": "twitter-ginobefun"
+      },
+      "source_id": "1213140723877031936",
+      "source_type": "twitter_extra",
+      "summary": "本期内容涉及 Claude 新增模型切换的语音交互、梁文锋内部交流披露 DeepSeek 将 Agent 持续学习作为重点、阿里开源 skill-up 实现 Agent Skill 可评测回归，以及多智能体安全架构和 RCA Agent 实践等。",
+      "time_precision": "exact",
+      "title": "AI早报涵盖Claude语音模式、DeepSeek持续学习策略及Agent评测工具",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_business",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/hongming731/status/2080438882143981928"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/vista8/status/2080439916203548806",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_meta_ai"
+      ],
+      "event_id": "e_03911902d13e2d2ceca8abb3bd0dcd8e43fd4cacc666a28a25c8929fa8156d52",
+      "featured": false,
+      "id": "n_03911902d13e2d2ceca8abb3bd0dcd8e43fd4cacc666a28a25c8929fa8156d52",
+      "identity_claims": [
+        "c_03911902d13e2d2ceca8abb3bd0dcd8e43fd4cacc666a28a25c8929fa8156d52",
+        "c_7db6b6755f6c8d665860166ec0fdc08a1109870c65e3104b91f797955e4f03b7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T02:00:56.000Z",
+      "published_at": "2026-07-23T23:48:23.016Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213110695764074496",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1213110695764074496",
+      "source_type": "twitter_extra",
+      "summary": "橘子展示使用 Cola 提炼话题、剪映录制并美化音频，再用 Cola 生成 Shownotes，实现录完即发的高效播客制作流程。",
+      "time_precision": "exact",
+      "title": "AI辅助播客工作流实现录制后即时生成Shownotes并快速发布",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2080439916203548806"
     },
     {
       "batch": "night",

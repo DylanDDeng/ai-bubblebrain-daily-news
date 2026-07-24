@@ -151,6 +151,13 @@ function htmlMetadata(html) {
 	return { canonical, hreflang, noindex };
 }
 
+// The Cloudflare adapter emits deployment metadata into the static asset
+// directory when every route is prerendered. It is not part of the public
+// Pages release and must not enter the immutable artifact inventory.
+await Promise.all(
+	['.assetsignore', 'wrangler.json'].map((name) => rm(resolve(distRoot, name), { force: true })),
+);
+
 for (const file of await walk(distRoot)) {
 	if (file.endsWith('/.DS_Store')) await rm(file, { force: true });
 }

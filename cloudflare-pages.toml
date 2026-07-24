@@ -2,7 +2,7 @@
 
 [build]
   command = "npm ci && npm ci --prefix astro && npm run build --prefix astro && npm run verify:site"
-  publish = "astro/dist"
+  publish = "astro/dist/client"
 
 [build.environment]
   NODE_VERSION = "22.17.0"

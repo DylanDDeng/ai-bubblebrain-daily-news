@@ -171,8 +171,16 @@ type GitHubCompare = {
   status: string;
   base_commit?: { sha?: string };
   merge_base_commit?: { sha?: string };
+  head_commit?: { sha?: string };
   commits?: Array<{ sha?: string }>;
   files?: GitHubFile[];
+};
+
+type GitHubTreeEntry = {
+  path: string;
+  mode: string;
+  type: string;
+  sha: string;
 };
 
 async function githubJson(
@@ -203,11 +211,33 @@ type CodeReleasePathClass = "publishable" | "inert" | "db_owned";
 const INERT_ROOT_SCRIPTS = new Set([
   "scripts/check-content-observability.mjs",
   "scripts/check-content-observation-window.mjs",
+  "scripts/create-content-addressed-artifact.mjs",
+  "scripts/pull-daily-content.sh",
   "scripts/request-code-release.mjs",
+  "scripts/request-production-promotion.mjs",
   "scripts/test-content-failure-matrix-local.mjs",
+  "scripts/upload-content-addressed-artifact.mjs",
   "scripts/validate-content-production-config.mjs",
+  "scripts/verify-preview.mjs",
   "scripts/verify-site.mjs",
 ]);
+
+const RETIRED_HUGO_PATHS = new Set([
+  "archetypes/daily.md",
+  "hugo.toml",
+  "scripts/auto-sync-and-cleanup.sh",
+  "scripts/fix-github-dirs.sh",
+  "scripts/migrate-to-cf-pages.sh",
+  "scripts/setup-domain.sh",
+  "scripts/sync-daily-to-hugo.js",
+  "scripts/sync-daily-to-hugo.sh",
+  "scripts/test-future-content.sh",
+  "scripts/test-hugo-build.sh",
+  "scripts/verify-daily-renderers.mjs",
+  "view-site.sh",
+]);
+
+const RETIRED_HUGO_PREFIXES = ["i18n/", "layouts/", "themes/"];
 
 function assertGitHubComparePath(path: string): void {
   if (
@@ -233,12 +263,21 @@ function structuredDateFromPath(path: string): string | null {
 function classifyCodeReleasePath(
   path: string,
   structuredCutoverDate: string,
+  status: string,
 ): CodeReleasePathClass {
   assertGitHubComparePath(path);
 
   const structuredDate = structuredDateFromPath(path);
   if (structuredDate && structuredDate >= structuredCutoverDate)
     return "db_owned";
+
+  if (
+    RETIRED_HUGO_PATHS.has(path) ||
+    RETIRED_HUGO_PREFIXES.some((prefix) => path.startsWith(prefix))
+  ) {
+    if (status === "removed") return "inert";
+    throw new Error(`Code release may only remove retired Hugo path: ${path}`);
+  }
 
   if (
     /(?:^|\/)\w[^/]*\.test\.[cm]?[jt]sx?$/.test(path) ||
@@ -262,6 +301,8 @@ function classifyCodeReleasePath(
       "astro/eslint.config.js",
       "astro/prettier.config.mjs",
       "astro/vitest.config.ts",
+      "package.json",
+      "start.sh",
       "wrangler.content-deployer.toml",
       "wrangler.toml",
       "wrangler.staging.toml",
@@ -273,6 +314,7 @@ function classifyCodeReleasePath(
 
   if (
     [
+      "astro/scripts/",
       "astro/src/pages/",
       "astro/src/components/",
       "astro/src/layouts/",
@@ -290,6 +332,8 @@ function classifyCodeReleasePath(
       "astro/raw-html-policy.json",
       "astro/route-ownership.json",
       "astro/tsconfig.json",
+      "astro/wrangler.jsonc",
+      "cloudflare-pages.toml",
       "data/knowledge/taxonomy.json",
       "static/css/daily-timeline.css",
       "static/js/ai-infographic.js",
@@ -314,15 +358,15 @@ export function validateCodeReleaseChangeSet(
   },
 ): GitHubFile[] {
   const files = compare.files;
+  const headSha =
+    compare.head_commit?.sha || compare.commits?.at(-1)?.sha || "";
   if (
     compare.status !== "ahead" ||
     compare.base_commit?.sha !== input.baseCodeSha ||
     compare.merge_base_commit?.sha !== input.baseCodeSha ||
-    !Array.isArray(compare.commits) ||
-    compare.commits.at(-1)?.sha !== input.targetCodeSha ||
+    headSha !== input.targetCodeSha ||
     !Array.isArray(files) ||
     files.length === 0 ||
-    files.length >= 300 ||
     !DATE.test(input.structuredCutoverDate)
   ) {
     throw new Error("GitHub compare is not a complete fast-forward change set");
@@ -335,17 +379,90 @@ export function validateCodeReleaseChangeSet(
     ) {
       throw new Error("Malformed GitHub compare file");
     }
-    classifyCodeReleasePath(file.filename, input.structuredCutoverDate);
+    classifyCodeReleasePath(
+      file.filename,
+      input.structuredCutoverDate,
+      file.status,
+    );
     if (file.previous_filename !== undefined) {
       if (typeof file.previous_filename !== "string")
         throw new Error("Malformed GitHub compare file");
       classifyCodeReleasePath(
         file.previous_filename,
         input.structuredCutoverDate,
+        "removed",
       );
     }
   }
   return files;
+}
+
+function parseGitHubTree(value: Record<string, unknown>): GitHubTreeEntry[] {
+  if (value.truncated !== false || !Array.isArray(value.tree)) {
+    throw new Error("GitHub tree is incomplete");
+  }
+  const entries: GitHubTreeEntry[] = [];
+  const paths = new Set<string>();
+  for (const candidate of value.tree) {
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate))
+      throw new Error("GitHub tree entry is malformed");
+    const entry = candidate as Record<string, unknown>;
+    const path = String(entry.path || "");
+    const mode = String(entry.mode || "");
+    const type = String(entry.type || "");
+    const sha = String(entry.sha || "");
+    if (type === "tree") continue;
+    assertGitHubComparePath(path);
+    if (
+      paths.has(path) ||
+      !/^[0-7]{6}$/.test(mode) ||
+      !["blob", "commit"].includes(type) ||
+      !SHA1.test(sha)
+    ) {
+      throw new Error("GitHub tree entry is malformed");
+    }
+    paths.add(path);
+    entries.push({ path, mode, type, sha });
+  }
+  return entries;
+}
+
+export function diffGitHubTrees(
+  baseTree: GitHubTreeEntry[],
+  targetTree: GitHubTreeEntry[],
+): GitHubFile[] {
+  const base = new Map(baseTree.map((entry) => [entry.path, entry]));
+  const target = new Map(targetTree.map((entry) => [entry.path, entry]));
+  return [...new Set([...base.keys(), ...target.keys()])]
+    .sort()
+    .flatMap((path): GitHubFile[] => {
+      const before = base.get(path);
+      const after = target.get(path);
+      if (!before && after)
+        return [{ filename: path, status: "added", sha: after.sha }];
+      if (before && !after)
+        return [{ filename: path, status: "removed", sha: before.sha }];
+      if (
+        before &&
+        after &&
+        (before.sha !== after.sha ||
+          before.mode !== after.mode ||
+          before.type !== after.type)
+      ) {
+        return [{ filename: path, status: "modified", sha: after.sha }];
+      }
+      return [];
+    });
+}
+
+async function completeTree(env: Env, sha: string): Promise<GitHubTreeEntry[]> {
+  const result = await githubJson(
+    env,
+    `git/trees/${encodeURIComponent(sha)}?recursive=1`,
+  );
+  if (String(result.sha || "") !== sha)
+    throw new Error("GitHub tree identity mismatch");
+  return parseGitHubTree(result);
 }
 
 async function currentMainSha(env: Env): Promise<string> {
@@ -374,7 +491,16 @@ async function compareCodeRelease(
     env,
     `compare/${baseCodeSha}...${targetCodeSha}`,
   )) as GitHubCompare;
-  const files = validateCodeReleaseChangeSet(result, {
+  const compareFiles = result.files;
+  const files =
+    Array.isArray(compareFiles) && compareFiles.length < 300
+      ? compareFiles
+      : diffGitHubTrees(
+          await completeTree(env, baseCodeSha),
+          await completeTree(env, targetCodeSha),
+        );
+  const completeResult = { ...result, files };
+  validateCodeReleaseChangeSet(completeResult, {
     baseCodeSha,
     targetCodeSha,
     structuredCutoverDate,
@@ -391,12 +517,16 @@ async function compareCodeRelease(
     files,
     publishableFileCount: files.filter(
       (file) =>
-        classifyCodeReleasePath(file.filename, structuredCutoverDate) ===
-          "publishable" ||
+        classifyCodeReleasePath(
+          file.filename,
+          structuredCutoverDate,
+          file.status,
+        ) === "publishable" ||
         (file.previous_filename !== undefined &&
           classifyCodeReleasePath(
             file.previous_filename,
             structuredCutoverDate,
+            "removed",
           ) === "publishable"),
     ).length,
     changeSetSha256: await sha256Hex(
@@ -858,12 +988,16 @@ export async function handleCodeReleaseRequest(
       comparison.publishableFileCount ??
       comparison.files.filter(
         (file) =>
-          classifyCodeReleasePath(file.filename, structuredCutoverDate) ===
-            "publishable" ||
+          classifyCodeReleasePath(
+            file.filename,
+            structuredCutoverDate,
+            file.status,
+          ) === "publishable" ||
           (file.previous_filename !== undefined &&
             classifyCodeReleasePath(
               file.previous_filename,
               structuredCutoverDate,
+              "removed",
             ) === "publishable"),
       ).length;
     if (publishableFileCount === 0) {
@@ -900,8 +1034,7 @@ export async function handleCodeReleaseRequest(
       ) as result
     `;
     const reservation = reservationRows[0]?.result as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     if (
       !reservation ||
       !UUID.test(String(reservation.reservation_id || "")) ||

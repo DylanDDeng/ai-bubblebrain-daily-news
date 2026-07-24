@@ -149,7 +149,7 @@ const isMain =
 if (isMain) {
   const distRoot =
     process.argv[2] ||
-    resolve(dirname(fileURLToPath(import.meta.url)), "../astro/dist");
+    resolve(dirname(fileURLToPath(import.meta.url)), "../astro/dist/client");
   const outputPath =
     process.argv[3] || resolve(process.cwd(), "content-release-artifact.json");
   const result = await createContentAddressedArtifact(distRoot, outputPath);

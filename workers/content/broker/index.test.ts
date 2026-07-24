@@ -1,12 +1,14 @@
 import { createHash } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  deploymentMatchesContext,
   handleRollbackRequest,
   isCommittedPromotionContext,
   pagesAssetHash,
   parseContentAddressedArtifact,
   parseDeterministicTar,
   purgeContentCaches,
+  reconcileProduction,
   uploadPages,
   verifyDeployment,
 } from "./index";
@@ -26,6 +28,111 @@ describe("promotion commit recovery", () => {
     expect(isCommittedPromotionContext(context, "target-release", 8)).toBe(
       false,
     );
+  });
+
+  it("recognizes the exact last-known-good Pages deployment", () => {
+    const context = {
+      code_sha: "a".repeat(40),
+      site_release_sequence: 111,
+    } as never;
+    expect(
+      deploymentMatchesContext(
+        {
+          id: "123e4567-e89b-42d3-a456-426614174000",
+          url: "https://release.pages.dev",
+          commitHash: "a".repeat(40),
+          commitMessage: "content release 111",
+        },
+        context,
+      ),
+    ).toBe(true);
+    expect(
+      deploymentMatchesContext(
+        {
+          id: "123e4567-e89b-42d3-a456-426614174000",
+          url: "https://release.pages.dev",
+          commitHash: "a".repeat(40),
+          commitMessage: "content release 110",
+        },
+        context,
+      ),
+    ).toBe(false);
+  });
+
+  it("reuses an already restored deployment instead of uploading it again", async () => {
+    const target = {
+      site_release_id: "123e4567-e89b-42d3-a456-426614174001",
+      site_release_sequence: 112,
+      code_sha: "b".repeat(40),
+    };
+    const current = {
+      site_release_id: "123e4567-e89b-42d3-a456-426614174000",
+      site_release_sequence: 111,
+      code_sha: "a".repeat(40),
+    };
+    const queries: string[] = [];
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      queries.push(query);
+      if (query.includes("begin_production_reconcile_v1")) {
+        return [
+          {
+            result: {
+              slot: {
+                operation: "forward",
+                fencing_token: 7,
+                expected_pointer_generation: 49,
+              },
+              target,
+              current,
+            },
+          },
+        ];
+      }
+      if (query.includes("finish_production_recovery_v1")) return [];
+      throw new Error(`Unexpected SQL: ${query}`);
+    });
+    const end = vi.fn(async () => undefined);
+    Object.assign(sql, {
+      json: vi.fn((value: unknown) => value),
+      end,
+    });
+    const verify = vi
+      .fn()
+      .mockRejectedValueOnce(new Error("target is not current"))
+      .mockResolvedValueOnce({ multi_edge_verified: true });
+    const upload = vi.fn();
+    const latest = {
+      id: "123e4567-e89b-42d3-a456-426614174010",
+      url: "https://release.pages.dev",
+      commitHash: current.code_sha,
+      commitMessage: "content release 111",
+    };
+
+    await expect(
+      reconcileProduction({} as never, {
+        openDatabase: vi.fn(() => sql as never),
+        loadArtifact: vi.fn(async () => ({ kind: "tar", files: [] }) as never),
+        upload,
+        verify,
+        latestDeployment: vi.fn(async () => latest),
+        purge: vi.fn(),
+      }),
+    ).resolves.toBe("restored");
+
+    expect(upload).not.toHaveBeenCalled();
+    expect(verify).toHaveBeenNthCalledWith(
+      2,
+      current,
+      latest.url,
+      expect.anything(),
+      expect.anything(),
+      undefined,
+    );
+    expect(
+      queries.some((query) => query.includes("finish_production_recovery_v1")),
+    ).toBe(true);
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
   });
 });
 
