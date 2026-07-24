@@ -139,16 +139,10 @@ begin
 end;
 $$;
 
-do $$
-begin
-  execute format(
-    'grant execute on function private.reconcile_legacy_github_trending_source_id_v1() to %I',
-    session_user
-  );
-end;
-$$;
+grant execute on function private.reconcile_legacy_github_trending_source_id_v1()
+  to postgres;
 
-reset role;
+set local role postgres;
 
 drop trigger if exists reconcile_legacy_github_trending_source_id
   on private.content_items;
@@ -162,23 +156,12 @@ set local role content_rpc_owner;
 select private.reconcile_all_legacy_github_trending_source_ids_v1();
 
 revoke all on function private.reconcile_legacy_github_trending_source_id_v1()
-  from public, anon, authenticated, service_role,
+  from public, postgres, anon, authenticated, service_role,
        content_ingestor, content_editor, content_controller,
        content_reader, content_deployer, content_backup;
 revoke all on function private.reconcile_all_legacy_github_trending_source_ids_v1()
   from public, anon, authenticated, service_role,
        content_ingestor, content_editor, content_controller,
        content_reader, content_deployer, content_backup;
-
-do $$
-begin
-  execute format(
-    'revoke execute on function private.reconcile_legacy_github_trending_source_id_v1() from %I',
-    session_user
-  );
-end;
-$$;
-
-reset role;
 
 commit;
