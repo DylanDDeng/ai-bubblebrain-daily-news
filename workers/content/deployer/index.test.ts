@@ -428,7 +428,27 @@ describe("automatic code release boundary", () => {
             status: "modified",
           },
           {
+            filename: "scripts/materialize-content-addressed-artifact.mjs",
+            status: "added",
+          },
+          {
+            filename: "scripts/request-content-release-plan.mjs",
+            status: "added",
+          },
+          {
+            filename: "scripts/send-content-deployment-callback.mjs",
+            status: "modified",
+          },
+          {
+            filename: "scripts/test-supabase-local.sh",
+            status: "modified",
+          },
+          {
             filename: "scripts/verify-preview.mjs",
+            status: "modified",
+          },
+          {
+            filename: "wrangler.content-broker.toml",
             status: "modified",
           },
           {
@@ -464,7 +484,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(33);
+    ).toHaveLength(38);
   });
 
   it.each([
