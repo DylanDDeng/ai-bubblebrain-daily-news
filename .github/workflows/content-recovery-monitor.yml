@@ -4,6 +4,32 @@ on:
   schedule:
     - cron: "15,45 * * * *"
   workflow_dispatch:
+    inputs:
+      emergency_action:
+        description: One-off superseded release action
+        required: false
+        default: none
+        type: choice
+        options:
+          - none
+          - inspect
+          - dead_letter_superseded
+      site_release_id:
+        description: Exact superseded site release UUID
+        required: false
+        type: string
+      dispatch_id:
+        description: Exact superseded dispatch UUID
+        required: false
+        type: string
+      expected_code_sha:
+        description: Exact superseded 40-character code SHA
+        required: false
+        type: string
+      superseded_by_sha:
+        description: Exact current main 40-character code SHA
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -14,7 +40,7 @@ concurrency:
 
 jobs:
   verify:
-    if: ${{ vars.CONTENT_RECOVERY_MONITOR_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ (github.event_name == 'schedule' && vars.CONTENT_RECOVERY_MONITOR_ENABLED == 'true') || (github.event_name == 'workflow_dispatch' && inputs.emergency_action == 'none') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: content-backup
@@ -72,3 +98,27 @@ jobs:
           path: recovery-health-evidence.json
           retention-days: 14
           if-no-files-found: error
+
+  recover-superseded-release:
+    if: ${{ inputs.emergency_action != '' && inputs.emergency_action != 'none' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: content-backup
+    env:
+      CONTENT_DATABASE_PROJECT_REF: ${{ vars.CONTENT_DATABASE_PROJECT_REF }}
+      SUPABASE_MANAGEMENT_API_TOKEN: ${{ secrets.SUPABASE_MANAGEMENT_API_TOKEN }}
+      EMERGENCY_ACTION: ${{ inputs.emergency_action }}
+      SITE_RELEASE_ID: ${{ inputs.site_release_id }}
+      DISPATCH_ID: ${{ inputs.dispatch_id }}
+      EXPECTED_CODE_SHA: ${{ inputs.expected_code_sha }}
+      SUPERSEDED_BY_SHA: ${{ inputs.superseded_by_sha }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.17.0
+
+      - name: Inspect or terminalize one exact superseded release
+        run: node scripts/recover-superseded-content-release.mjs
