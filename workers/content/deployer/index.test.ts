@@ -200,6 +200,18 @@ describe("automatic code release boundary", () => {
             status: "modified",
           },
           {
+            filename: "scripts/create-content-addressed-artifact.mjs",
+            status: "modified",
+          },
+          {
+            filename: "scripts/upload-content-addressed-artifact.mjs",
+            status: "modified",
+          },
+          {
+            filename: "scripts/verify-preview.mjs",
+            status: "modified",
+          },
+          {
             filename: "supabase/migrations/20260719000100_release.sql",
             status: "added",
           },
@@ -232,7 +244,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(30);
+    ).toHaveLength(33);
   });
 
   it.each([
@@ -499,6 +511,18 @@ describe("automatic code release boundary", () => {
               filename: "data/daily/2026-07-19.json",
               status: "modified",
             },
+            {
+              filename: "scripts/create-content-addressed-artifact.mjs",
+              status: "modified",
+            },
+            {
+              filename: "scripts/upload-content-addressed-artifact.mjs",
+              status: "modified",
+            },
+            {
+              filename: "scripts/verify-preview.mjs",
+              status: "modified",
+            },
           ],
           changeSetSha256: "e".repeat(64),
         })),
@@ -510,7 +534,7 @@ describe("automatic code release boundary", () => {
       ok: true,
       status: "no_changes",
       code_sha: targetCodeSha,
-      changed_file_count: 2,
+      changed_file_count: 5,
     });
     expect(getCurrentMainSha).toHaveBeenCalledTimes(1);
     expect(sql).toHaveBeenCalledTimes(1);

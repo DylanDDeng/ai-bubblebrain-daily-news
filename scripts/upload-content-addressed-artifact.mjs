@@ -341,7 +341,7 @@ const isMain =
   resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
   const manifestPath = process.argv[2] || "content-release-artifact.json";
-  const distRoot = process.argv[3] || "astro/dist";
+  const distRoot = process.argv[3] || "astro/dist/client";
   const store = new AwsCliObjectStore({
     bucket: process.env.R2_ARTIFACT_BUCKET,
     endpoint: process.env.R2_ENDPOINT,

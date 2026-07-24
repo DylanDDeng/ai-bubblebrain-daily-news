@@ -108,8 +108,8 @@ jobs:
 
       - name: Verify embedded draft identity
         run: |
-          node -e "const m=require('./astro/dist/release-manifests/site-route-manifest.json');const b=m.build;if(b.code_sha!==process.env.EXACT_CODE_SHA||b.source_sha!==process.env.EXACT_CODE_SHA||b.site_release_id!==process.env.SITE_RELEASE_ID||b.editorial_preview_sha256!==process.env.EDITORIAL_PREVIEW_SHA256||b.node_version!=='v22.17.0'||b.npm_version!=='10.9.2'||b.hugo_version!=='0.147.9'||b.build_timezone!=='UTC'||b.build_locale!=='C.UTF-8'||![b.content_schema_version,b.content_taxonomy_version,b.content_serializer_version,b.content_search_contract_version,b.content_source_contract_version].every(Boolean))process.exit(1)"
-          artifact_sha="$(node -e "process.stdout.write(require('./astro/dist/release-manifests/site-route-manifest.json').build.artifact_sha256)")"
+          node -e "const m=require('./astro/dist/client/release-manifests/site-route-manifest.json');const b=m.build;if(b.code_sha!==process.env.EXACT_CODE_SHA||b.source_sha!==process.env.EXACT_CODE_SHA||b.site_release_id!==process.env.SITE_RELEASE_ID||b.editorial_preview_sha256!==process.env.EDITORIAL_PREVIEW_SHA256||b.node_version!=='v22.17.0'||b.npm_version!=='10.9.2'||b.hugo_version!=='0.147.9'||b.build_timezone!=='UTC'||b.build_locale!=='C.UTF-8'||![b.content_schema_version,b.content_taxonomy_version,b.content_serializer_version,b.content_search_contract_version,b.content_source_contract_version].every(Boolean))process.exit(1)"
+          artifact_sha="$(node -e "process.stdout.write(require('./astro/dist/client/release-manifests/site-route-manifest.json').build.artifact_sha256)")"
           [[ "$artifact_sha" =~ ^[0-9a-f]{64}$ ]]
           echo "ARTIFACT_SHA256=$artifact_sha" >> "$GITHUB_ENV"
 
@@ -118,13 +118,13 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          npx wrangler pages deploy astro/dist --project-name bubble-content-preview --branch "draft-$DRAFT_ID" --commit-hash "$EXACT_CODE_SHA" --commit-dirty=false | tee preview-deploy.log
+          npx wrangler pages deploy astro/dist/client --project-name bubble-content-preview --branch "draft-$DRAFT_ID" --commit-hash "$EXACT_CODE_SHA" --commit-dirty=false | tee preview-deploy.log
           preview_url="$(grep -Eo 'https://[^ ]+\.pages\.dev' preview-deploy.log | tail -1)"
           test -n "$preview_url"
           echo "PREVIEW_URL=$preview_url" >> "$GITHUB_ENV"
 
       - name: Verify Preview route parity
-        run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/release-manifests/site-route-manifest.json
+        run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/client/release-manifests/site-route-manifest.json
 
       - name: Register immutable Preview evidence
         run: |

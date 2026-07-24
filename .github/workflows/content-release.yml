@@ -142,7 +142,7 @@ jobs:
       - name: Verify embedded release identity
         run: |
           node <<'NODE'
-          const build = require('./astro/dist/release-manifests/site-route-manifest.json').build;
+          const build = require('./astro/dist/client/release-manifests/site-route-manifest.json').build;
           const expected = {
             code_sha: process.env.EXACT_CODE_SHA,
             source_sha: process.env.EXACT_CODE_SHA,
@@ -179,7 +179,7 @@ jobs:
 
       - name: Create deterministic content-addressed artifact
         run: |
-          node scripts/create-content-addressed-artifact.mjs astro/dist content-release-artifact.json > artifact-summary.json
+          node scripts/create-content-addressed-artifact.mjs astro/dist/client content-release-artifact.json > artifact-summary.json
           echo "ARTIFACT_SHA256=$(jq -r .artifact_sha256 artifact-summary.json)" >> "$GITHUB_ENV"
           echo "ARTIFACT_BYTES=$(jq -r .artifact_byte_length artifact-summary.json)" >> "$GITHUB_ENV"
           echo "ARTIFACT_OBJECT_KEY=$(jq -r .artifact_object_key artifact-summary.json)" >> "$GITHUB_ENV"
@@ -209,12 +209,12 @@ jobs:
           R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
           R2_UPLOAD_CONCURRENCY: "8"
         run: |
-          node scripts/upload-content-addressed-artifact.mjs content-release-artifact.json astro/dist > r2-upload-summary.json
+          node scripts/upload-content-addressed-artifact.mjs content-release-artifact.json astro/dist/client > r2-upload-summary.json
           jq -e '.inventory_sha256 == env.ARTIFACT_SHA256 and (.inventory_byte_length | tostring) == env.ARTIFACT_BYTES' r2-upload-summary.json >/dev/null
 
       - name: Register immutable artifact
         run: |
-          artifact_fingerprint="$(jq -r '.build.artifact_sha256' astro/dist/release-manifests/site-route-manifest.json)"
+          artifact_fingerprint="$(jq -r '.build.artifact_sha256' astro/dist/client/release-manifests/site-route-manifest.json)"
           [[ "$artifact_fingerprint" =~ ^[0-9a-f]{64}$ ]]
           evidence="$(jq -nc --arg object_key "$ARTIFACT_OBJECT_KEY" --arg hash "$ARTIFACT_SHA256" --arg fingerprint "$artifact_fingerprint" --arg algorithm "$ARTIFACT_HASH_ALGORITHM" --arg code "$EXACT_CODE_SHA" --arg source_code "$SOURCE_CODE_SHA" --arg env "$BUILD_ENVIRONMENT_VERSION" --argjson bytes "$ARTIFACT_BYTES" '{object_key:$object_key,byte_length:$bytes,artifact_sha256:$hash,artifact_fingerprint_sha256:$fingerprint,hash_algorithm:$algorithm,code_sha:$code,source_code_sha:($source_code | if length > 0 then . else null end),build_environment_version:$env}')"
           node scripts/send-content-deployment-callback.mjs artifact_registered "$evidence"
@@ -224,13 +224,13 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          npx wrangler pages deploy astro/dist --project-name bubble-content-preview --branch "release-$CONTENT_RELEASE_SEQUENCE" --commit-hash "$EXACT_CODE_SHA" --commit-dirty=false | tee preview-deploy.log
+          npx wrangler pages deploy astro/dist/client --project-name bubble-content-preview --branch "release-$CONTENT_RELEASE_SEQUENCE" --commit-hash "$EXACT_CODE_SHA" --commit-dirty=false | tee preview-deploy.log
           preview_url="$(grep -Eo 'https://[^ ]+\.pages\.dev' preview-deploy.log | tail -1)"
           test -n "$preview_url"
           echo "PREVIEW_URL=$preview_url" >> "$GITHUB_ENV"
 
       - name: Verify Preview route parity and exact bytes
-        run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/release-manifests/site-route-manifest.json
+        run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/client/release-manifests/site-route-manifest.json
 
       - name: Record Preview evidence
         run: |

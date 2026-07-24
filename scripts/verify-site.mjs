@@ -192,7 +192,10 @@ invariant(
 let expectedPinnedBuild = null;
 if (pinnedContentBuild) {
   const input = JSON.parse(
-    await readFile(resolve(astroRoot, ".content-release", "build-input.json"), "utf8"),
+    await readFile(
+      resolve(astroRoot, ".content-release", "build-input.json"),
+      "utf8",
+    ),
   );
   expectedPinnedBuild = {
     code_sha: input.code_sha,
@@ -278,22 +281,18 @@ for (const file of await walk(distRoot)) {
   );
 }
 
-const serverRenderedRoute =
-  /^\/(?:en\/)?(?:$|daily\/\d{4}\/\d{2}\/\d{4}-\d{2}-\d{2}\/$)/;
-
 for (const record of contract.records.filter(
   (entry) => entry.status === 301 || entry.status === 308,
 )) {
   invariant(
-    byRoute.get(record.target)?.status === 200 ||
-      serverRenderedRoute.test(record.target),
+    byRoute.get(record.target)?.status === 200,
     `Redirect target is not a 200 route: ${record.route} -> ${record.target}`,
   );
 }
 
-// "/", "/en/", and structured daily pages are server-rendered and therefore
-// absent from the static route contract.
 const requiredRoutes = [
+  "/",
+  "/en/",
   "/daily/",
   "/en/daily/",
   "/search/",
@@ -341,9 +340,14 @@ invariant(
   "Static search release identity differs from the route manifest",
 );
 if (pinnedContentBuild) {
-  const searchHtml = await readFile(resolve(distRoot, "search", "index.html"), "utf8");
+  const searchHtml = await readFile(
+    resolve(distRoot, "search", "index.html"),
+    "utf8",
+  );
   invariant(
-    searchHtml.includes(`data-content-release-id="${contract.build.site_release_id}"`) &&
+    searchHtml.includes(
+      `data-content-release-id="${contract.build.site_release_id}"`,
+    ) &&
       searchHtml.includes(
         'data-content-api-origin="https://content-api.bubblenews.today"',
       ),
@@ -390,6 +394,36 @@ for (const name of dailyDataNames) {
   );
   const report = JSON.parse(source.toString("utf8"));
   const date = name.slice(0, -".json".length);
+  const year = date.slice(0, 4);
+  const month = date.slice(5, 7);
+  const chinesePageRoute = `/daily/${year}/${month}/${date}/`;
+  const englishPageRoute = `/en/daily/${year}/${month}/${date}/`;
+  const pageRoutes = [chinesePageRoute];
+  if (pinnedContentBuild || byRoute.has(englishPageRoute))
+    pageRoutes.push(englishPageRoute);
+  for (const pageRoute of pageRoutes) {
+    const pageRecord = byRoute.get(pageRoute);
+    invariant(
+      pageRecord?.status === 200 &&
+        pageRecord.content_type === "text/html" &&
+        pageRecord.owner === "astro",
+      `Missing structured daily HTML route: ${pageRoute}`,
+    );
+    const html = await readFile(
+      resolve(
+        distRoot,
+        pageRecord.output_path ??
+          pathFromRoute(pageRecord.route, pageRecord.content_type),
+      ),
+      "utf8",
+    );
+    for (const item of report.items) {
+      invariant(
+        html.includes(`id="news-${item.id}"`),
+        `Structured daily item is missing from HTML: ${pageRoute}#news-${item.id}`,
+      );
+    }
+  }
   if (expectedSearchWindow.has(date)) {
     expectedSearchItemCount += report.items.length;
     const searchItems = searchIndex.items.filter((item) => item.date === date);
@@ -608,8 +642,7 @@ for (const record of contract.records.filter(
     const path = decoded.replace(/^\//, "");
     const routeExists =
       contractRoutes.has(decoded) ||
-      contractRoutes.has(decoded.endsWith("/") ? decoded : `${decoded}/`) ||
-      serverRenderedRoute.test(decoded.endsWith("/") ? decoded : `${decoded}/`);
+      contractRoutes.has(decoded.endsWith("/") ? decoded : `${decoded}/`);
     const fileExists =
       allOutputPaths.has(path) ||
       allOutputPaths.has(`${path.replace(/\/$/, "")}/index.html`);
