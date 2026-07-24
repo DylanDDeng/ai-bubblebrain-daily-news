@@ -176,6 +176,8 @@ select ok(
 select ok(has_function_privilege('content_ingestor', 'private.ingest_report_snapshot_v1(jsonb,text,bigint,text,text,text,text)', 'execute'), 'ingestor can ingest snapshots');
 select ok(has_function_privilege('content_ingestor', 'private.reserve_site_release_v1(uuid)', 'execute'), 'ingestor can reserve releases');
 select ok(has_function_privilege('content_ingestor', 'private.reserve_ingestion_site_release_v1(uuid,text,text,text,text,text)', 'execute'), 'ingestor can reserve deterministic publication slots');
+select ok(has_function_privilege('content_ingestor', 'private.prepare_ingestion_publication_slot_v1(uuid,text,text)', 'execute'), 'ingestor can roll a terminal publication slot forward');
+select ok(not has_function_privilege('content_editor', 'private.prepare_ingestion_publication_slot_v1(uuid,text,text)', 'execute'), 'routine editor cannot roll ingestion publication slots');
 select ok(
   position('lateNightSupplement' in (
     select p.prosrc

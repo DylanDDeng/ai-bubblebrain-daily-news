@@ -7,6 +7,7 @@ import {
   ingestReportSnapshot,
   isRetryableReleaseContention,
   openContentDatabase,
+  prepareIngestionPublicationSlot,
   reserveIngestionSiteRelease,
   type ContentSql,
 } from "../shared/db";
@@ -192,6 +193,16 @@ export async function mirrorStructuredReport(
       serializerVersion: env.DAILY_SERIALIZER_VERSION || "daily-json-c14n-v1",
       provenanceKind: "live_ingestion",
     });
+    await withContentionRetry(
+      () =>
+        prepareIngestionPublicationSlot(sql, {
+          reportSnapshotId: String(snapshot.report_snapshot_id),
+          batchId: publicationBatch,
+          inputSha256: reportObject.sha256,
+        }),
+      "prepare_slot",
+      sleep,
+    );
     const reservation = await withContentionRetry(
       () =>
         reserveIngestionSiteRelease(sql, {

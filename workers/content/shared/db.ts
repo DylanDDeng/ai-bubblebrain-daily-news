@@ -100,6 +100,22 @@ export async function reserveIngestionSiteRelease(
   return oneJson(rows, "result");
 }
 
+export async function prepareIngestionPublicationSlot(
+  sql: ContentSql,
+  input: {
+    reportSnapshotId: string;
+    batchId: string;
+    inputSha256: string;
+  },
+): Promise<Record<string, unknown>> {
+  const rows = await sql<Record<string, unknown>[]>`
+    select private.prepare_ingestion_publication_slot_v1(
+      ${input.reportSnapshotId}::uuid, ${input.batchId}, ${input.inputSha256}
+    ) as result
+  `;
+  return oneJson(rows, "result");
+}
+
 export async function failIngestionPublicationAttempt(
   sql: ContentSql,
   input: {
