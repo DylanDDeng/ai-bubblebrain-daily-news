@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import {
 	formatTimelineTime,
+	homepageBatchLabel,
 	homepageFeedItems,
 	isDatabaseOwnedDailyDate,
 	orderTimelineBatches,
@@ -156,7 +157,7 @@ describe('timeline batch order', () => {
 		expect(batches.map(({ id }) => id)).toEqual(['morning', 'afternoon', 'night', 'lateNight']);
 	});
 
-	it('orders the homepage by latest completed batch, then source publication time', () => {
+	it('orders the homepage globally by source publication time across completed batches', () => {
 		const batches = [
 			batch('morning', 'completed'),
 			batch('afternoon', 'pending'),
@@ -183,10 +184,17 @@ describe('timeline batch order', () => {
 		];
 
 		expect(homepageFeedItems(items, batches, 3).map(({ id }) => id)).toEqual([
+			'night-newer-source',
 			'late-night-newer-source',
 			'late-night-older-source',
-			'night-newer-source',
 		]);
+	});
+
+	it('uses phase names instead of presenting batch labels as cron execution times', () => {
+		expect(homepageBatchLabel(batch('morning', 'completed'), 'zh-CN')).toBe('早间累计');
+		expect(homepageBatchLabel(batch('afternoon', 'completed'), 'zh-CN')).toBe('午后累计');
+		expect(homepageBatchLabel(batch('night', 'completed'), 'en')).toBe('Evening total');
+		expect(homepageBatchLabel(batch('lateNight', 'pending'), 'en')).toBe('Overnight supplement');
 	});
 });
 
