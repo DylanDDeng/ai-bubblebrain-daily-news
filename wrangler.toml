@@ -113,3 +113,6 @@ bucket_name = "bubble-content-site-manifests"
 # 北京时间 8:00-22:00 每 2 小时、23:00、0:00-7:00 每 1 小时增量更新（共 17 次/天）
 # 账号 cron 触发器配额为 5，须保持单条表达式（分钟对齐）
 crons = ["0 0,2,4,6,8,10,12,14,15,16,17,18,19,20,21,22,23 * * *"]
+
+# Set CONTENT_BACKLOG_REPLAY_SECRET as a Worker secret. Its value must exactly
+# match the secret configured on bubble-content-deployer.

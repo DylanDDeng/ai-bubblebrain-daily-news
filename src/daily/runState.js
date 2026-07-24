@@ -1,6 +1,7 @@
 const LEASE_TTL_SECONDS = 10 * 60;
 const MARKER_TTL_SECONDS = 14 * 24 * 60 * 60;
 const SCHEDULED_SLOT_PREFIX = 'scheduled:outcome:';
+const MIRROR_BACKLOG_PREFIX = 'structured:mirror-backlog:';
 
 async function digest(value) {
     const bytes = new TextEncoder().encode(value);
@@ -91,6 +92,51 @@ export async function storeTriggerMarker(kv, triggerId, marker) {
     if (!key) return false;
     await kv.put(key, JSON.stringify(marker), { expirationTtl: MARKER_TTL_SECONDS });
     return true;
+}
+
+function mirrorBacklogKey(triggerId) {
+    const match = /^scheduled:(\d{13})$/.exec(String(triggerId || ''));
+    return match ? `${MIRROR_BACKLOG_PREFIX}${match[1]}` : null;
+}
+
+export async function storeMirrorBacklogEntry(kv, triggerId, marker = null) {
+    const key = mirrorBacklogKey(triggerId);
+    if (!key) return false;
+    await kv.put(key, JSON.stringify({ run_id: triggerId, marker }), {
+        expirationTtl: MARKER_TTL_SECONDS,
+    });
+    return true;
+}
+
+export async function readMirrorBacklogEntry(kv, triggerId) {
+    const key = mirrorBacklogKey(triggerId);
+    return key ? readJson(kv, key) : null;
+}
+
+export async function removeMirrorBacklogEntry(kv, triggerId) {
+    const key = mirrorBacklogKey(triggerId);
+    if (!key) return false;
+    await kv.delete(key);
+    return true;
+}
+
+export async function listMirrorBacklogEntries(kv) {
+    if (typeof kv?.list !== 'function') return [];
+    const entries = [];
+    let cursor;
+    do {
+        const page = await kv.list({
+            prefix: MIRROR_BACKLOG_PREFIX,
+            limit: 1000,
+            ...(cursor ? { cursor } : {}),
+        });
+        for (const key of page?.keys || []) {
+            const timestamp = String(key?.name || '').slice(MIRROR_BACKLOG_PREFIX.length);
+            if (/^\d{13}$/.test(timestamp)) entries.push(`scheduled:${timestamp}`);
+        }
+        cursor = page?.list_complete === false ? page.cursor : null;
+    } while (cursor);
+    return entries.sort((left, right) => Number(left.slice(10)) - Number(right.slice(10)));
 }
 
 export async function storeFailureMarker(kv, triggerId, marker) {

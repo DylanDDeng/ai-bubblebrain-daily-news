@@ -16,6 +16,11 @@ type Env = {
   CONTENT_BUILD_API_SECRET: string;
   CODE_RELEASE_SECRET: string;
   RECOVERY_MONITOR_SECRET: string;
+  CONTENT_BACKLOG_REPLAY_ENABLED?: string;
+  CONTENT_BACKLOG_REPLAY_SECRET?: string;
+  CONTENT_INGESTOR?: {
+    fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
+  };
   REPORT_SNAPSHOTS?: R2BucketLike;
   SITE_MANIFESTS?: R2BucketLike;
 };
@@ -91,6 +96,39 @@ function timingSafeText(left: string, right: string): boolean {
     difference |= left.charCodeAt(index) ^ right.charCodeAt(index);
   }
   return difference === 0;
+}
+
+export async function replayContentBacklog(
+  env: Env,
+  now: Date = new Date(),
+): Promise<void> {
+  if (
+    env.CONTENT_BACKLOG_REPLAY_ENABLED !== "true" ||
+    !env.CONTENT_INGESTOR ||
+    !env.CONTENT_BACKLOG_REPLAY_SECRET
+  ) {
+    return;
+  }
+  const minute = now.getUTCMinutes();
+  // Give the ingestion cron an uncontested window around every top of hour.
+  // The replay path is best-effort and must never make a fresh fetch miss.
+  if (minute >= 55 || minute <= 5) return;
+  const response = await env.CONTENT_INGESTOR.fetch(
+    "https://ai-daily.internal/internal/backlog/replay",
+    {
+      method: "POST",
+      headers: {
+        "X-Content-Backlog-Secret": env.CONTENT_BACKLOG_REPLAY_SECRET,
+      },
+    },
+  );
+  if (!response.ok) {
+    throw new Error(`Content backlog replay failed with ${response.status}`);
+  }
+  const result = (await response.json()) as { success?: boolean };
+  if (result.success !== true) {
+    throw new Error("Content backlog replay returned an invalid result");
+  }
 }
 
 async function verifiedPrivateObject(
@@ -1472,7 +1510,7 @@ export default {
     return Promise.resolve(json({ error: "not_found" }, 404));
   },
   scheduled(
-    _controller: ScheduledController,
+    controller: ScheduledController,
     env: Env,
     context: ExecutionContext,
   ): void {
@@ -1482,6 +1520,13 @@ export default {
           await dispatchOne(env);
         } catch (error) {
           console.error("[ContentDeployer] dispatch failed", {
+            errorType: error instanceof Error ? error.name : "Error",
+          });
+        }
+        try {
+          await replayContentBacklog(env, new Date(controller.scheduledTime));
+        } catch (error) {
+          console.error("[ContentDeployer] backlog replay failed", {
             errorType: error instanceof Error ? error.name : "Error",
           });
         }

@@ -138,7 +138,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-24T19:00:00.000Z",
+      "generated_at": "2026-07-24T20:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_ffee637ea7a354fa7d55971d25f8ef80724f86544d3c9a36f43d00612487f173",
@@ -148,6 +148,7 @@
         "n_7fecece0313b1bc2e1a61d14495d1122872e83fb9648c43b6727b8ee52a99935",
         "n_930659d05f052e07e65072c64159fb79bdd09054bf253042fca67bd7e8d63da2",
         "n_db667b68457813591e40de986a27d4439066a099f341d9e2e3e118f05dfbe6ef",
+        "n_d483ced3cbf45d058ffff1226bc3d666f7b5c227ffa10e3fd9e69f08ef3da963",
         "n_8753f58bdba181f97db5369cbf298d4a1523e1912317e15333473b0921338b08",
         "n_41db17d03157264ac261eb2bf4026035e238bc0e75c62430354365cc8058ba2a",
         "n_57c15a02d8f4e79e35b4850e8c30392c5e399cc1a7e005bde7af81e3d5fdce19",
@@ -160,8 +161,11 @@
         "n_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca",
         "n_f3219a4883c3341953f3d02fb82c6cd592b00ddb14a4e1b21a768f18ca1ee259",
         "n_66ab08d306b42aa7818ea3f3dd1ee4052dd5be8401f985578ad0bf4781706a22",
+        "n_8d9f638e2e3f3a2c5250d9397b3d9871d045bea8e90e9e2a067a25a2bd554cd7",
         "n_198ca8a21ba19384749d2db0f38ac73bcfd9965ad9d02559552e4b228d042d4d",
-        "n_548c74c708194ca17c2fc7a9f93df947f84a35bb4ef045a067d9382f518eb575"
+        "n_548c74c708194ca17c2fc7a9f93df947f84a35bb4ef045a067d9382f518eb575",
+        "n_e015199ac54faac7761e78cc588f9ca86ed1d6c5c35ee8bb06b79000fba832c1",
+        "n_bfcf8df46ea5ceeb67461985d679c0aacc6ffcc45596288e8b1614690386dc02"
       ],
       "label": "次日 02:00 补充更新",
       "status": "completed"
@@ -170,7 +174,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T19:00:00.000Z",
+  "generated_at": "2026-07-24T20:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4765,6 +4769,42 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2080718788899573797",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d483ced3cbf45d058ffff1226bc3d666f7b5c227ffa10e3fd9e69f08ef3da963",
+      "featured": false,
+      "id": "n_d483ced3cbf45d058ffff1226bc3d666f7b5c227ffa10e3fd9e69f08ef3da963",
+      "identity_claims": [
+        "c_a585810a781c2eb9d174644fd94d65220328f2a3dcd58b6d1e5aa9f5880be774",
+        "c_d483ced3cbf45d058ffff1226bc3d666f7b5c227ffa10e3fd9e69f08ef3da963"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T20:00:00.000Z",
+      "published_at": "2026-07-24T12:23:37.065Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214242421945126916",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1214242421945126916",
+      "source_type": "twitter_extra",
+      "summary": "该书记录了1996至2014年中国电竞发展，作者采访上百位从业者，开源版比纸质书多出十余篇未收录章节，并包含部分游戏幕后史开篇内容。",
+      "time_precision": "exact",
+      "title": "《中国电竞幕后史》全文25万字已在GitHub开源并新增十几章",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2080718788899573797"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/omarsar0/status/2080653921559740668",
       "category": "business",
       "content_type": "socialMedia",
@@ -5213,6 +5253,48 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2080701514402730046",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_8d9f638e2e3f3a2c5250d9397b3d9871d045bea8e90e9e2a067a25a2bd554cd7",
+      "featured": false,
+      "id": "n_8d9f638e2e3f3a2c5250d9397b3d9871d045bea8e90e9e2a067a25a2bd554cd7",
+      "identity_claims": [
+        "c_8d9f638e2e3f3a2c5250d9397b3d9871d045bea8e90e9e2a067a25a2bd554cd7",
+        "c_ea773ee789c1d18295ad08fe9d2e6c6673f89bf7a33e1720b2be55bcf7422cfd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T20:00:00.000Z",
+      "published_at": "2026-07-24T17:07:53.836Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214242421945126914",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1214242421945126914",
+      "source_type": "twitter_extra",
+      "summary": "输入每百万Token 5美元、输出25美元，与Opus 4.8持平。多项基准测试中性能大幅领先前代，在CursorBench等任务上逼近Fable 5，成本仅其一半。",
+      "time_precision": "exact",
+      "title": "Anthropic发布Claude Opus 5，以Fable 5一半价格提供接近前沿智能",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2080701514402730046"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/omarsar0/status/2080701556425400427",
       "category": "models",
       "content_type": "socialMedia",
@@ -5287,6 +5369,87 @@
         "topic_products"
       ],
       "url": "https://x.com/Gorden_Sun/status/2080704214603588050"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2080704247495029208",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_e015199ac54faac7761e78cc588f9ca86ed1d6c5c35ee8bb06b79000fba832c1",
+      "featured": false,
+      "id": "n_e015199ac54faac7761e78cc588f9ca86ed1d6c5c35ee8bb06b79000fba832c1",
+      "identity_claims": [
+        "c_5200da9c061c4f1fe7722b4a470a00a8e231d1e901ad23f268ab5fd9225fd466",
+        "c_e015199ac54faac7761e78cc588f9ca86ed1d6c5c35ee8bb06b79000fba832c1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T20:00:00.000Z",
+      "published_at": "2026-07-24T17:18:44.503Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214242421945126913",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1214242421945126913",
+      "source_type": "twitter_extra",
+      "summary": "伴随Anthropic发布新模型，有观点认为相关开发工具将刷新配额，以便用户测试新能力。",
+      "time_precision": "exact",
+      "title": "用户猜测当日Codex与Claude Code均会重置使用额度",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2080704247495029208"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2080716128003706899",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_bfcf8df46ea5ceeb67461985d679c0aacc6ffcc45596288e8b1614690386dc02",
+      "featured": false,
+      "id": "n_bfcf8df46ea5ceeb67461985d679c0aacc6ffcc45596288e8b1614690386dc02",
+      "identity_claims": [
+        "c_83195779e5b8b7dbd4309d0efc15e04ada02318113187aab7b8cf3896f919c52",
+        "c_bfcf8df46ea5ceeb67461985d679c0aacc6ffcc45596288e8b1614690386dc02"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T20:00:00.000Z",
+      "published_at": "2026-07-24T17:54:06.940Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214242421945126912",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1214242421945126912",
+      "source_type": "twitter_extra",
+      "summary": "观点指出，模型能力如tool use、agent等均因产品需求被筛选，更强智能又催生新的人机交互形态，这种协同演化使AGI渐进到来。",
+      "time_precision": "exact",
+      "title": "大模型发展需与产品创新协同，能力与交互形态在自然选择中相互促进",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://x.com/dotey/status/2080716128003706899"
     }
   ],
   "overview": {

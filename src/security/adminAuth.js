@@ -6,7 +6,7 @@ async function tokenDigest(value) {
     return new Uint8Array(await crypto.subtle.digest('SHA-256', textEncoder.encode(value)));
 }
 
-async function tokensMatch(received, expected) {
+export async function tokensMatch(received, expected) {
     const [receivedDigest, expectedDigest] = await Promise.all([
         tokenDigest(received),
         tokenDigest(expected),

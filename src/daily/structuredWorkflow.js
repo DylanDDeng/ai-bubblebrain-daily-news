@@ -11,9 +11,23 @@ import {
     resolvePublicationSnapshot,
     verifySnapshotHead,
 } from './gitAtomic.js';
-import { acquireAdvisoryLease, readTriggerMarker, releaseAdvisoryLease, storeTriggerMarker } from './runState.js';
+import {
+    acquireAdvisoryLease,
+    listMirrorBacklogEntries,
+    readMirrorBacklogEntry,
+    readTriggerMarker,
+    releaseAdvisoryLease,
+    removeMirrorBacklogEntry,
+    storeMirrorBacklogEntry,
+    storeTriggerMarker,
+} from './runState.js';
 import { BATCH_ORDER } from './dedupe.js';
 import { isExplicitInstant, isRealDate, previousReportDates } from './time.js';
+import {
+    dueScheduledRuns,
+    resolveScheduledRun,
+    scheduledRunsForReportDate,
+} from './scheduleContract.js';
 import { resolveFoloCookie } from '../folo.js';
 import { callGitHubApi } from '../github.js';
 import { mirrorStructuredReport } from '../../workers/content/ingestion/mirror.ts';
@@ -56,6 +70,13 @@ export class StructuredSourceFetchError extends Error {
             error_type: error.error_type || 'Error',
             attempts: Number.isInteger(error.attempts) ? error.attempts : 1,
         }));
+    }
+}
+
+export class StructuredBacklogIndexError extends Error {
+    constructor() {
+        super('Required mirror backlog index write failed');
+        this.name = 'StructuredBacklogIndexError';
     }
 }
 
@@ -161,14 +182,33 @@ function assertPublicationFiles(files, reportDate) {
     return expectedPaths;
 }
 
-async function storeConfirmedMarker(env, triggerId, marker, storeMarker) {
+async function storeConfirmedMarker(env, triggerId, marker, deps) {
     if (!triggerId) return;
     try {
-        await storeMarker(env.DATA_KV, triggerId, marker);
+        await deps.storeMarker(env.DATA_KV, triggerId, marker);
     } catch (error) {
         console.warn('[StructuredDaily] confirmed marker write failed', {
             errorType: error?.name || 'Error',
         });
+    }
+    if (marker.database_mirror?.status === 'failed') {
+        try {
+            const indexed = await deps.storeBacklogEntry(env.DATA_KV, triggerId, marker);
+            if (!indexed) throw new Error('Backlog trigger is not schedulable');
+        } catch (error) {
+            console.error('[StructuredDaily] required mirror backlog index write failed', {
+                errorType: error?.name || 'Error',
+            });
+            throw new StructuredBacklogIndexError();
+        }
+    } else if (marker.database_mirror?.status === 'mirrored') {
+        try {
+            await deps.removeBacklogEntry(env.DATA_KV, triggerId);
+        } catch (error) {
+            console.warn('[StructuredDaily] mirror backlog index cleanup failed', {
+                errorType: error?.name || 'Error',
+            });
+        }
     }
 }
 
@@ -227,7 +267,7 @@ async function pendingTriggerResult(env, triggerId, marker, confirmedSha, report
     const databaseMirror = await reconcileConfirmedMirror(env, marker, confirmedSha, reportDate, triggerId, deps);
     if (databaseMirror !== marker.database_mirror) {
         result.database_mirror = databaseMirror;
-        await storeConfirmedMarker(env, triggerId, result, deps.storeMarker);
+        await storeConfirmedMarker(env, triggerId, result, deps);
     }
     return result;
 }
@@ -311,9 +351,10 @@ async function confirmedTriggerResult(env, triggerId, reportDate, batch, deps) {
             idempotent: true,
         };
         result.database_mirror = await reconcileConfirmedMirror(env, marker, confirmedSha, reportDate, triggerId, deps);
-        await storeConfirmedMarker(env, triggerId, result, deps.storeMarker);
+        await storeConfirmedMarker(env, triggerId, result, deps);
         return result;
     } catch (error) {
+        if (error instanceof StructuredBacklogIndexError) throw error;
         console.warn('[StructuredDaily] trigger marker could not be confirmed', {
             errorType: error?.name || 'Error',
         });
@@ -321,18 +362,8 @@ async function confirmedTriggerResult(env, triggerId, reportDate, batch, deps) {
     }
 }
 
-export async function runStructuredDailyWorkflow(
-    env,
-    {
-        reportDate,
-        batch,
-        triggerId = null,
-        runAt = new Date().toISOString(),
-        contentCutoff = runAt,
-    },
-    dependencies = {},
-) {
-    const deps = {
+function structuredDependencies(dependencies = {}) {
+    return {
         api: dependencies.api || callGitHubApi,
         build: dependencies.build || buildDailyArtifacts,
         commit: dependencies.commit || publishFilesAtomically,
@@ -352,6 +383,14 @@ export async function runStructuredDailyWorkflow(
                     expectedMode: 'structured',
                 })),
         storeMarker: dependencies.storeMarker || storeTriggerMarker,
+        listBacklogEntries:
+            dependencies.listBacklogEntries || listMirrorBacklogEntries,
+        readBacklogEntry:
+            dependencies.readBacklogEntry || readMirrorBacklogEntry,
+        storeBacklogEntry:
+            dependencies.storeBacklogEntry || storeMirrorBacklogEntry,
+        removeBacklogEntry:
+            dependencies.removeBacklogEntry || removeMirrorBacklogEntry,
         verifyHead: dependencies.verifyHead || verifySnapshotHead,
         acquireLease: dependencies.acquireLease || acquireAdvisoryLease,
         releaseLease: dependencies.releaseLease || releaseAdvisoryLease,
@@ -359,6 +398,9 @@ export async function runStructuredDailyWorkflow(
         enrich: dependencies.enrich || applyEditorialEnrichment,
         scoreTopStory: dependencies.scoreTopStory || applyTopStorySelection,
     };
+}
+
+function assertStructuredRuntime(env) {
     if (String(env.EXTERNAL_WRITES_ENABLED).toLowerCase() !== 'true') {
         throw new Error('External writes are disabled');
     }
@@ -369,6 +411,216 @@ export async function runStructuredDailyWorkflow(
         throw new Error('Structured writes are disabled');
     }
     if (!env.DATA_KV) throw new Error('Structured DATA_KV is required');
+}
+
+function markerMatchesScheduledRun(marker, run) {
+    return Boolean(
+        marker?.commit_sha &&
+        marker.mode === 'structured' &&
+        marker.reportDate === run.report_date &&
+        marker.batch === run.batch_id
+    );
+}
+
+async function findSupersedingStructuredMarker(env, run, nowMs, deps) {
+    let superseding = null;
+    for (const candidate of scheduledRunsForReportDate(run.report_date)) {
+        const candidateMs = Date.parse(candidate.scheduled_at);
+        if (candidateMs <= Date.parse(run.scheduled_at) || candidateMs > nowMs) continue;
+        const marker = await deps.readMarker(env.DATA_KV, candidate.run_id);
+        if (markerMatchesScheduledRun(marker, candidate)) {
+            superseding = { run: candidate, marker };
+        }
+    }
+    return superseding;
+}
+
+export async function reconcileStructuredTrigger(
+    env,
+    { scheduledAt },
+    dependencies = {},
+) {
+    assertStructuredRuntime(env);
+    const run = resolveScheduledRun(scheduledAt);
+    if (typeof scheduledAt !== 'string' || run.scheduled_at !== scheduledAt) {
+        throw new Error('Scheduled instant must be exact');
+    }
+    const deps = structuredDependencies(dependencies);
+    const now = dependencies.now || new Date().toISOString();
+    const nowMs = Date.parse(now);
+    if (!Number.isFinite(nowMs)) throw new Error('Invalid reconciliation time');
+    const lease = await deps.acquireLease(env.DATA_KV, {
+        reportDate: run.report_date,
+        batch: run.batch_id,
+        now,
+    });
+    if (!lease.acquired) return { status: 'locked', run };
+    try {
+        const marker = await deps.readMarker(env.DATA_KV, run.run_id);
+        if (!markerMatchesScheduledRun(marker, run)) {
+            return { status: 'not_found', run };
+        }
+        const superseding = await findSupersedingStructuredMarker(
+            env,
+            run,
+            nowMs,
+            deps,
+        );
+        if (superseding) {
+            return {
+                status: 'superseded',
+                run,
+                superseded_by: {
+                    run_id: superseding.run.run_id,
+                    scheduled_at: superseding.run.scheduled_at,
+                    database_mirror_status:
+                        superseding.marker.database_mirror?.status || 'unknown',
+                },
+            };
+        }
+        if (marker.database_mirror?.status === 'mirrored') {
+            return { status: 'already_mirrored', run, result: marker };
+        }
+        const result = await confirmedTriggerResult(
+            env,
+            run.run_id,
+            run.report_date,
+            run.batch_id,
+            deps,
+        );
+        if (!result) return { status: 'not_confirmed', run };
+        return {
+            status: result.database_mirror?.status === 'mirrored'
+                ? 'reconciled'
+                : 'blocked',
+            run,
+            result,
+        };
+    } finally {
+        await deps.releaseLease(env.DATA_KV, lease);
+    }
+}
+
+export async function replayOldestStructuredBacklog(
+    env,
+    { now = new Date().toISOString(), lookbackHours = 48 } = {},
+    dependencies = {},
+) {
+    assertStructuredRuntime(env);
+    if (
+        typeof now !== 'string' ||
+        !Number.isSafeInteger(lookbackHours) ||
+        lookbackHours < 1 ||
+        lookbackHours > 168
+    ) {
+        throw new Error('Invalid backlog replay range');
+    }
+    const deps = structuredDependencies(dependencies);
+    const nowMs = Date.parse(now);
+    if (!Number.isFinite(nowMs)) throw new Error('Invalid backlog replay time');
+    const fallbackRuns = dueScheduledRuns(nowMs, lookbackHours);
+    let indexedTriggerIds = [];
+    try {
+        indexedTriggerIds = await deps.listBacklogEntries(env.DATA_KV);
+    } catch (error) {
+        console.warn('[StructuredDaily] mirror backlog index read failed', {
+            errorType: error?.name || 'Error',
+        });
+    }
+    const runsById = new Map(fallbackRuns.map(run => [run.run_id, run]));
+    for (const triggerId of indexedTriggerIds) {
+        try {
+            const run = resolveScheduledRun(Number(triggerId.slice('scheduled:'.length)));
+            if (Date.parse(run.scheduled_at) <= nowMs) runsById.set(run.run_id, run);
+        } catch {
+            // Ignore malformed or non-production index entries.
+        }
+    }
+    const runs = [...runsById.values()].sort(
+        (left, right) => Date.parse(left.scheduled_at) - Date.parse(right.scheduled_at),
+    );
+    const indexedTriggerSet = new Set(indexedTriggerIds);
+    const latestByReportDate = new Map();
+    let deferredCount = 0;
+    for (const run of runs) {
+        let marker = await deps.readMarker(env.DATA_KV, run.run_id);
+        if (!markerMatchesScheduledRun(marker, run) && indexedTriggerSet.has(run.run_id)) {
+            const backlogEntry = await deps.readBacklogEntry(env.DATA_KV, run.run_id);
+            const backedUpMarker = backlogEntry?.marker || null;
+            if (markerMatchesScheduledRun(backedUpMarker, run)) {
+                try {
+                    const restored = await deps.storeMarker(
+                        env.DATA_KV,
+                        run.run_id,
+                        backedUpMarker,
+                    );
+                    if (!restored) throw new Error('Trigger marker was not restored');
+                    marker = backedUpMarker;
+                } catch (error) {
+                    console.warn('[StructuredDaily] trigger marker restore failed', {
+                        errorType: error?.name || 'Error',
+                        runId: run.run_id,
+                    });
+                    deferredCount += 1;
+                    continue;
+                }
+            }
+        }
+        if (!markerMatchesScheduledRun(marker, run)) continue;
+        latestByReportDate.set(run.report_date, { run, marker });
+    }
+    for (const { run, marker } of latestByReportDate.values()) {
+        if (marker.database_mirror?.status !== 'failed') continue;
+        const result = await reconcileStructuredTrigger(
+            env,
+            { scheduledAt: run.scheduled_at },
+            { ...dependencies, now },
+        );
+        if (result.status === 'not_found' && indexedTriggerSet.has(run.run_id)) {
+            console.warn('[StructuredDaily] restored trigger marker is not visible yet', {
+                runId: run.run_id,
+            });
+            deferredCount += 1;
+            continue;
+        }
+        if (['superseded', 'already_mirrored', 'not_found'].includes(result.status)) {
+            try {
+                await deps.removeBacklogEntry(env.DATA_KV, run.run_id);
+            } catch (error) {
+                console.warn('[StructuredDaily] mirror backlog cleanup failed', {
+                    errorType: error?.name || 'Error',
+                    runId: run.run_id,
+                });
+            }
+            continue;
+        }
+        if (result.status === 'not_confirmed') {
+            console.warn('[StructuredDaily] mirror backlog entry is not confirmed', {
+                runId: run.run_id,
+            });
+            deferredCount += 1;
+            continue;
+        }
+        return result;
+    }
+    return deferredCount > 0
+        ? { status: 'deferred', deferred_count: deferredCount }
+        : { status: 'empty' };
+}
+
+export async function runStructuredDailyWorkflow(
+    env,
+    {
+        reportDate,
+        batch,
+        triggerId = null,
+        runAt = new Date().toISOString(),
+        contentCutoff = runAt,
+    },
+    dependencies = {},
+) {
+    const deps = structuredDependencies(dependencies);
+    assertStructuredRuntime(env);
     const structuredStartDate = resolveHistoryEpochStartDate(env, reportDate);
     const producerVersion = env.DAILY_PRODUCER_VERSION;
     if (!isRealDate(reportDate)) throw new Error('Invalid report date');
@@ -542,7 +794,7 @@ export async function runStructuredDailyWorkflow(
                             ...response,
                             confirmed_at: runAt,
                         },
-                        deps.storeMarker,
+                        deps,
                     );
                     return response;
                 }
@@ -602,7 +854,7 @@ export async function runStructuredDailyWorkflow(
                         ...response,
                         confirmed_at: runAt,
                     },
-                    deps.storeMarker,
+                    deps,
                 );
                 return response;
             } catch (error) {
