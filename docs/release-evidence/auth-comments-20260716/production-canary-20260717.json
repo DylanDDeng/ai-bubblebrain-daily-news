@@ -1,0 +1,72 @@
+{
+  "source": {
+    "commit": "1e6b3e3cee42e747b691c7655108a6ea4c49363b",
+    "tree": "2e6f616b6c49166329d0557d3cd7ebeba112ca51"
+  },
+  "access": {
+    "application_id": "49a90d50-d8d8-439f-bf87-2caa5fc7b115",
+    "aud": "53966873f61f3a98b431155f0e71d32452f2622e2b88f26096606525659e9473",
+    "hostname": "admin.bubblenews.today",
+    "mfa_required": true,
+    "allowlist_size": 1
+  },
+  "admin": {
+    "worker_version": "1694d3d4-62f4-4dba-af27-1fede18bff95",
+    "workers_dev": false,
+    "visible_page_comments": 2,
+    "visible_archived_comments": 0
+  },
+  "canary": {
+    "pages_deployment": "3db6a2d1-d7d0-4baf-87ac-2cffeb8dd82a",
+    "community_worker_version": "aaba8626-c55e-4db2-8006-a30c0df3833a",
+    "root": {
+      "id": "0cb3a6ae-6ac8-436c-b1d4-158e06c73afd",
+      "created_at": "2026-07-17T00:56:20.171954Z"
+    },
+    "reply": {
+      "id": "20687c2a-1b56-4682-9dc8-fcd137eea482",
+      "created_at": "2026-07-17T00:56:39.703782Z"
+    },
+    "browser_counts": [2, 3, 4],
+    "real_turnstile": true,
+    "google_pkce": true,
+    "delete_followup": {
+      "id": "4d674405-843d-44ca-9591-b1623347b818",
+      "created_at": "2026-07-17T01:16:09.545041Z",
+      "browser_counts": [2, 3],
+      "owner_delete_control_visible": true,
+      "native_confirmation_accepted": false,
+      "gate_passed": false,
+      "cleanup": "exact_id_user_content_sql_after_security_switches_off"
+    }
+  },
+  "rollback": {
+    "database_writes_enabled": false,
+    "database_disabled_at": "2026-07-17T01:20:04.923845Z",
+    "community_worker_deployment": "d0c31150-4bf2-4b26-8a59-a50b4ce57d23",
+    "community_worker_version": "46ffd828-f684-4457-a0ef-5c42b0546182",
+    "pages_deployment": "f1533f91-6604-44bb-9284-6f49c529ecef",
+    "pages_source": "1e6b3e3cee42e747b691c7655108a6ea4c49363b",
+    "artifact_manifest_sha256": "2e21380081bc52fab3a435c2ca5d589605a32d0243ef18e862fd7fb72e9d4a2d",
+    "article_html_sha256": "641879256017e8851dca25bd8e81fcd83163086ee2962163f822b73a05b4fa64",
+    "health_writes_enabled": false,
+    "approved_origin_mutation_status": 503,
+    "unapproved_origin_mutation_status": 403,
+    "canary_rows_remaining": 0,
+    "comments_total": 13,
+    "page_comments": 2,
+    "gallery_archive_comments": 8,
+    "video_archive_comments": 3,
+    "authenticated_ui": {
+      "discussion_state": "ready_data",
+      "visible_count": 2,
+      "composer_visible": false,
+      "reply_controls": 0,
+      "delete_controls": 0
+    }
+  },
+  "remaining_gates": [
+    "authenticated_owner_delete_through_real_ui_and_native_confirmation",
+    "final_independent_security_data_ux_review_after_delete_and_read_only_reconvergence"
+  ]
+}
