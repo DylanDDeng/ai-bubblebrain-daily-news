@@ -1,10 +1,18 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-24T04:00:26.000Z",
+      "generated_at": "2026-07-24T04:27:58.000Z",
       "id": "morning",
       "item_ids": [
+        "n_62db572edfca9bb2325c37624b37ba3e08993c5a546e753cbcabb774ccf49b65",
+        "n_612642892a9e48c1ccb6b6032333eea42e6938ffdc6d0caa9eb5f51fa0dc2993",
         "n_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8",
+        "n_af6245d9fa73ced0a1468838e00c356460ee6300f99ee1ad8a037210dae3af17",
+        "n_d13d33b43eb58e2f5f8e5711c63377f7c2177d0c8dbfaab4c6a3490bec119129",
+        "n_de7b607577ea364ab4cb670924cbe32c48a7db0592f11ac0f6d761660e136aba",
+        "n_b5327590ad68662d575f9f67b9edca342f4a09bea1e2edd6717a3567a16ee26a",
+        "n_5fb7608dc56a2ecce21a671d1560ce188a77edfca7546c267f2f574a26809928",
+        "n_616864f3e02f8c41c5d804e21b48be29748d8721bf7917abd8b41783f909426e",
         "n_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
         "n_39cfd834766c497900f9ea67a439686fc5324a48720306dbbdd80aec356ed8ef",
         "n_046dc3596e38bc00dd92676b54e180485d56abb3392e149fb3d4d800e51082ac",
@@ -61,9 +69,83 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T04:00:26.000Z",
+  "generated_at": "2026-07-24T04:27:58.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.20785",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_62db572edfca9bb2325c37624b37ba3e08993c5a546e753cbcabb774ccf49b65",
+      "featured": false,
+      "id": "n_62db572edfca9bb2325c37624b37ba3e08993c5a546e753cbcabb774ccf49b65",
+      "identity_claims": [
+        "c_62db572edfca9bb2325c37624b37ba3e08993c5a546e753cbcabb774ccf49b65",
+        "c_a4964822e35927441cb1dd2a7feae42a320583de8edd66e0c418527d3b07a2ad"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-21T20:00:00.161Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244167",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244167",
+      "source_type": "huggingface_papers",
+      "summary": "Deploying navigation systems at scale requires a recipe that minimizes sensor assumptions, generalizes across robot embodiments, and trains efficiently. Yet, today's best systems depend on depth sensors, multi-camera rigs, or pre-built maps, limiting the hardware they support and increasing deployment cost. We introduce Robostral Navigate, an 8B vision-language model built around this scalability objective. The model consumes only a stream of monocular RGB images - the most ubiquitous sensor across robotic platforms and predicts waypoints by pointing to the next target location in the current camera view. Operating purely in image space, rather than robot-specific coordinates, makes the policy naturally robust to changes in camera intrinsics and scene scale, enabling deployment across wheeled, legged, and aerial robots without recalibration. We generate 2.4 million trajectories across 350k simulated scenes to reduce the reliance on real-world data collection and scale easily. We further introduce a prefix-caching training recipe that packs entire episodes into single training sequences, reducing training tokens by 22x and cutting training time from months to days. A tree-based attention mask prevents conditioning on previous ground-truth actions, encouraging visually grounded action prediction, and reinforcement learning is used to further improve exploration and recovery capabilities. On the Room-to-Room and Room-Across-Room in Continuous Environments (R2R-CE and RxR-CE) benchmarks, Robostral Navigate sets a new state of the art. On R2R-CE, it achieves a 77.4% success rate, surpassing the best monocular method by 10.5 points and the strongest depth- or multi-camera system by 5.3 points despite using only a single RGB camera. On RxR-CE, it reaches 75.1% success rate, outperforming all monocular baselines.",
+      "time_precision": "exact",
+      "title": "Robostral 导航",
+      "topic_ids": [
+        "topic_models",
+        "topic_policy"
+      ],
+      "url": "https://arxiv.org/abs/2607.20785"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.20061",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_612642892a9e48c1ccb6b6032333eea42e6938ffdc6d0caa9eb5f51fa0dc2993",
+      "featured": false,
+      "id": "n_612642892a9e48c1ccb6b6032333eea42e6938ffdc6d0caa9eb5f51fa0dc2993",
+      "identity_claims": [
+        "c_612642892a9e48c1ccb6b6032333eea42e6938ffdc6d0caa9eb5f51fa0dc2993",
+        "c_d0fc38382075772546063011063a13dd83a8c9af891236a2e1d91503c950cecc"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-21T20:00:00.524Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244165",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244165",
+      "source_type": "huggingface_papers",
+      "summary": "Embodied visual tracking (EVT) requires a mobile agent to continuously follow a specific target described in natural language using only onboard vision. While recent vision-language-action (VLA) policies unify target identification and trajectory planning, their chain-of-thought (CoT) reasoning often operates in abstract spatial latents that are difficult to supervise and weakly aligned with explicit image-space detections. To address this, we introduce ReferTrack, a referring-then-tracking paradigm that grounds EVT using a single forward-facing camera. Our model first selects the target from an indexed set of bounding boxes, then decodes tracking waypoints conditioned on this image-grounded decision. To preserve target motion cues over time, ReferTrack maintains a sliding-window queue of previously selected bounding boxes, injecting their geometric features into the visual history via temporal-viewpoint-bbox indicator (TVBI) tokens. We further enhance target identification by co-training on a custom Refer-QA dataset. On EVT-Bench, ReferTrack achieves state-of-the-art single-view performance with success rates of 89.4%, 73.3%, and 74.1% on the single-target, distracted, and ambiguity tracking splits, respectively -- matching or even surpassing several multi-camera baselines on identification-heavy tasks. Finally, real-world deployments on legged and humanoid robots validate its robust sim-to-real transfer capabilities. Code is available at",
+      "time_precision": "exact",
+      "title": "ReferTrack：先指称后跟踪的具身视觉跟踪",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://arxiv.org/abs/2607.20061"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://arxiv.org/abs/2607.20092",
@@ -100,6 +182,231 @@
         "topic_research"
       ],
       "url": "https://arxiv.org/abs/2607.20092"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.20709",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_af6245d9fa73ced0a1468838e00c356460ee6300f99ee1ad8a037210dae3af17",
+      "featured": false,
+      "id": "n_af6245d9fa73ced0a1468838e00c356460ee6300f99ee1ad8a037210dae3af17",
+      "identity_claims": [
+        "c_af6245d9fa73ced0a1468838e00c356460ee6300f99ee1ad8a037210dae3af17",
+        "c_eb3edf2cd1a03980e998d113a308247fc803908cb8b7e570ce9239a61dfaa9ab"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-21T20:00:00.945Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244166",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244166",
+      "source_type": "huggingface_papers",
+      "summary": "Traditional agent development is split across prompt templates, tool schemas, callback code, and workflow graphs. We present NVIDIA Object-Oriented Agents (NOOA), a model-agnostic Python framework for building reliable AI agents. NOOA takes a simpler approach: an agent is a Python object. Its methods are the actions the model can take, fields are its state, docstrings are its prompts, and its type annotations are contracts. A method whose code body consists of \"...\" is completed at runtime by an LLM-driven agent loop, while methods with normal bodies remain standard deterministic Python. This gives developers and agents the same interface, so agent behavior can be tested, traced, refactored, and improved just like other software. This paper makes three contributions. (1) We present the agent-as-a-Python-object programming model and the design principles behind it. Where Python has existing abstractions, we adopt them directly. Agent-specific capabilities--context, events, state rendering, long-term memory, and validated LLM loops--are exposed through simple Pythonic APIs, so both developers and agents share one familiar programming model. (2) We identify six model-facing ideas that NOOA is, to our knowledge, the first to combine on a single surface: typed input/output, pass-by-reference over live objects, code as action, programmable loop engineering, explicit object state, and model-callable harness APIs for context and events. We find the community already converging on several of these ideas--often as experimental or partial features--and present the comparison to encourage further adoption. (3) We demonstrate that current models use this interface effectively, both in targeted capability tests and on agentic and reasoning benchmarks such as SWE-bench Verified and Terminal-Bench 2.0 and ARC-AGI-3.",
+      "time_precision": "exact",
+      "title": "NVIDIA 实验室 OO Agents：原生 Python 面向对象智能体",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.20709"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21461",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_d13d33b43eb58e2f5f8e5711c63377f7c2177d0c8dbfaab4c6a3490bec119129",
+      "featured": false,
+      "id": "n_d13d33b43eb58e2f5f8e5711c63377f7c2177d0c8dbfaab4c6a3490bec119129",
+      "identity_claims": [
+        "c_b287cd6b4a327018a1f3318e17830d47a046958ff46d2fea6b8391bcadec2b14",
+        "c_d13d33b43eb58e2f5f8e5711c63377f7c2177d0c8dbfaab4c6a3490bec119129"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-22T20:00:00.082Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244160",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244160",
+      "source_type": "huggingface_papers",
+      "summary": "Deep research requires agents to find answers that jointly satisfy multiple constraints. Discovering such answers is costly, whereas verifying a candidate can often be decomposed into tractable constraint-wise checks. This discovery--verification asymmetry suggests that a research agent should do more than simply search longer: it should recursively improve its current answer by verifying intermediate results and using the partially verified state to guide subsequent refinement. We introduce AREX, a family of Recursively Self-Improving (RSI) deep research agents. AREX alternates between an inner research loop that gathers evidence and constructs a provisional answer, and an outer self-improvement loop that audits the answer constraint-wise, identifies unresolved claims, and launches targeted follow-up research. To sustain RSI over long horizons, AREX learns an autonomous context-update tool that compresses growing interaction history into a compact improvement state preserving verified evidence and unresolved constraints, without relying on an external model. We train AREX on verified synthetic tasks and high-quality trajectories through agentic mid-training and long-horizon reinforcement learning. To mitigate sparse final rewards during long horizon learning, we emphasize key steps where decisive evidence is acquired or erroneous research directions are corrected. We instantiate a dense 4B model and a 122B-A10B Mixture-of-Experts model. Across BrowseComp, WideSearch, DeepSearchQA, Humanity's Last Exam (HLE), and other reasoning and tool-use benchmarks, AREX substantially outperforms comparable-scale baselines and remains competitive with models using substantially more activated parameters.",
+      "time_precision": "exact",
+      "title": "AREX：迈向用于深度研究的递归自我改进智能体",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.21461"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21580",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_de7b607577ea364ab4cb670924cbe32c48a7db0592f11ac0f6d761660e136aba",
+      "featured": false,
+      "id": "n_de7b607577ea364ab4cb670924cbe32c48a7db0592f11ac0f6d761660e136aba",
+      "identity_claims": [
+        "c_de7b607577ea364ab4cb670924cbe32c48a7db0592f11ac0f6d761660e136aba",
+        "c_e28320cc013aae9bb553e7e042908ea62d3a8cc2abba599ceca0a376b5bd928f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-22T20:00:00.391Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244163",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244163",
+      "source_type": "huggingface_papers",
+      "summary": "Controllable video generation remains challenging due to the difficulty of specifying precise multi-object interactions using text prompts or motion-control inputs that primarily constrain pixel movement. In practice, trajectory-based control often requires users to draw accurate tracks for multiple objects, which scales poorly with scene complexity and becomes ambiguous under occlusion or overlap. To enable flexible yet precise multi-subject control, we introduce GraphVid, a graph-conditioned image-to-video generation model that enables interactive control through structured interaction graphs. We further curate GraphVid-Bench, a large-scale interaction-centric video dataset with structured relational annotations to enable training of interaction-aware video generation models. Despite using substantially less training data and fewer trainable parameters than prior motion-control methods, GraphVid delivers strong controllability and video quality. Compared with Motion-I2V, GraphVid reduces FID by up to 39.9% and FVD by 37.6%, while improving PSNR (9.87=>15.98) and SSIM (0.38=>0.61). Our results highlight the potential of structured semantic interfaces as a powerful paradigm for controllable video generation.",
+      "time_precision": "exact",
+      "title": "GraphVid：交互式图可控视频生成",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://arxiv.org/abs/2607.21580"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21017",
+      "category": "research",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_b5327590ad68662d575f9f67b9edca342f4a09bea1e2edd6717a3567a16ee26a",
+      "featured": false,
+      "id": "n_b5327590ad68662d575f9f67b9edca342f4a09bea1e2edd6717a3567a16ee26a",
+      "identity_claims": [
+        "c_4ce159d4c99865c52ca69749f9fad29e6f4f8c4a7b4d93cd7683c915e0f7c446",
+        "c_b5327590ad68662d575f9f67b9edca342f4a09bea1e2edd6717a3567a16ee26a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-22T20:00:00.631Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244164",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244164",
+      "source_type": "huggingface_papers",
+      "summary": "The development of generalizable robotic manipulation policies is inherently bounded by the availability of large-scale, high-fidelity scene data. While recent automated synthesis methods attempt to bridge this gap via text-to-layout hallucination or simplified procedural generation, they frequently suffer from physical implausibility and fail to capture the complex, dense clutter of actual human environments. In this paper, we introduce TableVerse, a fully automated Real2Sim pipeline that shifts the paradigm from imaginative layout generation to deterministic reconstruction from unstructured, in-the-wild image data. Our framework seamlessly processes unscripted internet media into high-fidelity, simulation-ready tabletop environments with accurate metric scales, authentic topologies, and verified mechanical stability. Furthermore, an automated task-conditioned trajectory generation framework is integrated to synthesize high-quality, collision-free pick-and-place demonstrations. Leveraging this complete pipeline, we construct the TableVerse-100K Dataset, a large-scale corpus comprising 100,000 unique, physically consistent environments paired with interactive manipulation trajectories. By capturing diverse asset compositions, realistic spatial distributions, and high-quality demonstrations, TableVerse-100K establishes a highly scalable and high-fidelity data foundation, providing significant value to facilitate future research in generalizable robotic manipulation tasks.",
+      "time_precision": "exact",
+      "title": "TableVerse：一个具有真实世界基础布局的大规模桌面数据集，用于可泛化操作",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.21017"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21594",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_5fb7608dc56a2ecce21a671d1560ce188a77edfca7546c267f2f574a26809928",
+      "featured": false,
+      "id": "n_5fb7608dc56a2ecce21a671d1560ce188a77edfca7546c267f2f574a26809928",
+      "identity_claims": [
+        "c_5fb7608dc56a2ecce21a671d1560ce188a77edfca7546c267f2f574a26809928",
+        "c_f81fc7c5a0b733fe10e6f4749254a709bdc0bca20f15d86fbe58aa8db5508d8a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-22T20:00:00.735Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244162",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244162",
+      "source_type": "huggingface_papers",
+      "summary": "Multi-agent interactive world models should not only generate consistent observations, but also maintain world states that persist across agents and evolve across views. Existing autoregressive video diffusion pipelines carry forward observation history as conditioning context, which makes shared state difficult to maintain in multi-agent and multi-view settings. We present WorldWeaver (W^2), a streaming multi-agent video diffusion model that augments rollout with cross-agent world state registers: learnable tokens that store shared world information, track individual agent status, and are dynamically updated after each generated chunk. We ground these registers with supervision signals spanning individual agent status, global state views including bird's-eye views, and scene text. We further improve the architecture with a Mixture-of-Transformers design that uses separate weights for world state modeling and visual frame modeling. Extensive experiments in two-agent Minecraft video generation show that explicit world-state modeling improves logical consistency and generation quality.",
+      "time_precision": "exact",
+      "title": "具有世界状态寄存器的流式多智能体自回归扩散模型",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://arxiv.org/abs/2607.21594"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.20911",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_616864f3e02f8c41c5d804e21b48be29748d8721bf7917abd8b41783f909426e",
+      "featured": false,
+      "id": "n_616864f3e02f8c41c5d804e21b48be29748d8721bf7917abd8b41783f909426e",
+      "identity_claims": [
+        "c_25d53c4f5bfa7db1bb976c0930e75c9df38a9acefc149f6a60960a8343e3861d",
+        "c_616864f3e02f8c41c5d804e21b48be29748d8721bf7917abd8b41783f909426e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:27:58.000Z",
+      "published_at": "2026-07-22T20:00:00.862Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213338545809244161",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1213338545809244161",
+      "source_type": "huggingface_papers",
+      "summary": "We introduce Tencent WorkBuddy Bench, a multi-domain evaluation suite for coding agents; this report documents its construction methodology, scoring protocol, and a cross-model leaderboard. At its core is a unified evaluation framework for constructing and running distribution-informed coding-agent tasks across four work domains - Code, Web, Office, and Security. Rather than adapting public issue text, every task is reverse-engineered from a real commit, pull request, or business scenario and rewritten as a short, colloquial, role-played request, so that a task's prompt is not recoverable by web-searching the underlying issue, pull request, or commit thread. Because the dataset is released openly - task directories, environment images, evaluation harness, tests, and reference solutions - contamination resistance rests on this construction together with dataset versioning rather than on secrecy. The four subsets - repository-level engineering, front-end development, office and business workflows, and red-/blue-team security - probe complementary facets of real work, each with its own verification style. All are packaged in a uniform task-directory format and run, under a uniform and reproducible protocol, on two agent harnesses (CodeBuddy Code and Claude Code); the full open release makes the benchmark reproducible end to end and directly auditable, since any third party can re-run each task and inspect its content. Because each subset uses a different scoring instrument, scores are not comparable across subsets and the suite reports no suite-wide average. We report a cross-model leaderboard across several model families.",
+      "time_precision": "exact",
+      "title": "腾讯 WorkBuddy Bench：一个多领域编码智能体基准，具有抗污染任务构建",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.20911"
     },
     {
       "batch": "morning",
