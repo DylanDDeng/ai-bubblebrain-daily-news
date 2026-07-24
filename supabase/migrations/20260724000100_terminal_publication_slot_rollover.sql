@@ -1,5 +1,3 @@
-set local role content_rpc_owner;
-
 create or replace function private.prepare_ingestion_publication_slot_v1(
   p_report_snapshot_id uuid,
   p_batch_id text,
@@ -117,7 +115,8 @@ begin
 end;
 $$;
 
-reset role;
+alter function private.prepare_ingestion_publication_slot_v1(uuid, text, text)
+  owner to content_rpc_owner;
 
 revoke all on function private.prepare_ingestion_publication_slot_v1(uuid, text, text)
   from public, anon, authenticated, service_role,

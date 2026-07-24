@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(114);
+select plan(116);
 
 select cmp_ok(
   (select count(*) from information_schema.tables where table_schema = 'private' and table_name like '%content%' or table_schema = 'private' and table_name like '%release%'),
