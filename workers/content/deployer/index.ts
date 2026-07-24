@@ -213,6 +213,7 @@ const INERT_ROOT_SCRIPTS = new Set([
   "scripts/check-content-observation-window.mjs",
   "scripts/pull-daily-content.sh",
   "scripts/request-code-release.mjs",
+  "scripts/request-production-promotion.mjs",
   "scripts/test-content-failure-matrix-local.mjs",
   "scripts/validate-content-production-config.mjs",
   "scripts/verify-site.mjs",
