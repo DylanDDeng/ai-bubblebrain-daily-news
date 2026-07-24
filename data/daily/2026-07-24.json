@@ -1,7 +1,7 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-24T04:27:58.000Z",
+      "generated_at": "2026-07-24T04:47:14.000Z",
       "id": "morning",
       "item_ids": [
         "n_62db572edfca9bb2325c37624b37ba3e08993c5a546e753cbcabb774ccf49b65",
@@ -35,7 +35,9 @@
         "n_a6ff713bc8fc1831e9f0c492a6d32dd02323275aa0fd06ce763849951be132cf",
         "n_370541a8605dffc16a4770e22875d009b6970793d39ef3f41968d38d3eac5cd3",
         "n_4f488c51090c56522dc080f203afb269ef688ae7e0ff4f326c05af0fe3bd0514",
-        "n_e49ca95ad0f0690bcf8f8aa26d475f57f58ff647af9238238945a7669003485b"
+        "n_56b25cd5522987eec8e1458745b424251ac4f4e881fbb191a2d82332f4f8d125",
+        "n_e49ca95ad0f0690bcf8f8aa26d475f57f58ff647af9238238945a7669003485b",
+        "n_fd3498c38b2b7821760641938b39de4909834a0e286404aeaaf9f69aef2208c1"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -69,7 +71,7 @@
   "classifier_version": 1,
   "date": "2026-07-24",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T04:27:58.000Z",
+  "generated_at": "2026-07-24T04:47:14.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1247,6 +1249,44 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080471499664949326",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_56b25cd5522987eec8e1458745b424251ac4f4e881fbb191a2d82332f4f8d125",
+      "featured": false,
+      "id": "n_56b25cd5522987eec8e1458745b424251ac4f4e881fbb191a2d82332f4f8d125",
+      "identity_claims": [
+        "c_3e52261f10c74f57cb25389196d7e37b1dfe843e82b9ee671cf8fe9bcb18aedc",
+        "c_56b25cd5522987eec8e1458745b424251ac4f4e881fbb191a2d82332f4f8d125"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:47:14.000Z",
+      "published_at": "2026-07-24T01:53:53.215Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213358168961253377",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1213358168961253377",
+      "source_type": "twitter_extra",
+      "summary": "网友注意到OpenAI正在刻意对两款产品做出差异化，以避免用户混淆。",
+      "time_precision": "exact",
+      "title": "OpenAI正着力区分ChatGPT与Codex的产品定位和功能",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080471499664949326"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/hongming731/status/2080477322013253880",
       "category": "other",
       "content_type": "socialMedia",
@@ -1280,6 +1320,43 @@
         "topic_other"
       ],
       "url": "https://x.com/hongming731/status/2080477322013253880"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080494477307940915",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_fd3498c38b2b7821760641938b39de4909834a0e286404aeaaf9f69aef2208c1",
+      "featured": false,
+      "id": "n_fd3498c38b2b7821760641938b39de4909834a0e286404aeaaf9f69aef2208c1",
+      "identity_claims": [
+        "c_0dd3bcafb9dbabfc391d12e5d22b875a9679f9171c648b4f353b7107ec3b6e8b",
+        "c_fd3498c38b2b7821760641938b39de4909834a0e286404aeaaf9f69aef2208c1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-24T04:47:14.000Z",
+      "published_at": "2026-07-24T03:25:11.099Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1213358168961253376",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1213358168961253376",
+      "source_type": "twitter_extra",
+      "summary": "该模型参数仅3B，在评分上超越了谷歌的Gemma4 4B和通义千问的Qwen3.5 4B，由招聘平台Boss直聘的LLM团队南北阁发布。",
+      "time_precision": "exact",
+      "title": "Boss直聘南北阁团队开源3B模型Nanbeige4.2，性能超过Gemma4和Qwen3.5同尺寸模型",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080494477307940915"
     },
     {
       "batch": "night",
