@@ -144,11 +144,9 @@ async function hmacHex(secret: string, bytes: Uint8Array): Promise<string> {
 }
 
 function base64(bytes: Uint8Array): string {
-  return Buffer.from(
-    bytes.buffer,
-    bytes.byteOffset,
-    bytes.byteLength,
-  ).toString("base64");
+  return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString(
+    "base64",
+  );
 }
 
 function tarText(bytes: Uint8Array, start: number, length: number): string {
@@ -1330,7 +1328,14 @@ async function promote(request: Request, env: Env): Promise<Response> {
         stage: promotionStage,
         ...errorDiagnostics(error),
       });
-      return json({ error: "promotion_commit_ambiguous" }, 503);
+      return json(
+        {
+          error: "promotion_commit_ambiguous",
+          stage: promotionStage,
+          diagnostics: errorDiagnostics(error),
+        },
+        503,
+      );
     }
     if (authorization && context) {
       const token = Number(authorization.fencing_token);
@@ -1373,7 +1378,14 @@ async function promote(request: Request, env: Env): Promise<Response> {
       stage: promotionStage,
       ...errorDiagnostics(error),
     });
-    return json({ error: "promotion_failed" }, 503);
+    return json(
+      {
+        error: "promotion_failed",
+        stage: promotionStage,
+        diagnostics: errorDiagnostics(error),
+      },
+      503,
+    );
   } finally {
     await sql.end({ timeout: 2 });
   }
@@ -1466,9 +1478,16 @@ export async function handleRollbackRequest(
   }
 }
 
+type ProductionDeployment = {
+  id: string;
+  url: string;
+  commitHash: string;
+  commitMessage: string;
+};
+
 async function latestProductionDeployment(
   env: Env,
-): Promise<{ id: string; url: string }> {
+): Promise<ProductionDeployment> {
   const api = "https://api.cloudflare.com/client/v4";
   const result = await cfApi<JsonRecord[]>(
     `${api}/accounts/${encodeURIComponent(env.CLOUDFLARE_ACCOUNT_ID)}/pages/projects/${encodeURIComponent(env.PAGES_PROJECT)}/deployments?env=production&page=1&per_page=1`,
@@ -1477,15 +1496,53 @@ async function latestProductionDeployment(
   );
   const id = String(result[0]?.id || "");
   const url = String(result[0]?.url || "");
-  if (!UUID.test(id) || !/^https:\/\//.test(url))
+  const trigger = result[0]?.deployment_trigger as JsonRecord | undefined;
+  const metadata = trigger?.metadata as JsonRecord | undefined;
+  const commitHash = String(metadata?.commit_hash || "");
+  const commitMessage = String(metadata?.commit_message || "");
+  if (
+    !UUID.test(id) ||
+    !/^https:\/\//.test(url) ||
+    !SHA1.test(commitHash) ||
+    !commitMessage
+  ) {
     throw new Error("No production Pages deployment is available");
-  return { id, url };
+  }
+  return { id, url, commitHash, commitMessage };
 }
+
+export function deploymentMatchesContext(
+  deployment: ProductionDeployment,
+  context: ArtifactContext,
+): boolean {
+  return (
+    deployment.commitHash === context.code_sha &&
+    deployment.commitMessage ===
+      `content release ${context.site_release_sequence}`
+  );
+}
+
+type ReconcileDependencies = {
+  openDatabase?: typeof openContentDatabase;
+  loadArtifact?: typeof artifactFiles;
+  upload?: typeof uploadPages;
+  verify?: typeof verifyDeployment;
+  latestDeployment?: typeof latestProductionDeployment;
+  purge?: typeof purgeContentCaches;
+};
 
 export async function reconcileProduction(
   env: Env,
+  dependencies: ReconcileDependencies = {},
 ): Promise<"empty" | "committed" | "restored"> {
-  const sql = openContentDatabase(env, "content-production-reconciler");
+  const sql = (dependencies.openDatabase || openContentDatabase)(
+    env,
+    "content-production-reconciler",
+  );
+  const loadArtifact = dependencies.loadArtifact || artifactFiles;
+  const upload = dependencies.upload || uploadPages;
+  const verify = dependencies.verify || verifyDeployment;
+  const purge = dependencies.purge || purgeContentCaches;
   try {
     const rows = await sql<
       JsonRecord[]
@@ -1495,13 +1552,15 @@ export async function reconcileProduction(
     const slot = reconciliation.slot as JsonRecord;
     const target = reconciliation.target as unknown as ArtifactContext;
     const current = reconciliation.current as unknown as ArtifactContext | null;
-    const deployment = await latestProductionDeployment(env);
+    const deployment = await (
+      dependencies.latestDeployment || latestProductionDeployment
+    )(env);
     try {
-      const targetFiles = await artifactFiles(target, env);
+      const targetFiles = await loadArtifact(target, env);
       // Recovery runs on the Free-plan 50-subrequest budget. Probe the
       // interrupted target once; if it has not already converged, preserve the
       // rest of this invocation for restoring and verifying last-known-good.
-      const evidence = await verifyDeployment(
+      const evidence = await verify(
         target,
         deployment.url,
         env,
@@ -1509,7 +1568,7 @@ export async function reconcileProduction(
         undefined,
         { maximumAttempts: 1 },
       );
-      await purgeContentCaches(env);
+      await purge(env);
       if (slot.operation === "forward") {
         await rpc(
           sql,
@@ -1551,10 +1610,23 @@ export async function reconcileProduction(
         )`;
         return "restored";
       }
-      const currentFiles = await artifactFiles(current, env);
-      const restorationStartedAt = Date.now();
-      const restored = await uploadPages(currentFiles, current, env);
-      const evidence = await verifyDeployment(
+      const currentFiles = await loadArtifact(current, env);
+      const reuseLatest = deploymentMatchesContext(deployment, current);
+      const restorationStartedAt = reuseLatest ? undefined : Date.now();
+      const restored = reuseLatest
+        ? deployment
+        : await upload(currentFiles, current, env);
+      if (reuseLatest) {
+        console.info(
+          "[ContentBroker] reusing latest last-known-good deployment during recovery",
+          {
+            deploymentId: deployment.id,
+            siteReleaseId: current.site_release_id,
+            siteReleaseSequence: current.site_release_sequence,
+          },
+        );
+      }
+      const evidence = await verify(
         current,
         restored.url,
         env,
