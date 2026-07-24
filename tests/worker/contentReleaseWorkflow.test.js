@@ -53,7 +53,7 @@ describe("fenced content release workflow", () => {
       'CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED = "false"',
     );
     expect(deployerConfig).toContain(
-      'CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS = "false"',
+      'CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS = "true"',
     );
   });
 });

@@ -213,7 +213,7 @@ select ok(not has_function_privilege('content_controller', 'private.ingest_repor
 select ok(has_function_privilege('content_deployer', 'private.claim_content_outbox_v1(text,integer)', 'execute'), 'deployer can claim outbox work');
 select ok(has_function_privilege('content_deployer', 'private.get_build_release_report_v1(uuid,date)', 'execute'), 'deployer can read an exact report for an authenticated build');
 select ok(has_function_privilege('content_deployer', 'private.get_build_release_manifest_v1(uuid)', 'execute'), 'deployer can read an exact manifest for an authenticated build');
-select ok(has_function_privilege('content_deployer', 'private.commit_production_promotion_v1(uuid,bigint,bigint,text,text,text,text,jsonb)', 'execute'), 'deployer can commit verified promotion');
+select ok(not has_function_privilege('content_deployer', 'private.commit_production_promotion_v1(uuid,bigint,bigint,text,text,text,text,jsonb)', 'execute'), 'deployer cannot bypass the attempt-fenced promotion commit');
 select ok(has_function_privilege('content_deployer', 'private.register_release_artifact_v1(uuid,text,bigint,text,text,text,text,text)', 'execute'), 'deployer can register both immutable artifact inventory and site fingerprint hashes');
 select has_table('private', 'content_observability_checks', 'append-only production observability evidence table exists');
 select ok(has_function_privilege('content_deployer', 'private.record_content_observability_v1(jsonb)', 'execute'), 'deployer can append production observability evidence');
