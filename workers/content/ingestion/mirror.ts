@@ -8,6 +8,7 @@ import {
   isRetryableReleaseContention,
   openContentDatabase,
   prepareIngestionPublicationSlot,
+  recordScheduledRunTrace as persistScheduledRunTrace,
   reserveIngestionSiteRelease,
   type ContentSql,
 } from "../shared/db";
@@ -43,9 +44,37 @@ export type MirrorResult = {
   reportSnapshotId?: string;
   siteReleaseId?: string;
   siteReleaseSequence?: number;
+  dispatchId?: string;
   contentSha256?: string;
   manifestSha256?: string;
 };
+
+export async function recordScheduledRunTrace(
+  env: MirrorEnv,
+  input: {
+    runId: string;
+    scheduledAt: string;
+    eventType: "started" | "succeeded" | "failed";
+    evidence: Record<string, unknown>;
+  },
+  dependencies: {
+    openDatabase?: typeof openContentDatabase;
+  } = {},
+): Promise<boolean> {
+  if (String(env.CONTENT_DATABASE_MIRROR_ENABLED).toLowerCase() !== "true") {
+    return false;
+  }
+  const sql = (dependencies.openDatabase || openContentDatabase)(
+    env,
+    "content-ingestor-run-trace",
+  );
+  try {
+    await persistScheduledRunTrace(sql, input);
+    return true;
+  } finally {
+    await (sql as ContentSql).end({ timeout: 2 });
+  }
+}
 
 const MAX_CONTENTION_ATTEMPTS = 3;
 const CONTENTION_RETRY_BASE_MS = 100;
@@ -299,6 +328,7 @@ export async function mirrorStructuredReport(
       reportSnapshotId: String(snapshot.report_snapshot_id),
       siteReleaseId: String(release.site_release_id),
       siteReleaseSequence: Number(release.site_release_sequence),
+      dispatchId: release.dispatch_id ? String(release.dispatch_id) : undefined,
       contentSha256: reportObject.sha256,
       manifestSha256: manifestObject.sha256,
     };

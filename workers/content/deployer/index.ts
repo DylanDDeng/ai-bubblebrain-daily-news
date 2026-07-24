@@ -8,6 +8,9 @@ type Env = {
   GITHUB_TOKEN: string;
   GITHUB_REPOSITORY: string;
   GITHUB_WORKFLOW_REF?: string;
+  CONTENT_RELEASE_RESUME_ENABLED?: string;
+  CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED?: string;
+  CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS?: string;
   DEPLOY_CALLBACK_SECRET: string;
   PREVIEW_DISPATCH_SECRET: string;
   CONTENT_BUILD_API_SECRET: string;
@@ -34,6 +37,7 @@ const UUID =
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const SHA1 = /^[a-f0-9]{40}$/;
 const CALLBACK_EVENTS = new Set([
+  "heartbeat",
   "building",
   "artifact_registered",
   "preview_verified",
@@ -212,10 +216,14 @@ const INERT_ROOT_SCRIPTS = new Set([
   "scripts/check-content-observability.mjs",
   "scripts/check-content-observation-window.mjs",
   "scripts/create-content-addressed-artifact.mjs",
+  "scripts/materialize-content-addressed-artifact.mjs",
   "scripts/pull-daily-content.sh",
   "scripts/request-code-release.mjs",
+  "scripts/request-content-release-plan.mjs",
   "scripts/request-production-promotion.mjs",
+  "scripts/send-content-deployment-callback.mjs",
   "scripts/test-content-failure-matrix-local.mjs",
+  "scripts/test-supabase-local.sh",
   "scripts/upload-content-addressed-artifact.mjs",
   "scripts/validate-content-production-config.mjs",
   "scripts/verify-preview.mjs",
@@ -303,6 +311,7 @@ function classifyCodeReleasePath(
       "astro/vitest.config.ts",
       "package.json",
       "start.sh",
+      "wrangler.content-broker.toml",
       "wrangler.content-deployer.toml",
       "wrangler.toml",
       "wrangler.staging.toml",
@@ -603,22 +612,32 @@ export async function dispatchOne(
       ? dependencies.randomUUID()
       : crypto.randomUUID();
     const rows = await sql<Record<string, unknown>[]>`
-			select private.claim_content_outbox_v1(${workerId}, 600) as result
+				select private.claim_content_outbox_v1(${workerId}, 1800) as result
     `;
     claimed = rows[0]?.result as Record<string, unknown> | null;
     if (!claimed) return "empty";
     const payload = claimed.payload;
     validateDispatchPayload(payload);
     const dispatchPayload = payload as Record<string, unknown>;
+    const attemptToken = String(claimed.attempt_token || "");
+    const executionGeneration = Number(claimed.execution_generation);
     await (dependencies.dispatch || githubDispatch)(
       env,
       "content-release.yml",
-      Object.fromEntries(
-        Object.entries(dispatchPayload).map(([key, value]) => [
-          key,
-          value === null ? "" : value,
-        ]),
-      ),
+      {
+        ...Object.fromEntries(
+          Object.entries(dispatchPayload).map(([key, value]) => [
+            key,
+            value === null ? "" : value,
+          ]),
+        ),
+        ...(UUID.test(attemptToken)
+          ? {
+              attempt_token: attemptToken,
+              execution_generation: String(executionGeneration),
+            }
+          : {}),
+      },
     );
     await recordEvent(
       sql,
@@ -639,6 +658,83 @@ export async function dispatchOne(
       );
     }
     throw error;
+  } finally {
+    await sql.end({ timeout: 2 });
+  }
+}
+
+export async function handleDeploymentPlanRequest(
+  request: Request,
+  env: Env,
+  dependencies: { openDatabase?: typeof openContentDatabase } = {},
+): Promise<Response> {
+  if (request.method !== "POST")
+    return json({ error: "method_not_allowed" }, 405);
+  const bytes = new Uint8Array(await request.arrayBuffer());
+  if (bytes.byteLength === 0 || bytes.byteLength > 8 * 1024)
+    return json({ error: "invalid_request" }, 400);
+  const supplied = request.headers.get("X-Content-Signature") || "";
+  const expected = await hmacHex(env.DEPLOY_CALLBACK_SECRET, bytes);
+  if (!timingSafeHex(supplied, expected))
+    return json({ error: "unauthorized" }, 401);
+  let payload: Record<string, unknown>;
+  try {
+    payload = JSON.parse(
+      new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+    );
+  } catch {
+    return json({ error: "invalid_request" }, 400);
+  }
+  const releaseId = String(payload.site_release_id || "");
+  const dispatchId = String(payload.dispatch_id || "");
+  const attemptToken = String(payload.attempt_token || "");
+  const executionGeneration = Number(payload.execution_generation);
+  if (
+    !UUID.test(releaseId) ||
+    !UUID.test(dispatchId) ||
+    !UUID.test(attemptToken) ||
+    !Number.isSafeInteger(executionGeneration) ||
+    executionGeneration < 1
+  ) {
+    return json({ error: "invalid_request" }, 400);
+  }
+  const sql = (dependencies.openDatabase || openContentDatabase)(
+    env,
+    "content-deployer-plan",
+  );
+  try {
+    const evidence = {
+      stage: "resume_plan",
+      requested_at: new Date().toISOString(),
+    };
+    const accepted = await sql<Record<string, unknown>[]>`
+      select private.accept_deployment_callback_v2(
+        ${releaseId}::uuid, ${dispatchId}::uuid, ${attemptToken}::uuid,
+        ${executionGeneration}, 'heartbeat', ${sql.json(evidence)}
+      ) as result
+    `;
+    if (accepted[0]?.result !== true)
+      return json({ error: "stale_attempt" }, 409);
+    const rows = await sql<Record<string, unknown>[]>`
+      select private.get_content_release_resume_plan_v1(
+        ${releaseId}::uuid, ${dispatchId}::uuid, ${attemptToken}::uuid
+      ) as result
+    `;
+    const plan = rows[0]?.result as Record<string, unknown> | null;
+    if (!plan) throw new Error("Resume plan is unavailable");
+    return json({
+      ...plan,
+      resume_stage:
+        env.CONTENT_RELEASE_RESUME_ENABLED === "true"
+          ? plan.resume_stage
+          : "build",
+      trusted_baseline:
+        env.CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED === "true"
+          ? plan.trusted_baseline
+          : null,
+    });
+  } catch {
+    return json({ error: "service_unavailable" }, 503);
   } finally {
     await sql.end({ timeout: 2 });
   }
@@ -704,6 +800,7 @@ export async function runRetentionMaintenance(
 export async function handleDeploymentCallback(
   request: Request,
   env: Env,
+  dependencies: { openDatabase?: typeof openContentDatabase } = {},
 ): Promise<Response> {
   if (request.method !== "POST")
     return json({ error: "method_not_allowed" }, 405);
@@ -727,6 +824,8 @@ export async function handleDeploymentCallback(
   const releaseId = String(payload.site_release_id || "");
   const dispatchId = String(payload.dispatch_id || "");
   const eventType = String(payload.event_type || "");
+  const attemptToken = String(payload.attempt_token || "");
+  const executionGeneration = Number(payload.execution_generation);
   if (
     !UUID.test(releaseId) ||
     !UUID.test(dispatchId) ||
@@ -737,7 +836,24 @@ export async function handleDeploymentCallback(
   ) {
     return json({ error: "invalid_request" }, 400);
   }
-  const sql = openContentDatabase(env, "content-deployer-callback");
+  const editorialCallback =
+    eventType === "editorial_preview_verified" ||
+    eventType === "editorial_preview_failed";
+  const fencedCallback =
+    UUID.test(attemptToken) &&
+    Number.isSafeInteger(executionGeneration) &&
+    executionGeneration > 0;
+  if (
+    !editorialCallback &&
+    env.CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS === "true" &&
+    !fencedCallback
+  ) {
+    return json({ error: "fenced_callback_required" }, 409);
+  }
+  const sql = (dependencies.openDatabase || openContentDatabase)(
+    env,
+    "content-deployer-callback",
+  );
   try {
     if (eventType === "editorial_preview_verified") {
       const evidence = payload.evidence as Record<string, unknown>;
@@ -759,6 +875,23 @@ export async function handleDeploymentCallback(
       `;
       return json({ ok: true });
     }
+    if (fencedCallback) {
+      const acceptedRows = await sql<Record<string, unknown>[]>`
+        select private.accept_deployment_callback_v2(
+          ${releaseId}::uuid, ${dispatchId}::uuid, ${attemptToken}::uuid,
+          ${executionGeneration}, ${eventType},
+          ${sql.json(payload.evidence as Record<string, unknown>)}
+        ) as result
+      `;
+      if (acceptedRows[0]?.result !== true) {
+        return json({ ok: true, stale: true }, 202);
+      }
+      if (eventType === "heartbeat") {
+        return json({ ok: true, lease_extended: true });
+      }
+    } else if (eventType === "heartbeat") {
+      return json({ error: "attempt_token_required" }, 400);
+    }
     if (eventType === "artifact_registered") {
       const evidence = payload.evidence as Record<string, unknown>;
       await sql`
@@ -769,14 +902,34 @@ export async function handleDeploymentCallback(
           ${String(evidence.code_sha)}, ${String(evidence.build_environment_version)}
         )
       `;
+      if (fencedCallback) {
+        await sql`
+          select private.attest_release_artifact_v1(
+            ${releaseId}::uuid, ${String(evidence.artifact_sha256)},
+            ${String(evidence.verification_profile)},
+            ${String(evidence.r2_verified_at)}::timestamptz,
+            ${String(evidence.lock_evidence_sha256)}
+          )
+        `;
+      }
     }
-    await recordEvent(
-      sql,
-      releaseId,
-      dispatchId,
-      eventType,
-      payload.evidence as Record<string, unknown>,
-    );
+    if (fencedCallback) {
+      await sql`
+        select private.record_deployment_checkpoint_v2(
+          ${releaseId}::uuid, ${dispatchId}::uuid, ${attemptToken}::uuid,
+          ${executionGeneration}, ${eventType},
+          ${sql.json(payload.evidence as Record<string, unknown>)}
+        )
+      `;
+    } else {
+      await recordEvent(
+        sql,
+        releaseId,
+        dispatchId,
+        eventType,
+        payload.evidence as Record<string, unknown>,
+      );
+    }
     return json({ ok: true });
   } catch {
     return json({ error: "service_unavailable" }, 503);
@@ -1285,6 +1438,8 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/callbacks/github")
       return handleDeploymentCallback(request, env);
+    if (url.pathname === "/internal/deployment-plan")
+      return handleDeploymentPlanRequest(request, env);
     if (url.pathname === "/internal/recovery-health")
       return handleRecoveryHealthCallback(request, env);
     if (url.pathname === "/internal/code-release") {

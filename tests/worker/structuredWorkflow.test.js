@@ -53,9 +53,14 @@ function dependencies(overrides = {}) {
         resolveSnapshot: vi.fn(async () => snapshotA),
         createReader: vi.fn(() => reader),
         getFoloCookie: vi.fn(async () => 'cookie'),
-        fetchData: vi.fn(async () => ({ structuredItems: [], errors: [] })),
+        fetchData: vi.fn(async () => ({
+            structuredItems: [],
+            errors: [],
+            sourceCounts: { news: 0, project: 0, paper: 0, socialMedia: 0 },
+        })),
         build: vi.fn(async () => ({
             files: files(),
+            json: `${JSON.stringify({ date: runInput.reportDate })}\n`,
             noOp: false,
             metrics: { raw_count: 0 },
         })),
@@ -517,7 +522,7 @@ describe('structured publication workflow', () => {
                 },
                 {
                     ...runInput,
-                    triggerId: 'scheduled:mirror-failure',
+                    triggerId: `scheduled:${Date.parse(runInput.runAt)}`,
                 },
                 deps,
             ),
@@ -526,6 +531,12 @@ describe('structured publication workflow', () => {
             pending: true,
             commit_sha: sha('e'),
             database_mirror: { status: 'failed', error_type: 'Error' },
+            run_id: `scheduled:${Date.parse(runInput.runAt)}`,
+            stage: 'database_mirror_failed',
+            source_result: {
+                status: 'succeeded',
+                counts: { news: 0, project: 0, paper: 0, socialMedia: 0 },
+            },
         });
         expect(deps.commit).toHaveBeenCalledOnce();
         expect(mirror).toHaveBeenCalledOnce();

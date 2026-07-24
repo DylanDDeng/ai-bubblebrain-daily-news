@@ -39,4 +39,6 @@ for migration in supabase/migrations/*.sql; do
 done
 
 run_supabase test db
-echo "Supabase migrations, second-run idempotency, and pgTAP passed."
+CONTENT_TEST_DATABASE_URL="postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres" \
+  node scripts/test-content-failure-matrix-local.mjs
+echo "Supabase migrations, second-run idempotency, pgTAP, and failure matrix passed."

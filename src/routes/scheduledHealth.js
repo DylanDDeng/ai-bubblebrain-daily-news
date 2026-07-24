@@ -1,6 +1,5 @@
 import { readScheduledOutcome } from '../daily/runState.js';
-
-const MAX_SLOTS = 16;
+import { SCHEDULE_HEALTH_PAGE_SIZE } from '../daily/scheduleContract.js';
 
 async function tokenDigest(value) {
     return new Uint8Array(await crypto.subtle.digest(
@@ -38,6 +37,61 @@ function validScheduledInstant(value) {
     return !Number.isNaN(parsed.getTime()) && parsed.toISOString() === value;
 }
 
+function publicSourceResult(value) {
+    const counts = {};
+    for (const contentType of ['news', 'project', 'paper', 'socialMedia']) {
+        const count = Number(value?.counts?.[contentType] || 0);
+        counts[contentType] = Number.isSafeInteger(count) && count >= 0 ? count : 0;
+    }
+    return {
+        status: ['succeeded', 'failed', 'unknown'].includes(value?.status)
+            ? value.status
+            : 'unknown',
+        completed_at: value?.completed_at || null,
+        counts,
+        ...(Number.isSafeInteger(value?.error_count)
+            ? { error_count: value.error_count }
+            : {}),
+    };
+}
+
+function publicScheduledOutcome(marker, scheduledAt) {
+    const status = ['started', 'succeeded', 'failed'].includes(marker?.status)
+        ? marker.status
+        : 'failed';
+    return {
+        scheduled_at: scheduledAt,
+        run_id: /^scheduled:\d{13}$/.test(String(marker?.run_id || ''))
+            ? marker.run_id
+            : `scheduled:${Date.parse(scheduledAt)}`,
+        status,
+        stage: String(marker?.stage || (status === 'succeeded' ? 'workflow_completed' : status)),
+        run_at: marker?.run_at || null,
+        started_at: marker?.started_at || null,
+        finished_at: marker?.finished_at || null,
+        source_result: publicSourceResult(marker?.source_result),
+        content_sha256: /^[a-f0-9]{64}$/.test(String(marker?.content_sha256 || ''))
+            ? marker.content_sha256
+            : null,
+        no_op: marker?.no_op === true,
+        database_mirror: {
+            status: ['mirrored', 'disabled', 'failed', 'unknown'].includes(
+                marker?.database_mirror?.status,
+            )
+                ? marker.database_mirror.status
+                : 'unknown',
+        },
+        site_release_id: marker?.site_release_id || null,
+        site_release_sequence: Number.isSafeInteger(marker?.site_release_sequence)
+            ? marker.site_release_sequence
+            : null,
+        dispatch_id: marker?.dispatch_id || null,
+        stable_verified_at: marker?.stable_verified_at || null,
+        error_type: marker?.error_type || null,
+        failure_stage: marker?.failure_stage || null,
+    };
+}
+
 export async function handleScheduledHealth(request, env) {
     if (request.method !== 'GET') {
         return json({ success: false, error: 'Method not allowed' }, 405, { Allow: 'GET' });
@@ -55,7 +109,7 @@ export async function handleScheduledHealth(request, env) {
     const scheduledAt = new URL(request.url).searchParams.getAll('scheduled_at');
     if (
         scheduledAt.length < 1 ||
-        scheduledAt.length > MAX_SLOTS ||
+        scheduledAt.length > SCHEDULE_HEALTH_PAGE_SIZE ||
         new Set(scheduledAt).size !== scheduledAt.length ||
         scheduledAt.some(value => !validScheduledInstant(value))
     ) {
@@ -65,14 +119,26 @@ export async function handleScheduledHealth(request, env) {
     const slots = await Promise.all(scheduledAt.map(async scheduled_at => {
         const marker = await readScheduledOutcome(env.DATA_KV, scheduled_at);
         return marker
-            ? {
+            ? publicScheduledOutcome(marker, scheduled_at)
+            : {
                   scheduled_at,
-                  status: marker.status === 'succeeded' ? 'succeeded' : 'failed',
-                  run_at: marker.run_at || null,
-                  error_type: marker.error_type || null,
-                  failure_stage: marker.failure_stage || null,
-              }
-            : { scheduled_at, status: 'missing', run_at: null, error_type: null, failure_stage: null };
+                  run_id: `scheduled:${Date.parse(scheduled_at)}`,
+                  status: 'missing',
+                  stage: 'missing',
+                  run_at: null,
+                  started_at: null,
+                  finished_at: null,
+                  source_result: publicSourceResult(null),
+                  content_sha256: null,
+                  no_op: false,
+                  database_mirror: { status: 'unknown' },
+                  site_release_id: null,
+                  site_release_sequence: null,
+                  dispatch_id: null,
+                  stable_verified_at: null,
+                  error_type: null,
+                  failure_stage: null,
+              };
     }));
     return json({ success: true, slots });
 }

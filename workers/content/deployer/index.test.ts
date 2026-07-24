@@ -5,12 +5,41 @@ import {
   diffGitHubTrees,
   handleBuildContentRequest,
   handleCodeReleaseRequest,
+  handleDeploymentCallback,
+  handleDeploymentPlanRequest,
   handleRecoveryHealthCallback,
   outboxAlertReasons,
   runRetentionMaintenance,
   validateCodeReleaseChangeSet,
   validateDispatchPayload,
 } from "./index";
+
+async function signedDeploymentCallback(
+  secret: string,
+  payload: Record<string, unknown>,
+): Promise<Request> {
+  const body = JSON.stringify(payload);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(body),
+  );
+  const hex = Array.from(new Uint8Array(signature), (value) =>
+    value.toString(16).padStart(2, "0"),
+  ).join("");
+  return new Request("https://deployer.test/internal/deployment-callback", {
+    method: "POST",
+    headers: { "X-Content-Signature": hex },
+    body,
+  });
+}
 
 async function signedRecoveryRequest(
   secret: string,
@@ -148,6 +177,197 @@ describe("content release dispatch recovery", () => {
     expect(events).toEqual(["failed", "building"]);
     expect(end).toHaveBeenCalledTimes(2);
   });
+
+  it("dispatches only the fenced identity and never a caller plan", async () => {
+    const attemptToken = "44444444-4444-4444-8444-444444444444";
+    const claimed = {
+      site_release_id: valid.site_release_id,
+      dispatch_id: valid.dispatch_id,
+      payload: valid,
+      attempt_token: attemptToken,
+      execution_generation: 3,
+    };
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("claim_content_outbox_v1"))
+        return [{ result: claimed }];
+      if (query.includes("record_deployment_event_v1")) return [];
+      throw new Error(`Unexpected SQL: ${query}`);
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const dispatch = vi.fn(async () => undefined);
+
+    await expect(
+      dispatchOne({} as never, {
+        openDatabase: vi.fn(() => sql as never),
+        dispatch,
+        randomUUID: () => "33333333-3333-4333-8333-333333333333",
+      }),
+    ).resolves.toBe("dispatched");
+
+    expect(dispatch.mock.calls[0][2]).toMatchObject({
+      attempt_token: attemptToken,
+      execution_generation: "3",
+    });
+    expect(dispatch.mock.calls[0][2]).not.toHaveProperty("resume_plan");
+  });
+});
+
+describe("server-computed deployment plan", () => {
+  it("returns the database plan only for the active fenced attempt", async () => {
+    const plan = {
+      resume_stage: "promote",
+      artifact: { artifact_sha256: "a".repeat(64) },
+      trusted_baseline: { artifact_sha256: "b".repeat(64) },
+      preview_checkpoint: { preview_url: "https://preview.example" },
+    };
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("accept_deployment_callback_v2"))
+        return [{ result: true }];
+      if (query.includes("get_content_release_resume_plan_v1"))
+        return [{ result: plan }];
+      throw new Error(`Unexpected SQL: ${query}`);
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const response = await handleDeploymentPlanRequest(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        attempt_token: "44444444-4444-4444-8444-444444444444",
+        execution_generation: 2,
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+        CONTENT_RELEASE_RESUME_ENABLED: "true",
+        CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED: "true",
+      } as never,
+      { openDatabase: vi.fn(() => sql as never) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(plan);
+    expect(sql).toHaveBeenCalledTimes(2);
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+});
+
+describe("fenced deployment callbacks", () => {
+  it("rejects an unfenced content callback before opening the database", async () => {
+    const openDatabase = vi.fn();
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        event_type: "failed",
+        evidence: { error: "workflow_failed" },
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+        CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS: "true",
+      } as never,
+      { openDatabase },
+    );
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      error: "fenced_callback_required",
+    });
+    expect(openDatabase).not.toHaveBeenCalled();
+  });
+
+  it("keeps the unfenced callback path available only when the rollout gate is off", async () => {
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("record_deployment_event_v1")) return [];
+      throw new Error(`Unexpected SQL: ${query}`);
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        event_type: "failed",
+        evidence: { error: "workflow_failed" },
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+        CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS: "false",
+      } as never,
+      { openDatabase: vi.fn(() => sql as never) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true });
+    expect(sql).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+
+  it("audits a stale callback without mutating release state", async () => {
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("accept_deployment_callback_v2"))
+        return [{ result: false }];
+      throw new Error(`Unexpected SQL after stale callback: ${query}`);
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        attempt_token: "44444444-4444-4444-8444-444444444444",
+        execution_generation: 2,
+        event_type: "preview_verified",
+        evidence: {
+          artifact_sha256: "a".repeat(64),
+          content_sha256: "b".repeat(64),
+          code_sha: "c".repeat(40),
+        },
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+      } as never,
+      { openDatabase: vi.fn(() => sql as never) },
+    );
+
+    expect(response.status).toBe(202);
+    expect(await response.json()).toEqual({ ok: true, stale: true });
+    expect(sql).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+
+  it("extends a fenced attempt lease on heartbeat", async () => {
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("accept_deployment_callback_v2"))
+        return [{ result: true }];
+      throw new Error(`Unexpected SQL: ${query}`);
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        attempt_token: "44444444-4444-4444-8444-444444444444",
+        execution_generation: 2,
+        event_type: "heartbeat",
+        evidence: { github_run_id: 123, stage: "checkout_verified" },
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+      } as never,
+      { openDatabase: vi.fn(() => sql as never) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true, lease_extended: true });
+    expect(sql).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("automatic code release boundary", () => {
@@ -208,7 +428,27 @@ describe("automatic code release boundary", () => {
             status: "modified",
           },
           {
+            filename: "scripts/materialize-content-addressed-artifact.mjs",
+            status: "added",
+          },
+          {
+            filename: "scripts/request-content-release-plan.mjs",
+            status: "added",
+          },
+          {
+            filename: "scripts/send-content-deployment-callback.mjs",
+            status: "modified",
+          },
+          {
+            filename: "scripts/test-supabase-local.sh",
+            status: "modified",
+          },
+          {
             filename: "scripts/verify-preview.mjs",
+            status: "modified",
+          },
+          {
+            filename: "wrangler.content-broker.toml",
             status: "modified",
           },
           {
@@ -244,7 +484,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(33);
+    ).toHaveLength(38);
   });
 
   it.each([

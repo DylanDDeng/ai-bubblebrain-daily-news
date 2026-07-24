@@ -346,6 +346,7 @@ describe("Supabase migration writer compatibility", () => {
       "20260717000900_content_publish_control_boundary.sql",
       "20260717001000_content_observability.sql",
       "20260717001100_content_observation_evidence.sql",
+      "20260724000400_scheduled_run_observability.sql",
     ];
     for (const migration of migrations) {
       const sql = readFileSync(`supabase/migrations/${migration}`, "utf8");

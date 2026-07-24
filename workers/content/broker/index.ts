@@ -7,6 +7,7 @@ type Env = {
   CONTENT_DB?: { connectionString?: string };
   CONTENT_DATABASE_URL?: string;
   ARTIFACTS: R2Bucket;
+  PRODUCTION_COORDINATOR: DurableObjectNamespace;
   WORKFLOW_HMAC_SECRET: string;
   CONTROL_BROKER_SECRET: string;
   CLOUDFLARE_API_TOKEN: string;
@@ -23,6 +24,23 @@ type Env = {
 };
 
 type JsonRecord = Record<string, unknown>;
+type CoordinatorOperationKind = "promote" | "rollback" | "reconcile";
+type CoordinatorOperation = {
+  id: string;
+  kind: CoordinatorOperationKind;
+  payload: JsonRecord | null;
+  status: "queued" | "running" | "completed";
+  attempts: number;
+  created_at: string;
+  updated_at: string;
+  completed_at?: string;
+  response_status?: number;
+  response_body?: string;
+};
+type CompletedCoordinatorOperation = {
+  id: string;
+  completed_at: string;
+};
 type ArtifactContext = {
   site_release_id: string;
   site_release_sequence: number;
@@ -80,6 +98,7 @@ type VerificationDependencies = {
   now?: () => number;
   sleep?: (milliseconds: number) => Promise<void>;
   maximumAttempts?: number;
+  stabilityOffsetsMs?: number[];
 };
 type VerificationProbeResult =
   | { ok: true; evidence: JsonRecord }
@@ -1043,16 +1062,95 @@ export async function verifyDeployment(
     await sleep(Math.min(delay, remainingAfterProbe));
     round += 1;
   }
-  const elapsedMs = Math.max(0, now() - windowStartedAt);
+  const convergenceElapsedMs = Math.max(0, now() - windowStartedAt);
   if (
     evidenceByOrigin.size !== bases.length ||
-    elapsedMs > maximumInconsistencyMs
+    convergenceElapsedMs > maximumInconsistencyMs
   ) {
     throw new ProductionConvergenceError(
-      elapsedMs,
+      convergenceElapsedMs,
       maximumInconsistencyMs,
       failures,
     );
+  }
+  const stabilityOffsets = dependencies.stabilityOffsetsMs ?? [
+    15_000, 45_000, 120_000,
+  ];
+  if (
+    stabilityOffsets.some(
+      (offset, index) =>
+        !Number.isSafeInteger(offset) ||
+        offset <= 0 ||
+        offset >= maximumInconsistencyMs ||
+        (index > 0 && offset <= stabilityOffsets[index - 1]),
+    )
+  ) {
+    throw new Error("Production stability offsets are invalid");
+  }
+  const firstConvergedAt = now();
+  const stabilityRounds: JsonRecord[] = [];
+  for (const offsetMs of stabilityOffsets) {
+    const targetTime = firstConvergedAt + offsetMs;
+    const delay = targetTime - now();
+    if (delay > 0) {
+      const remaining = remainingWindow();
+      if (delay >= remaining) {
+        throw new ProductionConvergenceError(
+          Math.max(0, now() - windowStartedAt),
+          maximumInconsistencyMs,
+          [],
+        );
+      }
+      await sleep(delay);
+    }
+    const remaining = maximumInconsistencyMs - (now() - windowStartedAt);
+    if (remaining <= 0) {
+      throw new ProductionConvergenceError(
+        Math.max(0, now() - windowStartedAt),
+        maximumInconsistencyMs,
+        [],
+      );
+    }
+    const stableResults = await Promise.all(
+      bases.map(async (base) => {
+        const attempt = (attemptsByOrigin.get(base) || 0) + 1;
+        attemptsByOrigin.set(base, attempt);
+        return {
+          base,
+          result: await probeDeploymentOrigin(
+            base,
+            context,
+            [],
+            transformedHtmlOrigins.has(new URL(base).origin),
+            attempt,
+            remaining,
+            fetcher,
+          ),
+        };
+      }),
+    );
+    const stabilityFailures = stableResults.flatMap(({ result }) =>
+      result.ok ? [] : [result.failure],
+    );
+    if (stabilityFailures.length > 0) {
+      throw new ProductionConvergenceError(
+        Math.max(0, now() - windowStartedAt),
+        maximumInconsistencyMs,
+        stabilityFailures,
+      );
+    }
+    stabilityRounds.push({
+      offset_ms: offsetMs,
+      verified_at: new Date(now()).toISOString(),
+      endpoints: stableResults.map(({ result }) =>
+        result.ok ? result.evidence : null,
+      ),
+    });
+  }
+  const stableVerifiedAt = new Date(now()).toISOString();
+  const elapsedMs = Math.max(0, now() - windowStartedAt);
+  if (elapsedMs > maximumInconsistencyMs) {
+    throw new ProductionConvergenceError(elapsedMs, maximumInconsistencyMs, []);
   }
   return {
     multi_edge_verified: true,
@@ -1064,7 +1162,11 @@ export async function verifyDeployment(
     artifact_fingerprint_sha256: context.artifact_fingerprint_sha256,
     code_sha: context.code_sha,
     build_environment_version: context.build_environment_version,
-    convergence_elapsed_ms: elapsedMs,
+    convergence_elapsed_ms: convergenceElapsedMs,
+    stability_elapsed_ms: elapsedMs,
+    stable_verified_at: stableVerifiedAt,
+    stability_offsets: stabilityOffsets,
+    stability_rounds: stabilityRounds,
     maximum_inconsistency_ms: maximumInconsistencyMs,
     endpoints: bases.map((base) => evidenceByOrigin.get(base)),
   };
@@ -1138,12 +1240,15 @@ async function artifactFiles(
   return { kind: "content-addressed", manifest };
 }
 
-function validatePromotion(
+export function validatePromotion(
   value: JsonRecord,
 ): asserts value is JsonRecord & ArtifactContext {
   if (
     !UUID.test(String(value.dispatch_id)) ||
     !UUID.test(String(value.site_release_id)) ||
+    !UUID.test(String(value.attempt_token)) ||
+    !Number.isSafeInteger(value.execution_generation) ||
+    Number(value.execution_generation) < 1 ||
     !Number.isSafeInteger(value.site_release_sequence) ||
     (value.expected_predecessor_id !== null &&
       value.expected_predecessor_id !== undefined &&
@@ -1219,19 +1324,179 @@ export function isCommittedPromotionContext(
   );
 }
 
-async function promote(request: Request, env: Env): Promise<Response> {
-  let body: JsonRecord;
-  try {
-    body = JSON.parse(
-      new TextDecoder("utf-8", { fatal: true }).decode(
-        await verifyWorkflowRequest(request, env),
-      ),
-    );
-    validatePromotion(body);
-  } catch {
-    return json({ error: "unauthorized_or_invalid" }, 401);
+async function rollbackPagesDeployment(
+  deploymentId: string,
+  env: Env,
+): Promise<{ id: string; url: string }> {
+  if (!UUID.test(deploymentId))
+    throw new Error("Current Pages deployment identity is invalid");
+  const api = "https://api.cloudflare.com/client/v4";
+  const result = await cfApi<JsonRecord>(
+    `${api}/accounts/${encodeURIComponent(env.CLOUDFLARE_ACCOUNT_ID)}/pages/projects/${encodeURIComponent(env.PAGES_PROJECT)}/deployments/${deploymentId}/rollback`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    },
+    env.CLOUDFLARE_API_TOKEN,
+  );
+  const id = String(result.id || "");
+  const url = String(result.url || "");
+  if (!UUID.test(id) || !/^https:\/\//.test(url)) {
+    throw new Error("Pages repair returned an unexpected deployment");
   }
-  const sql = openContentDatabase(env, "content-production-broker");
+  return { id, url };
+}
+
+type CurrentRepairDependencies = {
+  loadArtifact?: typeof artifactFiles;
+  latestDeployment?: typeof latestProductionDeployment;
+  verify?: typeof verifyDeployment;
+  rollbackDeployment?: typeof rollbackPagesDeployment;
+  purge?: typeof purgeContentCaches;
+};
+
+export async function verifyOrRepairCurrentDeployment(
+  context: ArtifactContext,
+  sql: ContentSql,
+  env: Env,
+  dependencies: CurrentRepairDependencies = {},
+): Promise<JsonRecord> {
+  const loadArtifact = dependencies.loadArtifact || artifactFiles;
+  const latestDeployment =
+    dependencies.latestDeployment || latestProductionDeployment;
+  const verify = dependencies.verify || verifyDeployment;
+  const rollbackDeployment =
+    dependencies.rollbackDeployment || rollbackPagesDeployment;
+  const purge = dependencies.purge || purgeContentCaches;
+  const pointer = await rpc(
+    sql,
+    sql<JsonRecord[]>`
+      select private.get_current_pages_deployment_v1(
+        ${context.site_release_id}::uuid
+      ) as result
+    `,
+  );
+  const expectedGeneration = Number(pointer.pointer_generation);
+  const expectedDeploymentId = String(pointer.pages_deployment_id || "");
+  const repairStillCurrent = async (): Promise<boolean> => {
+    const refreshed = await rpc(
+      sql,
+      sql<JsonRecord[]>`
+        select private.get_current_pages_deployment_v1(
+          ${context.site_release_id}::uuid
+        ) as result
+      `,
+    );
+    return (
+      Number(refreshed.pointer_generation) === expectedGeneration &&
+      String(refreshed.pages_deployment_id || "") === expectedDeploymentId
+    );
+  };
+  const superseded = (): JsonRecord => ({
+    healthy: false,
+    repaired: false,
+    superseded: true,
+    site_release_id: context.site_release_id,
+    pointer_generation: expectedGeneration,
+  });
+  const files = await loadArtifact(context, env);
+  const latest = await latestDeployment(env);
+  try {
+    const evidence = await verify(context, latest.url, env, files, undefined, {
+      maximumAttempts: 1,
+    });
+    if (latest.id !== expectedDeploymentId) {
+      if (!(await repairStillCurrent())) return superseded();
+      await purge(env);
+      await rpc(
+        sql,
+        sql<JsonRecord[]>`
+          select private.record_current_pages_repair_v1(
+            ${context.site_release_id}::uuid,
+            ${expectedGeneration},
+            ${latest.id},
+            ${sql.json({
+              ...evidence,
+              repair_mode: "adopt_exact_deployment",
+            })}
+          ) as result
+        `,
+      );
+      return {
+        healthy: true,
+        repaired: true,
+        repair_mode: "adopt_exact_deployment",
+        deployment_id: latest.id,
+        evidence,
+      };
+    }
+    return {
+      healthy: true,
+      repaired: false,
+      deployment_id: latest.id,
+      evidence,
+    };
+  } catch (error) {
+    console.warn(
+      "[ContentBroker] current pointer drifted from Pages; repairing exact deployment",
+      {
+        siteReleaseId: context.site_release_id,
+        expectedDeploymentId,
+        latestDeploymentId: latest.id,
+        ...errorDiagnostics(error),
+      },
+    );
+  }
+
+  if (!(await repairStillCurrent())) return superseded();
+  const repairStartedAt = Date.now();
+  const repaired = await rollbackDeployment(expectedDeploymentId, env);
+  const evidence = await verify(
+    context,
+    repaired.url,
+    env,
+    files,
+    repairStartedAt,
+  );
+  await purge(env);
+  await rpc(
+    sql,
+    sql<JsonRecord[]>`
+      select private.record_current_pages_repair_v1(
+        ${context.site_release_id}::uuid,
+        ${expectedGeneration},
+        ${repaired.id},
+        ${sql.json({ ...evidence, repair_mode: "rollback_exact_deployment" })}
+      ) as result
+    `,
+  );
+  return {
+    healthy: true,
+    repaired: true,
+    repair_mode: "rollback_exact_deployment",
+    deployment_id: repaired.id,
+    evidence,
+  };
+}
+
+type PromotionDependencies = {
+  openDatabase?: typeof openContentDatabase;
+  loadArtifact?: typeof artifactFiles;
+  upload?: typeof uploadPages;
+  verify?: typeof verifyDeployment;
+  purge?: typeof purgeContentCaches;
+};
+
+export async function performPromotion(
+  body: JsonRecord,
+  env: Env,
+  dependencies: PromotionDependencies = {},
+): Promise<Response> {
+  const sql = (dependencies.openDatabase || openContentDatabase)(
+    env,
+    "content-production-broker",
+  );
   let deploymentChanged = false;
   let authorization: JsonRecord | null = null;
   let context: ArtifactContext | null = null;
@@ -1240,39 +1505,53 @@ async function promote(request: Request, env: Env): Promise<Response> {
     context = await deployContext(sql, String(body.site_release_id));
     promotionStage = "compare_request";
     comparePromotion(context, body);
-    if (context.current_site_release_id === context.site_release_id) {
+    promotionStage = "authorize_attempt";
+    authorization = await rpc(
+      sql,
+      sql<JsonRecord[]>`
+      select private.authorize_attempt_production_promotion_v1(
+        ${context.site_release_id}::uuid,
+        ${String(body.dispatch_id)}::uuid,
+        ${String(body.attempt_token)}::uuid,
+        ${Number(body.execution_generation)},
+        ${Number(context.pointer_generation)},
+        ${`broker:${String(body.dispatch_id)}:${String(body.attempt_token)}`},
+        900,
+        600
+      ) as result
+    `,
+    );
+    if (authorization.already_committed === true) {
       return json({
         ok: true,
         idempotent: true,
         site_release_id: context.site_release_id,
+        generation: Number(authorization.expected_pointer_generation),
       });
     }
-    promotionStage = "authorize";
-    authorization = await rpc(
-      sql,
-      sql<JsonRecord[]>`
-      select private.authorize_production_promotion_v1(
-        ${context.site_release_id}::uuid, ${Number(context.pointer_generation)},
-        ${`broker:${String(body.dispatch_id)}`}, 600
-      ) as result
-    `,
-    );
     const token = Number(authorization.fencing_token);
     const generation = Number(authorization.expected_pointer_generation);
     promotionStage = "mark_deploying";
     await sql`select private.mark_promotion_deploying_v1(${context.site_release_id}::uuid, ${token}, ${generation})`;
     promotionStage = "load_artifact";
-    const files = await artifactFiles(context, env);
+    const files = await (dependencies.loadArtifact || artifactFiles)(
+      context,
+      env,
+    );
     const deploymentStartedAt = Date.now();
     promotionStage = "upload_pages";
-    const deployment = await uploadPages(files, context, env);
+    const deployment = await (dependencies.upload || uploadPages)(
+      files,
+      context,
+      env,
+    );
     deploymentChanged = true;
     promotionStage = "mark_verifying";
     await sql`select private.mark_promotion_verifying_v1(
       ${context.site_release_id}::uuid, ${token}, ${generation}, ${deployment.id}
     )`;
     promotionStage = "verify_deployment";
-    const evidence = await verifyDeployment(
+    const evidence = await (dependencies.verify || verifyDeployment)(
       context,
       deployment.url,
       env,
@@ -1280,13 +1559,17 @@ async function promote(request: Request, env: Env): Promise<Response> {
       deploymentStartedAt,
     );
     promotionStage = "purge_caches";
-    await purgeContentCaches(env);
+    await (dependencies.purge || purgeContentCaches)(env);
     promotionStage = "commit_promotion";
     const committed = await rpc(
       sql,
       sql<JsonRecord[]>`
-      select private.commit_production_promotion_v1(
-        ${context.site_release_id}::uuid, ${token}, ${generation}, ${deployment.id},
+      select private.commit_attempt_production_promotion_v1(
+        ${context.site_release_id}::uuid,
+        ${String(body.dispatch_id)}::uuid,
+        ${String(body.attempt_token)}::uuid,
+        ${Number(body.execution_generation)},
+        ${token}, ${generation}, ${deployment.id},
         ${context.manifest_sha256}, ${context.artifact_sha256}, ${context.build_environment_version},
         ${sql.json(evidence)}
       ) as result
@@ -1340,38 +1623,29 @@ async function promote(request: Request, env: Env): Promise<Response> {
     if (authorization && context) {
       const token = Number(authorization.fencing_token);
       const generation = Number(authorization.expected_pointer_generation);
-      try {
-        if (deploymentChanged && context.current_site_release_id) {
-          const previous = await deployContext(
-            sql,
-            context.current_site_release_id,
-          );
-          const previousFiles = await artifactFiles(previous, env);
-          const restored = await uploadPages(previousFiles, previous, env);
-          const recovery = await verifyDeployment(
-            previous,
-            restored.url,
-            env,
-            previousFiles,
-          );
-          await sql`select private.finish_production_recovery_v1(
-            ${context.site_release_id}::uuid, ${token}, ${generation}, true,
-            ${sql.json({ ...recovery, restored_site_release_id: previous.site_release_id, deployment_id: restored.id })}
-          )`;
-        } else if (!deploymentChanged) {
+      if (!deploymentChanged) {
+        try {
           await sql`select private.finish_production_recovery_v1(
             ${context.site_release_id}::uuid, ${token}, ${generation}, true,
             ${sql.json({ production_unchanged: true })}
           )`;
+        } catch {
+          await sql`select private.finish_production_recovery_v1(
+            ${context.site_release_id}::uuid, ${token}, ${generation}, false,
+            ${sql.json({ recovery_failed: true })}
+          )`.catch(() => undefined);
         }
-        // If Pages changed during the first-ever promotion there is no prior
-        // release to restore. Keep the slot in verifying so the scheduled
-        // reconciler can commit after delayed multi-edge convergence.
-      } catch {
-        await sql`select private.finish_production_recovery_v1(
-          ${context.site_release_id}::uuid, ${token}, ${generation}, false,
-          ${sql.json({ recovery_failed: true })}
-        )`.catch(() => undefined);
+      } else {
+        // Once Pages may have changed, this execution never performs a cached
+        // predecessor upload. The durable coordinator will run a fresh,
+        // fenced reconcile after the lease expires.
+        console.warn(
+          "[ContentBroker] promotion requires fresh reconcile; cached compensation suppressed",
+          {
+            siteReleaseId: context.site_release_id,
+            stage: promotionStage,
+          },
+        );
       }
     }
     console.error("[ContentBroker] promotion failed", {
@@ -1396,6 +1670,7 @@ type RollbackDependencies = {
   loadArtifact?: typeof artifactFiles;
   upload?: typeof uploadPages;
   verify?: typeof verifyDeployment;
+  latestDeployment?: typeof latestProductionDeployment;
   purge?: typeof purgeContentCaches;
 };
 
@@ -1444,19 +1719,32 @@ export async function handleRollbackRequest(
       context,
       env,
     );
-    const deploymentStartedAt = Date.now();
-    const deployment = await (dependencies.upload || uploadPages)(
-      artifact,
-      context,
-      env,
-    );
-    const evidence = await (dependencies.verify || verifyDeployment)(
-      context,
-      deployment.url,
-      env,
-      artifact,
-      deploymentStartedAt,
-    );
+    const verify = dependencies.verify || verifyDeployment;
+    let deployment: ProductionDeployment | { id: string; url: string };
+    let evidence: JsonRecord;
+    try {
+      const latest = await (
+        dependencies.latestDeployment || latestProductionDeployment
+      )(env);
+      evidence = await verify(context, latest.url, env, artifact, undefined, {
+        maximumAttempts: 1,
+      });
+      deployment = latest;
+    } catch {
+      const deploymentStartedAt = Date.now();
+      deployment = await (dependencies.upload || uploadPages)(
+        artifact,
+        context,
+        env,
+      );
+      evidence = await verify(
+        context,
+        deployment.url,
+        env,
+        artifact,
+        deploymentStartedAt,
+      );
+    }
     await (dependencies.purge || purgeContentCaches)(env);
     const committed = await rpc(
       sql,
@@ -1528,13 +1816,14 @@ type ReconcileDependencies = {
   upload?: typeof uploadPages;
   verify?: typeof verifyDeployment;
   latestDeployment?: typeof latestProductionDeployment;
+  rollbackDeployment?: typeof rollbackPagesDeployment;
   purge?: typeof purgeContentCaches;
 };
 
 export async function reconcileProduction(
   env: Env,
   dependencies: ReconcileDependencies = {},
-): Promise<"empty" | "committed" | "restored"> {
+): Promise<"empty" | "committed" | "restored" | "superseded"> {
   const sql = (dependencies.openDatabase || openContentDatabase)(
     env,
     "content-production-reconciler",
@@ -1548,19 +1837,43 @@ export async function reconcileProduction(
       JsonRecord[]
     >`select private.begin_production_reconcile_v1() as result`;
     const reconciliation = rows[0]?.result as JsonRecord | null;
-    if (!reconciliation) return "empty";
+    if (!reconciliation) {
+      const currentRows = await sql<
+        JsonRecord[]
+      >`select private.get_current_release_v1() as result`;
+      const currentPointer = currentRows[0]?.result as JsonRecord | null;
+      const currentReleaseId = String(currentPointer?.site_release_id || "");
+      if (!UUID.test(currentReleaseId)) return "empty";
+      const current = await deployContext(sql, currentReleaseId);
+      const currentResult = await verifyOrRepairCurrentDeployment(
+        current,
+        sql,
+        env,
+        {
+          loadArtifact,
+          latestDeployment:
+            dependencies.latestDeployment || latestProductionDeployment,
+          verify,
+          rollbackDeployment:
+            dependencies.rollbackDeployment || rollbackPagesDeployment,
+          purge,
+        },
+      );
+      if (currentResult.superseded === true) return "superseded";
+      return currentResult.repaired === true ? "restored" : "empty";
+    }
     const slot = reconciliation.slot as JsonRecord;
     const target = reconciliation.target as unknown as ArtifactContext;
-    const current = reconciliation.current as unknown as ArtifactContext | null;
     const deployment = await (
       dependencies.latestDeployment || latestProductionDeployment
     )(env);
+    const targetFiles = await loadArtifact(target, env);
+    let targetEvidence: JsonRecord | null = null;
     try {
-      const targetFiles = await loadArtifact(target, env);
       // Recovery runs on the Free-plan 50-subrequest budget. Probe the
       // interrupted target once; if it has not already converged, preserve the
       // rest of this invocation for restoring and verifying last-known-good.
-      const evidence = await verify(
+      targetEvidence = await verify(
         target,
         deployment.url,
         env,
@@ -1568,81 +1881,533 @@ export async function reconcileProduction(
         undefined,
         { maximumAttempts: 1 },
       );
+    } catch (error) {
+      console.warn("[ContentBroker] reconcile target did not verify", {
+        ...errorDiagnostics(error),
+      });
+    }
+
+    if (targetEvidence) {
+      // A stale fence or pointer conflict after successful target verification
+      // means another serialized operation won. It must never fall through to
+      // a compensating upload based on a cached previous pointer.
       await purge(env);
-      if (slot.operation === "forward") {
-        await rpc(
-          sql,
-          sql<JsonRecord[]>`
-          select private.commit_production_promotion_v1(
+      try {
+        if (slot.operation === "forward") {
+          await rpc(
+            sql,
+            sql<JsonRecord[]>`
+          select private.commit_reconciled_production_promotion_v1(
             ${target.site_release_id}::uuid, ${Number(slot.fencing_token)},
             ${Number(slot.expected_pointer_generation)}, ${deployment.id},
             ${target.manifest_sha256}, ${target.artifact_sha256}, ${target.build_environment_version},
-            ${sql.json({ ...evidence, reconciled: true })}
+              ${sql.json({ ...targetEvidence, reconciled: true })}
           ) as result
         `,
-        );
-      } else {
-        await rpc(
-          sql,
-          sql<JsonRecord[]>`
+          );
+        } else {
+          await rpc(
+            sql,
+            sql<JsonRecord[]>`
           select private.commit_production_rollback_v1(
             ${target.site_release_id}::uuid, ${Number(slot.fencing_token)},
             ${Number(slot.expected_pointer_generation)}, ${deployment.id},
-            ${sql.json({ ...evidence, reconciled: true })}
+              ${sql.json({ ...targetEvidence, reconciled: true })}
           ) as result
         `,
+          );
+        }
+        return "committed";
+      } catch (error) {
+        console.warn(
+          "[ContentBroker] reconcile commit was superseded; no compensating Pages write",
+          {
+            ...errorDiagnostics(error),
+          },
         );
+        return "superseded";
       }
-      return "committed";
-    } catch (error) {
-      console.warn("[ContentBroker] reconcile target not committed", {
-        ...errorDiagnostics(error),
-      });
-      if (!current) {
-        // A first-ever promotion can be terminated before Pages changes while
-        // leaving the fenced slot in a deploying state. With no current
-        // pointer there is nothing to restore; release the slot only after the
-        // target failed verification against the latest production deployment.
-        await sql`select private.finish_production_recovery_v1(
+    }
+
+    // Refresh both the operation fence and the desired current pointer after
+    // target verification fails. Never restore the pointer snapshot returned
+    // by the initial reconcile claim.
+    const refreshedRows = await sql<
+      JsonRecord[]
+    >`select private.get_promotion_reconcile_context_v1() as result`;
+    const refreshed = refreshedRows[0]?.result as JsonRecord | null;
+    const refreshedSlot = refreshed?.slot as JsonRecord | undefined;
+    if (
+      !refreshed ||
+      Number(refreshedSlot?.fencing_token) !== Number(slot.fencing_token) ||
+      Number(refreshedSlot?.expected_pointer_generation) !==
+        Number(slot.expected_pointer_generation)
+    ) {
+      console.info(
+        "[ContentBroker] reconcile recovery was superseded before Pages write",
+      );
+      return "superseded";
+    }
+    const current =
+      (refreshed.current as unknown as ArtifactContext | null) || null;
+    if (!current) {
+      // A first-ever promotion can be terminated before Pages changes while
+      // leaving the fenced slot in a deploying state. With no current
+      // pointer there is nothing to restore; release the slot only after the
+      // target failed verification against the latest production deployment.
+      await sql`select private.finish_production_recovery_v1(
           ${target.site_release_id}::uuid, ${Number(slot.fencing_token)},
           ${Number(slot.expected_pointer_generation)}, true,
           ${sql.json({ production_unchanged: true, reconciled: true, no_current_release: true })}
         )`;
-        return "restored";
-      }
-      const currentFiles = await loadArtifact(current, env);
-      const reuseLatest = deploymentMatchesContext(deployment, current);
-      const restorationStartedAt = reuseLatest ? undefined : Date.now();
-      const restored = reuseLatest
-        ? deployment
-        : await upload(currentFiles, current, env);
-      if (reuseLatest) {
-        console.info(
-          "[ContentBroker] reusing latest last-known-good deployment during recovery",
-          {
-            deploymentId: deployment.id,
-            siteReleaseId: current.site_release_id,
-            siteReleaseSequence: current.site_release_sequence,
-          },
-        );
-      }
-      const evidence = await verify(
-        current,
-        restored.url,
-        env,
-        currentFiles,
-        restorationStartedAt,
+      return "restored";
+    }
+    const currentFiles = await loadArtifact(current, env);
+    const reuseLatest = deploymentMatchesContext(deployment, current);
+    const restorationStartedAt = reuseLatest ? undefined : Date.now();
+    const restored = reuseLatest
+      ? deployment
+      : await upload(currentFiles, current, env);
+    if (reuseLatest) {
+      console.info(
+        "[ContentBroker] reusing latest last-known-good deployment during recovery",
+        {
+          deploymentId: deployment.id,
+          siteReleaseId: current.site_release_id,
+          siteReleaseSequence: current.site_release_sequence,
+        },
       );
-      await sql`select private.finish_production_recovery_v1(
+    }
+    const evidence = await verify(
+      current,
+      restored.url,
+      env,
+      currentFiles,
+      restorationStartedAt,
+    );
+    await sql`select private.finish_production_recovery_v1(
         ${target.site_release_id}::uuid, ${Number(slot.fencing_token)},
         ${Number(slot.expected_pointer_generation)}, true,
         ${sql.json({ ...evidence, reconciled: true, restored_site_release_id: current.site_release_id, deployment_id: restored.id })}
       )`;
-      return "restored";
-    }
+    return "restored";
   } finally {
     await sql.end({ timeout: 2 });
   }
+}
+
+const COORDINATOR_POLL_INTERVAL_MS = 1_000;
+const COORDINATOR_WAIT_TIMEOUT_MS = 15 * 60 * 1_000;
+const COORDINATOR_QUEUE_KEY = "production-operation-queue";
+const COORDINATOR_ACTIVE_KEY = "production-operation-active";
+const COORDINATOR_PENDING_RECONCILE_KEY =
+  "production-operation-pending-reconcile";
+const COORDINATOR_COMPLETED_KEY = "production-operation-completed";
+const COORDINATOR_WATCHDOG_MS = 60_000;
+const COORDINATOR_RETENTION_MS = 24 * 60 * 60 * 1_000;
+
+function coordinatorOperationKey(id: string): string {
+  return `production-operation:${id}`;
+}
+
+async function executeCoordinatorOperation(
+  operation: CoordinatorOperation,
+  env: Env,
+): Promise<Response> {
+  if (operation.kind === "promote") {
+    if (!operation.payload)
+      return json({ error: "coordinator_payload_missing" }, 500);
+    return performPromotion(operation.payload, env);
+  }
+  if (operation.kind === "rollback") {
+    if (!operation.payload)
+      return json({ error: "coordinator_payload_missing" }, 500);
+    return handleRollbackRequest(
+      new Request("https://production-coordinator.internal/v1/rollback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Content-Control-Secret": env.CONTROL_BROKER_SECRET,
+        },
+        body: JSON.stringify(operation.payload),
+      }),
+      env,
+    );
+  }
+  const result = await reconcileProduction(env);
+  return json({ ok: true, result });
+}
+
+/**
+ * The only runtime allowed to call production Pages mutation helpers.
+ *
+ * Fetch handlers only enqueue and inspect durable state. The alarm drains one
+ * operation at a time, so promote, rollback, reconcile and repair work cannot
+ * overlap even when ordinary Worker requests interleave across awaits.
+ */
+export class ProductionCoordinator {
+  private alarmRunning = false;
+
+  constructor(
+    private readonly state: DurableObjectState,
+    private readonly env: Env,
+    private readonly execute: typeof executeCoordinatorOperation = executeCoordinatorOperation,
+  ) {}
+
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    if (request.method === "POST" && url.pathname === "/internal/enqueue") {
+      let input: JsonRecord;
+      try {
+        input = (await request.json()) as JsonRecord;
+      } catch {
+        return json({ error: "invalid_request" }, 400);
+      }
+      const kind = String(input.kind || "") as CoordinatorOperationKind;
+      if (!["promote", "rollback", "reconcile"].includes(kind)) {
+        return json({ error: "invalid_operation_kind" }, 400);
+      }
+      const payload =
+        input.payload && typeof input.payload === "object"
+          ? (input.payload as JsonRecord)
+          : null;
+      if (kind !== "reconcile" && !payload) {
+        return json({ error: "operation_payload_required" }, 400);
+      }
+      const id = crypto.randomUUID();
+      const now = new Date().toISOString();
+      const operation: CoordinatorOperation = {
+        id,
+        kind,
+        payload,
+        status: "queued",
+        attempts: 0,
+        created_at: now,
+        updated_at: now,
+      };
+      let acceptedId = id;
+      let deduplicated = false;
+      await this.state.storage.transaction(async (transaction) => {
+        if (kind === "reconcile") {
+          const pendingId = await transaction.get<string>(
+            COORDINATOR_PENDING_RECONCILE_KEY,
+          );
+          if (pendingId) {
+            const pending = await transaction.get<CoordinatorOperation>(
+              coordinatorOperationKey(pendingId),
+            );
+            if (pending && pending.status !== "completed") {
+              acceptedId = pendingId;
+              deduplicated = true;
+              return;
+            }
+            await transaction.delete(COORDINATOR_PENDING_RECONCILE_KEY);
+          }
+        }
+        const queue =
+          (await transaction.get<string[]>(COORDINATOR_QUEUE_KEY)) || [];
+        queue.push(id);
+        await transaction.put(coordinatorOperationKey(id), operation);
+        await transaction.put(COORDINATOR_QUEUE_KEY, queue);
+        if (kind === "reconcile") {
+          await transaction.put(COORDINATOR_PENDING_RECONCILE_KEY, id);
+        }
+      });
+      await this.pruneCompletedOperations();
+      await this.state.storage.setAlarm(Date.now());
+      return json({ ok: true, operation_id: acceptedId, deduplicated }, 202);
+    }
+
+    const match = /^\/internal\/operations\/([0-9a-f-]{36})$/i.exec(
+      url.pathname,
+    );
+    if (request.method === "GET" && match) {
+      const operation = await this.state.storage.get<CoordinatorOperation>(
+        coordinatorOperationKey(match[1]),
+      );
+      return operation
+        ? json({ ok: true, operation })
+        : json({ error: "operation_not_found" }, 404);
+    }
+    return json({ error: "not_found" }, 404);
+  }
+
+  async alarm(): Promise<void> {
+    if (this.alarmRunning) return;
+    this.alarmRunning = true;
+    try {
+      let activeId = await this.state.storage.get<string>(
+        COORDINATOR_ACTIVE_KEY,
+      );
+      const queue =
+        (await this.state.storage.get<string[]>(COORDINATOR_QUEUE_KEY)) || [];
+      if (!activeId) activeId = queue[0];
+      if (!activeId) return;
+
+      const key = coordinatorOperationKey(activeId);
+      const operation = await this.state.storage.get<CoordinatorOperation>(key);
+      if (!operation) {
+        await this.finishMissingOperation(activeId);
+        return;
+      }
+      if (operation.status === "completed") {
+        await this.finishOperation(operation);
+        return;
+      }
+
+      operation.status = "running";
+      operation.attempts = Number(operation.attempts || 0) + 1;
+      operation.updated_at = new Date().toISOString();
+      await this.state.storage.put(COORDINATOR_ACTIVE_KEY, activeId);
+      await this.state.storage.put(key, operation);
+      // An alarm normally retries automatically after an uncaught runtime
+      // failure. Persist an explicit watchdog as well so an isolate reset after
+      // a Pages side effect cannot strand the active operation indefinitely.
+      await this.state.storage.setAlarm(Date.now() + COORDINATOR_WATCHDOG_MS);
+
+      let response: Response;
+      try {
+        response = await this.execute(operation, this.env);
+      } catch (error) {
+        console.error("[ContentBroker] coordinator operation failed", {
+          operationId: operation.id,
+          kind: operation.kind,
+          ...errorDiagnostics(error),
+        });
+        response = json(
+          {
+            error: "coordinator_operation_failed",
+            diagnostics: errorDiagnostics(error),
+          },
+          503,
+        );
+      }
+      operation.status = "completed";
+      operation.response_status = response.status;
+      operation.response_body = await response.text();
+      operation.completed_at = new Date().toISOString();
+      operation.updated_at = operation.completed_at;
+      await this.state.storage.put(key, operation);
+      await this.finishOperation(operation);
+    } finally {
+      this.alarmRunning = false;
+    }
+  }
+
+  private async finishOperation(
+    operation: CoordinatorOperation,
+  ): Promise<void> {
+    let hasMore = false;
+    await this.state.storage.transaction(async (transaction) => {
+      const queue =
+        (await transaction.get<string[]>(COORDINATOR_QUEUE_KEY)) || [];
+      const remaining = queue.filter((candidate) => candidate !== operation.id);
+      hasMore = remaining.length > 0;
+      await transaction.put(COORDINATOR_QUEUE_KEY, remaining);
+      await transaction.delete(COORDINATOR_ACTIVE_KEY);
+      if (operation.kind === "reconcile") {
+        const pending = await transaction.get<string>(
+          COORDINATOR_PENDING_RECONCILE_KEY,
+        );
+        if (pending === operation.id) {
+          await transaction.delete(COORDINATOR_PENDING_RECONCILE_KEY);
+        }
+      }
+      const completed =
+        (await transaction.get<CompletedCoordinatorOperation[]>(
+          COORDINATOR_COMPLETED_KEY,
+        )) || [];
+      completed.push({
+        id: operation.id,
+        completed_at: operation.completed_at || new Date().toISOString(),
+      });
+      await transaction.put(COORDINATOR_COMPLETED_KEY, completed);
+    });
+    await this.pruneCompletedOperations();
+    if (hasMore) {
+      await this.state.storage.setAlarm(Date.now());
+    }
+  }
+
+  private async finishMissingOperation(id: string): Promise<void> {
+    let hasMore = false;
+    await this.state.storage.transaction(async (transaction) => {
+      const queue =
+        (await transaction.get<string[]>(COORDINATOR_QUEUE_KEY)) || [];
+      const remaining = queue.filter((candidate) => candidate !== id);
+      hasMore = remaining.length > 0;
+      await transaction.put(COORDINATOR_QUEUE_KEY, remaining);
+      await transaction.delete(COORDINATOR_ACTIVE_KEY);
+      const pending = await transaction.get<string>(
+        COORDINATOR_PENDING_RECONCILE_KEY,
+      );
+      if (pending === id) {
+        await transaction.delete(COORDINATOR_PENDING_RECONCILE_KEY);
+      }
+    });
+    if (hasMore) {
+      await this.state.storage.setAlarm(Date.now());
+    }
+  }
+
+  private async pruneCompletedOperations(): Promise<void> {
+    const cutoff = Date.now() - COORDINATOR_RETENTION_MS;
+    await this.state.storage.transaction(async (transaction) => {
+      const completed =
+        (await transaction.get<CompletedCoordinatorOperation[]>(
+          COORDINATOR_COMPLETED_KEY,
+        )) || [];
+      const retained: CompletedCoordinatorOperation[] = [];
+      for (const item of completed) {
+        if (Date.parse(item.completed_at) >= cutoff) {
+          retained.push(item);
+        } else {
+          await transaction.delete(coordinatorOperationKey(item.id));
+        }
+      }
+      await transaction.put(COORDINATOR_COMPLETED_KEY, retained);
+    });
+  }
+}
+
+async function enqueueCoordinatorOperation(
+  env: Env,
+  kind: CoordinatorOperationKind,
+  payload: JsonRecord | null = null,
+) {
+  if (!env.PRODUCTION_COORDINATOR) {
+    return {
+      response: json({ error: "production_coordinator_unavailable" }, 503),
+      stub: null,
+      operationId: null,
+    };
+  }
+  const id = env.PRODUCTION_COORDINATOR.idFromName(
+    `pages-project:${env.PAGES_PROJECT}`,
+  );
+  const stub = env.PRODUCTION_COORDINATOR.get(id);
+  const enqueued = await stub.fetch(
+    new Request("https://production-coordinator.internal/internal/enqueue", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind, payload }),
+    }),
+  );
+  if (!enqueued.ok) {
+    return { response: enqueued, stub: null, operationId: null };
+  }
+  const accepted = (await enqueued.json()) as JsonRecord;
+  const operationId = String(accepted.operation_id || "");
+  if (!UUID.test(operationId)) {
+    return {
+      response: json({ error: "invalid_coordinator_response" }, 503),
+      stub: null,
+      operationId: null,
+    };
+  }
+  return {
+    response: json(accepted, enqueued.status),
+    stub,
+    operationId,
+  };
+}
+
+async function submitCoordinatorOperation(
+  env: Env,
+  kind: CoordinatorOperationKind,
+  payload: JsonRecord | null = null,
+): Promise<Response> {
+  const enqueued = await enqueueCoordinatorOperation(env, kind, payload);
+  if (!enqueued.stub || !enqueued.operationId) return enqueued.response;
+  const { stub, operationId } = enqueued;
+
+  const deadline = Date.now() + COORDINATOR_WAIT_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    const status = await stub.fetch(
+      new Request(
+        `https://production-coordinator.internal/internal/operations/${operationId}`,
+      ),
+    );
+    if (!status.ok) return status;
+    const result = (await status.json()) as {
+      operation?: CoordinatorOperation;
+    };
+    if (result.operation?.status === "completed") {
+      return new Response(result.operation.response_body || "", {
+        status: result.operation.response_status || 500,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "no-store",
+        },
+      });
+    }
+    await new Promise((resolve) =>
+      setTimeout(resolve, COORDINATOR_POLL_INTERVAL_MS),
+    );
+  }
+  return json(
+    { error: "coordinator_wait_timeout", operation_id: operationId },
+    504,
+  );
+}
+
+async function handlePromotionRequest(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  let body: JsonRecord;
+  try {
+    body = JSON.parse(
+      new TextDecoder("utf-8", { fatal: true }).decode(
+        await verifyWorkflowRequest(request, env),
+      ),
+    ) as JsonRecord;
+    validatePromotion(body);
+  } catch {
+    return json({ error: "unauthorized_or_invalid" }, 401);
+  }
+  return submitCoordinatorOperation(env, "promote", body);
+}
+
+async function handleCoordinatedRollbackRequest(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  if (
+    !bytesEqual(
+      request.headers.get("X-Content-Control-Secret") || "",
+      env.CONTROL_BROKER_SECRET,
+    )
+  ) {
+    return json({ error: "unauthorized" }, 401);
+  }
+  const bytes = new Uint8Array(await request.arrayBuffer());
+  if (bytes.byteLength > MAX_REQUEST_BYTES)
+    return json({ error: "payload_too_large" }, 413);
+  let payload: JsonRecord;
+  try {
+    payload = JSON.parse(
+      new TextDecoder("utf-8", { fatal: true }).decode(bytes),
+    ) as JsonRecord;
+  } catch {
+    return json({ error: "invalid_request" }, 400);
+  }
+  return submitCoordinatorOperation(env, "rollback", payload);
+}
+
+async function handleCoordinatedReconcileRequest(
+  request: Request,
+  env: Env,
+): Promise<Response> {
+  if (
+    !bytesEqual(
+      request.headers.get("X-Content-Control-Secret") || "",
+      env.CONTROL_BROKER_SECRET,
+    )
+  ) {
+    return json({ error: "unauthorized" }, 401);
+  }
+  return submitCoordinatorOperation(env, "reconcile");
 }
 
 export default {
@@ -1650,21 +2415,11 @@ export default {
     const path = new URL(request.url).pathname;
     if (request.method !== "POST")
       return Promise.resolve(json({ error: "method_not_allowed" }, 405));
-    if (path === "/v1/promote") return promote(request, env);
-    if (path === "/v1/rollback") return handleRollbackRequest(request, env);
-    if (path === "/v1/reconcile") {
-      if (
-        !bytesEqual(
-          request.headers.get("X-Content-Control-Secret") || "",
-          env.CONTROL_BROKER_SECRET,
-        )
-      ) {
-        return Promise.resolve(json({ error: "unauthorized" }, 401));
-      }
-      return reconcileProduction(env)
-        .then((result) => json({ ok: true, result }))
-        .catch(() => json({ error: "reconcile_failed" }, 503));
-    }
+    if (path === "/v1/promote") return handlePromotionRequest(request, env);
+    if (path === "/v1/rollback")
+      return handleCoordinatedRollbackRequest(request, env);
+    if (path === "/v1/reconcile")
+      return handleCoordinatedReconcileRequest(request, env);
     return Promise.resolve(json({ error: "not_found" }, 404));
   },
   scheduled(
@@ -1673,11 +2428,19 @@ export default {
     context: ExecutionContext,
   ): void {
     context.waitUntil(
-      reconcileProduction(env).catch((error) => {
-        console.error("[ContentBroker] reconcile failed", {
-          ...errorDiagnostics(error),
-        });
-      }),
+      enqueueCoordinatorOperation(env, "reconcile")
+        .then(({ response }) => {
+          if (!response.ok) {
+            throw new Error(
+              `Production reconcile enqueue failed with ${response.status}`,
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("[ContentBroker] reconcile enqueue failed", {
+            ...errorDiagnostics(error),
+          });
+        }),
     );
   },
 };

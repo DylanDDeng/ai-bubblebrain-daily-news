@@ -294,12 +294,39 @@ async function prepareRelease(release) {
 }
 
 async function authorizeForward(release, generation) {
+  const attemptToken = randomUUID();
+  const attemptRows = await admin`
+    update private.content_outbox
+    set status = 'preview_verified',
+        attempt_token = ${attemptToken}::uuid,
+        execution_generation = execution_generation + 1,
+        locked_by = ${`failure-matrix:${release.label}`},
+        locked_at = clock_timestamp(),
+        lease_expires_at = clock_timestamp() + interval '30 minutes',
+        updated_at = clock_timestamp()
+    where site_release_id = ${release.site_release_id}::uuid
+      and dispatch_id = ${release.dispatchId}::uuid
+    returning execution_generation
+  `;
+  assert(
+    attemptRows.length === 1,
+    `Could not prepare a fenced promotion attempt for ${release.label}`,
+  );
+  const executionGeneration = Number(attemptRows[0].execution_generation);
+  const lockedBy = `broker:${release.dispatchId}:${attemptToken}`;
   return rpc(
     await asRole(
       "content_deployer",
       (sql) => sql`
-			select private.authorize_production_promotion_v1(
-				${release.site_release_id}::uuid, ${generation}, ${`failure-matrix:${release.label}`}, 600
+			select private.authorize_attempt_production_promotion_v1(
+				${release.site_release_id}::uuid,
+				${release.dispatchId}::uuid,
+				${attemptToken}::uuid,
+				${executionGeneration},
+				${generation},
+				${lockedBy},
+				900,
+				600
 			) as result
 		`,
     ),
@@ -325,8 +352,13 @@ async function commitForward(
     await asRole(
       "content_deployer",
       (sql) => sql`
-			select private.commit_production_promotion_v1(
-				${release.site_release_id}::uuid, ${fencingToken}, ${expectedGeneration},
+			select private.commit_attempt_production_promotion_v1(
+				${release.site_release_id}::uuid,
+				${authorization.dispatch_id}::uuid,
+				${authorization.attempt_token}::uuid,
+				${authorization.execution_generation},
+				${fencingToken},
+				${expectedGeneration},
 				${`pages-${release.label}`}, ${manifestSha256}, ${artifactSha256},
 				${buildEnvironment}, ${sql.json(evidence)}
 			) as result
@@ -980,17 +1012,18 @@ try {
     callbackState[0].last_error === null,
     "Late failure callback mutated terminal error state",
   );
+  const unknownDispatchId = randomUUID();
   const wrongTupleMessage = await expectRejected(
     "wrong deployment callback tuple",
     () =>
       asRole(
         "content_deployer",
         (sql) => sql`
-				select private.record_deployment_event_v1(
-					${releaseA.site_release_id}::uuid, ${claimFixtures[0].dispatchId}::uuid,
-					'building', '{}'::jsonb
-				)
-			`,
+					select private.record_deployment_event_v1(
+						${releaseA.site_release_id}::uuid, ${unknownDispatchId}::uuid,
+						'building', '{}'::jsonb
+					)
+				`,
       ),
     /Deployment event identity mismatch/,
   );
@@ -1253,12 +1286,29 @@ try {
       releaseB.site_release_id,
     "Rollback authorization moved pointer",
   );
-  const reconcile = rpc(
+  const activeLeaseReconcile = rpc(
     await asRole(
       "content_deployer",
       (sql) => sql`
 			select private.begin_production_reconcile_v1() as result
 		`,
+    ),
+  );
+  assert(
+    activeLeaseReconcile === null,
+    "Active rollback lease was incorrectly claimable by reconciler",
+  );
+  await admin`
+    update private.production_promotion_slot
+    set lease_expires_at = clock_timestamp() - interval '1 second'
+    where project_key = 'bubble-brain-pages'
+  `;
+  const reconcile = rpc(
+    await asRole(
+      "content_deployer",
+      (sql) => sql`
+        select private.begin_production_reconcile_v1() as result
+      `,
     ),
   );
   assert(
@@ -1270,10 +1320,10 @@ try {
     "Reconcile did not identify B as current",
   );
   await asRole(
-    "content_deployer",
-    (sql) => sql`
+      "content_deployer",
+      (sql) => sql`
 		select private.finish_production_recovery_v1(
-			${releaseA.site_release_id}::uuid, ${rollbackAuth.fencing_token}, 2, true,
+			${releaseA.site_release_id}::uuid, ${reconcile.slot.fencing_token}, 2, true,
 			'{"restored_site_release":"B","multi_edge_verified":true}'::jsonb
 		)
 	`,
@@ -1331,12 +1381,12 @@ try {
   await expectRejected(
     "late C promotion commit",
     () => commitForward(releaseC, authC, 2),
-    /Stale production fencing token|Pointer generation conflict/,
+    /Stale production deployment attempt|Stale production fencing token|Pointer generation conflict/,
   );
   await expectRejected(
     "late B promotion commit",
     () => commitForward(releaseB, promotedB.authorization, 1),
-    /Stale production fencing token|Pointer generation conflict/,
+    /Stale production deployment attempt|Stale production fencing token|Pointer generation conflict/,
   );
 
   const releaseD = await createRelease(snapshotA, "D-after-rollback");
@@ -2069,6 +2119,15 @@ try {
     staged_global_overrides: 0,
     finalize_audit_rows: 1,
   };
+  await asRole(
+    "content_deployer",
+    (sql) => sql`
+      select private.record_deployment_event_v1(
+        ${hideRelease.site_release_id}::uuid, ${hideDispatchId}::uuid,
+        'edge_verified', '{"synthetic_cleanup":true}'::jsonb
+      )
+    `,
+  );
 
   const controlBody = sha256("routine-control-denial");
   await expectRejected(
@@ -2439,6 +2498,17 @@ try {
         `,
       ),
     /permission denied for function retry_content_outbox_v1/,
+  );
+  await asRole(
+    "content_deployer",
+    (sql) => sql`
+      select private.record_deployment_event_v1(
+        ${suppressionRelease.site_release_id}::uuid,
+        ${suppressionDispatchId}::uuid,
+        'failed',
+        ${sql.json({ error: "failure_matrix_retry_exhausted_fixture" })}
+      )
+    `,
   );
 
   const rebuildBodyHash = sha256("operations-same-release-rebuild");

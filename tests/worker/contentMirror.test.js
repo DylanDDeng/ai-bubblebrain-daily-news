@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
     mirrorStructuredReport,
     publicationBatchId,
+    recordScheduledRunTrace,
     resolveForwardBuildCodeSha,
 } from '../../workers/content/ingestion/mirror.ts';
 import { canonicalJsonBytes } from '../../workers/content/shared/canonical.ts';
@@ -132,6 +133,53 @@ function input(value = report()) {
 }
 
 describe('structured content database mirror', () => {
+    it('records scheduled run traces through the ingestor-only RPC', async () => {
+        const db = database();
+        db.sql.mockImplementationOnce(async (strings, ...values) => {
+            const query = strings.join(' ');
+            db.calls.push({ query, values });
+            expect(query).toContain('record_scheduled_run_trace_v1');
+            return [{
+                result: {
+                    run_id: 'scheduled:1784001600000',
+                    status: 'started',
+                },
+            }];
+        });
+
+        await expect(recordScheduledRunTrace(
+            enabledEnv(),
+            {
+                runId: 'scheduled:1784001600000',
+                scheduledAt: '2026-07-14T00:00:00.000Z',
+                eventType: 'started',
+                evidence: {
+                    status: 'started',
+                    stage: 'started',
+                    started_at: '2026-07-14T00:00:01.000Z',
+                    finished_at: null,
+                },
+            },
+            { openDatabase: () => db.sql },
+        )).resolves.toBe(true);
+        expect(db.sql.end).toHaveBeenCalledWith({ timeout: 2 });
+    });
+
+    it('does not open the content database when mirroring is disabled', async () => {
+        const openDatabase = vi.fn();
+        await expect(recordScheduledRunTrace(
+            { CONTENT_DATABASE_MIRROR_ENABLED: 'false' },
+            {
+                runId: 'scheduled:1784001600000',
+                scheduledAt: '2026-07-14T00:00:00.000Z',
+                eventType: 'started',
+                evidence: { status: 'started', stage: 'started' },
+            },
+            { openDatabase },
+        )).resolves.toBe(false);
+        expect(openDatabase).not.toHaveBeenCalled();
+    });
+
     it('pins a delayed mirror to current main when the source commit is its ancestor', async () => {
         const mainSha = 'b'.repeat(40);
         const api = vi

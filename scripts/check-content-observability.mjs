@@ -4,19 +4,16 @@ import { fileURLToPath } from "node:url";
 import postgres from "postgres";
 
 import { validateContentDatabaseTopology } from "./content-database-topology.mjs";
+import {
+  chunkScheduledRuns,
+  dueScheduledRuns,
+} from "../src/daily/scheduleContract.js";
 
 const PROJECT_REF = /^[a-z0-9]{20}$/;
 const ACCOUNT_ID = /^[a-f0-9]{32}$/i;
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SHA256 = /^[a-f0-9]{64}$/;
-const BATCHES = [
-  [2, "morning"],
-  [7, "afternoon"],
-  [15, "night"],
-  [18, "lateNight"],
-  [19, "lateNightSupplement"],
-];
 
 function required(label, value) {
   const normalized = String(value || "").trim();
@@ -184,28 +181,8 @@ export function validateContentObservabilityEnvironment(env) {
   };
 }
 
-function dateString(date) {
-  return date.toISOString().slice(0, 10);
-}
-
 export function dueContentBatches(now = Date.now(), lookbackHours = 30) {
-  const due = [];
-  const start = now - lookbackHours * 60 * 60 * 1000;
-  const firstDay = new Date(start);
-  firstDay.setUTCHours(0, 0, 0, 0);
-  for (let day = firstDay.getTime(); day <= now; day += 24 * 60 * 60 * 1000) {
-    for (const [hour, batch_id] of BATCHES) {
-      const scheduled_at = day + hour * 60 * 60 * 1000;
-      if (scheduled_at < start || scheduled_at + 10 * 60 * 1000 > now) continue;
-      due.push({
-        batch_id,
-        deadline: new Date(scheduled_at + 10 * 60 * 1000).toISOString(),
-        report_date: dateString(new Date(day)),
-        scheduled_at: new Date(scheduled_at).toISOString(),
-      });
-    }
-  }
-  return due;
+  return dueScheduledRuns(now, lookbackHours);
 }
 
 function currentIdentity(value) {
@@ -265,6 +242,59 @@ function sameStaticIdentity(current, staticManifest) {
   );
 }
 
+function sameInstant(left, right) {
+  const leftEpoch = Date.parse(String(left || ""));
+  const rightEpoch = Date.parse(String(right || ""));
+  return (
+    Number.isFinite(leftEpoch) &&
+    Number.isFinite(rightEpoch) &&
+    leftEpoch === rightEpoch
+  );
+}
+
+function scheduledRunEvidenceComplete(outcome, due) {
+  const startedAt = Date.parse(String(outcome?.started_at || ""));
+  const finishedAt = Date.parse(String(outcome?.finished_at || ""));
+  const releaseRequired = outcome?.no_op !== true;
+  return (
+    outcome?.run_id === due.run_id &&
+    sameInstant(outcome?.scheduled_at, due.scheduled_at) &&
+    outcome?.status === "succeeded" &&
+    Number.isFinite(startedAt) &&
+    Number.isFinite(finishedAt) &&
+    finishedAt >= startedAt &&
+    outcome?.source_result?.status === "succeeded" &&
+    SHA256.test(String(outcome?.content_sha256 || "")) &&
+    outcome?.database_mirror?.status === "mirrored" &&
+    (!releaseRequired ||
+      (UUID.test(String(outcome?.site_release_id || "")) &&
+        UUID.test(String(outcome?.dispatch_id || "")) &&
+        Number.isSafeInteger(Number(outcome?.site_release_sequence)) &&
+        Number(outcome.site_release_sequence) > 0))
+  );
+}
+
+function scheduledRunEvidenceAligned(kvOutcome, databaseOutcome) {
+  return (
+    kvOutcome?.run_id === databaseOutcome?.run_id &&
+    sameInstant(kvOutcome?.scheduled_at, databaseOutcome?.scheduled_at) &&
+    kvOutcome?.status === databaseOutcome?.status &&
+    sameInstant(kvOutcome?.started_at, databaseOutcome?.started_at) &&
+    sameInstant(kvOutcome?.finished_at, databaseOutcome?.finished_at) &&
+    kvOutcome?.source_result?.status === databaseOutcome?.source_result?.status &&
+    kvOutcome?.content_sha256 === databaseOutcome?.content_sha256 &&
+    (kvOutcome?.no_op === true) === (databaseOutcome?.no_op === true) &&
+    kvOutcome?.database_mirror?.status ===
+      databaseOutcome?.database_mirror?.status &&
+    String(kvOutcome?.site_release_id || "") ===
+      String(databaseOutcome?.site_release_id || "") &&
+    Number(kvOutcome?.site_release_sequence) ===
+      Number(databaseOutcome?.site_release_sequence) &&
+    String(kvOutcome?.dispatch_id || "") ===
+      String(databaseOutcome?.dispatch_id || "")
+  );
+}
+
 export function evaluateContentObservability(input, now = Date.now()) {
   const reasons = [];
   const database = input.database || {};
@@ -291,13 +321,13 @@ export function evaluateContentObservability(input, now = Date.now()) {
       reasons.push(`static_manifest_drift:${endpoint.url}`);
   }
 
-  const attempts = new Map(
-    (database.publication_attempts || []).map((attempt) => [
-      `${attempt.report_date}:${attempt.batch_id}`,
-      attempt,
-    ]),
+  const publicationAttempts = database.publication_attempts || [];
+  const attemptsByRunId = new Map(
+    publicationAttempts
+      .filter((attempt) => /^scheduled:\d{13}$/.test(String(attempt.trigger_kind || "")))
+      .map((attempt) => [String(attempt.trigger_kind), attempt]),
   );
-  const dueBatches = dueContentBatches(now).filter(
+  const dueRuns = dueContentBatches(now).filter(
     (batch) => Date.parse(batch.scheduled_at) >= (input.startedAt ?? -Infinity),
   );
   const scheduledOutcomes = new Map(
@@ -306,23 +336,48 @@ export function evaluateContentObservability(input, now = Date.now()) {
       outcome,
     ]),
   );
-  for (const due of dueBatches) {
+  const databaseScheduledRuns = new Map(
+    (Array.isArray(database.scheduled_runs) ? database.scheduled_runs : [])
+      .map((outcome) => [String(outcome?.run_id || ""), outcome]),
+  );
+  for (const due of dueRuns) {
     const scheduledOutcome = scheduledOutcomes.get(due.scheduled_at);
-    const scheduledKey = `${due.report_date}:${due.batch_id}:${due.scheduled_at}`;
+    const databaseScheduledRun = databaseScheduledRuns.get(due.run_id);
+    const scheduledKey = `${due.run_id}:${due.report_date}:${due.batch_id}`;
     if (!scheduledOutcome || scheduledOutcome.status === "missing") {
       reasons.push(`scheduled_run_missing:${scheduledKey}`);
+    } else if (scheduledOutcome.status === "started") {
+      reasons.push(`scheduled_run_terminal_missing:${scheduledKey}`);
     } else if (scheduledOutcome.status !== "succeeded") {
       reasons.push(`scheduled_run_failed:${scheduledKey}`);
+    } else if (!scheduledRunEvidenceComplete(scheduledOutcome, due)) {
+      reasons.push(`scheduled_run_evidence_incomplete:${scheduledKey}`);
     }
-    const attempt = attempts.get(`${due.report_date}:${due.batch_id}`);
-    if (!attempt || !["succeeded", "failed"].includes(attempt.status)) {
-      reasons.push(`batch_terminal_missing:${due.report_date}:${due.batch_id}`);
-    } else if (attempt.status === "failed") {
-      reasons.push(`batch_failed:${due.report_date}:${due.batch_id}`);
+
+    if (!databaseScheduledRun) {
+      reasons.push(`scheduled_run_database_trace_missing:${scheduledKey}`);
+    } else if (!scheduledRunEvidenceComplete(databaseScheduledRun, due)) {
+      reasons.push(`scheduled_run_database_trace_invalid:${scheduledKey}`);
+    } else if (
+      scheduledOutcome &&
+      !scheduledRunEvidenceAligned(scheduledOutcome, databaseScheduledRun)
+    ) {
+      reasons.push(`scheduled_run_database_trace_mismatch:${scheduledKey}`);
+    }
+
+    const attempt = attemptsByRunId.get(due.run_id);
+    const noOp =
+      databaseScheduledRun?.no_op === true || scheduledOutcome?.no_op === true;
+    if (!attempt && !noOp) {
+      reasons.push(`scheduled_run_database_attempt_missing:${scheduledKey}`);
+    } else if (attempt && attempt.status === "failed") {
+      reasons.push(`scheduled_run_database_failed:${scheduledKey}`);
+    } else if (attempt && !["succeeded", "failed"].includes(attempt.status)) {
+      reasons.push(`scheduled_run_database_terminal_missing:${scheduledKey}`);
     }
   }
 
-  const latestSucceededDate = [...attempts.values()]
+  const latestSucceededDate = publicationAttempts
     .filter((attempt) => attempt.status === "succeeded")
     .map((attempt) => String(attempt.report_date))
     .sort()
@@ -399,7 +454,8 @@ export function evaluateContentObservability(input, now = Date.now()) {
     },
     checked_at: new Date(now).toISOString(),
     current,
-    due_batches: dueBatches,
+    due_batches: dueRuns,
+    due_runs: dueRuns,
     healthy: reasons.length === 0,
     outbox: {
       dead_letter_count: deadLetterCount,
@@ -468,20 +524,31 @@ async function cloudflareAnalytics(input, now) {
   );
 }
 
-async function scheduledRunHealth(input, now) {
+export async function scheduledRunHealth(input, now, fetcher = fetchJson) {
   const due = dueContentBatches(now).filter(
     (batch) => Date.parse(batch.scheduled_at) >= input.startedAt,
   );
   if (!due.length) return [];
-  const url = new URL(input.scheduleHealthUrl);
-  for (const batch of due) url.searchParams.append("scheduled_at", batch.scheduled_at);
-  const body = await fetchJson(url, {
-    headers: { Authorization: `Bearer ${input.scheduleHealthToken}` },
-  });
-  if (body?.success !== true || !Array.isArray(body.slots)) {
-    throw new Error("scheduled run health response is malformed");
-  }
-  return body.slots;
+  const pages = await Promise.all(
+    chunkScheduledRuns(due).map(async (page) => {
+      const url = new URL(input.scheduleHealthUrl);
+      for (const run of page) {
+        url.searchParams.append("scheduled_at", run.scheduled_at);
+      }
+      const body = await fetcher(url, {
+        headers: { Authorization: `Bearer ${input.scheduleHealthToken}` },
+      });
+      if (
+        body?.success !== true ||
+        !Array.isArray(body.slots) ||
+        body.slots.length !== page.length
+      ) {
+        throw new Error("scheduled run health response is malformed");
+      }
+      return body.slots;
+    }),
+  );
+  return pages.flat();
 }
 
 async function run(env = process.env, now = Date.now()) {
