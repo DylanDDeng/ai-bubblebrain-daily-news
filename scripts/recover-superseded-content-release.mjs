@@ -1,7 +1,11 @@
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const GIT_SHA = /^[0-9a-f]{40}$/i;
-const ACTIONS = new Set(["inspect", "dead_letter_superseded"]);
+const ACTIONS = new Set([
+  "inspect_latest",
+  "inspect",
+  "dead_letter_superseded",
+]);
 
 function required(name) {
   const value = String(process.env[name] || "").trim();
@@ -16,25 +20,10 @@ function sqlLiteral(value) {
 const action = required("EMERGENCY_ACTION");
 const projectRef = required("CONTENT_DATABASE_PROJECT_REF");
 const token = required("SUPABASE_MANAGEMENT_API_TOKEN");
-const siteReleaseId = required("SITE_RELEASE_ID");
-const dispatchId = required("DISPATCH_ID");
-const expectedCodeSha = required("EXPECTED_CODE_SHA").toLowerCase();
-const supersededBySha = String(process.env.SUPERSEDED_BY_SHA || "")
-  .trim()
-  .toLowerCase();
 
 if (!ACTIONS.has(action)) throw new Error("Unsupported emergency action");
 if (!/^[a-z0-9]{20}$/.test(projectRef))
   throw new Error("Invalid Supabase project ref");
-if (!UUID.test(siteReleaseId)) throw new Error("Invalid site release ID");
-if (!UUID.test(dispatchId)) throw new Error("Invalid dispatch ID");
-if (!GIT_SHA.test(expectedCodeSha)) throw new Error("Invalid expected code SHA");
-if (
-  action === "dead_letter_superseded" &&
-  !GIT_SHA.test(supersededBySha)
-) {
-  throw new Error("A valid superseding code SHA is required");
-}
 
 async function query(sql) {
   const response = await fetch(
@@ -57,6 +46,74 @@ async function query(sql) {
   const parsed = JSON.parse(body);
   if (!Array.isArray(parsed)) throw new Error("Unexpected database query result");
   return parsed;
+}
+
+if (action === "inspect_latest") {
+  const rows = await query(`
+    with latest as (
+      select jsonb_build_object(
+        'outbox_id', outbox.id,
+        'site_release_id', outbox.site_release_id,
+        'dispatch_id', outbox.dispatch_id,
+        'status', outbox.status,
+        'attempts', outbox.attempts,
+        'max_attempts', outbox.max_attempts,
+        'next_attempt_at', outbox.next_attempt_at,
+        'lease_expires_at', outbox.lease_expires_at,
+        'last_error', outbox.last_error,
+        'updated_at', outbox.updated_at,
+        'release_sequence', release.sequence,
+        'code_sha', artifact.code_sha,
+        'source_code_sha', outbox.payload ->> 'source_code_sha',
+        'mode', outbox.payload ->> 'mode',
+        'head_claimed', head.reservation_id is not null
+      ) as item
+      from private.content_outbox outbox
+      join private.site_releases release on release.id = outbox.site_release_id
+      join private.release_artifacts artifact on artifact.site_release_id = release.id
+      left join private.release_head_claims head
+        on head.reservation_id = release.id
+      order by outbox.updated_at desc
+      limit 12
+    )
+    select jsonb_build_object(
+      'current', jsonb_build_object(
+        'site_release_id', current_release.id,
+        'release_sequence', current_release.sequence,
+        'code_sha', current_artifact.code_sha
+      ),
+      'latest_outbox', coalesce(
+        (select jsonb_agg(item) from latest),
+        '[]'::jsonb
+      )
+    ) as result
+    from private.release_current_pointer pointer
+    join private.site_releases current_release
+      on current_release.id = pointer.target_site_release_id
+    join private.release_artifacts current_artifact
+      on current_artifact.site_release_id = current_release.id
+  `);
+  if (rows.length !== 1 || !rows[0]?.result)
+    throw new Error("Expected one release state result");
+  console.log(JSON.stringify(rows[0].result));
+  process.exit(0);
+}
+
+const siteReleaseId = required("SITE_RELEASE_ID");
+const dispatchId = required("DISPATCH_ID");
+const expectedCodeSha = required("EXPECTED_CODE_SHA").toLowerCase();
+const supersededBySha = String(process.env.SUPERSEDED_BY_SHA || "")
+  .trim()
+  .toLowerCase();
+
+if (!UUID.test(siteReleaseId)) throw new Error("Invalid site release ID");
+if (!UUID.test(dispatchId)) throw new Error("Invalid dispatch ID");
+if (!GIT_SHA.test(expectedCodeSha)) throw new Error("Invalid expected code SHA");
+if (
+  action === "dead_letter_superseded" &&
+  !GIT_SHA.test(supersededBySha)
+) {
+  throw new Error("A valid superseding code SHA is required");
 }
 
 function inspectionSql() {

@@ -12,6 +12,7 @@ on:
         type: choice
         options:
           - none
+          - inspect_latest
           - inspect
           - dead_letter_superseded
       site_release_id:
