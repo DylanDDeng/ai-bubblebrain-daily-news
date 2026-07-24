@@ -1,0 +1,644 @@
+{
+  "batches": [
+    {
+      "generated_at": "2026-07-23T23:00:56.000Z",
+      "id": "morning",
+      "item_ids": [
+        "n_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8",
+        "n_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
+        "n_39cfd834766c497900f9ea67a439686fc5324a48720306dbbdd80aec356ed8ef",
+        "n_affa1c438780abdf783e94701a580b53fb4d4318877621229e8ba87f1202a3d6",
+        "n_08fea0029cc7302b9d11c7ff49d04b5f69a2b43bff89804a7cba75e9602ca10a",
+        "n_789f606eb6e02927c8ba2da182233fa36c7542f3fe6dbdf1a78710b0a7b72b4e",
+        "n_347db7b084043833648e532e1bf49849530de329a4b66fb8955df0e2ea52e8c7",
+        "n_21c7feac7fb8cd919cb085a2660ea92c4111749b790b382b98453bc9331d9421",
+        "n_771a257185d7c7890e14bfc79ceecce1177c6152e5c7db273ce610d78ed8508e",
+        "n_1c577fec6c7153940d36d824d0b7cceb93c4717a282b77bc1d5d71ba68d611d1",
+        "n_326bad14f9c44f7a0834d2494f37adb3bb7f2806a3028c20e3f19a962fa89f7d",
+        "n_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3"
+      ],
+      "label": "08:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "afternoon",
+      "item_ids": [],
+      "label": "14:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": "2026-07-23T17:00:56.000Z",
+      "id": "night",
+      "item_ids": [
+        "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+        "n_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+        "n_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe"
+      ],
+      "label": "22:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "lateNight",
+      "item_ids": [],
+      "label": "次日 02:00 补充更新",
+      "status": "pending"
+    }
+  ],
+  "classifier_version": 1,
+  "date": "2026-07-24",
+  "dedupe_version": 1,
+  "generated_at": "2026-07-23T23:00:56.000Z",
+  "identity_version": 1,
+  "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.20092",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8",
+      "featured": false,
+      "id": "n_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8",
+      "identity_claims": [
+        "c_74f14523aeff6d3fa27a89fe77783440f0ba0d1df3fbc72aed73110280e23520",
+        "c_ec7a5c60959f0bf182201e4b4d2a93d825f779bbbfd499c12ec93ebd155922e8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-21T20:00:00.637Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212898859722719241",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1212898859722719241",
+      "source_type": "huggingface_papers",
+      "summary": "Contextual entrainment is the tendency of a model to let auxiliary context in its input pull its output, independently of whether that context is relevant, true, or even meaningful. Recently, it has been identified and given a mechanistic account in unimodal language models. Whether and how it manifests in vision-language models (VLMs) is, by contrast, largely unexamined, and the field lacks a purpose-built instrument with which to investigate it. We take the position that studying contextual entrainment in VLMs requires more than porting an existing text-only benchmark to the multimodal setting: it requires a taxonomically structured, dual-modality instrument whose conditions are constructed around the item at hand (the depicted image in the textual stream, the textual query in the visual stream). We argue that the move to VLMs is substantive rather than incremental. It makes entrainment a dual phenomenon, drivable independently by textual and by visual context, and it opens a veracity distinction (context that is false of the depicted scene yet possible in the world) that has no counterpart in the unimodal, world-knowledge-only formulation of prior work. To make this position concrete and actionable, we introduce ENTRAP-VL (ENTRainment Assessment Probe for Vision and Language), a manually curated dataset of 1,500 items across eight categories, organized by a taxonomy that spans two axes, i.e., the association of context with the item and its relationship to truth, and split into a textual-entrainment stream (eight context conditions) and a visual-entrainment stream (three context conditions). We do not claim to measure entrainment in any particular model; we provide the instrument, the taxonomy that motivates it, and the evaluation protocols it enables, so that the community can investigate the phenomenon rigorously. We will release the dataset and its documentation publicly.",
+      "time_precision": "exact",
+      "title": "ENTRAP-VL: 用于视觉语言模型中双重上下文同步的分类学探针",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.20092"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/aigclink/status/2080171699056877779",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
+      "featured": false,
+      "id": "n_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
+      "identity_claims": [
+        "c_29abe67bbf3983f79d108a03962ffe2cf7b4235b3c559bf1dff5a16246f856bc",
+        "c_a1473afb57d4e77e20ed8ea6cd4b239adeefe842afcc417af6f17f7ba28554e4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T21:00:56.000Z",
+      "published_at": "2026-07-23T06:02:35.533Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212852560629645312",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1212852560629645312",
+      "source_type": "twitter_extra",
+      "summary": "一位用户在社交媒体抱怨Codex一天升级多次，不稳定且影响Mac存储寿命，其任务完成时间比Claude多1-2倍，并建议改为每日更新一个版本。",
+      "time_precision": "exact",
+      "title": "OpenAI Codex因每日多次更新被指不稳定且执行缓慢，耗时达Claude两倍",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/aigclink/status/2080171699056877779"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080259515694674408",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_39cfd834766c497900f9ea67a439686fc5324a48720306dbbdd80aec356ed8ef",
+      "featured": false,
+      "id": "n_39cfd834766c497900f9ea67a439686fc5324a48720306dbbdd80aec356ed8ef",
+      "identity_claims": [
+        "c_39cfd834766c497900f9ea67a439686fc5324a48720306dbbdd80aec356ed8ef",
+        "c_e6337740d0d006fa4649f4be83a14bac4712b56bc37c969a6ac9e0f2daaca8cf"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T11:51:32.865Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212934651916640257",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212934651916640257",
+      "source_type": "twitter_extra",
+      "summary": "文章认为，如果通用人工智能不能帮助人类解决利益分配问题，就很难称得上是真正的 AGI。",
+      "time_precision": "exact",
+      "title": "AGI若无法解决利益分配难题，其定义将面临质疑",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080259515694674408"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080290365735899326",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_affa1c438780abdf783e94701a580b53fb4d4318877621229e8ba87f1202a3d6",
+      "featured": false,
+      "id": "n_affa1c438780abdf783e94701a580b53fb4d4318877621229e8ba87f1202a3d6",
+      "identity_claims": [
+        "c_affa1c438780abdf783e94701a580b53fb4d4318877621229e8ba87f1202a3d6",
+        "c_e276eebdd2f0b0365714b6ab74e787872cff9317a5ac4ff48e8561b9dfa6ffb6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T13:54:07.861Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212901442893971457",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1212901442893971457",
+      "source_type": "twitter_extra",
+      "summary": "该模型在Artificial Analysis榜单上表现不错，参数规模较大。",
+      "time_precision": "exact",
+      "title": "韩国开源LLM模型Motif-3拥有314B总参数和13B激活参数",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080290365735899326"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080296884187652381",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_08fea0029cc7302b9d11c7ff49d04b5f69a2b43bff89804a7cba75e9602ca10a",
+      "featured": false,
+      "id": "n_08fea0029cc7302b9d11c7ff49d04b5f69a2b43bff89804a7cba75e9602ca10a",
+      "identity_claims": [
+        "c_08fea0029cc7302b9d11c7ff49d04b5f69a2b43bff89804a7cba75e9602ca10a",
+        "c_ea679a5bc93f9b3ed1736943b203bd9c9d9ff0c87daf31c79c37b8a855dc7112"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T14:20:01.133Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212926631149080578",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1212926631149080578",
+      "source_type": "twitter_extra",
+      "summary": "通过静态分析和LLM辅助构建三层行为到源码的映射，BGPD工作流指导编码代理逐级定位并验证文件，在Codex和Terminus-2上规划成功率和定位精度均有提高，令牌消耗下降。",
+      "time_precision": "exact",
+      "title": "论文提出Harness Handbook方法，将编码代理规划胜率最高提升至45.6%",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://x.com/omarsar0/status/2080296884187652381"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080385954120892852",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_789f606eb6e02927c8ba2da182233fa36c7542f3fe6dbdf1a78710b0a7b72b4e",
+      "featured": false,
+      "id": "n_789f606eb6e02927c8ba2da182233fa36c7542f3fe6dbdf1a78710b0a7b72b4e",
+      "identity_claims": [
+        "c_6ca611450c56730a996bbd22faf300e87738eb9d4b86ff8ff532880a7f22d0a6",
+        "c_789f606eb6e02927c8ba2da182233fa36c7542f3fe6dbdf1a78710b0a7b72b4e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T14:20:01.411Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212926631149080577",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1212926631149080577",
+      "source_type": "twitter_extra",
+      "summary": "论文使用静态分析与LLM构建三级行为到源码的映射，BGPD流程引导代理从系统概览逐步定位到具体文件和符号，并在多个修改请求中提升了规划胜率，同时降低了令牌消耗。",
+      "time_precision": "exact",
+      "title": "研究提出自改进代理框架Harness Handbook，规划成功率达45.6%",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://x.com/omarsar0/status/2080385954120892852"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080313363771572236",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_347db7b084043833648e532e1bf49849530de329a4b66fb8955df0e2ea52e8c7",
+      "featured": false,
+      "id": "n_347db7b084043833648e532e1bf49849530de329a4b66fb8955df0e2ea52e8c7",
+      "identity_claims": [
+        "c_3329b02b44a298e877f0485d3b5c6cc3c5ad2837f53f07ad49b79e8f1dc0ec2f",
+        "c_347db7b084043833648e532e1bf49849530de329a4b66fb8955df0e2ea52e8c7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T15:25:30.582Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212901442893971456",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1212901442893971456",
+      "source_type": "twitter_extra",
+      "summary": "该模型采用统一架构联合训练，可生成多种风格的内容，FLUX 3视频版已开放早期体验。",
+      "time_precision": "exact",
+      "title": "黑森林实验室发布FLUX 3 Omni模型，支持生成图片视频音频及动作预测",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080313363771572236"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080340696842539204",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_21c7feac7fb8cd919cb085a2660ea92c4111749b790b382b98453bc9331d9421",
+      "featured": false,
+      "id": "n_21c7feac7fb8cd919cb085a2660ea92c4111749b790b382b98453bc9331d9421",
+      "identity_claims": [
+        "c_21c7feac7fb8cd919cb085a2660ea92c4111749b790b382b98453bc9331d9421",
+        "c_84440a1bd795dda55c9d1c5be825ed93c5caa96b4b06ea5eb86a735948ce56e2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T17:14:07.846Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212926631149080576",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1212926631149080576",
+      "source_type": "twitter_extra",
+      "summary": "该分发模型决定哪个代理应该行动或保持沉默，从而消除重复工作和多余对话，团队仅四人就达到了这一成果。",
+      "time_precision": "exact",
+      "title": "Offloop训练调度模型D1使多智能体系统在GDPval达顶尖性能且成本大幅降低",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2080340696842539204"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/sama/status/2080392429484843295",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_771a257185d7c7890e14bfc79ceecce1177c6152e5c7db273ce610d78ed8508e",
+      "featured": false,
+      "id": "n_771a257185d7c7890e14bfc79ceecce1177c6152e5c7db273ce610d78ed8508e",
+      "identity_claims": [
+        "c_46774c3dbb10494374bef100bdc77f82031b48fc7404e9f92bac2afdfeed6956",
+        "c_771a257185d7c7890e14bfc79ceecce1177c6152e5c7db273ce610d78ed8508e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T17:24:29.511Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212927017729626113",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1212927017729626113",
+      "source_type": "twitter_extra",
+      "summary": "每周有超过3亿人向ChatGPT咨询健康问题，该功能帮助对话更个性化和实用。",
+      "time_precision": "exact",
+      "title": "ChatGPT向所有美国用户推出Health功能，可整合个人健康信息",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/sama/status/2080392429484843295"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/sama/status/2080392072297947281",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_1c577fec6c7153940d36d824d0b7cceb93c4717a282b77bc1d5d71ba68d611d1",
+      "featured": false,
+      "id": "n_1c577fec6c7153940d36d824d0b7cceb93c4717a282b77bc1d5d71ba68d611d1",
+      "identity_claims": [
+        "c_1c577fec6c7153940d36d824d0b7cceb93c4717a282b77bc1d5d71ba68d611d1",
+        "c_40af0635ebbd5a6cb0f312a92e4a1f8298ea22c710340a7fa1666388d3fb6a1f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T19:43:04.156Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212927017729626112",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1212927017729626112",
+      "source_type": "twitter_extra",
+      "summary": "基于GPT-Live，用户在macOS和Windows上可通过语音控制ChatGPT Work或Codex中的多个代理，面向Plus、Pro等付费计划全球推出。",
+      "time_precision": "exact",
+      "title": "ChatGPT语音功能上线桌面应用，支持语音控制和多代理协调",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/sama/status/2080392072297947281"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080407780738125931",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_326bad14f9c44f7a0834d2494f37adb3bb7f2806a3028c20e3f19a962fa89f7d",
+      "featured": false,
+      "id": "n_326bad14f9c44f7a0834d2494f37adb3bb7f2806a3028c20e3f19a962fa89f7d",
+      "identity_claims": [
+        "c_326bad14f9c44f7a0834d2494f37adb3bb7f2806a3028c20e3f19a962fa89f7d",
+        "c_59bd0c6c897f93d704ad18b0bf38b56b6d2d4743021a07b9e2a15afa2fc2a488"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T22:00:56.000Z",
+      "published_at": "2026-07-23T21:40:41.070Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212934651916640256",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212934651916640256",
+      "source_type": "twitter_extra",
+      "summary": "用户认为此举如同将人们当作实验对象，浪费注意力。",
+      "time_precision": "exact",
+      "title": "社交平台X将“重置”设为最新屏蔽词，引发用户不满",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080407780738125931"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/gdb/status/2080414383352529085",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3",
+      "featured": false,
+      "id": "n_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3",
+      "identity_claims": [
+        "c_0953d020dc28c251445fb2880ddd675dca81090d0732c9fbf28f6da56f475bcf",
+        "c_75d26bdd79fd19b8ec0226b697b2e2c44815a6dfb6954c127c5943ec7b4bafe3"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T23:00:56.000Z",
+      "published_at": "2026-07-23T22:06:55.007Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212976471291691008",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1212976471291691008",
+      "source_type": "twitter_extra",
+      "summary": "该功能由GPT-Live驱动，可以同步说话、聆听并协调应用内工作，今日全球上线。",
+      "time_precision": "exact",
+      "title": "ChatGPT语音功能登陆桌面端，支持用户语音控制电脑并指挥多个代理",
+      "topic_ids": [
+        "topic_models",
+        "topic_products"
+      ],
+      "url": "https://x.com/gdb/status/2080414383352529085"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/Khazix0918/status/2080022092498768176",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+      "featured": false,
+      "id": "n_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027",
+      "identity_claims": [
+        "c_3392f2a489cbb38dfcf2836eb2e4c48465aac7aa0dacb93c3d1024b9e37b2b71",
+        "c_8ba04a2bde721ac191fb63871bee62cdab988f7323636c76c8a530f34d080027"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T16:00:56.000Z",
+      "published_at": "2026-07-22T20:08:06.995Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212566253697146882",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1212566253697146882",
+      "source_type": "kazike_x",
+      "summary": "AIHOT创始人表示，该AI资讯站每月活跃用户已超过60万。后端系统每5分钟抓取数百个信源，并经由数据清洗、大模型预筛、自研聚类算法等十余项流程处理。网站对所有用户和AI Agent均提供最佳体验，且永久免费。",
+      "time_precision": "exact",
+      "title": "AIHOT月度活跃用户突破60万，开发者完成优化并承诺网站永久免费",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/Khazix0918/status/2080022092498768176"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/oran_ge/status/2080196444074705006",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+      "featured": false,
+      "id": "n_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4",
+      "identity_claims": [
+        "c_443f78c4a91a8a8faafd3c29b4524906d8a8b39dd6c97872ffbf8c41d1c4a1d0",
+        "c_8f3bd88726f1d6d95db56c6273bbd62690332a2b7c296b4b6cabb84b30d954a4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T17:00:56.000Z",
+      "published_at": "2026-07-23T07:40:55.616Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212647888644005889",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1212647888644005889",
+      "source_type": "twitter_extra",
+      "summary": "强调应将有限的时间投入真正稀缺的资产，即时间本身、人际关系和声誉。",
+      "time_precision": "exact",
+      "title": "时间、人际关系和声誉才是真正稀缺的资源，应把时间花在其上",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080196444074705006"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/Khazix0918/status/2080307371159830548",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe",
+      "featured": false,
+      "id": "n_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe",
+      "identity_claims": [
+        "c_31d250bbea7440ae59b1f024ba2c6e2c12e4878f1b3949d11583ac420ac07f88",
+        "c_486377b3886f2097f981b4c0dec9c478cdfc87cee89f3be2f348083ff51f7cbe"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-23T16:00:56.000Z",
+      "published_at": "2026-07-23T15:01:42.987Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1212566253697146880",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1212566253697146880",
+      "source_type": "kazike_x",
+      "summary": "Seed推出STEM计划，面向数学、物理、化学、生物等领域招募约100位研究者，以科学家顾问或博士实习生身份加入，首期6个月并提供算力和有竞争力的薪酬。作者认为这一趋势表明AI正成为所有学科的公共基础设施，未来重大突破可能体现为新药或新材料。",
+      "time_precision": "exact",
+      "title": "字节跳动Seed发起STEM科学家计划，将邀请百位多学科研究者在AI环境中工作",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/Khazix0918/status/2080307371159830548"
+    }
+  ],
+  "overview": {
+    "kind": "pending",
+    "provenance": {
+      "method": "template",
+      "model": null,
+      "prompt_version": null
+    },
+    "text": "今日 AI 增量日报正在更新中。"
+  },
+  "producer": {
+    "commit_sha": null,
+    "dedupe_lookback_days": 7,
+    "name": "bubble-brain-worker",
+    "version": "phase1d-production"
+  },
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "timezone": "Asia/Shanghai"
+}
