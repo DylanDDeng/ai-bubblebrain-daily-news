@@ -15,6 +15,7 @@ on:
           - inspect_latest
           - inspect
           - dead_letter_superseded
+          - reset_dead_letter_slot
       site_release_id:
         description: Exact superseded site release UUID
         required: false
@@ -29,6 +30,18 @@ on:
         type: string
       superseded_by_sha:
         description: Exact current main 40-character code SHA
+        required: false
+        type: string
+      report_date:
+        description: Exact publication slot report date
+        required: false
+        type: string
+      batch_id:
+        description: Exact publication slot batch ID
+        required: false
+        type: string
+      expected_current_release_id:
+        description: Exact current production release UUID
         required: false
         type: string
 
@@ -113,6 +126,9 @@ jobs:
       DISPATCH_ID: ${{ inputs.dispatch_id }}
       EXPECTED_CODE_SHA: ${{ inputs.expected_code_sha }}
       SUPERSEDED_BY_SHA: ${{ inputs.superseded_by_sha }}
+      REPORT_DATE: ${{ inputs.report_date }}
+      BATCH_ID: ${{ inputs.batch_id }}
+      EXPECTED_CURRENT_RELEASE_ID: ${{ inputs.expected_current_release_id }}
 
     steps:
       - uses: actions/checkout@v4

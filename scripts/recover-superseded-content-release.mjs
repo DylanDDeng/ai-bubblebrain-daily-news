@@ -5,6 +5,7 @@ const ACTIONS = new Set([
   "inspect_latest",
   "inspect",
   "dead_letter_superseded",
+  "reset_dead_letter_slot",
 ]);
 
 function required(name) {
@@ -135,6 +136,115 @@ if (
   !GIT_SHA.test(supersededBySha)
 ) {
   throw new Error("A valid superseding code SHA is required");
+}
+
+if (action === "reset_dead_letter_slot") {
+  const reportDate = required("REPORT_DATE");
+  const batchId = required("BATCH_ID");
+  const expectedCurrentReleaseId = required("EXPECTED_CURRENT_RELEASE_ID");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(reportDate))
+    throw new Error("Invalid report date");
+  if (!["morning", "afternoon", "night", "lateNight", "lateNightSupplement"].includes(batchId))
+    throw new Error("Invalid batch ID");
+  if (!UUID.test(expectedCurrentReleaseId))
+    throw new Error("Invalid expected current release ID");
+  if (expectedCurrentReleaseId === siteReleaseId)
+    throw new Error("Refusing to reset the current production release");
+
+  const stateRows = await query(`
+    select jsonb_build_object(
+      'report_date', slot.report_date,
+      'batch_id', slot.batch_id,
+      'slot_site_release_id', slot.site_release_id,
+      'slot_reservation_id', slot.reservation_id,
+      'dispatch_id', outbox.dispatch_id,
+      'outbox_status', outbox.status,
+      'code_sha', artifact.code_sha,
+      'head_claimed', head.reservation_id is not null,
+      'current_site_release_id', pointer.target_site_release_id
+    ) as result
+    from private.publication_slots slot
+    join private.content_outbox outbox
+      on outbox.site_release_id = slot.site_release_id
+    join private.release_artifacts artifact
+      on artifact.site_release_id = slot.site_release_id
+    left join private.release_head_claims head
+      on head.reservation_id = slot.site_release_id
+    cross join private.release_current_pointer pointer
+    where slot.report_date = ${sqlLiteral(reportDate)}::date
+      and slot.batch_id = ${sqlLiteral(batchId)}
+      and slot.site_release_id = ${sqlLiteral(siteReleaseId)}::uuid
+      and outbox.dispatch_id = ${sqlLiteral(dispatchId)}::uuid
+  `);
+  if (stateRows.length !== 1 || !stateRows[0]?.result)
+    throw new Error("Expected exactly one matching dead-letter publication slot");
+  const before = stateRows[0].result;
+  if (before.outbox_status !== "dead_letter")
+    throw new Error("Publication slot outbox is not dead-lettered");
+  if (before.head_claimed)
+    throw new Error("Publication slot still owns the release head");
+  if (String(before.code_sha).toLowerCase() !== expectedCodeSha)
+    throw new Error("Publication slot code SHA mismatch");
+  if (before.current_site_release_id !== expectedCurrentReleaseId)
+    throw new Error("Current production release changed");
+  console.log(JSON.stringify({ phase: "before_slot_reset", ...before }));
+
+  const resetRows = await query(`
+    with target as materialized (
+      select slot.report_date, slot.batch_id, slot.site_release_id
+      from private.publication_slots slot
+      join private.content_outbox outbox
+        on outbox.site_release_id = slot.site_release_id
+      join private.release_artifacts artifact
+        on artifact.site_release_id = slot.site_release_id
+      cross join private.release_current_pointer pointer
+      where slot.report_date = ${sqlLiteral(reportDate)}::date
+        and slot.batch_id = ${sqlLiteral(batchId)}
+        and slot.site_release_id = ${sqlLiteral(siteReleaseId)}::uuid
+        and outbox.dispatch_id = ${sqlLiteral(dispatchId)}::uuid
+        and outbox.status = 'dead_letter'
+        and artifact.code_sha = ${sqlLiteral(expectedCodeSha)}
+        and pointer.target_site_release_id = ${sqlLiteral(expectedCurrentReleaseId)}::uuid
+        and pointer.target_site_release_id <> slot.site_release_id
+        and not exists (
+          select 1 from private.release_head_claims head
+          where head.reservation_id = slot.site_release_id
+        )
+      for update of slot
+    ),
+    audit as (
+      insert into private.release_deployment_attempts(
+        site_release_id, dispatch_id, event_type, evidence
+      )
+      select target.site_release_id, ${sqlLiteral(dispatchId)}::uuid, 'failed',
+        jsonb_build_object(
+          'recovery', 'dead_letter_publication_slot_reset',
+          'report_date', target.report_date,
+          'batch_id', target.batch_id,
+          'current_site_release_id', ${sqlLiteral(expectedCurrentReleaseId)}
+        )
+      from target
+      returning site_release_id
+    ),
+    deleted as (
+      delete from private.publication_slots slot
+      using target
+      where slot.report_date = target.report_date
+        and slot.batch_id = target.batch_id
+      returning slot.report_date, slot.batch_id, slot.site_release_id
+    )
+    select jsonb_build_object(
+      'report_date', deleted.report_date,
+      'batch_id', deleted.batch_id,
+      'site_release_id', deleted.site_release_id,
+      'audit_recorded', exists(select 1 from audit)
+    ) as result
+    from deleted
+  `);
+  if (resetRows.length !== 1 || !resetRows[0]?.result?.audit_recorded)
+    throw new Error("Guarded publication slot reset did not affect exactly one row");
+  console.log(JSON.stringify({ phase: "after_slot_reset", ...resetRows[0].result }));
+  process.exit(0);
 }
 
 function inspectionSql() {
