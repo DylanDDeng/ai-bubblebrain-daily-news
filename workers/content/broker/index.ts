@@ -134,6 +134,23 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
+function coordinatorPayloadIdentity(value: unknown): string {
+  if (value === null || typeof value !== "object") {
+    return JSON.stringify(value) ?? "null";
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(coordinatorPayloadIdentity).join(",")}]`;
+  }
+  const record = value as JsonRecord;
+  return `{${Object.keys(record)
+    .sort()
+    .map(
+      (key) =>
+        `${JSON.stringify(key)}:${coordinatorPayloadIdentity(record[key])}`,
+    )
+    .join(",")}}`;
+}
+
 function bytesEqual(left: string, right: string): boolean {
   if (left.length !== right.length) return false;
   let difference = 0;
@@ -796,6 +813,42 @@ class ProductionConvergenceError extends Error {
   }
 }
 
+class ProductionStabilityError extends Error {
+  readonly code = "production_stability_failed";
+  readonly offsetMs: number;
+  readonly failures: VerificationFailure[];
+
+  constructor(offsetMs: number, failures: VerificationFailure[]) {
+    const summary = failures
+      .map(
+        (failure) =>
+          `${failure.origin}${failure.path} (${failure.phase}, status ${failure.status ?? "request_error"})`,
+      )
+      .join(", ");
+    super(
+      `Production deployment drifted during the ${offsetMs}ms stability probe: ${summary || "verification failed"}`,
+    );
+    this.name = "ProductionStabilityError";
+    this.offsetMs = offsetMs;
+    this.failures = failures;
+  }
+}
+
+class ProductionVerificationTimeoutError extends Error {
+  readonly code = "production_verification_timeout";
+  readonly elapsedMs: number;
+  readonly maximumOperationMs: number;
+
+  constructor(elapsedMs: number, maximumOperationMs: number) {
+    super(
+      `Production verification exceeded its ${maximumOperationMs}ms operation budget`,
+    );
+    this.name = "ProductionVerificationTimeoutError";
+    this.elapsedMs = elapsedMs;
+    this.maximumOperationMs = maximumOperationMs;
+  }
+}
+
 function errorDiagnostics(error: unknown): JsonRecord {
   if (error instanceof ProductionConvergenceError) {
     return {
@@ -804,6 +857,22 @@ function errorDiagnostics(error: unknown): JsonRecord {
       elapsedMs: error.elapsedMs,
       maximumInconsistencyMs: error.maximumInconsistencyMs,
       failures: error.failures,
+    };
+  }
+  if (error instanceof ProductionStabilityError) {
+    return {
+      errorType: error.name,
+      errorCode: error.code,
+      offsetMs: error.offsetMs,
+      failures: error.failures,
+    };
+  }
+  if (error instanceof ProductionVerificationTimeoutError) {
+    return {
+      errorType: error.name,
+      errorCode: error.code,
+      elapsedMs: error.elapsedMs,
+      maximumOperationMs: error.maximumOperationMs,
     };
   }
   return {
@@ -1081,36 +1150,44 @@ export async function verifyDeployment(
       (offset, index) =>
         !Number.isSafeInteger(offset) ||
         offset <= 0 ||
-        offset >= maximumInconsistencyMs ||
         (index > 0 && offset <= stabilityOffsets[index - 1]),
     )
   ) {
     throw new Error("Production stability offsets are invalid");
   }
   const firstConvergedAt = now();
+  // The inconsistency deadline governs how long a new release may take to
+  // converge for the first time. Stability probes intentionally run after
+  // that point and therefore need a separate bounded operation budget.
+  const finalStabilityOffset = stabilityOffsets.at(-1) || 0;
+  const maximumOperationMs =
+    maximumInconsistencyMs + finalStabilityOffset + 30_000;
+  const remainingOperation = (): number => {
+    const elapsed = now() - windowStartedAt;
+    const remaining = maximumOperationMs - elapsed;
+    if (remaining <= 0) {
+      throw new ProductionVerificationTimeoutError(
+        Math.max(0, elapsed),
+        maximumOperationMs,
+      );
+    }
+    return remaining;
+  };
   const stabilityRounds: JsonRecord[] = [];
   for (const offsetMs of stabilityOffsets) {
     const targetTime = firstConvergedAt + offsetMs;
     const delay = targetTime - now();
     if (delay > 0) {
-      const remaining = remainingWindow();
+      const remaining = remainingOperation();
       if (delay >= remaining) {
-        throw new ProductionConvergenceError(
+        throw new ProductionVerificationTimeoutError(
           Math.max(0, now() - windowStartedAt),
-          maximumInconsistencyMs,
-          [],
+          maximumOperationMs,
         );
       }
       await sleep(delay);
     }
-    const remaining = maximumInconsistencyMs - (now() - windowStartedAt);
-    if (remaining <= 0) {
-      throw new ProductionConvergenceError(
-        Math.max(0, now() - windowStartedAt),
-        maximumInconsistencyMs,
-        [],
-      );
-    }
+    const remaining = remainingOperation();
     const stableResults = await Promise.all(
       bases.map(async (base) => {
         const attempt = (attemptsByOrigin.get(base) || 0) + 1;
@@ -1133,11 +1210,7 @@ export async function verifyDeployment(
       result.ok ? [] : [result.failure],
     );
     if (stabilityFailures.length > 0) {
-      throw new ProductionConvergenceError(
-        Math.max(0, now() - windowStartedAt),
-        maximumInconsistencyMs,
-        stabilityFailures,
-      );
+      throw new ProductionStabilityError(offsetMs, stabilityFailures);
     }
     stabilityRounds.push({
       offset_ms: offsetMs,
@@ -1148,10 +1221,9 @@ export async function verifyDeployment(
     });
   }
   const stableVerifiedAt = new Date(now()).toISOString();
-  const elapsedMs = Math.max(0, now() - windowStartedAt);
-  if (elapsedMs > maximumInconsistencyMs) {
-    throw new ProductionConvergenceError(elapsedMs, maximumInconsistencyMs, []);
-  }
+  const stabilityElapsedMs = Math.max(0, now() - firstConvergedAt);
+  const operationElapsedMs = Math.max(0, now() - windowStartedAt);
+  remainingOperation();
   return {
     multi_edge_verified: true,
     site_release_id: context.site_release_id,
@@ -1163,7 +1235,9 @@ export async function verifyDeployment(
     code_sha: context.code_sha,
     build_environment_version: context.build_environment_version,
     convergence_elapsed_ms: convergenceElapsedMs,
-    stability_elapsed_ms: elapsedMs,
+    stability_elapsed_ms: stabilityElapsedMs,
+    operation_elapsed_ms: operationElapsedMs,
+    maximum_operation_ms: maximumOperationMs,
     stable_verified_at: stableVerifiedAt,
     stability_offsets: stabilityOffsets,
     stability_rounds: stabilityRounds,
@@ -2074,7 +2148,14 @@ export class ProductionCoordinator {
       if (kind !== "reconcile" && !payload) {
         return json({ error: "operation_payload_required" }, 400);
       }
-      const id = crypto.randomUUID();
+      // A deployment attempt is already a fenced UUID. Reuse it as the
+      // promotion operation identity so a replayed signed request cannot
+      // enqueue duplicate work if the original 202 response was lost.
+      const promotionAttemptId =
+        kind === "promote" && UUID.test(String(payload?.attempt_token || ""))
+          ? String(payload?.attempt_token)
+          : null;
+      const id = promotionAttemptId || crypto.randomUUID();
       const now = new Date().toISOString();
       const operation: CoordinatorOperation = {
         id,
@@ -2087,7 +2168,43 @@ export class ProductionCoordinator {
       };
       let acceptedId = id;
       let deduplicated = false;
+      let idempotencyConflict = false;
+      const retentionCutoff = Date.now() - COORDINATOR_RETENTION_MS;
       await this.state.storage.transaction(async (transaction) => {
+        if (promotionAttemptId) {
+          let existing = await transaction.get<CoordinatorOperation>(
+            coordinatorOperationKey(id),
+          );
+          if (
+            existing?.status === "completed" &&
+            existing.completed_at &&
+            Date.parse(existing.completed_at) < retentionCutoff
+          ) {
+            await transaction.delete(coordinatorOperationKey(id));
+            const completed =
+              (await transaction.get<CompletedCoordinatorOperation[]>(
+                COORDINATOR_COMPLETED_KEY,
+              )) || [];
+            await transaction.put(
+              COORDINATOR_COMPLETED_KEY,
+              completed.filter((item) => item.id !== id),
+            );
+            existing = undefined;
+          }
+          if (existing) {
+            if (
+              existing.kind !== kind ||
+              coordinatorPayloadIdentity(existing.payload) !==
+                coordinatorPayloadIdentity(payload)
+            ) {
+              idempotencyConflict = true;
+              return;
+            }
+            acceptedId = existing.id;
+            deduplicated = true;
+            return;
+          }
+        }
         if (kind === "reconcile") {
           const pendingId = await transaction.get<string>(
             COORDINATOR_PENDING_RECONCILE_KEY,
@@ -2113,6 +2230,9 @@ export class ProductionCoordinator {
           await transaction.put(COORDINATOR_PENDING_RECONCILE_KEY, id);
         }
       });
+      if (idempotencyConflict) {
+        return json({ error: "coordinator_idempotency_conflict" }, 409);
+      }
       await this.pruneCompletedOperations();
       await this.state.storage.setAlarm(Date.now());
       return json({ ok: true, operation_id: acceptedId, deduplicated }, 202);
@@ -2351,6 +2471,84 @@ async function submitCoordinatorOperation(
   );
 }
 
+async function handleCoordinatorOperationStatusRequest(
+  request: Request,
+  env: Env,
+  operationId: string,
+): Promise<Response> {
+  let body: JsonRecord;
+  try {
+    body = JSON.parse(
+      new TextDecoder("utf-8", { fatal: true }).decode(
+        await verifyWorkflowRequest(request, env),
+      ),
+    ) as JsonRecord;
+  } catch {
+    return json({ error: "unauthorized_or_invalid" }, 401);
+  }
+  const requestedOperationId = String(body.operation_id || "");
+  const siteReleaseId = String(body.site_release_id || "");
+  if (
+    !UUID.test(operationId) ||
+    requestedOperationId !== operationId ||
+    !UUID.test(siteReleaseId)
+  ) {
+    return json({ error: "invalid_request" }, 400);
+  }
+  if (!env.PRODUCTION_COORDINATOR) {
+    return json({ error: "production_coordinator_unavailable" }, 503);
+  }
+  const id = env.PRODUCTION_COORDINATOR.idFromName(
+    `pages-project:${env.PAGES_PROJECT}`,
+  );
+  const stub = env.PRODUCTION_COORDINATOR.get(id);
+  const status = await stub.fetch(
+    new Request(
+      `https://production-coordinator.internal/internal/operations/${operationId}`,
+    ),
+  );
+  if (!status.ok) {
+    return status.status === 404
+      ? json({ error: "operation_not_found" }, 404)
+      : json({ error: "coordinator_status_unavailable" }, 503);
+  }
+  const result = (await status.json()) as {
+    operation?: CoordinatorOperation;
+  };
+  const operation = result.operation;
+  if (
+    !operation ||
+    operation.id !== operationId ||
+    operation.kind !== "promote" ||
+    String(operation.payload?.site_release_id || "") !== siteReleaseId
+  ) {
+    // Do not disclose whether an operation exists when the caller cannot
+    // prove the release identity that was present in the signed promotion.
+    return json({ error: "operation_not_found" }, 404);
+  }
+  if (operation.status !== "completed") {
+    return json(
+      {
+        ok: true,
+        operation_id: operation.id,
+        site_release_id: siteReleaseId,
+        status: operation.status,
+        attempts: operation.attempts,
+      },
+      202,
+    );
+  }
+  return new Response(operation.response_body || "", {
+    status: operation.response_status || 500,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Content-Operation-Status": "completed",
+      "X-Content-Operation-Id": operation.id,
+    },
+  });
+}
+
 async function handlePromotionRequest(
   request: Request,
   env: Env,
@@ -2366,7 +2564,17 @@ async function handlePromotionRequest(
   } catch {
     return json({ error: "unauthorized_or_invalid" }, 401);
   }
-  return submitCoordinatorOperation(env, "promote", body);
+  const enqueued = await enqueueCoordinatorOperation(env, "promote", body);
+  if (!enqueued.stub || !enqueued.operationId) return enqueued.response;
+  return json(
+    {
+      ok: true,
+      operation_id: enqueued.operationId,
+      site_release_id: String(body.site_release_id),
+      status: "queued",
+    },
+    202,
+  );
 }
 
 async function handleCoordinatedRollbackRequest(
@@ -2416,6 +2624,14 @@ export default {
     if (request.method !== "POST")
       return Promise.resolve(json({ error: "method_not_allowed" }, 405));
     if (path === "/v1/promote") return handlePromotionRequest(request, env);
+    const operationMatch = /^\/v1\/operations\/([0-9a-f-]{36})$/i.exec(path);
+    if (operationMatch) {
+      return handleCoordinatorOperationStatusRequest(
+        request,
+        env,
+        operationMatch[1],
+      );
+    }
     if (path === "/v1/rollback")
       return handleCoordinatedRollbackRequest(request, env);
     if (path === "/v1/reconcile")

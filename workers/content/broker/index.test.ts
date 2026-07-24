@@ -40,6 +40,39 @@ function fakeCoordinatorState() {
   return { state: { storage } as never, values, alarms };
 }
 
+async function signedWorkflowRequest(
+  path: string,
+  secret: string,
+  payload: Record<string, unknown>,
+): Promise<Request> {
+  const body = JSON.stringify(payload);
+  const timestamp = String(Math.floor(Date.now() / 1000));
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`${timestamp}\n${body}`),
+  );
+  const hex = Array.from(new Uint8Array(signature), (value) =>
+    value.toString(16).padStart(2, "0"),
+  ).join("");
+  return new Request(`https://broker.test${path}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Content-Timestamp": timestamp,
+      "X-Content-Signature": hex,
+    },
+    body,
+  });
+}
+
 describe("production coordinator", () => {
   it("enqueues scheduled reconcile once without polling operation status", async () => {
     const operationId = "123e4567-e89b-42d3-a456-426614174000";
@@ -246,6 +279,343 @@ describe("production coordinator", () => {
       deduplicated: true,
     });
     expect(values.has(`production-operation:${expiredId}`)).toBe(false);
+  });
+
+  it("deduplicates replayed promotion attempts and rejects identity reuse", async () => {
+    const { state, values } = fakeCoordinatorState();
+    const attemptToken = "123e4567-e89b-42d3-a456-426614174088";
+    const coordinator = new ProductionCoordinator(
+      state,
+      {} as never,
+      vi.fn() as never,
+    );
+    const enqueue = (payload: Record<string, unknown>) =>
+      coordinator.fetch(
+        new Request("https://coordinator.internal/internal/enqueue", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kind: "promote", payload }),
+        }),
+      );
+
+    const first = await enqueue({
+      attempt_token: attemptToken,
+      execution_generation: 3,
+      site_release_id: "123e4567-e89b-42d3-a456-426614174001",
+    });
+    const replay = await enqueue({
+      site_release_id: "123e4567-e89b-42d3-a456-426614174001",
+      execution_generation: 3,
+      attempt_token: attemptToken,
+    });
+    const conflict = await enqueue({
+      attempt_token: attemptToken,
+      execution_generation: 4,
+      site_release_id: "123e4567-e89b-42d3-a456-426614174001",
+    });
+
+    expect(first.status).toBe(202);
+    await expect(replay.json()).resolves.toMatchObject({
+      operation_id: attemptToken,
+      deduplicated: true,
+    });
+    expect(conflict.status).toBe(409);
+    await expect(conflict.json()).resolves.toEqual({
+      error: "coordinator_idempotency_conflict",
+    });
+    expect(values.get("production-operation-queue")).toEqual([attemptToken]);
+  });
+
+  it("re-enqueues an expired completed promotion without pruning the replacement", async () => {
+    const { state, values } = fakeCoordinatorState();
+    const attemptToken = "123e4567-e89b-42d3-a456-426614174088";
+    const payload = {
+      attempt_token: attemptToken,
+      execution_generation: 3,
+      site_release_id: "123e4567-e89b-42d3-a456-426614174001",
+    };
+    values.set(`production-operation:${attemptToken}`, {
+      id: attemptToken,
+      kind: "promote",
+      payload,
+      status: "completed",
+      attempts: 1,
+      created_at: "2026-01-01T00:00:00.000Z",
+      updated_at: "2026-01-01T00:01:00.000Z",
+      completed_at: "2026-01-01T00:01:00.000Z",
+      response_status: 200,
+      response_body: JSON.stringify({ ok: true }),
+    });
+    values.set("production-operation-completed", [
+      {
+        id: attemptToken,
+        completed_at: "2026-01-01T00:01:00.000Z",
+      },
+    ]);
+    const coordinator = new ProductionCoordinator(
+      state,
+      {} as never,
+      vi.fn() as never,
+    );
+
+    const response = await coordinator.fetch(
+      new Request("https://coordinator.internal/internal/enqueue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "promote", payload }),
+      }),
+    );
+
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toMatchObject({
+      operation_id: attemptToken,
+      deduplicated: false,
+    });
+    expect(values.get("production-operation-queue")).toEqual([attemptToken]);
+    expect(values.get("production-operation-completed")).toEqual([]);
+    expect(values.get(`production-operation:${attemptToken}`)).toMatchObject({
+      id: attemptToken,
+      status: "queued",
+      attempts: 0,
+    });
+  });
+});
+
+describe("asynchronous production promotion protocol", () => {
+  const secret = "workflow-secret";
+  const operationId = "123e4567-e89b-42d3-a456-426614174000";
+  const siteReleaseId = "123e4567-e89b-42d3-a456-426614174001";
+  const promotion = {
+    dispatch_id: "123e4567-e89b-42d3-a456-426614174002",
+    site_release_id: siteReleaseId,
+    attempt_token: "123e4567-e89b-42d3-a456-426614174003",
+    execution_generation: 2,
+    site_release_sequence: 176,
+    expected_predecessor_id: "123e4567-e89b-42d3-a456-426614174004",
+    artifact_sha256: "a".repeat(64),
+    artifact_object_key: `artifacts/sha256/${"a".repeat(64)}.json`,
+    code_sha: "b".repeat(40),
+    content_sha256: "c".repeat(64),
+    build_environment_version: "node22-astro7-v1",
+  };
+
+  function envFor(fetch: ReturnType<typeof vi.fn>) {
+    return {
+      WORKFLOW_HMAC_SECRET: secret,
+      PAGES_PROJECT: "content-pages",
+      PRODUCTION_COORDINATOR: {
+        idFromName: vi.fn(() => ({ name: "coordinator" })),
+        get: vi.fn(() => ({ fetch })),
+      },
+    } as never;
+  }
+
+  it("returns 202 immediately after enqueueing without polling in the request", async () => {
+    const coordinatorFetch = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ ok: true, operation_id: operationId }), {
+          status: 202,
+          headers: { "Content-Type": "application/json" },
+        }),
+    );
+    const response = await contentBroker.fetch(
+      await signedWorkflowRequest("/v1/promote", secret, promotion),
+      envFor(coordinatorFetch),
+    );
+
+    expect(response.status).toBe(202);
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      operation_id: operationId,
+      site_release_id: siteReleaseId,
+      status: "queued",
+    });
+    expect(coordinatorFetch).toHaveBeenCalledOnce();
+    expect(
+      new URL((coordinatorFetch.mock.calls[0][0] as Request).url).pathname,
+    ).toBe("/internal/enqueue");
+  });
+
+  it("returns only sanitized queued operation status", async () => {
+    const coordinatorFetch = vi.fn(async () =>
+      Response.json({
+        ok: true,
+        operation: {
+          id: operationId,
+          kind: "promote",
+          payload: promotion,
+          status: "running",
+          attempts: 1,
+          created_at: "2026-07-25T09:00:00.000Z",
+          updated_at: "2026-07-25T09:00:01.000Z",
+        },
+      }),
+    );
+    const response = await contentBroker.fetch(
+      await signedWorkflowRequest(`/v1/operations/${operationId}`, secret, {
+        operation_id: operationId,
+        site_release_id: siteReleaseId,
+      }),
+      envFor(coordinatorFetch),
+    );
+
+    expect(response.status).toBe(202);
+    const result = await response.json();
+    expect(result).toEqual({
+      ok: true,
+      operation_id: operationId,
+      site_release_id: siteReleaseId,
+      status: "running",
+      attempts: 1,
+    });
+    expect(JSON.stringify(result)).not.toContain("attempt_token");
+    expect(JSON.stringify(result)).not.toContain("payload");
+  });
+
+  it("returns the completed operation result with an explicit completion header", async () => {
+    const coordinatorFetch = vi.fn(async () =>
+      Response.json({
+        ok: true,
+        operation: {
+          id: operationId,
+          kind: "promote",
+          payload: promotion,
+          status: "completed",
+          attempts: 1,
+          created_at: "2026-07-25T09:00:00.000Z",
+          updated_at: "2026-07-25T09:05:00.000Z",
+          completed_at: "2026-07-25T09:05:00.000Z",
+          response_status: 200,
+          response_body: JSON.stringify({
+            ok: true,
+            site_release_id: siteReleaseId,
+          }),
+        },
+      }),
+    );
+    const response = await contentBroker.fetch(
+      await signedWorkflowRequest(`/v1/operations/${operationId}`, secret, {
+        operation_id: operationId,
+        site_release_id: siteReleaseId,
+      }),
+      envFor(coordinatorFetch),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("X-Content-Operation-Status")).toBe(
+      "completed",
+    );
+    await expect(response.json()).resolves.toEqual({
+      ok: true,
+      site_release_id: siteReleaseId,
+    });
+  });
+
+  it("preserves a completed operation failure status and body", async () => {
+    const coordinatorFetch = vi.fn(async () =>
+      Response.json({
+        ok: true,
+        operation: {
+          id: operationId,
+          kind: "promote",
+          payload: promotion,
+          status: "completed",
+          attempts: 2,
+          created_at: "2026-07-25T09:00:00.000Z",
+          updated_at: "2026-07-25T09:05:00.000Z",
+          completed_at: "2026-07-25T09:05:00.000Z",
+          response_status: 503,
+          response_body: JSON.stringify({
+            error: "production_stability_failed",
+          }),
+        },
+      }),
+    );
+    const response = await contentBroker.fetch(
+      await signedWorkflowRequest(`/v1/operations/${operationId}`, secret, {
+        operation_id: operationId,
+        site_release_id: siteReleaseId,
+      }),
+      envFor(coordinatorFetch),
+    );
+
+    expect(response.status).toBe(503);
+    expect(response.headers.get("X-Content-Operation-Status")).toBe(
+      "completed",
+    );
+    await expect(response.json()).resolves.toEqual({
+      error: "production_stability_failed",
+    });
+  });
+
+  it("does not disclose an operation for a mismatched release identity", async () => {
+    const coordinatorFetch = vi.fn(async () =>
+      Response.json({
+        ok: true,
+        operation: {
+          id: operationId,
+          kind: "promote",
+          payload: promotion,
+          status: "running",
+          attempts: 1,
+          created_at: "2026-07-25T09:00:00.000Z",
+          updated_at: "2026-07-25T09:00:01.000Z",
+        },
+      }),
+    );
+    const response = await contentBroker.fetch(
+      await signedWorkflowRequest(`/v1/operations/${operationId}`, secret, {
+        operation_id: operationId,
+        site_release_id: "123e4567-e89b-42d3-a456-426614174099",
+      }),
+      envFor(coordinatorFetch),
+    );
+
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toEqual({
+      error: "operation_not_found",
+    });
+  });
+
+  it("fails closed for invalid workflow authentication and pruned operations", async () => {
+    const coordinatorFetch = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ error: "operation_not_found" }), {
+          status: 404,
+        }),
+    );
+    const invalid = new Request(
+      `https://broker.test/v1/operations/${operationId}`,
+      {
+        method: "POST",
+        headers: {
+          "X-Content-Timestamp": String(Math.floor(Date.now() / 1000)),
+          "X-Content-Signature": "0".repeat(64),
+        },
+        body: JSON.stringify({
+          operation_id: operationId,
+          site_release_id: siteReleaseId,
+        }),
+      },
+    );
+    const unauthorized = await contentBroker.fetch(
+      invalid,
+      envFor(coordinatorFetch),
+    );
+    expect(unauthorized.status).toBe(401);
+    expect(coordinatorFetch).not.toHaveBeenCalled();
+
+    const missing = await contentBroker.fetch(
+      await signedWorkflowRequest(`/v1/operations/${operationId}`, secret, {
+        operation_id: operationId,
+        site_release_id: siteReleaseId,
+      }),
+      envFor(coordinatorFetch),
+    );
+    expect(missing.status).toBe(404);
+    await expect(missing.json()).resolves.toEqual({
+      error: "operation_not_found",
+    });
   });
 });
 
@@ -1551,6 +1921,44 @@ describe("production convergence verification", () => {
     });
     expect(value.manifestAttempts.get("https://deploy.pages.dev")).toBe(1);
     expect(value.manifestAttempts.get("https://www.example.test")).toBe(10);
+  });
+
+  it("gives stability probes their own budget after slow initial convergence", async () => {
+    const value = setup();
+    const clock = controlledClock();
+    const baseFetch = vi.mocked(fetch);
+    let advanced = false;
+
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        {
+          ...value.env,
+          MAX_PRODUCTION_INCONSISTENCY_MS: "300000",
+        },
+        { kind: "tar", files },
+        clock.startedAt,
+        {
+          ...clock.dependencies,
+          fetch: async (input, init) => {
+            const response = await baseFetch(input, init);
+            if (!advanced) {
+              advanced = true;
+              clock.advance(216_000);
+            }
+            return response;
+          },
+        },
+      ),
+    ).resolves.toMatchObject({
+      multi_edge_verified: true,
+      convergence_elapsed_ms: 216_000,
+      stability_elapsed_ms: 120_000,
+      operation_elapsed_ms: 336_000,
+      maximum_inconsistency_ms: 300_000,
+      maximum_operation_ms: 450_000,
+    });
   });
 
   it("fails closed when a later stability round drifts after convergence", async () => {
