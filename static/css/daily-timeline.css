@@ -101,16 +101,6 @@
   overflow-wrap: anywhere;
 }
 
-.daily-timeline .day-header .stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 22px;
-  margin-top: 18px;
-  color: var(--ink-faint);
-  font-family: var(--mono);
-  font-size: 0.74rem;
-}
-
 /* ---------- sticky filter toolbar ---------- */
 .daily-timeline .toolbar {
   position: sticky;
