@@ -244,6 +244,86 @@ describe('worker regression guards', () => {
         expect(JSON.stringify(body)).not.toContain('must-not-leak');
     });
 
+    it('authenticates the internal backlog replay endpoint before invoking it', async () => {
+        const backlogReplay = vi.fn(async () => ({
+            status: 'reconciled',
+            run: { run_id: 'scheduled:1783994400000' },
+        }));
+        const worker = createWorker({ backlogReplay });
+        const env = { CONTENT_BACKLOG_REPLAY_SECRET: 'backlog-secret' };
+        const url = 'https://example.test/internal/backlog/replay';
+
+        for (const request of [
+            new Request(url, { method: 'POST' }),
+            new Request(url, {
+                method: 'POST',
+                headers: { 'X-Content-Backlog-Secret': 'wrong-secret' },
+            }),
+            new Request(url, {
+                method: 'GET',
+                headers: { 'X-Content-Backlog-Secret': 'backlog-secret' },
+            }),
+        ]) {
+            const response = await worker.fetch(request, env);
+            expect(response.status).toBe(401);
+            expect(await response.json()).toEqual({
+                success: false,
+                error: 'Unauthorized',
+            });
+        }
+        expect(backlogReplay).not.toHaveBeenCalled();
+
+        const response = await worker.fetch(new Request(url, {
+            method: 'POST',
+            headers: { 'X-Content-Backlog-Secret': 'backlog-secret' },
+        }), env);
+        expect(response.status).toBe(200);
+        expect(await response.json()).toEqual({
+            success: true,
+            retryable: false,
+            status: 'reconciled',
+            run: { run_id: 'scheduled:1783994400000' },
+        });
+        expect(backlogReplay).toHaveBeenCalledOnce();
+        expect(backlogReplay).toHaveBeenCalledWith(env);
+    });
+
+    it('surfaces retryable backlog states as non-success responses', async () => {
+        const worker = createWorker({
+            backlogReplay: vi.fn(async () => ({ status: 'deferred', deferred_count: 1 })),
+        });
+        const response = await worker.fetch(new Request(
+            'https://example.test/internal/backlog/replay',
+            {
+                method: 'POST',
+                headers: { 'X-Content-Backlog-Secret': 'backlog-secret' },
+            },
+        ), { CONTENT_BACKLOG_REPLAY_SECRET: 'backlog-secret' });
+
+        expect(response.status).toBe(409);
+        expect(await response.json()).toEqual({
+            success: false,
+            retryable: true,
+            status: 'deferred',
+            deferred_count: 1,
+        });
+    });
+
+    it('fails closed when the internal backlog replay secret is not configured', async () => {
+        const backlogReplay = vi.fn();
+        const worker = createWorker({ backlogReplay });
+        const response = await worker.fetch(new Request(
+            'https://example.test/internal/backlog/replay',
+            {
+                method: 'POST',
+                headers: { 'X-Content-Backlog-Secret': 'any-value' },
+            },
+        ), {});
+
+        expect(response.status).toBe(401);
+        expect(backlogReplay).not.toHaveBeenCalled();
+    });
+
     it('does not mark a production run succeeded when its database mirror failed', async () => {
         const waitUntil = vi.fn();
         const DATA_KV = { put: vi.fn(async () => undefined) };
@@ -306,6 +386,7 @@ describe('worker regression guards', () => {
         expect(config).toContain('DAILY_STRUCTURED_START_DATE = "2026-07-16"');
         expect(config).toContain('CONTENT_DATABASE_MIRROR_ENABLED = "true"');
         expect(config).toContain('CONTENT_DATABASE_PUBLICATION_ENABLED = "true"');
+        expect(config).toContain('CONTENT_BACKLOG_REPLAY_SECRET');
         expect(config).toContain('KAZIKE_FEED_ID = "187702008971600955"');
         expect(config).toContain('KAZIKE_FETCH_PAGES = "1"');
         expect(config).toContain('KAZIKE_X_FEED_ID = "66090931808241664"');

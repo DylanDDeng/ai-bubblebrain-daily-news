@@ -55,5 +55,11 @@ describe("fenced content release workflow", () => {
     expect(deployerConfig).toContain(
       'CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS = "true"',
     );
+    expect(deployerConfig).toContain(
+      'CONTENT_BACKLOG_REPLAY_ENABLED = "true"',
+    );
+    expect(deployerConfig).toContain('binding = "CONTENT_INGESTOR"');
+    expect(deployerConfig).toContain('service = "ai-daily"');
+    expect(deployerConfig).toContain("CONTENT_BACKLOG_REPLAY_SECRET");
   });
 });

@@ -6,6 +6,7 @@ import { checkAdminRateLimit } from '../security/adminRateLimit.js';
 const ADMIN_ROUTES = {
     '/auto': { handler: 'auto', allowSession: false, requiresExternalWrites: true },
     '/incrementalDaily': { handler: 'incrementalDaily', allowSession: false, requiresExternalWrites: true },
+    '/reconcileDaily': { handler: 'reconcileDaily', allowSession: false, requiresExternalWrites: true },
     '/writeRssData': { handler: 'writeRssData', allowSession: false, requiresExternalWrites: true },
     '/updateFoloCookie': { handler: 'updateFoloCookie', allowSession: true, requiresExternalWrites: true },
     '/debugFoloCookie': { handler: 'debugFoloCookie', allowSession: true, requiresExternalWrites: true },

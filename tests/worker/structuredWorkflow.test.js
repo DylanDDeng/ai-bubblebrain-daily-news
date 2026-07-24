@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { AtomicGitConflictError, AtomicGitUncertainError } from '../../src/daily/gitAtomic.js';
 import {
+    reconcileStructuredTrigger,
+    replayOldestStructuredBacklog,
     runStructuredDailyWorkflow,
     scheduledFetchPageCap,
     StructuredSourceFetchError,
@@ -43,6 +45,10 @@ function dependencies(overrides = {}) {
         releaseLease: vi.fn(async () => true),
         readMarker: vi.fn(async () => null),
         storeMarker: vi.fn(async () => true),
+        listBacklogEntries: vi.fn(async () => []),
+        readBacklogEntry: vi.fn(async () => null),
+        storeBacklogEntry: vi.fn(async () => true),
+        removeBacklogEntry: vi.fn(async () => true),
         resolveAlias: vi.fn(async () => null),
         resolveBaseSnapshot: vi.fn(async () => snapshotA),
         resolveCommitSnapshot: vi.fn(async (_env, commitSha) => ({
@@ -650,6 +656,393 @@ describe('structured publication workflow', () => {
                 database_mirror: expect.objectContaining({ status: 'mirrored' }),
             }),
         );
+    });
+
+    it('replays an exact scheduled trigger without fetching, building, or committing', async () => {
+        const scheduledAt = '2026-07-14T02:00:00.000Z';
+        const triggerId = `scheduled:${Date.parse(scheduledAt)}`;
+        const canonicalJson = `${JSON.stringify({ date: '2026-07-14' })}\n`;
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            database_mirror: { status: 'failed' },
+        };
+        const mirror = vi.fn(async () => ({
+            status: 'mirrored',
+            reportSnapshotId: 'snapshot-id',
+        }));
+        const deps = dependencies({
+            readMarker: vi.fn(async (_kv, key) => key === triggerId ? marker : null),
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async () => canonicalJson),
+            })),
+            mirror,
+        });
+
+        await expect(reconcileStructuredTrigger(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { scheduledAt },
+            deps,
+        )).resolves.toMatchObject({
+            status: 'reconciled',
+            run: {
+                run_id: triggerId,
+                report_date: '2026-07-14',
+                batch_id: 'morning',
+            },
+            result: {
+                commit_sha: sha('e'),
+                idempotent: true,
+                database_mirror: { status: 'mirrored' },
+            },
+        });
+
+        expect(mirror).toHaveBeenCalledWith(expect.anything(), {
+            report: { date: '2026-07-14' },
+            canonicalJson,
+            codeSha: sha('e'),
+            batch: 'morning',
+            triggerId,
+        });
+        expect(deps.fetchData).not.toHaveBeenCalled();
+        expect(deps.build).not.toHaveBeenCalled();
+        expect(deps.commit).not.toHaveBeenCalled();
+        expect(deps.releaseLease).toHaveBeenCalledOnce();
+        expect(deps.removeBacklogEntry).toHaveBeenCalledWith(env.DATA_KV, triggerId);
+    });
+
+    it('replays only the latest safe snapshot for the oldest unresolved report date', async () => {
+        const firstScheduledAt = '2026-07-14T02:00:00.000Z';
+        const secondScheduledAt = '2026-07-14T04:00:00.000Z';
+        const firstId = `scheduled:${Date.parse(firstScheduledAt)}`;
+        const secondId = `scheduled:${Date.parse(secondScheduledAt)}`;
+        const markers = new Map([
+            [firstId, {
+                commit_sha: sha('e'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'failed' },
+            }],
+            [secondId, {
+                commit_sha: sha('f'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'failed' },
+            }],
+        ]);
+        const readMarker = vi.fn(async (_kv, key) => markers.get(key) || null);
+        const deps = dependencies({
+            readMarker,
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async () => JSON.stringify({ date: '2026-07-14' })),
+            })),
+            mirror: vi.fn(async () => ({ status: 'failed', error_type: 'ReleaseBusyError' })),
+        });
+
+        await expect(replayOldestStructuredBacklog(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { now: '2026-07-14T06:20:00.000Z', lookbackHours: 5 },
+            deps,
+        )).resolves.toMatchObject({
+            status: 'blocked',
+            run: { run_id: secondId },
+        });
+        expect(deps.mirror).toHaveBeenCalledOnce();
+        expect(deps.mirror).toHaveBeenCalledWith(
+            expect.anything(),
+            expect.objectContaining({ codeSha: sha('f'), triggerId: secondId }),
+        );
+        expect(deps.storeBacklogEntry).toHaveBeenCalledWith(
+            env.DATA_KV,
+            secondId,
+            expect.objectContaining({
+                database_mirror: expect.objectContaining({ status: 'failed' }),
+            }),
+        );
+    });
+
+    it('skips mirrored markers and replays the next failed schedule slot', async () => {
+        const firstScheduledAt = '2026-07-14T02:00:00.000Z';
+        const secondScheduledAt = '2026-07-14T04:00:00.000Z';
+        const firstId = `scheduled:${Date.parse(firstScheduledAt)}`;
+        const secondId = `scheduled:${Date.parse(secondScheduledAt)}`;
+        const markers = new Map([
+            [firstId, {
+                commit_sha: sha('e'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'mirrored' },
+            }],
+            [secondId, {
+                commit_sha: sha('f'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'failed' },
+            }],
+        ]);
+        const deps = dependencies({
+            readMarker: vi.fn(async (_kv, key) => markers.get(key) || null),
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async () => JSON.stringify({ date: '2026-07-14' })),
+            })),
+            mirror: vi.fn(async () => ({ status: 'mirrored' })),
+        });
+
+        await expect(replayOldestStructuredBacklog(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { now: '2026-07-14T06:20:00.000Z', lookbackHours: 5 },
+            deps,
+        )).resolves.toMatchObject({
+            status: 'reconciled',
+            run: { run_id: secondId },
+        });
+        expect(deps.mirror).toHaveBeenCalledOnce();
+    });
+
+    it('never replays an older snapshot after a newer snapshot for the day was mirrored', async () => {
+        const olderScheduledAt = '2026-07-14T02:00:00.000Z';
+        const newerScheduledAt = '2026-07-14T04:00:00.000Z';
+        const olderId = `scheduled:${Date.parse(olderScheduledAt)}`;
+        const newerId = `scheduled:${Date.parse(newerScheduledAt)}`;
+        const markers = new Map([
+            [olderId, {
+                commit_sha: sha('e'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'failed' },
+            }],
+            [newerId, {
+                commit_sha: sha('f'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'mirrored' },
+            }],
+        ]);
+        const deps = dependencies({
+            readMarker: vi.fn(async (_kv, key) => markers.get(key) || null),
+            mirror: vi.fn(),
+        });
+
+        await expect(replayOldestStructuredBacklog(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { now: '2026-07-14T06:20:00.000Z', lookbackHours: 5 },
+            deps,
+        )).resolves.toEqual({ status: 'empty' });
+        expect(deps.mirror).not.toHaveBeenCalled();
+    });
+
+    it('rejects a manual replay when a newer structured snapshot supersedes it', async () => {
+        const olderScheduledAt = '2026-07-14T02:00:00.000Z';
+        const newerScheduledAt = '2026-07-14T04:00:00.000Z';
+        const olderId = `scheduled:${Date.parse(olderScheduledAt)}`;
+        const newerId = `scheduled:${Date.parse(newerScheduledAt)}`;
+        const markers = new Map([
+            [olderId, {
+                commit_sha: sha('e'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'failed' },
+            }],
+            [newerId, {
+                commit_sha: sha('f'),
+                mode: 'structured',
+                reportDate: '2026-07-14',
+                batch: 'morning',
+                database_mirror: { status: 'failed' },
+            }],
+        ]);
+        const deps = dependencies({
+            now: '2026-07-14T06:20:00.000Z',
+            readMarker: vi.fn(async (_kv, key) => markers.get(key) || null),
+            mirror: vi.fn(),
+        });
+
+        await expect(reconcileStructuredTrigger(
+            env,
+            { scheduledAt: olderScheduledAt },
+            deps,
+        )).resolves.toMatchObject({
+            status: 'superseded',
+            run: { run_id: olderId },
+            superseded_by: {
+                run_id: newerId,
+                database_mirror_status: 'failed',
+            },
+        });
+        expect(deps.mirror).not.toHaveBeenCalled();
+    });
+
+    it('discovers indexed backlog entries after the fallback scan window expires', async () => {
+        const scheduledAt = '2026-07-01T02:00:00.000Z';
+        const triggerId = `scheduled:${Date.parse(scheduledAt)}`;
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-01',
+            batch: 'morning',
+            database_mirror: { status: 'failed' },
+        };
+        let restoredMarker = null;
+        const deps = dependencies({
+            listBacklogEntries: vi.fn(async () => [triggerId]),
+            readMarker: vi.fn(async (_kv, key) => (
+                key === triggerId ? restoredMarker : null
+            )),
+            readBacklogEntry: vi.fn(async () => ({ run_id: triggerId, marker })),
+            storeMarker: vi.fn(async (_kv, key, value) => {
+                if (key === triggerId) restoredMarker = value;
+                return true;
+            }),
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async () => JSON.stringify({ date: '2026-07-01' })),
+            })),
+            mirror: vi.fn(async () => ({ status: 'mirrored' })),
+        });
+
+        await expect(replayOldestStructuredBacklog(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { now: '2026-07-14T06:20:00.000Z', lookbackHours: 1 },
+            deps,
+        )).resolves.toMatchObject({
+            status: 'reconciled',
+            run: { run_id: triggerId },
+        });
+        expect(deps.mirror).toHaveBeenCalledOnce();
+        expect(deps.readBacklogEntry).toHaveBeenCalledWith(env.DATA_KV, triggerId);
+        expect(deps.storeMarker).toHaveBeenCalledWith(env.DATA_KV, triggerId, marker);
+    });
+
+    it('preserves an indexed backlog entry when restoring its trigger marker fails', async () => {
+        const scheduledAt = '2026-07-01T02:00:00.000Z';
+        const triggerId = `scheduled:${Date.parse(scheduledAt)}`;
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-01',
+            batch: 'morning',
+            database_mirror: { status: 'failed' },
+        };
+        const deps = dependencies({
+            listBacklogEntries: vi.fn(async () => [triggerId]),
+            readMarker: vi.fn(async () => null),
+            readBacklogEntry: vi.fn(async () => ({ run_id: triggerId, marker })),
+            storeMarker: vi.fn(async () => {
+                throw new Error('KV unavailable');
+            }),
+            mirror: vi.fn(),
+        });
+
+        await expect(replayOldestStructuredBacklog(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { now: '2026-07-14T06:20:00.000Z', lookbackHours: 1 },
+            deps,
+        )).resolves.toEqual({ status: 'deferred', deferred_count: 1 });
+        expect(deps.mirror).not.toHaveBeenCalled();
+        expect(deps.removeBacklogEntry).not.toHaveBeenCalled();
+    });
+
+    it('preserves an indexed backlog entry until its restored marker is visible', async () => {
+        const scheduledAt = '2026-07-01T02:00:00.000Z';
+        const triggerId = `scheduled:${Date.parse(scheduledAt)}`;
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-01',
+            batch: 'morning',
+            database_mirror: { status: 'failed' },
+        };
+        const deps = dependencies({
+            listBacklogEntries: vi.fn(async () => [triggerId]),
+            readMarker: vi.fn(async () => null),
+            readBacklogEntry: vi.fn(async () => ({ run_id: triggerId, marker })),
+            storeMarker: vi.fn(async () => true),
+            mirror: vi.fn(),
+        });
+
+        await expect(replayOldestStructuredBacklog(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { now: '2026-07-14T06:20:00.000Z', lookbackHours: 1 },
+            deps,
+        )).resolves.toEqual({ status: 'deferred', deferred_count: 1 });
+        expect(deps.mirror).not.toHaveBeenCalled();
+        expect(deps.removeBacklogEntry).not.toHaveBeenCalled();
+    });
+
+    it('fails explicitly when a failed mirror cannot be added to the durable backlog', async () => {
+        const scheduledAt = '2026-07-14T02:00:00.000Z';
+        const triggerId = `scheduled:${Date.parse(scheduledAt)}`;
+        const marker = {
+            commit_sha: sha('e'),
+            mode: 'structured',
+            reportDate: '2026-07-14',
+            batch: 'morning',
+            database_mirror: { status: 'failed' },
+        };
+        const deps = dependencies({
+            readMarker: vi.fn(async (_kv, key) => key === triggerId ? marker : null),
+            createReader: vi.fn(() => ({
+                readText: vi.fn(async () => JSON.stringify({ date: '2026-07-14' })),
+            })),
+            mirror: vi.fn(async () => ({ status: 'failed' })),
+            storeBacklogEntry: vi.fn(async () => {
+                throw new Error('KV unavailable');
+            }),
+        });
+
+        await expect(reconcileStructuredTrigger(
+            { ...env, CONTENT_DATABASE_MIRROR_ENABLED: 'true' },
+            { scheduledAt },
+            deps,
+        )).rejects.toMatchObject({ name: 'StructuredBacklogIndexError' });
+        expect(deps.releaseLease).toHaveBeenCalledOnce();
+    });
+
+    it('fails closed for non-exact slots and respects the structured batch lease', async () => {
+        await expect(reconcileStructuredTrigger(
+            env,
+            { scheduledAt: '2026-07-14T02:00:01.000Z' },
+            dependencies(),
+        )).rejects.toThrow(/exact/);
+        await expect(reconcileStructuredTrigger(
+            env,
+            { scheduledAt: '2026-07-14T03:00:00.000Z' },
+            dependencies(),
+        )).rejects.toThrow(/production schedule/);
+
+        const deps = dependencies({
+            acquireLease: vi.fn(async () => ({ acquired: false })),
+        });
+        await expect(reconcileStructuredTrigger(
+            env,
+            { scheduledAt: '2026-07-14T02:00:00.000Z' },
+            deps,
+        )).resolves.toMatchObject({ status: 'locked' });
+        expect(deps.readMarker).not.toHaveBeenCalled();
+        expect(deps.releaseLease).not.toHaveBeenCalled();
+    });
+
+    it('rejects invalid replay windows before reading backlog markers', async () => {
+        const deps = dependencies();
+        await expect(replayOldestStructuredBacklog(
+            env,
+            { now: 'not-a-time', lookbackHours: 48 },
+            deps,
+        )).rejects.toThrow(/time/);
+        await expect(replayOldestStructuredBacklog(
+            env,
+            { now: '2026-07-14T06:20:00.000Z', lookbackHours: 169 },
+            deps,
+        )).rejects.toThrow(/range/);
+        expect(deps.readMarker).not.toHaveBeenCalled();
     });
 
     it('suppresses only the same trigger after Git ancestry confirmation', async () => {
