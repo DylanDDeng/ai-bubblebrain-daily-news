@@ -20,6 +20,7 @@ import {
 } from '../daily/structuredWorkflow.js';
 import { runStructuredShadow } from '../daily/shadowWorkflow.js';
 import { fetchProviderPreservingData } from '../daily/structuredFetch.js';
+import { resolveScheduledRun } from '../daily/scheduleContract.js';
 import {
     getSystemPromptArticleEvaluation,
     getSystemPromptBatchSection,
@@ -56,6 +57,19 @@ function getBeijingDateString(date = new Date()) {
 
 function resolveBatch(date = new Date(), forcedBatch = null, forcedDate = null) {
     if (forcedBatch && forcedDate) return { reportDate: forcedDate, batch: forcedBatch };
+
+    if (!forcedBatch) {
+        try {
+            const scheduled = resolveScheduledRun(date);
+            return {
+                reportDate: scheduled.report_date,
+                batch: scheduled.batch_id,
+            };
+        } catch {
+            // Manual runs outside the production schedule keep the legacy
+            // clock-based mapping below.
+        }
+    }
 
     const p = getBeijingParts(date);
     const hour = Number(p.hour);

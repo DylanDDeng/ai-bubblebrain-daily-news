@@ -3,31 +3,47 @@ import { describe, expect, it, vi } from 'vitest';
 import { createWorker } from '../../src/index.js';
 
 describe('worker regression guards', () => {
-    it('keeps scheduled events wired directly to the legacy incremental workflow', async () => {
+    it('records started and terminal evidence around each scheduled workflow', async () => {
         const workflowPromise = Promise.resolve({ success: true });
         const scheduledWorkflow = vi.fn(() => workflowPromise);
         const waitUntil = vi.fn();
         const DATA_KV = { put: vi.fn(async () => undefined) };
         const env = { marker: 'production-env', EXTERNAL_WRITES_ENABLED: 'true', DATA_KV };
-        const worker = createWorker({ scheduledWorkflow });
+        const scheduledTrace = vi.fn(async () => true);
+        const worker = createWorker({ scheduledWorkflow, scheduledTrace });
 
         await worker.scheduled({ scheduledTime: Date.UTC(2026, 6, 14) }, env, { waitUntil });
 
+        await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({ success: true });
         expect(scheduledWorkflow).toHaveBeenCalledOnce();
         expect(scheduledWorkflow).toHaveBeenCalledWith(env, {
             triggerId: `scheduled:${Date.UTC(2026, 6, 14)}`,
             runAt: '2026-07-14T00:00:00.000Z',
         });
         expect(waitUntil).toHaveBeenCalledOnce();
-        await expect(waitUntil.mock.calls[0][0]).resolves.toEqual({ success: true });
-        expect(DATA_KV.put).toHaveBeenCalledOnce();
-        expect(DATA_KV.put.mock.calls[0][0]).toBe(
+        expect(DATA_KV.put).toHaveBeenCalledTimes(2);
+        expect(scheduledTrace.mock.calls.map(([, value]) => value.eventType))
+            .toEqual(['started', 'succeeded']);
+        expect(scheduledTrace.mock.calls[1][1]).toMatchObject({
+            runId: `scheduled:${Date.UTC(2026, 6, 14)}`,
+            scheduledAt: '2026-07-14T00:00:00.000Z',
+            evidence: { status: 'succeeded' },
+        });
+        expect(JSON.parse(DATA_KV.put.mock.calls[0][1])).toMatchObject({
+            scheduled_at: '2026-07-14T00:00:00.000Z',
+            run_id: `scheduled:${Date.UTC(2026, 6, 14)}`,
+            status: 'started',
+            stage: 'started',
+        });
+        expect(DATA_KV.put.mock.calls[1][0]).toBe(
             'scheduled:outcome:2026-07-14T00:00:00.000Z',
         );
-        expect(JSON.parse(DATA_KV.put.mock.calls[0][1])).toEqual({
+        expect(JSON.parse(DATA_KV.put.mock.calls[1][1])).toMatchObject({
             scheduled_at: '2026-07-14T00:00:00.000Z',
             status: 'succeeded',
             run_at: '2026-07-14T00:00:00.000Z',
+            run_id: `scheduled:${Date.UTC(2026, 6, 14)}`,
+            stable_verified_at: null,
         });
     });
 
@@ -58,15 +74,17 @@ describe('worker regression guards', () => {
 
         expect(waitUntil).toHaveBeenCalledOnce();
         await expect(waitUntil.mock.calls[0][0]).rejects.toBe(error);
-        expect(DATA_KV.put).toHaveBeenCalledTimes(2);
+        expect(DATA_KV.put).toHaveBeenCalledTimes(3);
         const [markerKey, rawMarker, options] = DATA_KV.put.mock.calls.find(
             ([key]) => key.startsWith('structured:attempt-failure:'),
         );
         const marker = JSON.parse(rawMarker);
-        expect(marker).toEqual({
+        expect(marker).toMatchObject({
             success: false,
             status: 'failed',
+            stage: 'failed',
             trigger_type: 'scheduled',
+            run_id: `scheduled:${Date.UTC(2026, 6, 14)}`,
             run_at: '2026-07-14T00:00:00.000Z',
             error_type: 'structured_source_fetch_failed',
             failure_stage: 'fetch',
@@ -80,11 +98,12 @@ describe('worker regression guards', () => {
         });
         expect(markerKey).toMatch(/^structured:attempt-failure:[a-f0-9]{64}$/);
         expect(options).toEqual({ expirationTtl: 14 * 24 * 60 * 60 });
-        const outcome = DATA_KV.put.mock.calls.find(
+        const outcome = DATA_KV.put.mock.calls.filter(
             ([key]) => key === 'scheduled:outcome:2026-07-14T00:00:00.000Z',
-        );
+        ).at(-1);
         expect(JSON.parse(outcome[1])).toMatchObject({
             scheduled_at: '2026-07-14T00:00:00.000Z',
+            run_id: `scheduled:${Date.UTC(2026, 6, 14)}`,
             status: 'failed',
             failure_stage: 'fetch',
         });
@@ -212,7 +231,7 @@ describe('worker regression guards', () => {
         }), env);
         const body = await response.json();
         expect(response.status).toBe(200);
-        expect(body).toEqual({
+        expect(body).toMatchObject({
             success: true,
             slots: [{
                 scheduled_at: '2026-07-20T19:00:00.000Z',
@@ -223,6 +242,57 @@ describe('worker regression guards', () => {
             }],
         });
         expect(JSON.stringify(body)).not.toContain('must-not-leak');
+    });
+
+    it('does not mark a production run succeeded when its database mirror failed', async () => {
+        const waitUntil = vi.fn();
+        const DATA_KV = { put: vi.fn(async () => undefined) };
+        const scheduledTrace = vi.fn(async () => true);
+        const worker = createWorker({
+            scheduledWorkflow: vi.fn(async () => ({
+                success: true,
+                no_op: false,
+                content_sha256: 'a'.repeat(64),
+                source_result: {
+                    status: 'succeeded',
+                    counts: { news: 3 },
+                },
+                database_mirror: { status: 'failed' },
+                stage: 'database_mirror_failed',
+            })),
+            scheduledTrace,
+        });
+
+        await worker.scheduled(
+            { scheduledTime: Date.UTC(2026, 6, 14) },
+            {
+                EXTERNAL_WRITES_ENABLED: 'true',
+                CONTENT_DATABASE_MIRROR_ENABLED: 'true',
+                DATA_KV,
+            },
+            { waitUntil },
+        );
+
+        await expect(waitUntil.mock.calls[0][0]).rejects.toMatchObject({
+            name: 'ScheduledDatabaseMirrorError',
+        });
+        const outcome = DATA_KV.put.mock.calls
+            .filter(([key]) => key === 'scheduled:outcome:2026-07-14T00:00:00.000Z')
+            .map(([, value]) => JSON.parse(value))
+            .at(-1);
+        expect(outcome).toMatchObject({
+            status: 'failed',
+            stage: 'database_mirror_failed',
+            error_type: 'database_mirror_failed',
+            failure_stage: 'database_mirror',
+            content_sha256: 'a'.repeat(64),
+            source_result: {
+                status: 'failed',
+                counts: { news: 3 },
+            },
+        });
+        expect(scheduledTrace.mock.calls.map(([, value]) => value.eventType))
+            .toEqual(['started', 'failed']);
     });
 
     it('preserves the production cron and GitHub main branch configuration', async () => {

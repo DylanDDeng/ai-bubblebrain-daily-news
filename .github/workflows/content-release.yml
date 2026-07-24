@@ -31,6 +31,12 @@ on:
         required: true
         type: choice
         options: [shadow, production]
+      attempt_token:
+        required: false
+        type: string
+      execution_generation:
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -56,6 +62,8 @@ jobs:
       SOURCE_CODE_SHA: ${{ github.event.inputs.source_code_sha }}
       BUILD_ENVIRONMENT_VERSION: ${{ github.event.inputs.build_environment_version }}
       DEPLOYMENT_MODE: ${{ github.event.inputs.mode }}
+      DEPLOYMENT_ATTEMPT_TOKEN: ${{ github.event.inputs.attempt_token }}
+      DEPLOYMENT_EXECUTION_GENERATION: ${{ github.event.inputs.execution_generation }}
       CONTENT_BUILD_API_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
       PUBLIC_CONTENT_API_ORIGIN: https://content-api.bubblenews.today
       PUBLIC_COMMENTS_WRITE_UI_ENABLED: ${{ vars.PUBLIC_COMMENTS_WRITE_UI_ENABLED || 'false' }}
@@ -63,6 +71,7 @@ jobs:
       CONTENT_DEPLOY_CALLBACK_URL: ${{ vars.CONTENT_DEPLOY_CALLBACK_URL }}
       CONTENT_DEPLOY_CALLBACK_SECRET: ${{ secrets.CONTENT_DEPLOY_CALLBACK_SECRET }}
       R2_ARTIFACT_BUCKET: bubble-content-artifacts
+      R2_INCREMENTAL_REUSE_ENABLED: ${{ vars.R2_INCREMENTAL_REUSE_ENABLED || 'false' }}
       TZ: UTC
       LANG: C.UTF-8
       LC_ALL: C.UTF-8
@@ -82,7 +91,88 @@ jobs:
           if [[ -n "$SOURCE_CODE_SHA" ]]; then
             [[ "$SOURCE_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]
           fi
+          if [[ "$DEPLOYMENT_MODE" == "production" || -n "$DEPLOYMENT_ATTEMPT_TOKEN" || -n "$DEPLOYMENT_EXECUTION_GENERATION" ]]; then
+            [[ "$DEPLOYMENT_ATTEMPT_TOKEN" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$ ]]
+            [[ "$DEPLOYMENT_EXECUTION_GENERATION" =~ ^[1-9][0-9]*$ ]]
+          fi
           [[ "$BUILD_ENVIRONMENT_VERSION" == "node22.17-astro7-hugo0.147.9-v1" ]]
+
+      - name: Create immutable fenced release helper
+        shell: bash
+        run: |
+          umask 077
+          cat > "$RUNNER_TEMP/content-release-helper.mjs" <<'NODE'
+          import { createHmac } from "node:crypto";
+
+          const [action, eventType, evidenceText = "{}"] = process.argv.slice(2);
+          const callbackUrl = process.env.CONTENT_DEPLOY_CALLBACK_URL;
+          const secret = process.env.CONTENT_DEPLOY_CALLBACK_SECRET;
+          const siteReleaseId = process.env.SITE_RELEASE_ID;
+          const dispatchId = process.env.DISPATCH_ID;
+          const attemptToken = process.env.DEPLOYMENT_ATTEMPT_TOKEN;
+          const executionGeneration = Number(
+            process.env.DEPLOYMENT_EXECUTION_GENERATION || 0,
+          );
+          if (!callbackUrl || !secret || !siteReleaseId || !dispatchId) {
+            throw new Error("Content release helper environment is incomplete");
+          }
+
+          let url = callbackUrl;
+          let payload;
+          if (action === "plan") {
+            if (!attemptToken || !Number.isSafeInteger(executionGeneration) || executionGeneration < 1) {
+              throw new Error("Fenced deployment plan identity is incomplete");
+            }
+            url = new URL("/internal/deployment-plan", callbackUrl).toString();
+            payload = {
+              site_release_id: siteReleaseId,
+              dispatch_id: dispatchId,
+              attempt_token: attemptToken,
+              execution_generation: executionGeneration,
+            };
+          } else if (action === "callback" && eventType) {
+            payload = {
+              site_release_id: siteReleaseId,
+              dispatch_id: dispatchId,
+              ...(attemptToken
+                ? {
+                    attempt_token: attemptToken,
+                    execution_generation: executionGeneration,
+                  }
+                : {}),
+              event_type: eventType,
+              evidence: JSON.parse(evidenceText),
+            };
+          } else {
+            throw new Error("Unknown content release helper action");
+          }
+
+          const body = JSON.stringify(payload);
+          const signature = createHmac("sha256", secret).update(body).digest("hex");
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Content-Signature": signature,
+            },
+            body,
+          });
+          const responseBody = await response.text();
+          if (!response.ok) {
+            throw new Error(
+              `Content release ${action} failed with ${response.status}: ${responseBody
+                .trim()
+                .slice(0, 1024)}`,
+            );
+          }
+          if (action === "plan") {
+            const plan = JSON.parse(responseBody);
+            if (!plan || typeof plan !== "object") {
+              throw new Error("Content release plan response is invalid");
+            }
+            process.stdout.write(`${JSON.stringify(plan)}\n`);
+          }
+          NODE
 
       - name: Checkout exact code SHA
         uses: actions/checkout@v4
@@ -96,6 +186,53 @@ jobs:
           if [[ -n "$SOURCE_CODE_SHA" ]]; then
             git merge-base --is-ancestor "$SOURCE_CODE_SHA" "$EXACT_CODE_SHA"
           fi
+          if [[ -f scripts/materialize-content-addressed-artifact.mjs ]]; then
+            echo "RESUME_CONTRACT_VERSION=r2-materialize-v1" >> "$GITHUB_ENV"
+          else
+            echo "RESUME_CONTRACT_VERSION=" >> "$GITHUB_ENV"
+          fi
+
+      - name: Resolve fenced server resume plan
+        id: resume
+        run: |
+          if [[ -z "$DEPLOYMENT_ATTEMPT_TOKEN" ]]; then
+            printf '%s\n' '{"resume_stage":"build","trusted_baseline":null}' > server-resume-plan.json
+          else
+            node "$RUNNER_TEMP/content-release-helper.mjs" plan > server-resume-plan.json
+          fi
+          resume_stage="$(jq -r '.resume_stage' server-resume-plan.json)"
+          [[ "$resume_stage" =~ ^(build|preview|promote)$ ]]
+          if [[ "$resume_stage" != "build" ]]; then
+            jq -e \
+              --arg release "$SITE_RELEASE_ID" \
+              --arg code "$EXACT_CODE_SHA" \
+              --arg content "$CONTENT_ROOT_SHA256" \
+              '.artifact.site_release_id == $release
+                and .artifact.code_sha == $code
+                and .artifact.content_sha256 == $content
+                and (.artifact.artifact_sha256 | test("^[a-f0-9]{64}$"))
+                and (.artifact.artifact_fingerprint_sha256 | test("^[a-f0-9]{64}$"))
+                and .artifact.hash_algorithm == "sha256-content-addressed-pages-v1"' \
+              server-resume-plan.json >/dev/null
+            echo "ARTIFACT_SHA256=$(jq -r '.artifact.artifact_sha256' server-resume-plan.json)" >> "$GITHUB_ENV"
+            echo "ARTIFACT_BYTES=$(jq -r '.artifact.byte_length' server-resume-plan.json)" >> "$GITHUB_ENV"
+            echo "ARTIFACT_OBJECT_KEY=$(jq -r '.artifact.object_key' server-resume-plan.json)" >> "$GITHUB_ENV"
+            echo "ARTIFACT_HASH_ALGORITHM=$(jq -r '.artifact.hash_algorithm' server-resume-plan.json)" >> "$GITHUB_ENV"
+          fi
+          if [[ "$resume_stage" == "promote" ]]; then
+            jq -e \
+              --arg artifact "$(jq -r '.artifact.artifact_sha256' server-resume-plan.json)" \
+              --arg code "$EXACT_CODE_SHA" \
+              --arg content "$CONTENT_ROOT_SHA256" \
+              '.preview_checkpoint.artifact_sha256 == $artifact
+                and .preview_checkpoint.code_sha == $code
+                and .preview_checkpoint.content_sha256 == $content
+                and (.preview_checkpoint.preview_url | test("^https://"))' \
+              server-resume-plan.json >/dev/null
+            echo "PREVIEW_URL=$(jq -r '.preview_checkpoint.preview_url' server-resume-plan.json)" >> "$GITHUB_ENV"
+          fi
+          echo "SERVER_RESUME_STAGE=$resume_stage" >> "$GITHUB_ENV"
+          echo "stage=$resume_stage" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node.js 22.17.0
         uses: actions/setup-node@v4
@@ -122,15 +259,19 @@ jobs:
           PRODUCTION_BROKER_HMAC_SECRET: ${{ secrets.PRODUCTION_BROKER_HMAC_SECRET }}
         run: node scripts/validate-content-production-config.mjs workflow-release
 
-      - name: Install locked dependencies
-        run: |
-          npm ci
-          npm ci --prefix astro
+      - name: Install root locked dependencies
+        run: npm ci
+
+      - name: Install Astro locked dependencies
+        if: ${{ steps.resume.outputs.stage == 'build' }}
+        run: npm ci --prefix astro
 
       - name: Verify Worker contracts
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         run: npm test
 
       - name: Build pinned content release
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         run: |
           npm run check --prefix astro
           npm run lint --prefix astro
@@ -140,6 +281,7 @@ jobs:
           npm run verify:site --prefix astro
 
       - name: Verify embedded release identity
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         run: |
           node <<'NODE'
           const build = require('./astro/dist/client/release-manifests/site-route-manifest.json').build;
@@ -178,6 +320,7 @@ jobs:
           NODE
 
       - name: Create deterministic content-addressed artifact
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         run: |
           node scripts/create-content-addressed-artifact.mjs astro/dist/client content-release-artifact.json > artifact-summary.json
           echo "ARTIFACT_SHA256=$(jq -r .artifact_sha256 artifact-summary.json)" >> "$GITHUB_ENV"
@@ -186,6 +329,7 @@ jobs:
           echo "ARTIFACT_HASH_ALGORITHM=$(jq -r .hash_algorithm artifact-summary.json)" >> "$GITHUB_ENV"
 
       - name: Require indefinite locks for every artifact prefix
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_R2_LOCK_READ_TOKEN: ${{ secrets.R2_LOCK_READ_API_TOKEN }}
@@ -202,6 +346,7 @@ jobs:
             > artifact-lock-evidence.json
 
       - name: Upload immutable content-addressed R2 artifact
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ARTIFACT_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_ARTIFACT_SECRET_ACCESS_KEY }}
@@ -209,17 +354,47 @@ jobs:
           R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
           R2_UPLOAD_CONCURRENCY: "8"
         run: |
+          if [[ "$R2_INCREMENTAL_REUSE_ENABLED" == "true" ]]; then
+            if jq -e '.trusted_baseline != null' server-resume-plan.json > /dev/null 2>&1; then
+              jq '.trusted_baseline' server-resume-plan.json > trusted-base-descriptor.json
+              trusted_key="$(jq -r '.object_key' trusted-base-descriptor.json)"
+              if aws s3 cp "s3://$R2_ARTIFACT_BUCKET/$trusted_key" trusted-base-manifest.json \
+                --endpoint-url "$R2_ENDPOINT" --no-progress; then
+                export R2_TRUSTED_BASE_DESCRIPTOR_PATH=trusted-base-descriptor.json
+                export R2_TRUSTED_BASE_MANIFEST_PATH=trusted-base-manifest.json
+              else
+                echo "Trusted baseline unavailable; falling back to full R2 verification" >&2
+                rm -f trusted-base-manifest.json trusted-base-descriptor.json
+              fi
+            fi
+          fi
           node scripts/upload-content-addressed-artifact.mjs content-release-artifact.json astro/dist/client > r2-upload-summary.json
           jq -e '.inventory_sha256 == env.ARTIFACT_SHA256 and (.inventory_byte_length | tostring) == env.ARTIFACT_BYTES' r2-upload-summary.json >/dev/null
 
       - name: Register immutable artifact
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         run: |
           artifact_fingerprint="$(jq -r '.build.artifact_sha256' astro/dist/client/release-manifests/site-route-manifest.json)"
           [[ "$artifact_fingerprint" =~ ^[0-9a-f]{64}$ ]]
-          evidence="$(jq -nc --arg object_key "$ARTIFACT_OBJECT_KEY" --arg hash "$ARTIFACT_SHA256" --arg fingerprint "$artifact_fingerprint" --arg algorithm "$ARTIFACT_HASH_ALGORITHM" --arg code "$EXACT_CODE_SHA" --arg source_code "$SOURCE_CODE_SHA" --arg env "$BUILD_ENVIRONMENT_VERSION" --argjson bytes "$ARTIFACT_BYTES" '{object_key:$object_key,byte_length:$bytes,artifact_sha256:$hash,artifact_fingerprint_sha256:$fingerprint,hash_algorithm:$algorithm,code_sha:$code,source_code_sha:($source_code | if length > 0 then . else null end),build_environment_version:$env}')"
-          node scripts/send-content-deployment-callback.mjs artifact_registered "$evidence"
+          lock_evidence_sha256="$(sha256sum artifact-lock-evidence.json | awk '{print $1}')"
+          r2_verified_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          evidence="$(jq -nc --arg object_key "$ARTIFACT_OBJECT_KEY" --arg hash "$ARTIFACT_SHA256" --arg fingerprint "$artifact_fingerprint" --arg algorithm "$ARTIFACT_HASH_ALGORITHM" --arg code "$EXACT_CODE_SHA" --arg source_code "$SOURCE_CODE_SHA" --arg content "$CONTENT_ROOT_SHA256" --arg env "$BUILD_ENVIRONMENT_VERSION" --arg profile "r2-full-get-sha256-indefinite-lock-v1" --arg verified_at "$r2_verified_at" --arg lock "$lock_evidence_sha256" --arg contract "$RESUME_CONTRACT_VERSION" --argjson bytes "$ARTIFACT_BYTES" '{object_key:$object_key,byte_length:$bytes,artifact_sha256:$hash,artifact_fingerprint_sha256:$fingerprint,hash_algorithm:$algorithm,code_sha:$code,source_code_sha:($source_code | if length > 0 then . else null end),content_sha256:$content,build_environment_version:$env,verification_profile:$profile,r2_verified_at:$verified_at,lock_evidence_sha256:$lock,resume_contract_version:($contract | if length > 0 then . else null end)}')"
+          node "$RUNNER_TEMP/content-release-helper.mjs" callback artifact_registered "$evidence"
+
+      - name: Materialize exact registered R2 artifact
+        if: ${{ steps.resume.outputs.stage != 'build' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ARTIFACT_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_ARTIFACT_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          R2_MATERIALIZE_CONCURRENCY: "8"
+        run: |
+          node scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client > materialize-summary.json
+          jq -e '.site_release_id == env.SITE_RELEASE_ID and .artifact_sha256 == env.ARTIFACT_SHA256' materialize-summary.json >/dev/null
 
       - name: Deploy exact files to Pages Preview
+        if: ${{ steps.resume.outputs.stage != 'promote' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -234,8 +409,8 @@ jobs:
 
       - name: Record Preview evidence
         run: |
-          evidence="$(jq -nc --arg url "$PREVIEW_URL" --arg artifact "$ARTIFACT_SHA256" --arg content "$CONTENT_ROOT_SHA256" '{preview_url:$url,artifact_sha256:$artifact,content_sha256:$content,route_parity:true}')"
-          node scripts/send-content-deployment-callback.mjs preview_verified "$evidence"
+          evidence="$(jq -nc --arg url "$PREVIEW_URL" --arg artifact "$ARTIFACT_SHA256" --arg content "$CONTENT_ROOT_SHA256" --arg code "$EXACT_CODE_SHA" --arg contract "$RESUME_CONTRACT_VERSION" '{preview_url:$url,artifact_sha256:$artifact,content_sha256:$content,code_sha:$code,route_parity:true,resume_contract_version:($contract | if length > 0 then . else null end)}')"
+          node "$RUNNER_TEMP/content-release-helper.mjs" callback preview_verified "$evidence"
 
       - name: Request fenced production promotion
         if: ${{ github.event.inputs.mode == 'production' }}
@@ -244,21 +419,11 @@ jobs:
           PRODUCTION_BROKER_HMAC_SECRET: ${{ secrets.PRODUCTION_BROKER_HMAC_SECRET }}
         run: |
           test -n "$PRODUCTION_BROKER_URL"
-          body="$(jq -nc --arg dispatch "$DISPATCH_ID" --arg release "$SITE_RELEASE_ID" --argjson sequence "$CONTENT_RELEASE_SEQUENCE" --arg predecessor "$EXPECTED_PREDECESSOR_ID" --arg artifact "$ARTIFACT_SHA256" --arg object "$ARTIFACT_OBJECT_KEY" --arg code "$EXACT_CODE_SHA" --arg content "$CONTENT_ROOT_SHA256" --arg environment "$BUILD_ENVIRONMENT_VERSION" '{dispatch_id:$dispatch,site_release_id:$release,site_release_sequence:$sequence,expected_predecessor_id:($predecessor | if length > 0 then . else null end),artifact_sha256:$artifact,artifact_object_key:$object,code_sha:$code,content_sha256:$content,build_environment_version:$environment}')"
+          body="$(jq -nc --arg dispatch "$DISPATCH_ID" --arg release "$SITE_RELEASE_ID" --arg attempt "$DEPLOYMENT_ATTEMPT_TOKEN" --argjson execution_generation "$DEPLOYMENT_EXECUTION_GENERATION" --argjson sequence "$CONTENT_RELEASE_SEQUENCE" --arg predecessor "$EXPECTED_PREDECESSOR_ID" --arg artifact "$ARTIFACT_SHA256" --arg object "$ARTIFACT_OBJECT_KEY" --arg code "$EXACT_CODE_SHA" --arg content "$CONTENT_ROOT_SHA256" --arg environment "$BUILD_ENVIRONMENT_VERSION" '{dispatch_id:$dispatch,site_release_id:$release,attempt_token:$attempt,execution_generation:$execution_generation,site_release_sequence:$sequence,expected_predecessor_id:($predecessor | if length > 0 then . else null end),artifact_sha256:$artifact,artifact_object_key:$object,code_sha:$code,content_sha256:$content,build_environment_version:$environment}')"
           printf '%s' "$body" | node scripts/request-production-promotion.mjs > broker-result.json
           jq -e '.ok == true and (.site_release_id == env.SITE_RELEASE_ID)' broker-result.json >/dev/null
-
-      - name: Upload short-lived workflow artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: content-release-${{ github.event.inputs.site_release_sequence }}
-          path: |
-            content-release-artifact.json
-            artifact-lock-evidence.json
-          retention-days: 14
-          if-no-files-found: error
 
       - name: Record failed workflow
         if: ${{ failure() }}
         continue-on-error: true
-        run: node scripts/send-content-deployment-callback.mjs failed '{"error":"workflow_failed"}'
+        run: node "$RUNNER_TEMP/content-release-helper.mjs" callback failed '{"error":"workflow_failed"}'

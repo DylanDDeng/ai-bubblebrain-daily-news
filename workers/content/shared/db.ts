@@ -167,3 +167,21 @@ export async function finalizeSiteRelease(
   `;
   return oneJson(rows, "result");
 }
+
+export async function recordScheduledRunTrace(
+  sql: ContentSql,
+  input: {
+    runId: string;
+    scheduledAt: string;
+    eventType: "started" | "succeeded" | "failed";
+    evidence: Record<string, unknown>;
+  },
+): Promise<Record<string, unknown>> {
+  const rows = await sql<Record<string, unknown>[]>`
+    select private.record_scheduled_run_trace_v1(
+      ${input.runId}, ${input.scheduledAt}::timestamptz,
+      ${input.eventType}, ${sql.json(input.evidence)}
+    ) as result
+  `;
+  return oneJson(rows, "result");
+}

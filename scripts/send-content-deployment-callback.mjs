@@ -5,6 +5,10 @@ const callbackUrl = process.env.CONTENT_DEPLOY_CALLBACK_URL;
 const secret = process.env.CONTENT_DEPLOY_CALLBACK_SECRET;
 const siteReleaseId = process.env.SITE_RELEASE_ID;
 const dispatchId = process.env.DISPATCH_ID;
+const attemptToken = process.env.DEPLOYMENT_ATTEMPT_TOKEN;
+const executionGeneration = Number(
+  process.env.DEPLOYMENT_EXECUTION_GENERATION || 0,
+);
 if (!callbackUrl || !secret || !siteReleaseId || !dispatchId || !eventType) {
   throw new Error("Deployment callback environment is incomplete");
 }
@@ -12,6 +16,12 @@ const evidence = JSON.parse(evidenceText);
 const body = JSON.stringify({
   site_release_id: siteReleaseId,
   dispatch_id: dispatchId,
+  ...(attemptToken
+    ? {
+        attempt_token: attemptToken,
+        execution_generation: executionGeneration,
+      }
+    : {}),
   event_type: eventType,
   evidence,
 });
