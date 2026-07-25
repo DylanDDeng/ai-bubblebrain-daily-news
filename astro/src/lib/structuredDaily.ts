@@ -95,6 +95,14 @@ export function homepageFeedItems(
 		.slice(0, Math.max(0, Math.trunc(limit)));
 }
 
+export function timelineItemsBySourcePublishedAt(
+	items: readonly StructuredDailyItem[],
+): StructuredDailyItem[] {
+	return [...items].sort(
+		(a, b) => itemPublishedTimestamp(b) - itemPublishedTimestamp(a) || a.id.localeCompare(b.id),
+	);
+}
+
 const homepageBatchLabels: Record<StructuredDailyBatch['id'], Record<'zh-CN' | 'en', string>> = {
 	morning: { 'zh-CN': '早间累计', en: 'Morning total' },
 	afternoon: { 'zh-CN': '午后累计', en: 'Afternoon total' },

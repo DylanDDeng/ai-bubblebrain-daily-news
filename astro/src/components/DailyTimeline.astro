@@ -4,11 +4,12 @@ import {
 	cleanTimelineSummary,
 	displayContentType,
 	formatTimelineTime,
-	orderTimelineBatches,
+	timelineItemsBySourcePublishedAt,
 	timelineDisplayText,
 	timelineSourceDisplay,
 	type DailyContentType,
 	type DailyDisplayContentType,
+	type StructuredDailyBatch,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
 import { entitiesById, taxonomyLabel, topicsById } from '../lib/knowledge';
@@ -40,7 +41,16 @@ for (const item of report.items) {
 	typeCounts.set(displayType, (typeCounts.get(displayType) ?? 0) + 1);
 }
 
-const orderedBatches = orderTimelineBatches(report.batches);
+const orderedItems = timelineItemsBySourcePublishedAt(report.items);
+const orderedBatches: StructuredDailyBatch[] = [
+	{
+		id: 'night',
+		label: isEnglish ? 'Source publication time' : '按消息源发布时间',
+		status: 'completed',
+		generated_at: report.generated_at,
+		item_ids: orderedItems.map((item) => item.id),
+	},
+];
 const reportDate = dailyDateFromKey(report.date);
 const dateTitle = new Intl.DateTimeFormat(locale, {
 	year: 'numeric',
@@ -155,12 +165,9 @@ const olderKey = hrefDateKey(olderHref);
 	<div class="batches">
 		{
 			orderedBatches.map((batch) => {
-				// The producer stores each batch in ascending chronology for deterministic artifacts.
-				// The reading UI keeps that source untouched while showing each batch's newest item first.
 				const items = batch.item_ids
 					.map((id) => itemById.get(id))
-					.filter((item) => item !== undefined)
-					.reverse();
+					.filter((item) => item !== undefined);
 				const batchLabel = cleanTimelineSummary(batch.label);
 				const pending = batch.status !== 'completed';
 				return (

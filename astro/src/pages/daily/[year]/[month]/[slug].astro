@@ -7,7 +7,7 @@ import {
 	isDatabaseOwnedDailyDate,
 	type StructuredDailyReport,
 } from '../../../../lib/structuredDaily';
-import { loadStructuredDailyReport } from '../../../../lib/structuredDailyLocal';
+import { loadPublishedDailyReport } from '../../../../lib/structuredDailyLocal';
 
 export async function getStaticPaths() {
 	const allEntries = await getCollection('daily');
@@ -53,7 +53,7 @@ interface Props {
 
 const { entry, dateKey, newerHref, olderHref, alternateHref } = Astro.props;
 const report: StructuredDailyReport | null = isDatabaseOwnedDailyDate(dateKey)
-	? await loadStructuredDailyReport(dateKey)
+	? await loadPublishedDailyReport(dateKey)
 	: null;
 ---
 

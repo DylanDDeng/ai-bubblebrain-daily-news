@@ -11,6 +11,7 @@ import {
 	isDatabaseOwnedDailyDate,
 	orderTimelineBatches,
 	structuredCutoverDate,
+	timelineItemsBySourcePublishedAt,
 	timelineDisplayText,
 	timelineSourceDisplay,
 	type StructuredDailyBatch,
@@ -187,6 +188,30 @@ describe('timeline batch order', () => {
 			'night-newer-source',
 			'late-night-newer-source',
 			'late-night-older-source',
+		]);
+	});
+
+	it('orders the full timeline globally by source publication time across fetch batches', () => {
+		const items = [
+			{
+				id: 'morning-newer',
+				batch: 'morning',
+				published_at: '2026-07-25T12:00:00.000Z',
+				published_date: '2026-07-25',
+				ingested_at: '2026-07-25T12:05:00.000Z',
+			},
+			{
+				id: 'night-older',
+				batch: 'night',
+				published_at: '2026-07-25T02:00:00.000Z',
+				published_date: '2026-07-25',
+				ingested_at: '2026-07-25T16:00:00.000Z',
+			},
+		] as StructuredDailyItem[];
+
+		expect(timelineItemsBySourcePublishedAt(items).map(({ id }) => id)).toEqual([
+			'morning-newer',
+			'night-older',
 		]);
 	});
 
