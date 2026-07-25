@@ -62,6 +62,29 @@ describe('Folo incremental state', () => {
         });
     });
 
+    it('uses a just-promoted checkpoint while its append-only KV listing is stale', async () => {
+        const kv = memoryKv();
+        const incremental = await resolveFoloIncrementalPlan(
+            { ...enabledEnv, DATA_KV: kv },
+            {
+                runAt: '2026-07-25T01:00:00Z',
+                committedPlan: {
+                    enabled: true,
+                    mode: 'bootstrap',
+                    run_at: '2026-07-25T00:00:00.000Z',
+                },
+            },
+        );
+
+        expect(incremental).toMatchObject({
+            mode: 'incremental',
+            previous_checkpoint_at: '2026-07-25T00:00:00.000Z',
+            last_reconciled_at: '2026-07-25T00:00:00.000Z',
+            inserted_after: '2026-07-24T23:50:00.000Z',
+        });
+        expect(kv.list).toHaveBeenCalled();
+    });
+
     it('forces a periodic full reconciliation and never moves the cursor backwards', async () => {
         const kv = memoryKv({
             version: 1,

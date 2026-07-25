@@ -270,6 +270,10 @@ describe('structured publication workflow', () => {
             env,
             'daily:folo-incremental:v2:pending:key',
         );
+        expect(deps.resolveFoloIncrementalPlan).toHaveBeenCalledWith(env, {
+            runAt: runInput.runAt,
+            committedPlan: plan,
+        });
     });
 
     it('editorializes fresh items and same-day legacy social items before publishing', async () => {
