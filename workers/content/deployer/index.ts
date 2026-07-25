@@ -1,5 +1,9 @@
 import { canonicalJsonBytes, sha256Hex } from "../shared/canonical";
-import { openContentDatabase, type ContentSql } from "../shared/db";
+import {
+  databaseErrorCode,
+  openContentDatabase,
+  type ContentSql,
+} from "../shared/db";
 import { putVerifiedImmutable } from "../shared/r2";
 
 type Env = {
@@ -888,24 +892,38 @@ export async function handleDeploymentCallback(
   ) {
     return json({ error: "fenced_callback_required" }, 409);
   }
-  const sql = (dependencies.openDatabase || openContentDatabase)(
-    env,
-    "content-deployer-callback",
-  );
+  type CallbackStage =
+    | "database_open"
+    | "editorial_register"
+    | "editorial_fail"
+    | "accept"
+    | "artifact_register"
+    | "artifact_attest"
+    | "checkpoint"
+    | "event_record";
+  let callbackStage: CallbackStage = "database_open";
+  let sql: ContentSql | null = null;
   try {
+    const callbackSql = (dependencies.openDatabase || openContentDatabase)(
+      env,
+      "content-deployer-callback",
+    );
+    sql = callbackSql;
     if (eventType === "editorial_preview_verified") {
       const evidence = payload.evidence as Record<string, unknown>;
-      await sql`
+      callbackStage = "editorial_register";
+      await callbackSql`
         select private.register_preview_build_v1(
           ${String(evidence.draft_id)}::uuid, ${String(evidence.preview_sha256)},
-          ${String(evidence.artifact_sha256)}, ${String(evidence.pages_preview_url)}, ${sql.json(evidence)}
+          ${String(evidence.artifact_sha256)}, ${String(evidence.pages_preview_url)}, ${callbackSql.json(evidence)}
         )
       `;
       return json({ ok: true });
     }
     if (eventType === "editorial_preview_failed") {
       const evidence = payload.evidence as Record<string, unknown>;
-      await sql`
+      callbackStage = "editorial_fail";
+      await callbackSql`
         select private.fail_preview_build_v1(
           ${String(evidence.draft_id)}::uuid, ${String(evidence.preview_sha256)},
           ${String(evidence.error_code || "workflow_failed")}
@@ -914,11 +932,12 @@ export async function handleDeploymentCallback(
       return json({ ok: true });
     }
     if (fencedCallback) {
-      const acceptedRows = await sql<Record<string, unknown>[]>`
+      callbackStage = "accept";
+      const acceptedRows = await callbackSql<Record<string, unknown>[]>`
         select private.accept_deployment_callback_v2(
           ${releaseId}::uuid, ${dispatchId}::uuid, ${attemptToken}::uuid,
           ${executionGeneration}, ${eventType},
-          ${sql.json(payload.evidence as Record<string, unknown>)}
+          ${callbackSql.json(payload.evidence as Record<string, unknown>)}
         ) as result
       `;
       if (acceptedRows[0]?.result !== true) {
@@ -932,7 +951,8 @@ export async function handleDeploymentCallback(
     }
     if (eventType === "artifact_registered") {
       const evidence = payload.evidence as Record<string, unknown>;
-      await sql`
+      callbackStage = "artifact_register";
+      await callbackSql`
         select private.register_release_artifact_v1(
           ${releaseId}::uuid, ${String(evidence.object_key)}, ${Number(evidence.byte_length)},
           ${String(evidence.artifact_sha256)}, ${String(evidence.artifact_fingerprint_sha256)},
@@ -941,7 +961,8 @@ export async function handleDeploymentCallback(
         )
       `;
       if (fencedCallback) {
-        await sql`
+        callbackStage = "artifact_attest";
+        await callbackSql`
           select private.attest_release_artifact_v1(
             ${releaseId}::uuid, ${String(evidence.artifact_sha256)},
             ${String(evidence.verification_profile)},
@@ -952,16 +973,18 @@ export async function handleDeploymentCallback(
       }
     }
     if (fencedCallback) {
-      await sql`
+      callbackStage = "checkpoint";
+      await callbackSql`
         select private.record_deployment_checkpoint_v2(
           ${releaseId}::uuid, ${dispatchId}::uuid, ${attemptToken}::uuid,
           ${executionGeneration}, ${eventType},
-          ${sql.json(payload.evidence as Record<string, unknown>)}
+          ${callbackSql.json(payload.evidence as Record<string, unknown>)}
         )
       `;
     } else {
+      callbackStage = "event_record";
       await recordEvent(
-        sql,
+        callbackSql,
         releaseId,
         dispatchId,
         eventType,
@@ -969,10 +992,68 @@ export async function handleDeploymentCallback(
       );
     }
     return json({ ok: true });
-  } catch {
-    return json({ error: "service_unavailable" }, 503);
+  } catch (error) {
+    const databaseCode = databaseErrorCode(error);
+    let code = "internal_error";
+    let status = 503;
+    let retryable = true;
+    if (["55P03", "40001", "40P01"].includes(databaseCode || "")) {
+      code = "database_contention";
+      status = 409;
+    } else if (databaseCode?.startsWith("22")) {
+      code = "invalid_evidence";
+      status = 422;
+      retryable = false;
+    } else if (
+      databaseCode === "P0001" &&
+      ["artifact_register", "artifact_attest"].includes(callbackStage)
+    ) {
+      code = "invalid_evidence";
+      status = 422;
+      retryable = false;
+    } else if (databaseCode?.startsWith("23") || databaseCode === "P0001") {
+      code = "callback_conflict";
+      status = 409;
+      retryable = false;
+    } else if (
+      databaseCode?.startsWith("08") ||
+      databaseCode?.startsWith("53") ||
+      databaseCode === "57P01"
+    ) {
+      code = "database_unavailable";
+    } else if (callbackStage === "database_open") {
+      code = "database_unavailable";
+    }
+    console.error("[ContentDeployer] deployment callback failed", {
+      component: "content-deployer",
+      event: "deployment_callback_failed",
+      eventType,
+      callbackStage,
+      code,
+      errorType: error instanceof Error ? error.name : typeof error,
+    });
+    return json(
+      {
+        ok: false,
+        error: "deployment_callback_failed",
+        stage: callbackStage,
+        code,
+        retryable,
+      },
+      status,
+    );
   } finally {
-    await sql.end({ timeout: 2 });
+    if (sql) {
+      try {
+        await sql.end({ timeout: 2 });
+      } catch (error) {
+        console.error("[ContentDeployer] callback database close failed", {
+          component: "content-deployer",
+          event: "deployment_callback_database_close_failed",
+          errorType: error instanceof Error ? error.name : typeof error,
+        });
+      }
+    }
   }
 }
 

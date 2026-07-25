@@ -132,23 +132,30 @@ describe("content backlog replay trigger", () => {
   it("is a no-op unless the feature, binding, and secret are all configured", async () => {
     const fetch = vi.fn();
     await expect(replayContentBacklog({} as never)).resolves.toBeUndefined();
-    await expect(replayContentBacklog({
-      CONTENT_BACKLOG_REPLAY_ENABLED: "true",
-      CONTENT_INGESTOR: { fetch },
-    } as never)).resolves.toBeUndefined();
+    await expect(
+      replayContentBacklog({
+        CONTENT_BACKLOG_REPLAY_ENABLED: "true",
+        CONTENT_INGESTOR: { fetch },
+      } as never),
+    ).resolves.toBeUndefined();
     expect(fetch).not.toHaveBeenCalled();
   });
 
   it("calls the ingestion service binding with the dedicated secret", async () => {
-    const fetch = vi.fn(async () => new Response(
-      JSON.stringify({ success: true, status: "empty" }),
-      { status: 200 },
-    ));
-    await replayContentBacklog({
-      CONTENT_BACKLOG_REPLAY_ENABLED: "true",
-      CONTENT_BACKLOG_REPLAY_SECRET: "backlog-secret",
-      CONTENT_INGESTOR: { fetch },
-    } as never, new Date("2026-07-14T02:30:00.000Z"));
+    const fetch = vi.fn(
+      async () =>
+        new Response(JSON.stringify({ success: true, status: "empty" }), {
+          status: 200,
+        }),
+    );
+    await replayContentBacklog(
+      {
+        CONTENT_BACKLOG_REPLAY_ENABLED: "true",
+        CONTENT_BACKLOG_REPLAY_SECRET: "backlog-secret",
+        CONTENT_INGESTOR: { fetch },
+      } as never,
+      new Date("2026-07-14T02:30:00.000Z"),
+    );
 
     expect(fetch).toHaveBeenCalledOnce();
     const [url, init] = fetch.mock.calls[0];
@@ -160,13 +167,20 @@ describe("content backlog replay trigger", () => {
   });
 
   it("surfaces non-success responses for the cron isolation boundary to catch", async () => {
-    await expect(replayContentBacklog({
-      CONTENT_BACKLOG_REPLAY_ENABLED: "true",
-      CONTENT_BACKLOG_REPLAY_SECRET: "backlog-secret",
-      CONTENT_INGESTOR: {
-        fetch: vi.fn(async () => new Response("unavailable", { status: 503 })),
-      },
-    } as never, new Date("2026-07-14T02:30:00.000Z"))).rejects.toThrow(/503/);
+    await expect(
+      replayContentBacklog(
+        {
+          CONTENT_BACKLOG_REPLAY_ENABLED: "true",
+          CONTENT_BACKLOG_REPLAY_SECRET: "backlog-secret",
+          CONTENT_INGESTOR: {
+            fetch: vi.fn(
+              async () => new Response("unavailable", { status: 503 }),
+            ),
+          },
+        } as never,
+        new Date("2026-07-14T02:30:00.000Z"),
+      ),
+    ).rejects.toThrow(/503/);
   });
 
   it("does not replay around the top of hour reserved for fresh ingestion", async () => {
@@ -426,6 +440,163 @@ describe("fenced deployment callbacks", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ ok: true, lease_extended: true });
     expect(sql).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns a stable retryable stage when opening the callback database fails", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        attempt_token: "44444444-4444-4444-8444-444444444444",
+        execution_generation: 2,
+        event_type: "preview_verified",
+        evidence: { secret_value: "must-not-leak" },
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+      } as never,
+      {
+        openDatabase: vi.fn(() => {
+          throw new Error("database password must-not-leak");
+        }),
+      },
+    );
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({
+      ok: false,
+      error: "deployment_callback_failed",
+      stage: "database_open",
+      code: "database_unavailable",
+      retryable: true,
+    });
+    expect(JSON.stringify(log.mock.calls)).not.toContain("must-not-leak");
+    log.mockRestore();
+  });
+
+  it("classifies nested database contention at the fenced accept stage", async () => {
+    const end = vi.fn(async () => undefined);
+    const contention = Object.assign(new Error("locked"), {
+      cause: { code: "55P03" },
+    });
+    const sql = vi.fn(async () => {
+      throw contention;
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        attempt_token: "44444444-4444-4444-8444-444444444444",
+        execution_generation: 2,
+        event_type: "preview_verified",
+        evidence: {},
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+      } as never,
+      { openDatabase: vi.fn(() => sql as never) },
+    );
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({
+      ok: false,
+      error: "deployment_callback_failed",
+      stage: "accept",
+      code: "database_contention",
+      retryable: true,
+    });
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+
+  it("classifies malformed artifact evidence without exposing database details", async () => {
+    const end = vi.fn(async () => undefined);
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("accept_deployment_callback_v2"))
+        return [{ result: true }];
+      if (query.includes("register_release_artifact_v1")) {
+        throw Object.assign(new Error("invalid byte_length secret"), {
+          code: "P0001",
+        });
+      }
+      throw new Error(`Unexpected SQL: ${query}`);
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        attempt_token: "44444444-4444-4444-8444-444444444444",
+        execution_generation: 2,
+        event_type: "artifact_registered",
+        evidence: {
+          object_key: "artifact",
+          byte_length: -1,
+          artifact_sha256: "a".repeat(64),
+          artifact_fingerprint_sha256: "b".repeat(64),
+          hash_algorithm: "sha256",
+          code_sha: "c".repeat(40),
+          build_environment_version: "test",
+        },
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+      } as never,
+      { openDatabase: vi.fn(() => sql as never) },
+    );
+
+    expect(response.status).toBe(422);
+    expect(await response.json()).toEqual({
+      ok: false,
+      error: "deployment_callback_failed",
+      stage: "artifact_register",
+      code: "invalid_evidence",
+      retryable: false,
+    });
+    expect(end).toHaveBeenCalledWith({ timeout: 2 });
+  });
+
+  it("does not replace a successful callback when database close fails", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    const end = vi.fn(async () => {
+      throw new Error("close failed");
+    });
+    const sql = vi.fn(async (strings: TemplateStringsArray) => {
+      const query = strings.join("?");
+      if (query.includes("accept_deployment_callback_v2"))
+        return [{ result: true }];
+      throw new Error(`Unexpected SQL: ${query}`);
+    });
+    Object.assign(sql, { json: vi.fn((value: unknown) => value), end });
+    const response = await handleDeploymentCallback(
+      await signedDeploymentCallback("callback-secret", {
+        site_release_id: valid.site_release_id,
+        dispatch_id: valid.dispatch_id,
+        attempt_token: "44444444-4444-4444-8444-444444444444",
+        execution_generation: 2,
+        event_type: "heartbeat",
+        evidence: {},
+      }),
+      {
+        DEPLOY_CALLBACK_SECRET: "callback-secret",
+      } as never,
+      { openDatabase: vi.fn(() => sql as never) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      ok: true,
+      lease_extended: true,
+    });
+    expect(log).toHaveBeenCalledWith(
+      "[ContentDeployer] callback database close failed",
+      expect.objectContaining({
+        event: "deployment_callback_database_close_failed",
+      }),
+    );
+    log.mockRestore();
   });
 });
 

@@ -46,18 +46,20 @@ describe("fenced content release workflow", () => {
     expect(workflow).toContain(
       'node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA"',
     );
-    expect(deployerConfig).toContain(
-      'CONTENT_RELEASE_RESUME_ENABLED = "true"',
+    expect(workflow).toContain(
+      "node scripts/request-production-promotion.mjs > broker-result.json",
     );
+    expect(workflow).toContain(
+      "jq -e '.ok == true and (.site_release_id == env.SITE_RELEASE_ID)' broker-result.json",
+    );
+    expect(deployerConfig).toContain('CONTENT_RELEASE_RESUME_ENABLED = "true"');
     expect(deployerConfig).toContain(
       'CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED = "false"',
     );
     expect(deployerConfig).toContain(
       'CONTENT_RELEASE_REQUIRE_FENCED_CALLBACKS = "true"',
     );
-    expect(deployerConfig).toContain(
-      'CONTENT_BACKLOG_REPLAY_ENABLED = "true"',
-    );
+    expect(deployerConfig).toContain('CONTENT_BACKLOG_REPLAY_ENABLED = "true"');
     expect(deployerConfig).toContain('binding = "CONTENT_INGESTOR"');
     expect(deployerConfig).toContain('service = "ai-daily"');
     expect(deployerConfig).toContain("CONTENT_BACKLOG_REPLAY_SECRET");
