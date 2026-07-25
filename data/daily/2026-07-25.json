@@ -80,17 +80,20 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-25T18:00:00.000Z",
       "id": "lateNight",
-      "item_ids": [],
+      "item_ids": [
+        "n_5c4c10a125135a6a726ccc6ef4052e98f59f492a3235b8f279ebd39344f66829",
+        "n_2cdd168daa8d2a35c769b58b48637e22e02d9534e76c8497a7e25cc0bd4aef96"
+      ],
       "label": "次日 02:00 补充更新",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T14:00:00.000Z",
+  "generated_at": "2026-07-25T18:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -2157,6 +2160,78 @@
         "topic_models"
       ],
       "url": "https://x.com/aigclink/status/2080985963304772019"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/vista8/status/2081048707563389260",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5c4c10a125135a6a726ccc6ef4052e98f59f492a3235b8f279ebd39344f66829",
+      "featured": false,
+      "id": "n_5c4c10a125135a6a726ccc6ef4052e98f59f492a3235b8f279ebd39344f66829",
+      "identity_claims": [
+        "c_5c4c10a125135a6a726ccc6ef4052e98f59f492a3235b8f279ebd39344f66829",
+        "c_e9badd639016d21a2e8c28fb71ebc2ea43944e702bfe302a5d7eec97ddc44134"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T18:00:00.000Z",
+      "published_at": "2026-07-25T16:07:30.115Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215596742305554433",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1215596742305554433",
+      "source_type": "twitter_extra",
+      "summary": "该PPT基于单个HTML文件，支持文本编辑、全屏播放与多人协作，其文档采用明文JSON，方便交给AI修改迭代。",
+      "time_precision": "exact",
+      "title": "开源项目Bento可将博客网址自动转为HTML演示文稿，文章配图变为背景动效炫酷",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/vista8/status/2081048707563389260"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/vista8/status/2081057673835856271",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2cdd168daa8d2a35c769b58b48637e22e02d9534e76c8497a7e25cc0bd4aef96",
+      "featured": false,
+      "id": "n_2cdd168daa8d2a35c769b58b48637e22e02d9534e76c8497a7e25cc0bd4aef96",
+      "identity_claims": [
+        "c_2cdd168daa8d2a35c769b58b48637e22e02d9534e76c8497a7e25cc0bd4aef96",
+        "c_8b55e745a869684cd07bf6941db991c52901ce9fcd2001608280ea62f8b656ac"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T18:00:00.000Z",
+      "published_at": "2026-07-25T16:43:08.268Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215596742305554432",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1215596742305554432",
+      "source_type": "twitter_extra",
+      "summary": "该帖子指出梁文峰的照片在互联网上很少见，并随文附上一张图片。",
+      "time_precision": "exact",
+      "title": "社交平台流传一张梁文峰照片，发帖人称其全网公开影像为数不多",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2081057673835856271"
     }
   ],
   "overview": {
