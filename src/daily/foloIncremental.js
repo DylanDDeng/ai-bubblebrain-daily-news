@@ -94,6 +94,7 @@ export async function resolveFoloIncrementalPlan(
     {
         runAt,
         kv = env.DATA_KV,
+        committedPlan = null,
     } = {},
 ) {
     const normalizedRunAt = explicitInstant(runAt);
@@ -132,7 +133,23 @@ export async function resolveFoloIncrementalPlan(
         48,
         'FOLO_INCREMENTAL_RECONCILE_HOURS',
     );
-    const state = await readState(kv);
+    let state = await readState(kv);
+    const committedAt = explicitInstant(committedPlan?.run_at);
+    // Workers KV list results can lag a successful checkpoint write. Carry the
+    // checkpoint promoted in this invocation so the next fetch cannot bootstrap
+    // again while the append-only key propagates.
+    if (
+        committedPlan?.enabled === true
+        && committedAt
+        && (!state || Date.parse(committedAt) > Date.parse(state.completed_at))
+    ) {
+        state = {
+            completed_at: committedAt,
+            last_reconciled_at: ['bootstrap', 'reconcile'].includes(committedPlan.mode)
+                ? committedAt
+                : explicitInstant(committedPlan.last_reconciled_at),
+        };
+    }
     if (!state) {
         return {
             enabled: true,

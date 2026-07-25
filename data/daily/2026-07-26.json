@@ -15,7 +15,7 @@
       "status": "pending"
     },
     {
-      "generated_at": "2026-07-25T16:00:00.000Z",
+      "generated_at": "2026-07-25T17:00:00.000Z",
       "id": "night",
       "item_ids": [
         "n_ab393956a8fac626f10dce9e13c096132c55e2444441a33d407ced8538e12b94",
@@ -24,7 +24,9 @@
         "n_1ebb9a22c666c0616b57c983e13014ff361d2999817314d852b6c716e09b147a",
         "n_a39b4685e56660281406aeebf0d249acf564815d18e7448c11e803d3423763c2",
         "n_6354dcc7b161cf96d75580b3a4280d75e36b0571c7be79eac2be369c4399ea33",
-        "n_7e98a000c7cce7e8f7b4e2aca5c19a22c1a746c88dcfdf798dd3bc21652c16cb"
+        "n_7e98a000c7cce7e8f7b4e2aca5c19a22c1a746c88dcfdf798dd3bc21652c16cb",
+        "n_b97bfc801b8909ef147c8bf04693cfe48d25ec4d95162c600c92a23c7b49f6ae",
+        "n_599c6389d1f1f9949bfba8b59ebb51788b0433365659be40d3476c6cd0627c4c"
       ],
       "label": "22:00 更新",
       "status": "completed"
@@ -40,7 +42,7 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T16:00:00.000Z",
+  "generated_at": "2026-07-25T17:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -314,6 +316,80 @@
         "topic_open_source"
       ],
       "url": "https://x.com/Gorden_Sun/status/2080983794677662048"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/Khazix0918/status/2081023150154981751",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_b97bfc801b8909ef147c8bf04693cfe48d25ec4d95162c600c92a23c7b49f6ae",
+      "featured": false,
+      "id": "n_b97bfc801b8909ef147c8bf04693cfe48d25ec4d95162c600c92a23c7b49f6ae",
+      "identity_claims": [
+        "c_208d284adf9ca05021db687d07951636c1f1814e6e06654abf229d3625724b0d",
+        "c_b97bfc801b8909ef147c8bf04693cfe48d25ec4d95162c600c92a23c7b49f6ae"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T17:00:00.000Z",
+      "published_at": "2026-07-25T14:25:57.394Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215527265421402112",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1215527265421402112",
+      "source_type": "kazike_x",
+      "summary": "他认为过去的规则与约束反而会拖累模型推理效果，因此进行大幅重构。",
+      "time_precision": "exact",
+      "title": "受Anthropic观点影响，数字生命卡兹克决定清空并重构所有文档与规则以提升模型推理效率",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Khazix0918/status/2081023150154981751"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/HiTw93/status/2081028962864763295",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_599c6389d1f1f9949bfba8b59ebb51788b0433365659be40d3476c6cd0627c4c",
+      "featured": false,
+      "id": "n_599c6389d1f1f9949bfba8b59ebb51788b0433365659be40d3476c6cd0627c4c",
+      "identity_claims": [
+        "c_599c6389d1f1f9949bfba8b59ebb51788b0433365659be40d3476c6cd0627c4c",
+        "c_e26fcfb4e49c576d251b065ba1806832ece7a8f50b8c71cc29df8b93f1cabfc6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T17:00:00.000Z",
+      "published_at": "2026-07-25T14:49:03.016Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215503283733471232",
+        "name": "twitter-Tw93"
+      },
+      "source_id": "1215503283733471232",
+      "source_type": "twitter_extra",
+      "summary": "为回馈用户宣传，项目提供推广分润，强调真实推荐的重要性。",
+      "time_precision": "exact",
+      "title": "Mole上线推荐合作，注册获取专属链接，每单成交分佣25%且满60美元后按月结算",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/HiTw93/status/2081028962864763295"
     }
   ],
   "overview": {
