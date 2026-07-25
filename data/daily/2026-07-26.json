@@ -1,9 +1,11 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-25T21:00:00.000Z",
+      "generated_at": "2026-07-25T22:00:00.000Z",
       "id": "morning",
-      "item_ids": [],
+      "item_ids": [
+        "n_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d"
+      ],
       "label": "08:00 更新",
       "status": "completed"
     },
@@ -42,9 +44,47 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T21:00:00.000Z",
+  "generated_at": "2026-07-25T22:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2081131024021352623",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d",
+      "featured": false,
+      "id": "n_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d",
+      "identity_claims": [
+        "c_2850bc80408ed02acc584af30720c3074daae9b796b9e9be1adc2562e6d351f1",
+        "c_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T22:00:00.000Z",
+      "published_at": "2026-07-25T21:34:36.732Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215836326973132800",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1215836326973132800",
+      "source_type": "twitter_extra",
+      "summary": "Anthropic 技术员工 Julian Schrittwieser 发推称对黄仁勋相信开源感到兴奋，并期待 CUDA 和 GPU 驱动开源，语气带有嘲讽，暗示真正的承诺需要行动来证明。",
+      "time_precision": "exact",
+      "title": "Anthropic 技术员工暗讽黄仁勋开源言论，催促其发布 CUDA 和 GPU 驱动源码",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2081131024021352623"
+    },
     {
       "batch": "night",
       "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzIyMzA5NjEyMA%3D%3D&idx=1&mid=2647684622&sn=dab33249e9c9bd280524c433b9435764",
