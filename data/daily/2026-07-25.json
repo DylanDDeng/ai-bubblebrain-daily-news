@@ -23,14 +23,19 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-25T06:00:00.000Z",
+      "generated_at": "2026-07-25T08:00:00.000Z",
       "id": "afternoon",
       "item_ids": [
         "n_bef08ef643b22ce0be7d90394af7ee84321d29d238859673dc02dcdc6018d161",
+        "n_93914f7925344a6100975c7873499eefe81d70294954aa067fdb02424a9142e6",
+        "n_15910bbd9994f1e6a914ae41ef8450cf4405918dcb9a1b3b2f8fe87858260355",
         "n_e161d82a64f289c6678488afc29657128bc51b737da72c317766fb828568bc49",
         "n_7a38c486c3e3d89cf338556cd7b6d09a44a14b2f0845f005a7387fa127c7b695",
+        "n_61b9952ac3c9f52769c9a261d75c3673fa243e36aa823724fa7cd0263791555c",
         "n_514639bb1e9f566327380d7359cf0bd3e3f701dcece6176454427c0dcf576df8",
-        "n_db23009b47fecd71e53161122e0c2960477519864067f21b38b4cfb2dc58907f"
+        "n_f43f1f972c4c9de50eaca70638b88e073cd65c7b0364ee6e39ef6d06c19230fe",
+        "n_db23009b47fecd71e53161122e0c2960477519864067f21b38b4cfb2dc58907f",
+        "n_d70f92c9ada9b45af51ca672be07ed0d36ebb6e18871c81fc6b0f9ab82f5bbba"
       ],
       "label": "14:00 更新",
       "status": "completed"
@@ -68,7 +73,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T06:00:00.000Z",
+  "generated_at": "2026-07-25T08:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -647,6 +652,79 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2080843933286793507",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_93914f7925344a6100975c7873499eefe81d70294954aa067fdb02424a9142e6",
+      "featured": false,
+      "id": "n_93914f7925344a6100975c7873499eefe81d70294954aa067fdb02424a9142e6",
+      "identity_claims": [
+        "c_93914f7925344a6100975c7873499eefe81d70294954aa067fdb02424a9142e6",
+        "c_f87cad84ab7d70d2a84849152743440ab1ce59588de3b4d96361ee4ff517780d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T08:00:00.000Z",
+      "published_at": "2026-07-25T02:33:48.593Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214987463244681216",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1214987463244681216",
+      "source_type": "twitter_extra",
+      "summary": "该观点强调开源是确保AI民主化和广泛创新的关键路径，只有开源才能防止技术权力过度集中。",
+      "time_precision": "exact",
+      "title": "开源人工智能必须在未来技术生态中占据主导地位，以避免被少数公司垄断。",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/omarsar0/status/2080843933286793507"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/vista8/status/2080848416641605816",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_15910bbd9994f1e6a914ae41ef8450cf4405918dcb9a1b3b2f8fe87858260355",
+      "featured": false,
+      "id": "n_15910bbd9994f1e6a914ae41ef8450cf4405918dcb9a1b3b2f8fe87858260355",
+      "identity_claims": [
+        "c_15910bbd9994f1e6a914ae41ef8450cf4405918dcb9a1b3b2f8fe87858260355",
+        "c_54ea3840a3995f9be4b12d443302590c903174f0178503f676e6bc6520a9b708"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T08:00:00.000Z",
+      "published_at": "2026-07-25T02:51:37.416Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214920755339239427",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1214920755339239427",
+      "source_type": "twitter_extra",
+      "summary": "他进一步解释，美国走英雄史观的阶跃式发展，中国则是人民史观的渐进式累积，每个应用场景都在为整体智能做出贡献。公司One2X正聚焦AI视频Agent。",
+      "time_precision": "exact",
+      "title": "王冠将中美AI竞争比喻为攀登珠峰，美国从南坡依靠训练模型，中国从北坡侧重推理应用。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/vista8/status/2080848416641605816"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://x.com/gdb/status/2080861203010568232",
       "category": "other",
       "content_type": "socialMedia",
@@ -721,6 +799,42 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://x.com/vista8/status/2080869963351617686",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_61b9952ac3c9f52769c9a261d75c3673fa243e36aa823724fa7cd0263791555c",
+      "featured": false,
+      "id": "n_61b9952ac3c9f52769c9a261d75c3673fa243e36aa823724fa7cd0263791555c",
+      "identity_claims": [
+        "c_61b9952ac3c9f52769c9a261d75c3673fa243e36aa823724fa7cd0263791555c",
+        "c_da9c465d5aadc0cab5f8826505d3544e1e0dcb1e0e3e0796224ca541266c0df1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T08:00:00.000Z",
+      "published_at": "2026-07-25T04:17:14.798Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214920755339239426",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1214920755339239426",
+      "source_type": "twitter_extra",
+      "summary": "有用户在社交平台询问是否有人参加该活动，并描述活动场面热闹。",
+      "time_precision": "exact",
+      "title": "飞书今日举办活动，参会者反馈现场气氛热烈。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2080869963351617686"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://x.com/gdb/status/2080874519091151227",
       "category": "other",
       "content_type": "socialMedia",
@@ -759,6 +873,42 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://x.com/vista8/status/2080874556789838226",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f43f1f972c4c9de50eaca70638b88e073cd65c7b0364ee6e39ef6d06c19230fe",
+      "featured": false,
+      "id": "n_f43f1f972c4c9de50eaca70638b88e073cd65c7b0364ee6e39ef6d06c19230fe",
+      "identity_claims": [
+        "c_a5f8fe05fac34409476b0b0b5cfa205f6bd5a06b2ceead28bd7a4666a6da688f",
+        "c_f43f1f972c4c9de50eaca70638b88e073cd65c7b0364ee6e39ef6d06c19230fe"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T08:00:00.000Z",
+      "published_at": "2026-07-25T04:35:29.423Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214920755339239425",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1214920755339239425",
+      "source_type": "twitter_extra",
+      "summary": "课程将在微信视频号“通往AGI之路”和飞书同步进行，内容涵盖信源差异成因、国内AI平台偏好识别、投放策略制定及实战演练。",
+      "time_precision": "exact",
+      "title": "GEO公开课第三期将于7月25日晚8点举办，主题为AI信源偏好分析与内容投放策略。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2080874556789838226"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://x.com/oran_ge/status/2080882065361559671",
       "category": "other",
       "content_type": "socialMedia",
@@ -792,6 +942,42 @@
         "topic_other"
       ],
       "url": "https://x.com/oran_ge/status/2080882065361559671"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/vista8/status/2080905450346660321",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d70f92c9ada9b45af51ca672be07ed0d36ebb6e18871c81fc6b0f9ab82f5bbba",
+      "featured": false,
+      "id": "n_d70f92c9ada9b45af51ca672be07ed0d36ebb6e18871c81fc6b0f9ab82f5bbba",
+      "identity_claims": [
+        "c_ccd0d5b2bcc7441f7533ba3ee868bbe7a4fe95b554a29a7f4d479883f9ae214d",
+        "c_d70f92c9ada9b45af51ca672be07ed0d36ebb6e18871c81fc6b0f9ab82f5bbba"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T08:00:00.000Z",
+      "published_at": "2026-07-25T06:38:15.590Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214920755339239424",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1214920755339239424",
+      "source_type": "twitter_extra",
+      "summary": "多头注意力允许模型并行地从不同表示子空间关注输入信息，从而更丰富地捕获上下文关联。",
+      "time_precision": "exact",
+      "title": "硬核AI知识点系列本期解析多头注意力机制，它是Transformer模型的核心组件。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2080905450346660321"
     },
     {
       "batch": "night",
