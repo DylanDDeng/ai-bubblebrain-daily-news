@@ -23,7 +23,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-25T10:00:00.000Z",
+      "generated_at": "2026-07-25T12:00:00.000Z",
       "id": "afternoon",
       "item_ids": [
         "n_bef08ef643b22ce0be7d90394af7ee84321d29d238859673dc02dcdc6018d161",
@@ -38,7 +38,14 @@
         "n_d70f92c9ada9b45af51ca672be07ed0d36ebb6e18871c81fc6b0f9ab82f5bbba",
         "n_0caec7bda0896efb0826f80f8e70a85bae096ed71e5cf0a2de45996064e98906",
         "n_a8ca4e3668cea5b39d08f03c546930f60648d93475e1c6f5e5208810cfde3eec",
-        "n_d1b478d215fa5f7344f8bea66c667f68933735b055169e23cd29030c2a951d10"
+        "n_d1b478d215fa5f7344f8bea66c667f68933735b055169e23cd29030c2a951d10",
+        "n_2019c27d610f0449d875ab4c82abf74d5186b82fb66a9a269810abadffa981a9",
+        "n_311475e164bd1f242f6b1b1b826c2c7a2fb2323018aa1acb98935c2016f8390b",
+        "n_3a87421d9cf3ea678d8649bed68a9cf51e9cc5796553223c141d33e4031e58af",
+        "n_4686a0b0b129c8973ef384db7303f10307bc0603e0d7a5e2f496e912f8009f9b",
+        "n_97a419b64ccb8955fd6c9ec87e7d7c8c92d32b526629b4ed3cb72cff9970be0f",
+        "n_9c689c84a7b41a4c0ad629004528ba538ba3d496890575af0b914de0fc8e8ca9",
+        "n_b16d839aa7769e24e444aa673a77d3012d2d7dc056b05480811d6e05d10e69db"
       ],
       "label": "14:00 更新",
       "status": "completed"
@@ -76,7 +83,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T10:00:00.000Z",
+  "generated_at": "2026-07-25T12:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1092,6 +1099,267 @@
         "topic_products"
       ],
       "url": "https://x.com/dotey/status/2080926086515286484"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/anthropics/claude-cookbooks",
+      "category": "models",
+      "content_type": "project",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_2019c27d610f0449d875ab4c82abf74d5186b82fb66a9a269810abadffa981a9",
+      "featured": false,
+      "id": "n_2019c27d610f0449d875ab4c82abf74d5186b82fb66a9a269810abadffa981a9",
+      "identity_claims": [
+        "c_2019c27d610f0449d875ab4c82abf74d5186b82fb66a9a269810abadffa981a9",
+        "c_7f1f9cc34daaf0d8626b4f4ae4ffb3aa19e859a173e008ce58e53c7470e468d5"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/anthropics/claude-cookbooks",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/anthropics/claude-cookbooks",
+      "source_type": "github_trending",
+      "summary": "一组 Notebook/配方，展示使用 Claude 的一些有趣且有效的方法。",
+      "time_precision": "date_only",
+      "title": "claude-cookbooks",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/anthropics/claude-cookbooks"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/palmier-io/palmier-pro",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_311475e164bd1f242f6b1b1b826c2c7a2fb2323018aa1acb98935c2016f8390b",
+      "featured": false,
+      "id": "n_311475e164bd1f242f6b1b1b826c2c7a2fb2323018aa1acb98935c2016f8390b",
+      "identity_claims": [
+        "c_311475e164bd1f242f6b1b1b826c2c7a2fb2323018aa1acb98935c2016f8390b",
+        "c_8f0814368d64d07908cb87742582226754b3616bc0fb32a8e960eda356dd8ee5"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/palmier-io/palmier-pro",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/palmier-io/palmier-pro",
+      "source_type": "github_trending",
+      "summary": "专为 AI 构建的 macOS 视频编辑器",
+      "time_precision": "date_only",
+      "title": "palmier-pro",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/palmier-io/palmier-pro"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/RyanCodrai/turbovec",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_3a87421d9cf3ea678d8649bed68a9cf51e9cc5796553223c141d33e4031e58af",
+      "featured": false,
+      "id": "n_3a87421d9cf3ea678d8649bed68a9cf51e9cc5796553223c141d33e4031e58af",
+      "identity_claims": [
+        "c_3a87421d9cf3ea678d8649bed68a9cf51e9cc5796553223c141d33e4031e58af",
+        "c_53b085dee19efeb1c6587f786c09e90bad2520801992b76d9bb08003e38fc9f0"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/RyanCodrai/turbovec",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/RyanCodrai/turbovec",
+      "source_type": "github_trending",
+      "summary": "一个基于 TurboQuant 构建的向量索引，用 Rust 编写并提供 Python 绑定",
+      "time_precision": "date_only",
+      "title": "turbovec",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/RyanCodrai/turbovec"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/affaan-m/ECC",
+      "category": "models",
+      "content_type": "project",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_4686a0b0b129c8973ef384db7303f10307bc0603e0d7a5e2f496e912f8009f9b",
+      "featured": false,
+      "id": "n_4686a0b0b129c8973ef384db7303f10307bc0603e0d7a5e2f496e912f8009f9b",
+      "identity_claims": [
+        "c_4686a0b0b129c8973ef384db7303f10307bc0603e0d7a5e2f496e912f8009f9b",
+        "c_a28217d3356170acedb45153bd37f8538f92dd37742c5eef407c0b6f0fcf37a9"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/affaan-m/ECC",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/affaan-m/ECC",
+      "source_type": "github_trending",
+      "summary": "代理 harness 性能优化系统。为 Claude Code、Codex、Opencode、Cursor 等提供技能、本能、记忆、安全和研究优先的开发。",
+      "time_precision": "date_only",
+      "title": "ECC",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/affaan-m/ECC"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/obra/superpowers",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_97a419b64ccb8955fd6c9ec87e7d7c8c92d32b526629b4ed3cb72cff9970be0f",
+      "featured": false,
+      "id": "n_97a419b64ccb8955fd6c9ec87e7d7c8c92d32b526629b4ed3cb72cff9970be0f",
+      "identity_claims": [
+        "c_97a419b64ccb8955fd6c9ec87e7d7c8c92d32b526629b4ed3cb72cff9970be0f",
+        "c_ee460b4617c6acc4d38471213001f898188caacf20bb1d0d4ae78cc903dac869"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/obra/superpowers",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/obra/superpowers",
+      "source_type": "github_trending",
+      "summary": "一个切实可用的代理式技能框架和软件开发方法论。",
+      "time_precision": "date_only",
+      "title": "superpowers",
+      "topic_ids": [
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/obra/superpowers"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/permissionlesstech/bitchat",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_9c689c84a7b41a4c0ad629004528ba538ba3d496890575af0b914de0fc8e8ca9",
+      "featured": false,
+      "id": "n_9c689c84a7b41a4c0ad629004528ba538ba3d496890575af0b914de0fc8e8ca9",
+      "identity_claims": [
+        "c_37db9effd62682a9e33cfd9396564049c8656d76be91b028d417cc220e9987e1",
+        "c_9c689c84a7b41a4c0ad629004528ba538ba3d496890575af0b914de0fc8e8ca9"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/permissionlesstech/bitchat",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/permissionlesstech/bitchat",
+      "source_type": "github_trending",
+      "summary": "蓝牙网状网络聊天，IRC 风格",
+      "time_precision": "date_only",
+      "title": "bitchat",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/permissionlesstech/bitchat"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/andrewyng/aisuite",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_b16d839aa7769e24e444aa673a77d3012d2d7dc056b05480811d6e05d10e69db",
+      "featured": false,
+      "id": "n_b16d839aa7769e24e444aa673a77d3012d2d7dc056b05480811d6e05d10e69db",
+      "identity_claims": [
+        "c_1ea8cb59737d8066837b0573f9211eaed6390fcdb91480f763ebca5be2490a7c",
+        "c_b16d839aa7769e24e444aa673a77d3012d2d7dc056b05480811d6e05d10e69db"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/andrewyng/aisuite",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/andrewyng/aisuite",
+      "source_type": "github_trending",
+      "summary": "面向多个生成式 AI 提供商的简单、统一接口",
+      "time_precision": "date_only",
+      "title": "aisuite",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/andrewyng/aisuite"
     },
     {
       "batch": "night",
