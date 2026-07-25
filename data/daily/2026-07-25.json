@@ -1,11 +1,12 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-24T21:00:00.000Z",
+      "generated_at": "2026-07-25T00:00:00.000Z",
       "id": "morning",
       "item_ids": [
         "n_6fb884d603bf7fc06845c9e855ff1c64aa2d61be80aaac28e50921e276e22747",
-        "n_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2"
+        "n_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2",
+        "n_be3564488a7466968f53529b1f8b454650ffad168d4108ddf4ea320f10929568"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -50,7 +51,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-24T21:00:00.000Z",
+  "generated_at": "2026-07-25T00:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -127,6 +128,44 @@
         "topic_other"
       ],
       "url": "https://x.com/omarsar0/status/2080736027694510260"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080761013826433138",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_be3564488a7466968f53529b1f8b454650ffad168d4108ddf4ea320f10929568",
+      "featured": false,
+      "id": "n_be3564488a7466968f53529b1f8b454650ffad168d4108ddf4ea320f10929568",
+      "identity_claims": [
+        "c_6fccc8037fea5fa1ac2f5ce1a065ddb3bc6327279b97e7efd5c4b6b972eba80f",
+        "c_be3564488a7466968f53529b1f8b454650ffad168d4108ddf4ea320f10929568"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T00:00:00.000Z",
+      "published_at": "2026-07-24T21:04:19.254Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214520374226620416",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1214520374226620416",
+      "source_type": "twitter_extra",
+      "summary": "移除大部分系统提示后，模型意图理解与工具使用能力增强。系统提示应精简为最小偏好，避免取代模型能力，评估与验证仍是当前主要挑战。",
+      "time_precision": "exact",
+      "title": "最新模型在移除80%系统提示后，意图理解与工具使用能力显著增强",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/omarsar0/status/2080761013826433138"
     },
     {
       "batch": "night",
