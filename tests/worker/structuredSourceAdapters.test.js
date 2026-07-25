@@ -61,6 +61,7 @@ function validFoloEntry() {
             title: 'Example',
             content: '<p>Example</p>',
             publishedAt: new Date().toISOString(),
+            insertedAt: new Date().toISOString(),
             author: 'Author',
         },
         feeds: { title: 'Example feed' },
@@ -196,6 +197,7 @@ it('maps both Kazike feeds to the right content types and keeps the full body', 
         type: 'news',
         source: '数字生命卡兹克',
         description: 'Example',
+        folo_inserted_at: expect.any(String),
         details: { content_html: '<p>Example</p>' },
     });
     expect(xItem).toMatchObject({
@@ -203,6 +205,7 @@ it('maps both Kazike feeds to the right content types and keeps the full body', 
         type: 'socialMedia',
         source: '数字生命卡兹克',
         description: 'Example',
+        folo_inserted_at: expect.any(String),
         details: { content_html: '<p>Example</p>' },
     });
 });
@@ -341,4 +344,9 @@ it('covers every adapter in the structured source registry', () => {
         ...FOLO_ADAPTERS.map(([provider]) => provider),
         'github_trending',
     ].sort());
+    for (const [provider, , , pagesName] of FOLO_ADAPTERS) {
+        expect(
+            STRUCTURED_SOURCE_ADAPTERS.find(entry => entry.provider === provider)?.foloScope,
+        ).toMatchObject({ pageEnv: pagesName });
+    }
 });

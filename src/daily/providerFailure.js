@@ -112,7 +112,10 @@ export function assertFoloPayload(data, { requireFeeds = false } = {}) {
             || !['string', 'number'].includes(typeof entry.entries.id)
             || typeof entry.entries.publishedAt !== 'string'
             || !entry.entries.publishedAt.trim()
-            || !Number.isFinite(Date.parse(entry.entries.publishedAt))) {
+            || !Number.isFinite(Date.parse(entry.entries.publishedAt))
+            || (entry.entries.insertedAt !== undefined
+                && (typeof entry.entries.insertedAt !== 'string'
+                    || !Number.isFinite(Date.parse(entry.entries.insertedAt))))) {
             throw providerInvalidShapeError();
         }
         if (requireFeeds && (!entry.feeds || typeof entry.feeds.title !== 'string')) {

@@ -90,6 +90,7 @@ const PapersDataSource = {
                         title: entry.entries.title,
                         content_html: entry.entries.content,
                         date_published: entry.entries.publishedAt,
+                        folo_inserted_at: entry.entries.insertedAt || null,
                         authors: [{ name: entry.entries.author }],
                         source: `huggingface-papers`,
                     })));
@@ -192,6 +193,7 @@ Respond ONLY with the JSON array.`;
                     title: item.title_zh || item.title,
                     description: stripHtml(item.content_html || ""),
                     published_date: item.date_published,
+                    folo_inserted_at: item.folo_inserted_at,
                     authors: typeof item.authors === 'string' ? item.authors.split(',').map(s => s.trim()) : (item.authors ? item.authors.map(a => a.name) : []),
                     source: item.source || "Huggingface Papers", // Use existing source or default
                     details: {

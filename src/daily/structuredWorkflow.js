@@ -33,6 +33,13 @@ import { callGitHubApi } from '../github.js';
 import { mirrorStructuredReport } from '../../workers/content/ingestion/mirror.ts';
 import { applyEditorialEnrichment, editorialNeedsEnrichment } from './editorial.js';
 import { applyTopStorySelection } from './topStory.js';
+import {
+    commitFoloIncrementalPlan,
+    listPendingFoloIncrementalPlans,
+    removePendingFoloIncrementalPlan,
+    resolveFoloIncrementalPlan,
+    stageFoloIncrementalPlan,
+} from './foloIncremental.js';
 
 const MAX_PUBLICATION_ATTEMPTS = 3;
 
@@ -230,6 +237,71 @@ async function mirrorWithoutBlocking(env, result, codeSha, batch, triggerId, mir
     }
 }
 
+async function commitFoloCheckpointWithoutBlocking(
+    env,
+    fetched,
+    databaseMirror,
+    publication,
+    {
+        commitCheckpoint,
+        stageCheckpoint,
+    },
+) {
+    if (!fetched?.foloIncrementalPlan?.enabled) return 'disabled';
+    if (databaseMirror?.status === 'failed') return 'deferred';
+    try {
+        if (publication.pending) {
+            const staged = await stageCheckpoint(env, fetched.foloIncrementalPlan, {
+                commitSha: publication.commitSha,
+                pullRequestNumber: publication.pullRequestNumber,
+            });
+            return staged ? 'staged' : 'unchanged';
+        }
+        const committed = await commitCheckpoint(env, fetched.foloIncrementalPlan);
+        return committed ? 'committed' : 'unchanged';
+    } catch (error) {
+        console.error('[StructuredDaily] Folo incremental checkpoint commit failed', {
+            errorType: error?.name || 'Error',
+        });
+        return 'failed';
+    }
+}
+
+async function promoteMergedFoloCheckpointsWithoutBlocking(env, deps) {
+    let pending;
+    try {
+        pending = await deps.listPendingFoloIncrementalPlans(env);
+    } catch (error) {
+        console.warn('[StructuredDaily] pending Folo checkpoints could not be listed', {
+            errorType: error?.name || 'Error',
+        });
+        return;
+    }
+    const pullCache = new Map();
+    for (const candidate of pending) {
+        try {
+            if (!pullCache.has(candidate.pull_request_number)) {
+                pullCache.set(
+                    candidate.pull_request_number,
+                    deps.api(env, `/pulls/${candidate.pull_request_number}`),
+                );
+            }
+            const pull = await pullCache.get(candidate.pull_request_number);
+            if (pull?.state === 'open') continue;
+            if (pull?.state === 'closed' && pull?.merged_at) {
+                await deps.commitFoloIncrementalPlan(env, candidate.plan);
+            }
+            if (pull?.state === 'closed') {
+                await deps.removePendingFoloIncrementalPlan(env, candidate.key);
+            }
+        } catch (error) {
+            console.warn('[StructuredDaily] pending Folo checkpoint reconciliation failed', {
+                errorType: error?.name || 'Error',
+            });
+        }
+    }
+}
+
 async function reconcileConfirmedMirror(env, marker, confirmedSha, reportDate, triggerId, deps) {
     if (
         String(env.CONTENT_DATABASE_MIRROR_ENABLED).toLowerCase() !== 'true' ||
@@ -397,6 +469,16 @@ function structuredDependencies(dependencies = {}) {
         mirror: dependencies.mirror || mirrorStructuredReport,
         enrich: dependencies.enrich || applyEditorialEnrichment,
         scoreTopStory: dependencies.scoreTopStory || applyTopStorySelection,
+        resolveFoloIncrementalPlan:
+            dependencies.resolveFoloIncrementalPlan || resolveFoloIncrementalPlan,
+        commitFoloIncrementalPlan:
+            dependencies.commitFoloIncrementalPlan || commitFoloIncrementalPlan,
+        stageFoloIncrementalPlan:
+            dependencies.stageFoloIncrementalPlan || stageFoloIncrementalPlan,
+        listPendingFoloIncrementalPlans:
+            dependencies.listPendingFoloIncrementalPlans || listPendingFoloIncrementalPlans,
+        removePendingFoloIncrementalPlan:
+            dependencies.removePendingFoloIncrementalPlan || removePendingFoloIncrementalPlan,
     };
 }
 
@@ -644,13 +726,18 @@ export async function runStructuredDailyWorkflow(
     let failureStage = 'unknown';
     try {
         failureStage = 'git_publish';
+        await promoteMergedFoloCheckpointsWithoutBlocking(env, deps);
         const confirmed = await confirmedTriggerResult(env, triggerId, reportDate, batch, deps);
         if (confirmed) return confirmed;
 
         failureStage = 'fetch';
         const foloCookie = await deps.getFoloCookie(env);
         const fetchPageCap = scheduledFetchPageCap(env, batch, runAt);
-        const fetched = await deps.fetchData(env, foloCookie, { fetchPageCap });
+        const foloIncrementalPlan = await deps.resolveFoloIncrementalPlan(env, { runAt });
+        const fetched = await deps.fetchData(env, foloCookie, {
+            fetchPageCap,
+            foloIncrementalPlan,
+        });
         const sourceCompletedAt = new Date().toISOString();
         if (fetched.errors.length > 0) {
             throw new StructuredSourceFetchError(
@@ -779,6 +866,21 @@ export async function runStructuredDailyWorkflow(
                             : {}),
                         metrics: result.metrics,
                         database_mirror: databaseMirror,
+                        folo_incremental: fetched.foloIncremental || null,
+                        folo_checkpoint_status: await commitFoloCheckpointWithoutBlocking(
+                            env,
+                            fetched,
+                            databaseMirror,
+                            {
+                                pending: Boolean(snapshot.publicationPull),
+                                commitSha: snapshot.headSha,
+                                pullRequestNumber: snapshot.publicationPull?.number,
+                            },
+                            {
+                                commitCheckpoint: deps.commitFoloIncrementalPlan,
+                                stageCheckpoint: deps.stageFoloIncrementalPlan,
+                            },
+                        ),
                     }, {
                         databaseMirror,
                         fetched,
@@ -839,6 +941,21 @@ export async function runStructuredDailyWorkflow(
                     ...(published.lockRelease ? { lock_release: published.lockRelease } : {}),
                     metrics: result.metrics,
                     database_mirror: databaseMirror,
+                    folo_incremental: fetched.foloIncremental || null,
+                    folo_checkpoint_status: await commitFoloCheckpointWithoutBlocking(
+                        env,
+                        fetched,
+                        databaseMirror,
+                        {
+                            pending: published.pending === true,
+                            commitSha: published.commitSha,
+                            pullRequestNumber: published.pullRequest?.number,
+                        },
+                        {
+                            commitCheckpoint: deps.commitFoloIncrementalPlan,
+                            stageCheckpoint: deps.stageFoloIncrementalPlan,
+                        },
+                    ),
                 }, {
                     databaseMirror,
                     fetched,
