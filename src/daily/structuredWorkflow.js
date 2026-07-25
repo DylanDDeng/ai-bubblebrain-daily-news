@@ -275,8 +275,9 @@ async function promoteMergedFoloCheckpointsWithoutBlocking(env, deps) {
         console.warn('[StructuredDaily] pending Folo checkpoints could not be listed', {
             errorType: error?.name || 'Error',
         });
-        return;
+        return null;
     }
+    let latestCommittedPlan = null;
     const pullCache = new Map();
     for (const candidate of pending) {
         try {
@@ -290,6 +291,12 @@ async function promoteMergedFoloCheckpointsWithoutBlocking(env, deps) {
             if (pull?.state === 'open') continue;
             if (pull?.state === 'closed' && pull?.merged_at) {
                 await deps.commitFoloIncrementalPlan(env, candidate.plan);
+                if (
+                    !latestCommittedPlan
+                    || Date.parse(candidate.plan.run_at) > Date.parse(latestCommittedPlan.run_at)
+                ) {
+                    latestCommittedPlan = candidate.plan;
+                }
             }
             if (pull?.state === 'closed') {
                 await deps.removePendingFoloIncrementalPlan(env, candidate.key);
@@ -300,6 +307,7 @@ async function promoteMergedFoloCheckpointsWithoutBlocking(env, deps) {
             });
         }
     }
+    return latestCommittedPlan;
 }
 
 async function reconcileConfirmedMirror(env, marker, confirmedSha, reportDate, triggerId, deps) {
@@ -726,14 +734,18 @@ export async function runStructuredDailyWorkflow(
     let failureStage = 'unknown';
     try {
         failureStage = 'git_publish';
-        await promoteMergedFoloCheckpointsWithoutBlocking(env, deps);
+        const committedFoloIncrementalPlan =
+            await promoteMergedFoloCheckpointsWithoutBlocking(env, deps);
         const confirmed = await confirmedTriggerResult(env, triggerId, reportDate, batch, deps);
         if (confirmed) return confirmed;
 
         failureStage = 'fetch';
         const foloCookie = await deps.getFoloCookie(env);
         const fetchPageCap = scheduledFetchPageCap(env, batch, runAt);
-        const foloIncrementalPlan = await deps.resolveFoloIncrementalPlan(env, { runAt });
+        const foloIncrementalPlan = await deps.resolveFoloIncrementalPlan(env, {
+            runAt,
+            committedPlan: committedFoloIncrementalPlan,
+        });
         const fetched = await deps.fetchData(env, foloCookie, {
             fetchPageCap,
             foloIncrementalPlan,
