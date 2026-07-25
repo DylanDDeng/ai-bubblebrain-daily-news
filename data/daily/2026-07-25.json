@@ -23,11 +23,17 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-25T06:00:00.000Z",
       "id": "afternoon",
-      "item_ids": [],
+      "item_ids": [
+        "n_bef08ef643b22ce0be7d90394af7ee84321d29d238859673dc02dcdc6018d161",
+        "n_e161d82a64f289c6678488afc29657128bc51b737da72c317766fb828568bc49",
+        "n_7a38c486c3e3d89cf338556cd7b6d09a44a14b2f0845f005a7387fa127c7b695",
+        "n_514639bb1e9f566327380d7359cf0bd3e3f701dcece6176454427c0dcf576df8",
+        "n_db23009b47fecd71e53161122e0c2960477519864067f21b38b4cfb2dc58907f"
+      ],
       "label": "14:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": "2026-07-24T17:00:00.000Z",
@@ -62,7 +68,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T04:00:00.000Z",
+  "generated_at": "2026-07-25T06:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -594,6 +600,198 @@
         "topic_products"
       ],
       "url": "https://x.com/shao__meng/status/2080845119276929391"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/hongming731/status/2080804808123208161",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_meta_ai"
+      ],
+      "event_id": "e_bef08ef643b22ce0be7d90394af7ee84321d29d238859673dc02dcdc6018d161",
+      "featured": false,
+      "id": "n_bef08ef643b22ce0be7d90394af7ee84321d29d238859673dc02dcdc6018d161",
+      "identity_claims": [
+        "c_0fe1524f9c5c0a7c0f318bd9f2ca82b6ced1508e8408206a0b60fbb9895bbf81",
+        "c_bef08ef643b22ce0be7d90394af7ee84321d29d238859673dc02dcdc6018d161"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T06:00:00.000Z",
+      "published_at": "2026-07-24T23:58:20.398Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214877401922678784",
+        "name": "twitter-ginobefun"
+      },
+      "source_id": "1214877401922678784",
+      "source_type": "twitter_extra",
+      "summary": "该模型在ARC-AGI 3测试中得分是次优模型的三倍，OSWorld以约三分之一成本超越Fable 5，并展示复杂任务修复能力；同时腾讯WorkBuddy团队分享了Agent可靠性实践。",
+      "time_precision": "exact",
+      "title": "Anthropic发布新一代旗舰模型Claude Opus 5，Frontier-Bench得分较前代翻倍",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/hongming731/status/2080804808123208161"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/gdb/status/2080861203010568232",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_e161d82a64f289c6678488afc29657128bc51b737da72c317766fb828568bc49",
+      "featured": false,
+      "id": "n_e161d82a64f289c6678488afc29657128bc51b737da72c317766fb828568bc49",
+      "identity_claims": [
+        "c_6c060f0c21b742f133e8628ba0f0b5abd79d12d00a445a86ba3d8626367cfc11",
+        "c_e161d82a64f289c6678488afc29657128bc51b737da72c317766fb828568bc49"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T06:00:00.000Z",
+      "published_at": "2026-07-25T03:42:25.632Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214827963762049025",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1214827963762049025",
+      "source_type": "twitter_extra",
+      "summary": "一名女性曾被诊断为晚期胶质母细胞瘤，ChatGPT分析旧活检记录后指出关键基因突变，医生据此确认原诊断有误。",
+      "time_precision": "exact",
+      "title": "ChatGPT识别旧活检记录中的关键突变，帮助医生纠正末期脑癌误诊",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/gdb/status/2080861203010568232"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2080866938318995786",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_7a38c486c3e3d89cf338556cd7b6d09a44a14b2f0845f005a7387fa127c7b695",
+      "featured": false,
+      "id": "n_7a38c486c3e3d89cf338556cd7b6d09a44a14b2f0845f005a7387fa127c7b695",
+      "identity_claims": [
+        "c_7a38c486c3e3d89cf338556cd7b6d09a44a14b2f0845f005a7387fa127c7b695",
+        "c_bba707f058b693c01887fb1de66b8455326c8b0912834e370f405aa105514dfc"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T06:00:00.000Z",
+      "published_at": "2026-07-25T04:05:13.971Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214827532872908800",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1214827532872908800",
+      "source_type": "twitter_extra",
+      "summary": "玻利维亚央行转向灵活汇率致使官方汇率一次性重贬近30%，Google Play以当地货币支付的服务价差明显，但新用户注册可能受限。",
+      "time_precision": "exact",
+      "title": "玻利维亚汇率贬值导致Google Play订阅价格大幅下降，已有用户仍享受低价",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2080866938318995786"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/gdb/status/2080874519091151227",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_514639bb1e9f566327380d7359cf0bd3e3f701dcece6176454427c0dcf576df8",
+      "featured": false,
+      "id": "n_514639bb1e9f566327380d7359cf0bd3e3f701dcece6176454427c0dcf576df8",
+      "identity_claims": [
+        "c_514639bb1e9f566327380d7359cf0bd3e3f701dcece6176454427c0dcf576df8",
+        "c_74b0c7060516a450d906b0009071592e7130644d47d3e5fe035c4388c2135471"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T06:00:00.000Z",
+      "published_at": "2026-07-25T04:35:20.215Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214827963762049024",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1214827963762049024",
+      "source_type": "twitter_extra",
+      "summary": "ChatGPT网页版现已支持为自定义宠物创建分享链接，发送给朋友即可让对方领养，增加社交互动。",
+      "time_precision": "exact",
+      "title": "OpenAI为ChatGPT自定义宠物新增分享功能，用户可生成链接供好友领养",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/gdb/status/2080874519091151227"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/oran_ge/status/2080882065361559671",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_db23009b47fecd71e53161122e0c2960477519864067f21b38b4cfb2dc58907f",
+      "featured": false,
+      "id": "n_db23009b47fecd71e53161122e0c2960477519864067f21b38b4cfb2dc58907f",
+      "identity_claims": [
+        "c_2fb7e9341c32453ff265319fccda60de63ea568a1825bbb43c92366f92716070",
+        "c_db23009b47fecd71e53161122e0c2960477519864067f21b38b4cfb2dc58907f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T06:00:00.000Z",
+      "published_at": "2026-07-25T05:05:19.480Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214879647871852544",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1214879647871852544",
+      "source_type": "twitter_extra",
+      "summary": "部分用户在使用Opus 5时遇到非预期输出，怀疑模型存在bug，具体情况尚待官方确认。",
+      "time_precision": "exact",
+      "title": "用户反馈Claude Opus 5模型在实测中出现异常行为，疑似存在代码缺陷",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080882065361559671"
     },
     {
       "batch": "night",
