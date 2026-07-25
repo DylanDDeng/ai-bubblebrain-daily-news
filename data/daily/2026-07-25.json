@@ -1,7 +1,7 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-25T02:00:00.000Z",
+      "generated_at": "2026-07-25T04:00:00.000Z",
       "id": "morning",
       "item_ids": [
         "n_5723d34af343b794f57029ba5f89f7df140d1ee436424582dac3e8dbb5b0e227",
@@ -11,9 +11,13 @@
         "n_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2",
         "n_be3564488a7466968f53529b1f8b454650ffad168d4108ddf4ea320f10929568",
         "n_a44dd97c635642f2e126376deafd107c9b006751c2becbcb08d5e67e4c9179de",
+        "n_f7d2c09dcfd89ff60361c20a5aec8f739e7688b77c4403efe68c7d3ddaf9df18",
         "n_5bdf8a793b48cbbb2a7d13f9dce4c61ff3ff0dd473eb34f10b9eab829d1754a6",
         "n_f2f6fe62b5505f0fd2cac5fba920ee7ef9e370735bc03b3ffbbbfae965605c37",
-        "n_b7f71e28181e602a4b3179d171946efa47d7a9e4da31a91397a077b80357aa88"
+        "n_b7f71e28181e602a4b3179d171946efa47d7a9e4da31a91397a077b80357aa88",
+        "n_142b8ca25a3d1acc2fc0e9d1e551d87fdd4ead65a56e2f69e2bfe1879547372e",
+        "n_0f5c6b19dd9f5be18c803934164191b34b690c19b9f4499bc290d0d169a4ec17",
+        "n_f842a8ad2a6913d7aecc664e4af2ea29bf67fe584a062b027e08f7b3a3c1c197"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -58,7 +62,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T02:00:00.000Z",
+  "generated_at": "2026-07-25T04:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -325,6 +329,42 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/HiTw93/status/2080791637337493747",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f7d2c09dcfd89ff60361c20a5aec8f739e7688b77c4403efe68c7d3ddaf9df18",
+      "featured": false,
+      "id": "n_f7d2c09dcfd89ff60361c20a5aec8f739e7688b77c4403efe68c7d3ddaf9df18",
+      "identity_claims": [
+        "c_f7d2c09dcfd89ff60361c20a5aec8f739e7688b77c4403efe68c7d3ddaf9df18",
+        "c_fcfd7a07673a577b084c9f84ed0ae4b62c6486e9fd2219c2f66db95bd9227687"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T04:00:00.000Z",
+      "published_at": "2026-07-24T23:06:00.396Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214723449474326528",
+        "name": "twitter-Tw93"
+      },
+      "source_id": "1214723449474326528",
+      "source_type": "twitter_extra",
+      "summary": "Kami V1.10通过内容合约、编辑模板、渲染和逐页检查机制，提升文档生成质量。MCP工具让更多AI代理能调用这套流水线。",
+      "time_precision": "exact",
+      "title": "Kami V1.10可将原始内容变为可交付文档，并让更多代理通过MCP工具使用整套流程。",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://x.com/HiTw93/status/2080791637337493747"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/oran_ge/status/2080801268965265859",
       "category": "models",
       "content_type": "socialMedia",
@@ -435,6 +475,125 @@
         "topic_models"
       ],
       "url": "https://simonwillison.net/2026/Jul/25/boris-cherny/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shao__meng/status/2080839086085177726",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_142b8ca25a3d1acc2fc0e9d1e551d87fdd4ead65a56e2f69e2bfe1879547372e",
+      "featured": false,
+      "id": "n_142b8ca25a3d1acc2fc0e9d1e551d87fdd4ead65a56e2f69e2bfe1879547372e",
+      "identity_claims": [
+        "c_142b8ca25a3d1acc2fc0e9d1e551d87fdd4ead65a56e2f69e2bfe1879547372e",
+        "c_7e06c1924e2c12806ca4ea3350d8309441bd26d85d439956f916919375b4da13"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T04:00:00.000Z",
+      "published_at": "2026-07-25T02:14:32.479Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214720118475485186",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1214720118475485186",
+      "source_type": "twitter_extra",
+      "summary": "Claude Opus 5在编码、网络安全、计算机使用等任务上达到新SOTA，推理效率优化使任务成本仅Fable 5的一半或三分之一，并推出快速模式和API自动降级。",
+      "time_precision": "exact",
+      "title": "Claude Opus 5发布，以一半价格实现接近Fable 5的智能，保持Opus 4.8同等价格。",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_business",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2080839086085177726"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shao__meng/status/2080842340512702802",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_0f5c6b19dd9f5be18c803934164191b34b690c19b9f4499bc290d0d169a4ec17",
+      "featured": false,
+      "id": "n_0f5c6b19dd9f5be18c803934164191b34b690c19b9f4499bc290d0d169a4ec17",
+      "identity_claims": [
+        "c_0f5c6b19dd9f5be18c803934164191b34b690c19b9f4499bc290d0d169a4ec17",
+        "c_9b04ad067052779f7e0177dbb7f3aa0cdfde95931068bd114601c96825056c90"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T04:00:00.000Z",
+      "published_at": "2026-07-25T02:27:28.858Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214720118475485185",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1214720118475485185",
+      "source_type": "twitter_extra",
+      "summary": "公开信指出AI将渗透所有行业，开放模型有助于安全、创新扩散与主权，并强调闭源与开源并非二选一。",
+      "time_precision": "exact",
+      "title": "黄仁勋首条推文发布NVIDIA公开信，强调开放权重模型对美AI领导力关键，并主张闭源与开源并存。",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_business",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2080842340512702802"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shao__meng/status/2080845119276929391",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_f842a8ad2a6913d7aecc664e4af2ea29bf67fe584a062b027e08f7b3a3c1c197",
+      "featured": false,
+      "id": "n_f842a8ad2a6913d7aecc664e4af2ea29bf67fe584a062b027e08f7b3a3c1c197",
+      "identity_claims": [
+        "c_097aeb969bea00dbfa10de66794163632516a05a63f196e6e0fc7eaa7fdc8203",
+        "c_f842a8ad2a6913d7aecc664e4af2ea29bf67fe584a062b027e08f7b3a3c1c197"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T04:00:00.000Z",
+      "published_at": "2026-07-25T02:38:31.830Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214720118475485184",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1214720118475485184",
+      "source_type": "twitter_extra",
+      "summary": "若二者为升级替代关系，Grok 4.6的生命周期可能仅有两周；但或许它们是不同价位和能力的互补模型。",
+      "time_precision": "exact",
+      "title": "马斯克宣布Grok 4.6两周内发布、Grok 4.7四周内发布，引发对快速迭代的猜测。",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/shao__meng/status/2080845119276929391"
     },
     {
       "batch": "night",
