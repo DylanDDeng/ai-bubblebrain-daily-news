@@ -4,6 +4,7 @@ import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { XMLParser } from "fast-xml-parser";
+import { projectPublishedCalendarReport } from "../src/daily/calendarView.js";
 import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -322,6 +323,20 @@ const dailyDataDirectory = pinnedContentBuild
 const dailyDataNames = (await readdir(dailyDataDirectory))
   .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
   .sort();
+const canonicalReports = await Promise.all(
+  dailyDataNames.map(async (name) =>
+    JSON.parse(await readFile(resolve(dailyDataDirectory, name), "utf8")),
+  ),
+);
+const canonicalReportByDate = new Map(
+  canonicalReports.map((report) => [report.date, report]),
+);
+const publishedReportByDate = new Map(
+  canonicalReports.map((report) => [
+    report.date,
+    projectPublishedCalendarReport(report.date, canonicalReports),
+  ]),
+);
 const publishedDailyRecords = contract.records.filter(
   (record) =>
     record.status === 200 &&
@@ -362,10 +377,15 @@ const expectedSearchDates = dailyDataNames.map((name) =>
 // this value in sync). Search coverage invariants below apply to that window;
 // JSON route and rendered-HTML checks still cover every published day.
 const STATIC_SEARCH_MAX_REPORT_DAYS = 7;
-const expectedSearchWindow = new Set(
+const searchSourceWindow = new Set(
   [...expectedSearchDates]
     .sort((left, right) => right.localeCompare(left))
     .slice(0, STATIC_SEARCH_MAX_REPORT_DAYS),
+);
+const expectedSearchWindow = new Set(
+  [...searchSourceWindow].filter(
+    (date) => (publishedReportByDate.get(date)?.items.length || 0) > 0,
+  ),
 );
 const pinnedEnglishDailyRssIdentities = new Set(
   pinnedContentBuild
@@ -392,8 +412,10 @@ for (const name of dailyDataNames) {
     source.equals(output),
     `Published structured daily JSON differs from its canonical source: ${route}`,
   );
-  const report = JSON.parse(source.toString("utf8"));
   const date = name.slice(0, -".json".length);
+  const report = canonicalReportByDate.get(date);
+  const publishedReport = publishedReportByDate.get(date);
+  invariant(report && publishedReport, `Structured daily report projection is missing: ${date}`);
   const year = date.slice(0, 4);
   const month = date.slice(5, 7);
   const chinesePageRoute = `/daily/${year}/${month}/${date}/`;
@@ -417,26 +439,26 @@ for (const name of dailyDataNames) {
       ),
       "utf8",
     );
-    for (const item of report.items) {
+    for (const item of publishedReport.items) {
       invariant(
         html.includes(`id="news-${item.id}"`),
         `Structured daily item is missing from HTML: ${pageRoute}#news-${item.id}`,
       );
     }
   }
-  if (expectedSearchWindow.has(date)) {
-    expectedSearchItemCount += report.items.length;
+  if (searchSourceWindow.has(date)) {
+    expectedSearchItemCount += publishedReport.items.length;
     const searchItems = searchIndex.items.filter((item) => item.date === date);
     const expectedSearchItems = new Map(
-      report.items.map((item) => [
+      publishedReport.items.map((item) => [
         `${date}:${item.id}`,
         `/daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/#news-${item.id}`,
       ]),
     );
     invariant(
-      searchIndex.report_dates.includes(date) &&
-        searchItems.length === report.items.length &&
-        expectedSearchItems.size === report.items.length,
+      searchIndex.report_dates.includes(date) === (publishedReport.items.length > 0) &&
+        searchItems.length === publishedReport.items.length &&
+        expectedSearchItems.size === publishedReport.items.length,
       `Structured daily search coverage drifted: ${date}`,
     );
     const seenSearchKeys = new Set();

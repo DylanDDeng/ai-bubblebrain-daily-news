@@ -19,7 +19,7 @@ import {
 	type DailyContentType,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
-import { loadStructuredDailyReport } from '../lib/structuredDailyLocal';
+import { loadPublishedDailyReport } from '../lib/structuredDailyLocal';
 import '../styles/quiet-index.css';
 
 interface Props {
@@ -35,7 +35,7 @@ const latest = entries[0];
 const latestIdentity = latest ? parseDailyEntryId(latest.id) : null;
 const dateKey = latestIdentity?.dateKey ?? null;
 const report: StructuredDailyReport | null = dateKey
-	? await loadStructuredDailyReport(dateKey)
+	? await loadPublishedDailyReport(dateKey)
 	: null;
 const latestHref = latest ? dailyPermalink(latest.id) : isEnglish ? '/en/daily/' : '/daily/';
 

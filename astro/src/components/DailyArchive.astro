@@ -17,7 +17,7 @@ import {
 	isDatabaseOwnedDailyDate,
 	type StructuredDailyReport,
 } from '../lib/structuredDaily';
-import { loadStructuredDailyReport } from '../lib/structuredDailyLocal';
+import { loadPublishedDailyReport } from '../lib/structuredDailyLocal';
 
 interface Props {
 	entries: CollectionEntry<'daily'>[];
@@ -46,7 +46,7 @@ await Promise.all(
 	rows
 		.filter(({ identity }) => isDatabaseOwnedDailyDate(identity.dateKey))
 		.map(async ({ identity }) => {
-			reportByDate.set(identity.dateKey, await loadStructuredDailyReport(identity.dateKey));
+			reportByDate.set(identity.dateKey, await loadPublishedDailyReport(identity.dateKey));
 		}),
 );
 

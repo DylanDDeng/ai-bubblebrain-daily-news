@@ -12,7 +12,7 @@ import {
 } from './knowledge';
 import {
 	dailyDataDirectory,
-	loadStructuredDailyReport,
+	loadPublishedDailyReport,
 } from './structuredDailyLocal';
 import type { StructuredDailyItem } from './structuredDaily';
 
@@ -133,7 +133,7 @@ export async function buildKnowledgeSearchIndex(
 	const reportDates = availableReportDates.slice(0, STATIC_SEARCH_MAX_REPORT_DAYS);
 	const items: KnowledgeSearchItem[] = [];
 	for (const date of reportDates) {
-		const report = await loadStructuredDailyReport(date, { directory });
+		const report = await loadPublishedDailyReport(date, { directory });
 		if (!report) throw new Error(`Structured daily report disappeared: ${date}`);
 		items.push(
 			...report.items.map((item) => ({
