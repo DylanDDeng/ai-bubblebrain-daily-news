@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { buildDailyArtifacts } from '../../../src/daily/buildArtifacts.js';
 import { buildKnowledgeSearchIndex } from './searchIndex';
 
 const fixturePath = resolve(import.meta.dirname, '../../tests/fixtures/daily-report.valid.json');
@@ -19,6 +20,31 @@ async function dailyDirectory(): Promise<string> {
 	const directory = join(root, 'data', 'daily');
 	await mkdir(directory, { recursive: true });
 	return directory;
+}
+
+async function reportForDate(date: string): Promise<Record<string, unknown>> {
+	const build = buildDailyArtifacts as unknown as (
+		input: Record<string, unknown>,
+	) => Promise<{ report: Record<string, unknown> }>;
+	const result = await build({
+		rawItems: [
+			{
+				provider: 'aibase',
+				id: `source-${date}`,
+				title: `AI news for ${date}`,
+				url: `https://example.com/ai-news/${date}`,
+				source: 'Example News',
+				published_date: `${date}T14:20:00+08:00`,
+				description: 'A concise summary.',
+			},
+		],
+		reportDate: date,
+		structuredStartDate: date,
+		batch: 'morning',
+		runAt: `${date}T07:00:00.000Z`,
+		producer: { version: 'search-index-test', commitSha: 'a'.repeat(40) },
+	});
+	return result.report;
 }
 
 afterEach(async () => {
@@ -55,9 +81,8 @@ describe('knowledge search index', () => {
 
 	it('indexes individual news items across reports with stable daily anchors', async () => {
 		const directory = await dailyDirectory();
-		const first = await fixture();
-		const second = structuredClone(first);
-		second.date = '2026-07-15';
+		const first = await reportForDate('2026-07-14');
+		const second = await reportForDate('2026-07-15');
 		await writeFile(join(directory, '2026-07-14.json'), JSON.stringify(first));
 		await writeFile(join(directory, '2026-07-15.json'), JSON.stringify(second));
 
@@ -76,10 +101,9 @@ describe('knowledge search index', () => {
 
 	it('never includes more than the seven newest report days', async () => {
 		const directory = await dailyDirectory();
-		const report = await fixture();
 		for (let day = 1; day <= 8; day += 1) {
 			const date = `2026-07-${String(day).padStart(2, '0')}`;
-			await writeFile(join(directory, `${date}.json`), JSON.stringify({ ...report, date }));
+			await writeFile(join(directory, `${date}.json`), JSON.stringify(await reportForDate(date)));
 		}
 		const index = await buildKnowledgeSearchIndex({ directory });
 		expect(index.report_dates).toHaveLength(7);
