@@ -1,12 +1,19 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-25T00:00:00.000Z",
+      "generated_at": "2026-07-25T02:00:00.000Z",
       "id": "morning",
       "item_ids": [
+        "n_5723d34af343b794f57029ba5f89f7df140d1ee436424582dac3e8dbb5b0e227",
+        "n_f47ace57de68d7659bf79b40127f027de2084331e55c7ed2f9b7796110c7f944",
+        "n_b720f0c30c08e6788926c52d3649b04a2a871d3e76e8331a60d4315c0de66785",
         "n_6fb884d603bf7fc06845c9e855ff1c64aa2d61be80aaac28e50921e276e22747",
         "n_143c2edcc7d8e3bdec21c4861dea7542d77a498cc66ae86287b0f5ed53582da2",
-        "n_be3564488a7466968f53529b1f8b454650ffad168d4108ddf4ea320f10929568"
+        "n_be3564488a7466968f53529b1f8b454650ffad168d4108ddf4ea320f10929568",
+        "n_a44dd97c635642f2e126376deafd107c9b006751c2becbcb08d5e67e4c9179de",
+        "n_5bdf8a793b48cbbb2a7d13f9dce4c61ff3ff0dd473eb34f10b9eab829d1754a6",
+        "n_f2f6fe62b5505f0fd2cac5fba920ee7ef9e370735bc03b3ffbbbfae965605c37",
+        "n_b7f71e28181e602a4b3179d171946efa47d7a9e4da31a91397a077b80357aa88"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -51,9 +58,121 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T00:00:00.000Z",
+  "generated_at": "2026-07-25T02:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21557",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_5723d34af343b794f57029ba5f89f7df140d1ee436424582dac3e8dbb5b0e227",
+      "featured": false,
+      "id": "n_5723d34af343b794f57029ba5f89f7df140d1ee436424582dac3e8dbb5b0e227",
+      "identity_claims": [
+        "c_5723d34af343b794f57029ba5f89f7df140d1ee436424582dac3e8dbb5b0e227",
+        "c_74c8ab55839304c6ea2a074e885a3778f2b283ff0c8886a9d2f3b660e34a7188"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T02:00:00.000Z",
+      "published_at": "2026-07-22T20:00:00.778Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214559278879195146",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1214559278879195146",
+      "source_type": "huggingface_papers",
+      "summary": "Modern AI agents rely on elaborate inference harnesses such as Claude Code, Codex, and OpenClaw to drive multi-turn reasoning, tool use, and access to external systems. While powerful, these complex harnesses also make agents hard to train end-to-end with open infrastructure, whose SFT/RL stacks cannot natively express stateful, multi-process harness inference. To address this, we present OpenForgeRL, an open-source framework for training harness-based agents end-to-end in diverse environments. OpenForgeRL achieves this with a lightweight proxy that serves the harness's model calls while recording them as training data for a standard RL codebase (e.g., veRL), and a Kubernetes orchestrator that runs each rollout in its own remote container, together enabling training on any harness in any environment at scale. By decoupling training and inference, OpenForgeRL allows researchers to easily train, study, and improve agents directly in the real harnesses and environments they are deployed with. We validate our framework across diverse, complex harnesses and environments, spanning tool/claw-based agents and multimodal GUI browser- and computer-use agents. Using only hundreds to a few thousand tasks, OpenForgeClaw reaches 31.7 pass^3 and 55.9 pass@3 on ClawEval and 33.7 on QwenClawBench. OpenForgeGUI reaches 37.7 on OSWorld-Verified, 63.0 on Online-Mind2Web, and 72.3 on WebVoyager. Both outperform open baselines of similar size on nearly all benchmarks, and in the GUI setting match or surpass models several times larger. Beyond benchmarks, we analyze how harness choice (e.g., ZeroClaw, OpenClaw, Codex) and RL shape agent behavior. We find that some harnesses are substantially harder to learn than others, and that RL improves agentic reliability, such as self-verification, tool coverage, and completing multi-step plans, though critical abilities such as error recovery remain weak.",
+      "time_precision": "exact",
+      "title": "OpenForgeRL：在任意环境中训练Harness原生智能体",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://arxiv.org/abs/2607.21557"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080795708123382198",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f47ace57de68d7659bf79b40127f027de2084331e55c7ed2f9b7796110c7f944",
+      "featured": false,
+      "id": "n_f47ace57de68d7659bf79b40127f027de2084331e55c7ed2f9b7796110c7f944",
+      "identity_claims": [
+        "c_1e753a1073cceb7e3bcc75fed5c84e729ef030d08a337ce5570ec8add139255c",
+        "c_f47ace57de68d7659bf79b40127f027de2084331e55c7ed2f9b7796110c7f944"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T02:00:00.000Z",
+      "published_at": "2026-07-24T14:23:54.580Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214581136773144578",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1214581136773144578",
+      "source_type": "twitter_extra",
+      "summary": "Eric Xu 将大模型比作制药行业，指出其技术领先优势的有效期极短，大约只有十个月。",
+      "time_precision": "exact",
+      "title": "Eric Xu认为大模型商业模式类似专利期仅十个月的制药生意",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/oran_ge/status/2080795708123382198"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080794815059431896",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_b720f0c30c08e6788926c52d3649b04a2a871d3e76e8331a60d4315c0de66785",
+      "featured": false,
+      "id": "n_b720f0c30c08e6788926c52d3649b04a2a871d3e76e8331a60d4315c0de66785",
+      "identity_claims": [
+        "c_b720f0c30c08e6788926c52d3649b04a2a871d3e76e8331a60d4315c0de66785",
+        "c_dff3a126541055c32d50d2013287552013f38bfb2d8bf36fd83a54677eb11bcc"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T02:00:00.000Z",
+      "published_at": "2026-07-24T14:34:27.704Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214581136773144577",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1214581136773144577",
+      "source_type": "twitter_extra",
+      "summary": "设备销售占3.3%，加盟费仅占2.4%，其在港股上市的主体实质上是一家面向加盟商的供应链企业。",
+      "time_precision": "exact",
+      "title": "蜜雪冰城94.3%收入来自向加盟商销售食材和包装，本质是ToB公司",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2080794815059431896"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://x.com/omarsar0/status/2080717869877473764",
@@ -166,6 +285,156 @@
         "topic_models"
       ],
       "url": "https://x.com/omarsar0/status/2080761013826433138"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2080770347977113983",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a44dd97c635642f2e126376deafd107c9b006751c2becbcb08d5e67e4c9179de",
+      "featured": false,
+      "id": "n_a44dd97c635642f2e126376deafd107c9b006751c2becbcb08d5e67e4c9179de",
+      "identity_claims": [
+        "c_02122708648c3c721ba3147d4851149297dc00f30b70792ae86ac7426c6509dc",
+        "c_a44dd97c635642f2e126376deafd107c9b006751c2becbcb08d5e67e4c9179de"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T02:00:00.000Z",
+      "published_at": "2026-07-24T21:41:24.233Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214580699005177856",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1214580699005177856",
+      "source_type": "twitter_extra",
+      "summary": "用户可通过Agent或GUI识别画面文字并批量翻译，翻译结果以字幕形式叠加，并可导入剪映二次处理。",
+      "time_precision": "exact",
+      "title": "BaoCut上线视频画面翻译功能，支持Agent自动化操作并可直接导出到剪映",
+      "topic_ids": [
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2080770347977113983"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2080801268965265859",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5bdf8a793b48cbbb2a7d13f9dce4c61ff3ff0dd473eb34f10b9eab829d1754a6",
+      "featured": false,
+      "id": "n_5bdf8a793b48cbbb2a7d13f9dce4c61ff3ff0dd473eb34f10b9eab829d1754a6",
+      "identity_claims": [
+        "c_5bdf8a793b48cbbb2a7d13f9dce4c61ff3ff0dd473eb34f10b9eab829d1754a6",
+        "c_fed09bad256215c025c8b43c9d53cac1a9fad9916d205164b2b5569610bb6f60"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T02:00:00.000Z",
+      "published_at": "2026-07-24T23:44:16.285Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1214581136773144576",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1214581136773144576",
+      "source_type": "twitter_extra",
+      "summary": "Opus 5 性能小幅领先被降智的 Fable 5，价格仍为后者一半，但在开源模型冲击下，各模型均难再显特别优势。",
+      "time_precision": "exact",
+      "title": "Opus 5智能水平略超降智后的Fable 5价格保持不变",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/oran_ge/status/2080801268965265859"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/24/introducing-claude-opus-5/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_f2f6fe62b5505f0fd2cac5fba920ee7ef9e370735bc03b3ffbbbfae965605c37",
+      "featured": false,
+      "id": "n_f2f6fe62b5505f0fd2cac5fba920ee7ef9e370735bc03b3ffbbbfae965605c37",
+      "identity_claims": [
+        "c_6004faba868206fdfe89c4d0c09d95d7aef109010e14f77aaae0ecb869f97e51",
+        "c_f2f6fe62b5505f0fd2cac5fba920ee7ef9e370735bc03b3ffbbbfae965605c37"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T02:00:00.000Z",
+      "published_at": "2026-07-24T23:48:50.194Z",
+      "published_date": "2026-07-25",
+      "reason": "新模型发布，包含排行榜表现、价格、主动行为轶事等具体信息，影响开发者选型，但非变革性突破。",
+      "related_source_ids": [],
+      "score": 7.2,
+      "source": {
+        "homepage": null,
+        "id": "1214599223383588865",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1214599223383588865",
+      "source_type": "simonwillison",
+      "summary": "Introducing Claude Opus 5 I've been offline kayaking with sea otters for much of today so I haven't had a chance to put Anthropic's new model Claude Opus 5 through its paces yet. The buzz is positive, and Anthropic's description of it as a \"thoughtful and proactive model that comes close to the frontier intelligence of Claude Fable 5 at half the price\" sounds promising. It's currently leading the Artificial Analysis leaderboard, in front of even Fable 5. It's priced the same as Opus 4.8, and continues to offer a \"fast mode\" at twice the cost of the base model. Based on this anecdote in the release post it sounds like it might be relentlessly proactive: On one Frontier-Bench task, Opus 5 was given a drawing of a machine part and asked to write code to rebuild it as a 3D FreeCAD model. However, in this task, the model was intentionally given no way to directly viewthe drawing. Opus 5 responded by writing its own computer vision pipeline to pull the geometry from the raw pixels, then reconstructed the full machine part. It's better at finding vulnerabilities but has deliberately not been trained on how to exploit them. Hopefully this means the US government won't shut it down! As with its predecessor, Opus 4.8, we’ve intentionally avoided training Opus 5 on cyber tasks. The model has nevertheless improved substantially on these tasks as a result of becoming more generally capable, and it comes close to Mythos 5 at finding cybersecurity vulnerabilities. However, it remains substantially behind Mythos 5 on the exploitation of those vulnerabilities—that is, in turning vulnerabilities into material cyber threats. Anthropic have published a prompting guide for Claude Opus 5. Thariq Shihipar has also written The new rules of context engineering for Claude 5 generation models. The first pelican I got was missing the bicycle wheels; the second attempt was better. Tags: ai, generative-ai, llms, anthropic, claude, llm-release",
+      "time_precision": "exact",
+      "title": "Introducing Claude Opus 5",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/24/introducing-claude-opus-5/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/25/boris-cherny/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_b7f71e28181e602a4b3179d171946efa47d7a9e4da31a91397a077b80357aa88",
+      "featured": false,
+      "id": "n_b7f71e28181e602a4b3179d171946efa47d7a9e4da31a91397a077b80357aa88",
+      "identity_claims": [
+        "c_aeccbe3d9113e0150462ecf3efa1dfff8f67171201068ae5a9901ee40fc9d593",
+        "c_b7f71e28181e602a4b3179d171946efa47d7a9e4da31a91397a077b80357aa88"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T02:00:00.000Z",
+      "published_at": "2026-07-25T00:42:59.763Z",
+      "published_date": "2026-07-25",
+      "reason": "引用个人评价强调抗提示注入，缺乏新数据或独家细节，信息量低，属观点类内容。",
+      "related_source_ids": [],
+      "score": 4.5,
+      "source": {
+        "homepage": null,
+        "id": "1214599223383588864",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1214599223383588864",
+      "source_type": "simonwillison",
+      "summary": "More than any of these eval scores, what is most exciting to me is something else: Opus 5 is our least prompt injectable model yet. It is a bit buried in the system card, but across PI evals and red teaming, Opus 5 is very hard to prompt inject successfully. — Boris Cherny, here's that System Card section, page 73 Tags: prompt-injection, anthropic, claude, generative-ai, ai, llms, boris-cherny",
+      "time_precision": "exact",
+      "title": "Quoting Boris Cherny",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/25/boris-cherny/"
     },
     {
       "batch": "night",
