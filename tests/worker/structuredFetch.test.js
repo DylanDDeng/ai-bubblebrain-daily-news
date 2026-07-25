@@ -82,6 +82,284 @@ describe('provider-preserving structured fetch', () => {
         expect(source.adapter.fetch).not.toHaveBeenCalled();
     });
 
+    it('skips unchanged Folo providers after an insertedAfter probe', async () => {
+        const calls = [];
+        const source = adapter('aibase', 'news', [{ id: 'should-not-load' }], calls);
+        source.foloScope = { kind: 'feed', idEnv: 'AIBASE_FEED_ID' };
+        const direct = adapter('github_trending', 'project', [{ id: 'direct' }], calls);
+        const probe = vi.fn()
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ data: { has_new: true } }),
+            })
+            .mockResolvedValueOnce({
+                ok: true,
+                json: async () => ({ data: { has_new: false } }),
+            });
+        vi.stubGlobal('fetch', probe);
+        try {
+            const result = await fetchProviderPreservingData(
+                {
+                    FOLO_DATA_API: 'https://api.folo.is/entries',
+                    AIBASE_FEED_ID: 'feed-1',
+                },
+                'session=cookie',
+                {
+                    adapters: [source, direct],
+                    foloIncrementalPlan: {
+                        enabled: true,
+                        mode: 'incremental',
+                        run_at: '2026-07-25T01:00:00.000Z',
+                        inserted_after: '2026-07-25T00:50:00.000Z',
+                        inserted_after_ms: Date.parse('2026-07-25T00:50:00Z'),
+                        previous_checkpoint_at: '2026-07-25T01:00:00.000Z',
+                    },
+                },
+            );
+            expect(source.adapter.fetch).not.toHaveBeenCalled();
+            expect(direct.adapter.fetch).toHaveBeenCalledOnce();
+            expect(result.grouped.news).toEqual([]);
+            expect(result.grouped.project).toEqual([{ id: 'direct' }]);
+            expect(result.foloIncremental).toMatchObject({
+                mode: 'incremental',
+                skipped_provider_count: 1,
+                emitted_count: 0,
+            });
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
+
+    it('emits only newly inserted Folo entries with a fail-open metadata fallback', async () => {
+        const calls = [];
+        const source = adapter('aibase', 'news', [
+            { id: 'old', folo_inserted_at: '2026-07-25T00:40:00Z' },
+            { id: 'new', folo_inserted_at: '2026-07-25T00:55:00Z' },
+            { id: 'unknown' },
+        ], calls);
+        source.foloScope = { kind: 'feed', idEnv: 'AIBASE_FEED_ID' };
+        vi.stubGlobal('fetch', vi.fn(async () => ({
+            ok: true,
+            json: async () => ({ data: { has_new: true } }),
+        })));
+        try {
+            const result = await fetchProviderPreservingData(
+                {
+                    FOLO_DATA_API: 'https://api.folo.is/entries',
+                    AIBASE_FEED_ID: 'feed-1',
+                },
+                'session=cookie',
+                {
+                    adapters: [source],
+                    foloIncrementalPlan: {
+                        enabled: true,
+                        mode: 'incremental',
+                        run_at: '2026-07-25T01:00:00.000Z',
+                        inserted_after: '2026-07-25T00:50:00.000Z',
+                        inserted_after_ms: Date.parse('2026-07-25T00:50:00Z'),
+                        previous_checkpoint_at: '2026-07-25T00:00:00.000Z',
+                    },
+                },
+            );
+            expect(result.grouped.news.map(item => item.id)).toEqual(['new', 'unknown']);
+            expect(result.foloIncremental).toMatchObject({
+                scanned_count: 3,
+                emitted_count: 2,
+                missing_inserted_at_count: 1,
+            });
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
+
+    it('falls back to the full provider fetch when check-new cannot see baseline entries', async () => {
+        const calls = [];
+        const source = adapter('aibase', 'news', [
+            { id: 'kept', folo_inserted_at: '2026-07-25T00:55:00Z' },
+        ], calls);
+        source.foloScope = { kind: 'feed', idEnv: 'AIBASE_FEED_ID' };
+        vi.stubGlobal('fetch', vi.fn(async () => ({
+            ok: true,
+            json: async () => ({ data: { has_new: false } }),
+        })));
+        try {
+            const result = await fetchProviderPreservingData(
+                {
+                    FOLO_DATA_API: 'https://api.folo.is/entries',
+                    AIBASE_FEED_ID: 'feed-1',
+                },
+                'session=cookie',
+                {
+                    adapters: [source],
+                    foloIncrementalPlan: {
+                        enabled: true,
+                        mode: 'incremental',
+                        run_at: '2026-07-25T01:00:00.000Z',
+                        inserted_after: '2026-07-25T00:50:00.000Z',
+                        inserted_after_ms: Date.parse('2026-07-25T00:50:00Z'),
+                        previous_checkpoint_at: '2026-07-25T00:00:00.000Z',
+                    },
+                },
+            );
+            expect(source.adapter.fetch).toHaveBeenCalledOnce();
+            expect(result.grouped.news.map(item => item.id)).toEqual(['kept']);
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
+
+    it('deepens a changed incremental provider while widening the delayed-entry horizon', async () => {
+        const seen = [];
+        const source = {
+            provider: 'aibase',
+            contentType: 'news',
+            foloScope: {
+                kind: 'feed',
+                idEnv: 'AIBASE_FEED_ID',
+                pageEnv: 'AIBASE_FETCH_PAGES',
+            },
+            adapter: {
+                fetch: vi.fn(async providerEnv => {
+                    seen.push({
+                        pages: providerEnv.AIBASE_FETCH_PAGES,
+                        days: providerEnv.FOLO_FILTER_DAYS,
+                    });
+                    return [];
+                }),
+                transform: vi.fn(raw => raw),
+            },
+        };
+        vi.stubGlobal('fetch', vi.fn(async () => ({
+            ok: true,
+            json: async () => ({ data: { has_new: true } }),
+        })));
+        try {
+            await fetchProviderPreservingData(
+                {
+                    FOLO_DATA_API: 'https://api.folo.is/entries',
+                    AIBASE_FEED_ID: 'feed-1',
+                    AIBASE_FETCH_PAGES: '1',
+                    FOLO_FILTER_DAYS: '3',
+                    FOLO_INCREMENTAL_LOOKBACK_DAYS: '14',
+                    FOLO_INCREMENTAL_DEEP_SCAN_PAGES: '5',
+                },
+                'session=cookie',
+                {
+                    adapters: [source],
+                    foloIncrementalPlan: {
+                        enabled: true,
+                        mode: 'incremental',
+                        run_at: '2026-07-25T01:00:00.000Z',
+                        inserted_after: '2026-07-25T00:50:00.000Z',
+                        inserted_after_ms: Date.parse('2026-07-25T00:50:00Z'),
+                        previous_checkpoint_at: '2026-07-25T00:00:00.000Z',
+                    },
+                },
+            );
+            expect(seen).toEqual([{ pages: '5', days: '14' }]);
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
+
+    it('uses a deep periodic reconcile without overriding the late-night page cap', async () => {
+        const seen = [];
+        const source = {
+            provider: 'aibase',
+            contentType: 'news',
+            foloScope: {
+                kind: 'feed',
+                idEnv: 'AIBASE_FEED_ID',
+                pageEnv: 'AIBASE_FETCH_PAGES',
+            },
+            adapter: {
+                fetch: vi.fn(async providerEnv => {
+                    seen.push({
+                        pages: providerEnv.AIBASE_FETCH_PAGES,
+                        days: providerEnv.FOLO_FILTER_DAYS,
+                    });
+                    return [];
+                }),
+                transform: vi.fn(raw => raw),
+            },
+        };
+        const plan = {
+            enabled: true,
+            mode: 'reconcile',
+            run_at: '2026-07-25T06:00:00.000Z',
+            inserted_after: null,
+            inserted_after_ms: null,
+            previous_checkpoint_at: '2026-07-25T05:00:00.000Z',
+        };
+        const providerEnv = {
+            AIBASE_FEED_ID: 'feed-1',
+            AIBASE_FETCH_PAGES: '1',
+            FOLO_FILTER_DAYS: '3',
+            FOLO_INCREMENTAL_LOOKBACK_DAYS: '14',
+            FOLO_INCREMENTAL_DEEP_SCAN_PAGES: '5',
+        };
+
+        await fetchProviderPreservingData(providerEnv, 'session=cookie', {
+            adapters: [source],
+            foloIncrementalPlan: plan,
+        });
+        await fetchProviderPreservingData(providerEnv, 'session=cookie', {
+            adapters: [source],
+            fetchPageCap: 1,
+            foloIncrementalPlan: plan,
+        });
+
+        expect(seen).toEqual([
+            { pages: '5', days: '14' },
+            { pages: '1', days: '14' },
+        ]);
+    });
+
+    it('keeps a deep reconcile retry capped to one page', async () => {
+        const seen = [];
+        const source = {
+            provider: 'aibase',
+            contentType: 'news',
+            foloScope: {
+                kind: 'feed',
+                idEnv: 'AIBASE_FEED_ID',
+                pageEnv: 'AIBASE_FETCH_PAGES',
+            },
+            adapter: {
+                fetch: vi.fn(async providerEnv => {
+                    seen.push(providerEnv.AIBASE_FETCH_PAGES);
+                    if (seen.length === 1) throw new TypeError('transient');
+                    return [];
+                }),
+                transform: vi.fn(raw => raw),
+            },
+        };
+
+        await fetchProviderPreservingData(
+            {
+                AIBASE_FEED_ID: 'feed-1',
+                AIBASE_FETCH_PAGES: '1',
+                FOLO_INCREMENTAL_DEEP_SCAN_PAGES: '5',
+            },
+            'session=cookie',
+            {
+                adapters: [source],
+                retryDelayMs: 0,
+                sleep: vi.fn(async () => undefined),
+                foloIncrementalPlan: {
+                    enabled: true,
+                    mode: 'reconcile',
+                    run_at: '2026-07-25T06:00:00.000Z',
+                    inserted_after: null,
+                    inserted_after_ms: null,
+                    previous_checkpoint_at: '2026-07-25T05:00:00.000Z',
+                },
+            },
+        );
+
+        expect(seen).toEqual(['5', '1']);
+    });
+
     it('preserves legacy items while projecting provider only onto structured clones', async () => {
         const calls = [];
         const old = { id: 1, title: 'old', published_date: '2026-07-13T00:00:00Z' };

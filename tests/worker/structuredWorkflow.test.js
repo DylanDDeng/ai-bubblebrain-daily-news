@@ -59,6 +59,18 @@ function dependencies(overrides = {}) {
         resolveSnapshot: vi.fn(async () => snapshotA),
         createReader: vi.fn(() => reader),
         getFoloCookie: vi.fn(async () => 'cookie'),
+        resolveFoloIncrementalPlan: vi.fn(async (_env, { runAt }) => ({
+            enabled: false,
+            mode: 'disabled',
+            run_at: runAt,
+            inserted_after: null,
+            inserted_after_ms: null,
+            previous_checkpoint_at: null,
+        })),
+        commitFoloIncrementalPlan: vi.fn(async () => false),
+        stageFoloIncrementalPlan: vi.fn(async () => true),
+        listPendingFoloIncrementalPlans: vi.fn(async () => []),
+        removePendingFoloIncrementalPlan: vi.fn(async () => true),
         fetchData: vi.fn(async () => ({
             structuredItems: [],
             errors: [],
@@ -97,7 +109,167 @@ describe('structured publication workflow', () => {
             batch: 'lateNight',
             runAt: '2026-07-14T19:00:45.000Z',
         }, deps);
-        expect(deps.fetchData).toHaveBeenCalledWith(env, 'cookie', { fetchPageCap: 1 });
+        expect(deps.fetchData).toHaveBeenCalledWith(env, 'cookie', {
+            fetchPageCap: 1,
+            foloIncrementalPlan: expect.objectContaining({
+                mode: 'disabled',
+                run_at: '2026-07-14T19:00:45.000Z',
+            }),
+        });
+    });
+
+    it('advances the Folo checkpoint only after a successful publication path', async () => {
+        const plan = {
+            enabled: true,
+            mode: 'incremental',
+            run_at: runInput.runAt,
+            inserted_after: '2026-07-14T01:50:00.000Z',
+            inserted_after_ms: Date.parse('2026-07-14T01:50:00Z'),
+            previous_checkpoint_at: '2026-07-14T01:00:00.000Z',
+        };
+        const commitCheckpoint = vi.fn(async () => true);
+        const deps = dependencies({
+            resolveFoloIncrementalPlan: vi.fn(async () => plan),
+            commitFoloIncrementalPlan: commitCheckpoint,
+            fetchData: vi.fn(async () => ({
+                structuredItems: [],
+                errors: [],
+                sourceCounts: { news: 0, project: 0, paper: 0, socialMedia: 0 },
+                foloIncrementalPlan: plan,
+                foloIncremental: { enabled: true, mode: 'incremental' },
+            })),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(commitCheckpoint).toHaveBeenCalledWith(env, plan);
+        expect(result).toMatchObject({
+            folo_checkpoint_status: 'committed',
+            folo_incremental: { enabled: true, mode: 'incremental' },
+        });
+    });
+
+    it('does not advance the Folo checkpoint when database publication is deferred', async () => {
+        const plan = {
+            enabled: true,
+            mode: 'incremental',
+            run_at: runInput.runAt,
+            inserted_after: '2026-07-14T01:50:00.000Z',
+            inserted_after_ms: Date.parse('2026-07-14T01:50:00Z'),
+            previous_checkpoint_at: '2026-07-14T01:00:00.000Z',
+        };
+        const commitCheckpoint = vi.fn(async () => true);
+        const deps = dependencies({
+            resolveFoloIncrementalPlan: vi.fn(async () => plan),
+            commitFoloIncrementalPlan: commitCheckpoint,
+            fetchData: vi.fn(async () => ({
+                structuredItems: [],
+                errors: [],
+                sourceCounts: { news: 0, project: 0, paper: 0, socialMedia: 0 },
+                foloIncrementalPlan: plan,
+                foloIncremental: { enabled: true, mode: 'incremental' },
+            })),
+            mirror: vi.fn(async () => { throw new Error('database unavailable'); }),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(commitCheckpoint).not.toHaveBeenCalled();
+        expect(result).toMatchObject({
+            folo_checkpoint_status: 'deferred',
+            database_mirror: { status: 'failed' },
+        });
+    });
+
+    it('does not advance the Folo checkpoint while the publication pull request is pending', async () => {
+        const plan = {
+            enabled: true,
+            mode: 'incremental',
+            run_at: runInput.runAt,
+            inserted_after: '2026-07-14T01:50:00.000Z',
+            inserted_after_ms: Date.parse('2026-07-14T01:50:00Z'),
+            previous_checkpoint_at: '2026-07-14T01:00:00.000Z',
+        };
+        const commitCheckpoint = vi.fn(async () => true);
+        const stageCheckpoint = vi.fn(async () => true);
+        const deps = dependencies({
+            resolveFoloIncrementalPlan: vi.fn(async () => plan),
+            commitFoloIncrementalPlan: commitCheckpoint,
+            stageFoloIncrementalPlan: stageCheckpoint,
+            fetchData: vi.fn(async () => ({
+                structuredItems: [{ id: 'new-entry' }],
+                errors: [],
+                sourceCounts: { news: 1, project: 0, paper: 0, socialMedia: 0 },
+                foloIncrementalPlan: plan,
+                foloIncremental: { enabled: true, mode: 'incremental' },
+            })),
+            build: vi.fn(async () => ({
+                files: files(),
+                json: `${JSON.stringify({ date: runInput.reportDate })}\n`,
+                noOp: false,
+                metrics: { raw_count: 1 },
+                report: { date: runInput.reportDate, items: [{ id: 'new-entry' }] },
+            })),
+            commit: vi.fn(async () => ({
+                commitSha: 'b'.repeat(40),
+                reconciled: false,
+                pending: true,
+                branch: 'automation/daily/pending',
+                pullRequest: { number: 200, url: 'https://example.test/pull/200' },
+            })),
+        });
+
+        const result = await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(commitCheckpoint).not.toHaveBeenCalled();
+        expect(stageCheckpoint).toHaveBeenCalledWith(env, plan, {
+            commitSha: 'b'.repeat(40),
+            pullRequestNumber: 200,
+        });
+        expect(result).toMatchObject({
+            pending: true,
+            folo_checkpoint_status: 'staged',
+        });
+    });
+
+    it('promotes a staged Folo checkpoint after its publication pull request merges', async () => {
+        const plan = {
+            enabled: true,
+            mode: 'bootstrap',
+            run_at: '2026-07-14T01:00:00.000Z',
+            inserted_after: null,
+            inserted_after_ms: null,
+            previous_checkpoint_at: null,
+        };
+        const commitCheckpoint = vi.fn(async () => true);
+        const removePending = vi.fn(async () => true);
+        const deps = dependencies({
+            api: vi.fn(async (_env, path) => {
+                if (path === '/pulls/200') {
+                    return {
+                        state: 'closed',
+                        merged_at: '2026-07-14T02:30:00.000Z',
+                    };
+                }
+                throw new Error(`Unexpected API path: ${path}`);
+            }),
+            listPendingFoloIncrementalPlans: vi.fn(async () => [{
+                key: 'daily:folo-incremental:v2:pending:key',
+                plan,
+                commit_sha: 'b'.repeat(40),
+                pull_request_number: 200,
+            }]),
+            commitFoloIncrementalPlan: commitCheckpoint,
+            removePendingFoloIncrementalPlan: removePending,
+        });
+
+        await runStructuredDailyWorkflow(env, runInput, deps);
+
+        expect(commitCheckpoint).toHaveBeenCalledWith(env, plan);
+        expect(removePending).toHaveBeenCalledWith(
+            env,
+            'daily:folo-incremental:v2:pending:key',
+        );
     });
 
     it('editorializes fresh items and same-day legacy social items before publishing', async () => {

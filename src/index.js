@@ -131,6 +131,32 @@ function safeSourceCounts(value) {
     return counts;
 }
 
+function safeFoloIncremental(value) {
+    if (!value || typeof value !== 'object') return null;
+    const mode = ['disabled', 'bootstrap', 'incremental', 'reconcile'].includes(value.mode)
+        ? value.mode
+        : 'disabled';
+    const safeCount = candidate => {
+        const count = Number(candidate || 0);
+        return Number.isSafeInteger(count) && count >= 0 ? count : 0;
+    };
+    const safeInstant = candidate => {
+        const parsed = Date.parse(String(candidate || ''));
+        return Number.isFinite(parsed) ? new Date(parsed).toISOString() : null;
+    };
+    return {
+        enabled: value.enabled === true,
+        mode,
+        previous_checkpoint_at: safeInstant(value.previous_checkpoint_at),
+        inserted_after: safeInstant(value.inserted_after),
+        run_at: safeInstant(value.run_at),
+        skipped_provider_count: safeCount(value.skipped_provider_count),
+        scanned_count: safeCount(value.scanned_count),
+        emitted_count: safeCount(value.emitted_count),
+        missing_inserted_at_count: safeCount(value.missing_inserted_at_count),
+    };
+}
+
 function scheduledSuccessMarker(result, scheduled, startedAt, finishedAt) {
     const sourceResult = result?.source_result;
     const mirror = result?.database_mirror;
@@ -165,6 +191,17 @@ function scheduledSuccessMarker(result, scheduled, startedAt, finishedAt) {
             : null,
         dispatch_id: /^[0-9a-f-]{36}$/i.test(String(result?.dispatch_id || ''))
             ? result.dispatch_id
+            : null,
+        folo_incremental: safeFoloIncremental(result?.folo_incremental),
+        folo_checkpoint_status: [
+            'disabled',
+            'committed',
+            'staged',
+            'unchanged',
+            'deferred',
+            'failed',
+        ].includes(result?.folo_checkpoint_status)
+            ? result.folo_checkpoint_status
             : null,
         stable_verified_at: result?.stable_verified_at || null,
     };

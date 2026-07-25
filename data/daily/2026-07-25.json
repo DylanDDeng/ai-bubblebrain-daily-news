@@ -51,7 +51,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-24T17:00:00.000Z",
+      "generated_at": "2026-07-25T14:00:00.000Z",
       "id": "night",
       "item_ids": [
         "n_ffee637ea7a354fa7d55971d25f8ef80724f86544d3c9a36f43d00612487f173",
@@ -67,7 +67,14 @@
         "n_5677c16654a44aee52178ed9c04f4a5d77c6575f9357651356e3bd0ba77f304b",
         "n_da09c25eb68d4a59824ff1d6c20dad417e1432f94681c022f1fa814f31e22d50",
         "n_3358b7917de8ab65badfcb490c4dabee5b15248a9d15a1fb616cb06348f4e8ab",
-        "n_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca"
+        "n_03ef3f993807afe8dd20364fe57c7329062fb74343fc1d06bde0ea405903afca",
+        "n_f3341be63d09a50a92eb7e05e467fb237712aa9b304d7d88623d009e79152028",
+        "n_561592782c6e35926531c68207408f400db4a72884e6a77b0fd0662d846a6fb8",
+        "n_57ac622efb31084be08a94773123ae7a7e70338685a61fc91eaa2e0584a802ab",
+        "n_f26013220cc8ea2c3ef2d8e8f77640ff4440303afcf97458793edd08f45b5424",
+        "n_199f907aef6271348a9d2fceb00d6c3c177aefce3869c511b755800f77d022db",
+        "n_8746254fe3aa176374be2ff542259cd891a00c418b4f011f9ae13d1857a1eaa9",
+        "n_2ad10b8d035b6c8716562a6406aa561042db4aa1f09378fdb185627ea1709efa"
       ],
       "label": "22:00 更新",
       "status": "completed"
@@ -83,7 +90,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T12:00:00.000Z",
+  "generated_at": "2026-07-25T14:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1887,6 +1894,269 @@
         "topic_policy"
       ],
       "url": "https://www.anthropic.com/research/project-pilot"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/huangyun_122/status/2080894016611369348",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f3341be63d09a50a92eb7e05e467fb237712aa9b304d7d88623d009e79152028",
+      "featured": false,
+      "id": "n_f3341be63d09a50a92eb7e05e467fb237712aa9b304d7d88623d009e79152028",
+      "identity_claims": [
+        "c_68f135a98ff370f1fd760ccd16f33e5a08780512db97d9a77d56576186630c9f",
+        "c_f3341be63d09a50a92eb7e05e467fb237712aa9b304d7d88623d009e79152028"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T14:00:00.000Z",
+      "published_at": "2026-07-25T05:52:49.325Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215320014760869890",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1215320014760869890",
+      "source_type": "twitter_extra",
+      "summary": "该功能通过 Codex 代理实现无需人工干预的自动处理，翻译结果支持直接导出至剪映进行二次编辑。",
+      "time_precision": "exact",
+      "title": "BaoCut 新增视频画面翻译功能，可借助 Codex 代理自动化操作并导出至剪映",
+      "topic_ids": [
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080894016611369348"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/huangyun_122/status/2080896360803647697",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_561592782c6e35926531c68207408f400db4a72884e6a77b0fd0662d846a6fb8",
+      "featured": false,
+      "id": "n_561592782c6e35926531c68207408f400db4a72884e6a77b0fd0662d846a6fb8",
+      "identity_claims": [
+        "c_561592782c6e35926531c68207408f400db4a72884e6a77b0fd0662d846a6fb8",
+        "c_fdad208c63e12b38b8561f7f81c5de2efecf0c2ad464433f4e2094107f75e01e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T14:00:00.000Z",
+      "published_at": "2026-07-25T06:02:08.560Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215320014760869889",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1215320014760869889",
+      "source_type": "twitter_extra",
+      "summary": "模型能模仿对话情绪，几乎消除语音交互的生硬感，一支演示视频在社交媒体上迅速爆火。",
+      "time_precision": "exact",
+      "title": "GPT-Live 新语音模型能根据用户情绪调整回应语气，相关视频获千万次观看",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080896360803647697"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2080931122104652232",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_57ac622efb31084be08a94773123ae7a7e70338685a61fc91eaa2e0584a802ab",
+      "featured": false,
+      "id": "n_57ac622efb31084be08a94773123ae7a7e70338685a61fc91eaa2e0584a802ab",
+      "identity_claims": [
+        "c_57ac622efb31084be08a94773123ae7a7e70338685a61fc91eaa2e0584a802ab",
+        "c_89e4df6747693163262d9885ce7a661980dbfdc2223a7525ff541297a3fccb04"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T14:00:00.000Z",
+      "published_at": "2026-07-25T08:20:15.839Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215269271702106113",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1215269271702106113",
+      "source_type": "twitter_extra",
+      "summary": "这些账号程序化地生成回复，破坏了平台追求的真实人类互动，官方称此举旨在维护信息流的真实性。",
+      "time_precision": "exact",
+      "title": "社交平台 X 发现四万两千个账号用聊天机器人自动回复，已全部删除",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shao__meng/status/2080931122104652232"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/huangyun_122/status/2080932536419827933",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_f26013220cc8ea2c3ef2d8e8f77640ff4440303afcf97458793edd08f45b5424",
+      "featured": false,
+      "id": "n_f26013220cc8ea2c3ef2d8e8f77640ff4440303afcf97458793edd08f45b5424",
+      "identity_claims": [
+        "c_87a036c66e91a8bf72e6e9a3e02820e7efa9452d50ada427a68f69530474a7a8",
+        "c_f26013220cc8ea2c3ef2d8e8f77640ff4440303afcf97458793edd08f45b5424"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T14:00:00.000Z",
+      "published_at": "2026-07-25T08:25:53.364Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215320014760869888",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1215320014760869888",
+      "source_type": "twitter_extra",
+      "summary": "用户将要求做成 skill 后，Grok 可每日拉取特定赞数以上的帖子、存入数据库并生成查询仪表板，还能发掘多语种热门话题。",
+      "time_precision": "exact",
+      "title": "Grok 被用作推特爆款挖掘器，可自动拉取高赞帖并生成每日仪表板",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2080932536419827933"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/gdb/status/2080939030062178512",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_199f907aef6271348a9d2fceb00d6c3c177aefce3869c511b755800f77d022db",
+      "featured": false,
+      "id": "n_199f907aef6271348a9d2fceb00d6c3c177aefce3869c511b755800f77d022db",
+      "identity_claims": [
+        "c_199f907aef6271348a9d2fceb00d6c3c177aefce3869c511b755800f77d022db",
+        "c_c08450e41c18efb6098d385d7dcf9b573e35cbb21115a61e88569bfc4b260fb3"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T14:00:00.000Z",
+      "published_at": "2026-07-25T08:51:41.130Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215267157688942592",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1215267157688942592",
+      "source_type": "twitter_extra",
+      "summary": "用户只需在云端浏览器登录一次，代理便能自主执行后续任务，无需重复输入凭据。",
+      "time_precision": "exact",
+      "title": "ChatGPT Work 代理已能处理需要登录的网站，登录凭证跨会话保持",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/gdb/status/2080939030062178512"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2080963123826360716",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_8746254fe3aa176374be2ff542259cd891a00c418b4f011f9ae13d1857a1eaa9",
+      "featured": false,
+      "id": "n_8746254fe3aa176374be2ff542259cd891a00c418b4f011f9ae13d1857a1eaa9",
+      "identity_claims": [
+        "c_8746254fe3aa176374be2ff542259cd891a00c418b4f011f9ae13d1857a1eaa9",
+        "c_a4df0c610fc03a2e3c319a1560d0c9ff9958a75c52db8ee9cc15cf0b99670cee"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T14:00:00.000Z",
+      "published_at": "2026-07-25T10:27:25.988Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215269271702106112",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1215269271702106112",
+      "source_type": "twitter_extra",
+      "summary": "该浏览器通过独立 Space 隔离代理，利用代码基操作减少 token 消耗，能稳定穿透跨域 iframe 等复杂网页结构，并一键导入用户 Chrome 全部设置。",
+      "time_precision": "exact",
+      "title": "ego lite 推出代理原生浏览器，支持多代理在隔离空间并行工作且继承登录态",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2080963123826360716"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/aigclink/status/2080985963304772019",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2ad10b8d035b6c8716562a6406aa561042db4aa1f09378fdb185627ea1709efa",
+      "featured": false,
+      "id": "n_2ad10b8d035b6c8716562a6406aa561042db4aa1f09378fdb185627ea1709efa",
+      "identity_claims": [
+        "c_2ad10b8d035b6c8716562a6406aa561042db4aa1f09378fdb185627ea1709efa",
+        "c_8030001c5e647fc750fac4807413f0c9ace0e00da884ba07c82a4a5dbe745aec"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T14:00:00.000Z",
+      "published_at": "2026-07-25T11:58:11.953Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215315504575594496",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1215315504575594496",
+      "source_type": "twitter_extra",
+      "summary": "直播对话中指出，通用 Skill 难以直接套用，而定制化 Skill 的使用本身就是在反哺和训练大模型。",
+      "time_precision": "exact",
+      "title": "百川郭美青认为场景化 Skill 必须定制，做 Skill 过程在为大模型提供养料",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/aigclink/status/2080985963304772019"
     }
   ],
   "overview": {
