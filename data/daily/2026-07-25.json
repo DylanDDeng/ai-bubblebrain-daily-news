@@ -23,7 +23,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-25T08:00:00.000Z",
+      "generated_at": "2026-07-25T10:00:00.000Z",
       "id": "afternoon",
       "item_ids": [
         "n_bef08ef643b22ce0be7d90394af7ee84321d29d238859673dc02dcdc6018d161",
@@ -35,7 +35,10 @@
         "n_514639bb1e9f566327380d7359cf0bd3e3f701dcece6176454427c0dcf576df8",
         "n_f43f1f972c4c9de50eaca70638b88e073cd65c7b0364ee6e39ef6d06c19230fe",
         "n_db23009b47fecd71e53161122e0c2960477519864067f21b38b4cfb2dc58907f",
-        "n_d70f92c9ada9b45af51ca672be07ed0d36ebb6e18871c81fc6b0f9ab82f5bbba"
+        "n_d70f92c9ada9b45af51ca672be07ed0d36ebb6e18871c81fc6b0f9ab82f5bbba",
+        "n_0caec7bda0896efb0826f80f8e70a85bae096ed71e5cf0a2de45996064e98906",
+        "n_a8ca4e3668cea5b39d08f03c546930f60648d93475e1c6f5e5208810cfde3eec",
+        "n_d1b478d215fa5f7344f8bea66c667f68933735b055169e23cd29030c2a951d10"
       ],
       "label": "14:00 更新",
       "status": "completed"
@@ -73,7 +76,7 @@
   "classifier_version": 1,
   "date": "2026-07-25",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T08:00:00.000Z",
+  "generated_at": "2026-07-25T10:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -978,6 +981,117 @@
         "topic_other"
       ],
       "url": "https://x.com/vista8/status/2080905450346660321"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/dotey/status/2080913463577112611",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_0caec7bda0896efb0826f80f8e70a85bae096ed71e5cf0a2de45996064e98906",
+      "featured": false,
+      "id": "n_0caec7bda0896efb0826f80f8e70a85bae096ed71e5cf0a2de45996064e98906",
+      "identity_claims": [
+        "c_0caec7bda0896efb0826f80f8e70a85bae096ed71e5cf0a2de45996064e98906",
+        "c_eead4dadc07438c7565d3faaf863f20d326f7083d8a289bba6e053b3a98bdbd1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T10:00:00.000Z",
+      "published_at": "2026-07-25T07:10:05.414Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215078259390140417",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1215078259390140417",
+      "source_type": "twitter_extra",
+      "summary": "用户分析了弱模型主导、强模型顾问模式的多项缺陷，提出强模型应负责架构设计，弱模型只做执行，最后由强模型验收，被指为现阶段最优方案。",
+      "time_precision": "exact",
+      "title": "有观点认为让强模型设计、弱模型执行并由强模型验收是当前性价比最高的AI协作逻辑",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2080913463577112611"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Khazix0918/status/2080925557945258019",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_a8ca4e3668cea5b39d08f03c546930f60648d93475e1c6f5e5208810cfde3eec",
+      "featured": false,
+      "id": "n_a8ca4e3668cea5b39d08f03c546930f60648d93475e1c6f5e5208810cfde3eec",
+      "identity_claims": [
+        "c_a8ca4e3668cea5b39d08f03c546930f60648d93475e1c6f5e5208810cfde3eec",
+        "c_e51bd52f1b2305cc3bf05dec6d2748be7644a051ca303b57b79f3e35b97b8ce4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T10:00:00.000Z",
+      "published_at": "2026-07-25T07:58:09.468Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215042533399109632",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1215042533399109632",
+      "source_type": "kazike_x",
+      "summary": "作者称受Anthropic观点启发，决定放弃用规则约束模型一次写对的旧思路，改为给模型更多思考空间，把约束转移到测试侧，让文档和规则退出开发流程。",
+      "time_precision": "exact",
+      "title": "开发者认为冗长文档和规则会损害模型推理效率，转而采用测试驱动模式并清空重构所有规则",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Khazix0918/status/2080925557945258019"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/dotey/status/2080926086515286484",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d1b478d215fa5f7344f8bea66c667f68933735b055169e23cd29030c2a951d10",
+      "featured": false,
+      "id": "n_d1b478d215fa5f7344f8bea66c667f68933735b055169e23cd29030c2a951d10",
+      "identity_claims": [
+        "c_7782c46ca7da495810645d0115ac388a8df430a9826c73f7eb6e568ac8d1b316",
+        "c_d1b478d215fa5f7344f8bea66c667f68933735b055169e23cd29030c2a951d10"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-25T10:00:00.000Z",
+      "published_at": "2026-07-25T08:00:15.466Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215078259390140416",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1215078259390140416",
+      "source_type": "twitter_extra",
+      "summary": "Guanlan Dai表示团队正打造面向海量智能体的执行层，开放核心运行时、云基础设施和产品工程三个方向的职位，强调小团队高人才密度。",
+      "time_precision": "exact",
+      "title": "创业团队正在为下一代十亿级智能体构建执行层，招募内核运行时及云基础设施等高自主性工程师",
+      "topic_ids": [
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2080926086515286484"
     },
     {
       "batch": "night",
