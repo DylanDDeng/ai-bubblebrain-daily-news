@@ -88,6 +88,7 @@ const XinZhiYuanDataSource = {
                         title: entry.entries.title,
                         content_html: entry.entries.content,
                         date_published: entry.entries.publishedAt,
+                        folo_inserted_at: entry.entries.insertedAt || null,
                         authors: [{ name: entry.entries.author }],
                         source: `新智元`,
                     })));
@@ -126,6 +127,7 @@ const XinZhiYuanDataSource = {
                     title: item.title,
                     description: stripHtml(item.content_html || ""),
                     published_date: item.date_published,
+                    folo_inserted_at: item.folo_inserted_at,
                     authors: item.authors ? item.authors.map(a => a.name).join(', ') : 'Unknown',
                     source: item.source || '新智元',
                     details: {
