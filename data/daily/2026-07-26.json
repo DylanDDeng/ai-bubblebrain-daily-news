@@ -20,7 +20,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-26T10:00:00.000Z",
+      "generated_at": "2026-07-26T12:00:00.000Z",
       "id": "afternoon",
       "item_ids": [
         "n_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f",
@@ -28,8 +28,15 @@
         "n_69ad509cee17670939b8443c25a56bb11335766dfe4c2fb751d427f00eef4d47",
         "n_17493dc593f19de7b0af9a6cafae435fd72792e799ecfceb3ce4cb7b631f8120",
         "n_392d105bc75b5a7743fa6bb3c6c711a2e37d57c7fc030f07e6e07e0fa4bcf43e",
+        "n_b9a0e57bd1ac0af3d94e99d751d73444c169bffe38806cde262074cbc00a0b00",
         "n_04bae014a2f669e4cdb7d6f725d3ca00194e85ad21f0c61f3fb610988cb8626d",
-        "n_0dec2c410d9cb2ad2cd2eff3887aaa6905f765d73f214373af6b4105f7e4c4fd"
+        "n_0dec2c410d9cb2ad2cd2eff3887aaa6905f765d73f214373af6b4105f7e4c4fd",
+        "n_371cf9e8b0abcd9deaafd8ceb4ba6ea45094c72729421343db803cf0877dd3f7",
+        "n_61dc1b84d00f36f30d1e069a8369f56d79a713401ce1607c1808a26318e69080",
+        "n_6f8e337797ff676a4921afa0d7023c4d7014453847536ae0e90b48198ff3b7e6",
+        "n_7ecf4fd0a8738e11ee12a5497768af9117acf33394f6292b548de5c866d41d0c",
+        "n_b3dbc7fb45869850bb8d71fae126feb85e686b181b1f19e9274a1e06515716e1",
+        "n_bd77cbec119fd8b0645b7887055f1a084492fa69ddf41748e829a05ee60ae162"
       ],
       "label": "14:00 更新",
       "status": "completed"
@@ -62,7 +69,7 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T10:00:00.000Z",
+  "generated_at": "2026-07-26T12:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -656,6 +663,44 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081176628588392627",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_b9a0e57bd1ac0af3d94e99d751d73444c169bffe38806cde262074cbc00a0b00",
+      "featured": false,
+      "id": "n_b9a0e57bd1ac0af3d94e99d751d73444c169bffe38806cde262074cbc00a0b00",
+      "identity_claims": [
+        "c_398235b3befb48d7e034b6e07b252439458cd65f40e208df841ccd5692572e9a",
+        "c_b9a0e57bd1ac0af3d94e99d751d73444c169bffe38806cde262074cbc00a0b00"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T12:00:00.000Z",
+      "published_at": "2026-07-26T00:35:49.457Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216640251234156544",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1216640251234156544",
+      "source_type": "twitter_extra",
+      "summary": "Tibo透露，昨夜2点到4点发生近乎全球范围的服务中断，现已恢复。作为回应，所有相关用户的用量限制已被重置。",
+      "time_precision": "exact",
+      "title": "OpenAI已重置Codex与ChatGPT Work用户用量限额以弥补全球宕机影响",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081176628588392627"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://x.com/dotey/status/2081225771473879226",
       "category": "models",
       "content_type": "socialMedia",
@@ -727,6 +772,223 @@
         "topic_other"
       ],
       "url": "https://x.com/huangyun_122/status/2081254379617915372"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/jenkinsci/jenkins",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_371cf9e8b0abcd9deaafd8ceb4ba6ea45094c72729421343db803cf0877dd3f7",
+      "featured": false,
+      "id": "n_371cf9e8b0abcd9deaafd8ceb4ba6ea45094c72729421343db803cf0877dd3f7",
+      "identity_claims": [
+        "c_371cf9e8b0abcd9deaafd8ceb4ba6ea45094c72729421343db803cf0877dd3f7",
+        "c_4db8bd3a330ab114b8ad2a34c9a64e0c03e19777c139df0057fc10d448e07f32"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/jenkinsci/jenkins",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/jenkinsci/jenkins",
+      "source_type": "github_trending",
+      "summary": "Jenkins 自动化服务器",
+      "time_precision": "date_only",
+      "title": "jenkins",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/jenkinsci/jenkins"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/permissionlesstech/bitchat-android",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_61dc1b84d00f36f30d1e069a8369f56d79a713401ce1607c1808a26318e69080",
+      "featured": false,
+      "id": "n_61dc1b84d00f36f30d1e069a8369f56d79a713401ce1607c1808a26318e69080",
+      "identity_claims": [
+        "c_61dc1b84d00f36f30d1e069a8369f56d79a713401ce1607c1808a26318e69080",
+        "c_c843998bcfccc5d545a6bae3e67574e7d3f9f3814e300c875c061b3fa9aeb88b"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/permissionlesstech/bitchat-android",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/permissionlesstech/bitchat-android",
+      "source_type": "github_trending",
+      "summary": "蓝牙 mesh 聊天，IRC 风格",
+      "time_precision": "date_only",
+      "title": "bitchat-android",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/permissionlesstech/bitchat-android"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/nodejs/node",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_6f8e337797ff676a4921afa0d7023c4d7014453847536ae0e90b48198ff3b7e6",
+      "featured": false,
+      "id": "n_6f8e337797ff676a4921afa0d7023c4d7014453847536ae0e90b48198ff3b7e6",
+      "identity_claims": [
+        "c_09c582e64ee582d0f77a5dc0be27abc10c3d6be28adb9575b89a2bd40fd515a8",
+        "c_6f8e337797ff676a4921afa0d7023c4d7014453847536ae0e90b48198ff3b7e6"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/nodejs/node",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/nodejs/node",
+      "source_type": "github_trending",
+      "summary": "Node.js JavaScript 运行时 ✨🐢🚀✨",
+      "time_precision": "date_only",
+      "title": "node",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/nodejs/node"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/pingdotgg/t3code",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_7ecf4fd0a8738e11ee12a5497768af9117acf33394f6292b548de5c866d41d0c",
+      "featured": false,
+      "id": "n_7ecf4fd0a8738e11ee12a5497768af9117acf33394f6292b548de5c866d41d0c",
+      "identity_claims": [
+        "c_7ecf4fd0a8738e11ee12a5497768af9117acf33394f6292b548de5c866d41d0c",
+        "c_aa50138e6e7ed3f4e1c005cdf5d00fd2e2a4c301d4084f71af2434c4a8d6cc12"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/pingdotgg/t3code",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/pingdotgg/t3code",
+      "source_type": "github_trending",
+      "summary": "",
+      "time_precision": "date_only",
+      "title": "t3code",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/pingdotgg/t3code"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/pbakaus/impeccable",
+      "category": "products",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_b3dbc7fb45869850bb8d71fae126feb85e686b181b1f19e9274a1e06515716e1",
+      "featured": false,
+      "id": "n_b3dbc7fb45869850bb8d71fae126feb85e686b181b1f19e9274a1e06515716e1",
+      "identity_claims": [
+        "c_2d7b9aeeb4d503999bee6aee45f1bf8f1c1601182bcfca779c2fae2fd652fdb4",
+        "c_b3dbc7fb45869850bb8d71fae126feb85e686b181b1f19e9274a1e06515716e1"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/pbakaus/impeccable",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/pbakaus/impeccable",
+      "source_type": "github_trending",
+      "summary": "让你的 AI 工具更擅长设计的设计语言。",
+      "time_precision": "date_only",
+      "title": "impeccable",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/pbakaus/impeccable"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/amnezia-vpn/amnezia-client",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_bd77cbec119fd8b0645b7887055f1a084492fa69ddf41748e829a05ee60ae162",
+      "featured": false,
+      "id": "n_bd77cbec119fd8b0645b7887055f1a084492fa69ddf41748e829a05ee60ae162",
+      "identity_claims": [
+        "c_03c685c907a6e33b301efe4030f8fe74cea114db6427f6bf0224cc3a163c74d1",
+        "c_bd77cbec119fd8b0645b7887055f1a084492fa69ddf41748e829a05ee60ae162"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/amnezia-vpn/amnezia-client",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/amnezia-vpn/amnezia-client",
+      "source_type": "github_trending",
+      "summary": "Amnezia VPN 客户端（桌面+移动端）",
+      "time_precision": "date_only",
+      "title": "amnezia-client",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/amnezia-vpn/amnezia-client"
     },
     {
       "batch": "night",
