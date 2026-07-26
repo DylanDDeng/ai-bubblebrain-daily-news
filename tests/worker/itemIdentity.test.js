@@ -8,9 +8,10 @@ import { dataSources } from '../../src/dataFetchers.js';
 import GithubTrendingDataSource from '../../src/dataSources/github-trending.js';
 
 describe('source registry and stable identity v1', () => {
-    it('freezes unique policies for all 15 registered source providers', () => {
+    it('freezes unique policies for all 16 registered source providers', () => {
         expect(Object.keys(SOURCE_REGISTRY)).toEqual([
             'aibase', 'xiaohu', 'qbit', 'kazike', 'simonwillison', 'xinzhiyuan', 'openai_newsroom', 'anthropic_research',
+            'the_decoder',
             'github_trending', 'huggingface_papers', 'jiqizhixin',
             'twitter', 'twitter_extra', 'kazike_x', 'reddit',
         ]);
@@ -23,14 +24,14 @@ describe('source registry and stable identity v1', () => {
         // Retired providers (reddit) stay in the registry for historical identity
         // but no longer have an active fetch adapter.
         const retiredProviders = ['reddit'];
-        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(14);
+        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(15);
         expect(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.provider))
             .toEqual(Object.keys(SOURCE_REGISTRY).filter(provider => !retiredProviders.includes(provider)));
         for (const entry of STRUCTURED_SOURCE_ADAPTERS) {
             expect(dataSources[entry.contentType].sources).toContain(entry.adapter);
             expect(SOURCE_REGISTRY[entry.provider].contentType).toBe(entry.contentType);
         }
-        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(14);
+        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(15);
     });
 
     it('canonicalizes conservatively and preserves business-significant URL parts', () => {

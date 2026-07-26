@@ -13,6 +13,7 @@ import XinZhiYuanDataSource from '../../src/dataSources/xinzhiyuan.js';
 import KazikeDataSource from '../../src/dataSources/kazike.js';
 import KazikeXDataSource from '../../src/dataSources/kazike-x.js';
 import AnthropicResearchDataSource from '../../src/dataSources/anthropic-research.js';
+import TheDecoderDataSource from '../../src/dataSources/the-decoder.js';
 import { ProviderFetchError } from '../../src/daily/providerFailure.js';
 import { STRUCTURED_SOURCE_ADAPTERS } from '../../src/daily/sourceAdapters.js';
 
@@ -25,6 +26,7 @@ const FOLO_ADAPTERS = [
     ['xinzhiyuan', XinZhiYuanDataSource, 'XINZHIYUAN_FEED_ID', 'XINZHIYUAN_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['openai_newsroom', OpenAInewsroomDataSource, 'OPENAI_NEWSROOM_FEED_ID', 'OPENAI_NEWSROOM_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['anthropic_research', AnthropicResearchDataSource, 'ANTHROPIC_RESEARCH_FEED_ID', 'ANTHROPIC_RESEARCH_FETCH_PAGES', 'ANTHROPIC_RESEARCH_FILTER_DAYS'],
+    ['the_decoder', TheDecoderDataSource, 'THE_DECODER_FEED_ID', 'THE_DECODER_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['huggingface_papers', HuggingfacePapersDataSource, 'HGPAPERS_FEED_ID', 'HGPAPERS_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['jiqizhixin', JiqizhixinDataSource, 'JIQIZHIXIN_FEED_ID', 'JIQIZHIXIN_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['twitter', TwitterDataSource, 'TWITTER_LIST_ID', 'TWITTER_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
@@ -232,6 +234,32 @@ it('maps the official Anthropic Research feed as news and keeps the full body', 
         id: 'entry-1',
         type: 'news',
         source: 'Anthropic Research',
+        description: 'Example',
+        details: { content_html: '<p>Example</p>' },
+    });
+});
+
+it('maps The Decoder feed as news with the configured source identity', async () => {
+    const fetchMock = vi.fn(async () => jsonResponse(200, { data: [validFoloEntry()] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const raw = await TheDecoderDataSource.fetch(
+        envFor('THE_DECODER_FEED_ID', 'THE_DECODER_FETCH_PAGES', {
+            THE_DECODER_FEED_ID: '70041669251630200',
+        }),
+        'cookie',
+        { strict: true },
+    );
+    const [item] = TheDecoderDataSource.transform(raw, 'news');
+
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
+        feedId: '70041669251630200',
+        withContent: true,
+    });
+    expect(item).toMatchObject({
+        id: 'entry-1',
+        type: 'news',
+        source: 'The Decoder',
         description: 'Example',
         details: { content_html: '<p>Example</p>' },
     });
