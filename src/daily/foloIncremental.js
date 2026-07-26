@@ -172,12 +172,20 @@ export async function resolveFoloIncrementalPlan(
         : checkpointMs;
     const reconcileDue = runMs - lastReconciledMs >= reconcileHours * 60 * 60 * 1000;
     if (reconcileDue) {
+        // Reconciliation must scan deeper pages, but it must not turn back into
+        // a rolling full-window import. Re-read everything inserted since the
+        // last successful deep scan (plus overlap) so missed pagination is
+        // recovered without re-emitting days of historical inventory.
+        const insertedAfterMs = Math.max(
+            0,
+            lastReconciledMs - overlapMinutes * 60 * 1000,
+        );
         return {
             enabled: true,
             mode: 'reconcile',
             run_at: normalizedRunAt,
-            inserted_after: null,
-            inserted_after_ms: null,
+            inserted_after: new Date(insertedAfterMs).toISOString(),
+            inserted_after_ms: insertedAfterMs,
             previous_checkpoint_at: state.completed_at,
             last_reconciled_at: state.last_reconciled_at,
         };
@@ -373,7 +381,10 @@ export async function checkFoloNewEntries(
 }
 
 export function filterFoloIncrementalItems(items, plan) {
-    if (plan?.mode !== 'incremental' || !Number.isSafeInteger(plan.inserted_after_ms)) {
+    if (
+        !['incremental', 'reconcile'].includes(plan?.mode)
+        || !Number.isSafeInteger(plan.inserted_after_ms)
+    ) {
         return {
             items,
             scannedCount: items.length,
