@@ -1,7 +1,7 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-25T23:00:00.000Z",
+      "generated_at": "2026-07-26T00:00:00.000Z",
       "id": "morning",
       "item_ids": [
         "n_a901dd76e3e0e13397aacb62a5c052ed8714570711e3bdf7cbaf6e2d878b97e7",
@@ -102,7 +102,8 @@
         "n_f3ac9aa9bb14282f3e5bd93fc75c80c6ccc2684e4279020aaa5df5422662baee",
         "n_93d98ef56ff5af03f3a793b2a4a17c5dc81fb67a10a4b34ffcacccf09e3e0e22",
         "n_65e3166ff3a913309cc5a1842bb3fc6320a2625948cf97cbbc70522506a70886",
-        "n_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d"
+        "n_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d",
+        "n_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -142,7 +143,7 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T23:00:00.000Z",
+  "generated_at": "2026-07-26T00:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -3947,6 +3948,46 @@
         "topic_open_source"
       ],
       "url": "https://x.com/dotey/status/2081131024021352623"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/25/ruff/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f",
+      "featured": false,
+      "id": "n_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f",
+      "identity_claims": [
+        "c_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f",
+        "c_fff0a7b3256a6b8c1293e1bce09b9be611caad542e3df3db34e884a1a33faef7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T00:00:00.000Z",
+      "published_at": "2026-07-25T22:44:05.763Z",
+      "published_date": "2026-07-26",
+      "reason": "Ruff 默认规则从 59 条跃升至 413 条，可能造成众多 Python 项目 CI 中断，影响面广且有具体数据。",
+      "related_source_ids": [],
+      "score": 7,
+      "source": {
+        "homepage": null,
+        "id": "1215934313615228928",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1215934313615228928",
+      "source_type": "simonwillison",
+      "summary": "Ruff v0.16.0 Astral shipped a significant new version of their Ruff Python linting tool a few days ago on July 23rd. I noticed today because my various CI jobs all started failing thanks to new default Ruff checks and my unpinned \"ruff\" dev dependency. From Brent Westbrook's announcement post: Ruff now enables 413 rules by default, up from 59 in previous versions. Since Ruff's default rule set was last modified in v0.1.0, the number of rules in Ruff has grown from 708 to 968. Many of these rules catch severe issues, including syntax errors and immediate runtime errors but were not previously enabled by default. With the new rule set, Ruff will bring these issues and many others to your attention without any Ruff configuration. Here's a one-liner for trying it on any Python project: uvx ruff@latest check. I ran the latest Ruff against my three biggest projects - Datasette, sqlite-utils, and LLM - and it found hundreds of minor issues that breached the new default rules. All three projects have very comprehensive test suites, executed in CI against Python 3.10 through Python 3.14, so upgrades like this are pretty safe. The following command did the bulk of the upgrades: uvx ruff@latest check. --fix --unsafe-fixes Against sqlite-utils, that command reported: Found 1618 errors (1538 fixed, 80 remaining). As an illustrative example, here are three of the remaining issues. Ruff does a nice job of explaining each one: DTZ005 `datetime.datetime.now()` called without a `tz` argument --> tests/test_duplicate.py:17:10 | 15 | \"datetime_col\" TEXT)\"\"\") 16 | # Insert one row of mock data: 17 | dt = datetime.datetime.now() | ^^^^^^^^^^^^^^^^^^^^^^^ 18 | data = { 19 | \"text_col\": \"Cleo\", | help: Pass a `datetime.timezone` object to the `tz` parameter BLE001 Do not catch blind exception: `Exception` --> tests/test_plugins.py:16:12 | 14 | db.execute(\"select * from pragma_function_list()\") 15 | return True 16 | except Exception: | ^^^^^^^^^ 17 | return False 18 | finally: | B018 Found useless attribute access. Either assign it to a variable or remove it. --> tests/test_update.py:46:5 | 44 | def test_update_invalid_pk(fresh_db, pk, update_pk): 45 | table = fresh_db[\"table\"] 46 | table.insert({\"id1\": 5, \"id2\": 3, \"v\": 1}, pk=pk).last_pk | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 47 | with pytest.raises(NotFoundError): 48 | table.update(update_pk, {\"v\": 2}) | Unsurprisingly, given Astral's new home at OpenAI, this output provides everything a coding agent would need to fix the problems. I had Codex (GPT-5.6 Sol high) upgrade LLM and sqlite-utils, and Claude Code (with Opus 5) upgrade Datasette. Tags: python, ruff, astral",
+      "time_precision": "exact",
+      "title": "Ruff v0.16.0",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/25/ruff/"
     },
     {
       "batch": "night",
