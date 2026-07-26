@@ -13,11 +13,12 @@ import TwitterExtraDataSource from './dataSources/twitter-extra.js';
 import KazikeDataSource from './dataSources/kazike.js';
 import KazikeXDataSource from './dataSources/kazike-x.js';
 import AnthropicResearchDataSource from './dataSources/anthropic-research.js';
+import TheDecoderDataSource from './dataSources/the-decoder.js';
 import { filterBlockedSourceItems } from './sourceFilters.js';
 
 // Register data sources as arrays to support multiple sources per type
 export const dataSources = {
-    news: { name: '新闻', sources: [AibaseDataSource, XiaohuDataSource, QBitDataSource, KazikeDataSource, SimonWillisonDataSource, XinZhiYuanDataSource, OpenAInewsroomDataSource, AnthropicResearchDataSource] },
+    news: { name: '新闻', sources: [AibaseDataSource, XiaohuDataSource, QBitDataSource, KazikeDataSource, SimonWillisonDataSource, XinZhiYuanDataSource, OpenAInewsroomDataSource, AnthropicResearchDataSource, TheDecoderDataSource] },
     project: { name: '项目', sources: [GithubTrendingDataSource] },
     paper: { name: '论文', sources: [HuggingfacePapersDataSource, JiqizhixinDataSource] },
     socialMedia: { name: '社交平台', sources: [TwitterDataSource, TwitterExtraDataSource, KazikeXDataSource] },
