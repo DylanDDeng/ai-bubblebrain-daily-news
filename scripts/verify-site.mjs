@@ -368,7 +368,10 @@ for (const name of dailyDataNames) {
   const date = name.slice(0, -".json".length);
   const report = canonicalReportByDate.get(date);
   const publishedReport = publishedReportByDate.get(date);
-  invariant(report && publishedReport, `Structured daily report projection is missing: ${date}`);
+  invariant(
+    report && publishedReport,
+    `Structured daily report projection is missing: ${date}`,
+  );
   const year = date.slice(0, 4);
   const month = date.slice(5, 7);
   const chinesePageRoute = `/daily/${year}/${month}/${date}/`;
@@ -409,7 +412,8 @@ for (const name of dailyDataNames) {
       ]),
     );
     invariant(
-      searchIndex.report_dates.includes(date) === (publishedReport.items.length > 0) &&
+      searchIndex.report_dates.includes(date) ===
+        publishedReport.items.length > 0 &&
         searchItems.length === publishedReport.items.length &&
         expectedSearchItems.size === publishedReport.items.length,
       `Structured daily search coverage drifted: ${date}`,
@@ -659,7 +663,7 @@ const specializedMarkers = new Map([
   ],
   [
     "highlights/index.html",
-    ['id="highlight-search"', "highlights.json", "<script"],
+    ['id="highlight-search"', "data-directory-list", "<script"],
   ],
 ]);
 for (const [path, markers] of specializedMarkers) {
@@ -670,6 +674,15 @@ for (const [path, markers] of specializedMarkers) {
       `Specialized Astro behavior is missing ${marker} in ${path}`,
     );
 }
+const highlightsHtml = await readFile(
+  resolve(distRoot, "highlights/index.html"),
+  "utf8",
+);
+invariant(
+  !highlightsHtml.includes("highlights.json") &&
+    !highlightsHtml.includes("/v1/highlights"),
+  "Highlights must render from Markdown without JSON or API overrides",
+);
 
 const demoRoot = resolve(repoRoot, rawPolicy.source_directory);
 const demoFiles = (await walk(demoRoot))

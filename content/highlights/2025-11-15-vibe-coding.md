@@ -1,10 +1,15 @@
 ---
-title: "Google官方出品Vibe Coding课程"
-date: 2025-11-15T10:00:00+08:00
-description: "如何更好地使用Google AI Studio 进行Vibe Coding"
+externalId: "highlight-04"
+kind: "article"
+title: "Google官方出品的Vibe Coding课程"
+description: "Vibe Coding课程，介绍如何使用Google AI Studio"
+date: 2025-11-15
+sourceUrl: "https://www.youtube.com/playlist?list=PLOU2XLYxmsIKkEa_-KTPF9DZ0IyHJ7V1H"
+cover: "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251123170103483.png"
 tags: ["Vibe Coding"]
---- 
-
+featured: false
+draft: false
+---
 
 [课程链接](https://www.youtube.com/playlist?list=PLOU2XLYxmsIKkEa_-KTPF9DZ0IyHJ7V1H) 
 
