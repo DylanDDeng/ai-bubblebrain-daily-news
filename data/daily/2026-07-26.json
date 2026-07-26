@@ -42,7 +42,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-26T14:00:00.000Z",
+      "generated_at": "2026-07-26T15:00:00.000Z",
       "id": "night",
       "item_ids": [
         "n_ab393956a8fac626f10dce9e13c096132c55e2444441a33d407ced8538e12b94",
@@ -54,9 +54,12 @@
         "n_7e98a000c7cce7e8f7b4e2aca5c19a22c1a746c88dcfdf798dd3bc21652c16cb",
         "n_b97bfc801b8909ef147c8bf04693cfe48d25ec4d95162c600c92a23c7b49f6ae",
         "n_599c6389d1f1f9949bfba8b59ebb51788b0433365659be40d3476c6cd0627c4c",
+        "n_eed63e3792b3c4c07b398579a4808d9d8ada2e09f18f7a9b3e8e9e97d4766627",
+        "n_ab56eb7e260545d178973774cc9c5c14ec442f311487e4628fe00945c6d4da8e",
         "n_d141dbd568f3a8e83835bb73f8dec91a8e9479a362bfda7251c07ef727affaf9",
         "n_cfa2826a63ac527fe7f6736cde509b8e52573ca4c5a3e8fee8a739aae9dd0904",
-        "n_d81eb566bf0305d3257852683f12af4fc0fcb66a6050481e5751b0f0f4c73026"
+        "n_d81eb566bf0305d3257852683f12af4fc0fcb66a6050481e5751b0f0f4c73026",
+        "n_14aa265f3738c1e0218e1ff6d521fbb783df89e13ef53dd15dc9c316bd036ae7"
       ],
       "label": "22:00 更新",
       "status": "completed"
@@ -72,7 +75,7 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T14:00:00.000Z",
+  "generated_at": "2026-07-26T15:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1341,6 +1344,88 @@
     },
     {
       "batch": "night",
+      "canonical_url": "https://x.com/hongming731/status/2081175297932816774",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic",
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_eed63e3792b3c4c07b398579a4808d9d8ada2e09f18f7a9b3e8e9e97d4766627",
+      "featured": false,
+      "id": "n_eed63e3792b3c4c07b398579a4808d9d8ada2e09f18f7a9b3e8e9e97d4766627",
+      "identity_claims": [
+        "c_56bb19e313d91d9a8794a437c4e4da4418a72bad89b581198d2efc8ac4105069",
+        "c_eed63e3792b3c4c07b398579a4808d9d8ada2e09f18f7a9b3e8e9e97d4766627"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T15:00:00.000Z",
+      "published_at": "2026-07-26T00:30:32.580Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216825730269196288",
+        "name": "twitter-ginobefun"
+      },
+      "source_id": "1216825730269196288",
+      "source_type": "twitter_extra",
+      "summary": "本期BestBlogs早报精选还包括Google端侧模型采用1B-4B与50M-500M分工、Nunchaku量化推理集成Diffusers、无人机控制测评以及手机智能体安全测评等内容。",
+      "time_precision": "exact",
+      "title": "YC合伙人强调AI创业需攻克难销售强监管领域，LangChain提出企业AI三层所有权框架",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_policy"
+      ],
+      "url": "https://x.com/hongming731/status/2081175297932816774"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/9hills/status/2081211279541436563",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ab56eb7e260545d178973774cc9c5c14ec442f311487e4628fe00945c6d4da8e",
+      "featured": false,
+      "id": "n_ab56eb7e260545d178973774cc9c5c14ec442f311487e4628fe00945c6d4da8e",
+      "identity_claims": [
+        "c_6e680ccd1eb2269e8e97dfcc79059a78186dcbbe74dc3e69fac53151583bd753",
+        "c_ab56eb7e260545d178973774cc9c5c14ec442f311487e4628fe00945c6d4da8e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T15:00:00.000Z",
+      "published_at": "2026-07-26T02:53:30.288Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216868542469554176",
+        "name": "twitter-九原客"
+      },
+      "source_id": "1216868542469554176",
+      "source_type": "twitter_extra",
+      "summary": "该应用经过三四个月迭代，架构稳定，可读取HealthKit、日历等手机系统功能，提供类似电脑端Agent的移动助手体验。",
+      "time_precision": "exact",
+      "title": "Open Minis手机AI Agent应用完整开源iOS与Android代码，已服务于数万用户",
+      "topic_ids": [
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/9hills/status/2081211279541436563"
+    },
+    {
+      "batch": "night",
       "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=3&mid=2652714857&sn=560ad5de820c9142bf1b5e896794a6e5",
       "category": "models",
       "content_type": "news",
@@ -1459,6 +1544,47 @@
         "topic_policy"
       ],
       "url": "https://mp.weixin.qq.com/s?__biz=MzI3MTA0MTk1MA%3D%3D&idx=1&mid=2652714857&sn=a2b246b204236f19bf695794c5125d56"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081376569361408461",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_14aa265f3738c1e0218e1ff6d521fbb783df89e13ef53dd15dc9c316bd036ae7",
+      "featured": false,
+      "id": "n_14aa265f3738c1e0218e1ff6d521fbb783df89e13ef53dd15dc9c316bd036ae7",
+      "identity_claims": [
+        "c_14aa265f3738c1e0218e1ff6d521fbb783df89e13ef53dd15dc9c316bd036ae7",
+        "c_6cc6346b9997c8cfdacd9d6a48216bf27f2b3a3f1e878461e889143a1fb3d1ca"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T15:00:00.000Z",
+      "published_at": "2026-07-26T13:50:18.295Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216830478640807936",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1216830478640807936",
+      "source_type": "twitter_extra",
+      "summary": "与电脑上的Codex、Claude Code类似，OpenMinis为手机端智能体提供操作手机工具和服务的Harness平台。",
+      "time_precision": "exact",
+      "title": "OpenMinis作为手机端Agent运行环境，可调用HealthKit、日历与HomeKit等原生功能",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081376569361408461"
     }
   ],
   "overview": {
