@@ -258,6 +258,7 @@ const INERT_ROOT_SCRIPTS = new Set([
   "scripts/check-content-observability.mjs",
   "scripts/check-content-observation-window.mjs",
   "scripts/create-content-addressed-artifact.mjs",
+  "scripts/html-local-references.mjs",
   "scripts/materialize-content-addressed-artifact.mjs",
   "scripts/pull-daily-content.sh",
   "scripts/request-code-release.mjs",
