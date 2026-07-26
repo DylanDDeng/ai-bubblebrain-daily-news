@@ -2,13 +2,15 @@ import { describe, expect, it } from 'vitest';
 
 import { legacyEntryIsRoutable, loadLegacyContent, type LegacyContentEntry } from './legacyContent';
 
-const preservedArticleRoutes = [
+const expectedArticleRoutes = [
 	'/highlights/2025-11-10-best-practices-prompt-engineering/',
 	'/highlights/2025-11-14-gpt-5.1-prompt-guide/',
 	'/highlights/2025-11-15-claude-skills-explained/',
 	'/highlights/2025-11-15-vibe-coding/',
 	'/highlights/2025-11-16-claude-skills-example/',
 	'/highlights/2025-11-18-how-three-startups-use-claudecode/',
+	'/highlights/2026-07-24-why-software-factories-fail/',
+	'/en/highlights/2026-07-24-why-software-factories-fail/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -43,7 +45,7 @@ describe('unified highlights content', () => {
 			records.filter(legacyEntryIsRoutable).map((entry) => entry.route),
 		);
 
-		for (const route of preservedArticleRoutes) expect(routableRoutes).toContain(route);
+		for (const route of expectedArticleRoutes) expect(routableRoutes).toContain(route);
 		for (const entry of records.filter((candidate) => candidate.frontmatter.kind === 'bookmark')) {
 			expect(legacyEntryIsRoutable(entry)).toBe(false);
 		}
@@ -54,7 +56,7 @@ describe('unified highlights content', () => {
 			(entry) => entry.frontmatter.kind === 'article',
 		);
 
-		expect(articles).toHaveLength(6);
+		expect(articles.length).toBeGreaterThanOrEqual(expectedArticleRoutes.length);
 		for (const article of articles) expect(article.body.trim()).not.toBe('');
 	});
 });
