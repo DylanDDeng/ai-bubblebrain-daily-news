@@ -2,7 +2,7 @@ import { getCollection } from 'astro:content';
 
 import { dailyPermalink, filterDailyEntries } from './daily';
 import { knowledgeTaxonomy } from './knowledge';
-import { loadLegacyContent } from './legacyContent';
+import { legacyEntryIsRoutable, loadLegacyContent } from './legacyContent';
 
 export { renderRss } from './siteRss';
 
@@ -111,6 +111,7 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 	}
 
 	for (const entry of legacyEntries) {
+		if (!legacyEntryIsRoutable(entry)) continue;
 		records.push({
 			route: entry.route,
 			title: entry.title,

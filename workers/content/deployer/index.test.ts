@@ -817,7 +817,6 @@ describe("automatic code release boundary", () => {
   });
 
   it.each([
-    "static/highlights.json",
     "content/about/index.md",
     "data/daily/2026-07-15.json",
     "assets/daily.json",
@@ -840,14 +839,39 @@ describe("automatic code release boundary", () => {
     );
   });
 
-  it("rejects a rename whose previous filename is forbidden", () => {
+  it("accepts unified highlight Markdown and retired JSON removal", () => {
+    expect(
+      validateCodeReleaseChangeSet(
+        comparison([
+          {
+            filename: "content/highlights/2026-07-26-agents.md",
+            status: "added",
+          },
+          {
+            filename: "static/highlights.json",
+            status: "removed",
+          },
+          {
+            filename: "static/en/highlights.json",
+            status: "removed",
+          },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toHaveLength(3);
+  });
+
+  it("rejects recreating a retired highlight JSON index", () => {
     expect(() =>
       validateCodeReleaseChangeSet(
         comparison([
           {
-            filename: "astro/src/pages/index.astro",
-            previous_filename: "static/highlights.json",
-            status: "renamed",
+            filename: "static/highlights.json",
+            status: "modified",
           },
         ]),
         {
@@ -857,7 +881,7 @@ describe("automatic code release boundary", () => {
         },
       ),
     ).toThrow(
-      "Code release contains forbidden or unknown path: static/highlights.json",
+      "Code release may only remove retired highlight index: static/highlights.json",
     );
   });
 

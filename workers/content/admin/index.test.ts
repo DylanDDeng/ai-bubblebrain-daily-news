@@ -167,7 +167,7 @@ describe("routine content admin information architecture", () => {
     },
   );
 
-  it("creates a validated highlight through an attested mutation", async () => {
+  it("retires database highlight writes after the Markdown cutover", async () => {
     const { sql, queries } = fakeSql();
     vi.mocked(openContentDatabase).mockReturnValue(sql as never);
     vi.mocked(idempotencyKey).mockReturnValue(
@@ -187,36 +187,12 @@ describe("routine content admin information architecture", () => {
       new Request("https://admin.test/v1/highlights", { method: "POST" }),
       {} as never,
     );
-    expect(response.status).toBe(201);
-    expect(queries.join("\n")).toContain("create_highlight_v1");
-    expect(attest).toHaveBeenCalledWith(
-      expect.any(Request),
-      expect.anything(),
-      "content-routine",
-      "highlight.create",
-      expect.objectContaining({ title: "新的精选内容", status: "published" }),
-    );
-  });
-
-  it("rejects unsafe highlight URLs before attestation", async () => {
-    const { sql, queries } = fakeSql();
-    vi.mocked(openContentDatabase).mockReturnValue(sql as never);
-    vi.mocked(readAdminBody).mockResolvedValue({
-      locale: "zh-CN",
-      title: "不安全链接",
-      description: "",
-      source_url: "javascript:alert(1)",
-      cover_url: null,
-      tags: [],
-      status: "published",
-      reason: "验证非法链接",
+    expect(response.status).toBe(410);
+    await expect(response.json()).resolves.toEqual({
+      error: "highlights_are_git_managed",
     });
-    const response = await worker.fetch(
-      new Request("https://admin.test/v1/highlights", { method: "POST" }),
-      {} as never,
-    );
-    expect(response.status).toBe(400);
     expect(queries).toEqual([]);
+    expect(attest).not.toHaveBeenCalled();
   });
 
   it("creates a complete Prompt through an attested mutation", async () => {
