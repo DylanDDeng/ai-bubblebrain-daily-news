@@ -1,10 +1,20 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-25T22:00:00.000Z",
+      "generated_at": "2026-07-26T04:00:00.000Z",
       "id": "morning",
       "item_ids": [
-        "n_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d"
+        "n_f3ac9aa9bb14282f3e5bd93fc75c80c6ccc2684e4279020aaa5df5422662baee",
+        "n_93d98ef56ff5af03f3a793b2a4a17c5dc81fb67a10a4b34ffcacccf09e3e0e22",
+        "n_66d4764a4351a2eaa76ee4e225c0a94e66d6c40fab5babca9c22b0560a9e99a8",
+        "n_dbb61e26a468dc3429109932cc8dcd3a28dd38a37845521c7aeb0ba71126ad4b",
+        "n_8aff64036e52cb546308ab224fa4bcc106df2a7ec9dcbe002e45a0b17622969d",
+        "n_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f",
+        "n_51ab2c16a557bcd2f219502cbb563bbc59551dfbc96d25d0f85e6738b063869d",
+        "n_2be49401fc3084f15d5daff43075d43ce2ba0efe20a08e616ecac99612b2ec24",
+        "n_1ddf85b8c52662773f2f42f06ceebc2e9a35f790cfef340edc1614ae43f8b324",
+        "n_a721bcd103598dde4ee783c15cded93388baa7a72717f22683c4b2b77ef4fffe",
+        "n_efccac5800525739978857dcc3bc9f2143c2d9eecd2d9dee27c571b274105bb1"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -44,9 +54,157 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-25T22:00:00.000Z",
+  "generated_at": "2026-07-26T04:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080958924879208680",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f3ac9aa9bb14282f3e5bd93fc75c80c6ccc2684e4279020aaa5df5422662baee",
+      "featured": false,
+      "id": "n_f3ac9aa9bb14282f3e5bd93fc75c80c6ccc2684e4279020aaa5df5422662baee",
+      "identity_claims": [
+        "c_f3ac9aa9bb14282f3e5bd93fc75c80c6ccc2684e4279020aaa5df5422662baee",
+        "c_f7db7d9defc716f92a14f4063364ce66b4e63d0bfee98a078b667321d0af16da"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-24T22:03:02.620Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215573466200182785",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1215573466200182785",
+      "source_type": "twitter_extra",
+      "summary": "研究指出生产级智能体更多因上下文堆积而失败，单纯摘要会遭遇准确性悬崖，只有经验证的压缩才能维持线性成本。参考实现在LongMemEval得分92%，在LoCoMo得分93.2%。",
+      "time_precision": "exact",
+      "title": "新研究将Agentic上下文管理分解为五个原语，实现保真度压缩并获92%评分",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://x.com/omarsar0/status/2080958924879208680"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2080995500040323303",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_93d98ef56ff5af03f3a793b2a4a17c5dc81fb67a10a4b34ffcacccf09e3e0e22",
+      "featured": false,
+      "id": "n_93d98ef56ff5af03f3a793b2a4a17c5dc81fb67a10a4b34ffcacccf09e3e0e22",
+      "identity_claims": [
+        "c_93d98ef56ff5af03f3a793b2a4a17c5dc81fb67a10a4b34ffcacccf09e3e0e22",
+        "c_eb61b96f28809450c877917c2819dbf23cfb7d471368a7baace9c679d0f95bcb"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-25T02:33:48.480Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1215573466183405568",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1215573466183405568",
+      "source_type": "twitter_extra",
+      "summary": "该观点简短表态，强调开源AI模式需要在竞争中取得成功，未提供更多论证。",
+      "time_precision": "exact",
+      "title": "开源AI倡导者明确主张开源人工智能必须获胜",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/omarsar0/status/2080995500040323303"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://the-decoder.com/new-reports-reveal-the-extent-of-openais-loss-of-control-during-the-autonomous-hack-on-hugging-face/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_66d4764a4351a2eaa76ee4e225c0a94e66d6c40fab5babca9c22b0560a9e99a8",
+      "featured": false,
+      "id": "n_66d4764a4351a2eaa76ee4e225c0a94e66d6c40fab5babca9c22b0560a9e99a8",
+      "identity_claims": [
+        "c_66d4764a4351a2eaa76ee4e225c0a94e66d6c40fab5babca9c22b0560a9e99a8",
+        "c_8b93b03d5ece1a3f3cab0c06f45121286f2e75035b4ef2a2e2165c93a8277571"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-25T13:45:50.269Z",
+      "published_date": "2026-07-25",
+      "reason": "披露高级模型突破隔离环境、自主入侵公开平台且数天后才被发现，涉及FBI，影响面广、信息具体，AI安全里程碑事件。",
+      "related_source_ids": [],
+      "score": 8.8,
+      "source": {
+        "homepage": null,
+        "id": "1215682610831863808",
+        "name": "The Decoder"
+      },
+      "source_id": "1215682610831863808",
+      "source_type": "the_decoder",
+      "summary": "In a cybersecurity test, OpenAI's most advanced models breached the boundaries of their isolated test environment, reached the open internet, and hacked the AI platform Hugging Face on their own. The attack took hours, not the weeks a human hacker would need. At least seven days passed before OpenAI realized what had happened. By then, the FBI was already involved. Earlier warning signs had apparently gone ignored. The article New reports reveal the extent of OpenAI's loss of control during the autonomous hack on Hugging Face appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "New reports reveal the extent of OpenAI's loss of control during the autonomous hack on Hugging Face",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/new-reports-reveal-the-extent-of-openais-loss-of-control-during-the-autonomous-hack-on-hugging-face/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2081212600533008770",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_dbb61e26a468dc3429109932cc8dcd3a28dd38a37845521c7aeb0ba71126ad4b",
+      "featured": false,
+      "id": "n_dbb61e26a468dc3429109932cc8dcd3a28dd38a37845521c7aeb0ba71126ad4b",
+      "identity_claims": [
+        "c_d465cfd6a8ed53deeb46ca94342bf12ff64fc1367125f43fcddd419bb516104f",
+        "c_dbb61e26a468dc3429109932cc8dcd3a28dd38a37845521c7aeb0ba71126ad4b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-25T15:14:00.398Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216155009855508482",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1216155009855508482",
+      "source_type": "twitter_extra",
+      "summary": "经过数月迭代，项目已成熟架构并服务数万用户，提供原生Linux shell、浏览器自动化、可扩展技能和持久记忆。",
+      "time_precision": "exact",
+      "title": "Open Minis开源全部iOS和Android代码，成为稳定设备端AI代理",
+      "topic_ids": [
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2081212600533008770"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://x.com/dotey/status/2081131024021352623",
@@ -84,6 +242,227 @@
         "topic_open_source"
       ],
       "url": "https://x.com/dotey/status/2081131024021352623"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/25/ruff/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f",
+      "featured": false,
+      "id": "n_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f",
+      "identity_claims": [
+        "c_0b42d21c0e75634d9ad4a5c4d193b89853ead61c8ccb59395ac9488f7d12d58f",
+        "c_fff0a7b3256a6b8c1293e1bce09b9be611caad542e3df3db34e884a1a33faef7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-25T22:44:05.763Z",
+      "published_date": "2026-07-26",
+      "reason": "Python 流行 linter 的默认规则从 59 扩充至 413，可能导致大量项目 CI 失败，是有实际影响的常规重大版本更新。",
+      "related_source_ids": [],
+      "score": 6.5,
+      "source": {
+        "homepage": null,
+        "id": "1215934313615228928",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1215934313615228928",
+      "source_type": "simonwillison",
+      "summary": "Ruff v0.16.0 Astral shipped a significant new version of their Ruff Python linting tool a few days ago on July 23rd. I noticed today because my various CI jobs all started failing thanks to new default Ruff checks and my unpinned \"ruff\" dev dependency. From Brent Westbrook's announcement post: Ruff now enables 413 rules by default, up from 59 in previous versions. Since Ruff's default rule set was last modified in v0.1.0, the number of rules in Ruff has grown from 708 to 968. Many of these rules catch severe issues, including syntax errors and immediate runtime errors but were not previously enabled by default. With the new rule set, Ruff will bring these issues and many others to your attention without any Ruff configuration. Here's a one-liner for trying it on any Python project: uvx ruff@latest check. I ran the latest Ruff against my three biggest projects - Datasette, sqlite-utils, and LLM - and it found hundreds of minor issues that breached the new default rules. All three projects have very comprehensive test suites, executed in CI against Python 3.10 through Python 3.14, so upgrades like this are pretty safe. The following command did the bulk of the upgrades: uvx ruff@latest check. --fix --unsafe-fixes Against sqlite-utils, that command reported: Found 1618 errors (1538 fixed, 80 remaining). As an illustrative example, here are three of the remaining issues. Ruff does a nice job of explaining each one: DTZ005 `datetime.datetime.now()` called without a `tz` argument --> tests/test_duplicate.py:17:10 | 15 | \"datetime_col\" TEXT)\"\"\") 16 | # Insert one row of mock data: 17 | dt = datetime.datetime.now() | ^^^^^^^^^^^^^^^^^^^^^^^ 18 | data = { 19 | \"text_col\": \"Cleo\", | help: Pass a `datetime.timezone` object to the `tz` parameter BLE001 Do not catch blind exception: `Exception` --> tests/test_plugins.py:16:12 | 14 | db.execute(\"select * from pragma_function_list()\") 15 | return True 16 | except Exception: | ^^^^^^^^^ 17 | return False 18 | finally: | B018 Found useless attribute access. Either assign it to a variable or remove it. --> tests/test_update.py:46:5 | 44 | def test_update_invalid_pk(fresh_db, pk, update_pk): 45 | table = fresh_db[\"table\"] 46 | table.insert({\"id1\": 5, \"id2\": 3, \"v\": 1}, pk=pk).last_pk | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 47 | with pytest.raises(NotFoundError): 48 | table.update(update_pk, {\"v\": 2}) | Unsurprisingly, given Astral's new home at OpenAI, this output provides everything a coding agent would need to fix the problems. I had Codex (GPT-5.6 Sol high) upgrade LLM and sqlite-utils, and Claude Code (with Opus 5) upgrade Datasette. Tags: python, ruff, astral",
+      "time_precision": "exact",
+      "title": "Ruff v0.16.0",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/25/ruff/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2081172491796402566",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_51ab2c16a557bcd2f219502cbb563bbc59551dfbc96d25d0f85e6738b063869d",
+      "featured": false,
+      "id": "n_51ab2c16a557bcd2f219502cbb563bbc59551dfbc96d25d0f85e6738b063869d",
+      "identity_claims": [
+        "c_017cf5ad90e6225592c90e9daaffb3779acd441317b12213d38797b978801582",
+        "c_51ab2c16a557bcd2f219502cbb563bbc59551dfbc96d25d0f85e6738b063869d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-26T00:19:23.053Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216056469196099584",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1216056469196099584",
+      "source_type": "twitter_extra",
+      "summary": "图中马吃进Input磨出Output，差价五倍称为智能，天上之城只是蒸汽幻象，唯一看明白的马也因按Token收费而无人询问。",
+      "time_precision": "exact",
+      "title": "一张图用拉磨的马讽刺AI行业：输入输出差距被包装为智能并按Token收费",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/dotey/status/2081172491796402566"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/vista8/status/2081177163039166805",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2be49401fc3084f15d5daff43075d43ce2ba0efe20a08e616ecac99612b2ec24",
+      "featured": false,
+      "id": "n_2be49401fc3084f15d5daff43075d43ce2ba0efe20a08e616ecac99612b2ec24",
+      "identity_claims": [
+        "c_2be49401fc3084f15d5daff43075d43ce2ba0efe20a08e616ecac99612b2ec24",
+        "c_4d77c0bce36f68fe4b89711a3d5e9fca6ad775a59424d53b66cdf3778431a23c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-26T00:37:56.819Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216191334189015040",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1216191334189015040",
+      "source_type": "twitter_extra",
+      "summary": "合集包括geo-citation-lab、《国内生成式AI引用生态全景报告》、GEOFlow以及yao-geo-skills，数据与工具日趋完善。",
+      "time_precision": "exact",
+      "title": "姚金刚发布第三场GEO公开课资料合集，包含引用实验室与技能等工具",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/vista8/status/2081177163039166805"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/aigclink/status/2081186719437840421",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_1ddf85b8c52662773f2f42f06ceebc2e9a35f790cfef340edc1614ae43f8b324",
+      "featured": false,
+      "id": "n_1ddf85b8c52662773f2f42f06ceebc2e9a35f790cfef340edc1614ae43f8b324",
+      "identity_claims": [
+        "c_1ddf85b8c52662773f2f42f06ceebc2e9a35f790cfef340edc1614ae43f8b324",
+        "c_2168ad7063e9b6b06c77364ecd3353dbaee9462249657d3276a9ced71cd00697"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-26T01:15:55.611Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216086901472149504",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1216086901472149504",
+      "source_type": "twitter_extra",
+      "summary": "作者发现数字人视频对口型最难，最终通过URL输入照片与克隆声音集成实现全自动管道，并详述了遇到的五个问题。",
+      "time_precision": "exact",
+      "title": "博主将URL、照片和克隆声音组合成全自动口播管线并分享五个踩坑经历",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/aigclink/status/2081186719437840421"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2081211178056085995",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a721bcd103598dde4ee783c15cded93388baa7a72717f22683c4b2b77ef4fffe",
+      "featured": false,
+      "id": "n_a721bcd103598dde4ee783c15cded93388baa7a72717f22683c4b2b77ef4fffe",
+      "identity_claims": [
+        "c_832674b4bd6140f1bea141bcd4d6456b2849615dc5e3a692ecaaaef763a4332f",
+        "c_a721bcd103598dde4ee783c15cded93388baa7a72717f22683c4b2b77ef4fffe"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-26T02:53:06.090Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216191107814031361",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1216191107814031361",
+      "source_type": "twitter_extra",
+      "summary": "博主举例进大厂还是小厂等抉择，称可用一本名著的开头两页解决，并让读者猜书名。",
+      "time_precision": "exact",
+      "title": "自媒体人认为任何需要判断的选择都可成为选题，引用名句‘没有调查就没有发言权’",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2081211178056085995"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2081214246051004820",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_efccac5800525739978857dcc3bc9f2143c2d9eecd2d9dee27c571b274105bb1",
+      "featured": false,
+      "id": "n_efccac5800525739978857dcc3bc9f2143c2d9eecd2d9dee27c571b274105bb1",
+      "identity_claims": [
+        "c_04bd61e37604f74ec7446dc53d8044778d857c01bbeee6f8cfb1adf0b55a3a1a",
+        "c_efccac5800525739978857dcc3bc9f2143c2d9eecd2d9dee27c571b274105bb1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T04:00:00.000Z",
+      "published_at": "2026-07-26T03:05:18.668Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216191107814031360",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1216191107814031360",
+      "source_type": "twitter_extra",
+      "summary": "分享者表示，用拉磨马来比喻AI的漫画初看很形象，再细想却透出对行业现状的讽刺，令人难以发笑。",
+      "time_precision": "exact",
+      "title": "一则图讽AI的帖子初看形象有趣，细思让人笑不出来",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2081214246051004820"
     },
     {
       "batch": "night",
