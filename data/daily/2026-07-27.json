@@ -1,14 +1,16 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-26T22:00:00.000Z",
+      "generated_at": "2026-07-26T23:00:00.000Z",
       "id": "morning",
       "item_ids": [
         "n_8aec9877572b0420bc0c161898c72ad0097e666debb6813b35d97cb00ae065e6",
         "n_1ff08d5ae06226f7b0b898f606de01c99a194a315bded3d910d6a5709d1d5635",
         "n_6145e2f5343fb335b2f22ba7b2aacab2364723676577ed4fced9cf6c78360fab",
         "n_0dbe3df793faa0405b673822825b3df133581813d697d7670f3ac7d3e8bdd848",
-        "n_89a2576dc68ddadf5162fc238132238c050fedde4e33b2a12e4ca881adb28424"
+        "n_89a2576dc68ddadf5162fc238132238c050fedde4e33b2a12e4ca881adb28424",
+        "n_97d26e41d207a567dd7377d71a89c19030b27d2b0f13534667d7ff53ad17b8ae",
+        "n_5820795c2c616d30a719d8aa5732b7ac9c88d5fac82c74bc17e63ac3ccf32498"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -45,7 +47,7 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T22:00:00.000Z",
+  "generated_at": "2026-07-26T23:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -143,9 +145,9 @@
       "ingested_at": "2026-07-26T22:00:00.000Z",
       "published_at": "2026-07-26T04:30:00.090Z",
       "published_date": "2026-07-26",
-      "reason": null,
+      "reason": "仅为一则企业自身招聘广告，无行业动态或实质信息，对大多数AI读者缺乏头条价值。",
       "related_source_ids": [],
-      "score": null,
+      "score": 3.5,
       "source": {
         "homepage": null,
         "id": "1217276556997476354",
@@ -242,6 +244,81 @@
         "topic_open_source"
       ],
       "url": "https://mp.weixin.qq.com/s?__biz=MzIzNjc1NzUzMw%3D%3D&idx=2&mid=2247907283&sn=5df8a52712c79f67232ca9672d4cc34e"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/sama/status/2081396796174282900",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_97d26e41d207a567dd7377d71a89c19030b27d2b0f13534667d7ff53ad17b8ae",
+      "featured": false,
+      "id": "n_97d26e41d207a567dd7377d71a89c19030b27d2b0f13534667d7ff53ad17b8ae",
+      "identity_claims": [
+        "c_3e3f0efb19d51fbe934af46ccf2caf2f36b13a770713de54bfe77fb7199c14e1",
+        "c_97d26e41d207a567dd7377d71a89c19030b27d2b0f13534667d7ff53ad17b8ae"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T23:00:00.000Z",
+      "published_at": "2026-07-26T15:10:41.472Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217346681431887872",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1217346681431887872",
+      "source_type": "twitter_extra",
+      "summary": "该用户要求 ChatGPT 利用全部聊天历史为八位朋友规划长周末出行，生成三个方案并搭建全栈协调网站，待团队达成一致后完成预订，同时起草通知邮件，整套任务一次性自动成功执行。",
+      "time_precision": "exact",
+      "title": "用户通过手机指令让 ChatGPT 自动完成旅行规划、网站搭建与预订全流程",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/sama/status/2081396796174282900"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/26/relay-market/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_5820795c2c616d30a719d8aa5732b7ac9c88d5fac82c74bc17e63ac3ccf32498",
+      "featured": false,
+      "id": "n_5820795c2c616d30a719d8aa5732b7ac9c88d5fac82c74bc17e63ac3ccf32498",
+      "identity_claims": [
+        "c_32f096b06856be01872ec56647f78507c89ec60a68f198f8f776970a24cb12b8",
+        "c_5820795c2c616d30a719d8aa5732b7ac9c88d5fac82c74bc17e63ac3ccf32498"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T23:00:00.000Z",
+      "published_at": "2026-07-26T19:30:54.207Z",
+      "published_date": "2026-07-27",
+      "reason": "深度调查揭示了API令牌转售灰色市场及其安全风险，对AI安全与成本控制有警示意义。",
+      "related_source_ids": [],
+      "score": 7.2,
+      "source": {
+        "homepage": null,
+        "id": "1217355177061679104",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1217355177061679104",
+      "source_type": "simonwillison",
+      "summary": "An Inside Look at the Relay Market Powering Token Resellers and Fraud Fascinating investigation by Matt Lenhard into the market that has grown up around reselling LLM tokens at a discount by pooling API keys from various sources. This looks to be mostly a thing in China. Resellers sell access to an LLM proxy that offers significant discounts on regular API pricing, which they achieve by abusing free trials, proxying through unprotected support bots, or sometimes through stolen credit cards or chargeback attacks. The software they are using for these proxies is open source - mostly one-api and its more actively developed fork new-api, both legitimate API proxy products which can be used to load. balance requests across a pool of API credentials. The buyers are seeking cheap tokens, avoiding geo-restrictions, and in some cases collecting data for model distillation. I've been cautious about exposing my own LLM-driven applications publicly out of fear of abuse leading to big token bills. The existence of this marketplace makes me even more cautious: there's now an entire ecosystem that can profit from finding a new unprotected endpoint to exploit. LLM vendors really need to get better at offering strict caps for their API keys. I want my LLM apps to stop working the moment they hit a dollar threshold I've set for a period of time. Here's the (Chinese language) forum thread that served as the principal source for Matt's article. Via Hacker News Tags: ai, generative-ai, llms, llm-pricing, ai-ethics, ai-in-china",
+      "time_precision": "exact",
+      "title": "An Inside Look at the Relay Market Powering Token Resellers and Fraud",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/26/relay-market/"
     },
     {
       "batch": "night",
