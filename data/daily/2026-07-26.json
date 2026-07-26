@@ -65,17 +65,23 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-26T18:00:00.000Z",
       "id": "lateNight",
-      "item_ids": [],
+      "item_ids": [
+        "n_23413e538331c4d6f5040cc0cd5ae5cf5efa6146cf2624a41f2f302f3a2d43f6",
+        "n_ebecf0e4e159301942fe47b1fe014ebfbd7ab24a848af01b8bc44fd9d9f31024",
+        "n_b409c8edf7b5665bcc69132978d386e21259a4694d04a88b69b2bec5b6352323",
+        "n_4dd4b2c302ea6e122456398bd2cf016ebec7ae33553471756f6a80ce6b39e6ef",
+        "n_4bdf1b3752c86631d5cda92d200b24e8e47696ad9fb188edb8aed6215ef9d8eb"
+      ],
       "label": "次日 02:00 补充更新",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T15:00:00.000Z",
+  "generated_at": "2026-07-26T18:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1585,6 +1591,195 @@
         "topic_open_source"
       ],
       "url": "https://x.com/Gorden_Sun/status/2081376569361408461"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/gdb/status/2081233872168390661",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_23413e538331c4d6f5040cc0cd5ae5cf5efa6146cf2624a41f2f302f3a2d43f6",
+      "featured": false,
+      "id": "n_23413e538331c4d6f5040cc0cd5ae5cf5efa6146cf2624a41f2f302f3a2d43f6",
+      "identity_claims": [
+        "c_23413e538331c4d6f5040cc0cd5ae5cf5efa6146cf2624a41f2f302f3a2d43f6",
+        "c_59657b7c7cfc848d4bf374f7f29b20873f5cbaf93b955bbba722c65679030afe"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T18:00:00.000Z",
+      "published_at": "2026-07-26T04:23:17.557Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216966147732111362",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1216966147732111362",
+      "source_type": "twitter_extra",
+      "summary": "社交媒体上有人表示Titanium: Codex的使用感受令人惊叹，称其表现非常优秀。",
+      "time_precision": "exact",
+      "title": "用户盛赞Titanium Codex模型体验极为出色",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/gdb/status/2081233872168390661"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/gdb/status/2081285058485534856",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ebecf0e4e159301942fe47b1fe014ebfbd7ab24a848af01b8bc44fd9d9f31024",
+      "featured": false,
+      "id": "n_ebecf0e4e159301942fe47b1fe014ebfbd7ab24a848af01b8bc44fd9d9f31024",
+      "identity_claims": [
+        "c_17d2065f2c8686da4c28f2ee9bb4aa0e554c8c639fa006fb906b2b3aa6eadd11",
+        "c_ebecf0e4e159301942fe47b1fe014ebfbd7ab24a848af01b8bc44fd9d9f31024"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T18:00:00.000Z",
+      "published_at": "2026-07-26T07:46:41.801Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216966147732111361",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1216966147732111361",
+      "source_type": "twitter_extra",
+      "summary": "José Ocampo 分享，阅读时打开 GPT Live 进行实时对话、提问和记录，让整个过程变得像“4D”一样丰富，大幅增强了沉浸感与互动性。",
+      "time_precision": "exact",
+      "title": "GPT Live让阅读体验升级，用户表示边读书边提问记笔记如同多维阅读",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/gdb/status/2081285058485534856"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081407446002946450",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_microsoft"
+      ],
+      "event_id": "e_b409c8edf7b5665bcc69132978d386e21259a4694d04a88b69b2bec5b6352323",
+      "featured": false,
+      "id": "n_b409c8edf7b5665bcc69132978d386e21259a4694d04a88b69b2bec5b6352323",
+      "identity_claims": [
+        "c_4b4f2075238bf295ec01fb9e2587941269194976e72c9eb877639fb5738858b4",
+        "c_b409c8edf7b5665bcc69132978d386e21259a4694d04a88b69b2bec5b6352323"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T18:00:00.000Z",
+      "published_at": "2026-07-26T15:53:00.055Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216973310328373249",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1216973310328373249",
+      "source_type": "twitter_extra",
+      "summary": "大量公司和组织已签署开源权重声明，然而Anthropic并不在名单中，且有评论指出该榜单缺乏权威性，真正具备模型发布能力的参与者寥寥无几。",
+      "time_precision": "exact",
+      "title": "开源权重声明获众多公司签署但Anthropic未加入，榜单权威性引发争议",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081407446002946450"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/gdb/status/2081409255916359771",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_4dd4b2c302ea6e122456398bd2cf016ebec7ae33553471756f6a80ce6b39e6ef",
+      "featured": false,
+      "id": "n_4dd4b2c302ea6e122456398bd2cf016ebec7ae33553471756f6a80ce6b39e6ef",
+      "identity_claims": [
+        "c_4dd4b2c302ea6e122456398bd2cf016ebec7ae33553471756f6a80ce6b39e6ef",
+        "c_78e10a6683505947a4cd2c400311f5a68e73fcddef63f0a1feb25f49c5db0358"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T18:00:00.000Z",
+      "published_at": "2026-07-26T16:00:11.676Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216966147732111360",
+        "name": "twitter-Greg Brockman"
+      },
+      "source_id": "1216966147732111360",
+      "source_type": "twitter_extra",
+      "summary": "Sam Altman 在社交媒体上展示，他通过手机向 ChatGPT 发送指令，让其利用聊天历史策划三个长周末方案，并创建一个供九人协作的全栈网站，他将这次体验形容为“工作”一词无法完整概括。",
+      "time_precision": "exact",
+      "title": "Sam Altman用ChatGPT分析聊天记录规划八人周末旅行并生成协调网站",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/gdb/status/2081409255916359771"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081409859745186080",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_4bdf1b3752c86631d5cda92d200b24e8e47696ad9fb188edb8aed6215ef9d8eb",
+      "featured": false,
+      "id": "n_4bdf1b3752c86631d5cda92d200b24e8e47696ad9fb188edb8aed6215ef9d8eb",
+      "identity_claims": [
+        "c_01afc72db25c568117173adb3119cf2442325e7ebfc617a48ab549ba13ce9aa9",
+        "c_4bdf1b3752c86631d5cda92d200b24e8e47696ad9fb188edb8aed6215ef9d8eb"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T18:00:00.000Z",
+      "published_at": "2026-07-26T16:02:35.727Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216973310328373248",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1216973310328373248",
+      "source_type": "twitter_extra",
+      "summary": "该模型首次在扩散解码中引入 DELETE 和 INSERT 控制 token，可在生成过程中动态删除或插入内容，打破以往序列不可修改的限制，适合多轮工具调用和长上下文任务。然而在基准评测中，其得分仅为0-5，远低于参数相近的其他模型。",
+      "time_precision": "exact",
+      "title": "inclusionAI开源扩散语言模型LLaDA2.2-flash，新增编辑机制实现自我纠错但评测得分极低",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081409859745186080"
     }
   ],
   "overview": {
