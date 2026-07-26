@@ -395,6 +395,8 @@ describe('worker regression guards', () => {
         expect(config).toContain('ANTHROPIC_RESEARCH_FEED_ID = "160743780570397696"');
         expect(config).toContain('ANTHROPIC_RESEARCH_FETCH_PAGES = "1"');
         expect(config).toContain('ANTHROPIC_RESEARCH_FILTER_DAYS = "14"');
+        expect(config).toContain('THE_DECODER_FEED_ID = "70041669251630200"');
+        expect(config).toContain('THE_DECODER_FETCH_PAGES = "1"');
         expect(config).toContain('AIBASE_FETCH_PAGES = "2"');
         expect(config).toContain('OPENAI_NEWSROOM_FETCH_PAGES = "1"');
         expect(config).toContain('XIAOHU_FETCH_PAGES = "1"');
@@ -478,6 +480,8 @@ describe('worker regression guards', () => {
         expect(staging).toContain('ANTHROPIC_RESEARCH_FEED_ID = "160743780570397696"');
         expect(staging).toContain('ANTHROPIC_RESEARCH_FETCH_PAGES = "1"');
         expect(staging).toContain('ANTHROPIC_RESEARCH_FILTER_DAYS = "14"');
+        expect(staging).toContain('THE_DECODER_FEED_ID = "70041669251630200"');
+        expect(staging).toContain('THE_DECODER_FETCH_PAGES = "1"');
         expect(staging).not.toMatch(/^\s*\[triggers\]/m);
         expect(staging).not.toMatch(/^\s*crons\s*=/m);
         expect(staging).not.toMatch(/^\s*routes?\s*=/m);

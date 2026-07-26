@@ -12,6 +12,7 @@ import TwitterExtraDataSource from '../dataSources/twitter-extra.js';
 import KazikeDataSource from '../dataSources/kazike.js';
 import KazikeXDataSource from '../dataSources/kazike-x.js';
 import AnthropicResearchDataSource from '../dataSources/anthropic-research.js';
+import TheDecoderDataSource from '../dataSources/the-decoder.js';
 
 function foloFeed(provider, contentType, adapter, idEnv, pageEnv) {
     return Object.freeze({
@@ -63,6 +64,13 @@ export const STRUCTURED_SOURCE_ADAPTERS = Object.freeze([
         AnthropicResearchDataSource,
         'ANTHROPIC_RESEARCH_FEED_ID',
         'ANTHROPIC_RESEARCH_FETCH_PAGES',
+    ),
+    foloFeed(
+        'the_decoder',
+        'news',
+        TheDecoderDataSource,
+        'THE_DECODER_FEED_ID',
+        'THE_DECODER_FETCH_PAGES',
     ),
     Object.freeze({ provider: 'github_trending', contentType: 'project', adapter: GithubTrendingDataSource }),
     foloFeed(
