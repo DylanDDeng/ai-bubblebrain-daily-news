@@ -6,6 +6,10 @@ import { fileURLToPath } from "node:url";
 import { XMLParser } from "fast-xml-parser";
 import { projectPublishedCalendarReport } from "../src/daily/calendarView.js";
 import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
+import {
+  extractLocalReferences,
+  tagAttribute,
+} from "./html-local-references.mjs";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const astroRoot = resolve(repoRoot, "astro");
@@ -36,13 +40,6 @@ async function artifactFingerprint(directory, excludedPath) {
     aggregate.update("\n");
   }
   return aggregate.digest("hex");
-}
-
-function tagAttribute(tag, name) {
-  const match = tag.match(
-    new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i"),
-  );
-  return match ? (match[1] ?? match[2] ?? match[3] ?? null) : null;
 }
 
 async function exists(path) {
@@ -76,50 +73,6 @@ function releaseOutput(path) {
     ![".DS_Store", "_headers", "_redirects", ".assetsignore"].includes(path) &&
     !path.endsWith("/.DS_Store")
   );
-}
-
-function extractLocalReferences(html, pageRoute) {
-  const references = [];
-  const add = (value) => {
-    const normalized = value.trim();
-    if (
-      !normalized ||
-      normalized.startsWith("#") ||
-      /^(?:mailto|tel|data|blob|javascript):/i.test(normalized)
-    )
-      return;
-    let url;
-    try {
-      url = new URL(normalized, new URL(pageRoute, siteOrigin));
-    } catch {
-      return;
-    }
-    if (url.origin === siteOrigin) references.push(url.pathname);
-  };
-  const markup = html
-    .replace(/<script\b[\s\S]*?<\/script>/gi, "")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, "")
-    .replace(/<pre\b[\s\S]*?<\/pre>/gi, "")
-    .replace(/<code\b[\s\S]*?<\/code>/gi, "");
-  const attributes = markup.matchAll(
-    /\b(?:href|src|action|poster|data|cite)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi,
-  );
-  for (const match of attributes) {
-    add(match[1] ?? match[2] ?? match[3] ?? "");
-  }
-  for (const match of markup.matchAll(
-    /\bsrcset\s*=\s*(?:"([^"]*)"|'([^']*)')/gi,
-  )) {
-    for (const candidate of (match[1] ?? match[2] ?? "").split(","))
-      add(candidate.trim().split(/\s+/, 1)[0]);
-  }
-  for (const match of markup.matchAll(
-    /<meta\b[^>]*http-equiv=["']?refresh["']?[^>]*content=["']([^"']+)["'][^>]*>/gi,
-  )) {
-    const target = match[1].match(/url\s*=\s*(.+)$/i)?.[1];
-    if (target) add(target);
-  }
-  return references;
 }
 
 function headerBlock(text, routePattern) {
