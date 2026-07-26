@@ -95,7 +95,11 @@ describe('Folo incremental state', () => {
         const reconcile = await resolveFoloIncrementalPlan(env, {
             runAt: '2026-07-25T06:00:00Z',
         });
-        expect(reconcile.mode).toBe('reconcile');
+        expect(reconcile).toMatchObject({
+            mode: 'reconcile',
+            inserted_after: '2026-07-24T23:50:00.000Z',
+            inserted_after_ms: Date.parse('2026-07-24T23:50:00.000Z'),
+        });
         await commitFoloIncrementalPlan(env, reconcile);
         await expect(resolveFoloIncrementalPlan(env, {
             runAt: '2026-07-25T07:00:00Z',
@@ -159,6 +163,23 @@ describe('Folo incremental state', () => {
         expect(result).toMatchObject({
             scannedCount: 3,
             missingInsertedAtCount: 1,
+        });
+    });
+
+    it('keeps reconciliation deep scans inside the insertion-time window', () => {
+        const plan = {
+            mode: 'reconcile',
+            inserted_after_ms: Date.parse('2026-07-25T00:50:00Z'),
+        };
+        const result = filterFoloIncrementalItems([
+            { id: 'historical', folo_inserted_at: '2026-07-20T00:00:00Z' },
+            { id: 'missed-recent', folo_inserted_at: '2026-07-25T00:55:00Z' },
+        ], plan);
+
+        expect(result.items.map(item => item.id)).toEqual(['missed-recent']);
+        expect(result).toMatchObject({
+            scannedCount: 2,
+            missingInsertedAtCount: 0,
         });
     });
 
