@@ -65,11 +65,12 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-26T18:00:00.000Z",
+      "generated_at": "2026-07-26T19:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_23413e538331c4d6f5040cc0cd5ae5cf5efa6146cf2624a41f2f302f3a2d43f6",
         "n_ebecf0e4e159301942fe47b1fe014ebfbd7ab24a848af01b8bc44fd9d9f31024",
+        "n_a635366829c33e5a3b5c0f256a6a7d733038c391be2a59831742ebae9110a46e",
         "n_b409c8edf7b5665bcc69132978d386e21259a4694d04a88b69b2bec5b6352323",
         "n_4dd4b2c302ea6e122456398bd2cf016ebec7ae33553471756f6a80ce6b39e6ef",
         "n_4bdf1b3752c86631d5cda92d200b24e8e47696ad9fb188edb8aed6215ef9d8eb"
@@ -81,7 +82,7 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T18:00:00.000Z",
+  "generated_at": "2026-07-26T19:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1663,6 +1664,44 @@
         "topic_models"
       ],
       "url": "https://x.com/gdb/status/2081285058485534856"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/aigclink/status/2081402138232828029",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_a635366829c33e5a3b5c0f256a6a7d733038c391be2a59831742ebae9110a46e",
+      "featured": false,
+      "id": "n_a635366829c33e5a3b5c0f256a6a7d733038c391be2a59831742ebae9110a46e",
+      "identity_claims": [
+        "c_a635366829c33e5a3b5c0f256a6a7d733038c391be2a59831742ebae9110a46e",
+        "c_b53f87f7cb72af7ac6eadd8b51f25228dc47e5e7eb8ba325cce065ccf6c241fe"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T19:00:00.000Z",
+      "published_at": "2026-07-26T15:31:54.542Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217065184258998272",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1217065184258998272",
+      "source_type": "twitter_extra",
+      "summary": "传闻该漏洞可免费获取Claude max 20倍资源，下午社区中大量用户参与消耗，最终导致服务器宕机。",
+      "time_precision": "exact",
+      "title": "免费Claude max 20x漏洞遭大规模利用，服务器因此崩溃",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/aigclink/status/2081402138232828029"
     },
     {
       "batch": "lateNight",
