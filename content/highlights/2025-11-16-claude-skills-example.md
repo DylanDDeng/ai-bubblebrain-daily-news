@@ -1,9 +1,15 @@
 ---
-title: "Claude官方示例使用前端Skills提升网页审美"
-date: 2025-11-16T10:00:00+08:00
-description: "如何使用Claude Skills"
-tags: ["Agent"]
----  
+externalId: "highlight-02"
+kind: "article"
+title: "使用Skills提升前端设计"
+description: "通过Claude的Skills功能，可以提升AI设计的页面质量。"
+date: 2025-11-16
+sourceUrl: "https://www.claude.com/blog/improving-frontend-design-through-skills"
+cover: "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251123163140267.png"
+tags: ["Agent","Skills"]
+featured: false
+draft: false
+---
 
 [原文：Improving frontend design through Skills](https://www.claude.com/blog/improving-frontend-design-through-skills)
 

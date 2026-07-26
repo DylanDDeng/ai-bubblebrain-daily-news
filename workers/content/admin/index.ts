@@ -257,44 +257,7 @@ async function mutation(
   const key = idempotencyKey(request);
   let match: RegExpExecArray | null;
   if (url.pathname === "/v1/highlights") {
-    if (
-      !["zh-CN", "en"].includes(String(body.locale)) ||
-      typeof body.title !== "string" ||
-      body.title.trim().length < 1 ||
-      body.title.trim().length > 300 ||
-      (body.description !== undefined &&
-        typeof body.description !== "string") ||
-      !validHttpsUrl(body.source_url) ||
-      !validHttpsUrl(body.cover_url, true) ||
-      !Array.isArray(body.tags) ||
-      body.tags.length > 20 ||
-      body.tags.some(
-        (tag) => typeof tag !== "string" || !tag.trim() || tag.length > 64,
-      ) ||
-      !["draft", "published"].includes(String(body.status)) ||
-      typeof body.reason !== "string" ||
-      body.reason.trim().length < 4
-    ) {
-      throw new Error("invalid_request");
-    }
-    const proof = await attest(
-      request,
-      env,
-      "content-routine",
-      "highlight.create",
-      body,
-    );
-    return json(
-      await result(sql<JsonRecord[]>`
-      select private.create_highlight_v1(
-        ${String(body.locale)}, ${body.title.trim()}, ${String(body.description || "")},
-        ${String(body.source_url)}, ${body.cover_url ? String(body.cover_url) : null},
-        ${body.tags as string[]}, ${String(body.status)}, ${body.reason.trim()},
-        ${key}::uuid, ${sql.json(proof.assertion)}, ${proof.bodySha256}
-      ) as result
-    `),
-      201,
-    );
+    return json({ error: "highlights_are_git_managed" }, 410);
   }
   if (url.pathname === "/v1/prompts") {
     if (

@@ -289,6 +289,10 @@ const RETIRED_HUGO_PATHS = new Set([
 ]);
 
 const RETIRED_HUGO_PREFIXES = ["i18n/", "layouts/", "themes/"];
+const RETIRED_HIGHLIGHT_INDEXES = new Set([
+  "static/highlights.json",
+  "static/en/highlights.json",
+]);
 
 function assertGitHubComparePath(path: string): void {
   if (
@@ -328,6 +332,13 @@ function classifyCodeReleasePath(
   ) {
     if (status === "removed") return "inert";
     throw new Error(`Code release may only remove retired Hugo path: ${path}`);
+  }
+
+  if (RETIRED_HIGHLIGHT_INDEXES.has(path)) {
+    if (status === "removed") return "publishable";
+    throw new Error(
+      `Code release may only remove retired highlight index: ${path}`,
+    );
   }
 
   if (
@@ -373,6 +384,7 @@ function classifyCodeReleasePath(
       "astro/src/styles/",
       "astro/src/scripts/",
       "astro/src/lib/",
+      "content/highlights/",
     ].some((prefix) => path.startsWith(prefix)) ||
     [
       "astro/src/content.config.ts",

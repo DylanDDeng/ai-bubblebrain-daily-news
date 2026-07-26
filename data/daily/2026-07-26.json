@@ -20,9 +20,10 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-26T08:00:00.000Z",
+      "generated_at": "2026-07-26T10:00:00.000Z",
       "id": "afternoon",
       "item_ids": [
+        "n_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f",
         "n_e7a40f835e58cbc5751bffd60272ecf75c895e5d1baabeda4868b247ce1636d7",
         "n_69ad509cee17670939b8443c25a56bb11335766dfe4c2fb751d427f00eef4d47",
         "n_17493dc593f19de7b0af9a6cafae435fd72792e799ecfceb3ce4cb7b631f8120",
@@ -61,7 +62,7 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T08:00:00.000Z",
+  "generated_at": "2026-07-26T10:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -470,6 +471,43 @@
         "topic_other"
       ],
       "url": "https://x.com/huangyun_122/status/2081214246051004820"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2081082152939114566",
+      "category": "business",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f",
+      "featured": false,
+      "id": "n_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f",
+      "identity_claims": [
+        "c_24c2292ab2f997c259273a2ca39703c8d6d809f603f4c05b7323c1175e293843",
+        "c_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T10:00:00.000Z",
+      "published_at": "2026-07-24T18:03:01.646Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216407794853384201",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1216407794853384201",
+      "source_type": "twitter_extra",
+      "summary": "米拉·穆拉蒂认为使AI有用的知识分散在科学家、工程师和公司等群体中，AI自身也需要分布化才能受益。英伟达CEO黄仁勋发文强调开放模型能加强安全、加速创新并赋予各国主权，与这一方向形成呼应。",
+      "time_precision": "exact",
+      "title": "米拉·穆拉蒂主张分布式AI利用分散知识，黄仁勋发文支持开放模型",
+      "topic_ids": [
+        "topic_business",
+        "topic_policy"
+      ],
+      "url": "https://x.com/omarsar0/status/2081082152939114566"
     },
     {
       "batch": "afternoon",

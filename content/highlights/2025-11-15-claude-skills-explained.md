@@ -1,9 +1,15 @@
 ---
-title: "Skills, Projects, Prompt, MCP的区别"
-date: 2025-11-15T10:00:00+08:00
-description: "Anthropic 官方解释如何理解Skills, Projects, Prompt, MCP的区别"
-tags: ["Agent"]
---- 
+externalId: "highlight-03"
+kind: "article"
+title: "Skills, MCP, Projects, Prompt的区别"
+description: "Anthropic 官方介绍Skills, MCP, Projects, Prompt的区别"
+date: 2025-11-15
+sourceUrl: "https://claude.com/blog/skills-explained"
+cover: "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251123165227931.png"
+tags: ["Agent","Skills"]
+featured: false
+draft: false
+---
 
 [原文：Skills explained: How Skills compares to prompts, Projects, MCP, and subagents](https://claude.com/blog/skills-explained)
 

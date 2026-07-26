@@ -33,6 +33,10 @@ export interface LegacyContentEntry {
 	frontmatter: Record<string, unknown>;
 }
 
+export function legacyEntryIsRoutable(entry: LegacyContentEntry): boolean {
+	return entry.isIndex || entry.section !== 'highlights' || entry.frontmatter.kind !== 'bookmark';
+}
+
 const repoRoot = resolve(process.cwd(), '..');
 const contentRoot = resolve(repoRoot, 'content');
 
@@ -167,5 +171,9 @@ export function legacyAlternate(
 ): LegacyContentEntry | null {
 	const counterpart =
 		entry.locale === 'en' ? entry.route.replace(/^\/en/, '') : `/en${entry.route}`;
-	return entries.find((candidate) => candidate.route === counterpart) ?? null;
+	return (
+		entries.find(
+			(candidate) => candidate.route === counterpart && legacyEntryIsRoutable(candidate),
+		) ?? null
+	);
 }

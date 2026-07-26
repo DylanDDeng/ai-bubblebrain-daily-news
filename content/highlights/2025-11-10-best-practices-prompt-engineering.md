@@ -1,9 +1,15 @@
 ---
-title: "Claude 提示词最佳实践"
-date: 2025-11-10T10:00:00+08:00
-description: "如何做好Prompt Engineering"
+externalId: "highlight-06"
+kind: "article"
+title: "提示词工程最佳实践"
+description: "Claude官方出品提示词工程最佳实践"
+date: 2025-11-10
+sourceUrl: "https://claude.com/blog/best-practices-for-prompt-engineering"
+cover: "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251123171521611.png"
 tags: ["Prompt"]
---- 
+featured: false
+draft: false
+---
 
 [原文：Best Practices for Prompt Engineering](https://claude.com/blog/best-practices-for-prompt-engineering)  
 

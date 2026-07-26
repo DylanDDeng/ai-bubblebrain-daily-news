@@ -1,9 +1,16 @@
 ---
-title: "在企业中如何使用Claude Code"
-date: 2025-11-16T10:00:00+08:00
-description: "企业里是如何使用Claude Code的"
+externalId: "highlight-01"
+kind: "article"
+title: "在企业中如何使用 Claude Code"
+description: "企业里是如何使用 Claude Code 的实践案例总结。"
+date: 2025-11-18
+sourceUrl: "https://claude.com/blog/building-companies-with-claude-code"
+cover: "https://image-1325800846.cos.ap-nanjing.myqcloud.com/20251123153854715.png"
 tags: ["Agent"]
----   
+featured: false
+draft: false
+---
+
 [原文:How three YC startups built their companies with Claude Code](https://claude.com/blog/building-companies-with-claude-code)
 
 ## 📖 博文主题
