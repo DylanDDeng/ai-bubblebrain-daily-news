@@ -1,0 +1,97 @@
+{
+  "batches": [
+    {
+      "generated_at": null,
+      "id": "morning",
+      "item_ids": [],
+      "label": "08:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "afternoon",
+      "item_ids": [],
+      "label": "14:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": "2026-07-26T16:00:00.000Z",
+      "id": "night",
+      "item_ids": [
+        "n_b000f798b6da1a2e1b3dfe1974b4809ce036e5f3771a51f5cd4ded0d9eccbc18"
+      ],
+      "label": "22:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "lateNight",
+      "item_ids": [],
+      "label": "次日 02:00 补充更新",
+      "status": "pending"
+    }
+  ],
+  "classifier_version": 1,
+  "date": "2026-07-27",
+  "dedupe_version": 1,
+  "generated_at": "2026-07-26T16:00:00.000Z",
+  "identity_version": 1,
+  "items": [
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/aigclink/status/2080826399536165297",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_b000f798b6da1a2e1b3dfe1974b4809ce036e5f3771a51f5cd4ded0d9eccbc18",
+      "featured": false,
+      "id": "n_b000f798b6da1a2e1b3dfe1974b4809ce036e5f3771a51f5cd4ded0d9eccbc18",
+      "identity_claims": [
+        "c_7724250e03dce0342123d691d4c5293c327e54d24f88779cf0a1ed40a140f8c7",
+        "c_b000f798b6da1a2e1b3dfe1974b4809ce036e5f3771a51f5cd4ded0d9eccbc18"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T16:00:00.000Z",
+      "published_at": "2026-07-25T01:24:08.983Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216742025248948224",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1216742025248948224",
+      "source_type": "twitter_extra",
+      "summary": "该工具支持改稿和AI味检测：改稿时保留作者观点，仅删除术语、长句等使文字难读的元素；检测时逐条列出命中的20余种套路并引用原句，不猜测、不评分，让用户自行核对。还配套自检表实现自我验收，适合中文写作定制化使用。",
+      "time_precision": "exact",
+      "title": "名为no-ai-slop的写作技能通过最小编辑和具体套路检测帮助去除AI味，检测方法比市面AI检测器更可靠。",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/aigclink/status/2080826399536165297"
+    }
+  ],
+  "overview": {
+    "kind": "pending",
+    "provenance": {
+      "method": "template",
+      "model": null,
+      "prompt_version": null
+    },
+    "text": "今日 AI 增量日报正在更新中。"
+  },
+  "producer": {
+    "commit_sha": null,
+    "dedupe_lookback_days": 7,
+    "name": "bubble-brain-worker",
+    "version": "phase1d-production"
+  },
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "timezone": "Asia/Shanghai"
+}
