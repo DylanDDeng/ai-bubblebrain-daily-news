@@ -20,9 +20,17 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-26T06:00:00.000Z",
+      "generated_at": "2026-07-26T10:00:00.000Z",
       "id": "afternoon",
-      "item_ids": [],
+      "item_ids": [
+        "n_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f",
+        "n_e7a40f835e58cbc5751bffd60272ecf75c895e5d1baabeda4868b247ce1636d7",
+        "n_69ad509cee17670939b8443c25a56bb11335766dfe4c2fb751d427f00eef4d47",
+        "n_17493dc593f19de7b0af9a6cafae435fd72792e799ecfceb3ce4cb7b631f8120",
+        "n_392d105bc75b5a7743fa6bb3c6c711a2e37d57c7fc030f07e6e07e0fa4bcf43e",
+        "n_04bae014a2f669e4cdb7d6f725d3ca00194e85ad21f0c61f3fb610988cb8626d",
+        "n_0dec2c410d9cb2ad2cd2eff3887aaa6905f765d73f214373af6b4105f7e4c4fd"
+      ],
       "label": "14:00 更新",
       "status": "completed"
     },
@@ -54,7 +62,7 @@
   "classifier_version": 1,
   "date": "2026-07-26",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T06:00:00.000Z",
+  "generated_at": "2026-07-26T10:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -463,6 +471,262 @@
         "topic_other"
       ],
       "url": "https://x.com/huangyun_122/status/2081214246051004820"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2081082152939114566",
+      "category": "business",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f",
+      "featured": false,
+      "id": "n_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f",
+      "identity_claims": [
+        "c_24c2292ab2f997c259273a2ca39703c8d6d809f603f4c05b7323c1175e293843",
+        "c_896556c1cecf0a0b3206e0092fed3f482689c5a5d98bdd3972d8057b9a50920f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T10:00:00.000Z",
+      "published_at": "2026-07-24T18:03:01.646Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216407794853384201",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1216407794853384201",
+      "source_type": "twitter_extra",
+      "summary": "米拉·穆拉蒂认为使AI有用的知识分散在科学家、工程师和公司等群体中，AI自身也需要分布化才能受益。英伟达CEO黄仁勋发文强调开放模型能加强安全、加速创新并赋予各国主权，与这一方向形成呼应。",
+      "time_precision": "exact",
+      "title": "米拉·穆拉蒂主张分布式AI利用分散知识，黄仁勋发文支持开放模型",
+      "topic_ids": [
+        "topic_business",
+        "topic_policy"
+      ],
+      "url": "https://x.com/omarsar0/status/2081082152939114566"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2081075060270363136",
+      "category": "open_source",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e7a40f835e58cbc5751bffd60272ecf75c895e5d1baabeda4868b247ce1636d7",
+      "featured": false,
+      "id": "n_e7a40f835e58cbc5751bffd60272ecf75c895e5d1baabeda4868b247ce1636d7",
+      "identity_claims": [
+        "c_df0eb58b133a31b1de2d47f3e935e414cea48cb5b11efb846fd5cbedb68980b0",
+        "c_e7a40f835e58cbc5751bffd60272ecf75c895e5d1baabeda4868b247ce1636d7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T08:00:00.000Z",
+      "published_at": "2026-07-25T17:52:13.997Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216407794853384195",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1216407794853384195",
+      "source_type": "twitter_extra",
+      "summary": "该回应针对Julian称黄仁勋相信开源后应该期待CUDA和GPU驱动开源。发文者指出开放权重模型遭到不当攻击，但很多公司都从中受益，当前争论触发点令人担忧。",
+      "time_precision": "exact",
+      "title": "批评者认为Julian Schrittwieser对黄仁勋开源态度的回应偏离重点，开放权重模型话题已变得不必要地有毒。",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://x.com/omarsar0/status/2081075060270363136"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2081182877329363314",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_69ad509cee17670939b8443c25a56bb11335766dfe4c2fb751d427f00eef4d47",
+      "featured": false,
+      "id": "n_69ad509cee17670939b8443c25a56bb11335766dfe4c2fb751d427f00eef4d47",
+      "identity_claims": [
+        "c_69ad509cee17670939b8443c25a56bb11335766dfe4c2fb751d427f00eef4d47",
+        "c_f66c0d14c71d73ec98be05dc97c651b6ff233c082578066e5f2a0dbe0f22c4ee"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T08:00:00.000Z",
+      "published_at": "2026-07-25T18:07:07.139Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216407794853384194",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1216407794853384194",
+      "source_type": "twitter_extra",
+      "summary": "这是首个大规模扩散语言模型被用于完整智能体任务，标志着扩散模型从生成扩展到多步决策链路。",
+      "time_precision": "exact",
+      "title": "扩散大语言模型LLaDA 2.2首次作为真正智能体运行，能够跨多轮对话进行规划、工具调用和自我纠正，并保持块并行解码的速度优势。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2081182877329363314"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2081085236641747104",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_17493dc593f19de7b0af9a6cafae435fd72792e799ecfceb3ce4cb7b631f8120",
+      "featured": false,
+      "id": "n_17493dc593f19de7b0af9a6cafae435fd72792e799ecfceb3ce4cb7b631f8120",
+      "identity_claims": [
+        "c_17493dc593f19de7b0af9a6cafae435fd72792e799ecfceb3ce4cb7b631f8120",
+        "c_fbe268ae6f35448c234520f32ff2dfbb3f80bff30dede5c2ac04e0dd47d8d4c2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T08:00:00.000Z",
+      "published_at": "2026-07-25T18:32:39.806Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216407794853384193",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1216407794853384193",
+      "source_type": "twitter_extra",
+      "summary": "发言强调开放权重模型的历史地位和持续影响力，驳斥质疑声音。",
+      "time_precision": "exact",
+      "title": "支持者坚称开放权重模型贯穿过去、现在，并将继续主导未来，集体判断不可能都出错。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/omarsar0/status/2081085236641747104"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2081086786084770119",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_392d105bc75b5a7743fa6bb3c6c711a2e37d57c7fc030f07e6e07e0fa4bcf43e",
+      "featured": false,
+      "id": "n_392d105bc75b5a7743fa6bb3c6c711a2e37d57c7fc030f07e6e07e0fa4bcf43e",
+      "identity_claims": [
+        "c_392d105bc75b5a7743fa6bb3c6c711a2e37d57c7fc030f07e6e07e0fa4bcf43e",
+        "c_81f574eca82a91fe77e7e0d3504842735df970f808e85ce9d3feacb5713c9146"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T08:00:00.000Z",
+      "published_at": "2026-07-25T18:38:49.719Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216407794853384192",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1216407794853384192",
+      "source_type": "twitter_extra",
+      "summary": "她用科学家、工程师和企业的分散知识为例，强调分布式AI是值得建设的方向。",
+      "time_precision": "exact",
+      "title": "Mira Murati主张AI自身必须分布式才能利用分散的知识，这与黄仁勋构建分布式未来的观点一致。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/omarsar0/status/2081086786084770119"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/dotey/status/2081225771473879226",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_04bae014a2f669e4cdb7d6f725d3ca00194e85ad21f0c61f3fb610988cb8626d",
+      "featured": false,
+      "id": "n_04bae014a2f669e4cdb7d6f725d3ca00194e85ad21f0c61f3fb610988cb8626d",
+      "identity_claims": [
+        "c_04bae014a2f669e4cdb7d6f725d3ca00194e85ad21f0c61f3fb610988cb8626d",
+        "c_c129dddbd629d3c9f6b23e6892c3ae868350109e575a9404cc8a1a4a79b307a2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T08:00:00.000Z",
+      "published_at": "2026-07-26T03:51:05.675Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216364167917719552",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1216364167917719552",
+      "source_type": "twitter_extra",
+      "summary": "Prompt Caching使多轮对话中的系统提示词被缓存，后续轮次不再重复处理，节省时间和成本。",
+      "time_precision": "exact",
+      "title": "Agent使用Skills时无需分两次调用大模型，所有Skill描述在对话开始时作为系统提示词统一加载，一次调用即可完成选择与工具执行。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2081225771473879226"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/huangyun_122/status/2081254379617915372",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_0dec2c410d9cb2ad2cd2eff3887aaa6905f765d73f214373af6b4105f7e4c4fd",
+      "featured": false,
+      "id": "n_0dec2c410d9cb2ad2cd2eff3887aaa6905f765d73f214373af6b4105f7e4c4fd",
+      "identity_claims": [
+        "c_0dec2c410d9cb2ad2cd2eff3887aaa6905f765d73f214373af6b4105f7e4c4fd",
+        "c_6a96054ff3fdfc233efaa727254ebaf86bd8a90aa95db271b708b6737ffc227b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-26T08:00:00.000Z",
+      "published_at": "2026-07-26T05:44:46.997Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1216422832339058688",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1216422832339058688",
+      "source_type": "twitter_extra",
+      "summary": "批评者认为泄密内容仅涉及买卡和存款利率，缺乏实质判断，呼吁社交平台加强事实核查。",
+      "time_precision": "exact",
+      "title": "网上泄露的梁文峰投资者会议发言被指信息密度极低，远不如《大空头》角色用几句话完成实地调查与推演的密度。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2081254379617915372"
     },
     {
       "batch": "night",
