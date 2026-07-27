@@ -38,9 +38,11 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-27T10:00:00.000Z",
+      "generated_at": "2026-07-27T12:00:00.000Z",
       "id": "afternoon",
       "item_ids": [
+        "n_b0e3c5f16d55c5fa11b830a36d3317c7f09082011d25fda12f2304e9c3d722c2",
+        "n_18645e65a161859df5b1a2cbe39768324d3cc1998871be83229e4215cffde0f5",
         "n_877de07878548ae216188361b894558c1931c9959f8180217ea1322a2bfc5714",
         "n_c02d20cd0e25d23ada98395749b4e9fdd64717508fa442fae772c688d45ea086",
         "n_b2f58eb35cfd02c9e64d4602910b89d918260187c4c49ee7a2eb239749ad4813",
@@ -53,17 +55,22 @@
         "n_a429970ee93321e8a56af688dc1083619378d55c1d174260a5f5f19f7277f001",
         "n_b37d11fb94f94cb37e228b129041713f074751e3bd17aa3dc297edc02df61c8f",
         "n_63f3bdb871bf4f3c06e733ed001abd028038cc70b0a4eb72f4e34d9c49c8a29a",
+        "n_07fc3007d8bec5ba8aa4d5d593ac06b862f3fb673a42995b5941d48e3c95ddaf",
         "n_0b0ff470997988997a07f4857a13a6b63447d49d3fcaf0e23815e6d3269b3046",
         "n_117338836af8337fc9908931e6850c1ed19460c55f63a5886bf2673b6b08f63f",
         "n_75658ad81f3c30a0b52411a42a8c7dd3a68f719c99e0606cf089ebe34834fb38",
         "n_bd26fc04a94d3441bf5e9b79cc838aed665e0306a4f81a922899b5bcd3e55bfd",
         "n_01d997dcd6aa2110f3bab2b8f7de5cb5ff6fda9936ee1d78fc9a490937aa1bfc",
         "n_54c8c1cd27f8a3a71e353f70f743c05d7048191fd07c5f97b3fb3b1ca3ebbe3f",
+        "n_85df2fb484fc6812eaaae2ea6538b2863e36cfc22326a21b2d6ee4ada9c5ac25",
+        "n_d42e68d2978438f0cc65a0a6721539052482c420606d4d35de69001fe86df4ad",
+        "n_fa53e65bc98bc71bb4becd9865b7242b12f7b4056f8969c936103993c30867dd",
         "n_ddb3cea43d1cb28172bea76e7c46492e8f9abf0c51ac096a7fe5bca42f5a8066",
         "n_47bb0bae284ca0765ce32a4549399402c8224d291044570a602dbb9638ac5e50",
         "n_82bcc5c84c8247face6c03e7113d236838bc2b412ce5b084565fc5e674924d57",
         "n_f6e041cd1da011f63102fe61e9df02886eaee9791e2ea2bc1927ff90a3c4ea44",
         "n_18c7110c8b717c32852738e1ca927ca62edbc18d7ae03998a526a913c2f33cad",
+        "n_306263f1fa077ffbe20bbb28b45f30b81fd6bcf2fb6ab03b58e44118e6f0b66f",
         "n_8165cdf4a0830427a1d966188654380e6ae6fa3d35c17fd4ab4a3004d09ae551",
         "n_8183a5c6da5a4427e6bd38354074a07c2769ecd6792e763649a5de76037e7333",
         "n_6e8c3bcb9dc3331f18af171a2d72d44ac5ce186ac7d78864c2104ae4a33d616b",
@@ -78,7 +85,15 @@
         "n_14f2f86f9ead0df587a87a14a1e751e432b1681c5424b48a50b7b27d98ad2b78",
         "n_db711ae80da78d029386be2719cd8644e28c6e94aeb336138c2b051633efb1ed",
         "n_e0c7cc95314bb1f26d72b27fa17106b3523cf11320a8520beabf660dbe8f555d",
-        "n_2f9213697710fd4a63351ba929efc3e95299a522b0fd5a1466c7afd590fc0a53"
+        "n_179b31ed35b1be04aae4a73e1bbb708102f139423f04509eddc59f49a12a9a9a",
+        "n_2f9213697710fd4a63351ba929efc3e95299a522b0fd5a1466c7afd590fc0a53",
+        "n_243207511edf5547973d73b21597a855787e57317f242fb59e8437c245fa2781",
+        "n_3ec531ba2933b2c51e8499f8602b0b7fae865f24971e46395a88e4a641d6ae57",
+        "n_95ebc175a0b10226d8ae93ea977405f3aa4b06e0edc1fe710dcc6b5625126ebf",
+        "n_b6523311fb814a59f1b307d7a609126a646b5fcea259fdc0a8c894a65e5bef52",
+        "n_cd6a6013c1d235245a8608de8f2ecbc5219a26f9fab6b288ae53376cea77e644",
+        "n_e3a1291e7d5fcbf75d9a164e823bab0a9d49426c1a68a68802bf32b60924a133",
+        "n_e5a337dd2000ef61026c3531c4f3f0ab5c1b95eeb66f8273fd35cf9bc9d733bf"
       ],
       "label": "14:00 更新",
       "status": "completed"
@@ -108,7 +123,7 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T10:00:00.000Z",
+  "generated_at": "2026-07-27T12:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1203,6 +1218,78 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.18198",
+      "category": "other",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_b0e3c5f16d55c5fa11b830a36d3317c7f09082011d25fda12f2304e9c3d722c2",
+      "featured": false,
+      "id": "n_b0e3c5f16d55c5fa11b830a36d3317c7f09082011d25fda12f2304e9c3d722c2",
+      "identity_claims": [
+        "c_0a6bbb08a6d289f37ea88314fbc0f67dffda06764eae058b94758ae100227bea",
+        "c_b0e3c5f16d55c5fa11b830a36d3317c7f09082011d25fda12f2304e9c3d722c2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-19T20:00:00.117Z",
+      "published_date": "2026-07-20",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218023689946120202",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1218023689946120202",
+      "source_type": "huggingface_papers",
+      "summary": "Modern generative models typically rely on an adversarial critic, a prescribed noise-to-data path, or an autoregressive factorization. Instead, we show that a proper distributional energy can induce sample-level motion and provide direct regression supervision for a one-step generator. Three-Body Scattering Modeling (TBSM) for generation turns the energy distance into a constant-size per-projectile interaction: each projectile is attracted toward one real source and repelled from one independently generated source. Conditioned on the projectile and its condition, its expectation equals the 2-Wasserstein gradient-flow velocity of frac12D_E^2(P_θ,Q). A batch of B frozen-target events yields O(B) sample-level losses, each using one reference for its condition instead of the minibatch-wide all-pairs field used by methods such as Drifting Models. Tracking this conditional expectation online can reduce field noise. Using scattering in frozen image features, TBSM trains one-step generators on ImageNet-256, achieving FID{}=2.23 with pixel-space PixelDiT-XL and FID{}=1.63 with latent-space DiT-XL at NFE{}=1. We provide a design map relating diffusion-related supervision, Drift-like dynamics, and GAN-like objectives. These results establish tracked scattering as a route to high-dimensional one-step generation. Code:",
+      "time_precision": "exact",
+      "title": "Three-Body Scattering for Generative Modeling",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://arxiv.org/abs/2607.18198"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.19636",
+      "category": "other",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_18645e65a161859df5b1a2cbe39768324d3cc1998871be83229e4215cffde0f5",
+      "featured": false,
+      "id": "n_18645e65a161859df5b1a2cbe39768324d3cc1998871be83229e4215cffde0f5",
+      "identity_claims": [
+        "c_18645e65a161859df5b1a2cbe39768324d3cc1998871be83229e4215cffde0f5",
+        "c_b0dda2a6e8a9836bf888b2c0a92c1d4479426591988426573b69c390bd58427d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-21T20:00:00.677Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218023689946120201",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1218023689946120201",
+      "source_type": "huggingface_papers",
+      "summary": "Most automatic speaker verification (ASV) systems operate on individual utterances, despite real-world interactions typically consisting of multiple utterances. As speech accumulates, increasingly rich speaker information becomes available through acoustic, prosodic, and linguistic cues, potentially challenging speaker anonymization methods that primarily target vocal characteristics. We investigate ASV in a multi-utterance, multimodal setting and examine whether aggregating information across anonymized speech impacts privacy. We first study audio-only aggregation across multiple anonymized utterances and observe consistent performance improvements as more speech becomes available. We then incorporate prosodic and linguistic information, showing that multimodal systems outperform unimodal approaches. Finally, we compare aggregation strategies and find that frame-level aggregation yields the lowest EERs. Even with only five anonymized utterances, combining audio and text reduces EER by over 15% relative to audio-only aggregation, demonstrating that substantial speaker-discriminative information remains accessible despite anonymization.",
+      "time_precision": "exact",
+      "title": "Multimodal Speaker Verification as a Threat to Speaker Anonymization",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://arxiv.org/abs/2607.19636"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://arxiv.org/abs/2607.21503",
       "category": "agents",
       "content_type": "paper",
@@ -1663,6 +1750,47 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://x.com/shao__meng/status/2081562462537777457",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_07fc3007d8bec5ba8aa4d5d593ac06b862f3fb673a42995b5941d48e3c95ddaf",
+      "featured": false,
+      "id": "n_07fc3007d8bec5ba8aa4d5d593ac06b862f3fb673a42995b5941d48e3c95ddaf",
+      "identity_claims": [
+        "c_07fc3007d8bec5ba8aa4d5d593ac06b862f3fb673a42995b5941d48e3c95ddaf",
+        "c_9e0e48e7dfeef871e517b484c95fd595376d265cb9c5cc40c434559ccc23783a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-27T02:08:59.684Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218105655051710466",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218105655051710466",
+      "source_type": "twitter_extra",
+      "summary": "OpenMinis 在 iOS 上通过 iSH 的 ARM64 移植运行 Alpine Linux，Android 端使用 PRoot 实现，Agent 可获得日历、健康、蓝牙等系统级集成，所有设备功能以命令行工具暴露，保持工具精简。",
+      "time_precision": "exact",
+      "title": "开源AI Agent OpenMinis 在移动端提供完整Linux沙箱，支持接入任意模型并获取系统权限",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081562462537777457"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://www.aibase.com/zh/news/29893",
       "category": "other",
       "content_type": "news",
@@ -1895,6 +2023,120 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work",
+      "category": "research",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_85df2fb484fc6812eaaae2ea6538b2863e36cfc22326a21b2d6ee4ada9c5ac25",
+      "featured": false,
+      "id": "n_85df2fb484fc6812eaaae2ea6538b2863e36cfc22326a21b2d6ee4ada9c5ac25",
+      "identity_claims": [
+        "c_72ec3ab414530fb67e3064e20e554cde77005955fba2a78dc301ce10137909e6",
+        "c_85df2fb484fc6812eaaae2ea6538b2863e36cfc22326a21b2d6ee4ada9c5ac25"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-27T03:30:00.751Z",
+      "published_date": "2026-07-27",
+      "reason": "OpenAI发布的研究揭示AI正在扩展工作角色，对劳动力市场有启示，但缺乏具体量化数据，影响面广但信息深度一般。",
+      "related_source_ids": [],
+      "score": 7.2,
+      "source": {
+        "homepage": null,
+        "id": "1218103993083867136",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1218103993083867136",
+      "source_type": "openai_newsroom",
+      "summary": "New OpenAI research shows how AI is expanding what workers do, with ChatGPT users taking on tasks across roles and reshaping job boundaries.",
+      "time_precision": "exact",
+      "title": "How AI is expanding what people do at work",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/blankwebdev/status/2081607553742721431",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d42e68d2978438f0cc65a0a6721539052482c420606d4d35de69001fe86df4ad",
+      "featured": false,
+      "id": "n_d42e68d2978438f0cc65a0a6721539052482c420606d4d35de69001fe86df4ad",
+      "identity_claims": [
+        "c_c9209b657b72719d3ad7ee7d7baeaa64186daa34377237dad2e82bd15a101b89",
+        "c_d42e68d2978438f0cc65a0a6721539052482c420606d4d35de69001fe86df4ad"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-27T05:08:09.961Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218103981390213121",
+        "name": "twitter-blank"
+      },
+      "source_id": "1218103981390213121",
+      "source_type": "twitter_extra",
+      "summary": "该模板实现 Agent 标准交互流程，可进行多次作图与改图，开箱即用、可视化配置，限时会员半价。",
+      "time_precision": "exact",
+      "title": "idoubi 上线 ShipAny Image Agent 模板，支持多步骤图像生成与编辑，会员享半价",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/blankwebdev/status/2081607553742721431"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/shao__meng/status/2081609024911581558",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_fa53e65bc98bc71bb4becd9865b7242b12f7b4056f8969c936103993c30867dd",
+      "featured": false,
+      "id": "n_fa53e65bc98bc71bb4becd9865b7242b12f7b4056f8969c936103993c30867dd",
+      "identity_claims": [
+        "c_30726ef4f7e03334169add01322cd930c339990619cc2fa7f16a578d8bb7e773",
+        "c_fa53e65bc98bc71bb4becd9865b7242b12f7b4056f8969c936103993c30867dd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-27T05:14:00.685Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218105655051710465",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218105655051710465",
+      "source_type": "twitter_extra",
+      "summary": "实践包括用语音或备忘录先构思 prompt、明确字体配色或 moodboard、建立 design system、批量生成方案后混合筛选、手绘草图上传、线框图先保结构、最后一公里人工精调等，以提升设计效率。",
+      "time_precision": "exact",
+      "title": "Claude Design 作者 Nate Parrott 分享十条 AI 设计实践经验，提出先明确意图再提示并指定风格",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081609024911581558"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://x.com/dotey/status/2081636299123892344",
       "category": "products",
       "content_type": "socialMedia",
@@ -2080,6 +2322,48 @@
         "topic_products"
       ],
       "url": "https://www.aibase.com/zh/news/29902"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/shao__meng/status/2081628436343480706",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_306263f1fa077ffbe20bbb28b45f30b81fd6bcf2fb6ab03b58e44118e6f0b66f",
+      "featured": false,
+      "id": "n_306263f1fa077ffbe20bbb28b45f30b81fd6bcf2fb6ab03b58e44118e6f0b66f",
+      "identity_claims": [
+        "c_306263f1fa077ffbe20bbb28b45f30b81fd6bcf2fb6ab03b58e44118e6f0b66f",
+        "c_f87f57f79086b246049d992d511f24ab2e10f1a85b633209c6d32b01e020c6b6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-27T06:31:08.890Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218105655051710464",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218105655051710464",
+      "source_type": "twitter_extra",
+      "summary": "Jason Liu 的实践显示，Work 是 Codex 的表皮，重要上下文写入文件、自动操作需逐步授权；每日 heartbeat 检查消息，输出直接打开购物标签页等，强调将 AI 产出落回决策界面。",
+      "time_precision": "exact",
+      "title": "开发者将 ChatGPT Work 与 Codex 组合成个人操作系统，实现邮件、日历、Slack 等事务代理",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081628436343480706"
     },
     {
       "batch": "afternoon",
@@ -2629,6 +2913,42 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://x.com/blankwebdev/status/2081670809396093234",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_179b31ed35b1be04aae4a73e1bbb708102f139423f04509eddc59f49a12a9a9a",
+      "featured": false,
+      "id": "n_179b31ed35b1be04aae4a73e1bbb708102f139423f04509eddc59f49a12a9a9a",
+      "identity_claims": [
+        "c_179b31ed35b1be04aae4a73e1bbb708102f139423f04509eddc59f49a12a9a9a",
+        "c_ec90e21b1059e1d0ab57bc1a2c439454dfee1c632960a9529feee98254016d02"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": "2026-07-27T09:19:31.838Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218103981390213120",
+        "name": "twitter-blank"
+      },
+      "source_id": "1218103981390213120",
+      "source_type": "twitter_extra",
+      "summary": "该产品去年 7 月上线，近期用 Fable 5 重构并升级 UI、优化工作流，本次周年限时促销结束后将调价，活动现延长至本周五。",
+      "time_precision": "exact",
+      "title": "blank 榜单产品上线一周年推出限时促销，年付价格达历史最低且活动延长至周五",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/blankwebdev/status/2081670809396093234"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://www.aibase.com/zh/news/29917",
       "category": "models",
       "content_type": "news",
@@ -2665,6 +2985,265 @@
         "topic_models"
       ],
       "url": "https://www.aibase.com/zh/news/29917"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/apache/cassandra",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_243207511edf5547973d73b21597a855787e57317f242fb59e8437c245fa2781",
+      "featured": false,
+      "id": "n_243207511edf5547973d73b21597a855787e57317f242fb59e8437c245fa2781",
+      "identity_claims": [
+        "c_243207511edf5547973d73b21597a855787e57317f242fb59e8437c245fa2781",
+        "c_87c204bd25bb2804e643b5a1b1964436fc5a98406e0e9289ffb9095ac63b6a27"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/apache/cassandra",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/apache/cassandra",
+      "source_type": "github_trending",
+      "summary": "开源事务型分布式数据库。在商用硬件或云基础设施上实现线性扩展和经过验证的容错能力，且不影响性能。",
+      "time_precision": "date_only",
+      "title": "cassandra",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/apache/cassandra"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/vudovn/ag-kit",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_3ec531ba2933b2c51e8499f8602b0b7fae865f24971e46395a88e4a641d6ae57",
+      "featured": false,
+      "id": "n_3ec531ba2933b2c51e8499f8602b0b7fae865f24971e46395a88e4a641d6ae57",
+      "identity_claims": [
+        "c_3ec531ba2933b2c51e8499f8602b0b7fae865f24971e46395a88e4a641d6ae57",
+        "c_8a8ccd591abdec26e6d6341b176ab6d27a2677d632a9d0d00ff6a202f581906a"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/vudovn/ag-kit",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/vudovn/ag-kit",
+      "source_type": "github_trending",
+      "summary": "",
+      "time_precision": "date_only",
+      "title": "ag-kit",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/vudovn/ag-kit"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/ocornut/imgui",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_95ebc175a0b10226d8ae93ea977405f3aa4b06e0edc1fe710dcc6b5625126ebf",
+      "featured": false,
+      "id": "n_95ebc175a0b10226d8ae93ea977405f3aa4b06e0edc1fe710dcc6b5625126ebf",
+      "identity_claims": [
+        "c_1d6d569dc6d0aee48096354ba4dcdca77e96328dd53652431fd6b9e629ac99a5",
+        "c_95ebc175a0b10226d8ae93ea977405f3aa4b06e0edc1fe710dcc6b5625126ebf"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/ocornut/imgui",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/ocornut/imgui",
+      "source_type": "github_trending",
+      "summary": "Dear ImGui：无臃肿、依赖极少的 C++ 图形用户界面",
+      "time_precision": "date_only",
+      "title": "imgui",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/ocornut/imgui"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/NanmiCoder/MediaCrawler",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_b6523311fb814a59f1b307d7a609126a646b5fcea259fdc0a8c894a65e5bef52",
+      "featured": false,
+      "id": "n_b6523311fb814a59f1b307d7a609126a646b5fcea259fdc0a8c894a65e5bef52",
+      "identity_claims": [
+        "c_884b01412304b7fd9704abb5ca366f2e904f9b8c4dd50f60862f8021fb865079",
+        "c_b6523311fb814a59f1b307d7a609126a646b5fcea259fdc0a8c894a65e5bef52"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/NanmiCoder/MediaCrawler",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/NanmiCoder/MediaCrawler",
+      "source_type": "github_trending",
+      "summary": "小红书笔记 | 评论爬虫、抖音视频 | 评论爬虫、快手视频 | 评论爬虫、B 站视频 ｜ 评论爬虫、微博帖子 ｜ 评论爬虫、百度贴吧帖子 ｜ 百度贴吧评论回复爬虫 | 知乎问答文章｜评论爬虫",
+      "time_precision": "date_only",
+      "title": "MediaCrawler",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/NanmiCoder/MediaCrawler"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/mvanhorn/last30days-skill",
+      "category": "agents",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_cd6a6013c1d235245a8608de8f2ecbc5219a26f9fab6b288ae53376cea77e644",
+      "featured": false,
+      "id": "n_cd6a6013c1d235245a8608de8f2ecbc5219a26f9fab6b288ae53376cea77e644",
+      "identity_claims": [
+        "c_cd6a6013c1d235245a8608de8f2ecbc5219a26f9fab6b288ae53376cea77e644",
+        "c_deadad27843eb238d28c82964f152b68e61ec67a9ce81a2dbc8a6861b3102150"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/mvanhorn/last30days-skill",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/mvanhorn/last30days-skill",
+      "source_type": "github_trending",
+      "summary": "AI 智能体技能，可在 Reddit、X、YouTube、HN、Polymarket 及整个网络上研究任意话题，然后综合生成有依据的摘要。",
+      "time_precision": "date_only",
+      "title": "last30days-skill",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/mvanhorn/last30days-skill"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/moeru-ai/airi",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_e3a1291e7d5fcbf75d9a164e823bab0a9d49426c1a68a68802bf32b60924a133",
+      "featured": false,
+      "id": "n_e3a1291e7d5fcbf75d9a164e823bab0a9d49426c1a68a68802bf32b60924a133",
+      "identity_claims": [
+        "c_0fe4a985a975a92a90070511e621f953bbecf4bb8261dee3bd9ffab6dc52ce80",
+        "c_e3a1291e7d5fcbf75d9a164e823bab0a9d49426c1a68a68802bf32b60924a133"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/moeru-ai/airi",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/moeru-ai/airi",
+      "source_type": "github_trending",
+      "summary": "💖🧸 自托管、归你所有的 Grok 伴侣，一个容纳“老婆”灵魂的容器，将赛博生命带入我们的世界，期冀达到 Neuro-sama 的高度。支持实时语音聊天、玩 Minecraft 和 Factorio。兼容 Web / macOS / Windows。",
+      "time_precision": "date_only",
+      "title": "airi",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/moeru-ai/airi"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://github.com/bradautomates/claude-video",
+      "category": "models",
+      "content_type": "project",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_e5a337dd2000ef61026c3531c4f3f0ab5c1b95eeb66f8273fd35cf9bc9d733bf",
+      "featured": false,
+      "id": "n_e5a337dd2000ef61026c3531c4f3f0ab5c1b95eeb66f8273fd35cf9bc9d733bf",
+      "identity_claims": [
+        "c_1e45399446930c0bd2d13d08f31c449cc036fd93cfde042a1694d9d8be313d29",
+        "c_e5a337dd2000ef61026c3531c4f3f0ab5c1b95eeb66f8273fd35cf9bc9d733bf"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T12:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/bradautomates/claude-video",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/bradautomates/claude-video",
+      "source_type": "github_trending",
+      "summary": "赋予 Claude 观看任何视频的能力。/watch 命令下载视频、提取帧、转写文本，全部交给 Claude。",
+      "time_precision": "date_only",
+      "title": "claude-video",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://github.com/bradautomates/claude-video"
     },
     {
       "batch": "night",
