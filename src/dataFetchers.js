@@ -12,7 +12,6 @@ import TwitterDataSource from './dataSources/twitter.js';
 import TwitterExtraDataSource from './dataSources/twitter-extra.js';
 import KazikeDataSource from './dataSources/kazike.js';
 import KazikeXDataSource from './dataSources/kazike-x.js';
-import AlexFinnXDataSource from './dataSources/alex-finn-x.js';
 import AnthropicResearchDataSource from './dataSources/anthropic-research.js';
 import TheDecoderDataSource from './dataSources/the-decoder.js';
 import { filterBlockedSourceItems } from './sourceFilters.js';
@@ -22,7 +21,7 @@ export const dataSources = {
     news: { name: '新闻', sources: [AibaseDataSource, XiaohuDataSource, QBitDataSource, KazikeDataSource, SimonWillisonDataSource, XinZhiYuanDataSource, OpenAInewsroomDataSource, AnthropicResearchDataSource, TheDecoderDataSource] },
     project: { name: '项目', sources: [GithubTrendingDataSource] },
     paper: { name: '论文', sources: [HuggingfacePapersDataSource, JiqizhixinDataSource] },
-    socialMedia: { name: '社交平台', sources: [TwitterDataSource, TwitterExtraDataSource, KazikeXDataSource, AlexFinnXDataSource] },
+    socialMedia: { name: '社交平台', sources: [TwitterDataSource, TwitterExtraDataSource, KazikeXDataSource] },
     // Add new data sources here as arrays, e.g.,
     // newType: { name: '新类型', sources: [NewTypeDataSource1, NewTypeDataSource2] },
 };
