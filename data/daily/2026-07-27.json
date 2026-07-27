@@ -121,7 +121,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-27T19:00:00.000Z",
+      "generated_at": "2026-07-27T20:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_011d03340e0d89c2b16a10314703b274e27785b65931d946d537728c3d6a9035",
@@ -144,7 +144,10 @@
         "n_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528",
         "n_be28e9f022e2a9411295f018f9c42ab9de29e0d00048deddc452689b722c5359",
         "n_fcf54d7e87cab5bcee0fcce5ca49def1eecffe2b3bb7743b5bb0aa85f1277b27",
-        "n_8c1ccf1af7c4870050f9da52cc7f9dbad1949e7446cd8c2e16b88dd43cae87ae"
+        "n_f4e5a2b04de008996ef5470a85fd9cbac355ac3fcb040172ed8de0bb16a350a6",
+        "n_358f42b01d5d05d33c9252869be98de57c1e70e21a7c68eac9177f01f9e65ae0",
+        "n_8c1ccf1af7c4870050f9da52cc7f9dbad1949e7446cd8c2e16b88dd43cae87ae",
+        "n_ea0047a4e5ff17f9819ebdcc05074372919a9277d0e87fe5cec1d879f16841c5"
       ],
       "label": "次日 02:00 补充更新",
       "status": "completed"
@@ -153,7 +156,7 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T19:00:00.000Z",
+  "generated_at": "2026-07-27T20:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4540,9 +4543,9 @@
       },
       "source_id": "1218529343710466050",
       "source_type": "twitter_extra",
-      "summary": "Are agent skills always worth using? The answer is no? This paper provides some important insights to understand this more. (bookmark it) Paper summary: Adding procedural skills to an agent is usually scored by average task success. That number nets gains against damage and hides half of what happened. Setup: nearly 6,000 paired runs across two office automation benchmarks and three model harness stacks, comparing the same agent with and without skills. A regression is a task the agent solved without skills and then failed once skills were added. Regressions are large enough that the best performing skills separate themselves mainly through fewer regressions. Larger gains contribute much less. Three mechanisms drive it. Skill description osmosis, where a skill changes agent behavior just by sitting in context even when it is never invoked. Grounding displacement, where a prescribed procedure overrides how the agent reads its inputs. Verification displacement, where the procedure suppresses checks the agent would otherwise run on its own output. Trace analysis surfaces that procedural guidance is the stage least often responsible for failure, while grounding and verification dominate the errors that remain. Existing skills are almost entirely procedure. Paper: Learn to build effective AI agents in our academy:",
+      "summary": "一项覆盖近六千次对比实验的研究发现，引入技能后智能体在原本能解决的任务上出现显著倒退，表现最好的技能主要通过减少这类倒退次数来区分，而非靠更大的增益。技能描述渗透、接地替换和验证替换三种机制是主因，其中接地与验证环节取代了智能体原有的自主检查，成为失败主导因素。",
       "time_precision": "exact",
-      "title": "Are agent skills always worth using? The answer is no? This paper",
+      "title": "给智能体添加程序性技能平均成功率的提升掩盖了近半任务倒退现象",
       "topic_ids": [
         "topic_models",
         "topic_agents",
@@ -4588,6 +4591,81 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2081768665356124481",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f4e5a2b04de008996ef5470a85fd9cbac355ac3fcb040172ed8de0bb16a350a6",
+      "featured": false,
+      "id": "n_f4e5a2b04de008996ef5470a85fd9cbac355ac3fcb040172ed8de0bb16a350a6",
+      "identity_claims": [
+        "c_d20e9bfdd73faab65829cbadfc491d1d76dd2994c9fb8343dc8e8bf3eba4cd92",
+        "c_f4e5a2b04de008996ef5470a85fd9cbac355ac3fcb040172ed8de0bb16a350a6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T20:00:00.000Z",
+      "published_at": "2026-07-27T15:48:21.533Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218610783034789889",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1218610783034789889",
+      "source_type": "twitter_extra",
+      "summary": "K3 是一个 2.8 万亿参数的混合专家模型，具备原生视觉理解能力，上下文窗口达到 1M 令牌，新架构在不依赖参数堆叠的情况下大幅提高计算效率。",
+      "time_precision": "exact",
+      "title": "Kimi 开源 K3 模型权重，该 MoE 模型实现每计算单位智能 2.5 倍提升并支持百万 token 上下文。",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2081768665356124481"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/dotey/status/2081790703781204032",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_358f42b01d5d05d33c9252869be98de57c1e70e21a7c68eac9177f01f9e65ae0",
+      "featured": false,
+      "id": "n_358f42b01d5d05d33c9252869be98de57c1e70e21a7c68eac9177f01f9e65ae0",
+      "identity_claims": [
+        "c_358f42b01d5d05d33c9252869be98de57c1e70e21a7c68eac9177f01f9e65ae0",
+        "c_ec28d2e4a42daa1c1e103b7932f2f1e7fe24334f662f28258831b1a005859389"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T20:00:00.000Z",
+      "published_at": "2026-07-27T16:14:33.911Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218610783034789888",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1218610783034789888",
+      "source_type": "twitter_extra",
+      "summary": "协议将模型训练与推理在商业上分离，围绕开放权重模型可衍生微调、仅预填充等专业化企业，形成封闭厂商难以匹配的生态力量。",
+      "time_precision": "exact",
+      "title": "Kimi K3 许可证要求年收入超 2000 万美元的推理提供商单独签署商业协议，首创无晶圆厂模式。",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://x.com/dotey/status/2081790703781204032"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/omarsar0/status/2081783727001145568",
       "category": "models",
       "content_type": "socialMedia",
@@ -4621,6 +4699,42 @@
         "topic_models"
       ],
       "url": "https://x.com/omarsar0/status/2081783727001145568"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://github.com/opengeos/GeoLibre",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_ea0047a4e5ff17f9819ebdcc05074372919a9277d0e87fe5cec1d879f16841c5",
+      "featured": false,
+      "id": "n_ea0047a4e5ff17f9819ebdcc05074372919a9277d0e87fe5cec1d879f16841c5",
+      "identity_claims": [
+        "c_ea0047a4e5ff17f9819ebdcc05074372919a9277d0e87fe5cec1d879f16841c5",
+        "c_f916cb6f01e839e1607c4c31a57f75ea3c6d0d331641bb094fe506e6d62a2bfc"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T20:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/opengeos/GeoLibre",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/opengeos/GeoLibre",
+      "source_type": "github_trending",
+      "summary": "一个轻量级、云原生的 GIS 平台，用于可视化、探索和分析地理空间数据。可在 Web 浏览器、桌面端、移动端以及 Jupyter Notebook 中运行。",
+      "time_precision": "date_only",
+      "title": "GeoLibre",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/opengeos/GeoLibre"
     }
   ],
   "overview": {
