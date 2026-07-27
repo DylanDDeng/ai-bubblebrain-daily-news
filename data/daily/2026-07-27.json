@@ -99,7 +99,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-26T17:00:00.000Z",
+      "generated_at": "2026-07-27T14:00:00.000Z",
       "id": "night",
       "item_ids": [
         "n_b000f798b6da1a2e1b3dfe1974b4809ce036e5f3771a51f5cd4ded0d9eccbc18",
@@ -107,7 +107,10 @@
         "n_ebecf0e4e159301942fe47b1fe014ebfbd7ab24a848af01b8bc44fd9d9f31024",
         "n_b409c8edf7b5665bcc69132978d386e21259a4694d04a88b69b2bec5b6352323",
         "n_4dd4b2c302ea6e122456398bd2cf016ebec7ae33553471756f6a80ce6b39e6ef",
-        "n_4bdf1b3752c86631d5cda92d200b24e8e47696ad9fb188edb8aed6215ef9d8eb"
+        "n_4bdf1b3752c86631d5cda92d200b24e8e47696ad9fb188edb8aed6215ef9d8eb",
+        "n_44dd4cfc6ae33ef3f91b2cc1eb686c5ee581fac021234176b8155ad9a35868ae",
+        "n_c62b1c4d69f69d1faef5acfce1cc94a289a5d758dbe6a5205e4dbe9a8fc43c72",
+        "n_a8e56aad6a80601952626ffe3e9728e66fedb96b339f0436202913c05cea22ae"
       ],
       "label": "22:00 更新",
       "status": "completed"
@@ -123,7 +126,7 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T12:00:00.000Z",
+  "generated_at": "2026-07-27T14:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -3471,6 +3474,114 @@
         "topic_open_source"
       ],
       "url": "https://x.com/Gorden_Sun/status/2081409859745186080"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/vista8/status/2081576279640572232",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_44dd4cfc6ae33ef3f91b2cc1eb686c5ee581fac021234176b8155ad9a35868ae",
+      "featured": false,
+      "id": "n_44dd4cfc6ae33ef3f91b2cc1eb686c5ee581fac021234176b8155ad9a35868ae",
+      "identity_claims": [
+        "c_44dd4cfc6ae33ef3f91b2cc1eb686c5ee581fac021234176b8155ad9a35868ae",
+        "c_e6c5374b58a1e64d915c8a3ebc784f11114f7452d1a063f06343513f24b0cb2a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T14:00:00.000Z",
+      "published_at": "2026-07-27T03:03:53.592Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218224139022540802",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1218224139022540802",
+      "source_type": "twitter_extra",
+      "summary": "该方法常用于训练大语言模型，使其回答更安全、有用。",
+      "time_precision": "exact",
+      "title": "基于人类反馈的强化学习通过反馈指导训练，使模型输出更符合人类预期",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2081576279640572232"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/vista8/status/2081672514162581745",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_c62b1c4d69f69d1faef5acfce1cc94a289a5d758dbe6a5205e4dbe9a8fc43c72",
+      "featured": false,
+      "id": "n_c62b1c4d69f69d1faef5acfce1cc94a289a5d758dbe6a5205e4dbe9a8fc43c72",
+      "identity_claims": [
+        "c_44392d3445f30eeed4b853d9b86030bc26af31f99cb93a0f181f3be22e30845f",
+        "c_c62b1c4d69f69d1faef5acfce1cc94a289a5d758dbe6a5205e4dbe9a8fc43c72"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T14:00:00.000Z",
+      "published_at": "2026-07-27T09:26:17.669Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218224139022540801",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1218224139022540801",
+      "source_type": "twitter_extra",
+      "summary": "通过剪映录音并上传至 Suno，添加歌词与风格后即可生成完整作品，适合非专业演唱者翻唱。",
+      "time_precision": "exact",
+      "title": "用户利用吉他哼唱和 Suno 扩展功能轻松翻唱歌曲，绕开版权限制",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2081672514162581745"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/vista8/status/2081700151006302406",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a8e56aad6a80601952626ffe3e9728e66fedb96b339f0436202913c05cea22ae",
+      "featured": false,
+      "id": "n_a8e56aad6a80601952626ffe3e9728e66fedb96b339f0436202913c05cea22ae",
+      "identity_claims": [
+        "c_a8e56aad6a80601952626ffe3e9728e66fedb96b339f0436202913c05cea22ae",
+        "c_ef51693d1dfa8f622db9ff1f816f0d8d69c36b822adb99aecaca892922c7e2d1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T14:00:00.000Z",
+      "published_at": "2026-07-27T11:16:06.380Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218224139022540800",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1218224139022540800",
+      "source_type": "twitter_extra",
+      "summary": "这个简单流程为音乐创作爱好者提供了低门槛的创作方式，生成效果出色。",
+      "time_precision": "exact",
+      "title": "仅需哼唱一段旋律并由 Suno 续写，就能快速获得悦耳成品歌曲",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/vista8/status/2081700151006302406"
     }
   ],
   "overview": {
