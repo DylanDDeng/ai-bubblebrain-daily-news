@@ -153,7 +153,7 @@ begin
   if p_scheduled_at is null
     or p_scheduled_at <> date_trunc('hour', p_scheduled_at)
     or extract(hour from p_scheduled_at at time zone 'UTC')::integer
-      not in (0, 2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 19, 20, 21, 22, 23)
+      not in (0, 2, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23)
     or p_scheduled_at < timestamptz '2020-01-01 00:00:00+00'
     or p_scheduled_at > clock_timestamp() + interval '5 minutes'
     or p_event_type not in ('started', 'release_registered', 'succeeded', 'failed')

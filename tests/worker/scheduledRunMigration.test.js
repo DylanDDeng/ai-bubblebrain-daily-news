@@ -1,17 +1,28 @@
 import { readFile } from 'node:fs/promises';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { SCHEDULE_UTC_HOURS } from '../../src/daily/scheduleContract.js';
 
 describe('scheduled run observability migration', () => {
     let sql;
+    let repairSql;
 
     beforeAll(async () => {
-        sql = await readFile(
-            new URL(
-                '../../supabase/migrations/20260724000400_scheduled_run_observability.sql',
-                import.meta.url,
+        [sql, repairSql] = await Promise.all([
+            readFile(
+                new URL(
+                    '../../supabase/migrations/20260724000400_scheduled_run_observability.sql',
+                    import.meta.url,
+                ),
+                'utf8',
             ),
-            'utf8',
-        );
+            readFile(
+                new URL(
+                    '../../supabase/migrations/20260727000100_accept_utc15_scheduled_run_trace.sql',
+                    import.meta.url,
+                ),
+                'utf8',
+            ),
+        ]);
     });
 
     it('keeps an append-only audit and a monotonic current projection', () => {
@@ -22,10 +33,14 @@ describe('scheduled run observability migration', () => {
     });
 
     it('accepts only exact production schedule hours', () => {
+        const productionHours = `not in (${SCHEDULE_UTC_HOURS.join(', ')})`;
         expect(sql).toContain("p_scheduled_at <> date_trunc('hour', p_scheduled_at)");
-        expect(sql).toContain(
-            'not in (0, 2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 19, 20, 21, 22, 23)',
+        expect(sql).toContain(productionHours);
+        expect(repairSql).toContain(
+            "'not in (0, 2, 4, 6, 8, 10, 12, 14, 16, 17, 18, 19, 20, 21, 22, 23)'",
         );
+        expect(repairSql).toContain(`'${productionHours}'`);
+        expect(repairSql).toContain('execute updated_definition');
     });
 
     it('associates fresh releases with their run in the finalize transaction', () => {
