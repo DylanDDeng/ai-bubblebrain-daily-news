@@ -1,19 +1,38 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-27T02:00:00.000Z",
+      "generated_at": "2026-07-27T04:00:00.000Z",
       "id": "morning",
       "item_ids": [
+        "n_cc5598549eaff6cb404c48033a7cf52dcf332fc16de5e84ad66057c03f3529a4",
+        "n_6af49e575aa5d1cfb16f24f2bbc94c2c66cd1e669251219fac23ec0c85fb7e89",
+        "n_f5ce038350787d24ba34f25627bd07dcf570379a9501d7769f656f6988f49ddf",
+        "n_24a11de5c7ed7f27315c41748b5c4728532f100c8a635de9f79ff6540de6603a",
+        "n_7b45211f0126bffcebf59c9935abed4cec479e151b014f8fbe32cc7bf55057bd",
+        "n_3413727c0dd1cc0d8b0c4333168cff99aabb4a06977540fd16739af2ac00c295",
+        "n_e5718becf508b7c58ecb8ab78619640f0a622c406aa44dbec9371a397cdd7bc9",
         "n_8aec9877572b0420bc0c161898c72ad0097e666debb6813b35d97cb00ae065e6",
+        "n_c6ccdfd0816314a33e0fd17f77acea8ba6246c43b3487db24ec081fee50eaa66",
+        "n_3297d8306173229b7b19901be4a06abcfa58ee5fd05b65cc11f9a80d3105723f",
+        "n_fd2c6f7a5aa08b0bc1c4a1555baad8547c1ce9e17ef2556a540fde9f9d3570fc",
+        "n_a0093851d00e3cf3220993c3dfb5478756a7c17f82e4f8d415a53636fdd58981",
+        "n_ba81ead8c55af7dd5c72bd08f9c2ec4ecc45b8f38e9c692f3c04ff40dd7964c2",
+        "n_3db0221f212c448217acd556f012ab106adc1e57c9eb8e8376c0c316ec54365b",
         "n_1ff08d5ae06226f7b0b898f606de01c99a194a315bded3d910d6a5709d1d5635",
+        "n_6ff6f7c76398d4eed4da257299386955aa4fa5fad08863d9d4764803ddba3988",
+        "n_a428a44b9646a139098367d1d90b81ea20aaed581f5422c6248f27c0375db5d5",
         "n_6145e2f5343fb335b2f22ba7b2aacab2364723676577ed4fced9cf6c78360fab",
         "n_0dbe3df793faa0405b673822825b3df133581813d697d7670f3ac7d3e8bdd848",
         "n_89a2576dc68ddadf5162fc238132238c050fedde4e33b2a12e4ca881adb28424",
         "n_231707a657bc6a84ad594fd60ee83573cd00bdf13d7b606cb02109890669c001",
+        "n_65e984aa7f90dfbed540440161d889590dcd7d946f9250d18f31ae843cd18ce6",
         "n_97d26e41d207a567dd7377d71a89c19030b27d2b0f13534667d7ff53ad17b8ae",
         "n_1d9e59d0e2aabb8cb3829c1d4646077d0e0a3a48ddf062cd0ddf7602f1fe78a0",
         "n_5820795c2c616d30a719d8aa5732b7ac9c88d5fac82c74bc17e63ac3ccf32498",
-        "n_82ae67b3eeefece73b28b30e65be60aaf61c1bece930b7f06b3ba28035411dae"
+        "n_268a646f66dad538da94693488ae0e1d766670a2cdab5166a813a6f1f86783e5",
+        "n_1dee89a1f98c26a1a72155863534bc81e199814ec0438f73c04ff1e70e2256da",
+        "n_82ae67b3eeefece73b28b30e65be60aaf61c1bece930b7f06b3ba28035411dae",
+        "n_f23c657fdfce3eabeca939e4b0a3c9ee7b3fd6dc7292c15c6296f7b632115ab5"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -50,9 +69,271 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T02:00:00.000Z",
+  "generated_at": "2026-07-27T04:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21653",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_cc5598549eaff6cb404c48033a7cf52dcf332fc16de5e84ad66057c03f3529a4",
+      "featured": false,
+      "id": "n_cc5598549eaff6cb404c48033a7cf52dcf332fc16de5e84ad66057c03f3529a4",
+      "identity_claims": [
+        "c_cc5598549eaff6cb404c48033a7cf52dcf332fc16de5e84ad66057c03f3529a4",
+        "c_e48ddb20ddb3985d8a884bc029ce14180b55f219f4df8e2af29016d0cbbdbf1c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-21T20:00:00.917Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217621858761818118",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1217621858761818118",
+      "source_type": "huggingface_papers",
+      "summary": "Agentic reinforcement learning research is constant algorithm modification, new estimators, new pipeline stages, new rollout schemes, and in mainstream frameworks each change threads through layers of trainer, distributed backend, and rollout glue: the cost lands on the researcher at every iteration. Molt is a PyTorch-native training framework built to keep that cost small: a codebase compact and clean enough for a researcher to hold in their head, and for an AI coding assistant to read and reason about in its entirety, so the algorithm flow can be traced and changed end to end. The agent is an ordinary program, and one asynchronous loop trains multimodal and mixture-of-experts policies while never training on a token it did not generate, consistent in tokens, policy versions, and model semantics. Leanness does not cost performance: under a matched, fully asynchronous protocol, Molt is statistically comparable to a state-of-the-art Megatron-based stack. Molt is open source and provides recipes and containers at",
+      "time_precision": "exact",
+      "title": "Molt: 一个可扩展的PyTorch原生训练框架，用于智能体强化学习",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://arxiv.org/abs/2607.21653"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.21848",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_6af49e575aa5d1cfb16f24f2bbc94c2c66cd1e669251219fac23ec0c85fb7e89",
+      "featured": false,
+      "id": "n_6af49e575aa5d1cfb16f24f2bbc94c2c66cd1e669251219fac23ec0c85fb7e89",
+      "identity_claims": [
+        "c_6af49e575aa5d1cfb16f24f2bbc94c2c66cd1e669251219fac23ec0c85fb7e89",
+        "c_aad14f12683a986674d90ecc9a42c3d18f9338484099daf7e58b471265a43a89"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-22T20:00:00.251Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217621858761818117",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1217621858761818117",
+      "source_type": "huggingface_papers",
+      "summary": "Recent conditional video generation models have shown promising potentials to transform 3D engine renderings, such as depth maps and untextured geometry, into photorealistic videos for gaming and immersive content creation. These applications require long-horizon auto-regressive generation that continuously synthesizes new frames while preserving a persistent 3D world. Auto-regressive generators synthesize video chunk by chunk with a bounded KV cache, so when the camera revisits a location after its context has been evicted, the model often regenerates inconsistent appearance, even though the conditioning renderings (e.g., depth) remain perfectly aligned with the underlying geometry.We address this revisit inconsistency without any post-training by exploiting correspondences the 3D engine already provides: temporal correspondence retrieves pose-matched historical latent chunks into the KV cache as loop-closure memory, while spatial correspondence from camera pose and depth reprojection biases token-level attention toward geometrically corresponding regions of the retrieved chunks. We demonstrate our method on loop-closure trajectories mined from TartanAir and TartanGround dataset to mirror complicate real-world application scenarios, where it outperforms existing training-free baselines on revisit consistency without losing overall video quality. Project Page:",
+      "time_precision": "exact",
+      "title": "闭合循环：自回归生成渲染中免训练的重访一致性",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://arxiv.org/abs/2607.21848"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.22375",
+      "category": "agents",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_f5ce038350787d24ba34f25627bd07dcf570379a9501d7769f656f6988f49ddf",
+      "featured": false,
+      "id": "n_f5ce038350787d24ba34f25627bd07dcf570379a9501d7769f656f6988f49ddf",
+      "identity_claims": [
+        "c_214df9c65cf2b2c486ee1f6003a591d944f707447bbe73bf3369acfb77ca9630",
+        "c_f5ce038350787d24ba34f25627bd07dcf570379a9501d7769f656f6988f49ddf"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-23T20:00:00.130Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217621858761818113",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1217621858761818113",
+      "source_type": "huggingface_papers",
+      "summary": "Large Language Models (LLMs) have significantly automated the process of scientific discovery over the past few years. However, existing systems share one core limitation: they generate and optimize ideas independently for either Quality or Diversity. This often leads to the generation of ideas in close proximity to one another or to a large set of trivial, unsound, or unclear concepts. In this work, we instead argue that research ideation should be treated as a conjunction of both objectives and framed as a Quality-Diversity (QD) search. In line with this perspective, we introduce IDEAgent, a multi-agent framework that manages the evolution of ideas through lineages. We jointly drive Quality using multi-objective feedback for dedicated repair and refinement, while Diversity is achieved through lightweight sequential memory and explicit comparison against completed ideas, their historical ancestors, and rejected proposals. To systematically evaluate this QD conjunction, we develop Yield, a joint metric that computes the largest set of mutually diverse ideas that satisfy a predetermined quality threshold. Finally, through evaluations across 32 topics spanning 8 domains of Computer Science, we show that IDEAgent outperforms the best baseline by 3.89x on Yield, while achieving non-zero Yield on 8x more topics. We further corroborate these findings through an analysis of quality improvements, showing that repair and refinement are crucial for building logical rigor and clarity while preserving non-obviousness. To encourage future research on QD-search-based ideation, we open-source IDEAgent at",
+      "time_precision": "exact",
+      "title": "IDEAgent: 面向研究想法生成的智能质量-多样性搜索",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research",
+        "topic_open_source"
+      ],
+      "url": "https://arxiv.org/abs/2607.22375"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.22043",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_24a11de5c7ed7f27315c41748b5c4728532f100c8a635de9f79ff6540de6603a",
+      "featured": false,
+      "id": "n_24a11de5c7ed7f27315c41748b5c4728532f100c8a635de9f79ff6540de6603a",
+      "identity_claims": [
+        "c_24a11de5c7ed7f27315c41748b5c4728532f100c8a635de9f79ff6540de6603a",
+        "c_c22624de2cd721c94332004a2a545ea44c8abbf239bbf007c31e2f7c40b2377e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-23T20:00:00.234Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217621858761818115",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1217621858761818115",
+      "source_type": "huggingface_papers",
+      "summary": "Although large language models (LLMs) exhibit remarkable reasoning capabilities, their reliance on text-only pre-training restricts the perception of the multimodal physical world. Native multimodal pre-training avoids this limitation by training models from scratch on multimodal inputs, thereby achieving deep cross-modal integration and mitigating optimization asymmetries inherent to traditional late-fusion architectures. Despite these advantages, the scaling properties of this paradigm remain systematically uncharacterized. To address this gap, we investigate the optimal model size and token count for training a transformer-based vision-language model under a fixed computational budget. We demonstrate that minimal objective loss adheres to a predictable compute law, whereas compute-optimal model sizes and token counts scale as power laws. Notably, language and multimodal objectives manifest distinct scaling behaviors. The language allocation law is largely invariant to the composition of the data, indicating stable language learning regardless of the multimodal data ratio. Conversely, the multimodal allocation law is highly sensitive to this composition. Specifically, text-heavy mixtures become compute-efficient only at larger model scales, shifting the optimal resource allocation toward greater model capacity. Additionally, by modeling the influence of data composition on compute laws and allocation exponents, we derive an efficiency frontier specifying precise configurations of model size, token count, and data mixture. Downstream evaluations further reveal that native multimodal pre-training induces positive cross-modal transfer, thereby enhancing pure-text spatial reasoning and enabling robust multimodal in-context learning. In summary, this empirical research establishes the essential groundwork for predictably scaling multimodal foundation models.",
+      "time_precision": "exact",
+      "title": "从零开始扩展原生多模态预训练",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.22043"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.22042",
+      "category": "other",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_7b45211f0126bffcebf59c9935abed4cec479e151b014f8fbe32cc7bf55057bd",
+      "featured": false,
+      "id": "n_7b45211f0126bffcebf59c9935abed4cec479e151b014f8fbe32cc7bf55057bd",
+      "identity_claims": [
+        "c_7b45211f0126bffcebf59c9935abed4cec479e151b014f8fbe32cc7bf55057bd",
+        "c_f81416f5aba39a57df8f9a37c6367222c01f78f4973dafca40726e116aee637e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-23T20:00:00.586Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217621858761818114",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1217621858761818114",
+      "source_type": "huggingface_papers",
+      "summary": "In multilingual retrieval augmented generation, a retriever can retrieve relevant documents written in multiple languages, which are subsequently reranked before answer generation. However, it remains unclear whether existing multilingual rerankers consider document language when ordering semantically relevant candidates. Our analysis shows that these rerankers do not consistently prioritize documents written in the same language as the query when semantically equivalent documents are available across languages, even though document language can affect answer generation. We release LAMAR, a language aware multilingual cross encoder trained to account for both semantic relevance and language coherence. LAMAR first uses English anchored relevance distillation to establish consistent relevance scoring across multilingual inputs and then applies preference alignment for language coherence to encourage documents written in the same language as the query to receive higher rankings while retaining semantic relevance. In a controlled experiment designed to assess language coherence, LAMAR achieves the best performance overall and across all languages examined individually. LAMAR also remains competitive on established multilingual reranking benchmarks. In practical retrieval settings, LAMAR achieves the best results across all reported metrics when reranking candidates retrieved in the first stage. These results demonstrate that LAMAR accounts for language coherence while achieving strong performance on general multilingual reranking benchmarks.",
+      "time_precision": "exact",
+      "title": "LAMAR: 一个开放的语言感知多语言对齐重排序器",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://arxiv.org/abs/2607.22042"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.22529",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_3413727c0dd1cc0d8b0c4333168cff99aabb4a06977540fd16739af2ac00c295",
+      "featured": false,
+      "id": "n_3413727c0dd1cc0d8b0c4333168cff99aabb4a06977540fd16739af2ac00c295",
+      "identity_claims": [
+        "c_3413727c0dd1cc0d8b0c4333168cff99aabb4a06977540fd16739af2ac00c295",
+        "c_53baddce957bc34fafbae312f7b06d1ffbd307d7c13d91f5938772bc07c58cf6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-23T20:00:00.593Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217621858761818112",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1217621858761818112",
+      "source_type": "huggingface_papers",
+      "summary": "LLM training is shifting from manual design and annotation to interaction-driven self-evolution. However, existing self-evolutionary methods face a fundamental dilemma between task diversity and verification reliability: environment-bound methods obtain precise feedback but confine learning to narrow domains, while open-ended self-generation broadens the task space but lacks reliable verification, allowing misleading rewards to pollute the training loop. We identify agent skills as a powerful middle ground to reconcile this tension: each skill ensures deep, verifiable execution in a specific scenario, while dynamic routing across skills maintains open-ended task variety. Leveraging this insight, we introduce Skill Self-Play (Skill-SP), a co-evolutionary framework comprising a proposer, a solver, and a dynamic skill controller. Orchestrated via a reinforcement learning loop, these components co-evolve in a continuous self-play loop: the proposer generates challenging tasks conditioned on dynamically sampled skills; the solver explores candidate solutions to push its capability boundaries; and the skill controller collects execution feedback to update and expand the skill library. This interactive co-evolution effectively bridges the gap between structured verification and open-ended exploration. Empirical evaluations on tool-use and reasoning benchmarks demonstrate that Skill-SP, serving as a robust evolution engine, consistently pushes the performance ceiling of competent backbones while catalyzing striking turnarounds for initially misaligned models. Our code is available at",
+      "time_precision": "exact",
+      "title": "技能自对弈：通过协同进化技能推动LLM能力边界",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://arxiv.org/abs/2607.22529"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.22393",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_e5718becf508b7c58ecb8ab78619640f0a622c406aa44dbec9371a397cdd7bc9",
+      "featured": false,
+      "id": "n_e5718becf508b7c58ecb8ab78619640f0a622c406aa44dbec9371a397cdd7bc9",
+      "identity_claims": [
+        "c_2cf5a49c9187b4f55a3c154c052a8924121f612851aa88566045837127d5b376",
+        "c_e5718becf508b7c58ecb8ab78619640f0a622c406aa44dbec9371a397cdd7bc9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-23T20:00:00.779Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217621858761818116",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1217621858761818116",
+      "source_type": "huggingface_papers",
+      "summary": "Vision-language model (VLM) agents increasingly use tools to act on 3D scenes rather than only describe them. Existing 3D benchmarks score textual responses or single-object operations, leaving agent action on complete multi-object 3D scenes under evaluated. We present SceneActBench, a benchmark for visually conditioned action across five 3D tasks under a unified agent-environment loop. Given PNG images or sampled video frames and, where applicable, supplied 3D assets, an agent acts on a 3D environment. We evaluate each final output against hidden ground truth with task-specific geometric metrics. SceneActBench comprises five tasks built from 210 source instances, yielding 520 task cases including paired input conditions. Every task runs through one fixed agent loop to keep the comparison fair. Across eleven proprietary VLM configurations, Overall scores span 38.6-50.2, and none performs consistently well across tasks. We further analyse where and how failures manifest.",
+      "time_precision": "exact",
+      "title": "SceneActBench: 智能体能对它们看到的三维场景采取行动吗？",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.22393"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://x.com/gdb/status/2080736094157488201",
@@ -93,6 +374,223 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081078811236380861",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_c6ccdfd0816314a33e0fd17f77acea8ba6246c43b3487db24ec081fee50eaa66",
+      "featured": false,
+      "id": "n_c6ccdfd0816314a33e0fd17f77acea8ba6246c43b3487db24ec081fee50eaa66",
+      "identity_claims": [
+        "c_87944ab6e393edb59e254728e2be51ed786c6b27b12f57a33abca41742b0361f",
+        "c_c6ccdfd0816314a33e0fd17f77acea8ba6246c43b3487db24ec081fee50eaa66"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-25T18:07:07.112Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335816",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335816",
+      "source_type": "twitter_extra",
+      "summary": "LLaDA 2.2 利用块并行解码，在多轮交互中自主规划、调用工具并自我修正错误，同时保持速度优势。",
+      "time_precision": "exact",
+      "title": "LLaDA 2.2 成为首个具备规划、工具调用和自修正能力的扩散大语言模型智能体",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2081078811236380861"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081078815971844484",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_3297d8306173229b7b19901be4a06abcfa58ee5fd05b65cc11f9a80d3105723f",
+      "featured": false,
+      "id": "n_3297d8306173229b7b19901be4a06abcfa58ee5fd05b65cc11f9a80d3105723f",
+      "identity_claims": [
+        "c_3297d8306173229b7b19901be4a06abcfa58ee5fd05b65cc11f9a80d3105723f",
+        "c_518edc6c341ba79edad4677c3a812960a0699bcb0d8ccbf1410b5c748467ac82"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-25T18:07:08.211Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335815",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335815",
+      "source_type": "twitter_extra",
+      "summary": "模型通过最长公共子序列对齐训练，可删除错误片段或插入缺失内容，让自修正更加精细。",
+      "time_precision": "exact",
+      "title": "LLaDA 2.2 利用莱文斯坦编辑在生成过程中执行保持、替换、删除和插入操作以避免错误固化",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/omarsar0/status/2081078815971844484"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081078818756870581",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_fd2c6f7a5aa08b0bc1c4a1555baad8547c1ce9e17ef2556a540fde9f9d3570fc",
+      "featured": false,
+      "id": "n_fd2c6f7a5aa08b0bc1c4a1555baad8547c1ce9e17ef2556a540fde9f9d3570fc",
+      "identity_claims": [
+        "c_aa8cb484432d17a4d0f1b74c303d1ed2a87275a611183fcbea655d31f14af92d",
+        "c_fd2c6f7a5aa08b0bc1c4a1555baad8547c1ce9e17ef2556a540fde9f9d3570fc"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-25T18:07:09.919Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335814",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335814",
+      "source_type": "twitter_extra",
+      "summary": "该得分反映了模型在软件工程任务上的能力水平。",
+      "time_precision": "exact",
+      "title": "LLaDA 2.2-flash 在 SWE-bench Verified 基准测试中取得 49.28 分",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/omarsar0/status/2081078818756870581"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081078823236391363",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a0093851d00e3cf3220993c3dfb5478756a7c17f82e4f8d415a53636fdd58981",
+      "featured": false,
+      "id": "n_a0093851d00e3cf3220993c3dfb5478756a7c17f82e4f8d415a53636fdd58981",
+      "identity_claims": [
+        "c_3e07d2ef6ec5549bb05885b9a94a05554a3d01ce9c70c5eea7c72c5aa7f60856",
+        "c_a0093851d00e3cf3220993c3dfb5478756a7c17f82e4f8d415a53636fdd58981"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-25T18:07:10.473Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335813",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335813",
+      "source_type": "twitter_extra",
+      "summary": "模型渐进式从 8K 训练到 128K 上下文，MoE 每 token 仅激活部分参数，块路由进一步降低长上下文开销。",
+      "time_precision": "exact",
+      "title": "LLaDA 2.2 原生支持 128K 上下文长度，并通过 MoE 架构和块路由策略控制推理成本",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/omarsar0/status/2081078823236391363"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081078825878683897",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ba81ead8c55af7dd5c72bd08f9c2ec4ecc45b8f38e9c692f3c04ff40dd7964c2",
+      "featured": false,
+      "id": "n_ba81ead8c55af7dd5c72bd08f9c2ec4ecc45b8f38e9c692f3c04ff40dd7964c2",
+      "identity_claims": [
+        "c_a6ae8de81a6348fc4e547a38da260b901127abf7c0b589eda14c705306ea353b",
+        "c_ba81ead8c55af7dd5c72bd08f9c2ec4ecc45b8f38e9c692f3c04ff40dd7964c2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-25T18:07:11.203Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335812",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335812",
+      "source_type": "twitter_extra",
+      "summary": "该结果体现了模型在推理速度上的显著优势。",
+      "time_precision": "exact",
+      "title": "LLaDA 2.2-flash 的 BF16 吞吐量是 Ling-2.6-flash 的 1.64 倍，FP8 量化可再提升 18.6%",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/omarsar0/status/2081078825878683897"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081078828252725425",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_3db0221f212c448217acd556f012ab106adc1e57c9eb8e8376c0c316ec54365b",
+      "featured": false,
+      "id": "n_3db0221f212c448217acd556f012ab106adc1e57c9eb8e8376c0c316ec54365b",
+      "identity_claims": [
+        "c_3db0221f212c448217acd556f012ab106adc1e57c9eb8e8376c0c316ec54365b",
+        "c_467301cfd51eb2f1934cd8a7d3078644832b7b70b0d3de05db5962607d639c24"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-25T18:07:11.556Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335811",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335811",
+      "source_type": "twitter_extra",
+      "summary": "测试结果表明 LLaDA 2.2 在智能体任务中的性能大幅领先对比模型。",
+      "time_precision": "exact",
+      "title": "LLaDA 2.2-flash 在 τ²-Bench 智能体基准上获得 592.80 分，超越 Ling-2.6-flash 的 334.90 分，快速模式达 705.30 分",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/omarsar0/status/2081078828252725425"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/wwwgoubuli/status/2081400357763285239",
       "category": "other",
       "content_type": "socialMedia",
@@ -129,6 +627,82 @@
         "topic_other"
       ],
       "url": "https://x.com/wwwgoubuli/status/2081400357763285239"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shao__meng/status/2081214445980995944",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_microsoft"
+      ],
+      "event_id": "e_6ff6f7c76398d4eed4da257299386955aa4fa5fad08863d9d4764803ddba3988",
+      "featured": false,
+      "id": "n_6ff6f7c76398d4eed4da257299386955aa4fa5fad08863d9d4764803ddba3988",
+      "identity_claims": [
+        "c_6fcbef4fc4fba6374f85b065bd3fe456da0b7fb7f9487b5323b69eb3052d926c",
+        "c_6ff6f7c76398d4eed4da257299386955aa4fa5fad08863d9d4764803ddba3988"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-26T03:06:05.548Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217380423466774531",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1217380423466774531",
+      "source_type": "twitter_extra",
+      "summary": "英伟达和微软牵头签署“Open Weights and American AI Leadership”文件，倡导开源与闭源模型并存，引发关于开源定义的争论。",
+      "time_precision": "exact",
+      "title": "A 社 MTS 指责黄仁勋与纳德拉虚假支持开源，因其签署支持开源模型声明却未开源 CUDA 等产品",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081214445980995944"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shao__meng/status/2081216459364331528",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_a428a44b9646a139098367d1d90b81ea20aaed581f5422c6248f27c0375db5d5",
+      "featured": false,
+      "id": "n_a428a44b9646a139098367d1d90b81ea20aaed581f5422c6248f27c0375db5d5",
+      "identity_claims": [
+        "c_864cd8f751efcc948d636fffcb4afbf63deaf4bb92815a4b22ac6d97d2945f6e",
+        "c_a428a44b9646a139098367d1d90b81ea20aaed581f5422c6248f27c0375db5d5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-26T03:14:05.869Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217380423466774530",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1217380423466774530",
+      "source_type": "twitter_extra",
+      "summary": "将人类下属替换为 AI Agent 后，原有的管理流程和质量机制仍然适用，每个开发者都转变为管理多个 AI 的工程经理。",
+      "time_precision": "exact",
+      "title": "开发者仅靠提示工程指挥 AI Agent 不读代码，本质上相当于工程经理管理 AI 下属",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/shao__meng/status/2081216459364331528"
     },
     {
       "batch": "morning",
@@ -286,6 +860,42 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2081338798651387949",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_65e984aa7f90dfbed540440161d889590dcd7d946f9250d18f31ae843cd18ce6",
+      "featured": false,
+      "id": "n_65e984aa7f90dfbed540440161d889590dcd7d946f9250d18f31ae843cd18ce6",
+      "identity_claims": [
+        "c_073181053644a680d62e86937ac243d4ec563d5c8cc64e23e2776c041c7a8ccf",
+        "c_65e984aa7f90dfbed540440161d889590dcd7d946f9250d18f31ae843cd18ce6"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-26T11:20:13.950Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217600050578907137",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1217600050578907137",
+      "source_type": "twitter_extra",
+      "summary": "该书被视为创作者的高质量工作指南。",
+      "time_precision": "exact",
+      "title": "小红书用户极力推荐《李诞工作手册》，认为该书对创作者价值极高值得背诵",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/oran_ge/status/2081338798651387949"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/sama/status/2081396796174282900",
       "category": "other",
       "content_type": "socialMedia",
@@ -399,6 +1009,81 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081471875885203791",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_268a646f66dad538da94693488ae0e1d766670a2cdab5166a813a6f1f86783e5",
+      "featured": false,
+      "id": "n_268a646f66dad538da94693488ae0e1d766670a2cdab5166a813a6f1f86783e5",
+      "identity_claims": [
+        "c_268a646f66dad538da94693488ae0e1d766670a2cdab5166a813a6f1f86783e5",
+        "c_562184a16815d55e8aa9421e86e91352639e22a400904e7008fa79338a20688d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-26T20:09:01.865Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335809",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335809",
+      "source_type": "twitter_extra",
+      "summary": "论文表明在批次规模达 1 亿 token 时 AdamW 稳定性下降，而 SOAP 和 Muon 通过改进正交化和预条件策略维持训练质量。",
+      "time_precision": "exact",
+      "title": "英伟达研究指出 AdamW 在大批量训练下退化，SOAP 和 Muon 优化器表现更稳定",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://x.com/omarsar0/status/2081471875885203791"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/oran_ge/status/2081501133168947412",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic",
+        "entity_xai"
+      ],
+      "event_id": "e_1dee89a1f98c26a1a72155863534bc81e199814ec0438f73c04ff1e70e2256da",
+      "featured": false,
+      "id": "n_1dee89a1f98c26a1a72155863534bc81e199814ec0438f73c04ff1e70e2256da",
+      "identity_claims": [
+        "c_1dee89a1f98c26a1a72155863534bc81e199814ec0438f73c04ff1e70e2256da",
+        "c_4c8e19d62b52552973afd379509568c607ff8fa63587b9e57586353fa4b3823a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-26T22:05:17.134Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217600050578907136",
+        "name": "twitter-Orange AI"
+      },
+      "source_id": "1217600050578907136",
+      "source_type": "twitter_extra",
+      "summary": "用户反馈 Opus 5 的实用价值与基准成绩严重不符，引发对当前模型评测有效性的讨论。",
+      "time_precision": "exact",
+      "title": "Opus 5 在多项基准上超越 Fable 5 但实际使用体验远不如后者，用户质疑现有评测体系已失效",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/oran_ge/status/2081501133168947412"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/sama/status/2081513071135346814",
       "category": "other",
       "content_type": "socialMedia",
@@ -434,6 +1119,48 @@
         "topic_other"
       ],
       "url": "https://x.com/sama/status/2081513071135346814"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/omarsar0/status/2081530022947705201",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_google_deepmind",
+        "entity_meta_ai",
+        "entity_deepseek"
+      ],
+      "event_id": "e_f23c657fdfce3eabeca939e4b0a3c9ee7b3fd6dc7292c15c6296f7b632115ab5",
+      "featured": false,
+      "id": "n_f23c657fdfce3eabeca939e4b0a3c9ee7b3fd6dc7292c15c6296f7b632115ab5",
+      "identity_claims": [
+        "c_46c41228eab998e9a3df4921ffdc44cb949254fff41d254f26157427b303a9fc",
+        "c_f23c657fdfce3eabeca939e4b0a3c9ee7b3fd6dc7292c15c6296f7b632115ab5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T04:00:00.000Z",
+      "published_at": "2026-07-27T00:00:05.763Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217599705337335808",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1217599705337335808",
+      "source_type": "twitter_extra",
+      "summary": "JAXBench 使用基于真实 MaxText 架构的 JAX 工作负载和专家手调的 Pallas 内核作为基准，证明上下文信息对智能体表现至关重要。",
+      "time_precision": "exact",
+      "title": "谷歌等推出 JAXBench，为 AI 智能体提供高质量文档可使 TPU 内核优化正确率从 5.8% 升至 37.3%",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://x.com/omarsar0/status/2081530022947705201"
     },
     {
       "batch": "night",
