@@ -1,11 +1,17 @@
 {
   "batches": [
     {
-      "generated_at": null,
+      "generated_at": "2026-07-27T22:00:00.000Z",
       "id": "morning",
-      "item_ids": [],
+      "item_ids": [
+        "n_b5e82c0cc19d3de7e1163f212f9c6226547c0b33fe42da6006bb0da590a467b5",
+        "n_ff1b51a272c051282406b89fceb421355c2a6adb76742469ec9be8d7a8dca5e7",
+        "n_3eac4808db0a5cbcf66777cb4d14e2e518bec0ad12c050ce6b0999396cc48b5e",
+        "n_b81a0928f38cb91bb6f1244f94362e0f226ae4085a8cda6412f3d1108246a98e",
+        "n_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069"
+      ],
       "label": "08:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -48,9 +54,202 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T17:00:00.000Z",
+  "generated_at": "2026-07-27T22:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://the-decoder.com/delhi-high-court-hands-openai-a-win-by-rejecting-major-indian-news-agencys-copyright-injunction/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_b5e82c0cc19d3de7e1163f212f9c6226547c0b33fe42da6006bb0da590a467b5",
+      "featured": false,
+      "id": "n_b5e82c0cc19d3de7e1163f212f9c6226547c0b33fe42da6006bb0da590a467b5",
+      "identity_claims": [
+        "c_5a6e4b5639fb00766a8f1acf5a50e8ab520bc4febfd92d575166e8aa9c7f040e",
+        "c_b5e82c0cc19d3de7e1163f212f9c6226547c0b33fe42da6006bb0da590a467b5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T22:00:00.000Z",
+      "published_at": "2026-07-27T17:55:24.894Z",
+      "published_date": "2026-07-28",
+      "reason": "首次法院将AI训练定性为私人使用，为全球AI版权纠纷树立重要判例，影响面广，信息具体且稀缺。",
+      "related_source_ids": [],
+      "score": 8.5,
+      "source": {
+        "homepage": null,
+        "id": "1218710203424354307",
+        "name": "The Decoder"
+      },
+      "source_id": "1218710203424354307",
+      "source_type": "the_decoder",
+      "summary": "The Delhi High Court has handed OpenAI a major win in its copyright fight with news agency ANI. For the first time, a court has classified AI training as private use. ANI undermined its own case by citing articles published after the models were trained. The main trial is still pending. The article Delhi High Court hands OpenAI a win by rejecting major Indian news agency's copyright injunction appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Delhi High Court hands OpenAI a win by rejecting major Indian news agency's copyright injunction",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/delhi-high-court-hands-openai-a-win-by-rejecting-major-indian-news-agencys-copyright-injunction/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://the-decoder.com/microsoft-launches-its-own-cybersecurity-model-mai-cyber-1-flash-but-still-depends-on-openai-for-the-toughest-tasks/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_microsoft"
+      ],
+      "event_id": "e_ff1b51a272c051282406b89fceb421355c2a6adb76742469ec9be8d7a8dca5e7",
+      "featured": false,
+      "id": "n_ff1b51a272c051282406b89fceb421355c2a6adb76742469ec9be8d7a8dca5e7",
+      "identity_claims": [
+        "c_f55f4247080fbb1cfb3e39b836f327b4a87bfbb80a00a98e1a0b851c7caf0f84",
+        "c_ff1b51a272c051282406b89fceb421355c2a6adb76742469ec9be8d7a8dca5e7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T22:00:00.000Z",
+      "published_at": "2026-07-27T18:50:07.173Z",
+      "published_date": "2026-07-28",
+      "reason": "微软推出新安全模型并附基准成绩与成本数据，属常规产品更新，有行业参考价值但非颠覆性发布。",
+      "related_source_ids": [],
+      "score": 6.5,
+      "source": {
+        "homepage": null,
+        "id": "1218710203424354306",
+        "name": "The Decoder"
+      },
+      "source_id": "1218710203424354306",
+      "source_type": "the_decoder",
+      "summary": "Microsoft introduces MAI-Cyber-1-Flash, a compact security model that scores 96 percent on the CyberGym benchmark when embedded in its MDASH multi-agent system. Microsoft says costs should drop by 50 percent compared to pure frontier models, since only tough cases get passed to GPT-5.4. For complex reasoning, Microsoft still relies on OpenAI. The article Microsoft launches its own cybersecurity model MAI-Cyber-1-Flash but still depends on OpenAI for the toughest tasks appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Microsoft launches its own cybersecurity model MAI-Cyber-1-Flash but still depends on OpenAI for the toughest tasks",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://the-decoder.com/microsoft-launches-its-own-cybersecurity-model-mai-cyber-1-flash-but-still-depends-on-openai-for-the-toughest-tasks/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://the-decoder.com/openai-says-more-workers-are-using-chatgpt-to-do-other-peoples-jobs/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_3eac4808db0a5cbcf66777cb4d14e2e518bec0ad12c050ce6b0999396cc48b5e",
+      "featured": false,
+      "id": "n_3eac4808db0a5cbcf66777cb4d14e2e518bec0ad12c050ce6b0999396cc48b5e",
+      "identity_claims": [
+        "c_3eac4808db0a5cbcf66777cb4d14e2e518bec0ad12c050ce6b0999396cc48b5e",
+        "c_7e94e1fa5c707660caab71fafff4f8f99d43a4927d5e0467447bff2355442ce5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T22:00:00.000Z",
+      "published_at": "2026-07-27T19:08:51.749Z",
+      "published_date": "2026-07-28",
+      "reason": "基于80万消息的统计显示跨职业使用趋势，有一定信息量但属营销性质解读，未触及实质行业变化。",
+      "related_source_ids": [],
+      "score": 6,
+      "source": {
+        "homepage": null,
+        "id": "1218710203424354305",
+        "name": "The Decoder"
+      },
+      "source_id": "1218710203424354305",
+      "source_type": "the_decoder",
+      "summary": "OpenAI analyzed over 800,000 work-related ChatGPT messages and found that 43.5 percent of job-specific queries involve tasks from other professions. The company calls this \"task crossover.\" The trend is most pronounced at small businesses, where users increasingly handle specialized work without dedicated experts. The article OpenAI says more workers are using ChatGPT to do other people's jobs appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "OpenAI says more workers are using ChatGPT to do other people's jobs",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/openai-says-more-workers-are-using-chatgpt-to-do-other-peoples-jobs/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://the-decoder.com/moonshot-ai-releases-kimi-k3-open-weights-and-infrastructure-after-shaking-up-the-frontier-model-race/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_b81a0928f38cb91bb6f1244f94362e0f226ae4085a8cda6412f3d1108246a98e",
+      "featured": false,
+      "id": "n_b81a0928f38cb91bb6f1244f94362e0f226ae4085a8cda6412f3d1108246a98e",
+      "identity_claims": [
+        "c_b81a0928f38cb91bb6f1244f94362e0f226ae4085a8cda6412f3d1108246a98e",
+        "c_c67a4b73cf4743c9086fea831ce1d75e0729b30fedaa2cf5c70ea1cd689d32da"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T22:00:00.000Z",
+      "published_at": "2026-07-27T19:35:08.001Z",
+      "published_date": "2026-07-28",
+      "reason": "中国模型以开放权重挑战西方前沿，虽独立测试有差距，但提升了开源竞赛热度，具竞争信号价值。",
+      "related_source_ids": [],
+      "score": 7,
+      "source": {
+        "homepage": null,
+        "id": "1218710203424354304",
+        "name": "The Decoder"
+      },
+      "source_id": "1218710203424354304",
+      "source_type": "the_decoder",
+      "summary": "Moonshot AI has released Kimi K3's model weights and made parts of its infrastructure open source. The Chinese model nearly matches Western frontier models such as Fable 5 and GPT-5.6 Sol on popular benchmarks, but independent tests found major gaps in cyber and math performance, possibly pointing to distillation. The article Moonshot AI releases Kimi K3 open weights and infrastructure after shaking up the frontier model race appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Moonshot AI releases Kimi K3 open weights and infrastructure after shaking up the frontier model race",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://the-decoder.com/moonshot-ai-releases-kimi-k3-open-weights-and-infrastructure-after-shaking-up-the-frontier-model-race/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/sama/status/2081832600591892712",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069",
+      "featured": false,
+      "id": "n_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069",
+      "identity_claims": [
+        "c_29d2d8f3f0f0ad668502a4f9dcc9e1df36446ad3362b2c8b843c27cb385a83de",
+        "c_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069",
+        "c_f8b80bce79d5b394a4a590941ea99c7cee0d4872ee9050363f97cfcca483d292"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T21:00:00.000Z",
+      "published_at": "2026-07-27T20:02:25.334Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218657212805648384",
+        "name": "Sam Altman"
+      },
+      "source_id": "1218657212805648384",
+      "source_type": "sam_altman_x",
+      "summary": "他表示即使OpenAI明天停止推出新模型，自己也会完全接受。",
+      "time_precision": "exact",
+      "title": "用户Can Vardar称GPT-5.6 sol已满足全部需求，不再期待新模型",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/sama/status/2081832600591892712"
+    },
     {
       "batch": "night",
       "canonical_url": "https://the-decoder.com/the-ai-coding-tutor-paradox-grows-as-educators-scramble-to-rethink-how-they-test-real-skills/",
