@@ -1,7 +1,7 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-26T23:00:00.000Z",
+      "generated_at": "2026-07-27T00:00:00.000Z",
       "id": "morning",
       "item_ids": [
         "n_8aec9877572b0420bc0c161898c72ad0097e666debb6813b35d97cb00ae065e6",
@@ -9,8 +9,10 @@
         "n_6145e2f5343fb335b2f22ba7b2aacab2364723676577ed4fced9cf6c78360fab",
         "n_0dbe3df793faa0405b673822825b3df133581813d697d7670f3ac7d3e8bdd848",
         "n_89a2576dc68ddadf5162fc238132238c050fedde4e33b2a12e4ca881adb28424",
+        "n_231707a657bc6a84ad594fd60ee83573cd00bdf13d7b606cb02109890669c001",
         "n_97d26e41d207a567dd7377d71a89c19030b27d2b0f13534667d7ff53ad17b8ae",
-        "n_5820795c2c616d30a719d8aa5732b7ac9c88d5fac82c74bc17e63ac3ccf32498"
+        "n_5820795c2c616d30a719d8aa5732b7ac9c88d5fac82c74bc17e63ac3ccf32498",
+        "n_82ae67b3eeefece73b28b30e65be60aaf61c1bece930b7f06b3ba28035411dae"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -47,7 +49,7 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-26T23:00:00.000Z",
+  "generated_at": "2026-07-27T00:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -247,6 +249,42 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/shao__meng/status/2081242530411147427",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_231707a657bc6a84ad594fd60ee83573cd00bdf13d7b606cb02109890669c001",
+      "featured": false,
+      "id": "n_231707a657bc6a84ad594fd60ee83573cd00bdf13d7b606cb02109890669c001",
+      "identity_claims": [
+        "c_231707a657bc6a84ad594fd60ee83573cd00bdf13d7b606cb02109890669c001",
+        "c_e93d5e5910261942825549c867944ea0ef69a2fdca27ffd45778fb6653e1c5c7"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T00:00:00.000Z",
+      "published_at": "2026-07-26T04:57:41.142Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217380423466774529",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1217380423466774529",
+      "source_type": "twitter_extra",
+      "summary": "该用户原本只想了解“崩老头”的含义，却被Kimi的严谨回答所惊讶。",
+      "time_precision": "exact",
+      "title": "一名用户查询网络用语“崩老头”时发现Kimi的释义极为严谨",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shao__meng/status/2081242530411147427"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/sama/status/2081396796174282900",
       "category": "other",
       "content_type": "socialMedia",
@@ -319,6 +357,44 @@
         "topic_open_source"
       ],
       "url": "https://simonwillison.net/2026/Jul/26/relay-market/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/sama/status/2081513071135346814",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_82ae67b3eeefece73b28b30e65be60aaf61c1bece930b7f06b3ba28035411dae",
+      "featured": false,
+      "id": "n_82ae67b3eeefece73b28b30e65be60aaf61c1bece930b7f06b3ba28035411dae",
+      "identity_claims": [
+        "c_1e34c92cc2c4044cf54d9ecf2412103884ee56b7813a94446c65234c54abb2d7",
+        "c_82ae67b3eeefece73b28b30e65be60aaf61c1bece930b7f06b3ba28035411dae"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T00:00:00.000Z",
+      "published_at": "2026-07-26T22:52:43.433Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217381439243259904",
+        "name": "twitter-Sam Altman"
+      },
+      "source_id": "1217381439243259904",
+      "source_type": "twitter_extra",
+      "summary": "Alex Finn在北加州红杉林徒步期间，通过AirPods使用ChatGPT语音功能处理工作，发现4小时完成的工作量比8小时办公室工作更多，认为工作可随时随地开展。",
+      "time_precision": "exact",
+      "title": "Alex Finn徒步时借助ChatGPT语音工作4小时，效率超过全天办公室",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/sama/status/2081513071135346814"
     },
     {
       "batch": "night",
