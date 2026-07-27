@@ -11,7 +11,6 @@ import TwitterDataSource from '../dataSources/twitter.js';
 import TwitterExtraDataSource from '../dataSources/twitter-extra.js';
 import KazikeDataSource from '../dataSources/kazike.js';
 import KazikeXDataSource from '../dataSources/kazike-x.js';
-import AlexFinnXDataSource from '../dataSources/alex-finn-x.js';
 import AnthropicResearchDataSource from '../dataSources/anthropic-research.js';
 import TheDecoderDataSource from '../dataSources/the-decoder.js';
 
@@ -96,12 +95,5 @@ export const STRUCTURED_SOURCE_ADAPTERS = Object.freeze([
         KazikeXDataSource,
         'KAZIKE_X_FEED_ID',
         'KAZIKE_X_FETCH_PAGES',
-    ),
-    foloFeed(
-        'alex_finn_x',
-        'socialMedia',
-        AlexFinnXDataSource,
-        'ALEX_FINN_X_FEED_ID',
-        'ALEX_FINN_X_FETCH_PAGES',
     ),
 ]);
