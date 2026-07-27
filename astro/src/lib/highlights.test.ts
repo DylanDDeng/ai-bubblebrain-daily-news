@@ -15,6 +15,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-07-25-claude-design/',
 	'/highlights/2026-07-26-cloud-rendering/',
 	'/en/highlights/2026-07-26-cloud-rendering/',
+	'/highlights/2026-07-27-prompt-caching-in-agents/',
+	'/en/highlights/2026-07-27-prompt-caching-in-agents/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
