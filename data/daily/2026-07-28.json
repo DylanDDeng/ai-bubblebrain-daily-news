@@ -1,0 +1,56 @@
+{
+  "batches": [
+    {
+      "generated_at": null,
+      "id": "morning",
+      "item_ids": [],
+      "label": "08:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": null,
+      "id": "afternoon",
+      "item_ids": [],
+      "label": "14:00 更新",
+      "status": "pending"
+    },
+    {
+      "generated_at": "2026-07-27T16:00:00.000Z",
+      "id": "night",
+      "item_ids": [],
+      "label": "22:00 更新",
+      "status": "completed"
+    },
+    {
+      "generated_at": null,
+      "id": "lateNight",
+      "item_ids": [],
+      "label": "次日 02:00 补充更新",
+      "status": "pending"
+    }
+  ],
+  "classifier_version": 1,
+  "date": "2026-07-28",
+  "dedupe_version": 1,
+  "generated_at": "2026-07-27T16:00:00.000Z",
+  "identity_version": 1,
+  "items": [],
+  "overview": {
+    "kind": "pending",
+    "provenance": {
+      "method": "template",
+      "model": null,
+      "prompt_version": null
+    },
+    "text": "今日 AI 增量日报正在更新中。"
+  },
+  "producer": {
+    "commit_sha": null,
+    "dedupe_lookback_days": 7,
+    "name": "bubble-brain-worker",
+    "version": "phase1d-production"
+  },
+  "schema_version": 1,
+  "taxonomy_version": 1,
+  "timezone": "Asia/Shanghai"
+}
