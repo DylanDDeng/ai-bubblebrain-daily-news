@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(11);
 
 select has_table(
   'private',
@@ -75,6 +75,20 @@ select throws_ok(
   '22023',
   'Invalid scheduled run trace',
   'off-contract half-hour traces fail closed'
+);
+select lives_ok(
+  $$select private.record_scheduled_run_trace_v1(
+    'scheduled:1785164400000',
+    timestamptz '2026-07-27 15:00:00+00',
+    'started',
+    jsonb_build_object(
+      'status', 'started',
+      'stage', 'started',
+      'started_at', '2026-07-27T15:00:00.000Z',
+      'finished_at', null
+    )
+  )$$,
+  'the 23:00 Beijing production slot accepts its UTC 15:00 trace'
 );
 select is(
   (

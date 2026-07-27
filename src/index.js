@@ -266,7 +266,11 @@ function scheduledFailureMarker(error, scheduled, startedAt) {
                     ? 'git_publish'
                     : 'unknown',
         source_result: {
-            status: 'failed',
+            status:
+                error?.name === 'ScheduledDatabaseMirrorError' &&
+                evidence?.source_result?.status === 'succeeded'
+                    ? 'succeeded'
+                    : 'failed',
             completed_at: evidence?.source_result?.completed_at || null,
             counts: sourceCounts,
             error_count: sourceErrors.length,
