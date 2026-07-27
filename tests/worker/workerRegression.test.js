@@ -367,7 +367,7 @@ describe('worker regression guards', () => {
             failure_stage: 'database_mirror',
             content_sha256: 'a'.repeat(64),
             source_result: {
-                status: 'failed',
+                status: 'succeeded',
                 counts: { news: 3 },
             },
         });

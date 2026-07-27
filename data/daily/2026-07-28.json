@@ -15,9 +15,25 @@
       "status": "pending"
     },
     {
-      "generated_at": "2026-07-27T16:00:00.000Z",
+      "generated_at": "2026-07-27T17:00:00.000Z",
       "id": "night",
-      "item_ids": [],
+      "item_ids": [
+        "n_f68e59365fed4e80abe606e5f47d63b91506268116a6041fa2b3cc15b2c31ece",
+        "n_1852719ecccef1cce666631254061516f21bc9732f7bf88256dd6144b567d5b8",
+        "n_6bec622f9a553161e48ca4242ae20b9ecee964283099b64a769c8271fffd258a",
+        "n_4a2072b2c4588da3b0ef63701319ab23b3d7e4769bec1ed36d16f147af7d1e6a",
+        "n_2e850ce19c1968a5bcc5eec4a2260ef57b0e9fc3c92a7ec1447c6743b89536fb",
+        "n_fbcebcadbaaeb597b130941b451c96aaa8655f5157af6a4b8c7e85973f65cef8",
+        "n_b3e018f2c71be487889a387341c2d9ba62379ca74b4d361f81222fd13047860e",
+        "n_920d1b57126ed6f190a03da18569bd73c1e1788e873b5b52c40e10df38d11e40",
+        "n_0be60b86b15bdcdb5ef7a77a58790c48077b1bf16e1de1c1918e0208ad701215",
+        "n_d88cc9c0dea85f2c2ac17a57841e867bfba1a5762c920520e492ad9bc004e286",
+        "n_5a1b62174f79d02fddb1f07d03fa9328f51a3d31e0342be31b1d83ca8969a5f2",
+        "n_a7ae8c6b10d3ee5a374d5a7a80eabdf9529052d635b6a4a787147c2426da05dd",
+        "n_2246a004bb3afc882da3a13ed0c8dd9dcd0fdd13539f1889be65804b8dc154bd",
+        "n_9521e80c255001b9444e120ac8692e988c4513f01796da1a279c061ec50e2b31",
+        "n_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528"
+      ],
       "label": "22:00 更新",
       "status": "completed"
     },
@@ -32,9 +48,597 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T16:00:00.000Z",
+  "generated_at": "2026-07-27T17:00:00.000Z",
   "identity_version": 1,
-  "items": [],
+  "items": [
+    {
+      "batch": "night",
+      "canonical_url": "https://the-decoder.com/the-ai-coding-tutor-paradox-grows-as-educators-scramble-to-rethink-how-they-test-real-skills/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_f68e59365fed4e80abe606e5f47d63b91506268116a6041fa2b3cc15b2c31ece",
+      "featured": false,
+      "id": "n_f68e59365fed4e80abe606e5f47d63b91506268116a6041fa2b3cc15b2c31ece",
+      "identity_claims": [
+        "c_af3239130df40bc37ce10c96dbf3a652548b455df8193e4973eb4cf80109be15",
+        "c_f68e59365fed4e80abe606e5f47d63b91506268116a6041fa2b3cc15b2c31ece"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-26T06:59:56.895Z",
+      "published_date": "2026-07-26",
+      "reason": "ACM 全球调查显示 68% 的教育者已因 AI 改变考试方式，数据具体但属渐进式变化，缺乏突破性。",
+      "related_source_ids": [],
+      "score": 6.5,
+      "source": {
+        "homepage": null,
+        "id": "1218439556630622214",
+        "name": "The Decoder"
+      },
+      "source_id": "1218439556630622214",
+      "source_type": "the_decoder",
+      "summary": "An ACM survey of 763 computer science educators from 49 countries shows that 68 percent have already changed their exams because of AI, shifting toward oral exams, proctored tests, and project-based work. Teaching is moving from writing code to understanding it. But nearly half of respondents say they lack proven examples for integrating AI into their courses. The article The AI coding tutor paradox grows as educators scramble to rethink how they test real skills appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "The AI coding tutor paradox grows as educators scramble to rethink how they test real skills",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/the-ai-coding-tutor-paradox-grows-as-educators-scramble-to-rethink-how-they-test-real-skills/"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://the-decoder.com/us-reportedly-favors-selective-bans-over-blanket-restrictions-on-chinese-open-weight-models-citing-security-concerns/",
+      "category": "policy",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic",
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_1852719ecccef1cce666631254061516f21bc9732f7bf88256dd6144b567d5b8",
+      "featured": false,
+      "id": "n_1852719ecccef1cce666631254061516f21bc9732f7bf88256dd6144b567d5b8",
+      "identity_claims": [
+        "c_1852719ecccef1cce666631254061516f21bc9732f7bf88256dd6144b567d5b8",
+        "c_a021fb615bca3b7d49db0757ee002b820287e8353cb73c116d5ed44cc9f18609"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-26T07:56:24.229Z",
+      "published_date": "2026-07-26",
+      "reason": "美国对华 AI 模型管制从全面禁令转向选择性禁令，披露 OpenAI 等公司公开与私下立场矛盾，影响全球开源生态。",
+      "related_source_ids": [],
+      "score": 8.2,
+      "source": {
+        "homepage": null,
+        "id": "1218439556630622213",
+        "name": "The Decoder"
+      },
+      "source_id": "1218439556630622213",
+      "source_type": "the_decoder",
+      "summary": "The Trump administration is planning targeted bans on Chinese AI models rather than a blanket ban. After public pressure, OpenAI and Google DeepMind signed an open letter opposing regulation of open-weight models, yet OpenAI and Anthropic continue to lobby privately for those same restrictions amid security concerns and powerful business interests. The article US reportedly favors selective bans over blanket restrictions on Chinese open weight models citing security concerns appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "US reportedly favors selective bans over blanket restrictions on Chinese open weight models citing security concerns",
+      "topic_ids": [
+        "topic_policy"
+      ],
+      "url": "https://the-decoder.com/us-reportedly-favors-selective-bans-over-blanket-restrictions-on-chinese-open-weight-models-citing-security-concerns/"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://the-decoder.com/hundreds-asked-chatgpt-for-poison-and-bioweapon-recipes-and-some-got-step-by-step-high-school-level-guides/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_6bec622f9a553161e48ca4242ae20b9ecee964283099b64a769c8271fffd258a",
+      "featured": false,
+      "id": "n_6bec622f9a553161e48ca4242ae20b9ecee964283099b64a769c8271fffd258a",
+      "identity_claims": [
+        "c_206c533b8aa3cae333e8e4b66e2a35fded1a7d04c58b0140bfb16f2fc757cdca",
+        "c_6bec622f9a553161e48ca4242ae20b9ecee964283099b64a769c8271fffd258a"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-26T08:35:49.391Z",
+      "published_date": "2026-07-26",
+      "reason": "GPT-5 被曝提供生物武器分步指南，OpenAI 内部曾标记高风险后降级，引用华尔街日报，触及安全红线。",
+      "related_source_ids": [],
+      "score": 8.5,
+      "source": {
+        "homepage": null,
+        "id": "1218439556630622212",
+        "name": "The Decoder"
+      },
+      "source_id": "1218439556630622212",
+      "source_type": "the_decoder",
+      "summary": "In summer 2025, OpenAI internally flagged GPT-5 as high-risk because it helped users create biological hazards, but downgraded the model's risk rating that fall. According to the Wall Street Journal, some users got step-by-step instructions for making poisons and biological weapons. Hundreds asked for that kind of information. The article Hundreds asked ChatGPT for poison and bioweapon recipes and some got step-by-step high school level guides appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Hundreds asked ChatGPT for poison and bioweapon recipes and some got step-by-step high school level guides",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://the-decoder.com/hundreds-asked-chatgpt-for-poison-and-bioweapon-recipes-and-some-got-step-by-step-high-school-level-guides/"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://the-decoder.com/anthropics-opus-5-blows-past-fable-5-and-gpt-5-6-sol-on-the-benchmark-designed-to-measure-real-intelligence/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_4a2072b2c4588da3b0ef63701319ab23b3d7e4769bec1ed36d16f147af7d1e6a",
+      "featured": true,
+      "id": "n_4a2072b2c4588da3b0ef63701319ab23b3d7e4769bec1ed36d16f147af7d1e6a",
+      "identity_claims": [
+        "c_4a2072b2c4588da3b0ef63701319ab23b3d7e4769bec1ed36d16f147af7d1e6a",
+        "c_d8059e7eb58ef84e0dcc9a06dba2f0710faecbb5e4523e5dc408e8b5df00d510"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-26T09:43:02.355Z",
+      "published_date": "2026-07-26",
+      "reason": "Claude Opus 5 在 ARC-AGI-3 上取得 30.2% 成绩，接近前纪录的四倍，并展现出前所未有的推理能力，可能重新定义智能基准。",
+      "related_source_ids": [],
+      "score": 9.5,
+      "source": {
+        "homepage": null,
+        "id": "1218439556630622211",
+        "name": "The Decoder"
+      },
+      "source_id": "1218439556630622211",
+      "source_type": "the_decoder",
+      "summary": "Anthropic's Claude Opus 5 scored 30.2 percent on ARC-AGI-3, nearly quadrupling GPT-5.6 Sol's previous record of 7.8 percent. The benchmark's developers say the model independently formulated reflection equations, a behavior they had never seen from another model, and attribute to stronger logical reasoning. The article Anthropic's Opus 5 blows past Fable 5 and GPT-5.6 Sol on the benchmark designed to measure real intelligence appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Anthropic's Opus 5 blows past Fable 5 and GPT-5.6 Sol on the benchmark designed to measure real intelligence",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://the-decoder.com/anthropics-opus-5-blows-past-fable-5-and-gpt-5-6-sol-on-the-benchmark-designed-to-measure-real-intelligence/"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://the-decoder.com/cursors-agent-swarm-suggests-cheaper-models-can-handle-most-coding-when-frontier-models-plan-the-work/",
+      "category": "agents",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_2e850ce19c1968a5bcc5eec4a2260ef57b0e9fc3c92a7ec1447c6743b89536fb",
+      "featured": false,
+      "id": "n_2e850ce19c1968a5bcc5eec4a2260ef57b0e9fc3c92a7ec1447c6743b89536fb",
+      "identity_claims": [
+        "c_2e850ce19c1968a5bcc5eec4a2260ef57b0e9fc3c92a7ec1447c6743b89536fb",
+        "c_3599a0f71105a28aec343b3508ebea67eb4a7b76ad18b0848e95f03fac30b7f3"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-26T15:09:11.091Z",
+      "published_date": "2026-07-26",
+      "reason": "Cursor 的规划-执行分离 swarm 实验达到 100% 测试通过率，验证了廉价模型与前沿规划结合的高效性，对工程实践有参考价值。",
+      "related_source_ids": [],
+      "score": 7.5,
+      "source": {
+        "homepage": null,
+        "id": "1218439556630622210",
+        "name": "The Decoder"
+      },
+      "source_id": "1218439556630622210",
+      "source_type": "the_decoder",
+      "summary": "Cursor asked its upgraded agent swarm and its predecessor to rebuild SQLite in Rust using only the documentation, with no source code or internet access. Every configuration of the new system, which separates planners from workers, eventually scored 100 percent on the test suite. The old swarm choked on merge conflicts of its own making. The article Cursor's agent swarm suggests cheaper models can handle most coding when frontier models plan the work appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Cursor's agent swarm suggests cheaper models can handle most coding when frontier models plan the work",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://the-decoder.com/cursors-agent-swarm-suggests-cheaper-models-can-handle-most-coding-when-frontier-models-plan-the-work/"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://mp.weixin.qq.com/s?__biz=MzIyMzA5NjEyMA%3D%3D&idx=1&mid=2647684648&sn=d246e9edd3be0f08cbd738b0531add21",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_fbcebcadbaaeb597b130941b451c96aaa8655f5157af6a4b8c7e85973f65cef8",
+      "featured": false,
+      "id": "n_fbcebcadbaaeb597b130941b451c96aaa8655f5157af6a4b8c7e85973f65cef8",
+      "identity_claims": [
+        "c_d551563c4a7ceca40bac05853607452da0a3e8d7b4dfda04e044b1a0075fac7f",
+        "c_fbcebcadbaaeb597b130941b451c96aaa8655f5157af6a4b8c7e85973f65cef8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T00:12:00.985Z",
+      "published_date": "2026-07-27",
+      "reason": "个人博客推广开源 Skill，内容以经验分享和产品介绍为主，缺乏实质新闻或行业影响，营销属性明显。",
+      "related_source_ids": [],
+      "score": 3.2,
+      "source": {
+        "homepage": null,
+        "id": "1218440168176922624",
+        "name": "数字生命卡兹克"
+      },
+      "source_id": "1218440168176922624",
+      "source_type": "kazike",
+      "summary": "原创 数字生命卡兹克 2026-07-27 08:12 北京 直接开源 今天给大家开源一个我自己周末做完然后用的很爽的Skill。 我把它称为， Leader.skill。 它专门解决一件事，就是帮我们定义目标。 把我们人类脑子里那些模模糊糊、连自己都还没完全想清楚、不知道该怎么明确定义目标的需求，变成一份能交给Agent使用目标模式或者/goal模式独立执行几个小时以上并且保证完成度的目标。 比如，就这么一句话。 然后它就会根据你的代码库，还有网上最新的信息，根据skill的知识，帮你产生一份定义的极其清晰的、下一个Agent拿到就直接完美开干的目标任务书。 就像这样。 所以，你可能就明白，为啥这个skill叫leader.skill了。。。 毕竟很多领导，也是说不明白话的嘛 当然，这玩意还有另一个最合适的场景，就是多模型组合，用类似Claude Fable 5、Kimi K3这种强大的规划模型出一个清清晰的目标，然后交给类似GPT-5.6 Sol、GLM-5.2这种执行能力更强的模型去超长程执行。 之所以做这个东西，其实也是因为我最近跟Agent的交互，越来越强烈的一个感受。 人类跟Agent的协作方式，其实越来越是以定义目标为核心了。 很久远的过去，我们用AI，核心交互单位是一轮对话，你问一句，它答一句，那时候，是聊天制。 后来有了Coding Agent，核心交互单位变成了一个任务。 你让它做一个功能、改一个 Bug、查一份资料，它自己调用工具，自己执行，最后把结果交回来。 但到了2026年的今天，你像Claude Code、Codex、Kimi Code都已经有了 /goal 、目标模式这样的功能。 我们开始希望交给Agent一个目标，它就能自己连续工作几个小时，甚至几天，然后帮我们完成这个目标。 它可以自己拆任务、自己调工具、自己派子 Agent、自己验证、失败了自己重试，一轮接一轮地跑下去。 人类不需要坐在屏幕前一直盯着，也不需要一直交互，只需要最终验收目标就行。 这就是这几年，AI与人类交互范式的转变，从聊天制，到任务制，再到目标制。 这件事听起来特别美好对吧。 但当Agent真能独立跑一整夜以后，一个以前还能被人类临场补救的问题，会突然变得非常致命。 你的目标到底写得对不对。 短任务跑偏了，你看一眼，还能马上纠正。 长程任务跑偏了，你睡醒以后，它可能已经沿着错误方向狂奔了八个小时。 它越勤奋，浪费得越彻底，就像这样，直接一天浪费了我20亿Token。 当然，网上吐槽归吐槽，但是我其实明白，核心问题还是在我自己菜比，目标定义的完全不清楚，导致Agent理解错误，最后面向错误的方向一路狂奔。 所以我之前其实一直不是很喜欢Loop Engineering这个词，我更喜欢Goal Engineering。 一个目标里，除了有明确的目标定义，也必然是包含着Harness。 所以，这个技能最重要的部分，我觉得来了，也就是，到底什么是目标？ 这个问题，我其实思考了两周多的时间，也看了很多的书还有过去的一些理论，又用AI做了大量的横纵分析调研。 最后我觉得两件事特别重要。 第一件，来自军事传统里的一个概念，指挥官意图，Commander's Intent。核心就一句话，告诉部队“为什么打”和“打完了战场该是什么样”，然后让他们自己决定怎么打。 因为没有任何计划能在跟现实第一次接触后存活。比如你说“过桥清扫高地”，桥被炸了部队可能就傻了。你说“掐断补给线”，桥没了它自己就会绕路，这就是意图不变，手段随机应变。 给Agent定义目标也是同一件事。 你告诉它过桥，它就会对着断桥一直死磕，但是你告诉它掐断补给线，它有可能自己找到另一条路。 这一件事，其实大家比较好理解。 但第二件事，我觉得才是我真正花了时间才想明白的。 定义一个目标，最重要的部分，不是告诉它要做什么，是告诉它什么不能做。 大佬们花在排除上的时间，远远多于花在设定本身上的时间。 普通人定目标，想要什么，写下来。而大佬们定目标，想要什么，很多先想的是“达成这个数字最偷懒的办法是什么”，然后把偷懒路径全堵死，剩下的才是目标。 肯尼迪1961年那句著名的登月宣言，关键不在登月两个字，而在后半句： landing a man on the Moon and returning him safely to the Earth。 把人送上月球，然后，安全带回地球。 如果只是说，把人送上月球，那其实可能以当时的科技，没有特别难，但是多出来的安全返回四个字，效果上做的事情是，它把“单程票”这个最省钱的解法直接删掉了。 芒格说，我只想知道自己会死在哪里，这样我就永远不去那里。 其实也是一样的。 所以我后来越来越觉得，一个目标里，Harness比Goal本身更重要。 Goal告诉Agent往哪走，Harness告诉它哪些路不许走，没有Harness的Goal，你相信我，Agent永远会找到你没想到的捷径。 然后基于这些呢，我自己总结了一个对Agent很友好的我称为 目标七问的方法论： 我用出海来打比方，因为出海跟让Agent干活也挺像的。 你给Agent定义一个目标，就是派一艘船出海，然后它在海上怎么兴风作浪，你可是管不了一丁点了。 所以，这七个问题，就是出海前你必须想清楚的七件事，缺一条都不行。 第一个，目的，Why。 我们为什么要出这趟海，你是去找香料的？还是去探新航线的？还是去打仗的？这个不写清楚，船在海上遇到岔路口就不知道该咋整了。 第二个，完成态，Done。 船回港的时候，甲板上应该有什么？比如出去转一圈不是完成态，带回三船香料才是。这个完成态得很具体，具体到船靠岸那一刻就能判断的程度。 第三个，证据，Proof。 谁来清点货舱，怎么算数。船长说满载而归，你得有人上去一箱箱点过，数字对得上才算，你不能听船长说满就是满。 第四个，反作弊，Anti。 比如不 许抢商船凑数。你说带回三船香料，最省事的办法是在港口外面劫三条商船，指标一样达成了，但是人事是一件没干。所以你得把这些偷懒路径一条条写明白，告诉他不许这么干。 第五个，边界，Bounds。 比如你 只许走这三条航线，其他海域不准进。粮食够吃三十天，第二十天还没找到就必须掉头。 第六个，取舍，Trade。 风暴里保货还是保船。大部分时候不冲突，但真冲突了船长得知道保哪个，你不提前说优先级他就只能猜，猜错了整趟航程就彻底废了，甚至人财两空。 第七个，未知，Unknown。 海图上的空白区怎么办。遇到没见过的海域不要硬闯也不要原地抛锚，记下来绕过去继续走，回来以后再决定要不要探，闷头闯和原地停都是最差的选择。 七条，每一条在定义目标的时候，都需要问清楚自己。 而这，就是整个Leader.skill的最核心的心法。 还是用最开始的那个案例来给大家看一下使用流程。 直接选中一个适合做方案和规划的模型，把你的需求，比如我用的就是Claude Fable 5 Extra。 我的需求就特别的“领导”，我就要重构后台，我觉得后台做的不符合我心意，我感觉我看不懂，我不相信里面的数据是真的，而且我觉得你卡得要死。 对任何一个执行者来说，我觉得看到这段需求，必然都会窒息的。。。 这时候，就该Leader.skill出场了。 Leader.skill专治想不清楚目标的领导。 它会根据流程，先对自己的文件库进行实测，或者去网上调研最新的方案，先进行全面调研，知己知彼，方能百战不殆。 然后呢，必然就是要摸清楚领导具体的需求和喜好了，所以Leader.skill会问你最多5个他调研完以后，确实需要知道你偏好的问题，这些问题是必须由你来拍板的，比如我这个重构后台的任务，就问了我一些问题。 它问我，为啥看不懂？？？",
+      "time_precision": "exact",
+      "title": "浪费20亿Token之后，我开源了一个帮自己定义目标的Skill。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://mp.weixin.qq.com/s?__biz=MzIyMzA5NjEyMA%3D%3D&idx=1&mid=2647684648&sn=d246e9edd3be0f08cbd738b0531add21"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2081730965278466519",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_b3e018f2c71be487889a387341c2d9ba62379ca74b4d361f81222fd13047860e",
+      "featured": false,
+      "id": "n_b3e018f2c71be487889a387341c2d9ba62379ca74b4d361f81222fd13047860e",
+      "identity_claims": [
+        "c_385f04d45816df78c4f44f10058d9d82624ec2c57d30216290d4377c54a734e1",
+        "c_b3e018f2c71be487889a387341c2d9ba62379ca74b4d361f81222fd13047860e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T02:08:59.238Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218438122648399878",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218438122648399878",
+      "source_type": "twitter_extra",
+      "summary": "该项目在iOS上基于深度定制的iSH模拟器运行Alpine Linux，Android端使用PRoot，让Agent能执行Shell命令、操作文件和调用日历、健康、蓝牙等系统功能。工具层仅暴露8个接口，设备集成全部通过沙箱内命令行程序实现，避开工具schema膨胀。",
+      "time_precision": "exact",
+      "title": "开源移动AI Agent OpenMinis通过定制Linux沙箱使手机获得完整系统自动化能力",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081730965278466519"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2081730999130730640",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_920d1b57126ed6f190a03da18569bd73c1e1788e873b5b52c40e10df38d11e40",
+      "featured": false,
+      "id": "n_920d1b57126ed6f190a03da18569bd73c1e1788e873b5b52c40e10df38d11e40",
+      "identity_claims": [
+        "c_33a9a644b5bf062a914c14d870919bf4401a455656fc473e88630949d2ce10e1",
+        "c_920d1b57126ed6f190a03da18569bd73c1e1788e873b5b52c40e10df38d11e40"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T05:14:00.055Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218438122648399876",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218438122648399876",
+      "source_type": "twitter_extra",
+      "summary": "核心方法包括：先用充分构思再写prompt、直接指定美学风格、将重复元素沉淀为design system、要求多方案并重组、通过手绘草图表达布局、结合点指与语音指挥等，目的都是把设计决策权从模型拉回人手中。",
+      "time_precision": "exact",
+      "title": "Claude Design作者分享十条最佳实践，通过明确约束和设计系统提升AI设计产出效率",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081730999130730640"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2081730945200398794",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_0be60b86b15bdcdb5ef7a77a58790c48077b1bf16e1de1c1918e0208ad701215",
+      "featured": false,
+      "id": "n_0be60b86b15bdcdb5ef7a77a58790c48077b1bf16e1de1c1918e0208ad701215",
+      "identity_claims": [
+        "c_0be60b86b15bdcdb5ef7a77a58790c48077b1bf16e1de1c1918e0208ad701215",
+        "c_3d8500fa41df8a2475c96701741fb5c84cb6cb506477ef3b88f2564e64bafe77"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T06:31:08.915Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218438122648399874",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218438122648399874",
+      "source_type": "twitter_extra",
+      "summary": "通过让Agent处理邮件、Slack、日历等任务，把上下文写成文件而非依赖对话，谨慎授予自动化权限，并且要求输出直接落在标签页等操作界面，而非停留在文档报告。",
+      "time_precision": "exact",
+      "title": "OpenAI员工将ChatGPT Work与Codex改造成个人操作系统，提炼出五条核心原则",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081730945200398794"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://the-decoder.com/shared-claude-chats-were-reportedly-showing-up-in-search-engines/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_d88cc9c0dea85f2c2ac17a57841e867bfba1a5762c920520e492ad9bc004e286",
+      "featured": false,
+      "id": "n_d88cc9c0dea85f2c2ac17a57841e867bfba1a5762c920520e492ad9bc004e286",
+      "identity_claims": [
+        "c_5ea03ba9efa24f96a6f834ca13da3ec2fc30b296f2e9143b98cddb70a1b3a1f9",
+        "c_d88cc9c0dea85f2c2ac17a57841e867bfba1a5762c920520e492ad9bc004e286"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T07:51:16.563Z",
+      "published_date": "2026-07-27",
+      "reason": "Claude 共享对话因 noindex 缺失被搜索引擎收录，暴露用户敏感信息，但类似事件去年已发生，影响有限。",
+      "related_source_ids": [],
+      "score": 6,
+      "source": {
+        "homepage": null,
+        "id": "1218439556630622209",
+        "name": "The Decoder"
+      },
+      "source_id": "1218439556630622209",
+      "source_type": "the_decoder",
+      "summary": "Shared conversations with Anthropic's Claude chatbot briefly appeared in Google search results because the pages lacked a noindex tag. Users said some chats contained crypto keys and legal questions. OpenAI made the same mistake last year. The article Shared Claude chats were reportedly showing up in search engines appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Shared Claude chats were reportedly showing up in search engines",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://the-decoder.com/shared-claude-chats-were-reportedly-showing-up-in-search-engines/"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/aigclink/status/2081684368947613829",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_microsoft"
+      ],
+      "event_id": "e_5a1b62174f79d02fddb1f07d03fa9328f51a3d31e0342be31b1d83ca8969a5f2",
+      "featured": false,
+      "id": "n_5a1b62174f79d02fddb1f07d03fa9328f51a3d31e0342be31b1d83ca8969a5f2",
+      "identity_claims": [
+        "c_5a1b62174f79d02fddb1f07d03fa9328f51a3d31e0342be31b1d83ca8969a5f2",
+        "c_7b32c7864a73813885887e52e3967bac8f4424e4b3e304a4ef16eaa305df8afc"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T10:13:24.780Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218405247374901249",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1218405247374901249",
+      "source_type": "twitter_extra",
+      "summary": "服务市场体量是软件支出的6倍，AI全自动化可整体替代会计、理赔等成熟流程，每次模型升级能扩大利润；而卖Copilot则需直面模型竞争。",
+      "time_precision": "exact",
+      "title": "红杉资本认为卖可交付服务的AI公司将成为下一个万亿美元机会，而非卖Copilot",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_policy"
+      ],
+      "url": "https://x.com/aigclink/status/2081684368947613829"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://the-decoder.com/metr-introduces-a-new-metric-to-calculate-exactly-when-ai-agents-become-more-expensive-than-humans/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_a7ae8c6b10d3ee5a374d5a7a80eabdf9529052d635b6a4a787147c2426da05dd",
+      "featured": false,
+      "id": "n_a7ae8c6b10d3ee5a374d5a7a80eabdf9529052d635b6a4a787147c2426da05dd",
+      "identity_claims": [
+        "c_1e41e8f5411f0fc4d7137ae39c0bb4d37e1698cc8fec79a5257d2a6dc7f1be07",
+        "c_a7ae8c6b10d3ee5a374d5a7a80eabdf9529052d635b6a4a787147c2426da05dd"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T12:28:06.402Z",
+      "published_date": "2026-07-27",
+      "reason": "METR 推出“耗费地平线”指标量化 AI 代理成本效益，虽早期结果平庸但提供了可量化的评估工具，有助于行业讨论。",
+      "related_source_ids": [],
+      "score": 6.5,
+      "source": {
+        "homepage": null,
+        "id": "1218439556630622208",
+        "name": "The Decoder"
+      },
+      "source_id": "1218439556630622208",
+      "source_type": "the_decoder",
+      "summary": "METR's new metric, the \"expenditure horizon,\" puts a dollar figure on how cost-effective AI agents are at solving problems. Early results on the NanoGPT speedrun are underwhelming, the metric has blind spots, and the newest generation of models could change the picture. The article METR introduces a new metric to calculate exactly when AI agents become more expensive than humans appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "METR introduces a new metric to calculate exactly when AI agents become more expensive than humans",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/metr-introduces-a-new-metric-to-calculate-exactly-when-ai-agents-become-more-expensive-than-humans/"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/aigclink/status/2081735489888067678",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_2246a004bb3afc882da3a13ed0c8dd9dcd0fdd13539f1889be65804b8dc154bd",
+      "featured": false,
+      "id": "n_2246a004bb3afc882da3a13ed0c8dd9dcd0fdd13539f1889be65804b8dc154bd",
+      "identity_claims": [
+        "c_2246a004bb3afc882da3a13ed0c8dd9dcd0fdd13539f1889be65804b8dc154bd",
+        "c_49b8970a91857dacb077b06ab613977d74780a4257279b439a6c5b973a91fa05"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T13:36:32.146Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218405247374901248",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1218405247374901248",
+      "source_type": "twitter_extra",
+      "summary": "该用户跑K3任务时感觉套餐不经用，对比发现最高阶plan价格与Claude的max 10x版相近，遂认为不如用Claude，并询问他人是否同感。",
+      "time_precision": "exact",
+      "title": "用户反馈Kimi套餐消耗过快价格趋近Claude，使用体感性价比不如后者",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/aigclink/status/2081735489888067678"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2081745070022365650",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_9521e80c255001b9444e120ac8692e988c4513f01796da1a279c061ec50e2b31",
+      "featured": false,
+      "id": "n_9521e80c255001b9444e120ac8692e988c4513f01796da1a279c061ec50e2b31",
+      "identity_claims": [
+        "c_9521e80c255001b9444e120ac8692e988c4513f01796da1a279c061ec50e2b31",
+        "c_9bf44cc92ebb638b1aa245d6f3f92ad414ec57336403c21d8d9d76cd50d1bb39"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T14:14:36.353Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218438122648399873",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218438122648399873",
+      "source_type": "twitter_extra",
+      "summary": "此前SSI未公开产品已获超30亿美元融资，Ilya表示研究已值得规模化。SSI原有工作主要基于Google TPU，此次转向NVIDIA，让英伟达获得前沿研究可见性并锁定关键客户。",
+      "time_precision": "exact",
+      "title": "NVIDIA对SSI进行战略投资并开放Vera Rubin平台，助其算力提升十倍并标志研究进入规模化阶段",
+      "topic_ids": [
+        "topic_research",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://x.com/shao__meng/status/2081745070022365650"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2081747876993233109",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528",
+      "featured": false,
+      "id": "n_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528",
+      "identity_claims": [
+        "c_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528",
+        "c_57d1a29b0a6fcb3c3c3dd24d55d3ef6125f00f15fba4176afa5798a9aaa2e6c9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T17:00:00.000Z",
+      "published_at": "2026-07-27T14:25:45.217Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218438122648399872",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1218438122648399872",
+      "source_type": "twitter_extra",
+      "summary": "常规MCP工具分散查询多个系统，导致模型运行时还要做数据关联，Glean的MCP Gateway则提前完成跨公司数据关联与排序，赋予智能体结构化上下文，同时附带权限治理和安全检查。",
+      "time_precision": "exact",
+      "title": "企业Agent应用中上下文质量成为关键瓶颈，Glean通过预构建统一索引使智能体效果提升2.5倍",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081747876993233109"
+    }
+  ],
   "overview": {
     "kind": "pending",
     "provenance": {
