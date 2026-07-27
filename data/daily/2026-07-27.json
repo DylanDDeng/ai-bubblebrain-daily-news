@@ -121,7 +121,7 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-27T18:00:00.000Z",
+      "generated_at": "2026-07-27T19:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
         "n_011d03340e0d89c2b16a10314703b274e27785b65931d946d537728c3d6a9035",
@@ -141,7 +141,10 @@
         "n_a7ae8c6b10d3ee5a374d5a7a80eabdf9529052d635b6a4a787147c2426da05dd",
         "n_2246a004bb3afc882da3a13ed0c8dd9dcd0fdd13539f1889be65804b8dc154bd",
         "n_9521e80c255001b9444e120ac8692e988c4513f01796da1a279c061ec50e2b31",
-        "n_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528"
+        "n_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528",
+        "n_be28e9f022e2a9411295f018f9c42ab9de29e0d00048deddc452689b722c5359",
+        "n_fcf54d7e87cab5bcee0fcce5ca49def1eecffe2b3bb7743b5bb0aa85f1277b27",
+        "n_8c1ccf1af7c4870050f9da52cc7f9dbad1949e7446cd8c2e16b88dd43cae87ae"
       ],
       "label": "次日 02:00 补充更新",
       "status": "completed"
@@ -150,7 +153,7 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T18:00:00.000Z",
+  "generated_at": "2026-07-27T19:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4508,6 +4511,116 @@
         "topic_open_source"
       ],
       "url": "https://x.com/shao__meng/status/2081747876993233109"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/omarsar0/status/2081765310433280209",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_be28e9f022e2a9411295f018f9c42ab9de29e0d00048deddc452689b722c5359",
+      "featured": false,
+      "id": "n_be28e9f022e2a9411295f018f9c42ab9de29e0d00048deddc452689b722c5359",
+      "identity_claims": [
+        "c_13ad793aa64d0aa41b3d12eff8cd7f29ed04ebc487cfea9df8f6da3856363147",
+        "c_be28e9f022e2a9411295f018f9c42ab9de29e0d00048deddc452689b722c5359"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T19:00:00.000Z",
+      "published_at": "2026-07-27T15:35:01.554Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218529343710466050",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1218529343710466050",
+      "source_type": "twitter_extra",
+      "summary": "Are agent skills always worth using? The answer is no? This paper provides some important insights to understand this more. (bookmark it) Paper summary: Adding procedural skills to an agent is usually scored by average task success. That number nets gains against damage and hides half of what happened. Setup: nearly 6,000 paired runs across two office automation benchmarks and three model harness stacks, comparing the same agent with and without skills. A regression is a task the agent solved without skills and then failed once skills were added. Regressions are large enough that the best performing skills separate themselves mainly through fewer regressions. Larger gains contribute much less. Three mechanisms drive it. Skill description osmosis, where a skill changes agent behavior just by sitting in context even when it is never invoked. Grounding displacement, where a prescribed procedure overrides how the agent reads its inputs. Verification displacement, where the procedure suppresses checks the agent would otherwise run on its own output. Trace analysis surfaces that procedural guidance is the stage least often responsible for failure, while grounding and verification dominate the errors that remain. Existing skills are almost entirely procedure. Paper: Learn to build effective AI agents in our academy:",
+      "time_precision": "exact",
+      "title": "Are agent skills always worth using? The answer is no? This paper",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://x.com/omarsar0/status/2081765310433280209"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/omarsar0/status/2081767303738274194",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_fcf54d7e87cab5bcee0fcce5ca49def1eecffe2b3bb7743b5bb0aa85f1277b27",
+      "featured": false,
+      "id": "n_fcf54d7e87cab5bcee0fcce5ca49def1eecffe2b3bb7743b5bb0aa85f1277b27",
+      "identity_claims": [
+        "c_a2f36cc1631fd914497248955c635ab72bf640562172d13d1f495efb8c95b591",
+        "c_fcf54d7e87cab5bcee0fcce5ca49def1eecffe2b3bb7743b5bb0aa85f1277b27"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T19:00:00.000Z",
+      "published_at": "2026-07-27T15:42:57.163Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218529343710466049",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1218529343710466049",
+      "source_type": "twitter_extra",
+      "summary": "该模型是目前最强模型，新架构让单位计算智能提升2.5倍，不仅依赖参数规模增长。",
+      "time_precision": "exact",
+      "title": "Kimi K3发布模型权重与技术报告，采用2.8万亿参数混合专家架构并支持原生视觉与超长上下文",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/omarsar0/status/2081767303738274194"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/omarsar0/status/2081783727001145568",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8c1ccf1af7c4870050f9da52cc7f9dbad1949e7446cd8c2e16b88dd43cae87ae",
+      "featured": false,
+      "id": "n_8c1ccf1af7c4870050f9da52cc7f9dbad1949e7446cd8c2e16b88dd43cae87ae",
+      "identity_claims": [
+        "c_414208870a2148ab6f075c7654ab3d48161cb2c367fdd7673b30d8f6cdc5d1b9",
+        "c_8c1ccf1af7c4870050f9da52cc7f9dbad1949e7446cd8c2e16b88dd43cae87ae"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T19:00:00.000Z",
+      "published_at": "2026-07-27T16:48:12.006Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218529343710466048",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1218529343710466048",
+      "source_type": "twitter_extra",
+      "summary": "作为首个3万亿参数级开源模型，它具备100万token上下文和原生视觉，推理能力媲美顶尖闭源模型。",
+      "time_precision": "exact",
+      "title": "Kimi K3模型已在Fireworks平台上线，提供推理和训练服务，并支持通过LoRA进行快速微调",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/omarsar0/status/2081783727001145568"
     }
   ],
   "overview": {
