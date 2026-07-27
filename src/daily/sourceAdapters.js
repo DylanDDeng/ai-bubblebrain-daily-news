@@ -13,6 +13,9 @@ import KazikeDataSource from '../dataSources/kazike.js';
 import KazikeXDataSource from '../dataSources/kazike-x.js';
 import AnthropicResearchDataSource from '../dataSources/anthropic-research.js';
 import TheDecoderDataSource from '../dataSources/the-decoder.js';
+import CursorXDataSource from '../dataSources/cursor-x.js';
+import AnthropicXDataSource from '../dataSources/anthropic-x.js';
+import SamAltmanXDataSource from '../dataSources/sam-altman-x.js';
 
 function foloFeed(provider, contentType, adapter, idEnv, pageEnv) {
     return Object.freeze({
@@ -95,5 +98,26 @@ export const STRUCTURED_SOURCE_ADAPTERS = Object.freeze([
         KazikeXDataSource,
         'KAZIKE_X_FEED_ID',
         'KAZIKE_X_FETCH_PAGES',
+    ),
+    foloFeed(
+        'cursor_x',
+        'socialMedia',
+        CursorXDataSource,
+        'CURSOR_X_FEED_ID',
+        'CURSOR_X_FETCH_PAGES',
+    ),
+    foloFeed(
+        'anthropic_x',
+        'socialMedia',
+        AnthropicXDataSource,
+        'ANTHROPIC_X_FEED_ID',
+        'ANTHROPIC_X_FETCH_PAGES',
+    ),
+    foloFeed(
+        'sam_altman_x',
+        'socialMedia',
+        SamAltmanXDataSource,
+        'SAM_ALTMAN_X_FEED_ID',
+        'SAM_ALTMAN_X_FETCH_PAGES',
     ),
 ]);
