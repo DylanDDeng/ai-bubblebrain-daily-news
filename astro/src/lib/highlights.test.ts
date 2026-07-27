@@ -11,6 +11,10 @@ const expectedArticleRoutes = [
 	'/highlights/2025-11-18-how-three-startups-use-claudecode/',
 	'/highlights/2026-07-24-why-software-factories-fail/',
 	'/en/highlights/2026-07-24-why-software-factories-fail/',
+	'/highlights/2026-07-25-claude-design/',
+	'/en/highlights/2026-07-25-claude-design/',
+	'/highlights/2026-07-26-cloud-rendering/',
+	'/en/highlights/2026-07-26-cloud-rendering/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
