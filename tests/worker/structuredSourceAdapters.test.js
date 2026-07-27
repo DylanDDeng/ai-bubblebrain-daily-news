@@ -12,6 +12,7 @@ import XiaohuDataSource from '../../src/dataSources/xiaohu.js';
 import XinZhiYuanDataSource from '../../src/dataSources/xinzhiyuan.js';
 import KazikeDataSource from '../../src/dataSources/kazike.js';
 import KazikeXDataSource from '../../src/dataSources/kazike-x.js';
+import AlexFinnXDataSource from '../../src/dataSources/alex-finn-x.js';
 import AnthropicResearchDataSource from '../../src/dataSources/anthropic-research.js';
 import TheDecoderDataSource from '../../src/dataSources/the-decoder.js';
 import { ProviderFetchError } from '../../src/daily/providerFailure.js';
@@ -32,6 +33,7 @@ const FOLO_ADAPTERS = [
     ['twitter', TwitterDataSource, 'TWITTER_LIST_ID', 'TWITTER_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['twitter_extra', TwitterExtraDataSource, 'TWITTER_EXTRA_LIST_ID', 'TWITTER_EXTRA_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['kazike_x', KazikeXDataSource, 'KAZIKE_X_FEED_ID', 'KAZIKE_X_FETCH_PAGES', 'KAZIKE_FILTER_DAYS'],
+    ['alex_finn_x', AlexFinnXDataSource, 'ALEX_FINN_X_FEED_ID', 'ALEX_FINN_X_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
 ];
 
 function envFor(idName, pagesName, overrides = {}) {
