@@ -1,11 +1,13 @@
 {
   "batches": [
     {
-      "generated_at": null,
+      "generated_at": "2026-07-27T21:00:00.000Z",
       "id": "morning",
-      "item_ids": [],
+      "item_ids": [
+        "n_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069"
+      ],
       "label": "08:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -48,9 +50,48 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T17:00:00.000Z",
+  "generated_at": "2026-07-27T21:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/sama/status/2081832600591892712",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069",
+      "featured": false,
+      "id": "n_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069",
+      "identity_claims": [
+        "c_29d2d8f3f0f0ad668502a4f9dcc9e1df36446ad3362b2c8b843c27cb385a83de",
+        "c_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069",
+        "c_f8b80bce79d5b394a4a590941ea99c7cee0d4872ee9050363f97cfcca483d292"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T21:00:00.000Z",
+      "published_at": "2026-07-27T20:02:25.334Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218657212805648384",
+        "name": "Sam Altman"
+      },
+      "source_id": "1218657212805648384",
+      "source_type": "sam_altman_x",
+      "summary": "他表示即使OpenAI明天停止推出新模型，自己也会完全接受。",
+      "time_precision": "exact",
+      "title": "用户Can Vardar称GPT-5.6 sol已满足全部需求，不再期待新模型",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/sama/status/2081832600591892712"
+    },
     {
       "batch": "night",
       "canonical_url": "https://the-decoder.com/the-ai-coding-tutor-paradox-grows-as-educators-scramble-to-rethink-how-they-test-real-skills/",
