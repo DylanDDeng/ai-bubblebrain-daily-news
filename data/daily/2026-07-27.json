@@ -38,9 +38,12 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-27T06:00:00.000Z",
+      "generated_at": "2026-07-27T08:00:00.000Z",
       "id": "afternoon",
-      "item_ids": [],
+      "item_ids": [
+        "n_b2f58eb35cfd02c9e64d4602910b89d918260187c4c49ee7a2eb239749ad4813",
+        "n_028a167aec56d9723573d5cbdaf6729ffcfa6d067bd94747ac8872fe2180bbcb"
+      ],
       "label": "14:00 更新",
       "status": "completed"
     },
@@ -69,7 +72,7 @@
   "classifier_version": 1,
   "date": "2026-07-27",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T06:00:00.000Z",
+  "generated_at": "2026-07-27T08:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1161,6 +1164,79 @@
         "topic_research"
       ],
       "url": "https://x.com/omarsar0/status/2081530022947705201"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/HiTw93/status/2081374877140025374",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_b2f58eb35cfd02c9e64d4602910b89d918260187c4c49ee7a2eb239749ad4813",
+      "featured": false,
+      "id": "n_b2f58eb35cfd02c9e64d4602910b89d918260187c4c49ee7a2eb239749ad4813",
+      "identity_claims": [
+        "c_a76b7ac28efdb20457a391372a947f5ef01686e0a38bd8f19e9011235b067c08",
+        "c_b2f58eb35cfd02c9e64d4602910b89d918260187c4c49ee7a2eb239749ad4813"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T08:00:00.000Z",
+      "published_at": "2026-07-26T13:43:35.343Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217901866839515136",
+        "name": "twitter-Tw93"
+      },
+      "source_id": "1217901866839515136",
+      "source_type": "twitter_extra",
+      "summary": "该项目基于 WezTerm 深度定制，通过 Rust 底层渲染优化提升启动速度，支持分屏、标签页快速切换等操作。AI 功能可在命令出错时给出正确指令，或通过快捷键直接聊天。",
+      "time_precision": "exact",
+      "title": "Kaku 终端已迭代至 23 个版本并加入完善的 SSH 管理与 AI 辅助交互",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/HiTw93/status/2081374877140025374"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/tuturetom/status/2081541142475157838",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_028a167aec56d9723573d5cbdaf6729ffcfa6d067bd94747ac8872fe2180bbcb",
+      "featured": false,
+      "id": "n_028a167aec56d9723573d5cbdaf6729ffcfa6d067bd94747ac8872fe2180bbcb",
+      "identity_claims": [
+        "c_028a167aec56d9723573d5cbdaf6729ffcfa6d067bd94747ac8872fe2180bbcb",
+        "c_c3f9375af383b23c26bb7504386707d67f9da91e53ec167ce1810d0820a734c9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T08:00:00.000Z",
+      "published_at": "2026-07-26T14:55:50.028Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1217901659926016000",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1217901659926016000",
+      "source_type": "twitter_extra",
+      "summary": "该流程用真实浏览器模拟注册、引导、空状态、核心操作、Aha时刻、付费墙及导出环节，再结合外围侦察与核心循环分析，最终交付结构化报告。",
+      "time_precision": "exact",
+      "title": "Codex 搭配产品拆解技能实现产品调研全流程，从注册到付费墙自动走查并生成报告",
+      "topic_ids": [
+        "topic_products"
+      ],
+      "url": "https://x.com/tuturetom/status/2081541142475157838"
     },
     {
       "batch": "night",
