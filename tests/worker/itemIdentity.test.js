@@ -8,12 +8,14 @@ import { dataSources } from '../../src/dataFetchers.js';
 import GithubTrendingDataSource from '../../src/dataSources/github-trending.js';
 
 describe('source registry and stable identity v1', () => {
-    it('freezes unique policies for all 16 registered source providers', () => {
+    it('freezes unique policies for all 19 registered source providers', () => {
         expect(Object.keys(SOURCE_REGISTRY)).toEqual([
             'aibase', 'xiaohu', 'qbit', 'kazike', 'simonwillison', 'xinzhiyuan', 'openai_newsroom', 'anthropic_research',
             'the_decoder',
             'github_trending', 'huggingface_papers', 'jiqizhixin',
-            'twitter', 'twitter_extra', 'kazike_x', 'reddit',
+            'twitter', 'twitter_extra', 'kazike_x',
+            'cursor_x', 'anthropic_x', 'sam_altman_x',
+            'reddit',
         ]);
         for (const policy of Object.values(SOURCE_REGISTRY)) {
             expect(['source_id', 'canonical_url']).toContain(policy.primaryIdentity);
@@ -24,14 +26,14 @@ describe('source registry and stable identity v1', () => {
         // Retired providers (reddit) stay in the registry for historical identity
         // but no longer have an active fetch adapter.
         const retiredProviders = ['reddit'];
-        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(15);
+        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(18);
         expect(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.provider))
             .toEqual(Object.keys(SOURCE_REGISTRY).filter(provider => !retiredProviders.includes(provider)));
         for (const entry of STRUCTURED_SOURCE_ADAPTERS) {
             expect(dataSources[entry.contentType].sources).toContain(entry.adapter);
             expect(SOURCE_REGISTRY[entry.provider].contentType).toBe(entry.contentType);
         }
-        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(15);
+        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(18);
     });
 
     it('canonicalizes conservatively and preserves business-significant URL parts', () => {
@@ -119,6 +121,30 @@ describe('source registry and stable identity v1', () => {
         const first = await createIdentity({ provider: 'aibase', sourceId: '42', canonicalUrl: null });
         const second = await createIdentity({ provider: 'xiaohu', sourceId: '42', canonicalUrl: null });
         expect(first.id).not.toBe(second.id);
+    });
+
+    it('deduplicates the same X post fetched from a list and a fixed feed', async () => {
+        const raw = {
+            id: '2081513071135346814',
+            title: 'Same Sam Altman post',
+            url: 'https://x.com/sama/status/2081513071135346814',
+            published_date: '2026-07-26T22:52:43.433Z',
+            source: 'Sam Altman',
+        };
+        const fromList = await normalizeSourceItem(raw, {
+            provider: 'twitter_extra',
+            batch: 'morning',
+            runAt: '2026-07-27T00:00:00Z',
+        });
+        const fromFixedFeed = await normalizeSourceItem(raw, {
+            provider: 'sam_altman_x',
+            batch: 'morning',
+            runAt: '2026-07-27T00:00:00Z',
+        });
+
+        const result = deduplicateSameDay([], [fromList.item, fromFixedFeed.item]);
+        expect(result.items).toHaveLength(1);
+        expect(result.duplicateCount).toBe(1);
     });
 
     it('uses a dated title fallback only when exact claims are unavailable', async () => {

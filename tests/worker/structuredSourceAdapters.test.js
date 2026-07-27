@@ -14,6 +14,9 @@ import KazikeDataSource from '../../src/dataSources/kazike.js';
 import KazikeXDataSource from '../../src/dataSources/kazike-x.js';
 import AnthropicResearchDataSource from '../../src/dataSources/anthropic-research.js';
 import TheDecoderDataSource from '../../src/dataSources/the-decoder.js';
+import CursorXDataSource from '../../src/dataSources/cursor-x.js';
+import AnthropicXDataSource from '../../src/dataSources/anthropic-x.js';
+import SamAltmanXDataSource from '../../src/dataSources/sam-altman-x.js';
 import { ProviderFetchError } from '../../src/daily/providerFailure.js';
 import { STRUCTURED_SOURCE_ADAPTERS } from '../../src/daily/sourceAdapters.js';
 
@@ -32,6 +35,9 @@ const FOLO_ADAPTERS = [
     ['twitter', TwitterDataSource, 'TWITTER_LIST_ID', 'TWITTER_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['twitter_extra', TwitterExtraDataSource, 'TWITTER_EXTRA_LIST_ID', 'TWITTER_EXTRA_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
     ['kazike_x', KazikeXDataSource, 'KAZIKE_X_FEED_ID', 'KAZIKE_X_FETCH_PAGES', 'KAZIKE_FILTER_DAYS'],
+    ['cursor_x', CursorXDataSource, 'CURSOR_X_FEED_ID', 'CURSOR_X_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['anthropic_x', AnthropicXDataSource, 'ANTHROPIC_X_FEED_ID', 'ANTHROPIC_X_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
+    ['sam_altman_x', SamAltmanXDataSource, 'SAM_ALTMAN_X_FEED_ID', 'SAM_ALTMAN_X_FETCH_PAGES', 'FOLO_FILTER_DAYS'],
 ];
 
 function envFor(idName, pagesName, overrides = {}) {
@@ -261,6 +267,59 @@ it('maps The Decoder feed as news with the configured source identity', async ()
         type: 'news',
         source: 'The Decoder',
         description: 'Example',
+        details: { content_html: '<p>Example</p>' },
+    });
+});
+
+it.each([
+    [
+        'Cursor',
+        CursorXDataSource,
+        'CURSOR_X_FEED_ID',
+        'CURSOR_X_FETCH_PAGES',
+        '156627007562221601',
+    ],
+    [
+        'Anthropic',
+        AnthropicXDataSource,
+        'ANTHROPIC_X_FEED_ID',
+        'ANTHROPIC_X_FETCH_PAGES',
+        '42034394558772224',
+    ],
+    [
+        'Sam Altman',
+        SamAltmanXDataSource,
+        'SAM_ALTMAN_X_FEED_ID',
+        'SAM_ALTMAN_X_FETCH_PAGES',
+        '41374113210459148',
+    ],
+])('maps the %s fixed X feed as social media', async (
+    sourceName,
+    adapter,
+    feedIdEnv,
+    fetchPagesEnv,
+    feedId,
+) => {
+    const fetchMock = vi.fn(async () => jsonResponse(200, { data: [validFoloEntry()] }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const raw = await adapter.fetch(
+        envFor(feedIdEnv, fetchPagesEnv, { [feedIdEnv]: feedId }),
+        'cookie',
+        { strict: true },
+    );
+    const [item] = adapter.transform(raw, 'socialMedia');
+
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
+        feedId,
+        withContent: true,
+    });
+    expect(item).toMatchObject({
+        id: 'entry-1',
+        type: 'socialMedia',
+        source: sourceName,
+        description: 'Example',
+        folo_inserted_at: expect.any(String),
         details: { content_html: '<p>Example</p>' },
     });
 });
