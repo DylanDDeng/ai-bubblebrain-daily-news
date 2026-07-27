@@ -168,7 +168,6 @@ const olderKey = hrefDateKey(olderHref);
 				const items = batch.item_ids
 					.map((id) => itemById.get(id))
 					.filter((item) => item !== undefined);
-				const batchLabel = cleanTimelineSummary(batch.label);
 				const pending = batch.status !== 'completed';
 				return (
 					<section
@@ -176,18 +175,6 @@ const olderKey = hrefDateKey(olderHref);
 						data-timeline-batch={batch.id}
 						data-batch-status={batch.status}
 					>
-						<div class="batch-heading">
-							<h2>
-								{pending ? `${batchLabel} · ${isEnglish ? 'scheduled' : '等待中'}` : batchLabel}
-							</h2>
-							{!pending && (
-								<span class="batch-count">
-									<span data-batch-count>{items.length}</span>
-									{isEnglish ? ' items' : ' 条'}
-								</span>
-							)}
-							<span class="batch-line" />
-						</div>
 						{pending ? (
 							<p class="pending-note">
 								{isEnglish
@@ -215,7 +202,6 @@ const olderKey = hrefDateKey(olderHref);
 								const entities = item.entity_ids
 									.map((id) => entitiesById.get(id))
 									.filter((entity) => entity !== undefined);
-								const reason = item.reason ? cleanTimelineSummary(item.reason) : '';
 								const searchText = [
 									title,
 									...sourceSearchTerms,
@@ -291,12 +277,6 @@ const olderKey = hrefDateKey(olderHref);
 														</li>
 													))}
 												</ul>
-											)}
-											{reason && (
-												<p class="timeline-reason">
-													<span>{isEnglish ? 'Why it matters' : '推荐理由'}</span>
-													{reason}
-												</p>
 											)}
 										</div>
 									</article>
