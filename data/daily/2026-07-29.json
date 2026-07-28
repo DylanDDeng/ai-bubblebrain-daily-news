@@ -1,11 +1,13 @@
 {
   "batches": [
     {
-      "generated_at": null,
+      "generated_at": "2026-07-28T21:00:00.000Z",
       "id": "morning",
-      "item_ids": [],
+      "item_ids": [
+        "n_2e0e4671222d176d2e092dfd7e479427c5ee09e761184b134dd6dcaaf4e0090b"
+      ],
       "label": "08:00 更新",
-      "status": "pending"
+      "status": "completed"
     },
     {
       "generated_at": null,
@@ -42,9 +44,47 @@
   "classifier_version": 1,
   "date": "2026-07-29",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T17:00:00.000Z",
+  "generated_at": "2026-07-28T21:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2082148581377720467",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2e0e4671222d176d2e092dfd7e479427c5ee09e761184b134dd6dcaaf4e0090b",
+      "featured": false,
+      "id": "n_2e0e4671222d176d2e092dfd7e479427c5ee09e761184b134dd6dcaaf4e0090b",
+      "identity_claims": [
+        "c_2e0e4671222d176d2e092dfd7e479427c5ee09e761184b134dd6dcaaf4e0090b",
+        "c_668e4b8fe1e3829a472110703a61f4f5bed356503959c15c302f9d70b9d6514e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T21:00:00.000Z",
+      "published_at": "2026-07-28T16:58:00.297Z",
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220115518871031808",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1220115518871031808",
+      "source_type": "twitter_extra",
+      "summary": "现在智能体消耗Token的大头是技能调用和重复工具使用，而非输入文本；加上提示词缓存机制，直接上传PDF带来的额外成本已不显著。",
+      "time_precision": "exact",
+      "title": "多模态模型直接上传PDF可避免转换带来的信息损耗且输入成本影响不大",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products"
+      ],
+      "url": "https://x.com/dotey/status/2082148581377720467"
+    },
     {
       "batch": "night",
       "canonical_url": "https://x.com/tuturetom/status/2082026826361127379",
