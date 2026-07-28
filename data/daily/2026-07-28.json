@@ -123,9 +123,10 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-27T17:00:00.000Z",
+      "generated_at": "2026-07-28T14:00:00.000Z",
       "id": "night",
       "item_ids": [
+        "n_926b56f41dd086b220829fc726c3b1e42238cbd6078919cfb294e90ff4a05550",
         "n_f68e59365fed4e80abe606e5f47d63b91506268116a6041fa2b3cc15b2c31ece",
         "n_1852719ecccef1cce666631254061516f21bc9732f7bf88256dd6144b567d5b8",
         "n_6bec622f9a553161e48ca4242ae20b9ecee964283099b64a769c8271fffd258a",
@@ -138,9 +139,14 @@
         "n_d88cc9c0dea85f2c2ac17a57841e867bfba1a5762c920520e492ad9bc004e286",
         "n_5a1b62174f79d02fddb1f07d03fa9328f51a3d31e0342be31b1d83ca8969a5f2",
         "n_a7ae8c6b10d3ee5a374d5a7a80eabdf9529052d635b6a4a787147c2426da05dd",
+        "n_f065b8074daa27ae752e421958ac87d527a0e639319cf3e0e151e85fba6c9c57",
         "n_2246a004bb3afc882da3a13ed0c8dd9dcd0fdd13539f1889be65804b8dc154bd",
         "n_9521e80c255001b9444e120ac8692e988c4513f01796da1a279c061ec50e2b31",
-        "n_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528"
+        "n_d2ce72eefda64694e52090c8833f1815e1d71e3896820a4534011b1c4eb6f076",
+        "n_0a66719054b85208c289c53ee5477dfd61a8c6e8a7c45a7dd0ae908791db3528",
+        "n_755cde206a140d0cbfb6ea08120b64b59cff48f36591ea7fd590a340c339c4bb",
+        "n_986f77a7449cf3ac69cfedb48875982546d0b1bbe1fa21947692d30595c30225",
+        "n_5a288c005c97d066da4bc4ee633edfbb07df7a78ec720b76ac55913b3021e244"
       ],
       "label": "22:00 更新",
       "status": "completed"
@@ -156,7 +162,7 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T12:00:00.000Z",
+  "generated_at": "2026-07-28T14:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -4221,6 +4227,42 @@
     },
     {
       "batch": "night",
+      "canonical_url": "https://arxiv.org/abs/2607.22098",
+      "category": "research",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_926b56f41dd086b220829fc726c3b1e42238cbd6078919cfb294e90ff4a05550",
+      "featured": false,
+      "id": "n_926b56f41dd086b220829fc726c3b1e42238cbd6078919cfb294e90ff4a05550",
+      "identity_claims": [
+        "c_926b56f41dd086b220829fc726c3b1e42238cbd6078919cfb294e90ff4a05550",
+        "c_a649952d214e13036b6ab7d9c0551d66dd07b53f73f3f2387fb525112e8a7b9f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T14:00:00.000Z",
+      "published_at": "2026-07-23T20:00:00.080Z",
+      "published_date": "2026-07-24",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219354820788338707",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1219354820788338707",
+      "source_type": "huggingface_papers",
+      "summary": "Large reasoning models (LRMs) generate long reasoning traces before producing final answers. While these traces may contain useful signals for hallucination detection, harnessing them is non-trivial because long trajectories often include noisy steps that obscure the cues relevant to truthfulness assessment. In this paper, we identify two prevalent forms of reasoning noises, i.e., irrelevant steps and repetitive steps, and show that both substantially degrade hallucination detection performance. Existing confidence-based scores and naive embedding-based filtering fail to reliably separate noisy from informative steps. To address this challenge, we propose REDE, a novel learning framework for denoising reasoning traces for hallucination detection. Specifically, REDE leverages final-answer attention as an automatic supervision signal to shape the step-level representation space, yielding refined embeddings in which noisy steps can be reliably identified and filtered. REDE can be readily plugged into diverse hallucination detectors by operating on the filtered reasoning trajectory after removing noisy steps. Extensive experiments on multiple reasoning benchmarks show that REDE consistently improves detection performance over competitive baselines.",
+      "time_precision": "exact",
+      "title": "Reasoning Denoiser: Denoising Reasoning Traces for Hallucination Detection in Large Reasoning Models",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.22098"
+    },
+    {
+      "batch": "night",
       "canonical_url": "https://the-decoder.com/the-ai-coding-tutor-paradox-grows-as-educators-scramble-to-rethink-how-they-test-real-skills/",
       "category": "other",
       "content_type": "news",
@@ -4689,6 +4731,42 @@
     },
     {
       "batch": "night",
+      "canonical_url": "https://x.com/dotey/status/2081734462044328086",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f065b8074daa27ae752e421958ac87d527a0e639319cf3e0e151e85fba6c9c57",
+      "featured": false,
+      "id": "n_f065b8074daa27ae752e421958ac87d527a0e639319cf3e0e151e85fba6c9c57",
+      "identity_claims": [
+        "c_5ac832a3cef5e2beda1d8670c91898df48d2dd190a72ca7f8c93cdc8fb313a24",
+        "c_f065b8074daa27ae752e421958ac87d527a0e639319cf3e0e151e85fba6c9c57"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T14:00:00.000Z",
+      "published_at": "2026-07-27T13:32:27.742Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219516351572332544",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1219516351572332544",
+      "source_type": "twitter_extra",
+      "summary": "针对用户提出的问题，开发方已加入重试机制，以增强任务执行的稳定性。",
+      "time_precision": "exact",
+      "title": "开发团队根据用户反馈快速为产品添加了重试逻辑",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/dotey/status/2081734462044328086"
+    },
+    {
+      "batch": "night",
       "canonical_url": "https://x.com/aigclink/status/2081735489888067678",
       "category": "models",
       "content_type": "socialMedia",
@@ -4768,6 +4846,47 @@
     },
     {
       "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2081913925210411262",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_d2ce72eefda64694e52090c8833f1815e1d71e3896820a4534011b1c4eb6f076",
+      "featured": false,
+      "id": "n_d2ce72eefda64694e52090c8833f1815e1d71e3896820a4534011b1c4eb6f076",
+      "identity_claims": [
+        "c_8f6cead29c79a48bbd5a9097d35100396b71b9a333a011ab1b125fbc07428c4d",
+        "c_d2ce72eefda64694e52090c8833f1815e1d71e3896820a4534011b1c4eb6f076"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T14:00:00.000Z",
+      "published_at": "2026-07-27T14:14:36.810Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219537746566082567",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1219537746566082567",
+      "source_type": "twitter_extra",
+      "summary": "SSI此前主要使用Google Cloud TPU，此次合作标志着其从研究阶段转向规模化扩展。NVIDIA确认合作前查看了SSI的保密研究，此举也有助于NVIDIA洞察前沿方向以优化硬件路线图。",
+      "time_precision": "exact",
+      "title": "NVIDIA对SSI进行股权投资并开放Vera Rubin平台，使其算力未来一年提升十倍",
+      "topic_ids": [
+        "topic_research",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://x.com/shao__meng/status/2081913925210411262"
+    },
+    {
+      "batch": "night",
       "canonical_url": "https://x.com/shao__meng/status/2081747876993233109",
       "category": "models",
       "content_type": "socialMedia",
@@ -4805,6 +4924,127 @@
         "topic_open_source"
       ],
       "url": "https://x.com/shao__meng/status/2081747876993233109"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/shao__meng/status/2081912967663366583",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_755cde206a140d0cbfb6ea08120b64b59cff48f36591ea7fd590a340c339c4bb",
+      "featured": false,
+      "id": "n_755cde206a140d0cbfb6ea08120b64b59cff48f36591ea7fd590a340c339c4bb",
+      "identity_claims": [
+        "c_540ad756e262fad8f57eb64a29e82529bdc68e61503794ca1e25864cda904e61",
+        "c_755cde206a140d0cbfb6ea08120b64b59cff48f36591ea7fd590a340c339c4bb"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T14:00:00.000Z",
+      "published_at": "2026-07-27T14:25:45.506Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219537746566082565",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1219537746566082565",
+      "source_type": "twitter_extra",
+      "summary": "直接使用MCP工具整合多个系统时，跨源查询会导致碎片化上下文和额外token消耗。Glean的方案以统一索引和知识图谱预先完成跨系统关联，测试中其上下文被偏好的比例是现成MCP工具的2.5倍，后者平均多耗30% token。",
+      "time_precision": "exact",
+      "title": "企业Agent应用中上下文质量是关键瓶颈，Glean通过预计算关联使Agent准确度大幅提升",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_policy",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2081912967663366583"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/hongming731/status/2081884971699171574",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic",
+        "entity_qwen"
+      ],
+      "event_id": "e_986f77a7449cf3ac69cfedb48875982546d0b1bbe1fa21947692d30595c30225",
+      "featured": false,
+      "id": "n_986f77a7449cf3ac69cfedb48875982546d0b1bbe1fa21947692d30595c30225",
+      "identity_claims": [
+        "c_672051b9cbd16512e42ba6f56298072a5e2d44889435e839acd4b9a099fc4054",
+        "c_986f77a7449cf3ac69cfedb48875982546d0b1bbe1fa21947692d30595c30225"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T14:00:00.000Z",
+      "published_at": "2026-07-27T23:30:31.321Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219580242952204288",
+        "name": "twitter-ginobefun"
+      },
+      "source_id": "1219580242952204288",
+      "source_type": "twitter_extra",
+      "summary": "本期精讲介绍Boris Cherny通过持续消融与实测构建Claude Code，以及将模型路由、安全等集中到独立网关的架构模式；同时讨论Kimi K3上线即获SGLang推理支持并采用ReplaySSM优化状态缓存。",
+      "time_precision": "exact",
+      "title": "BestBlogs早报07-28期聚焦Claude Code构建方法、AI网关架构与Kimi K3推理栈等热点",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/hongming731/status/2081884971699171574"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/HiTw93/status/2082101811394290142",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_5a288c005c97d066da4bc4ee633edfbb07df7a78ec720b76ac55913b3021e244",
+      "featured": false,
+      "id": "n_5a288c005c97d066da4bc4ee633edfbb07df7a78ec720b76ac55913b3021e244",
+      "identity_claims": [
+        "c_5a288c005c97d066da4bc4ee633edfbb07df7a78ec720b76ac55913b3021e244",
+        "c_f7299378d3177208b5110cf6b414f0026704146c41709a65dc80bd0fd6f4ac61"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T14:00:00.000Z",
+      "published_at": "2026-07-28T13:52:10.477Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219715014210953216",
+        "name": "twitter-Tw93"
+      },
+      "source_id": "1219715014210953216",
+      "source_type": "twitter_extra",
+      "summary": "该项目自去年起步以来累计解决812个问题并合并483条优化代码，覆盖多种Mac环境。开发者表示将继续精进，目标未来每50台Mac中有一台安装Mole。",
+      "time_precision": "exact",
+      "title": "开源工具Mole Cli在GitHub获得六万星标，已发布55个版本并吸引112位贡献者",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/HiTw93/status/2082101811394290142"
     }
   ],
   "overview": {
