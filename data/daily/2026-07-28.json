@@ -1,14 +1,17 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-27T22:00:00.000Z",
+      "generated_at": "2026-07-27T23:00:00.000Z",
       "id": "morning",
       "item_ids": [
         "n_b5e82c0cc19d3de7e1163f212f9c6226547c0b33fe42da6006bb0da590a467b5",
         "n_ff1b51a272c051282406b89fceb421355c2a6adb76742469ec9be8d7a8dca5e7",
         "n_3eac4808db0a5cbcf66777cb4d14e2e518bec0ad12c050ce6b0999396cc48b5e",
         "n_b81a0928f38cb91bb6f1244f94362e0f226ae4085a8cda6412f3d1108246a98e",
-        "n_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069"
+        "n_9efd179b86a596870f9260c6c1ec1dd1b0c64b75c603dec81bc724091052b069",
+        "n_37560737109b8fa47aab985b9f6034cff511398627f8bba79e08f2b1a5ebf321",
+        "n_b851ad8a43584fb43835b886fe6e7d6162f06d29f38dca9f43ac41cb0337c4af",
+        "n_0489e6ca8593f6318f83044d11faf54aff9cfbecdc197eefca67cb40e180cb06"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -54,7 +57,7 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T22:00:00.000Z",
+  "generated_at": "2026-07-27T23:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -249,6 +252,123 @@
         "topic_models"
       ],
       "url": "https://x.com/sama/status/2081832600591892712"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shaoruu/status/2081865251054924045",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_37560737109b8fa47aab985b9f6034cff511398627f8bba79e08f2b1a5ebf321",
+      "featured": false,
+      "id": "n_37560737109b8fa47aab985b9f6034cff511398627f8bba79e08f2b1a5ebf321",
+      "identity_claims": [
+        "c_37560737109b8fa47aab985b9f6034cff511398627f8bba79e08f2b1a5ebf321",
+        "c_feafe95bd33e567731078adb41afc1d178c1cc69c85ba70e6d433d39bda68882"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T23:00:00.000Z",
+      "published_at": "2026-07-27T21:03:40.665Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218764911308517376",
+        "name": "twitter-ian"
+      },
+      "source_id": "1218764911308517376",
+      "source_type": "twitter_extra",
+      "summary": "该模型由合作伙伴Fireworks、Together和Baseten提供美国推理服务，同时支持零数据保留功能。",
+      "time_precision": "exact",
+      "title": "Kimi K3模型登陆Cursor，在CursorBench基准测试中成绩接近最前沿模型",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shaoruu/status/2081865251054924045"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/27/an-opinionated-guide-to-which-ai-to-use-to-do-stuff/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic",
+        "entity_google_deepmind"
+      ],
+      "event_id": "e_b851ad8a43584fb43835b886fe6e7d6162f06d29f38dca9f43ac41cb0337c4af",
+      "featured": false,
+      "id": "n_b851ad8a43584fb43835b886fe6e7d6162f06d29f38dca9f43ac41cb0337c4af",
+      "identity_claims": [
+        "c_3552de3ca41e8a6f7aa7f7e2e8d45dcb9a3bcf3c0d73e10bd7fe848cf879d579",
+        "c_b851ad8a43584fb43835b886fe6e7d6162f06d29f38dca9f43ac41cb0337c4af"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T23:00:00.000Z",
+      "published_at": "2026-07-27T21:55:53.366Z",
+      "published_date": "2026-07-28",
+      "reason": "汇总了知名学者对AI代理模式的实用建议，但属于个人观点总结，无独家数据或行业级影响，信息量有限。",
+      "related_source_ids": [],
+      "score": 5.5,
+      "source": {
+        "homepage": null,
+        "id": "1218764954710999040",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1218764954710999040",
+      "source_type": "simonwillison",
+      "summary": "An opinionated guide to which AI to use to do stuff It's interesting watching the evolution of Ethan Mollick's guide over time. A year ago it was still all about chat - ChatGPT, Claude, Gemini - with o3, Claude 4 Opus, and Gemini 2.5 Pro as the models and Deep Research as a useful alternative mode. Today it's much more about agentic systems - \"where the AI is capable of doing the equivalent of many hours of real human work in one go\". Gemini has fallen off Ethan's list, since Google still doesn’t have an established entry in the Codex/ChatGPT Work/Cowork category. Gemini Spark has yet to prove itself! Ethan offers a useful explanation of the ways you can give ChatGPT or Claude a computer to use: To use the computers provided by the AI companies, the mode you want is called ChatGPT Work in ChatGPT, and Cowork in Claude (the naming will not get less confusing, I am sorry to say). [...] The most powerful way to use AI is to give it access to your computer. You do that by downloading the ChatGPT or Claude apps and picking a mode to use. ChatGPT's two agent modes are Work and Codex; Claude's are Cowork and Code. The names do not map onto each other in any way that will help you remember them. And yes, these use the same names as the Work and Cowork modes we discussed above, but operate differently, and have more features and capabilities because they can access your computer. I think the difference between ChatGPT Work on a mobile device and ChatGPT Work inside the desktop app (where it's effectively a less intimidating skin on top of Codex) is spectacularly unintuitive. Short version: if you flip ChatGPT mobile from \"Chat\" to \"Work\" mode you get a version where its Code Interpreter container is no longer restricted from accessing the internet! Tags: ai, generative-ai, llms, ethan-mollick, general-agents",
+      "time_precision": "exact",
+      "title": "An opinionated guide to which AI to use to do stuff",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/27/an-opinionated-guide-to-which-ai-to-use-to-do-stuff/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/AnthropicAI/status/2081864750296658008",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_0489e6ca8593f6318f83044d11faf54aff9cfbecdc197eefca67cb40e180cb06",
+      "featured": false,
+      "id": "n_0489e6ca8593f6318f83044d11faf54aff9cfbecdc197eefca67cb40e180cb06",
+      "identity_claims": [
+        "c_0489e6ca8593f6318f83044d11faf54aff9cfbecdc197eefca67cb40e180cb06",
+        "c_65406aef1b86578462636d0a8a32d1a2ed8335a96c560f00b0e4ec8994002bcf"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-27T23:00:00.000Z",
+      "published_at": "2026-07-27T22:10:10.536Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218784138115448832",
+        "name": "Anthropic"
+      },
+      "source_id": "1218784138115448832",
+      "source_type": "anthropic_x",
+      "summary": "此前外界对团队在开源权重模型上的立场多有猜测，现已将完整观点予以阐述。",
+      "time_precision": "exact",
+      "title": "团队就开源权重模型立场发表完整声明以回应外界广泛猜测",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/AnthropicAI/status/2081864750296658008"
     },
     {
       "batch": "night",
