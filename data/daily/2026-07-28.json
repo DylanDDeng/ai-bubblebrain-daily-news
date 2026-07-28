@@ -159,11 +159,25 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-28T19:00:00.000Z",
+      "generated_at": "2026-07-28T20:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
+        "n_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+        "n_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d",
+        "n_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1",
+        "n_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba",
+        "n_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055",
+        "n_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d",
+        "n_0adcbfb71cf184753962d227ccc1b3453f783da6ddafcc37a698c8ed7d9cafd2",
+        "n_fb0f43f11e6cc2098eecbb5dc585cff4b8e7ceb23f2952db378492af2c1c4445",
+        "n_c4ddb1061bdf58119e9ec0eeb254a655d72c2000d4b3a85b612d07bc4f74cc4c",
+        "n_b81f93a1e51570044b64db0fc172dd988e3319004937c45e1460450a1d63fc6b",
+        "n_83d273516f3a710c5cf9fdacc7557a21b48521c52c7b248819793e0bfb045ccf",
+        "n_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919",
         "n_f49724106140410dc604b0fce32dc2c6e8a349928790f60cf0a4461a711892be",
-        "n_2688943fc99bf08d4ccc8322c7a4ab2651d1f6f14c54ee012dd18b2eb06f6306"
+        "n_5f6ffab3c47a6140a6a8e31b5b2732821f9b79120c519bd098620905554a3367",
+        "n_2688943fc99bf08d4ccc8322c7a4ab2651d1f6f14c54ee012dd18b2eb06f6306",
+        "n_fa94e84f56b6d055a492a5993b993520ad396058785f62f7ec038fd6cee08776"
       ],
       "label": "次日 02:00 补充更新",
       "status": "completed"
@@ -172,7 +186,7 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T19:00:00.000Z",
+  "generated_at": "2026-07-28T20:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -5336,6 +5350,449 @@
     },
     {
       "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2082026826361127379",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+      "featured": false,
+      "id": "n_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+      "identity_claims": [
+        "c_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+        "c_858e67c181f2639a4125f500cb79f60107d91ff6a6f314d582763a1947d86812"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T08:53:07.566Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937669",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937669",
+      "source_type": "twitter_extra",
+      "summary": "月之暗面的最新模型Kimi K3现已在Open Design上线，该模型将强大的前端能力与出色的设计品味相结合，开放权重版本也即将推出。",
+      "time_precision": "exact",
+      "title": "Kimi K3模型登陆Open Design平台并开放开源权重",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/tuturetom/status/2082026826361127379"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2082033393609376132",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d",
+      "featured": false,
+      "id": "n_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d",
+      "identity_claims": [
+        "c_35145133b615b5b5f838660c3451d1aee124bbfac49d958cd98c7ff368dff7e9",
+        "c_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T09:20:18.426Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937668",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937668",
+      "source_type": "twitter_extra",
+      "summary": "为庆祝Kimi K3在开源领域达到Fable 5水平，Open Design Cloud平台所有模型推出限时优惠，折扣低至4.9折。",
+      "time_precision": "exact",
+      "title": "Kimi K3达成开源Fable 5时刻，Open Design Cloud模型限时4.9折",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2082033393609376132"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2082046869392261486",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1",
+      "featured": false,
+      "id": "n_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1",
+      "identity_claims": [
+        "c_3e6629db29eeea6ad82059d80cc696ebf7e66348ca03fc40209d5c7c884b12b4",
+        "c_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T10:06:35.518Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937667",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937667",
+      "source_type": "twitter_extra",
+      "summary": "一位用户利用Kimi K3生成的提示词制作了视频，其展现出的设计品味令人印象深刻。",
+      "time_precision": "exact",
+      "title": "用户用Kimi K3生成提示词制作视频，展示出色设计品味",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/tuturetom/status/2082046869392261486"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2082059612811837453",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba",
+      "featured": false,
+      "id": "n_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba",
+      "identity_claims": [
+        "c_2ea7f77f4597ecb57b1fd39af17dd4e9044ed97713304a241f3e71daa64f1f7f",
+        "c_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T10:48:48.178Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937666",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937666",
+      "source_type": "twitter_extra",
+      "summary": "通过Codex操控HeyGen、MiniMax、剪映和HyperFrames等工具，可直接生成真人口播与产品演示视频，自媒体生产流程被简化，两条40秒视频花费仅20多元。",
+      "time_precision": "exact",
+      "title": "Codex整合HeyGen与剪映等工具，自动生成口播视频并大幅降低成本",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2082059612811837453"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2082058561371201690",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055",
+      "featured": false,
+      "id": "n_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055",
+      "identity_claims": [
+        "c_9f5c61f48c73e66d5019d26e112f9dfc1d443c67d616370878f825fb20d056cf",
+        "c_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T11:00:18.343Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937665",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937665",
+      "source_type": "twitter_extra",
+      "summary": "团队成员的Codex可进入同一个Open Design可视化画布，实现实时沟通、编辑与评审，AI设计正式进入多人协作时代，内测名额现已开放申请。",
+      "time_precision": "exact",
+      "title": "Open Design本周更新将支持在Codex中进行多人实时AI协作设计",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2082058561371201690"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/tuturetom/status/2082067113947124093",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d",
+      "featured": false,
+      "id": "n_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d",
+      "identity_claims": [
+        "c_3e5ad2d32baf9ac98f4c8a7425c90910f4c8088a813bbaa398776b95661f99e2",
+        "c_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T11:09:18.226Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937664",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937664",
+      "source_type": "twitter_extra",
+      "summary": "Open Design将作为插件集成到Codex中，允许多人通过共享画布进行实时AI设计协作，颠覆式的设计体验即将到来。",
+      "time_precision": "exact",
+      "title": "Open Design即将上线Codex插件市场，开启多人AI设计协作",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/tuturetom/status/2082067113947124093"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2082061580343390311",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_0adcbfb71cf184753962d227ccc1b3453f783da6ddafcc37a698c8ed7d9cafd2",
+      "featured": false,
+      "id": "n_0adcbfb71cf184753962d227ccc1b3453f783da6ddafcc37a698c8ed7d9cafd2",
+      "identity_claims": [
+        "c_0adcbfb71cf184753962d227ccc1b3453f783da6ddafcc37a698c8ed7d9cafd2",
+        "c_5e9cc324918bd33876963e56bdf2988dd8e77373e0017f2713cc73391f9c158e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T11:12:18.155Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219822103482626049",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1219822103482626049",
+      "source_type": "twitter_extra",
+      "summary": "作者认为许多起号教程把账号当作追随热点的商品，缺乏个人感受，自己更倾向于创建陈列认可内容的展示柜，即使没有观众也对自身有价值。",
+      "time_precision": "exact",
+      "title": "作者反感将账号商品化的起号教程，更愿打造个人展示柜",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shao__meng/status/2082061580343390311"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://the-decoder.com/anthropic-ceo-amodei-doubles-down-on-open-weight-risk-stance-while-insisting-he-never-called-for-a-ban/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_fb0f43f11e6cc2098eecbb5dc585cff4b8e7ceb23f2952db378492af2c1c4445",
+      "featured": false,
+      "id": "n_fb0f43f11e6cc2098eecbb5dc585cff4b8e7ceb23f2952db378492af2c1c4445",
+      "identity_claims": [
+        "c_7486329a30ee0a4bcf6dbc1a6f5081e6661c9421579de47681ac00c9078b8865",
+        "c_fb0f43f11e6cc2098eecbb5dc585cff4b8e7ceb23f2952db378492af2c1c4445"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T12:06:42.626Z",
+      "published_date": "2026-07-28",
+      "reason": "Amodei 再次重申对开放权重的风险立场，无实质性新内容或行动，观点争议为主，对行业直接影响有限。",
+      "related_source_ids": [],
+      "score": 5.2,
+      "source": {
+        "homepage": null,
+        "id": "1220068835093164036",
+        "name": "The Decoder"
+      },
+      "source_id": "1220068835093164036",
+      "source_type": "the_decoder",
+      "summary": "Anthropic CEO Dario Amodei is once again warning about the risks of open AI models while insisting he has never called for a ban. He argues that authoritarian states like China could overtake the US and that open models could be misused for biological or cyberattacks. Critics say he's mostly trying to protect his own business from cheaper competition. The article Anthropic CEO Amodei doubles down on open-weight risk stance while insisting he never called for a ban appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Anthropic CEO Amodei doubles down on open-weight risk stance while insisting he never called for a ban",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/anthropic-ceo-amodei-doubles-down-on-open-weight-risk-stance-while-insisting-he-never-called-for-a-ban/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://the-decoder.com/nvidia-invests-in-ilya-sutskevers-ai-lab-shifting-ssi-away-from-google-chips/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_c4ddb1061bdf58119e9ec0eeb254a655d72c2000d4b3a85b612d07bc4f74cc4c",
+      "featured": false,
+      "id": "n_c4ddb1061bdf58119e9ec0eeb254a655d72c2000d4b3a85b612d07bc4f74cc4c",
+      "identity_claims": [
+        "c_5697db552d78e7f78b2f4e0318b7d53195ce9dd9adadf70c8eb7eb0cab21cc9e",
+        "c_c4ddb1061bdf58119e9ec0eeb254a655d72c2000d4b3a85b612d07bc4f74cc4c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T13:06:35.098Z",
+      "published_date": "2026-07-28",
+      "reason": "英伟达对 SSI 的“substantial”投资确认了资金和芯片供应链转向，影响顶尖 AI 实验室的硬件生态，信息具体且可信度高。",
+      "related_source_ids": [],
+      "score": 7.8,
+      "source": {
+        "homepage": null,
+        "id": "1220068835093164035",
+        "name": "The Decoder"
+      },
+      "source_id": "1220068835093164035",
+      "source_type": "the_decoder",
+      "summary": "Nvidia is pouring what it calls a \"substantial\" sum into Safe Superintelligence (SSI), the AI lab run by Ilya Sutskever, OpenAI's former chief scientist. The article Nvidia invests in Ilya Sutskever's AI lab, shifting SSI away from Google chips appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Nvidia invests in Ilya Sutskever's AI lab, shifting SSI away from Google chips",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/nvidia-invests-in-ilya-sutskevers-ai-lab-shifting-ssi-away-from-google-chips/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://the-decoder.com/taiwan-detains-nvidia-employee-in-widening-china-chip-smuggling-probe/",
+      "category": "other",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_b81f93a1e51570044b64db0fc172dd988e3319004937c45e1460450a1d63fc6b",
+      "featured": false,
+      "id": "n_b81f93a1e51570044b64db0fc172dd988e3319004937c45e1460450a1d63fc6b",
+      "identity_claims": [
+        "c_2879f3833260441c2f139688a03ae39366c4922a8fb153e9a81f951bd75712d7",
+        "c_b81f93a1e51570044b64db0fc172dd988e3319004937c45e1460450a1d63fc6b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T13:15:43.651Z",
+      "published_date": "2026-07-28",
+      "reason": "涉及英伟达员工被拘、芯片走私调查，事件本身具有法律和地缘政治敏感性，直接关联中美 AI 硬件管制，多家权威来源报道。",
+      "related_source_ids": [],
+      "score": 8.2,
+      "source": {
+        "homepage": null,
+        "id": "1220068835093164034",
+        "name": "The Decoder"
+      },
+      "source_id": "1220068835093164034",
+      "source_type": "the_decoder",
+      "summary": "Taiwan's prosecutors have detained an Nvidia employee in connection with the alleged illegal export of Super Micro AI servers to China, according to Bloomberg and Reuters. The article Taiwan detains Nvidia employee in widening China chip smuggling probe appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Taiwan detains Nvidia employee in widening China chip smuggling probe",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://the-decoder.com/taiwan-detains-nvidia-employee-in-widening-china-chip-smuggling-probe/"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/shao__meng/status/2082123645430669627",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_83d273516f3a710c5cf9fdacc7557a21b48521c52c7b248819793e0bfb045ccf",
+      "featured": false,
+      "id": "n_83d273516f3a710c5cf9fdacc7557a21b48521c52c7b248819793e0bfb045ccf",
+      "identity_claims": [
+        "c_83d273516f3a710c5cf9fdacc7557a21b48521c52c7b248819793e0bfb045ccf",
+        "c_a4bbe6645cd98e493fdb43a79ff81307fb7269ef7befaff30d08f3f6b65ecbeb"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T15:10:51.251Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219822103482626048",
+        "name": "twitter-meng shao"
+      },
+      "source_id": "1219822103482626048",
+      "source_type": "twitter_extra",
+      "summary": "该模型总参数2.8万亿，采用MoE架构每token激活16个专家。原生统一处理文本、图像和视频，引入Kimi Delta Attention和Gated MLA注意力，训练使用MXFP4，并开源了vLLM KDA预填充缓存实现。",
+      "time_precision": "exact",
+      "title": "Moonshot AI发布开源模型Kimi K3，原生多模态架构与百万token上下文窗口实现2.5倍训练效率提升",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/shao__meng/status/2082123645430669627"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/aiwarts/status/2082129548762878344",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919",
+      "featured": false,
+      "id": "n_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919",
+      "identity_claims": [
+        "c_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919",
+        "c_38481149f4c6c78e908d08a9a0bb4209ac05af7e0c2ac660ac73ec7223d2ba4b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T15:42:23.917Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219847038401695744",
+        "name": "twitter-卡尔的AI沃茨"
+      },
+      "source_id": "1219847038401695744",
+      "source_type": "twitter_extra",
+      "summary": "Runway官方账号宣布Seedance 2.5即将上线，引发用户期待。",
+      "time_precision": "exact",
+      "title": "Runway预告Seedance 2.5即将发布",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/aiwarts/status/2082129548762878344"
+    },
+    {
+      "batch": "lateNight",
       "canonical_url": "https://x.com/vista8/status/2082132646646485344",
       "category": "agents",
       "content_type": "socialMedia",
@@ -5369,6 +5826,43 @@
         "topic_agents"
       ],
       "url": "https://x.com/vista8/status/2082132646646485344"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://the-decoder.com/amazon-reportedly-scales-back-its-nova-ai-models-and-bets-on-a-new-frontier-research-team/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_5f6ffab3c47a6140a6a8e31b5b2732821f9b79120c519bd098620905554a3367",
+      "featured": false,
+      "id": "n_5f6ffab3c47a6140a6a8e31b5b2732821f9b79120c519bd098620905554a3367",
+      "identity_claims": [
+        "c_5f6ffab3c47a6140a6a8e31b5b2732821f9b79120c519bd098620905554a3367",
+        "c_ee2e737ebbc70cdda770204a0ac6985289d19ebb30d9982664ea0107453bea03"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T16:03:39.406Z",
+      "published_date": "2026-07-29",
+      "reason": "Amazon 大幅收缩自研 Nova 模型线并转向新团队，是具体业务战略调整，影响现有客户和内部路线，有明确时间点和细节。",
+      "related_source_ids": [],
+      "score": 7.1,
+      "source": {
+        "homepage": null,
+        "id": "1220068835093164033",
+        "name": "The Decoder"
+      },
+      "source_id": "1220068835093164033",
+      "source_type": "the_decoder",
+      "summary": "Amazon is scaling back most of its in-house Nova AI models, including Nova Premier, Omni, Reel, and Canvas. The models stay online for existing customers in \"keep the lights on\" mode but are no longer actively developed. Instead, Amazon is betting on a new Frontier Model Research group and a new foundation model set to debut at re:Invent this fall. The article Amazon reportedly scales back its Nova AI models and bets on a new Frontier research team appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Amazon reportedly scales back its Nova AI models and bets on a new Frontier research team",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://the-decoder.com/amazon-reportedly-scales-back-its-nova-ai-models-and-bets-on-a-new-frontier-research-team/"
     },
     {
       "batch": "lateNight",
@@ -5407,6 +5901,44 @@
         "topic_agents"
       ],
       "url": "https://openai.com/index/scientific-computing-agentic-ai"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://the-decoder.com/anthropic-says-its-mythos-model-found-vulnerabilities-in-cryptographic-algorithms-that-secure-the-internet/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_fa94e84f56b6d055a492a5993b993520ad396058785f62f7ec038fd6cee08776",
+      "featured": false,
+      "id": "n_fa94e84f56b6d055a492a5993b993520ad396058785f62f7ec038fd6cee08776",
+      "identity_claims": [
+        "c_27d11bb2228d61ed585bd31679ed8074235954b92b97c0f916939b2cfc5ef788",
+        "c_fa94e84f56b6d055a492a5993b993520ad396058785f62f7ec038fd6cee08776"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T20:00:00.000Z",
+      "published_at": "2026-07-28T19:12:27.162Z",
+      "published_date": "2026-07-29",
+      "reason": "Anthropic 的模型以 60 小时和 10 万美元成本发现后量子签名算法 HAWK 的实际弱点，挑战互联网安全基石，影响深远，具体证据充分。",
+      "related_source_ids": [],
+      "score": 9.3,
+      "source": {
+        "homepage": null,
+        "id": "1220068835093164032",
+        "name": "The Decoder"
+      },
+      "source_id": "1220068835093164032",
+      "source_type": "the_decoder",
+      "summary": "Anthropic's Claude Mythos Preview found weaknesses in key cryptographic algorithms, including a better attack on HAWK, a post-quantum signature scheme that human experts had reviewed for more than two years. The model found it in just 60 hours at an API cost of about $100,000. The findings don't affect systems in use today, but they show how AI could challenge core assumptions behind internet security, Anthropic says. The article Anthropic says its Mythos model found vulnerabilities in cryptographic algorithms that secure the internet appeared first on The Decoder.",
+      "time_precision": "exact",
+      "title": "Anthropic says its Mythos model found vulnerabilities in cryptographic algorithms that secure the internet",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://the-decoder.com/anthropic-says-its-mythos-model-found-vulnerabilities-in-cryptographic-algorithms-that-secure-the-internet/"
     }
   ],
   "overview": {
