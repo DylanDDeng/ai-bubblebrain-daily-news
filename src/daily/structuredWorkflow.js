@@ -749,6 +749,7 @@ export async function runStructuredDailyWorkflow(
         const fetched = await deps.fetchData(env, foloCookie, {
             fetchPageCap,
             foloIncrementalPlan,
+            runAt: contentCutoff,
         });
         const sourceCompletedAt = new Date().toISOString();
         if (fetched.errors.length > 0) {

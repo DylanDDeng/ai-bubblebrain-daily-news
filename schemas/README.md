@@ -13,7 +13,7 @@
 
 ## Source registry v1
 
-`src/daily/sourceRegistry.js` is the complete registry for the 11 active adapters plus retired
+`src/daily/sourceRegistry.js` is the complete registry for the active adapters plus retired
 providers kept for historical identity. `source_type` is
 the stable provider key and is never inferred from a display name. `content_type` is the separate
 rendering class. `src/daily/sourceAdapters.js` maps every active legacy adapter object to exactly one
@@ -33,6 +33,7 @@ payload.
 | `jiqizhixin` | `paper` | source ID |
 | `twitter` | `socialMedia` | source ID |
 | `twitter_extra` | `socialMedia` | source ID |
+| `grok_x` | `socialMedia` | canonical URL |
 | `reddit` (retired) | `socialMedia` | source ID |
 
 Adding or renaming a provider requires a registry entry and identity-policy tests. Display-name

@@ -8,13 +8,14 @@ import { dataSources } from '../../src/dataFetchers.js';
 import GithubTrendingDataSource from '../../src/dataSources/github-trending.js';
 
 describe('source registry and stable identity v1', () => {
-    it('freezes unique policies for all 19 registered source providers', () => {
+    it('freezes unique policies for all 20 registered source providers', () => {
         expect(Object.keys(SOURCE_REGISTRY)).toEqual([
             'aibase', 'xiaohu', 'qbit', 'kazike', 'simonwillison', 'xinzhiyuan', 'openai_newsroom', 'anthropic_research',
             'the_decoder',
             'github_trending', 'huggingface_papers', 'jiqizhixin',
             'twitter', 'twitter_extra', 'kazike_x',
             'cursor_x', 'anthropic_x', 'sam_altman_x',
+            'grok_x',
             'reddit',
         ]);
         for (const policy of Object.values(SOURCE_REGISTRY)) {
@@ -26,14 +27,16 @@ describe('source registry and stable identity v1', () => {
         // Retired providers (reddit) stay in the registry for historical identity
         // but no longer have an active fetch adapter.
         const retiredProviders = ['reddit'];
-        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(18);
+        expect(STRUCTURED_SOURCE_ADAPTERS).toHaveLength(19);
         expect(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.provider))
             .toEqual(Object.keys(SOURCE_REGISTRY).filter(provider => !retiredProviders.includes(provider)));
         for (const entry of STRUCTURED_SOURCE_ADAPTERS) {
-            expect(dataSources[entry.contentType].sources).toContain(entry.adapter);
+            if (entry.provider !== 'grok_x') {
+                expect(dataSources[entry.contentType].sources).toContain(entry.adapter);
+            }
             expect(SOURCE_REGISTRY[entry.provider].contentType).toBe(entry.contentType);
         }
-        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(18);
+        expect(new Set(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.adapter)).size).toBe(19);
     });
 
     it('canonicalizes conservatively and preserves business-significant URL parts', () => {
@@ -143,6 +146,31 @@ describe('source registry and stable identity v1', () => {
         });
 
         const result = deduplicateSameDay([], [fromList.item, fromFixedFeed.item]);
+        expect(result.items).toHaveLength(1);
+        expect(result.duplicateCount).toBe(1);
+    });
+
+    it('deduplicates the same X post fetched from Folo and Grok', async () => {
+        const raw = {
+            id: '2081513071135346814',
+            title: 'Same post through two ingestion providers',
+            url: 'https://x.com/sama/status/2081513071135346814',
+            published_date: '2026-07-26T22:52:43.433Z',
+            source: 'Sam Altman',
+        };
+        const fromFolo = await normalizeSourceItem(raw, {
+            provider: 'twitter_extra',
+            batch: 'morning',
+            runAt: '2026-07-27T00:00:00Z',
+        });
+        const fromGrok = await normalizeSourceItem(raw, {
+            provider: 'grok_x',
+            batch: 'morning',
+            runAt: '2026-07-27T00:00:00Z',
+        });
+
+        const result = deduplicateSameDay([], [fromFolo.item, fromGrok.item]);
+        expect(fromGrok.item.identity_strategy).toBe('canonical_url');
         expect(result.items).toHaveLength(1);
         expect(result.duplicateCount).toBe(1);
     });

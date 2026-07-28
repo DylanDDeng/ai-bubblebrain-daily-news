@@ -110,6 +110,7 @@ async function fetchWithDeadline(
         foloIncrementalPlan,
         probeCache,
         allowPageExpansion,
+        runAt,
     },
 ) {
     const controller = new AbortController();
@@ -155,7 +156,7 @@ async function fetchWithDeadline(
                 raw: await entry.adapter.fetch(
                     adapterEnv,
                     foloCookie,
-                    { strict: true, signal: controller.signal },
+                    { strict: true, signal: controller.signal, runAt },
                 ),
             };
         };
@@ -187,6 +188,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
         inserted_after_ms: null,
         previous_checkpoint_at: null,
     },
+    runAt = foloIncrementalPlan?.run_at || new Date().toISOString(),
 } = {}) {
     if (!Number.isInteger(fetchAttempts) || fetchAttempts < 1 || fetchAttempts > 3) {
         throw new Error('Structured fetch attempts must be between one and three');
@@ -203,6 +205,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
 
     const taggedByType = Object.fromEntries(CONTENT_TYPE_ORDER.map(type => [type, []]));
     const errors = [];
+    const warnings = [];
     const providerEnv = cappedProviderEnvironment(env, fetchPageCap);
     const retryProviderEnv = cappedProviderEnvironment(providerEnv, 1);
     let retriesRemaining = retryBudget;
@@ -236,6 +239,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
                             attempt === 1
                             && (fetchPageCap === null || fetchPageCap === undefined)
                         ),
+                        runAt,
                     },
                 );
                 raw = fetched.raw;
@@ -265,13 +269,14 @@ export async function fetchProviderPreservingData(env, foloCookie, {
 
         if (fetchError) {
             const failure = classifyProviderFailure(fetchError);
-            errors.push({
+            const failureRecord = {
                 provider: entry.provider,
                 content_type: entry.contentType,
                 stage: 'fetch',
                 error_type: failure.code,
                 attempts: attemptsUsed,
-            });
+            };
+            (entry.nonBlocking ? warnings : errors).push(failureRecord);
             continue;
         }
         if (skipped) {
@@ -304,13 +309,14 @@ export async function fetchProviderPreservingData(env, foloCookie, {
                 item,
             })));
         } catch (error) {
-            errors.push({
+            const failureRecord = {
                 provider: entry.provider,
                 content_type: entry.contentType,
                 stage: 'transform',
                 error_type: 'transform_error',
                 attempts: 1,
-            });
+            };
+            (entry.nonBlocking ? warnings : errors).push(failureRecord);
         }
     }
 
@@ -335,6 +341,7 @@ export async function fetchProviderPreservingData(env, foloCookie, {
         grouped,
         structuredItems,
         errors,
+        warnings,
         foloIncrementalPlan,
         foloIncremental: publicFoloIncrementalEvidence(foloIncrementalPlan, {
             skippedProviderCount,
