@@ -1,9 +1,10 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-27T23:00:00.000Z",
+      "generated_at": "2026-07-28T00:00:00.000Z",
       "id": "morning",
       "item_ids": [
+        "n_9fb8e8623367945636182f6a9d804ce9af7eb4c2e4a23dfafe538046a3fa9ce8",
         "n_b5e82c0cc19d3de7e1163f212f9c6226547c0b33fe42da6006bb0da590a467b5",
         "n_ff1b51a272c051282406b89fceb421355c2a6adb76742469ec9be8d7a8dca5e7",
         "n_3eac4808db0a5cbcf66777cb4d14e2e518bec0ad12c050ce6b0999396cc48b5e",
@@ -57,9 +58,45 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-27T23:00:00.000Z",
+  "generated_at": "2026-07-28T00:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/huangyun_122/status/2081754029458419721",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_9fb8e8623367945636182f6a9d804ce9af7eb4c2e4a23dfafe538046a3fa9ce8",
+      "featured": false,
+      "id": "n_9fb8e8623367945636182f6a9d804ce9af7eb4c2e4a23dfafe538046a3fa9ce8",
+      "identity_claims": [
+        "c_9fb8e8623367945636182f6a9d804ce9af7eb4c2e4a23dfafe538046a3fa9ce8",
+        "c_a48120e6b4df19abb0cb2d7f4f0504a7dd68ad2bbac682786c64ba38fb8189b9"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T00:00:00.000Z",
+      "published_at": "2026-07-27T14:50:12.825Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1218827905660780544",
+        "name": "twitter-黄赟"
+      },
+      "source_id": "1218827905660780544",
+      "source_type": "twitter_extra",
+      "summary": "杨姨此前在生财航海家大会露面，此次展示通过AI工具NewMax检索案例和下载判决书，以替代实习生完成重复性工作。",
+      "time_precision": "exact",
+      "title": "牛马创始人杨姨示范法律从业者使用NewMax查案例并下载判决书节省人力",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/huangyun_122/status/2081754029458419721"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://the-decoder.com/delhi-high-court-hands-openai-a-win-by-rejecting-major-indian-news-agencys-copyright-injunction/",
