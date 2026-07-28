@@ -15,11 +15,18 @@
       "status": "pending"
     },
     {
-      "generated_at": "2026-07-28T16:00:00.000Z",
+      "generated_at": "2026-07-28T17:00:00.000Z",
       "id": "night",
       "item_ids": [
+        "n_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+        "n_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d",
+        "n_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1",
+        "n_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba",
+        "n_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055",
+        "n_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d",
         "n_0adcbfb71cf184753962d227ccc1b3453f783da6ddafcc37a698c8ed7d9cafd2",
-        "n_83d273516f3a710c5cf9fdacc7557a21b48521c52c7b248819793e0bfb045ccf"
+        "n_83d273516f3a710c5cf9fdacc7557a21b48521c52c7b248819793e0bfb045ccf",
+        "n_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919"
       ],
       "label": "22:00 更新",
       "status": "completed"
@@ -35,9 +42,228 @@
   "classifier_version": 1,
   "date": "2026-07-29",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T16:00:00.000Z",
+  "generated_at": "2026-07-28T17:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/tuturetom/status/2082026826361127379",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+      "featured": false,
+      "id": "n_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+      "identity_claims": [
+        "c_4a636816549ede1a8acdd1667b263fdc21f9f4ec98306f9363febe7a05ac85b1",
+        "c_858e67c181f2639a4125f500cb79f60107d91ff6a6f314d582763a1947d86812"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T17:00:00.000Z",
+      "published_at": "2026-07-28T08:53:07.566Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937669",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937669",
+      "source_type": "twitter_extra",
+      "summary": "月之暗面的最新模型将开源权重，用户可试用。",
+      "time_precision": "exact",
+      "title": "Kimi K3 已上线 Open Design，具备强大前端能力与设计品味。",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/tuturetom/status/2082026826361127379"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/tuturetom/status/2082033393609376132",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d",
+      "featured": false,
+      "id": "n_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d",
+      "identity_claims": [
+        "c_35145133b615b5b5f838660c3451d1aee124bbfac49d958cd98c7ff368dff7e9",
+        "c_dd7f6cde0ce15177881cbf6ec039ee5844099e9d96d0e514fd09680e745d1b6d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T17:00:00.000Z",
+      "published_at": "2026-07-28T09:20:18.426Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937668",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937668",
+      "source_type": "twitter_extra",
+      "summary": "为庆祝 Kimi K3 达成开源版本 Fable 5 时刻，Open Design Cloud 限时提供折扣。",
+      "time_precision": "exact",
+      "title": "Kimi K3 登陆 Open Design，平台庆祝开源里程碑全模型促销低至 4.9 折。",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2082033393609376132"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/tuturetom/status/2082046869392261486",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1",
+      "featured": false,
+      "id": "n_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1",
+      "identity_claims": [
+        "c_3e6629db29eeea6ad82059d80cc696ebf7e66348ca03fc40209d5c7c884b12b4",
+        "c_6671873e35b0a44260a08c042d598b10d27afbe18c94fc353b97986e1bce7ae1"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T17:00:00.000Z",
+      "published_at": "2026-07-28T10:06:35.518Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937667",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937667",
+      "source_type": "twitter_extra",
+      "summary": "该视频由 @Mayii0205 制作，模型开源权重即将推出。",
+      "time_precision": "exact",
+      "title": "用户利用 Kimi K3 生成的提示制作视频，展现其令人印象深刻的设计品味。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/tuturetom/status/2082046869392261486"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/tuturetom/status/2082059612811837453",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba",
+      "featured": false,
+      "id": "n_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba",
+      "identity_claims": [
+        "c_2ea7f77f4597ecb57b1fd39af17dd4e9044ed97713304a241f3e71daa64f1f7f",
+        "c_ffe9d3cfe7328d90c2d283ea3b5131e7f605ee4da28743cd29066ec7939e95ba"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T17:00:00.000Z",
+      "published_at": "2026-07-28T10:48:48.178Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937666",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937666",
+      "source_type": "twitter_extra",
+      "summary": "Codex 工作流可操控 HeyGen、MiniMax、剪映等工具自动生成口播视频，两条 40 秒成本 20 多元；Open Design 即将开启重大更新内测。",
+      "time_precision": "exact",
+      "title": "Codex 整合多款工具实现全自动口播视频工作流，每条成本仅 20 多元。",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2082059612811837453"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/tuturetom/status/2082058561371201690",
+      "category": "products",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055",
+      "featured": false,
+      "id": "n_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055",
+      "identity_claims": [
+        "c_9f5c61f48c73e66d5019d26e112f9dfc1d443c67d616370878f825fb20d056cf",
+        "c_f5ca9edd0a7a6889ed571c938923f9309f27d90ec557169bda5088ac7a382055"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T17:00:00.000Z",
+      "published_at": "2026-07-28T11:00:18.343Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937665",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937665",
+      "source_type": "twitter_extra",
+      "summary": "团队成员可以在同一个可视化画布中实时沟通、编辑和评审，AI设计迈向多人协作，现已开放内测申请。",
+      "time_precision": "exact",
+      "title": "Open Design 即将推出 Codex 插件，实现团队多人实时协作设计。",
+      "topic_ids": [
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/tuturetom/status/2082058561371201690"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/tuturetom/status/2082067113947124093",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d",
+      "featured": false,
+      "id": "n_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d",
+      "identity_claims": [
+        "c_3e5ad2d32baf9ac98f4c8a7425c90910f4c8088a813bbaa398776b95661f99e2",
+        "c_8eb6bff20eff03c1c25b0ffa84137f42b0e5c93fa945694af5b194a3ce0c654d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T17:00:00.000Z",
+      "published_at": "2026-07-28T11:09:18.226Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219842367389937664",
+        "name": "twitter-Tom Huang"
+      },
+      "source_id": "1219842367389937664",
+      "source_type": "twitter_extra",
+      "summary": "你的 Codex 和团队 Codex 可进入同一画布实时协作，标志着 AI 设计进入多人时代。",
+      "time_precision": "exact",
+      "title": "Open Design 将上线 Codex 插件市场，提供一个共享画布实现多人 AI 设计协作。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/tuturetom/status/2082067113947124093"
+    },
     {
       "batch": "night",
       "canonical_url": "https://x.com/shao__meng/status/2082061580343390311",
@@ -112,6 +338,42 @@
         "topic_open_source"
       ],
       "url": "https://x.com/shao__meng/status/2082123645430669627"
+    },
+    {
+      "batch": "night",
+      "canonical_url": "https://x.com/aiwarts/status/2082129548762878344",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919",
+      "featured": false,
+      "id": "n_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919",
+      "identity_claims": [
+        "c_21195b06f36bf32c52eb09edc49bfbc5b8a44f7b3c6f0fa89da7c63e6f02c919",
+        "c_38481149f4c6c78e908d08a9a0bb4209ac05af7e0c2ac660ac73ec7223d2ba4b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T17:00:00.000Z",
+      "published_at": "2026-07-28T15:42:23.917Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219847038401695744",
+        "name": "twitter-卡尔的AI沃茨"
+      },
+      "source_id": "1219847038401695744",
+      "source_type": "twitter_extra",
+      "summary": "Runway 宣布 Seedance 2.5 即将发布。",
+      "time_precision": "exact",
+      "title": "Seedance 2.5 即将在 Runway 平台推出。",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/aiwarts/status/2082129548762878344"
     }
   ],
   "overview": {
