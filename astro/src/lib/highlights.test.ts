@@ -17,6 +17,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-07-26-cloud-rendering/',
 	'/highlights/2026-07-27-prompt-caching-in-agents/',
 	'/en/highlights/2026-07-27-prompt-caching-in-agents/',
+	'/highlights/2026-07-28-why-software-factories-fail-benchmarking-new-frontier/',
+	'/en/highlights/2026-07-28-why-software-factories-fail-benchmarking-new-frontier/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
