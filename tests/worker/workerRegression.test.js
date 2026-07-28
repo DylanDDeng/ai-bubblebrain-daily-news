@@ -411,7 +411,13 @@ describe('worker regression guards', () => {
         expect(config).toContain('TWITTER_EXTRA_FETCH_PAGES = "1"');
         expect(config).toContain('LATE_NIGHT_SUPPLEMENT_FETCH_PAGE_CAP = "1"');
         expect(config).toContain('DAILY_SOURCE_RETRY_BUDGET = "2"');
-        expect(config).toContain('X_BLOCKED_HANDLES = "ezshine,GemstoneNicole"');
+        expect(config).toContain(
+            'X_BLOCKED_HANDLES = "ezshine,GemstoneNicole,wwwgoubuli"',
+        );
+        const grokHandles = config
+            .split('\n')
+            .find(line => line.startsWith('GROK_X_HANDLES = '));
+        expect(grokHandles).not.toContain('wwwgoubuli');
         expect(config).toContain('id = "a8155f35059c4b2faf4b06ef43c30fa3"');
     });
 
