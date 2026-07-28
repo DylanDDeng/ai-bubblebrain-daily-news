@@ -159,17 +159,19 @@
       "status": "completed"
     },
     {
-      "generated_at": null,
+      "generated_at": "2026-07-28T18:00:00.000Z",
       "id": "lateNight",
-      "item_ids": [],
+      "item_ids": [
+        "n_2688943fc99bf08d4ccc8322c7a4ab2651d1f6f14c54ee012dd18b2eb06f6306"
+      ],
       "label": "次日 02:00 补充更新",
-      "status": "pending"
+      "status": "completed"
     }
   ],
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T15:00:00.000Z",
+  "generated_at": "2026-07-28T18:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -5330,6 +5332,44 @@
         "topic_open_source"
       ],
       "url": "https://x.com/HiTw93/status/2082101811394290142"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://openai.com/index/scientific-computing-agentic-ai",
+      "category": "agents",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_2688943fc99bf08d4ccc8322c7a4ab2651d1f6f14c54ee012dd18b2eb06f6306",
+      "featured": false,
+      "id": "n_2688943fc99bf08d4ccc8322c7a4ab2651d1f6f14c54ee012dd18b2eb06f6306",
+      "identity_claims": [
+        "c_2688943fc99bf08d4ccc8322c7a4ab2651d1f6f14c54ee012dd18b2eb06f6306",
+        "c_616bcfedf34ccf0f38a16b805ec2d849931cb1d5b08989e162a1b2bab36baa0d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T18:00:00.000Z",
+      "published_at": "2026-07-28T17:00:00.806Z",
+      "published_date": "2026-07-29",
+      "reason": "报道了AI代理在科研计算中的新应用趋势，但缺乏具体案例或数据，属于常规行业进展。",
+      "related_source_ids": [],
+      "score": 6.5,
+      "source": {
+        "homepage": null,
+        "id": "1219910808834650112",
+        "name": "openai-newsroom"
+      },
+      "source_id": "1219910808834650112",
+      "source_type": "openai_newsroom",
+      "summary": "A new field report shows how scientists use AI coding agents to modernize scientific computing, accelerating software development and discovery in genomics and beyond.",
+      "time_precision": "exact",
+      "title": "Scientific computing in the age of agentic AI",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://openai.com/index/scientific-computing-agentic-ai"
     }
   ],
   "overview": {
