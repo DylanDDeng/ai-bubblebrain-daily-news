@@ -32,14 +32,17 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-28T06:00:00.000Z",
+      "generated_at": "2026-07-28T08:00:00.000Z",
       "id": "afternoon",
       "item_ids": [
+        "n_66621cf6697a6486b1140508548ce17f15117eb81dde24d19e87bf1187fd919b",
+        "n_a70307c9c6d0ef4a6fc121af43821ba3810e58c903fcdd9afa309b1fb64ef3bf",
         "n_69c0d025675f1130d42112c1b309597ea088dbb8e6d5b15dd4646decf7ca1edd",
         "n_8cc2ca9678702742bf98e54b62f17d51928ec6fe4c27ad7260cae5ff605bf36a",
         "n_2e6a69b266d9e1d19af26d667ea9dc4e088294ae5af1e40a09a6f868b3a52d71",
         "n_58f7bccb63a10aab0cb41105b9f5ee7f0e0538123d7f1212914e8ea5728e930f",
         "n_4989316e18d6de4ad5c6cb1319f7bc0dbf732aefc13c3a09b0c2f4b5e7ea61b0",
+        "n_02bf68e1c4ebc659e99610762af3720c24baa8896a7fcd7ca1e19782aa6b29d9",
         "n_2f1d264d8194f8bf1a9ca4a8ac982c7b07f06bdf3afee55bbb95974e6ed12c57",
         "n_1f17dad9eaebf39b116fcf8e78460ef21887083c22e9eef2f52e54b3ec6516a4",
         "n_2cc94576ce145f714beb1133dcb56ae1da858b29c4320067e06f1f4ea400d79f",
@@ -53,6 +56,11 @@
         "n_2e3c7815585f43664be30865ed81e9576198282b77523cbe53e8a8a879e1f89d",
         "n_e319cb0181cb69bf411b877342f32353aa5dce60eb695f672ae80cc3326eb7d5",
         "n_f443c2096b00527ac919b9a10a7217ab9bbb13602cd1e1333914664b1a759d8a",
+        "n_fe956729fd1ce1c53359ac767641c9888360e9f61573bec5c00d13777ee13823",
+        "n_f1d5311a2632af3b0dfe6f4ad1b314249129e797e2563d6c9088ff7c9730e952",
+        "n_26f32e06b913c137442b502246d3d6756b6e5b44068db62fabec99ec1e8ae911",
+        "n_041164555114efb6a0042dff2e4a706474af0f49c9092cf764ad7163125c761b",
+        "n_2cdd85140bd4b1c0ec4f23305b1e8e6409a2cc19f3281a9ec98feaee0983c4fb",
         "n_4ce225b1c6b7e6f9245e5d649f4c4c307fc611e2bbfbbf56950b19226dff13c1",
         "n_0fa584734508dd2e8bd0e1b0245c3796c8eebb41f1110583c656468fe958a962",
         "n_3af0f19efab247030af659544ed17cc3a5b0faed5aabb2ef037eac11167cd5fa",
@@ -71,7 +79,13 @@
         "n_ed70537d7e731b5040344f9445ecf2d57ae94b7540a8dc0ef8583151cb36e5c0",
         "n_b48bf830ba5e2299c08e7ec4aa221314f14e207d334dd254211102f2fd17d6f5",
         "n_074bde0bca9c5f0057fa562748c4a027204d4cee930b5ac957210189bfbb01eb",
-        "n_89c704134cd815f09cccf93d6436d684f4ca0543648ed52974453691bb72b7ad"
+        "n_d0da0f075e24154b80a5efa6711346cd5e541f17e08bf88a7e1358ad9dc8ef2e",
+        "n_cad76335457ae729c4671d86d98f1a281649ab19055c91c560ce4d58320efa71",
+        "n_942de89f1acd68302f568669eac421d69e257b08d7ffd770f03aef640ecb5807",
+        "n_89c704134cd815f09cccf93d6436d684f4ca0543648ed52974453691bb72b7ad",
+        "n_cdd3934bc5a5def364c2c90e539e05893c66c89ac6dce798a61ce536ade68ad2",
+        "n_7acf6c7eaab06736708ad93de8554f87edf22418ad35fb79b74779e65ccd7257",
+        "n_e21b71b961993179756a6bc5239552cddc9ff5e0a9332149b60d3725830e8a5d"
       ],
       "label": "14:00 更新",
       "status": "completed"
@@ -110,7 +124,7 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T06:00:00.000Z",
+  "generated_at": "2026-07-28T08:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -1002,6 +1016,81 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.21655",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_66621cf6697a6486b1140508548ce17f15117eb81dde24d19e87bf1187fd919b",
+      "featured": false,
+      "id": "n_66621cf6697a6486b1140508548ce17f15117eb81dde24d19e87bf1187fd919b",
+      "identity_claims": [
+        "c_66621cf6697a6486b1140508548ce17f15117eb81dde24d19e87bf1187fd919b",
+        "c_9c11eb92f5b00dc8bee4239087a3f0b0d0e90bc45865204f987a01ecd9c34e59"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-21T20:00:00.024Z",
+      "published_date": "2026-07-22",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219155033019367443",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1219155033019367443",
+      "source_type": "huggingface_papers",
+      "summary": "Robotic learning takes place in dynamic environments with large behavior spaces. A terminal success signal only tells the robot whether the task is completed. It does not explain whether the current behavior is making progress, remaining unchanged, or undoing earlier progress. For this reason, recent studies have increasingly explored progress rewards that provide feedback during task execution. However, the current literature lacks a shared framework. Existing methods use different observations, goal specifications, output signals, supervision sources, and evaluation protocols. This makes it difficult to compare them and understand what their results actually validate. In this survey, we provide a unified view of progress reward modeling for robotic learning. We organize the field in three connected steps. We first study the interface of a progress model. This defines the problem from the outside by asking what information the model receives and what form of progress signal it produces. We then move inside the model and study the methods used to construct this signal. This reveals the different assumptions and mechanisms behind progress estimation and reward generation. Finally, we examine the data and benchmarks that support these methods. This shows how progress supervision is obtained and what different evaluations actually measure. Together, these three perspectives connect what a progress model is, how it is built, and how its quality is validated. We further summarize the main limitations of current approaches and discuss future research directions.",
+      "time_precision": "exact",
+      "title": "Progress Reward Modeling for Robotic Learning: A Comprehensive Survey",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.21655"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.21694",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_a70307c9c6d0ef4a6fc121af43821ba3810e58c903fcdd9afa309b1fb64ef3bf",
+      "featured": false,
+      "id": "n_a70307c9c6d0ef4a6fc121af43821ba3810e58c903fcdd9afa309b1fb64ef3bf",
+      "identity_claims": [
+        "c_4591eb0a047975531ebcf78814c7e994666f623cbf22c759b9ff58b252d922e9",
+        "c_a70307c9c6d0ef4a6fc121af43821ba3810e58c903fcdd9afa309b1fb64ef3bf"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-22T20:00:00.516Z",
+      "published_date": "2026-07-23",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219155033019367442",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1219155033019367442",
+      "source_type": "huggingface_papers",
+      "summary": "We present Oxygen-TryOn, a unified foundation model for any-item virtual try-on. Rather than repurposing a general-purpose image editor, Oxygen-TryOn is fashion-native, built for try-on through a dedicated data engine and try-on-specific training. Given one or more reference items (clean product shots or in-the-wild worn-on photos) and a single target subject image, it synthesizes a photorealistic image of the subject wearing the items across virtually any fashion category. Prior systems handle a single garment category in a studio setting, and recent multi-reference methods remain garment-centric; in contrast, Oxygen-TryOn supports diverse items and scenarios, including full- and half-body views, a variable number of references, and free multi-item composition, while faithfully preserving both subject identity and item appearance. Instead of mask-based inpainting, we reformulate try-on as a multi-reference, understanding-driven generation task. We build a data engine that collects, manufactures, annotates, and filters high-quality try-on data at scale, and design a three-stage recipe of continued pre-training (CPT), supervised fine-tuning (SFT), and reinforcement learning (RL). The RL stage uses a hybrid reward combining an in-house try-on reward model with a proprietary, rubric-guided general-purpose model, jointly supervising fine-grained consistency and instruction-level quality. It also follows general editing instructions (e.g., pose changes) in the same pass. Across public benchmarks and our in-house Oxygen-TryOn Bench, it achieves state-of-the-art consistency and realism on single-item try-on and leads on multi-item try-on, matching or surpassing both leading proprietary systems (Nano Banana Pro, GPT-Image-2, Seedream5 Lite) and open-source models (FLUX.2).",
+      "time_precision": "exact",
+      "title": "Oxygen-TryOn: Fashion-Native Foundation Model for Any-item Virtual Try-On",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://arxiv.org/abs/2607.21694"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://arxiv.org/abs/2607.22798",
       "category": "models",
       "content_type": "paper",
@@ -1182,6 +1271,43 @@
         "topic_models"
       ],
       "url": "https://arxiv.org/abs/2607.23855"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://arxiv.org/abs/2607.23518",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_02bf68e1c4ebc659e99610762af3720c24baa8896a7fcd7ca1e19782aa6b29d9",
+      "featured": false,
+      "id": "n_02bf68e1c4ebc659e99610762af3720c24baa8896a7fcd7ca1e19782aa6b29d9",
+      "identity_claims": [
+        "c_02bf68e1c4ebc659e99610762af3720c24baa8896a7fcd7ca1e19782aa6b29d9",
+        "c_5d1a95e8e6f69ebcfb4ef91554b28c2b66a9e56c8922f9e45ea8feb6aefe1d25"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-25T20:00:00.455Z",
+      "published_date": "2026-07-26",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219263804827746315",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1219263804827746315",
+      "source_type": "huggingface_papers",
+      "summary": "The rapid evolution of generative models has unlocked new potentials in protein binder design, a pivotal task in structural biology, by facilitating end-to-end generation via joint sequence-structure modeling or hallucination. However, existing approaches are predominantly implemented under a single-target, single-state assumption, limiting their ability to model multi-target or multi-state interactions required for advanced function-oriented protein design. Here, we introduce Chamaileon, which unifies multi-target and multi-state binder design by formulating the problem as cross-context binding landscape modeling. The framework is underpinned by a training paradigm termed In-Context Complex Co-Design (I3CD) for context-aware sequence-structure co-modeling. During inference, we employ Mixture-of-Paths Sampling (MoPS), a scalable strategy that optimizes a single sequence across contexts while alleviating the scarcity of high-quality multi-conformational paired data. Extensive evaluation on our newly constructed benchmark, CROSS, demonstrates that Chamaileon effectively generates sequences adaptable to diverse conformational landscapes and multi-target requirements. The code is available on",
+      "time_precision": "exact",
+      "title": "Chamaileon: Cross-Context Binder Design with Contextualized Modeling and Mixed Sampling",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.23518"
     },
     {
       "batch": "afternoon",
@@ -1669,6 +1795,191 @@
         "topic_policy"
       ],
       "url": "https://arxiv.org/abs/2607.24720"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081567497392980031",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_fe956729fd1ce1c53359ac767641c9888360e9f61573bec5c00d13777ee13823",
+      "featured": false,
+      "id": "n_fe956729fd1ce1c53359ac767641c9888360e9f61573bec5c00d13777ee13823",
+      "identity_claims": [
+        "c_b24c6c03ee63b12ce33711257e673007cc692550b753b04fcf41a0ccd5233354",
+        "c_fe956729fd1ce1c53359ac767641c9888360e9f61573bec5c00d13777ee13823"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-27T02:28:59.026Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219166448740532230",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1219166448740532230",
+      "source_type": "twitter_extra",
+      "summary": "根据用户反馈，Grok印度区订阅价格已大幅上调至约2000元人民币一年，而此前售价为6500卢布（约合575元人民币）。该版本只有周使用限额，无五小时限制。",
+      "time_precision": "exact",
+      "title": "Grok印度区订阅年费上涨至2000元人民币，早期575元年费用户已受益",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081567497392980031"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081668340310061379",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f1d5311a2632af3b0dfe6f4ad1b314249129e797e2563d6c9088ff7c9730e952",
+      "featured": false,
+      "id": "n_f1d5311a2632af3b0dfe6f4ad1b314249129e797e2563d6c9088ff7c9730e952",
+      "identity_claims": [
+        "c_f1d5311a2632af3b0dfe6f4ad1b314249129e797e2563d6c9088ff7c9730e952",
+        "c_f33ce6ce3028e3bcd7e6b6139debdb93200e84ff97d2699c3529544f81753213"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-27T09:09:42.458Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219166448740532229",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1219166448740532229",
+      "source_type": "twitter_extra",
+      "summary": "多位用户称GiffGaff服务疑似失效，导致之前绑定该运营商手机号的ChatGPT账号面临无法修改手机号的风险，用户担忧账号安全。",
+      "time_precision": "exact",
+      "title": "GiffGaff服务异常，用户反映多个GPT账号因绑定此手机号无法更改",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081668340310061379"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081761910010393080",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_26f32e06b913c137442b502246d3d6756b6e5b44068db62fabec99ec1e8ae911",
+      "featured": false,
+      "id": "n_26f32e06b913c137442b502246d3d6756b6e5b44068db62fabec99ec1e8ae911",
+      "identity_claims": [
+        "c_26f32e06b913c137442b502246d3d6756b6e5b44068db62fabec99ec1e8ae911",
+        "c_b99510323961b5218059ccde14e0862d00828afdafe7d03d9868284fc07b9649"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-27T15:21:31.264Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219166448740532228",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1219166448740532228",
+      "source_type": "twitter_extra",
+      "summary": "Kimi K3模型正式开源，用户通过提供的链接可以访问相关资源，具体性能与用法等待进一步探究。",
+      "time_precision": "exact",
+      "title": "月之暗面旗下Kimi K3模型宣布开源，开发者可获取模型使用",
+      "topic_ids": [
+        "topic_models",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081761910010393080"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/omarsar0/status/2081948060188606605",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_041164555114efb6a0042dff2e4a706474af0f49c9092cf764ad7163125c761b",
+      "featured": false,
+      "id": "n_041164555114efb6a0042dff2e4a706474af0f49c9092cf764ad7163125c761b",
+      "identity_claims": [
+        "c_041164555114efb6a0042dff2e4a706474af0f49c9092cf764ad7163125c761b",
+        "c_099fc276b5ff0297f38eeadfd4c6d9149e1060bef81ff7db25255bbe957ebbca"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-27T15:35:01.966Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219311950773653509",
+        "name": "twitter-elvis"
+      },
+      "source_id": "1219311950773653509",
+      "source_type": "twitter_extra",
+      "summary": "一项基于近6000次对比实验的研究显示，为智能体添加技能后，原本能完成的任务出现失败，最佳技能组合主要通过减少这种倒退来提升表现，而非增加成功次数。原因包括技能描述渗透、依托关系置换与验证置换。",
+      "time_precision": "exact",
+      "title": "研究发现为AI智能体添加程序性技能可能造成任务成功率倒退",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://x.com/omarsar0/status/2081948060188606605"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2081768654614806839",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_2cdd85140bd4b1c0ec4f23305b1e8e6409a2cc19f3281a9ec98feaee0983c4fb",
+      "featured": false,
+      "id": "n_2cdd85140bd4b1c0ec4f23305b1e8e6409a2cc19f3281a9ec98feaee0983c4fb",
+      "identity_claims": [
+        "c_2cdd85140bd4b1c0ec4f23305b1e8e6409a2cc19f3281a9ec98feaee0983c4fb",
+        "c_f10daccad8757f8b4481cabc10d792d0c37527068a78db3078d0578e1736f919"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-27T15:48:19.193Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219166448740532227",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1219166448740532227",
+      "source_type": "twitter_extra",
+      "summary": "针对GiffGaff服务不稳定的现状，有用户计划通过开通长期合约的方式测试能否保住仍可正常使用的号码。",
+      "time_precision": "exact",
+      "title": "用户尝试为状态正常的GiffGaff号码开通18个月连续合约以保留功能",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2081768654614806839"
     },
     {
       "batch": "afternoon",
@@ -2370,6 +2681,122 @@
     },
     {
       "batch": "afternoon",
+      "canonical_url": "https://x.com/wwwgoubuli/status/2081998074805944816",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_d0da0f075e24154b80a5efa6711346cd5e541f17e08bf88a7e1358ad9dc8ef2e",
+      "featured": false,
+      "id": "n_d0da0f075e24154b80a5efa6711346cd5e541f17e08bf88a7e1358ad9dc8ef2e",
+      "identity_claims": [
+        "c_d0da0f075e24154b80a5efa6711346cd5e541f17e08bf88a7e1358ad9dc8ef2e",
+        "c_d0e8c4fadb59a51fb372878607be825ef36dde0e7e33056bfb0d50f8e72cf2a0"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-28T05:05:29.941Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219305621468160002",
+        "name": "twitter-wwwgoubuli"
+      },
+      "source_id": "1219305621468160002",
+      "source_type": "twitter_extra",
+      "summary": "Andros Fenollosa的博客提出基于HTTP的HMTP协议，利用TLS、WebFinger等已有标准解决SMTP长期设计缺陷。协议不与传统邮件互通，仅作为技术探索方案。",
+      "time_precision": "exact",
+      "title": "开发者仅用现有技术重构出取代SMTP的新邮件协议HMTP并登上HN热门",
+      "topic_ids": [
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/wwwgoubuli/status/2081998074805944816"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://www.aibase.com/zh/news/29938",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_cad76335457ae729c4671d86d98f1a281649ab19055c91c560ce4d58320efa71",
+      "featured": false,
+      "id": "n_cad76335457ae729c4671d86d98f1a281649ab19055c91c560ce4d58320efa71",
+      "identity_claims": [
+        "c_59d05e73cdbfc6313bdc7eb921d23eafb3b2926167db60f0c0354ee9fd7ec638",
+        "c_cad76335457ae729c4671d86d98f1a281649ab19055c91c560ce4d58320efa71"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-28T05:37:23.976Z",
+      "published_date": "2026-07-28",
+      "reason": "英伟达绑定前OpenAI核心科学家苏茨克维，延续类似投资策略，影响算力生态但非变革性，来源可信、信息具体。",
+      "related_source_ids": [],
+      "score": 7.8,
+      "source": {
+        "homepage": null,
+        "id": "1219286013566836738",
+        "name": "aibase"
+      },
+      "source_id": "1219286013566836738",
+      "source_type": "aibase",
+      "summary": "据《华尔街日报》报道，英伟达正式投资OpenAI联合创始人、前首席科学家伊尔亚·苏茨克维旗下高度保密的AI实验室Safe Superintelligence（SSI），投资金额被描述为\"实质性\"，但具体财务条款未予披露。 这笔交易的核心筹码是算力。根据协议，SSI将获准使用大量英伟达旗舰级GPU硬件，足以将其算力资源提升\"一个数量级\"——而此前该公司主要依赖谷歌制造的TPU芯片。英伟达难得得以一窥SSI的研究进展后即决定出手，足见其对苏茨克维技术路线的认可。 隐秘巨头浮出水面：一年估值 300 亿美元 SSI由苏茨克维于 2024 年联合创办，公司定位极其明确——以\"一步到位\"的方式攻克\"安全超智能\"，即在不威胁人类的前提下实现能胜任人类一切任务的AI。 凭借苏茨克维在学术界的强大声誉，SSI迅速吸引了a16z和红杉资本等 顶级 风投约 20 亿美元注资，估值截至去年已达约 300 亿美元（约合 2033 亿元人民币），而其研究细节至今依然高度保密。 这并非英伟达 首次 押注OpenAI出走的核心人员——今年 3 月，英伟达已与前OpenAI首席技术官米拉·穆拉蒂创立的Thinking Machines Lab达成类似投资协议，后者本月发布的 首次 AI模型正是基于英伟达硬件训练而成。 从穆拉蒂到苏茨克维，英伟达正在系统性地绑定AI领域最 顶尖 的研究力量，在GPU销售之上构建一张深度耦合的算力生态网络——谁能训练出下一代模型，谁就必须驶入英伟达的轨道。",
+      "time_precision": "exact",
+      "title": "英伟达拿下苏茨克维：投资SSI实验室，算力版图再添一枚重磅棋子",
+      "topic_ids": [
+        "topic_models",
+        "topic_research",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://www.aibase.com/zh/news/29938"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://www.aibase.com/zh/news/29939",
+      "category": "products",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_942de89f1acd68302f568669eac421d69e257b08d7ffd770f03aef640ecb5807",
+      "featured": false,
+      "id": "n_942de89f1acd68302f568669eac421d69e257b08d7ffd770f03aef640ecb5807",
+      "identity_claims": [
+        "c_59a048d6ded6117f68a3b6a82e93ce4d9e766da7fee2197ee57cf0815bd0b1fb",
+        "c_942de89f1acd68302f568669eac421d69e257b08d7ffd770f03aef640ecb5807"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-28T05:41:11.277Z",
+      "published_date": "2026-07-28",
+      "reason": "版权案聚焦小众梗生成器，法律问题虽典型但影响面窄，对AI行业整体冲击有限，信息丰富但未改变格局。",
+      "related_source_ids": [],
+      "score": 5.5,
+      "source": {
+        "homepage": null,
+        "id": "1219286013566836737",
+        "name": "aibase"
+      },
+      "source_id": "1219286013566836737",
+      "source_type": "aibase",
+      "summary": "一幅两格漫画，曾在2017年悄悄长成了互联网上的流行梗。 第一 格里，一个男人追着标有\"机会\"的黄色气球;第二格里，一个写着\"害羞\"的粉色团子微笑着拉住他，让他终究没抓住机会。它的作者埃尔默·萨夫洛尔说，这幅叫\"逃跑气球\"的画来自\"极其私人的地方\"，人们借它诉说被自身局限绊住的挫败——无论是空空的钱包，还是半途冒出的别的念头。 萨夫洛尔乐于看到数百万人把它当成梗分享，但他告诉对方:无数人复制，不等于一家 AI 表情包生成器可以把受版权保护的梗，商业化成广告模板。如今他正试图拦住 最大 的梗生成器之一，别让 AI 把所谓\"非法使用\"继续放大。 本月初提交的诉状，把 Memes Apps 这家运营 Memes.ai 与 Memes AI Studio 的公司推上了被告席。萨夫洛尔指控，对方通过售卖付费订阅的广告生成器，在未经许可的情况下，直接输出了他漫画的副本。订阅分两档，第三方广告商每月交40美元或199美元，便能拿到一整套模板梗的访问权。诉状里提到，这个平台与超过40个品牌合作，每月最多生成1000个广告，触达超7500万社交媒体粉丝;萨夫洛尔称自己已遭受\"实质性的经济损失\"。他求的不只是禁令——还要法院勒令对方停止把他的漫画当模板，并彻查所有含该漫画的广告数量，追回全部不当获利。 耐人寻味的是，萨夫洛尔没有先发函交涉，而是直接起诉，目的之一是逼出证据开示，把\"AI 平台如何使用创作者作品、许可义务何在\"这类更大的问题摆上台面。互联网法律专家埃里克·戈德曼认为，萨夫洛尔\"起跑姿势是对的\"，给法官讲了一个站得住的故事;但告生成器而非广告商，是步险棋，会牵出一连串别的法律两难。 真正的炸弹，埋在那个\"打包出售订阅模板\"的商业模式里。戈德曼判断，这很可能毁掉被告的辩护——除非它能证明这是行业通行做法。更关键的是，Memes Apps 的输出里含有原作的近乎一模一样的副本，这让本案酷似那些高风险 AI 版权大战里的\"实锤\";别的 AI 公司尚可辩解自己的产出不含原作，它却难逃这一击。不过戈德曼也不认为影响会外溢太广，毕竟梗生成器仍属小众。 整件事撕开的是版权法与梗文化之间那道本就别扭的裂缝。戈德曼点破:非商业的梗使用大概率算合理使用，但塞进广告里就不是了——这正是2024年\"成功小子\"梗案定下的基调。而梗这种东西，恰恰靠不经许可的复制才活下来;若有人画了幅图、再喊一句\"请大家把它做成梗\"，反而永远不会成立。萨夫洛尔从不曾阻止网友分享，也从不反对人们用 AI，他反感的是\"不负责任的 AI\"——当一家平台打着\"解雇你的广告公司\"的旗号，把无名创作者的原作当成商品，他便不能坐视。\"互联网用户为好玩做梗，和一家公司把我受版权保护的作品当作商业产品变现，之间有天壤之别，\"他说，\"我的目标很简单，就是在创作者的作品被指未经许可商业化时保护他们——也希望这桩案子，能开启一场关于尊重艺术家权利的更广对话，毕竟 AI 驱动的平台正越来越深地嵌进互联网文化。\"",
+      "time_precision": "exact",
+      "title": "艺术家把 AI 表情包生成器告上法庭：私人漫画被当成广告模板卖，版权法遇上梗文化",
+      "topic_ids": [
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://www.aibase.com/zh/news/29939"
+    },
+    {
+      "batch": "afternoon",
       "canonical_url": "https://x.com/aigclink/status/2081980992940810515",
       "category": "models",
       "content_type": "socialMedia",
@@ -2410,6 +2837,119 @@
         "topic_open_source"
       ],
       "url": "https://x.com/aigclink/status/2081980992940810515"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://www.aibase.com/zh/news/29940",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_cdd3934bc5a5def364c2c90e539e05893c66c89ac6dce798a61ce536ade68ad2",
+      "featured": false,
+      "id": "n_cdd3934bc5a5def364c2c90e539e05893c66c89ac6dce798a61ce536ade68ad2",
+      "identity_claims": [
+        "c_099f54b7cb2ccceeca60a79d181476a4288375fd180b97e999c88c02a0703093",
+        "c_cdd3934bc5a5def364c2c90e539e05893c66c89ac6dce798a61ce536ade68ad2"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-28T06:22:36.626Z",
+      "published_date": "2026-07-28",
+      "reason": "比亚迪人形机器人8月亮相属常规产品预告，无具体技术细节，行业影响暂不可知，市场情绪驱动为主。",
+      "related_source_ids": [],
+      "score": 5,
+      "source": {
+        "homepage": null,
+        "id": "1219286013566836736",
+        "name": "aibase"
+      },
+      "source_id": "1219286013566836736",
+      "source_type": "aibase",
+      "summary": "比亚迪人形机器人项目迎来明确落地时间节点。7月28日，比亚迪方面向媒体确认，其人形机器人产品将于8月正式亮相，预计将在商业服务等场景展开应用探索。 此前，比亚迪旗下“迪空间|郑州馆”发布人形机器人预热视频海报，配文“八月初，有个新朋友，想来认识你”，引发市场关注。此次亮相地点位于比亚迪打造的首个“迪空间”体验中心——郑州馆，该空间定位为品牌科技展示和用户体验终端，区别于传统4S店，主要承担产品展示、技术互动和新业务首发功能。 公开资料显示，“迪空间|郑州馆”共有四层，总建筑面积约1.5万平方米，是比亚迪探索未来科技展示模式的重要场景。业内预计，比亚迪人形机器人未来可能优先应用于展厅接待、产品讲解、用户互动等商业服务环节，并逐步拓展至工业制造、智能物流等领域。 消息公布后，比亚迪A股盘中一度上涨超过2%。与此同时，人形机器人概念板块同步走强，明新旭腾实现两连板，上纬新材涨超9%，北自科技、三花智控、拓斯达、力星股份、天奇股份等相关企业跟涨。 近年来，随着人工智能、大模型和机器人技术快速发展，汽车企业正在加速进入具身智能赛道。比亚迪此次推出人形机器人产品，意味着传统制造企业正从智能汽车向更广泛的智能终端和机器人生态延伸。 随着机器人硬件成本下降、AI能力提升以及应用场景逐步开放，人形机器人商业化落地正在进入加速阶段，线下服务、工业生产等高频场景或成为行业率先突破方向。",
+      "time_precision": "exact",
+      "title": "比亚迪人形机器人8月亮相郑州，商业服务场景或率先落地",
+      "topic_ids": [
+        "topic_models",
+        "topic_products",
+        "topic_business"
+      ],
+      "url": "https://www.aibase.com/zh/news/29940"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/wwwgoubuli/status/2081990578930429961",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_7acf6c7eaab06736708ad93de8554f87edf22418ad35fb79b74779e65ccd7257",
+      "featured": false,
+      "id": "n_7acf6c7eaab06736708ad93de8554f87edf22418ad35fb79b74779e65ccd7257",
+      "identity_claims": [
+        "c_189205f6c342bbec7cf80be9b51e20c79dd70037fbeacfa1cb904771def9b3f7",
+        "c_7acf6c7eaab06736708ad93de8554f87edf22418ad35fb79b74779e65ccd7257"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-28T06:30:10.212Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219305621468160001",
+        "name": "twitter-wwwgoubuli"
+      },
+      "source_id": "1219305621468160001",
+      "source_type": "twitter_extra",
+      "summary": "有用户分享其新购置一块移动硬盘，未透露具体品牌与用途细节。",
+      "time_precision": "exact",
+      "title": "个人用户购入移动硬盘一个，用于扩充数据存储与备份空间",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/wwwgoubuli/status/2081990578930429961"
+    },
+    {
+      "batch": "afternoon",
+      "canonical_url": "https://x.com/wwwgoubuli/status/2081993559889293714",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_openai",
+        "entity_anthropic"
+      ],
+      "event_id": "e_e21b71b961993179756a6bc5239552cddc9ff5e0a9332149b60d3725830e8a5d",
+      "featured": false,
+      "id": "n_e21b71b961993179756a6bc5239552cddc9ff5e0a9332149b60d3725830e8a5d",
+      "identity_claims": [
+        "c_12e556734cea5c2e6e01a3ba94ffbba94eff7928c80497a06e816315467ccf70",
+        "c_e21b71b961993179756a6bc5239552cddc9ff5e0a9332149b60d3725830e8a5d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T08:00:00.000Z",
+      "published_at": "2026-07-28T06:42:00.107Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219305621468160000",
+        "name": "twitter-wwwgoubuli"
+      },
+      "source_id": "1219305621468160000",
+      "source_type": "twitter_extra",
+      "summary": "一位用户表示大厂人才无需强调公司身份，但随即被他人指出其本人及关联账号长期在社交平台利用字节跳动的头衔进行自我推广，引发争论。",
+      "time_precision": "exact",
+      "title": "用户称字节跳动真正人才不靠公司头衔宣传，被反驳频繁蹭字节标签",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/wwwgoubuli/status/2081993559889293714"
     },
     {
       "batch": "night",
