@@ -16,6 +16,7 @@ import TheDecoderDataSource from '../dataSources/the-decoder.js';
 import CursorXDataSource from '../dataSources/cursor-x.js';
 import AnthropicXDataSource from '../dataSources/anthropic-x.js';
 import SamAltmanXDataSource from '../dataSources/sam-altman-x.js';
+import GrokXDataSource from '../dataSources/grok-x.js';
 
 function foloFeed(provider, contentType, adapter, idEnv, pageEnv) {
     return Object.freeze({
@@ -120,4 +121,10 @@ export const STRUCTURED_SOURCE_ADAPTERS = Object.freeze([
         'SAM_ALTMAN_X_FEED_ID',
         'SAM_ALTMAN_X_FETCH_PAGES',
     ),
+    Object.freeze({
+        provider: 'grok_x',
+        contentType: 'socialMedia',
+        adapter: GrokXDataSource,
+        nonBlocking: true,
+    }),
 ]);

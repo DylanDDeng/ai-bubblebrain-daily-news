@@ -594,6 +594,37 @@ describe('provider-preserving structured fetch', () => {
         }]);
     });
 
+    it('reports a non-blocking provider failure as a warning without discarding other sources', async () => {
+        const calls = [];
+        const folo = adapter('twitter', 'socialMedia', [{
+            id: 'folo-post',
+            published_date: '2026-07-28T09:00:00Z',
+        }], calls);
+        const grok = adapter('grok_x', 'socialMedia', [], calls);
+        grok.nonBlocking = true;
+        grok.adapter.fetch.mockRejectedValue(new ProviderFetchError('http_5xx', {
+            status: 503,
+        }));
+
+        const result = await fetchProviderPreservingData({}, null, {
+            adapters: [folo, grok],
+            fetchAttempts: 1,
+        });
+
+        expect(result.errors).toEqual([]);
+        expect(result.warnings).toEqual([{
+            provider: 'grok_x',
+            content_type: 'socialMedia',
+            stage: 'fetch',
+            error_type: 'http_5xx',
+            attempts: 1,
+        }]);
+        expect(result.grouped.socialMedia).toEqual([{
+            id: 'folo-post',
+            published_date: '2026-07-28T09:00:00Z',
+        }]);
+    });
+
     it('aborts and retries a provider that exceeds the per-attempt deadline', async () => {
         const calls = [];
         const hanging = adapter('hanging', 'news', [], calls);
