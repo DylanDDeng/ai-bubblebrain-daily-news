@@ -159,9 +159,10 @@
       "status": "completed"
     },
     {
-      "generated_at": "2026-07-28T18:00:00.000Z",
+      "generated_at": "2026-07-28T19:00:00.000Z",
       "id": "lateNight",
       "item_ids": [
+        "n_f49724106140410dc604b0fce32dc2c6e8a349928790f60cf0a4461a711892be",
         "n_2688943fc99bf08d4ccc8322c7a4ab2651d1f6f14c54ee012dd18b2eb06f6306"
       ],
       "label": "次日 02:00 补充更新",
@@ -171,7 +172,7 @@
   "classifier_version": 1,
   "date": "2026-07-28",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T18:00:00.000Z",
+  "generated_at": "2026-07-28T19:00:00.000Z",
   "identity_version": 1,
   "items": [
     {
@@ -5332,6 +5333,42 @@
         "topic_open_source"
       ],
       "url": "https://x.com/HiTw93/status/2082101811394290142"
+    },
+    {
+      "batch": "lateNight",
+      "canonical_url": "https://x.com/vista8/status/2082132646646485344",
+      "category": "agents",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f49724106140410dc604b0fce32dc2c6e8a349928790f60cf0a4461a711892be",
+      "featured": false,
+      "id": "n_f49724106140410dc604b0fce32dc2c6e8a349928790f60cf0a4461a711892be",
+      "identity_claims": [
+        "c_2e9da5d964cfb6c9d71519a6481042200c492cd9f1ef97916d3eae4ebb302ad5",
+        "c_f49724106140410dc604b0fce32dc2c6e8a349928790f60cf0a4461a711892be"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T19:00:00.000Z",
+      "published_at": "2026-07-28T15:54:41.204Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1219969768098799616",
+        "name": "twitter-向阳乔木"
+      },
+      "source_id": "1219969768098799616",
+      "source_type": "twitter_extra",
+      "summary": "该流程展示了AI Agent的长文本理解和任务分解能力，相比三年前AutoGPT等项目已有质的飞跃。",
+      "time_precision": "exact",
+      "title": "智能体自动切换飞书CLI处理20万字超长文档，成功提取关键结构与精华撰写文章",
+      "topic_ids": [
+        "topic_agents"
+      ],
+      "url": "https://x.com/vista8/status/2082132646646485344"
     },
     {
       "batch": "lateNight",
