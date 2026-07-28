@@ -407,6 +407,7 @@ describe('worker regression guards', () => {
         expect(config).toContain('OPENAI_NEWSROOM_FETCH_PAGES = "1"');
         expect(config).toContain('XIAOHU_FETCH_PAGES = "1"');
         expect(config).toContain('HGPAPERS_FETCH_PAGES = "1"');
+        expect(config).toContain('TWITTER_LIST_ID = "168008717254704128"');
         expect(config).toContain('TWITTER_EXTRA_FETCH_PAGES = "1"');
         expect(config).toContain('LATE_NIGHT_SUPPLEMENT_FETCH_PAGE_CAP = "1"');
         expect(config).toContain('DAILY_SOURCE_RETRY_BUDGET = "2"');
