@@ -78,6 +78,16 @@ TWITTER_EXTRA_FETCH_PAGES = "1"
 LATE_NIGHT_SUPPLEMENT_FETCH_PAGE_CAP = "1"
 DAILY_SOURCE_RETRY_BUDGET = "2"
 X_BLOCKED_HANDLES = "ezshine,GemstoneNicole"
+GROK_X_ENABLED = "true"
+GROK_X_API_URL = "https://api.x.ai/v1/responses"
+GROK_X_MODEL = "grok-4.5"
+GROK_X_LOOKBACK_HOURS = "3"
+GROK_X_RECONCILE_HOURS = "48"
+# Beijing midnight (16:00 UTC) performs the daily 48-hour overlap scan.
+GROK_X_RECONCILE_UTC_HOUR = "16"
+GROK_X_IMAGE_UNDERSTANDING = "true"
+GROK_X_VIDEO_UNDERSTANDING = "true"
+GROK_X_HANDLES = "9hills,aigclink,aiwarts,AnthropicAI,blankwebdev,dotey,gdb,Gorden_Sun,HiTw93,hongming731,huangyun_122,Khazix0918,lyson_ober,omarsar0,oran_ge,sama,shao__meng,shaoruu,tuturetom,vista8,wwwgoubuli"
 PROJECTS_API_URL = "https://git-trending.justlikemaki.vip/topone/?since=daily"
 # GITHUB_TOKEN 在环境变量中设置
 GITHUB_REPO_OWNER = "DylanDDeng"  # 请替换为你的 GitHub 用户名

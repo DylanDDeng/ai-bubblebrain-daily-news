@@ -17,6 +17,7 @@ export const SOURCE_REGISTRY = Object.freeze({
     cursor_x: Object.freeze({ contentType: 'socialMedia', primaryIdentity: 'source_id' }),
     anthropic_x: Object.freeze({ contentType: 'socialMedia', primaryIdentity: 'source_id' }),
     sam_altman_x: Object.freeze({ contentType: 'socialMedia', primaryIdentity: 'source_id' }),
+    grok_x: Object.freeze({ contentType: 'socialMedia', primaryIdentity: 'canonical_url' }),
     reddit: Object.freeze({ contentType: 'socialMedia', primaryIdentity: 'source_id' }),
 });
 

@@ -430,6 +430,7 @@ it('covers every adapter in the structured source registry', () => {
     expect(STRUCTURED_SOURCE_ADAPTERS.map(entry => entry.provider).sort()).toEqual([
         ...FOLO_ADAPTERS.map(([provider]) => provider),
         'github_trending',
+        'grok_x',
     ].sort());
     for (const [provider, , , pagesName] of FOLO_ADAPTERS) {
         expect(

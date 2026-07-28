@@ -115,6 +115,7 @@ describe('structured publication workflow', () => {
                 mode: 'disabled',
                 run_at: '2026-07-14T19:00:45.000Z',
             }),
+            runAt: '2026-07-14T19:00:45.000Z',
         });
     });
 
