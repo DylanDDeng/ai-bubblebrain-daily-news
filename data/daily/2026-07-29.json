@@ -1,12 +1,22 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-29T00:00:00.000Z",
+      "generated_at": "2026-07-29T02:00:00.000Z",
       "id": "morning",
       "item_ids": [
+        "n_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
         "n_0cd7faf258e8aa9fd8e2219615074cb8cbdbc353bb4b071113e82564266e9d01",
         "n_1ca1a72483db23adc69123016c548c1ed5000ff7b50cdac8b7ed8af96ce8009d",
+        "n_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f",
+        "n_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b",
+        "n_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4",
+        "n_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c",
+        "n_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca",
+        "n_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+        "n_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+        "n_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
         "n_7fe98b27be7d9bc1346c1a5e244e3b9f82a1635a442af54bf5eb87d1ea82e787",
+        "n_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201",
         "n_9a717b7a59f896bc36b39130d9ad7542eb2b9336a2b119d59d92ff050faba81b",
         "n_38315da0e408ace407cfef035b3a55bedc7d417bc53b4e952159829ba40f3866",
         "n_0844fbb955c78f9692594ee1d4c3a2d2dc2c4ef8315ee659e63e4ca4c573e7b7",
@@ -77,7 +87,10 @@
         "n_6c2ff59523c49da37d4e7b5c686159f1c9a8bd2adf651005c804c077df23272d",
         "n_ce5605f1d2b81f60c29073d848baa84a7657bf51c64268a5627e92f2fd19c139",
         "n_c22dc97ca461883aebc098dafd55162dd523fc59410ab684eedea384743dba3b",
-        "n_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7"
+        "n_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7",
+        "n_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e",
+        "n_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+        "n_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -117,9 +130,45 @@
   "classifier_version": 1,
   "date": "2026-07-29",
   "dedupe_version": 1,
-  "generated_at": "2026-07-29T00:00:00.000Z",
+  "generated_at": "2026-07-29T02:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.23370",
+      "category": "research",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
+      "featured": false,
+      "id": "n_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
+      "identity_claims": [
+        "c_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
+        "c_ae829c5c4fa2accdb2efe7ba81c17a72b983a05399273832b682d05b4d94877e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-24T20:00:00.190Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220218224558194707",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1220218224558194707",
+      "source_type": "huggingface_papers",
+      "summary": "在日内时间尺度上预测比特币价格，是计算金融领域一个困难且尚未解决的问题。比特币收益呈现肥尾分布，动态特征非平稳，其价格发现过程还会受到 Reddit 和 Twitter 上社会讨论的影响。传统方法通常通过静态拼接把 OHLCV 技术特征与情绪特征融合，无论市场状态如何都采用相同的融合权重；这与行为金融学研究并不一致，因为后者表明，散户情绪在市场剧烈波动时预测能力最强，在平静期则噪声较多。论文提出市场状态感知多模态学习（RAML），根据动态检测得到的二元市场状态来调整情绪与价格特征的融合方式。系统使用滚动 24 小时波动率把观测划分为稳定与波动两种状态，再通过可学习的 sigmoid 门控调整情绪嵌入相对于价格嵌入的权重：波动期更信任情绪，稳定期更依赖价格动态。研究在 2024 年 7 月至 2025 年 9 月的 3,491 条小时级观测上进行评估，把比特币 OHLCV 数据与 Reddit /r/Bitcoin 的 FinBERT 情绪数据结合起来，并在 3 小时和 6 小时预测范围内比较四种模型：仅价格 BiLSTM、仅情绪分类器、静态拼接 BiLSTM 和 RAML；同时通过消融实验分别检验情绪分支、状态检测与自适应融合的作用。RAML 的宏平均 F1 在 3 小时和 6 小时任务上分别达到 0.5474 和 0.5513，并在 3 小时任务上取得最高 AUC 0.5084，说明校准效果更好。消融结果证实每个组件都不可或缺；用静态拼接替代自适应加权后，6 小时任务的召回率会崩塌，F1 仅为 0.14。结果表明，基于市场状态的自适应融合应成为多模态金融预测的一项必要设计原则。",
+      "time_precision": "exact",
+      "title": "基于市场状态感知的社交情绪与技术特征多模态融合预测比特币价格方向",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.23370"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://arxiv.org/abs/2607.23373",
@@ -195,6 +244,302 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158122391761317",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f",
+      "featured": false,
+      "id": "n_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f",
+      "identity_claims": [
+        "c_680d0b7bfc05a8213ed503e05a00b89b647a135b490ebedff132abbac7d8fa18",
+        "c_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-27T18:26:18.238Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468176",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468176",
+      "source_type": "twitter",
+      "summary": "转发：@ruthstrong_ @johnhewtt @chrmanning #JamCoders2026",
+      "time_precision": "exact",
+      "title": "Stanford NLP 转发 JamCoders 2026 相关动态",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158122391761317"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158229405245831",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b",
+      "featured": false,
+      "id": "n_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b",
+      "identity_claims": [
+        "c_7f090ba5dd3a691a124f773491a522fde916b544483909aa71913d15d1228a83",
+        "c_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-27T22:13:36.922Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468175",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468175",
+      "source_type": "twitter",
+      "summary": "斯坦福团队比较 11 个模型与人类回答，发现 AI 认同用户立场的比例高出 49%。一次谄媚型 AI 对话就会增强“我没错”的确信，并降低承担责任、修复冲突的意愿。",
+      "time_precision": "exact",
+      "title": "斯坦福研究人员在《Science》发表的一项研究分析了谄媚型 AI 的影响",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158229405245831"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/giffmana/status/2082163457432928759",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4",
+      "featured": false,
+      "id": "n_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4",
+      "identity_claims": [
+        "c_28a930aed4336fc8804076d350f6b6d0041b91188e833bbe08c5fe59d9fb24f4",
+        "c_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T01:02:17.492Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468174",
+        "name": "twitter-Lucas Beyer (bl16)"
+      },
+      "source_id": "1220173809093468174",
+      "source_type": "twitter",
+      "summary": "书商调查认为，批量收购冷门书更像利用价差转售的算法套利，而非 AI 公司买书切割扫描。真正风险是 FBA 滞销清仓可能让仅存的冷门书永久消失。",
+      "time_precision": "exact",
+      "title": "我是第二代书商，家族经营着休斯敦最大的二手与珍本书店",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/giffmana/status/2082163457432928759"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158274468786478",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c",
+      "featured": false,
+      "id": "n_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c",
+      "identity_claims": [
+        "c_957b4851c9224bf28a825c58111ec3639e4eb1226fe9ec5557ba60b62a1c2fc2",
+        "c_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T01:36:20.137Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468173",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468173",
+      "source_type": "twitter",
+      "summary": "转发 Vivek Galatage：《语音与语言处理：使用语言模型的自然语言处理、计算语言学与语音识别导论》",
+      "time_precision": "exact",
+      "title": "自然语言处理、计算语言学与语音识别导论",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158274468786478"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158314348269830",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca",
+      "featured": false,
+      "id": "n_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca",
+      "identity_claims": [
+        "c_17ae4048e9790e35269c0ad4be300551d7ce77ed67d22dc6e8d35767df2f43a0",
+        "c_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T02:44:10.526Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468172",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468172",
+      "source_type": "twitter",
+      "summary": "Daniel Jeffries 整理了错误 AI 预测目录。面对“不可避免，所以应立即行动或立法”的主张，应先用旧预测的实际命中率检验其可信度。",
+      "time_precision": "exact",
+      "title": "在作出极度乐观的 AI 预测之前，值得先读一读",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158314348269830"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shaoruu/status/2082152823182274633",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+      "featured": false,
+      "id": "n_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+      "identity_claims": [
+        "c_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+        "c_fec544fc76708b58864b1987bf3cf18b6ab03d57b1e9bcf32a9c2a773667cf05"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T05:41:11.657Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220410478317088768",
+        "name": "twitter-ian"
+      },
+      "source_id": "1220410478317088768",
+      "source_type": "twitter_extra",
+      "summary": "转发 Cursor：今天我们发布 Cursor Start，这是面向印度开发者的全新 ₹649/月套餐。Start 提供充足的 Grok 4.5 和 Composer 使用额度，让你每天都能借助智能体进行规划、构建、测试和发布。",
+      "time_precision": "exact",
+      "title": "Cursor 发布面向印度开发者的 ₹649/月 Start 套餐",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shaoruu/status/2082152823182274633"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/aigclink/status/2081984536842584128",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+      "featured": false,
+      "id": "n_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+      "identity_claims": [
+        "c_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+        "c_1978cd4957ea57b9b8f4a3f0c42caabfcf502c444198704e95254fa52d8b183e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T06:06:09.963Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220273240119754752",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1220273240119754752",
+      "source_type": "twitter_extra",
+      "summary": "作者判断未来企业会像拥有网站一样拥有自己的模型；Skill 和 Agent 将成为模型养料，真正形成长期竞争力的关键是自有模型与数据飞轮。",
+      "time_precision": "exact",
+      "title": "AIGCLINK：AI 时代企业应建立自有模型与数据飞轮",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/aigclink/status/2081984536842584128"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/GaryMarcus/status/2082194749184983246",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
+      "featured": false,
+      "id": "n_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
+      "identity_claims": [
+        "c_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
+        "c_b5c8dcbfb6acd5a88af9964e88dc368cb2ded0077d5a395e9a54e42908d61432"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T09:24:23.539Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468171",
+        "name": "twitter-Gary Marcus"
+      },
+      "source_id": "1220173809093468171",
+      "source_type": "twitter",
+      "summary": "作者认为近期模型主要增强了编程、数学等能力尖刺，通用语言与逻辑能力并未同步提升，甚至有所退化；他对“这不是通往 AGI 的路径”约有 40% 把握。",
+      "time_precision": "exact",
+      "title": "最近，我对 AI 的态度从看多转向了看空",
+      "topic_ids": [
+        "topic_models",
+        "topic_business"
+      ],
+      "url": "https://x.com/GaryMarcus/status/2082194749184983246"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/Gorden_Sun/status/2082043946713379264",
       "category": "other",
       "content_type": "socialMedia",
@@ -228,6 +573,42 @@
         "topic_other"
       ],
       "url": "https://x.com/Gorden_Sun/status/2082043946713379264"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/GaryMarcus/status/2082207539593466134",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201",
+      "featured": false,
+      "id": "n_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201",
+      "identity_claims": [
+        "c_153e06682659a1a3fa76d40247c4cd5db8814abd7ab6d4738cc21dfdf25561fb",
+        "c_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T10:12:24.971Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468170",
+        "name": "twitter-Gary Marcus"
+      },
+      "source_id": "1220173809093468170",
+      "source_type": "twitter",
+      "summary": "转发 Peter Berezin：LLM 可能是一条无法通向超级智能的死路。",
+      "time_precision": "exact",
+      "title": "LLM 可能是一条无法通向超级智能的死路",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GaryMarcus/status/2082207539593466134"
     },
     {
       "batch": "morning",
@@ -2845,6 +3226,119 @@
         "topic_research"
       ],
       "url": "https://simonwillison.net/2026/Jul/28/discovering-cryptographic-weaknesses-with-claude/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2082242761449689334",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e",
+      "featured": false,
+      "id": "n_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e",
+      "identity_claims": [
+        "c_5259777be9006825e756752827ea5a2c880300038da71c0b104b382cb4e3d4b6",
+        "c_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T23:12:15.114Z",
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220354786801471488",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1220354786801471488",
+      "source_type": "twitter_extra",
+      "summary": "宝玉认为通用 Agent 会挤压垂直产品，插件生态决定开放性，最终差异仍来自模型能力与成本。小团队更适合围绕 Agent 做插件和服务，而非正面竞争通用 Agent。",
+      "time_precision": "exact",
+      "title": "宝玉：通用 Agent 竞争将集中于少数赢家",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2082242761449689334"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2082280325040750998",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+      "featured": false,
+      "id": "n_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+      "identity_claims": [
+        "c_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+        "c_59f40e7e7c0000a436f73e4bebef8e70cc99bca73c24e2de364fbc48b86c5529"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-29T01:41:31.804Z",
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220434038343323648",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1220434038343323648",
+      "source_type": "twitter_extra",
+      "summary": "宝玉默认将 GPT 5.6 Sol 设为 xhigh；Fable 5 多用 medium/high，Opus 5 多用 high。他认为后两类模型推理强度越高，往往越慢、越费 token，性价比也越低。",
+      "time_precision": "exact",
+      "title": "宝玉分享 GPT 5.6、Fable 5 与 Opus 5 的推理强度设置",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2082280325040750998"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/hello245m/free-stockdb",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20",
+      "featured": false,
+      "id": "n_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20",
+      "identity_claims": [
+        "c_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20",
+        "c_c4a6cc3aac6d37000434a171acc4fc31897f824b89345841d249dd6205c144a1"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/hello245m/free-stockdb",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/hello245m/free-stockdb",
+      "source_type": "github_trending",
+      "summary": "面向 A 股日K、分钟K与ETF分钟数据的本地量化引擎，集成增量同步、本地缓存、复权、批量查询、回测与指标计算。",
+      "time_precision": "date_only",
+      "title": "free-stockdb",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/hello245m/free-stockdb"
     },
     {
       "batch": "night",
