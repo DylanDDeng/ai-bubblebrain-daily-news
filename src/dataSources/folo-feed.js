@@ -15,6 +15,7 @@ import {
   providerConfigurationError,
   providerHttpError,
 } from "../daily/providerFailure.js";
+import { localizeEnglishFeedItems } from "./localize-english-feed.js";
 
 export function createFoloFeedDataSource({
   feedIdEnv,
@@ -25,6 +26,7 @@ export function createFoloFeedDataSource({
   defaultFetchPages = "3",
   filterDaysEnv = "FOLO_FILTER_DAYS",
   defaultFilterDays = "3",
+  localize = false,
 }) {
   return {
     fetch: async (env, foloCookie, { strict = false, signal } = {}) => {
@@ -134,13 +136,20 @@ export function createFoloFeedDataSource({
         }
       }
 
+      const localizedItems = localize
+        ? await localizeEnglishFeedItems(env, items, {
+            strict,
+            signal,
+            sourceName,
+          })
+        : items;
       return {
         version: "https://jsonfeed.org/version/1.1",
         title: `${sourceName} Daily Feeds`,
         home_page_url: homePageUrl,
         description: `Aggregated ${sourceName} daily feeds`,
         language: "zh-cn",
-        items,
+        items: localizedItems,
       };
     },
 
@@ -150,8 +159,8 @@ export function createFoloFeedDataSource({
             id: item.id,
             type: sourceType,
             url: item.url,
-            title: item.title,
-            description: stripHtml(item.content_html || ""),
+            title: item.title_zh || item.title,
+            description: item.summary_zh || stripHtml(item.content_html || ""),
             published_date: item.date_published,
             folo_inserted_at: item.folo_inserted_at,
             authors:

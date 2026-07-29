@@ -1,6 +1,7 @@
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml } from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
 import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
+import { localizeEnglishFeedItems } from './localize-english-feed.js';
 
 const SimonWillisonDataSource = {
     fetch: async (env, foloCookie, { strict = false, signal } = {}) => {
@@ -107,13 +108,18 @@ const SimonWillisonDataSource = {
             await sleep(Math.random() * 5000, { signal });
         }
 
+        const localizedItems = await localizeEnglishFeedItems(
+            env,
+            allSimonWillisonItems,
+            { strict, signal, sourceName: "Simon Willison" },
+        );
         return {
             version: "https://jsonfeed.org/version/1.1",
             title: "Simon Willison's Weblog",
             home_page_url: "https://simonwillison.net",
             description: "Aggregated Simon Willison's Weblog feeds",
             language: "en",
-            items: allSimonWillisonItems
+            items: localizedItems
         };
     },
     transform: (rawData, sourceType) => {
@@ -124,8 +130,8 @@ const SimonWillisonDataSource = {
                     id: item.id,
                     type: sourceType,
                     url: item.url,
-                    title: item.title,
-                    description: stripHtml(item.content_html || ""),
+                    title: item.title_zh || item.title,
+                    description: item.summary_zh || stripHtml(item.content_html || ""),
                     published_date: item.date_published,
                     folo_inserted_at: item.folo_inserted_at,
                     authors: item.authors ? item.authors.map(a => a.name).join(', ') : 'Unknown',

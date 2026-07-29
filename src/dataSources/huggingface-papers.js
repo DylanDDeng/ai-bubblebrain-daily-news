@@ -1,8 +1,8 @@
 // src/dataSources/huggingface-papers.js
-import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, removeMarkdownCodeBlock, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
-import { callChatAPI } from '../chatapi.js';
+import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
 import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
+import { localizeEnglishFeedItems } from './localize-english-feed.js';
 
 const PapersDataSource = {
     fetch: async (env, foloCookie, { strict = false, signal } = {}) => {
@@ -122,63 +122,11 @@ const PapersDataSource = {
             console.log("No hgpapers found for today or after filtering.");
             return papersData;
         }
-
-        if (env.OPEN_TRANSLATE !== "true") {
-            console.warn("Skipping hgpapers translations.");
-            papersData.items = papersData.items.map(item => ({
-                ...item,
-                title_zh: item.title || "",
-                content_html_zh: item.content_html || ""
-            }));
-            return papersData;
-        }
-
-        const itemsToTranslate = papersData.items.map((item, index) => ({
-            id: index,
-            original_title: item.title || ""
-        }));
-
-        const hasContentToTranslate = itemsToTranslate.some(item => item.original_title.trim() !== "");
-        if (!hasContentToTranslate) {
-            console.log("No non-empty hgpapers titles to translate for today's papers.");
-            papersData.items = papersData.items.map(item => ({ ...item, title_zh: item.title || "", content_html_zh: item.content_html || "" }));
-            return papersData;
-        }
-
-        const promptText = `You will be given a JSON array of paper data objects. Each object has an "id" and "original_title".
-Translate "original_title" into Chinese.
-Return a JSON array of objects. Each output object MUST have:
-- "id": The same id from the input.
-- "title_zh": Chinese translation of "original_title". Empty if original is empty.
-Input: ${JSON.stringify(itemsToTranslate)}
-Respond ONLY with the JSON array.`;
-
-        let translatedItemsMap = new Map();
-        try {
-            console.log(`Requesting translation for ${itemsToTranslate.length} hgpapers titles for today.`);
-            const chatResponse = await callChatAPI(env, promptText, null, { signal });
-            const parsedTranslations = JSON.parse(removeMarkdownCodeBlock(chatResponse)); // Assuming direct JSON array response
-
-            if (parsedTranslations) {
-                parsedTranslations.forEach(translatedItem => {
-                    if (translatedItem && typeof translatedItem.id === 'number' &&
-                        typeof translatedItem.title_zh === 'string') {
-                        translatedItemsMap.set(translatedItem.id, translatedItem);
-                    }
-                });
-            }
-        } catch (translationError) {
-            if (strict) console.error('Failed to translate hgpapers titles in batch');
-            else console.error("Failed to translate hgpapers titles in batch:", translationError.message);
-        }
-
-        papersData.items = papersData.items.map((originalItem, index) => {
-            const translatedData = translatedItemsMap.get(index);
-            return {
-                ...originalItem,
-                title_zh: translatedData ? translatedData.title_zh : (originalItem.title || "")
-            };
-        });
+        papersData.items = await localizeEnglishFeedItems(
+            env,
+            papersData.items,
+            { strict, signal, sourceName: "Hugging Face Papers" },
+        );
 
         return papersData;
     },
@@ -191,7 +139,7 @@ Respond ONLY with the JSON array.`;
                     type: sourceType,
                     url: item.url,
                     title: item.title_zh || item.title,
-                    description: stripHtml(item.content_html || ""),
+                    description: item.summary_zh || stripHtml(item.content_html || ""),
                     published_date: item.date_published,
                     folo_inserted_at: item.folo_inserted_at,
                     authors: typeof item.authors === 'string' ? item.authors.split(',').map(s => s.trim()) : (item.authors ? item.authors.map(a => a.name) : []),
