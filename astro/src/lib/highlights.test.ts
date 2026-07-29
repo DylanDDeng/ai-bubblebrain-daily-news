@@ -21,6 +21,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-07-28-why-software-factories-fail-benchmarking-new-frontier/',
 	'/highlights/2026-07-28-we-rewrote-our-agent-durable-object-pi-agents-sdk-code-mode/',
 	'/en/highlights/2026-07-28-we-rewrote-our-agent-durable-object-pi-agents-sdk-code-mode/',
+	'/highlights/2026-07-29-templates-variables/',
+	'/en/highlights/2026-07-29-templates-variables/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
