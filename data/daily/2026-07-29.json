@@ -1,12 +1,22 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-29T00:00:00.000Z",
+      "generated_at": "2026-07-29T02:00:00.000Z",
       "id": "morning",
       "item_ids": [
+        "n_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
         "n_0cd7faf258e8aa9fd8e2219615074cb8cbdbc353bb4b071113e82564266e9d01",
         "n_1ca1a72483db23adc69123016c548c1ed5000ff7b50cdac8b7ed8af96ce8009d",
+        "n_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f",
+        "n_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b",
+        "n_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4",
+        "n_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c",
+        "n_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca",
+        "n_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+        "n_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+        "n_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
         "n_7fe98b27be7d9bc1346c1a5e244e3b9f82a1635a442af54bf5eb87d1ea82e787",
+        "n_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201",
         "n_9a717b7a59f896bc36b39130d9ad7542eb2b9336a2b119d59d92ff050faba81b",
         "n_38315da0e408ace407cfef035b3a55bedc7d417bc53b4e952159829ba40f3866",
         "n_0844fbb955c78f9692594ee1d4c3a2d2dc2c4ef8315ee659e63e4ca4c573e7b7",
@@ -77,7 +87,10 @@
         "n_6c2ff59523c49da37d4e7b5c686159f1c9a8bd2adf651005c804c077df23272d",
         "n_ce5605f1d2b81f60c29073d848baa84a7657bf51c64268a5627e92f2fd19c139",
         "n_c22dc97ca461883aebc098dafd55162dd523fc59410ab684eedea384743dba3b",
-        "n_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7"
+        "n_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7",
+        "n_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e",
+        "n_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+        "n_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -117,9 +130,45 @@
   "classifier_version": 1,
   "date": "2026-07-29",
   "dedupe_version": 1,
-  "generated_at": "2026-07-29T00:00:00.000Z",
+  "generated_at": "2026-07-29T02:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.23370",
+      "category": "research",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
+      "featured": false,
+      "id": "n_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
+      "identity_claims": [
+        "c_647d5c37c3bf35f8a4e151a58a16cb06ce98cfd24c1ac8aa98324531a67d30eb",
+        "c_ae829c5c4fa2accdb2efe7ba81c17a72b983a05399273832b682d05b4d94877e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-24T20:00:00.190Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220218224558194707",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1220218224558194707",
+      "source_type": "huggingface_papers",
+      "summary": "Bitcoin price prediction on sub-daily timescales is a hard open problem in computational finance. Bitcoin exhibits fat-tailed returns, non-stationary dynamics, and a price discovery process influenced by social discourse on Reddit and Twitter. Conventional approaches fuse OHLCV technical features with sentiment via static concatenation, applying identical fusion weights regardless of market state. This is inconsistent with the behavioural finance literature, which shows that retail sentiment is most predictive during volatile periods and noisy during calm ones. This paper proposes Regime-Aware Multi-Modal Learning (RAML), which conditions fusion of sentiment and price features on a dynamically detected binary market regime. Rolling 24-hour volatility partitions observations into stable and volatile regimes; a learnable sigmoid gate adjusts the weight of the sentiment embedding relative to the price embedding, trusting sentiment more during volatility and price dynamics more during stable phases. The system is evaluated on 3,491 hourly observations (July 2024-September 2025), combining Bitcoin OHLCV data with Reddit /r/Bitcoin FinBERT sentiment. Four models are compared - price-only BiLSTM, sentiment-only classifier, static-concatenation BiLSTM, and RAML - across 3-hour and 6-hour horizons, with an ablation study isolating the sentiment branch, regime detection, and adaptive fusion. RAML achieves macro-F1 of 0.5474 (3h) and 0.5513 (6h), with the highest AUC at 3 hours (0.5084), indicating better calibration. Ablation confirms every component is necessary, and replacing adaptive weighting with concatenation causes recall collapse at 6 hours (F1: 0.14). These results establish regime-conditioned adaptive fusion as a necessary design principle for multi-modal financial forecasting.",
+      "time_precision": "exact",
+      "title": "Bitcoin Price Direction Prediction via Regime-Aware Multi-Modal Fusion of Social Sentiment and Technical Features",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.23370"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://arxiv.org/abs/2607.23373",
@@ -195,6 +244,302 @@
     },
     {
       "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158122391761317",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f",
+      "featured": false,
+      "id": "n_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f",
+      "identity_claims": [
+        "c_680d0b7bfc05a8213ed503e05a00b89b647a135b490ebedff132abbac7d8fa18",
+        "c_f2552cd1a845a8b8b7359cf1785d3174a23e8ef62fa9b84a9aec5802e237848f"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-27T18:26:18.238Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468176",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468176",
+      "source_type": "twitter",
+      "summary": "RT Face-Fuchsia-Tongue-Out Re @ruthstrong_ @johnhewtt @chrmanning #JamCoders2026",
+      "time_precision": "exact",
+      "title": "@ruthstrong_ @johnhewtt @chrmanning #JamCoders2026",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158122391761317"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158229405245831",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b",
+      "featured": false,
+      "id": "n_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b",
+      "identity_claims": [
+        "c_7f090ba5dd3a691a124f773491a522fde916b544483909aa71913d15d1228a83",
+        "c_e5f7f1d11be2d3c90247fa17ce046956ae48318712074d971dbc70c19db3e97b"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-27T22:13:36.922Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468175",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468175",
+      "source_type": "twitter",
+      "summary": "RT Sofía Carlota Geyer Un estudio publicado en Science, de investigadores de Stanford, analizó qué pasa cuando una IA intenta \"complacernos\" en lugar de desafiarnos: \"Sycophantic AI decreases prosocial intentions and promotes dependence\", de Cheng, Lee, Khadpe, Yu, Han y Jurafsky (2026). Compararon 11 modelos de IA con respuestas humanas y encontraron que la IA validaba la postura del usuario un 49% más, incluso cuando describía conductas engañosas, ilegales o perjudiciales. En experimentos con más de 2.400 personas, una sola conversación con una IA complaciente hizo que los participantes se sintieran más convencidos de que tenían razón y menos dispuestos a asumir responsabilidad o reparar un conflicto interpersonal. Lo más \"llamativo\" (para no hacer juicios de valor): esas respuestas fueron las que más gustaron y en las que más confiaron los usuarios. Eso crea un incentivo para que las empresas sigan diseñando IAs que nos den la razón, aunque no necesariamente nos ayuden a tomar mejores decisiones. ¿Coincidencias con las redes sociales?",
+      "time_precision": "exact",
+      "title": "Un estudio publicado en Science, de investigadores de Stanford, analizó",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158229405245831"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/giffmana/status/2082163457432928759",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4",
+      "featured": false,
+      "id": "n_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4",
+      "identity_claims": [
+        "c_28a930aed4336fc8804076d350f6b6d0041b91188e833bbe08c5fe59d9fb24f4",
+        "c_329a5482a3c39d73102e55bfdf2651d98e011485f9872ef2cec6738bf76f13a4"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T01:02:17.492Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468174",
+        "name": "twitter-Lucas Beyer (bl16)"
+      },
+      "source_id": "1220173809093468174",
+      "source_type": "twitter",
+      "summary": "RT Charlie D. Becker I'm a second-generation bookseller. My family runs Houston's largest used &#x26; rare bookstore and I'm building an AI tool for used bookstores. We got hit by exactly these orders, including a single order for 70 obscure books that made us pause online sales entirely. So I dug in. I don't think this connects the way people want it to. Every ingredient of the viral story is true. ISBNdb really does advertise sourcing books for AI companies. Anthropic really did destructively scan millions of books though they were mostly acquired through things like library deaccessions, not bookstore inventory. And booksellers really are getting bizarre bulk orders. But \"rare\" here isn't what you're picturing. It's The Insider's Guide to Metro Denver (1995) and how-to-use-WordPerfect 1991 manuals. Obscure, but often not precious. When we combed through our orders, nearly every book bought from us was either unavailable on Amazon or listed there at 5, 10, 20x our price on the platform they were purchased on. And the shipments are going to FBA prep companies: which is what you do with a book you're about to resell, not one you're about to cut apart. There is more than circumstantial evidence that this is a well-funded company running algorithmic arbitrage, buying underpriced or out-of-stock books to relist on Amazon at markup. This evidence includes an official denial that they are selling to train AI but I don't want to mention them for several reasons. You can Google it. That's more mundane than the shredder story. The actual risk is worse, though, because it's quieter: books that don't sell via FBA eventually get liquidated. If we really hold the last copies of some of these (and comparing platforms, it looks like we might) we're feeding them into a portal they may not come back from. No AI company required. Everyone assumes the internet preserved everything. It didn't. Many of these books have almost no metadata anywhere, just a scattered listings across proprietary databases then nothing. That's what my project is for: building better bibliographic records for these books than exist anywhere else, so we at least have a map of what we stand to lose. So the Library of Alexandria is still burning, just more slowly, and kore from “who cares” than from some cinematic villain. (I am open to being corrected.) Full writeup: Hedgie: 🦔AI companies are bulk-buying rare books, scanning them through high-speed machines that cut the spines off, and shredding the originals. A service called ISBNdb facilitates orders of up to a million books and keeps buyers anonymous. Pre-2022 books are premium because they're",
+      "time_precision": "exact",
+      "title": "I'm a second-generation bookseller. My family runs Houston's largest",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/giffmana/status/2082163457432928759"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158274468786478",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c",
+      "featured": false,
+      "id": "n_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c",
+      "identity_claims": [
+        "c_957b4851c9224bf28a825c58111ec3639e4eb1226fe9ec5557ba60b62a1c2fc2",
+        "c_e743207a38e9a66c40b242d0f1258d54980e91f55cf88836a1afb6ad61dffe5c"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T01:36:20.137Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468173",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468173",
+      "source_type": "twitter",
+      "summary": "RT Vivek Galatage Speech and Language Processing: An Introduction to Natural Language Processing, Computational Linguistics, and Speech Recognition with Language Models",
+      "time_precision": "exact",
+      "title": "An Introduction to Natural Language Processing, Computational",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158274468786478"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/stanfordnlp/status/2082158314348269830",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca",
+      "featured": false,
+      "id": "n_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca",
+      "identity_claims": [
+        "c_17ae4048e9790e35269c0ad4be300551d7ce77ed67d22dc6e8d35767df2f43a0",
+        "c_63b681b4c3aae9f2c08cccd5ba04ae75db146e9b4ff3b150f87a5abbb9a7f4ca"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T02:44:10.526Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468172",
+        "name": "twitter-Stanford NLP Group"
+      },
+      "source_id": "1220173809093468172",
+      "source_type": "twitter",
+      "summary": "RT Christopher Manning Worth reading before making wildly optimistic AI predictions! Daniel Jeffries: Catalog of incorrect AI predictions. Doomers from the rationalist cosplay community are left out, presumably because their predictions have a near 100% failure rate. When people proudly proclaim that we need to 'act now' or make laws because something is inevitable, point them",
+      "time_precision": "exact",
+      "title": "Worth reading before making wildly optimistic AI predictions! Daniel",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/stanfordnlp/status/2082158314348269830"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/shaoruu/status/2082152823182274633",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_xai"
+      ],
+      "event_id": "e_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+      "featured": false,
+      "id": "n_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+      "identity_claims": [
+        "c_3b90b0a21271be477504e2bfad4bb5192a23a7eaff09aa04bfc32abd7d1aa7a0",
+        "c_fec544fc76708b58864b1987bf3cf18b6ab03d57b1e9bcf32a9c2a773667cf05"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T05:41:11.657Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220410478317088768",
+        "name": "twitter-ian"
+      },
+      "source_id": "1220410478317088768",
+      "source_type": "twitter_extra",
+      "summary": "RT Cursor Today we're launching Cursor Start, a new ₹649/month plan for developers in India. Start includes generous access to Grok 4.5 and Composer, so you can plan, build, test, and ship with agents every day.",
+      "time_precision": "exact",
+      "title": "Today we're launching Cursor Start, a new ₹649/month plan for developers",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/shaoruu/status/2082152823182274633"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/aigclink/status/2081984536842584128",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+      "featured": false,
+      "id": "n_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+      "identity_claims": [
+        "c_06cbe53e86ef9dea9db23d60ab03cb13cb80a7e26c16e98acee8b30c296bc882",
+        "c_1978cd4957ea57b9b8f4a3f0c42caabfcf502c444198704e95254fa52d8b183e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T06:06:09.963Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220273240119754752",
+        "name": "twitter-AIGCLINK"
+      },
+      "source_id": "1220273240119754752",
+      "source_type": "twitter_extra",
+      "summary": "分享几个最近的思考和一些对未来终局的判断： 1、终局看每家公司都会拥有自己的大模型，犹如互联网时代的今天每家公司都有自己的网站。 2、当前所有的skill、agent都会成为模型公司的养料，未来希望寻找确定性的只能是拥有自己数据飞轮的模型，才能形成ai时代公司的核心竞争力。 3、模型公司里的算法工程师犹如运营，模型公司做benchmark的人犹如产品经理，数据管线的人犹如当年的程序员，整个范式在重新转移。 4、今天非常像四大门户的互联网时代，后来随着网站越来越多出现了搜索引擎，然后网站迎来了更大的爆发；大模型的发展路径也会逐步遵循，当前的模型公司有点像当年的四大门户，未来会分出各种板块的模型（以前叫网站） 5、从业者可以从agent切入，但一定要建立自己的模型形成数据飞轮，才能避免成为开着AI这台机器去务农（从事软件行业），当下的软件行业犹如农业，产值占比只会越来越小，而且会卷到没边。 #数据飞轮 #大模型",
+      "time_precision": "exact",
+      "title": "分享几个最近的思考和一些对未来终局的判断： 1、终局看每家公司都会拥有自己的大模型，犹如互联网时代的今天每家公司都有自己的网站。 2、当前所有的skill、agent都会成为模型公司的养料，未来希望寻找确定性的只能是拥有自己数据飞轮的模型，才能形成ai时代公司的核心竞争力。 3、模型公司里的算法工程师犹如运营，模型公司做benchmark的人犹如产品经理，数据管线的人犹如当年的程序员，整个范式在重新转移。 4、今天非常像四大门户的互联网时代，后来随着网站越来越多出现了搜索引擎，然后网站迎来了更大的爆发；大模型的发展路径也会逐步遵循，当前的模型公司有点像当年的四大门户，未来会分出各种板块的模型（以前叫网站） 5、从业者可以从agent切入，但一定要建立自己的模型形成数据飞轮，才能避免成为开着AI这台机器去务农（从事软件行业），当下的软件行业犹如农业，产值占比只会越来越小，而且会卷到没边。 #数据飞轮 #大模型",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_research",
+        "topic_products"
+      ],
+      "url": "https://x.com/aigclink/status/2081984536842584128"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/GaryMarcus/status/2082194749184983246",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
+      "featured": false,
+      "id": "n_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
+      "identity_claims": [
+        "c_53b02441910ede4605bb27acc491703acae4f621ca479cdafe8e3acccef068dd",
+        "c_b5c8dcbfb6acd5a88af9964e88dc368cb2ded0077d5a395e9a54e42908d61432"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T09:24:23.539Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468171",
+        "name": "twitter-Gary Marcus"
+      },
+      "source_id": "1220173809093468171",
+      "source_type": "twitter",
+      "summary": "RT Adam Hunt Recently I've flipped from being bullish to being bearish about AI. I think I'm updating my bearishness to be more solidly bearish. Early thoughts (which I hope to be disproven in the next year or so, I would prefer progress) and my reasoning: The whole 'it turns out if you keep training and scaling the models more they develop broad new capabilities in lots of domains' thesis is wrong (sorry Demis). The recent batch of models haven't got more general, they've got less general. This is most obvious in the fact that their language outputs have got much worse in comparison to e.g. o3. If they were gaining generalist capacities we would expect them to be describing their work in ever more graceful and comprehensive prose! The image that was being shared as the AGI thesis (November 2025, Tomas Pueyo) was the spiky bubble that has a current spike or two out past human capabilities (e.g. on coding or math) but below human on other capabilities on the other spikes - the future prediction was that as the models scale/advance, every spike would grow bit by bit until the whole center encompasses the human capabilities, with super-superhuman on some spikes. I think it seems like what's actually happened in the last few models has been that the coding/math spike has grown, but leaving behind or even at the cost of the other spikes. The models are no better at some simple logic, language (and sometimes worse!). This makes sense from a simple RL perspective; you can't RL something endlessly on one domain of tasks and expect it to improve on the other tasks. The fact that early LLMs did seem to improve generally was a byproduct of the written language corpus covering everything - that corpus is general, so training it on that gave the appearance of something generally intelligent and becoming more generally intelligent as it got better at replicating that corpus. But the actual logic and underlying ground truths behind the language aren't captured efficiently enough and weren't effectively RLd in - they top out at some point (I guess this happened around the time that there was the 'has scaling hit a wall' discussion in late 2024). Chain of thought was then a genuine breakthrough, along with web search, which plugged into that general LLM global-corpus intelligence to lead to post 2024 gains. The AI companies have since worked out that coding works (and pays) really well (basically this is because the entire job is nearly perfectly recorded and exists as training data, and you can set up clear benchmarks and rewards). The recent models (and benchmarks) have been maxxing that and we've seen degradation on normal English use for that reason. This could still be transformative, leading to extremely powerful (and potentially dangerous, particularly in cyber security) models but it's not a pathway to AGI. I'm probably at about 40% confidence about this. It fits my current observations of AI progress and has a basic explanatory model. It doesn't account for potential breakthroughs, which is a major reason for discounting. To make some predictions, I guess if I'm right this will become broadly apparent and more widely acknowledged in the next year or two, as we see how the spikiness of models that keep getting released develops. Maybe there will be efforts to concentrate on specific spikes e.g. health or law which require going back to earlier models and RLing on a different data set/with different rewards/benchmarks. Maybe those separate models can be linked together to give a more apparently general model. How capital intensive that is/the potential profitability will be a defining question. But I just don't see general abilities emerging atm, and I don't think we will any time soon. Good news - a whole industry of tackling important specific problems/sectors can open up!",
+      "time_precision": "exact",
+      "title": "Recently I've flipped from being bullish to being bearish about AI. I",
+      "topic_ids": [
+        "topic_models",
+        "topic_business"
+      ],
+      "url": "https://x.com/GaryMarcus/status/2082194749184983246"
+    },
+    {
+      "batch": "morning",
       "canonical_url": "https://x.com/Gorden_Sun/status/2082043946713379264",
       "category": "other",
       "content_type": "socialMedia",
@@ -228,6 +573,42 @@
         "topic_other"
       ],
       "url": "https://x.com/Gorden_Sun/status/2082043946713379264"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/GaryMarcus/status/2082207539593466134",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201",
+      "featured": false,
+      "id": "n_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201",
+      "identity_claims": [
+        "c_153e06682659a1a3fa76d40247c4cd5db8814abd7ab6d4738cc21dfdf25561fb",
+        "c_c8c4dc91b60ce9ba6db3a466b7cbe8eee5fd21e5f1ebd75ec4a64d3f754fb201"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T10:12:24.971Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220173809093468170",
+        "name": "twitter-Gary Marcus"
+      },
+      "source_id": "1220173809093468170",
+      "source_type": "twitter",
+      "summary": "RT Peter Berezin LLMs may be a dead end to superintelligence.",
+      "time_precision": "exact",
+      "title": "LLMs may be a dead end to superintelligence.",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/GaryMarcus/status/2082207539593466134"
     },
     {
       "batch": "morning",
@@ -2845,6 +3226,119 @@
         "topic_research"
       ],
       "url": "https://simonwillison.net/2026/Jul/28/discovering-cryptographic-weaknesses-with-claude/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2082242761449689334",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e",
+      "featured": false,
+      "id": "n_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e",
+      "identity_claims": [
+        "c_5259777be9006825e756752827ea5a2c880300038da71c0b104b382cb4e3d4b6",
+        "c_7b382f548ecff4aa6b366930e1d8d6a83bfe12445fd924f884265aaf211a7e1e"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-28T23:12:15.114Z",
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220354786801471488",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1220354786801471488",
+      "source_type": "twitter_extra",
+      "summary": "【少数通用 Agent 通吃】 不只是通用的吃掉垂直的，通用 Agent 本身也是少数赢家通吃，小的通用 Agent 也没有生存空间。 【基于 Agent 的插件系统至关重要】 开放和封闭的差别，不在于是不是开源，也不在于能不能自由换模型，而是它的插件生态，就像最受欢迎的 Claude Code 和 Codex，默认都是自家模型，但是没多大影响，何况也都支持你用 API。 现在 Agent 能火爆的原因之一是因为丰富的插件（Skill + MCP）生态，可以帮助完成任务。 【前期的 Agent 更多是在教育用户】 下沉和傲慢是很主观的，Workbuddy 那样不见得就叫下沉，Codex 也不见得傲慢。当然说 Anthropic 傲慢那可能没啥争议，但只要模型够强，捏着鼻子也认了。 Agent 这种事，没有那么多忠诚度，前期都是在教育用户，就像小龙虾🦞，虽然现在都没人提起，但确实起到了普及 Agent 得作用，将来 AGI 发展史上也算留下了一笔。 Workbuddy 现在火爆，也一样是在教育用户，让很多不知道或者用不了 Codex/CC 的人也能用上了 Agent。 想当年 Claude Code 多火爆，后来 Codex 推出 GUI 版也马上抢了很多用户。 【模型是护城河】 Agent 的体验也没多大护城河，最后都趋同了，模型能力和成本终究还是会让产品拉开差距。 用户使用 Agent，最大的体验差异来源于模型的智能，当你用过聪明的模型，就不会想回到不那么聪明的模型，很多人愿意接受当下的，是因为没机会用到过更好的。 Cursor 的 Agent 体验也很好，什么模型都能用，但是热度最高还是 Codex 和 Claude Code，因为有订阅服务，性价比最高。 【个人和小团队没必要拼 Agent】 小团队做通用 Agent、垂直 Agent 已经没啥机会了，但是基于 Agent 做插件还机会很多 很多传统软件，并不是为 Agent 设计的，有一个时间窗口。 Skills 已经泛滥了，单纯的 Skill 没啥门槛，让 Skill 做为入口，后面再接入服务是有机会的，这也是提供差异化的地方。 Cellier: 关于 Agent 的判断： 1. 更通用的吃掉更垂直的 通用 Agent — Codex、Claude Cowork、Workbuddy... 逐渐吃掉专业 Agent 和垂类 Agent（比如 Genspark、Skywork...）。通用 Agent 将成为用户的主要入口，通用 Agent + Skill + MCP 能解决大部分专业任务，大部分 AI-native 应用创业会是伪命题。 2.",
+      "time_precision": "exact",
+      "title": "【少数通用 Agent 通吃】 不只是通用的吃掉垂直的，通用 Agent 本身也是少数赢家通吃，小的通用 Agent 也没有生存空间。 【基于 Agent 的插件系统至关重要】 开放和封闭的差别，不在于是不是开源，也不在于能不能自由换模型，而是它的插件生态，就像最受欢迎的 Claude Code 和 Codex，默认都是自家模型，但是没多大影响，何况也都支持你用 API。 现在 Agent 能火爆的原因之一是因为丰富的插件（Skill + MCP）生态，可以帮助完成任务。 【前期的 Agent 更多是在教育用户】 下沉和傲慢是很主观的，Workbuddy 那样不见得就叫下沉，Codex 也不见得傲慢。当然说 Anthropic 傲慢那可能没啥争议，但只要模型够强，捏着鼻子也认了。 Agent 这种事，没有那么多忠诚度，前期都是在教育用户，就像小龙虾🦞，虽然现在都没人提起，但确实起到了普及 Agent 得作用，将来 AGI 发展史上也算留下了一笔。",
+      "topic_ids": [
+        "topic_models",
+        "topic_agents",
+        "topic_products",
+        "topic_open_source"
+      ],
+      "url": "https://x.com/dotey/status/2082242761449689334"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/dotey/status/2082280325040750998",
+      "category": "models",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+      "featured": false,
+      "id": "n_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+      "identity_claims": [
+        "c_298bc7222f5ae098afea0eae9b2c7e6c6addde226f5eb4b2916e69275caa28ea",
+        "c_59f40e7e7c0000a436f73e4bebef8e70cc99bca73c24e2de364fbc48b86c5529"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": "2026-07-29T01:41:31.804Z",
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220434038343323648",
+        "name": "twitter-宝玉"
+      },
+      "source_id": "1220434038343323648",
+      "source_type": "twitter_extra",
+      "summary": "Re GPT 5.6 Sol 推理强度我默认用 xhigh，GPT 这点还不错，就算 xhigh 也不会过度推理。 Fable 5 我用 high，大部分时候medium，更高推理强度不见的更聪明，但是一定更慢更费 token。 Opus 4.6 我用 max 最多，写作任务足够 Opus 5 我现在一般也只用 high，Fable 5/sonnet5/opus5推理强度越多越是性价比不高 Gao fei: @dotey 宝玉老师，5.6思考强度常用哪一档？",
+      "time_precision": "exact",
+      "title": "GPT 5.6 Sol 推理强度我默认用 xhigh，GPT 这点还不错，就算 xhigh 也不会过度推理。 Fable 5 我用 high，大部分时候medium，更高推理强度不见的更聪明，但是一定更慢更费 token。 Opus 4.6 我用 max 最多，写作任务足够 Opus 5 我现在一般也只用 high，Fable 5/sonnet5/opus5推理强度越多越是性价比不高 Gao fei: @dotey 宝玉老师，5.6思考强度常用哪一档？",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://x.com/dotey/status/2082280325040750998"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://github.com/hello245m/free-stockdb",
+      "category": "open_source",
+      "content_type": "project",
+      "entity_ids": [],
+      "event_id": "e_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20",
+      "featured": false,
+      "id": "n_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20",
+      "identity_claims": [
+        "c_8d04110c5148e1fd560b05fd05e8b6759577aaea37a98ce06b5a0384bc355e20",
+        "c_c4a6cc3aac6d37000434a171acc4fc31897f824b89345841d249dd6205c144a1"
+      ],
+      "identity_strategy": "canonical_url",
+      "identity_version": 1,
+      "ingested_at": "2026-07-29T02:00:00.000Z",
+      "published_at": null,
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "https://github.com/hello245m/free-stockdb",
+        "name": "GitHub Trending"
+      },
+      "source_id": "https://github.com/hello245m/free-stockdb",
+      "source_type": "github_trending",
+      "summary": "面向 A 股日K、分钟K与ETF分钟数据的本地量化引擎，集成增量同步、本地缓存、复权、批量查询、回测与指标计算。",
+      "time_precision": "date_only",
+      "title": "free-stockdb",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://github.com/hello245m/free-stockdb"
     },
     {
       "batch": "night",
