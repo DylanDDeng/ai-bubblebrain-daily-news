@@ -13,7 +13,10 @@ import HuggingfacePapersDataSource from '../../src/dataSources/huggingface-paper
 import OpenAInewsroomDataSource from '../../src/dataSources/openai-newsroom.js';
 import SimonWillisonDataSource from '../../src/dataSources/simonwillison.js';
 import TheDecoderDataSource from '../../src/dataSources/the-decoder.js';
-import { localizeEnglishFeedItems } from '../../src/dataSources/localize-english-feed.js';
+import {
+    ENGLISH_FEED_LOCALIZATION_BATCH_SIZE,
+    localizeEnglishFeedItems,
+} from '../../src/dataSources/localize-english-feed.js';
 
 function jsonResponse(body) {
     return {
@@ -79,6 +82,48 @@ describe('English feed localization', () => {
             summary_zh: LOCALIZED_SUMMARY,
         });
         expect(localized.content_html).toBe(items[0].content_html);
+    });
+
+    it('splits large translation inputs into bounded parallel batches', async () => {
+        const itemCount = ENGLISH_FEED_LOCALIZATION_BATCH_SIZE * 2 + 6;
+        const items = Array.from({ length: itemCount }, (_, index) => ({
+            id: `item-${index}`,
+            title: `English title ${index}`,
+            content_html: `<p>English summary ${index}</p>`,
+        }));
+        const batchSizes = [];
+        const generate = vi.fn(async (_env, prompt) => {
+            const match = prompt.match(/输入：(.*)\n\n只返回 JSON 数组。/s);
+            const input = JSON.parse(match?.[1] || '[]');
+            batchSizes.push(input.length);
+            return JSON.stringify(input.map(({ id, original_title }) => {
+                const sourceIndex = original_title.split(' ').at(-1);
+                return {
+                    id,
+                    title_zh: `中文标题 ${sourceIndex}`,
+                    summary_zh: `中文摘要 ${sourceIndex}`,
+                };
+            }));
+        });
+
+        const localized = await localizeEnglishFeedItems(
+            { OPEN_TRANSLATE: 'true' },
+            items,
+            { strict: true, generate, sourceName: 'Test feed' },
+        );
+
+        expect(generate).toHaveBeenCalledTimes(3);
+        expect(batchSizes).toEqual([
+            ENGLISH_FEED_LOCALIZATION_BATCH_SIZE,
+            ENGLISH_FEED_LOCALIZATION_BATCH_SIZE,
+            6,
+        ]);
+        expect(localized).toHaveLength(itemCount);
+        expect(localized.map((item) => item.id)).toEqual(items.map((item) => item.id));
+        expect(localized.at(-1)).toMatchObject({
+            title_zh: `中文标题 ${itemCount - 1}`,
+            summary_zh: `中文摘要 ${itemCount - 1}`,
+        });
     });
 
     it.each([
