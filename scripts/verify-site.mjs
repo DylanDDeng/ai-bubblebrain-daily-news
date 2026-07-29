@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { XMLParser } from "fast-xml-parser";
 import { projectPublishedCalendarReport } from "../src/daily/calendarView.js";
 import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
+import { assertDailyLocalization } from "./daily-localization-contract.mjs";
 import {
   extractLocalReferences,
   tagAttribute,
@@ -281,6 +282,7 @@ const canonicalReports = await Promise.all(
     JSON.parse(await readFile(resolve(dailyDataDirectory, name), "utf8")),
   ),
 );
+for (const report of canonicalReports) assertDailyLocalization(report);
 const canonicalReportByDate = new Map(
   canonicalReports.map((report) => [report.date, report]),
 );

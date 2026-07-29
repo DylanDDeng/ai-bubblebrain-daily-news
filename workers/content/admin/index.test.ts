@@ -73,7 +73,10 @@ describe("routine content admin information architecture", () => {
     expect(response.headers.get("content-security-policy")).toContain(
       "frame-ancestors 'none'",
     );
-    expect(await response.text()).toContain("Content Desk");
+    const html = await response.text();
+    expect(html).toContain("Content Desk");
+    expect(html).toContain("精确内容 ID");
+    expect(html).toContain("/v1/content?after=");
     expect(openContentDatabase).not.toHaveBeenCalled();
   });
 
