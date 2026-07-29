@@ -19,6 +19,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-07-27-prompt-caching-in-agents/',
 	'/highlights/2026-07-28-why-software-factories-fail-benchmarking-new-frontier/',
 	'/en/highlights/2026-07-28-why-software-factories-fail-benchmarking-new-frontier/',
+	'/highlights/2026-07-28-we-rewrote-our-agent-durable-object-pi-agents-sdk-code-mode/',
+	'/en/highlights/2026-07-28-we-rewrote-our-agent-durable-object-pi-agents-sdk-code-mode/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
