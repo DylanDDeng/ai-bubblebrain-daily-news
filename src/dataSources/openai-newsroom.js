@@ -2,6 +2,7 @@
 import { getRandomUserAgent, sleep, isDateWithinLastDays, stripHtml, formatDateToChineseWithTime, escapeHtml} from '../helpers.js';
 import { getFoloDataApi, getFoloErrorMessage } from '../folo.js';
 import { assertFoloPayload, assertProviderPositiveIntegerSetting, assertProviderUrl, normalizeProviderFailure, providerConfigurationError, providerHttpError } from '../daily/providerFailure.js';
+import { localizeEnglishFeedItems } from './localize-english-feed.js';
 
 const NewsDataSource = {
     fetch: async (env, foloCookie, { strict = false, signal } = {}) => {
@@ -106,13 +107,18 @@ const NewsDataSource = {
             await sleep(Math.random() * 5000, { signal });
         }
 
+        const localizedItems = await localizeEnglishFeedItems(
+            env,
+            allItems,
+            { strict, signal, sourceName: "OpenAI Newsroom" },
+        );
         return {
             version: "https://jsonfeed.org/version/1.1",
             title: "OpenAI NewsRoom Feeds",
             home_page_url: "https://openai.com/news/",
             description: "Aggregated OpenAI NewsRoom feeds",
             language: "en",
-            items: allItems
+            items: localizedItems
         };
     },
 
@@ -124,8 +130,8 @@ const NewsDataSource = {
                     id: item.id,
                     type: sourceType,
                     url: item.url,
-                    title: item.title,
-                    description: stripHtml(item.content_html || ""),
+                    title: item.title_zh || item.title,
+                    description: item.summary_zh || stripHtml(item.content_html || ""),
                     published_date: item.date_published,
                     folo_inserted_at: item.folo_inserted_at,
                     authors: item.authors ? item.authors.map(a => a.name).join(', ') : 'OpenAI',

@@ -8,6 +8,7 @@ const AnthropicResearchDataSource = createFoloFeedDataSource({
   homePageUrl: "https://www.anthropic.com/research",
   filterDaysEnv: "ANTHROPIC_RESEARCH_FILTER_DAYS",
   defaultFilterDays: "14",
+  localize: true,
 });
 
 export default AnthropicResearchDataSource;

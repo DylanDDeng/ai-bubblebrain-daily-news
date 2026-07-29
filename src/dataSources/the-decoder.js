@@ -7,6 +7,7 @@ const TheDecoderDataSource = createFoloFeedDataSource({
   logName: "The Decoder",
   homePageUrl: "https://the-decoder.com/",
   defaultFetchPages: "1",
+  localize: true,
 });
 
 export default TheDecoderDataSource;
