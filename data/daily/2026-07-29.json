@@ -1,9 +1,12 @@
 {
   "batches": [
     {
-      "generated_at": "2026-07-28T22:00:00.000Z",
+      "generated_at": "2026-07-28T23:00:00.000Z",
       "id": "morning",
       "item_ids": [
+        "n_0cd7faf258e8aa9fd8e2219615074cb8cbdbc353bb4b071113e82564266e9d01",
+        "n_1ca1a72483db23adc69123016c548c1ed5000ff7b50cdac8b7ed8af96ce8009d",
+        "n_7fe98b27be7d9bc1346c1a5e244e3b9f82a1635a442af54bf5eb87d1ea82e787",
         "n_9a717b7a59f896bc36b39130d9ad7542eb2b9336a2b119d59d92ff050faba81b",
         "n_0844fbb955c78f9692594ee1d4c3a2d2dc2c4ef8315ee659e63e4ca4c573e7b7",
         "n_048768cabbad5a26cb4313c19c8912f0e370ff3ccaa2c61830c79390f6df96b6",
@@ -27,6 +30,7 @@
         "n_d200198bf936d98fcd7abd9cf6e9c9942243d39db73a0850060c899ed9fa40ea",
         "n_22a627473fd67578458e67d04e25639aa5f13b51983f43073d2a36b2f1c16457",
         "n_2e0e4671222d176d2e092dfd7e479427c5ee09e761184b134dd6dcaaf4e0090b",
+        "n_8ca11ed63aca0df14b4a7c4d534527f82d16c968e9a7a67b6c1a699b1f3b6a15",
         "n_163302f0ec3a2487df92ce395966a6fa11cd2586b09cd7d5459425c8d4e0096e",
         "n_48d029b68e7031b398e243c3c690c9431de60fbd981c166430a4963850a0cd79",
         "n_dc3eefe59a155c07453d83c48ed95ddfbfbd1de67fed859bf813e7d000161b3e",
@@ -65,7 +69,11 @@
         "n_ccc85f3f7bea551c056e554c08c1cca8f65ff58ec9b9ae9857daa012b74a6c0f",
         "n_9222d1730978a166cae4bc2be459a820c5123eebe97e449b985136942b84357f",
         "n_c4be1dd6bf3be9275365f3c811623bb6cc8c5f9dd838238840a515a555a957d2",
-        "n_00a6ca51d66776c3c5e06a8edf7c348bfd66a578bdcb35ab1654af86709af2c7"
+        "n_00a6ca51d66776c3c5e06a8edf7c348bfd66a578bdcb35ab1654af86709af2c7",
+        "n_06b89a8b45fcbd387b6edc1813cfff51efb4e45e2187820ea5f7b1929cc534e0",
+        "n_595b7c322fd83d05ee88104bb91335446b3c5d2e5f91cb1cfac741e7cd338e77",
+        "n_6c2ff59523c49da37d4e7b5c686159f1c9a8bd2adf651005c804c077df23272d",
+        "n_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7"
       ],
       "label": "08:00 更新",
       "status": "completed"
@@ -105,9 +113,118 @@
   "classifier_version": 1,
   "date": "2026-07-29",
   "dedupe_version": 1,
-  "generated_at": "2026-07-28T22:00:00.000Z",
+  "generated_at": "2026-07-28T23:00:00.000Z",
   "identity_version": 1,
   "items": [
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.23373",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_0cd7faf258e8aa9fd8e2219615074cb8cbdbc353bb4b071113e82564266e9d01",
+      "featured": false,
+      "id": "n_0cd7faf258e8aa9fd8e2219615074cb8cbdbc353bb4b071113e82564266e9d01",
+      "identity_claims": [
+        "c_0cd7faf258e8aa9fd8e2219615074cb8cbdbc353bb4b071113e82564266e9d01",
+        "c_73dd2f1c8e2df95ef02ab04515cde9c5aa3679d967321ed13ff380afda021185"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-24T20:00:00.872Z",
+      "published_date": "2026-07-25",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220218224558194708",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1220218224558194708",
+      "source_type": "huggingface_papers",
+      "summary": "Large Vision-Language Models (LVLMs) remain bottlenecked by massive computational footprints, precluding their deployment on resource-constrained edge devices. While efforts to compress LVLMs focus heavily on vision token reduction or smaller language models, the vision encoder is largely overlooked, typically deployed as a monolithic, computationally heavy feature extractor. Moreover, there is no previous effort that designs a vision encoder for LVLMs directly optimized for on-device latency. In this paper, we present UltraViT, a vision encoder for LVLMs, explicitly designed and optimized for on-device performance. Specifically, by taking into account real on-device latencies, we systematically design a pyramidal architecture that strategically integrates and adapts heterogeneous spatial mixers at the macro-block level. Furthermore, to pre-train UltraViT, we propose a novel two-stage generative pre-training strategy: cultivating rich spatial features via dense distillation, followed by direct generative supervision from a capacity-mixed frozen LLM. Compared to standard contrastive and SSL, we show that our pre-training is much more effective for achieving high-level semantic grounding for UltraViT needed for the subsequent generative multimodal alignment of LVLM training. Extensive experiments demonstrate that our on-device latency-informed design combined with our tailored training strategy establishes a new state-of-the-art for efficient LVLM encoding, significantly outperforming existing encoder-centric baselines while operating on-device at nearly 1.7xthe speed.",
+      "time_precision": "exact",
+      "title": "UltraViT：面向大视觉语言模型的延迟优化设备端视觉编码器",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://arxiv.org/abs/2607.23373"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://arxiv.org/abs/2607.23909",
+      "category": "models",
+      "content_type": "paper",
+      "entity_ids": [],
+      "event_id": "e_1ca1a72483db23adc69123016c548c1ed5000ff7b50cdac8b7ed8af96ce8009d",
+      "featured": false,
+      "id": "n_1ca1a72483db23adc69123016c548c1ed5000ff7b50cdac8b7ed8af96ce8009d",
+      "identity_claims": [
+        "c_1ca1a72483db23adc69123016c548c1ed5000ff7b50cdac8b7ed8af96ce8009d",
+        "c_e507de64f98cd29e5242060fd0dadeb1cc18186a889c60a47b9f86dc7bae7f2d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-26T20:00:00.743Z",
+      "published_date": "2026-07-27",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220218224558194698",
+        "name": "huggingface-papers"
+      },
+      "source_id": "1220218224558194698",
+      "source_type": "huggingface_papers",
+      "summary": "Many recent robot policies pursue stronger control by using large pretrained vision-language models (VLMs) as the action backbone. We introduce WorldDiT, a unified diffusion transformer architecture that couples action generation with visual world modeling and achieves strong performance without a large pretrained VLM action backbone. During training, a single diffusion transformer generates continuous action chunks and predicts normalized RGB patch targets from future camera frames. Across four LIBERO simulation suites, WorldDiT lies on the reported Pareto frontier for total model parameters and mean success among methods reporting all four suites. These results provide a strong sub-billion-parameter baseline for future scaling studies.",
+      "time_precision": "exact",
+      "title": "WorldDiT：一种用于世界与动作建模的统一扩散架构",
+      "topic_ids": [
+        "topic_models"
+      ],
+      "url": "https://arxiv.org/abs/2607.23909"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/Gorden_Sun/status/2082043946713379264",
+      "category": "other",
+      "content_type": "socialMedia",
+      "entity_ids": [],
+      "event_id": "e_7fe98b27be7d9bc1346c1a5e244e3b9f82a1635a442af54bf5eb87d1ea82e787",
+      "featured": false,
+      "id": "n_7fe98b27be7d9bc1346c1a5e244e3b9f82a1635a442af54bf5eb87d1ea82e787",
+      "identity_claims": [
+        "c_433d24986c028e8af5ef3358c039bd637ef680905a6a5ac787c3cef3b241259c",
+        "c_7fe98b27be7d9bc1346c1a5e244e3b9f82a1635a442af54bf5eb87d1ea82e787"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-28T10:02:14.415Z",
+      "published_date": "2026-07-28",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220200508640264192",
+        "name": "twitter-Gorden Sun"
+      },
+      "source_id": "1220200508640264192",
+      "source_type": "twitter_extra",
+      "summary": "我取消了这个套餐，我以为是18个月有效期，实际是18个月的合约，每个月8英镑。合约的意思就是提前取消要扣违约金。 订购后14天内取消，不扣违约金，但是当月的费用已经扣了。被我误导了的快去退订吧，不好意思。 Gorden Sun: 还没封的号，我来开一个18个月的连续合约，来试试能不能保号",
+      "time_precision": "exact",
+      "title": "我取消了这个套餐，我以为是18个月有效期，实际是18个月的合约，每个月8英镑。合约的意思就是提前取消要扣违约金。 订购后14天内取消，不扣违约金，但是当月的费用已经扣了。被我误导了的快去退订吧，不好意思。 Gorden Sun: 还没封的号，我来开一个18个月的连续合约，来试试能不能保号",
+      "topic_ids": [
+        "topic_other"
+      ],
+      "url": "https://x.com/Gorden_Sun/status/2082043946713379264"
+    },
     {
       "batch": "morning",
       "canonical_url": "https://x.com/steipete/status/2082187649088163873",
@@ -321,7 +438,7 @@
       "source_type": "twitter",
       "summary": "RT NVIDIA Re The Open Secure AI Alliance is growing, with more organizations contributing expertise to help safeguard software and agents.",
       "time_precision": "exact",
-      "title": "Re The Open Secure AI Alliance is growing, with more organizations",
+      "title": "The Open Secure AI Alliance is growing, with more organizations",
       "topic_ids": [
         "topic_other"
       ],
@@ -947,6 +1064,45 @@
         "topic_products"
       ],
       "url": "https://x.com/dotey/status/2082148581377720467"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://www.anthropic.com/research/discovering-cryptographic-weaknesses",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_8ca11ed63aca0df14b4a7c4d534527f82d16c968e9a7a67b6c1a699b1f3b6a15",
+      "featured": false,
+      "id": "n_8ca11ed63aca0df14b4a7c4d534527f82d16c968e9a7a67b6c1a699b1f3b6a15",
+      "identity_claims": [
+        "c_87035d5b52778f7afa804171c8bc4b97e898baee400c9206ad5cf881a37263a3",
+        "c_8ca11ed63aca0df14b4a7c4d534527f82d16c968e9a7a67b6c1a699b1f3b6a15"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-28T17:00:00.810Z",
+      "published_date": "2026-07-29",
+      "reason": "来自Anthropic的研究成果，在密码学领域发现两种新攻击方法，有具体算法细节，虽未影响生产系统但具学术影响力。",
+      "related_source_ids": [],
+      "score": 7.8,
+      "source": {
+        "homepage": null,
+        "id": "1220215885696937984",
+        "name": "Anthropic Research"
+      },
+      "source_id": "1220215885696937984",
+      "source_type": "anthropic_research",
+      "summary": "Summary Using Claude Mythos Preview, researchers at Anthropic have discovered improved ways to attack cryptographic algorithms (the mathematical methods used to keep online data private). The first attack significantly weakens HAWK, a digital signature scheme that was built for a post-quantum world. The second identifies a new way to attack round-reduced AES, the most widely used symmetric cipher. These are substantial research advances, but they do not currently affect any production systems. This post describes both findings in more detail and discusses the implications for cryptography in an age of powerful AI models. Introduction When we launched Claude Mythos Preview, we showed it was able to autonomously find and exploit vulnerabilities in almost every piece of software we pointed it at. This included several major cryptographic libraries—shared collections of code that are used to encrypt data. The vulnerabilities that Claude found in these cryptographic libraries 1 were due to incorrect implementation of the algorithms—that is, errors in how programmers used the algorithms in their code that created opportunities for attackers to break the encryption. Now, we have found that Claude is able to find mathematical flaws in the algorithms themselves. Cryptographic algorithms are a fundamental building block of digital security. For example, when you visit a webpage like, your browser checks that it is communicating with an authentic website using an algorithm called a digital signature scheme. Later, the traffic between you and the website is encrypted using symmetric ciphers —codes that allow secure data transmission between parties who share an identical key. Without secure cryptographic systems like these, your email, online banking, and other internet use would be open to cybercriminals, who could intercept or modify your communications. Flaws in these widely used cryptographic systems could put billions of users’ data at risk. The first result we describe in this post, which was discovered with Claude Mythos Preview, is an improved attack against a digital signature scheme called HAWK. In 2022, the US Government’s National Institute of Standards and Technology (NIST) put out a call for additional cryptographic systems that would remain secure even against quantum computers (which could, if developed, break most of the existing signature schemes in use today). HAWK is one of the third-round candidates under consideration from this call. Despite HAWK having survived two rounds of expert human review over a period of two years, Mythos was able to improve the best-known attack on it in just 60 hours of work—effectively cutting its key strength in half. The second result concerns the Advanced Encryption Standard (AES), a symmetric cipher that was adopted by NIST in 2001 and has received more scrutiny than almost any other encryption algorithm. In order to better understand the robustness of AES, weaker variations of the algorithm are regularly studied in cryptography research; Mythos found a way to break one such weaker version, and eliminated one of the guesses an attacker needs to make, improving the speed of the previous best attacks by 200-800×. To be clear, neither of these results has a practical impact on today’s computer systems; no production software will have to change as a result. HAWK is only a candidate signature scheme and so is not deployed; 2 our second attack is on a reduced version of AES and does not break the full cipher. 3 Nevertheless, both results show the potential for frontier AI models to help discover flaws in important cryptographic algorithms, both before and after real-world deployment. This is cryptography research working as intended: stress-testing algorithms to build trust and ultimately make systems more secure. Mythos Preview achieved these results mostly autonomously and mostly without human intervention. Over the course of a week, one Anthropic researcher worked together with Claude to develop the HAWK attack, and another researcher built a scaffold 4 that allowed Claude to fully autonomously discover the AES attack. 5 Each of the results cost roughly $100,000 in API cost to develop. After seeing these results, we broadened our search and began to discover other attacks. We discuss some of these follow-ups below. In order to make it easier for others to continue studying the cryptanalytic ability of LLMs, we partnered with academics at ETH Zurich, Tel Aviv University, and University of Haifa to build CryptanalysisBench, a benchmark that packages together many cryptographic ciphers and makes it easy for others to evaluate the capabilities of LLMs on this important topic. Throughout the research process, we followed responsible disclosure procedures, and consulted with academics to confirm the validity of our findings. We al",
+      "time_precision": "exact",
+      "title": "Discovering cryptographic weaknesses with Claude",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://www.anthropic.com/research/discovering-cryptographic-weaknesses"
     },
     {
       "batch": "morning",
@@ -2366,14 +2522,166 @@
       },
       "source_id": "1220173806744657920",
       "source_type": "twitter",
-      "summary": "RT Raj Really appreciate the transparency from @huggingface clem 🤗: The first autonomous agent cyberattack is an unprecedented event that deserves unprecedented transparency. Today we’re sharing everything we can: a full technical timeline, an interactive replay, and how we used an open model to defend ourselves, so defenders everywhere can learn",
+      "summary": "该事件被认为是一次前所未有的攻击，Huggingface 还分享了交互式重放，并说明了如何用开源模型进行防御，以便全球防御者学习。",
       "time_precision": "exact",
-      "title": "Really appreciate the transparency from @huggingface",
+      "title": "Huggingface 针对首次自主代理网络攻击公开完整技术时间线与防御方法",
       "topic_ids": [
         "topic_models",
         "topic_agents"
       ],
       "url": "https://x.com/ClementDelangue/status/2082217715507294369"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/28/uv/",
+      "category": "open_source",
+      "content_type": "news",
+      "entity_ids": [],
+      "event_id": "e_06b89a8b45fcbd387b6edc1813cfff51efb4e45e2187820ea5f7b1929cc534e0",
+      "featured": false,
+      "id": "n_06b89a8b45fcbd387b6edc1813cfff51efb4e45e2187820ea5f7b1929cc534e0",
+      "identity_claims": [
+        "c_06b89a8b45fcbd387b6edc1813cfff51efb4e45e2187820ea5f7b1929cc534e0",
+        "c_3ee9a8b2cb22922d24489eb4e8b1578ec2625aa3c8b4ac335c7ac9dcedc6ecd5"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-28T21:51:38.669Z",
+      "published_date": "2026-07-29",
+      "reason": "uv小版本更新，主要改动项目布局，属于例行迭代，对Python开发者有参考价值但信息量一般。",
+      "related_source_ids": [],
+      "score": 5.2,
+      "source": {
+        "homepage": null,
+        "id": "1220250813243228162",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1220250813243228162",
+      "source_type": "simonwillison",
+      "summary": "uv 0.12.0 Some interesting breaking changes in this release of uv, in particular to the default project produced by the uv init command. uv init is the uv shortcut for creating a new project. The previous version of uv, version 0.11.x, produced this directory when you ran uv init uv-init. Here's what you get with uv 0.12. I have a GitHub repository that automatically snapshots the output of uv init, so you can also see the full diff: None type annotation that prints Hello from uv-init.\" src=\" > uv init now defaults to a src/ shaped package, instead of dropping main.py in the root of the project. It also configures the uv_build backend for building wheels and.tar.gz distribution files when you run uv build. Finally, it sets up uv-init as a script alias which, when run with uv run uv-init, executes a new main() function in src/uv_init/__init__.py. I've so far avoided using src layout in my own projects just out of inertia. I think it's time I switched. I wonder when uv will be judged ready for a 1.0 release? Tags: packaging, python, uv",
+      "time_precision": "exact",
+      "title": "uv 0.12.0",
+      "topic_ids": [
+        "topic_open_source"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/28/uv/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/28/akshat-bubna/",
+      "category": "agents",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_openai"
+      ],
+      "event_id": "e_595b7c322fd83d05ee88104bb91335446b3c5d2e5f91cb1cfac741e7cd338e77",
+      "featured": false,
+      "id": "n_595b7c322fd83d05ee88104bb91335446b3c5d2e5f91cb1cfac741e7cd338e77",
+      "identity_claims": [
+        "c_0c91ba33d4611287f623bd8473b76f64682378562c920af295899f76c7044aa9",
+        "c_595b7c322fd83d05ee88104bb91335446b3c5d2e5f91cb1cfac741e7cd338e77"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-28T22:05:55.959Z",
+      "published_date": "2026-07-29",
+      "reason": "引用Modal CTO对安全事件的简短回应，仅声明平台未受损，缺乏技术细节和新信息，影响范围小。",
+      "related_source_ids": [],
+      "score": 4.8,
+      "source": {
+        "homepage": null,
+        "id": "1220250813243228161",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1220250813243228161",
+      "source_type": "simonwillison",
+      "summary": "We’re aware a Modal customer published an unauthenticated endpoint that allowed ​anyone on the internet to use ​their ⁠sandboxes for code execution. This was used by the rogue agent. Modal’s ⁠platform ​or isolation were not ​compromised in anyway. — Akshat Bubna, Modal's CTO, talking to Reuters about this incident Tags: ai-security-research, openai, sandboxing, security, openai-hugging-face-incident",
+      "time_precision": "exact",
+      "title": "Quoting Akshat Bubna",
+      "topic_ids": [
+        "topic_agents",
+        "topic_research"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/28/akshat-bubna/"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://x.com/AnthropicAI/status/2082228994653696371",
+      "category": "research",
+      "content_type": "socialMedia",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_6c2ff59523c49da37d4e7b5c686159f1c9a8bd2adf651005c804c077df23272d",
+      "featured": false,
+      "id": "n_6c2ff59523c49da37d4e7b5c686159f1c9a8bd2adf651005c804c077df23272d",
+      "identity_claims": [
+        "c_44d8497a53071a300407fc8b7b583563711cba1350c8d8234d4dd0af16d9da6e",
+        "c_6c2ff59523c49da37d4e7b5c686159f1c9a8bd2adf651005c804c077df23272d"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-28T22:17:32.591Z",
+      "published_date": "2026-07-29",
+      "reason": null,
+      "related_source_ids": [],
+      "score": null,
+      "source": {
+        "homepage": null,
+        "id": "1220238595672014848",
+        "name": "Anthropic"
+      },
+      "source_id": "1220238595672014848",
+      "source_type": "anthropic_x",
+      "summary": "该机构上月发表的递归自我改进研究指出需刻意调整AI发展前沿，让社会做好准备，并乐见业界就此达成广泛共识。",
+      "time_precision": "exact",
+      "title": "机构CEO及联合创始人签署请愿，呼吁为递归自我改进研究配备调节AI发展的工具",
+      "topic_ids": [
+        "topic_research"
+      ],
+      "url": "https://x.com/AnthropicAI/status/2082228994653696371"
+    },
+    {
+      "batch": "morning",
+      "canonical_url": "https://simonwillison.net/2026/Jul/28/discovering-cryptographic-weaknesses-with-claude/",
+      "category": "models",
+      "content_type": "news",
+      "entity_ids": [
+        "entity_anthropic"
+      ],
+      "event_id": "e_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7",
+      "featured": false,
+      "id": "n_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7",
+      "identity_claims": [
+        "c_28561ebf1796fcb97acb1b7fd70d71018dcf030933166cab10af218952e43ab7",
+        "c_3e625d0559ca4e5af9ccf9da8d0fa71437782e3f5f36c68b19fd87ffd706fbd8"
+      ],
+      "identity_strategy": "source_id",
+      "identity_version": 1,
+      "ingested_at": "2026-07-28T23:00:00.000Z",
+      "published_at": "2026-07-28T22:45:37.924Z",
+      "published_date": "2026-07-29",
+      "reason": "补充了Claude Mythos研究的提示词和成本细节，突出大模型辅助研究的昂贵与人为引导，增加技术干货但核心发现已报道。",
+      "related_source_ids": [],
+      "score": 6.3,
+      "source": {
+        "homepage": null,
+        "id": "1220250813243228160",
+        "name": "Simon Willison's Weblog"
+      },
+      "source_id": "1220250813243228160",
+      "source_type": "simonwillison",
+      "summary": "Discovering cryptographic weaknesses with Claude The best part of this article (here's the repo ) about how Anthropic researchers used Claude Mythos to find mathematical flaws in both HAWK and a weaker version of AES (\"neither of these results has a practical impact on today’s computer systems\") is the prompts that they shared, spelling mistakes included: the models tend to think it is impossible to solve so they don't try they need a good amount of prompting. why not do aes-128 r7? the whole point is to find something better than existing approaches. no again the goal is that we have highly inteligent model as good top researcher, we want to find new attacks no we don't want to change the targets [...] agian we need to find something that worth publishing again we are not looking for low hanging fruit, we want proper research to find genuinly hard findings. Mythos Preview worked for 60 hours in total (~$100,000 in estimated API cost) and the main human interventions were to encourage it not to give up and \"find something that worth publishing\". Via Hacker News Tags: ai, prompt-engineering, generative-ai, llms, anthropic, claude, ai-security-research, claude-mythos-fable",
+      "time_precision": "exact",
+      "title": "Discovering cryptographic weaknesses with Claude",
+      "topic_ids": [
+        "topic_models",
+        "topic_research"
+      ],
+      "url": "https://simonwillison.net/2026/Jul/28/discovering-cryptographic-weaknesses-with-claude/"
     },
     {
       "batch": "night",
