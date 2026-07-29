@@ -646,6 +646,10 @@ describe("automatic code release boundary", () => {
             status: "modified",
           },
           {
+            filename: "scripts/daily-localization-contract.mjs",
+            status: "added",
+          },
+          {
             filename: "scripts/html-local-references.mjs",
             status: "added",
           },
@@ -718,7 +722,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(39);
+    ).toHaveLength(40);
   });
 
   it.each([
