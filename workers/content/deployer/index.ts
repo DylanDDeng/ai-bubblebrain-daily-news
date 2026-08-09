@@ -295,6 +295,9 @@ const RETIRED_HIGHLIGHT_INDEXES = new Set([
   "static/highlights.json",
   "static/en/highlights.json",
 ]);
+const RETIRED_PROMPT_LIBRARY_PATHS = new Set([
+  "static/js/prompt-library-detail.js",
+]);
 const RETIRED_DAILY_PATHS = new Set([
   "assets/daily.json",
   "data/daily/.gitkeep",
@@ -345,6 +348,13 @@ function classifyCodeReleasePath(
     if (status === "removed") return "publishable";
     throw new Error(
       `Code release may only remove retired highlight index: ${path}`,
+    );
+  }
+
+  if (RETIRED_PROMPT_LIBRARY_PATHS.has(path)) {
+    if (status === "removed") return "publishable";
+    throw new Error(
+      `Code release may only remove retired Prompt library path: ${path}`,
     );
   }
 

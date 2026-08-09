@@ -958,6 +958,44 @@ describe("automatic code release boundary", () => {
     );
   });
 
+  it("allows removing the retired Prompt library client asset", () => {
+    expect(
+      validateCodeReleaseChangeSet(
+        comparison([
+          {
+            filename: "static/js/prompt-library-detail.js",
+            status: "removed",
+          },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toHaveLength(1);
+  });
+
+  it("rejects recreating the retired Prompt library client asset", () => {
+    expect(() =>
+      validateCodeReleaseChangeSet(
+        comparison([
+          {
+            filename: "static/js/prompt-library-detail.js",
+            status: "added",
+          },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toThrow(
+      "Code release may only remove retired Prompt library path: static/js/prompt-library-detail.js",
+    );
+  });
+
   it("returns a retryable conflict when the requested SHA is already superseded", async () => {
     const currentMainSha = "c".repeat(40);
     const end = vi.fn(async () => undefined);
