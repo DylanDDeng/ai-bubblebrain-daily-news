@@ -47,6 +47,21 @@ describe("fenced content release workflow", () => {
       'node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA"',
     );
     expect(workflow).toContain(
+      "CONTENT_SCHEMA_VERSION: ${{ vars.CONTENT_SCHEMA_VERSION || '1' }}",
+    );
+    expect(workflow).toContain(
+      "CONTENT_TAXONOMY_VERSION: ${{ vars.CONTENT_TAXONOMY_VERSION || '1' }}",
+    );
+    expect(workflow).toContain(
+      "CONTENT_SERIALIZER_VERSION: ${{ vars.CONTENT_SERIALIZER_VERSION || 'daily-json-c14n-v1' }}",
+    );
+    expect(workflow).toContain(
+      "CONTENT_SEARCH_CONTRACT_VERSION: ${{ vars.CONTENT_SEARCH_CONTRACT_VERSION || 'search-v1' }}",
+    );
+    expect(workflow).toContain(
+      "CONTENT_SOURCE_CONTRACT_VERSION: ${{ vars.CONTENT_SOURCE_CONTRACT_VERSION || 'daily-source-v1' }}",
+    );
+    expect(workflow).toContain(
       "node scripts/request-production-promotion.mjs > broker-result.json",
     );
     expect(workflow).toContain(

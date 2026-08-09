@@ -58,6 +58,11 @@ jobs:
       CONTENT_RELEASE_SEQUENCE: ${{ github.event.inputs.site_release_sequence }}
       EXPECTED_PREDECESSOR_ID: ${{ github.event.inputs.expected_predecessor_id }}
       CONTENT_ROOT_SHA256: ${{ github.event.inputs.expected_content_sha }}
+      CONTENT_SCHEMA_VERSION: ${{ vars.CONTENT_SCHEMA_VERSION || '1' }}
+      CONTENT_TAXONOMY_VERSION: ${{ vars.CONTENT_TAXONOMY_VERSION || '1' }}
+      CONTENT_SERIALIZER_VERSION: ${{ vars.CONTENT_SERIALIZER_VERSION || 'daily-json-c14n-v1' }}
+      CONTENT_SEARCH_CONTRACT_VERSION: ${{ vars.CONTENT_SEARCH_CONTRACT_VERSION || 'search-v1' }}
+      CONTENT_SOURCE_CONTRACT_VERSION: ${{ vars.CONTENT_SOURCE_CONTRACT_VERSION || 'daily-source-v1' }}
       EXACT_CODE_SHA: ${{ github.event.inputs.code_sha }}
       SOURCE_CODE_SHA: ${{ github.event.inputs.source_code_sha }}
       BUILD_ENVIRONMENT_VERSION: ${{ github.event.inputs.build_environment_version }}
