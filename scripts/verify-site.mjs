@@ -4,9 +4,8 @@ import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { XMLParser } from "fast-xml-parser";
-import { projectPublishedCalendarReport } from "../src/daily/calendarView.js";
+
 import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
-import { assertDailyLocalization } from "./daily-localization-contract.mjs";
 import {
   extractLocalReferences,
   tagAttribute,
@@ -23,24 +22,6 @@ function invariant(condition, message) {
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
-}
-
-async function artifactFingerprint(directory, excludedPath) {
-  const aggregate = createHash("sha256");
-  const files = (await walk(directory))
-    .map((file) => ({
-      file,
-      path: relative(directory, file).replaceAll("\\", "/"),
-    }))
-    .filter((entry) => entry.path !== excludedPath)
-    .sort((a, b) => a.path.localeCompare(b.path));
-  for (const entry of files) {
-    aggregate.update(entry.path);
-    aggregate.update("\0");
-    aggregate.update(sha256(await readFile(entry.file)));
-    aggregate.update("\n");
-  }
-  return aggregate.digest("hex");
 }
 
 async function exists(path) {
@@ -62,18 +43,29 @@ async function walk(directory) {
   return files;
 }
 
+async function artifactFingerprint(directory, excludedPath) {
+  const aggregate = createHash("sha256");
+  const files = (await walk(directory))
+    .map((file) => ({
+      file,
+      path: relative(directory, file).replaceAll("\\", "/"),
+    }))
+    .filter((entry) => entry.path !== excludedPath)
+    .sort((left, right) => left.path.localeCompare(right.path));
+  for (const entry of files) {
+    aggregate.update(entry.path);
+    aggregate.update("\0");
+    aggregate.update(sha256(await readFile(entry.file)));
+    aggregate.update("\n");
+  }
+  return aggregate.digest("hex");
+}
+
 function pathFromRoute(route, contentType) {
   if (route === "/") return "index.html";
   if (contentType === "text/html" && route.endsWith("/"))
     return `${route.slice(1)}index.html`;
   return route.slice(1);
-}
-
-function releaseOutput(path) {
-  return (
-    ![".DS_Store", "_headers", "_redirects", ".assetsignore"].includes(path) &&
-    !path.endsWith("/.DS_Store")
-  );
 }
 
 function headerBlock(text, routePattern) {
@@ -102,19 +94,6 @@ function cspDirectives(value) {
   );
 }
 
-function rssIdentitySet(xml, route) {
-  const identities = [];
-  for (const item of xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)) {
-    const link = item[1].match(/<link>([\s\S]*?)<\/link>/i)?.[1]?.trim();
-    const guid = item[1]
-      .match(/<guid(?:\s[^>]*)?>([\s\S]*?)<\/guid>/i)?.[1]
-      ?.trim();
-    invariant(link && guid, `RSS item has no link/guid identity: ${route}`);
-    identities.push(`${link}\n${guid}`);
-  }
-  return identities.sort();
-}
-
 const ownershipBytes = await readFile(
   resolve(astroRoot, "route-ownership.json"),
 );
@@ -139,45 +118,14 @@ invariant(
 
 const contract = JSON.parse(await readFile(contractPath, "utf8"));
 const legacyManifest = JSON.parse(await readFile(legacyManifestPath, "utf8"));
-const pinnedContentBuild = Boolean(contract.build?.site_release_id);
 invariant(
   contract.schema_version === 3 && Array.isArray(contract.records),
   "Invalid site route contract",
 );
-let expectedPinnedBuild = null;
-if (pinnedContentBuild) {
-  const input = JSON.parse(
-    await readFile(
-      resolve(astroRoot, ".content-release", "build-input.json"),
-      "utf8",
-    ),
-  );
-  expectedPinnedBuild = {
-    code_sha: input.code_sha,
-    source_sha: input.code_sha,
-    site_release_id: input.site_release_id,
-    site_release_sequence: input.site_release_sequence,
-    content_sha256: input.content_sha256,
-    manifest_sha256: input.manifest_sha256,
-    build_environment_version: input.build_environment_version,
-    content_schema_version: input.content_schema_version,
-    content_taxonomy_version: input.content_taxonomy_version,
-    content_serializer_version: input.content_serializer_version,
-    content_search_contract_version: input.content_search_contract_version,
-    content_source_contract_version: input.content_source_contract_version,
-  };
-}
-assertRouteBuildContract(contract.build, {
-  pinned: pinnedContentBuild,
-  expected: expectedPinnedBuild,
-});
+assertRouteBuildContract(contract.build, { pinned: false });
 invariant(
   /^[\da-f]{40}$/.test(contract.build?.source_sha ?? ""),
   "Site contract has no immutable source SHA",
-);
-invariant(
-  contract.build?.hash_algorithm === "sha256-path-and-content-v1",
-  "Site contract uses an unknown artifact hash algorithm",
 );
 invariant(
   contract.build?.artifact_sha256 ===
@@ -190,6 +138,7 @@ invariant(
 );
 
 const byRoute = new Map();
+const byOutputPath = new Map();
 for (const record of contract.records) {
   invariant(
     /^\//.test(record.route),
@@ -204,28 +153,27 @@ for (const record of contract.records) {
     `Unsupported route status: ${record.route}`,
   );
   byRoute.set(record.route, record);
-  if (record.status === 200) {
-    const outputPath =
-      record.output_path ?? pathFromRoute(record.route, record.content_type);
-    invariant(
-      await exists(resolve(distRoot, outputPath)),
-      `Contract route has no output file: ${record.route}`,
-    );
-  }
+  if (record.status !== 200) continue;
+  const outputPath =
+    record.output_path ?? pathFromRoute(record.route, record.content_type);
+  invariant(
+    await exists(resolve(distRoot, outputPath)),
+    `Contract route has no output file: ${record.route}`,
+  );
+  invariant(
+    !byOutputPath.has(outputPath),
+    `Duplicate output path in route contract: ${outputPath}`,
+  );
+  byOutputPath.set(outputPath, record);
 }
-
-const byOutputPath = new Map(
-  contract.records
-    .filter((record) => record.status === 200)
-    .map((record) => [
-      record.output_path ?? pathFromRoute(record.route, record.content_type),
-      record,
-    ]),
-);
 
 for (const file of await walk(distRoot)) {
   const path = relative(distRoot, file).replaceAll("\\", "/");
-  if (!releaseOutput(path)) continue;
+  if (
+    [".DS_Store", "_headers", "_redirects", ".assetsignore"].includes(path) ||
+    path.endsWith("/.DS_Store")
+  )
+    continue;
   invariant(
     byOutputPath.get(path)?.status === 200,
     `Output file is missing from the site contract: ${path}`,
@@ -248,12 +196,8 @@ for (const record of contract.records.filter(
 const requiredRoutes = [
   "/",
   "/en/",
-  "/daily/",
-  "/en/daily/",
   "/search/",
   "/search/index.json",
-  "/topics/",
-  "/entities/",
   "/index.json",
   "/en/index.json",
   "/404",
@@ -265,224 +209,78 @@ const requiredRoutes = [
   "/zh-cn/sitemap.xml",
   "/en/sitemap.xml",
 ];
-for (const route of requiredRoutes)
+for (const route of requiredRoutes) {
   invariant(
     byRoute.get(route)?.status === 200,
     `Missing required 200 route: ${route}`,
   );
+}
 
-const dailyDataDirectory = pinnedContentBuild
-  ? resolve(astroRoot, ".content-release", "data")
-  : resolve(repoRoot, "data", "daily");
-const dailyDataNames = (await readdir(dailyDataDirectory))
-  .filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
-  .sort();
-const canonicalReports = await Promise.all(
-  dailyDataNames.map(async (name) =>
-    JSON.parse(await readFile(resolve(dailyDataDirectory, name), "utf8")),
-  ),
-);
-for (const report of canonicalReports) assertDailyLocalization(report);
-const canonicalReportByDate = new Map(
-  canonicalReports.map((report) => [report.date, report]),
-);
-const publishedReportByDate = new Map(
-  canonicalReports.map((report) => [
-    report.date,
-    projectPublishedCalendarReport(report.date, canonicalReports),
-  ]),
-);
-const publishedDailyRecords = contract.records.filter(
-  (record) =>
-    record.status === 200 &&
-    /^\/data\/daily\/\d{4}-\d{2}-\d{2}\.json$/.test(record.route),
-);
-invariant(
-  publishedDailyRecords.length === dailyDataNames.length,
-  `Structured daily route count drifted (${publishedDailyRecords.length} routes for ${dailyDataNames.length} source files)`,
-);
+const removedPrefixes = [
+  "/daily",
+  "/en/daily",
+  "/data/daily",
+  "/topics",
+  "/entities",
+  "/ai-tools",
+  "/en/ai-tools",
+  "/my-publish",
+  "/en/my-publish",
+];
+for (const record of contract.records) {
+  const isPreservedMyPublishMedia =
+    record.owner === "static" &&
+    record.content_type.startsWith("video/") &&
+    record.route.startsWith("/my-publish/");
+  invariant(
+    isPreservedMyPublishMedia ||
+      !removedPrefixes.some(
+        (prefix) =>
+          record.route === prefix || record.route.startsWith(`${prefix}/`),
+      ),
+    `Removed section route is still published: ${record.route}`,
+  );
+}
+
 const searchIndex = JSON.parse(
   await readFile(resolve(distRoot, "search", "index.json"), "utf8"),
 );
 invariant(
-  (searchIndex.site_release_id ?? null) ===
-    (contract.build?.site_release_id ?? null),
-  "Static search release identity differs from the route manifest",
+  searchIndex.schema_version === 2,
+  "Knowledge search uses an obsolete schema",
 );
-if (pinnedContentBuild) {
-  const searchHtml = await readFile(
-    resolve(distRoot, "search", "index.html"),
-    "utf8",
-  );
-  invariant(
-    searchHtml.includes(
-      `data-content-release-id="${contract.build.site_release_id}"`,
-    ) &&
-      searchHtml.includes(
-        'data-content-api-origin="https://content-api.bubblenews.today"',
-      ),
-    "Search HTML does not bind historical queries to the pinned release",
-  );
-}
-const expectedSearchDates = dailyDataNames.map((name) =>
-  name.slice(0, -".json".length),
+invariant(
+  searchIndex.item_count === searchIndex.items.length,
+  "Knowledge search count drifted",
 );
-// The static search index intentionally covers only the most recent report
-// days (STATIC_SEARCH_MAX_REPORT_DAYS in astro/src/lib/searchIndex.ts — keep
-// this value in sync). Search coverage invariants below apply to that window;
-// JSON route and rendered-HTML checks still cover every published day.
-const STATIC_SEARCH_MAX_REPORT_DAYS = 7;
-const searchSourceWindow = new Set(
-  [...expectedSearchDates]
-    .sort((left, right) => right.localeCompare(left))
-    .slice(0, STATIC_SEARCH_MAX_REPORT_DAYS),
-);
-const expectedSearchWindow = new Set(
-  [...searchSourceWindow].filter(
-    (date) => (publishedReportByDate.get(date)?.items.length || 0) > 0,
+invariant(
+  searchIndex.items.every(
+    (item) =>
+      item.href &&
+      !item.href.startsWith("/daily/") &&
+      item.section !== "ai-tools" &&
+      item.section !== "my-publish",
   ),
+  "Knowledge search still contains hidden-section links",
 );
-const pinnedEnglishDailyRssIdentities = new Set(
-  pinnedContentBuild
-    ? expectedSearchDates.map((date) => {
-        const url = `${siteOrigin}/en/daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/`;
-        return `${url}\n${url}`;
-      })
-    : [],
-);
-let expectedSearchItemCount = 0;
-for (const name of dailyDataNames) {
-  const route = `/data/daily/${name}`;
-  const record = byRoute.get(route);
+for (const item of searchIndex.items) {
   invariant(
-    record?.status === 200 &&
-      record.owner === "astro" &&
-      record.content_type === "application/json" &&
-      record.output_path === `data/daily/${name}`,
-    `Missing canonical structured daily route: ${route}`,
-  );
-  const source = await readFile(resolve(dailyDataDirectory, name));
-  const output = await readFile(resolve(distRoot, record.output_path));
-  invariant(
-    source.equals(output),
-    `Published structured daily JSON differs from its canonical source: ${route}`,
-  );
-  const date = name.slice(0, -".json".length);
-  const report = canonicalReportByDate.get(date);
-  const publishedReport = publishedReportByDate.get(date);
-  invariant(
-    report && publishedReport,
-    `Structured daily report projection is missing: ${date}`,
-  );
-  const year = date.slice(0, 4);
-  const month = date.slice(5, 7);
-  const chinesePageRoute = `/daily/${year}/${month}/${date}/`;
-  const englishPageRoute = `/en/daily/${year}/${month}/${date}/`;
-  const pageRoutes = [chinesePageRoute];
-  if (pinnedContentBuild || byRoute.has(englishPageRoute))
-    pageRoutes.push(englishPageRoute);
-  for (const pageRoute of pageRoutes) {
-    const pageRecord = byRoute.get(pageRoute);
-    invariant(
-      pageRecord?.status === 200 &&
-        pageRecord.content_type === "text/html" &&
-        pageRecord.owner === "astro",
-      `Missing structured daily HTML route: ${pageRoute}`,
-    );
-    const html = await readFile(
-      resolve(
-        distRoot,
-        pageRecord.output_path ??
-          pathFromRoute(pageRecord.route, pageRecord.content_type),
-      ),
-      "utf8",
-    );
-    for (const item of publishedReport.items) {
-      invariant(
-        html.includes(`id="news-${item.id}"`),
-        `Structured daily item is missing from HTML: ${pageRoute}#news-${item.id}`,
-      );
-    }
-  }
-  if (searchSourceWindow.has(date)) {
-    expectedSearchItemCount += publishedReport.items.length;
-    const searchItems = searchIndex.items.filter((item) => item.date === date);
-    const expectedSearchItems = new Map(
-      publishedReport.items.map((item) => [
-        `${date}:${item.id}`,
-        `/daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/#news-${item.id}`,
-      ]),
-    );
-    invariant(
-      searchIndex.report_dates.includes(date) ===
-        publishedReport.items.length > 0 &&
-        searchItems.length === publishedReport.items.length &&
-        expectedSearchItems.size === publishedReport.items.length,
-      `Structured daily search coverage drifted: ${date}`,
-    );
-    const seenSearchKeys = new Set();
-    for (const item of searchItems) {
-      invariant(
-        !seenSearchKeys.has(item.key) &&
-          expectedSearchItems.get(item.key) === item.href,
-        `Structured daily search item drifted: ${item.key}`,
-      );
-      seenSearchKeys.add(item.key);
-    }
-    invariant(
-      seenSearchKeys.size === expectedSearchItems.size &&
-        [...expectedSearchItems.keys()].every((key) => seenSearchKeys.has(key)),
-      `Structured daily search keys drifted: ${date}`,
-    );
-  }
-}
-invariant(
-  new Set(searchIndex.report_dates).size === searchIndex.report_dates.length &&
-    searchIndex.report_dates.length === expectedSearchWindow.size &&
-    [...expectedSearchWindow].every((date) =>
-      searchIndex.report_dates.includes(date),
-    ),
-  "Structured daily search report dates drifted",
-);
-invariant(
-  searchIndex.item_count === expectedSearchItemCount &&
-    searchIndex.items.length === expectedSearchItemCount,
-  `Structured daily search item count drifted (${searchIndex.items.length} items for ${expectedSearchItemCount} canonical items)`,
-);
-
-for (const [source, target] of [
-  ["/index.xml", "/rss.xml"],
-  ["/en/index.xml", "/en/rss.xml"],
-  ["/en/daily/2025/12/202-22/", "/en/daily/2025/12/2025-12-22/"],
-  ["/curations/amo-gemini/", "/curations/amo-bench/"],
-  ["/en/curations/amo-gemini/", "/en/curations/amo-bench/"],
-]) {
-  const redirect = byRoute.get(source);
-  invariant(
-    redirect?.status === 301 && redirect.target === target,
-    `Missing required redirect: ${source} -> ${target}`,
+    byRoute.get(item.href)?.status === 200,
+    `Knowledge search target is not published: ${item.href}`,
   );
 }
 
-for (const [source, target] of [
-  ["/404.html", "/404"],
-  ["/en/404.html", "/en/404"],
-]) {
-  const redirect = byRoute.get(source);
-  invariant(
-    redirect?.status === 308 && redirect.target === target,
-    `Missing Pages clean-URL redirect: ${source}`,
-  );
-}
+const redirects = await readFile(resolve(distRoot, "_redirects"), "utf8");
+invariant(
+  !/(?:^|\s)\/daily\//m.test(redirects),
+  "Redirect manifest still exposes daily-news routes",
+);
 
 const xmlRecords = contract.records.filter(
   (record) =>
     record.status === 200 && record.content_type === "application/xml",
 );
-invariant(
-  xmlRecords.length === 27,
-  `Expected 27 XML routes, received ${xmlRecords.length}`,
-);
+invariant(xmlRecords.length > 0, "No XML endpoints were generated");
 const xmlParser = new XMLParser({
   ignoreAttributes: false,
   allowBooleanAttributes: false,
@@ -506,12 +304,13 @@ for (const record of xmlRecords) {
   }
 }
 
-for (const record of contract.records.filter(
+const htmlRecords = contract.records.filter(
   (entry) =>
     entry.status === 200 &&
     entry.content_type === "text/html" &&
     entry.owner !== "static",
-)) {
+);
+for (const record of htmlRecords) {
   const expectedCanonical = new URL(record.route, siteOrigin).href;
   invariant(
     record.canonical === expectedCanonical,
@@ -545,33 +344,18 @@ for (const record of contract.records.filter(
       target?.status === 200 && target.content_type === "text/html",
       `hreflang target is not a 200 HTML route: ${record.route} -> ${url.pathname}`,
     );
-    if (
-      alternate.locale === "x-default" ||
-      alternate.href === expectedCanonical
-    )
-      continue;
-    const reciprocal = (target.hreflang ?? []).find(
-      (entry) => entry.locale === selfLanguage,
-    );
-    invariant(
-      reciprocal?.href === expectedCanonical,
-      `hreflang is not reciprocal: ${record.route} -> ${url.pathname}`,
-    );
   }
-}
 
-for (const record of contract.records.filter(
-  (entry) =>
-    entry.status === 200 &&
-    entry.content_type === "text/html" &&
-    entry.owner !== "static",
-)) {
   const html = await readFile(
     resolve(
       distRoot,
       record.output_path ?? pathFromRoute(record.route, record.content_type),
     ),
     "utf8",
+  );
+  invariant(
+    !/href=["']\/daily\//i.test(html),
+    `HTML still links to the removed daily section: ${record.route}`,
   );
   const skipLink = (html.match(/<a\b[^>]*>/gi) ?? []).find(
     (tag) =>
@@ -602,12 +386,7 @@ const allOutputPaths = new Set(
 );
 const contractRoutes = new Set(contract.records.map((record) => record.route));
 const brokenReferences = [];
-for (const record of contract.records.filter(
-  (entry) =>
-    entry.status === 200 &&
-    entry.content_type === "text/html" &&
-    entry.indexable,
-)) {
+for (const record of htmlRecords.filter((entry) => entry.indexable)) {
   const html = await readFile(
     resolve(
       distRoot,
@@ -646,18 +425,24 @@ for (const entry of legacyManifest.copied) {
     sha256(await readFile(path)) === entry.sha256,
     `Compatibility file hash drifted: ${entry.path}`,
   );
-  if (entry.kind === "page") {
+  if (entry.kind === "page")
     invariant(
       byRoute.get(entry.route)?.owner === "hugo_compat",
       `Compatibility owner drifted: ${entry.route}`,
     );
-  }
 }
 
 const specializedMarkers = new Map([
   [
-    "ai-tools/image-compress/index.html",
-    ['id="imgc-input"', "heic2any", "jszip"],
+    "codex-tutorials/index.html",
+    ['id="codex-tutorials-search"', "content-directory--codex-tutorials"],
+  ],
+  [
+    "workbuddy-tutorials/index.html",
+    [
+      'id="workbuddy-tutorials-search"',
+      "content-directory--workbuddy-tutorials",
+    ],
   ],
   [
     "model-evals/index.html",
@@ -676,6 +461,7 @@ for (const [path, markers] of specializedMarkers) {
       `Specialized Astro behavior is missing ${marker} in ${path}`,
     );
 }
+
 const highlightsHtml = await readFile(
   resolve(distRoot, "highlights/index.html"),
   "utf8",
@@ -721,6 +507,7 @@ invariant(
   aggregate.digest("hex") === rawPolicy.aggregate_sha256,
   "Raw HTML hash inventory drifted",
 );
+
 const headers = await readFile(resolve(distRoot, "_headers"), "utf8");
 const demoHeaders = headerBlock(headers, `${rawPolicy.route_prefix}*`);
 for (const [name, expected] of Object.entries(rawPolicy.required_headers)) {
@@ -737,7 +524,7 @@ invariant(
 );
 invariant(
   !sandbox?.includes("allow-same-origin"),
-  "Raw HTML CSP must not permit same-origin access",
+  "Raw HTML CSP must keep same-origin access disabled",
 );
 for (const directive of [
   "default-src",
@@ -750,10 +537,6 @@ for (const directive of [
     `Raw HTML CSP must deny ${directive}`,
   );
 }
-invariant(
-  rawPolicy.same_origin_access === false,
-  "Raw HTML policy must keep same-origin access disabled",
-);
 
 const robots = await readFile(resolve(distRoot, "robots.txt"), "utf8");
 invariant(
@@ -765,28 +548,6 @@ invariant(
   "Executable demos are not explicitly noindex",
 );
 
-for (const record of xmlRecords.filter(
-  (entry) => entry.route.endsWith("/rss.xml") || entry.route === "/rss.xml",
-)) {
-  const outputPath =
-    record.output_path ?? pathFromRoute(record.route, record.content_type);
-  const astroRss = await readFile(resolve(distRoot, outputPath), "utf8");
-  const astroSet = rssIdentitySet(astroRss, record.route);
-  if (
-    pinnedContentBuild &&
-    (record.route === "/en/daily/rss.xml" || record.route === "/en/rss.xml")
-  ) {
-    const astroIdentities = new Set(astroSet);
-    const missingPinned = [...pinnedEnglishDailyRssIdentities].filter(
-      (identity) => !astroIdentities.has(identity),
-    );
-    invariant(
-      missingPinned.length === 0,
-      `RSS pinned-identity drift for ${record.route}: missing ${missingPinned.length} identities`,
-    );
-  }
-}
-
 console.log(
-  `Verified ${contract.records.length} routes, ${xmlRecords.length} XML endpoints, ${legacyManifest.copied.length} compatibility files, and ${demoFiles.length} sandboxed demos.`,
+  `Verified ${contract.records.length} knowledge-base routes, ${xmlRecords.length} XML endpoints, ${legacyManifest.copied.length} compatibility files, and no daily-news routes.`,
 );

@@ -1,9 +1,8 @@
 ---
 import '../styles/migration.css';
+import '../styles/ricoui-theme.css';
 import { ClientRouter } from 'astro:transitions';
 import AuthControls from '../components/AuthControls.astro';
-
-declare const __SITE_DISPLAY_DATE__: string;
 
 interface Props {
 	title: string;
@@ -26,33 +25,24 @@ const {
 
 const isEnglish = lang === 'en';
 const homeHref = isEnglish ? '/en/' : '/';
-const dailyHref = isEnglish ? '/en/daily/' : '/daily/';
 const languageHref = alternateHref ?? (isEnglish ? '/' : '/en/');
 const canonicalUrl = new URL(canonicalPath, Astro.site);
 const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
-const indexDate =
-	typeof __SITE_DISPLAY_DATE__ === 'string' && __SITE_DISPLAY_DATE__
-		? __SITE_DISPLAY_DATE__
-		: process.env.SITE_DISPLAY_DATE;
-if (!/^\d{4}-\d{2}-\d{2}$/.test(indexDate ?? '')) {
-	throw new Error('SITE_DISPLAY_DATE must be a deterministic source date');
-}
 const navLinks = isEnglish
 	? [
-			{ href: '/en/daily/', label: 'Daily brief' },
+			{ href: '/search/', label: 'Search' },
 			{ href: '/en/highlights/', label: 'Highlights' },
-			{ href: '/en/curations/', label: 'Curations' },
 			{ href: '/en/model-evals/', label: 'Model reviews' },
 			{ href: '/en/prompts/', label: 'Prompts' },
-			{ href: '/en/my-publish/', label: 'My writing' },
 			{ href: '/en/about/', label: 'About' },
 		]
 	: [
-			{ href: '/daily/', label: '资讯日报' },
+			{ href: '/search/', label: '知识搜索' },
+			{ href: '/codex-tutorials/', label: 'Codex 教程' },
+			{ href: '/workbuddy-tutorials/', label: 'WorkBuddy 教程' },
 			{ href: '/highlights/', label: '精选阅读' },
 			{ href: '/model-evals/', label: '模型评测' },
-			{ href: '/prompts/', label: 'Prompt' },
-			{ href: '/my-publish/', label: '我的文章' },
+			{ href: '/prompts/', label: 'Prompt 库' },
 			{ href: '/about/', label: '关于' },
 		];
 ---
@@ -94,7 +84,12 @@ const navLinks = isEnglish
 		<div class="site-frame">
 			<aside class="site-rail" aria-label={isEnglish ? 'Site navigation' : '网站导航'}>
 				<div class="rail-topline">
-					<a class="site-brand" href={homeHref}>Bubble's<br />Brain</a>
+					<a class="site-brand" href={homeHref} aria-label="Bubble's Brain">
+						<span class="site-brand-mark" aria-hidden="true">
+							<img src="/favicon-512x512.png" alt="" width="40" height="40" />
+						</span>
+						<span class="site-brand-name">Bubble's Brain</span>
+					</a>
 					<div class="rail-mobile-actions">
 						<AuthControls locale={lang} compact />
 						<button
@@ -110,8 +105,8 @@ const navLinks = isEnglish
 				</div>
 				<div class="rail-menu" id="rail-menu">
 					<div class="rail-today">
-						<span>{isEnglish ? 'Latest index' : '最新索引'}</span>
-						<strong>{indexDate}</strong>
+						<span>{isEnglish ? 'NAVIGATION' : '知识导航'}</span>
+						<strong>{isEnglish ? 'KNOWLEDGE BASE' : '个人 AI 知识库'}</strong>
 					</div>
 					<nav class="rail-nav" aria-label={isEnglish ? 'Primary navigation' : '主导航'}>
 						{
@@ -145,22 +140,43 @@ const navLinks = isEnglish
 					<slot />
 				</main>
 				<footer class="site-footer">
-					<div>
-						<strong>Bubble's Brain</strong>
+					<div class="site-footer-intro">
+						<a class="site-brand-mark" href={homeHref} aria-label="Bubble's Brain">
+							<img src="/favicon-512x512.png" alt="" width="40" height="40" />
+						</a>
 						<p>
-							{isEnglish ? 'A personal AI knowledge archive.' : '一个持续生长的个人 AI 知识档案。'}
+							{
+								isEnglish
+									? 'A curated AI knowledge base for sources, prompts, evaluations, and field notes.'
+									: '一个持续整理的个人 AI 知识库，收录 Codex 与 WorkBuddy 教程、一手资料、Prompt、模型评测与实践笔记。'
+							}
 						</p>
 					</div>
-					<nav aria-label={isEnglish ? 'More sections' : '更多栏目'}>
-						<a href={isEnglish ? '/en/ai-tools/' : '/ai-tools/'}
-							>{isEnglish ? 'AI tools' : 'AI 工具'}</a
-						>
-						<a href={isEnglish ? '/en/curations/' : '/curations/'}
-							>{isEnglish ? 'Curations' : '论文精选'}</a
-						>
-						<a href={isEnglish ? '/en/x-trending/' : '/x-trending/'}>X Trending</a>
-						<a href={dailyHref}>RSS</a>
-					</nav>
+					<div class="site-footer-links">
+						<nav aria-label={isEnglish ? 'Knowledge collections' : '知识栏目'}>
+							<strong>{isEnglish ? 'Library' : '知识库'}</strong>
+							{!isEnglish && <a href="/codex-tutorials/">Codex 教程</a>}
+							{!isEnglish && <a href="/workbuddy-tutorials/">WorkBuddy 教程</a>}
+							<a href={isEnglish ? '/en/highlights/' : '/highlights/'}
+								>{isEnglish ? 'Highlights' : '精选阅读'}</a
+							>
+							<a href={isEnglish ? '/en/prompts/' : '/prompts/'}
+								>{isEnglish ? 'Prompts' : 'Prompt 库'}</a
+							>
+							<a href={isEnglish ? '/en/model-evals/' : '/model-evals/'}
+								>{isEnglish ? 'Model reviews' : '模型评测'}</a
+							>
+						</nav>
+						<nav aria-label={isEnglish ? 'Resources' : '更多资源'}>
+							<strong>{isEnglish ? 'More' : '更多'}</strong>
+							<a href={isEnglish ? '/en/about/' : '/about/'}>{isEnglish ? 'About' : '关于'}</a>
+							<a href={isEnglish ? '/en/rss.xml' : '/rss.xml'}>RSS</a>
+						</nav>
+					</div>
+					<div class="site-footer-meta">
+						<span>© {new Date().getFullYear()} Bubble's Brain</span>
+						<span>{isEnglish ? 'Curated, not automated.' : '人工整理，不追逐信息流。'}</span>
+					</div>
 				</footer>
 			</div>
 		</div>

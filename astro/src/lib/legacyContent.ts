@@ -6,6 +6,8 @@ import matter from 'gray-matter';
 export const LEGACY_SECTIONS = [
 	'about',
 	'ai-tools',
+	'codex-tutorials',
+	'workbuddy-tutorials',
 	'curations',
 	'highlights',
 	'model-evals',
@@ -16,6 +18,10 @@ export const LEGACY_SECTIONS = [
 
 export type LegacySection = (typeof LEGACY_SECTIONS)[number];
 export type LegacyLocale = 'zh-CN' | 'en';
+
+export const PUBLIC_LEGACY_SECTIONS: LegacySection[] = LEGACY_SECTIONS.filter(
+	(section) => !['ai-tools', 'my-publish'].includes(section),
+);
 
 export interface LegacyContentEntry {
 	id: string;
@@ -34,6 +40,7 @@ export interface LegacyContentEntry {
 }
 
 export function legacyEntryIsRoutable(entry: LegacyContentEntry): boolean {
+	if (!PUBLIC_LEGACY_SECTIONS.includes(entry.section)) return false;
 	return entry.isIndex || entry.section !== 'highlights' || entry.frontmatter.kind !== 'bookmark';
 }
 

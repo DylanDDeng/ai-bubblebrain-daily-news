@@ -1,7 +1,5 @@
 ---
 import type { KnowledgeSearchItem } from '../lib/searchIndex';
-import { entitiesById, taxonomyLabel, topicsById } from '../lib/knowledge';
-import { displayContentType } from '../lib/structuredDaily';
 
 interface Props {
 	items: KnowledgeSearchItem[];
@@ -9,62 +7,44 @@ interface Props {
 }
 
 const { items, filterable = false } = Astro.props;
-const typeLabels = {
-	news: '资讯',
-	project: '项目',
-	paper: '论文',
-	socialMedia: '资讯',
-};
 ---
 
 <div class="knowledge-results" data-knowledge-results>
 	{
-		items.map((item) => {
-			const topics = item.topic_ids
-				.map((id) => topicsById.get(id))
-				.filter((topic) => topic !== undefined);
-			const entities = item.entity_ids
-				.map((id) => entitiesById.get(id))
-				.filter((entity) => entity !== undefined);
-			return (
-				<article
-					class="knowledge-result"
-					data-knowledge-search-item={filterable ? '' : undefined}
-					data-content-type={filterable ? displayContentType(item) : undefined}
-					data-topics={filterable ? item.topic_ids.join(' ') : undefined}
-					data-entities={filterable ? item.entity_ids.join(' ') : undefined}
-					data-search={filterable ? item.search_text : undefined}
-				>
-					<div class="knowledge-result-date">
-						<time datetime={item.date}>{item.date.slice(5)}</time>
-						<span>{item.date.slice(0, 4)}</span>
-					</div>
-					<div class="knowledge-result-body">
-						<p class="knowledge-result-meta">
-							<span>{item.source_name}</span>
-							<span>{typeLabels[item.content_type]}</span>
-						</p>
-						<h2>
-							<a href={item.href}>{item.title}</a>
-						</h2>
-						{item.summary && <p class="knowledge-result-summary">{item.summary}</p>}
-						{(topics.length > 0 || entities.length > 0) && (
-							<ul class="knowledge-result-tags" aria-label="主题与实体">
-								{topics.map((topic) => (
-									<li>
-										<a href={`/topics/${topic.slug}/`}>{taxonomyLabel(topic, 'zh-CN')}</a>
-									</li>
-								))}
-								{entities.map((entity) => (
-									<li>
-										<a href={`/entities/${entity.slug}/`}>{taxonomyLabel(entity, 'zh-CN')}</a>
-									</li>
-								))}
-							</ul>
-						)}
-					</div>
-				</article>
-			);
-		})
+		items.map((item) => (
+			<article
+				class="knowledge-result"
+				data-knowledge-search-item={filterable ? '' : undefined}
+				data-section={filterable ? item.section : undefined}
+				data-search={filterable ? item.search_text : undefined}
+			>
+				<div class="knowledge-result-date">
+					{item.date ? (
+						<>
+							<time datetime={item.date}>{item.date.slice(5)}</time>
+							<span>{item.date.slice(0, 4)}</span>
+						</>
+					) : (
+						<span>—</span>
+					)}
+				</div>
+				<div class="knowledge-result-body">
+					<p class="knowledge-result-meta">
+						<span>{item.section_label}</span>
+					</p>
+					<h2>
+						<a href={item.href}>{item.title}</a>
+					</h2>
+					{item.summary && <p class="knowledge-result-summary">{item.summary}</p>}
+					{item.tags.length > 0 && (
+						<ul class="knowledge-result-tags" aria-label="标签">
+							{item.tags.map((tag) => (
+								<li>{tag}</li>
+							))}
+						</ul>
+					)}
+				</div>
+			</article>
+		))
 	}
 </div>

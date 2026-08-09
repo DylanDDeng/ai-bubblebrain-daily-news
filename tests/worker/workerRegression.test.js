@@ -375,17 +375,20 @@ describe('worker regression guards', () => {
             .toEqual(['started', 'failed']);
     });
 
-    it('preserves the production cron and GitHub main branch configuration', async () => {
+    it('keeps automated daily crawling disabled in production', async () => {
         const config = await readFile(new URL('../../wrangler.toml', import.meta.url), 'utf8');
         expect(config).toContain('GITHUB_BRANCH = "main"');
         expect(config).toContain('GITHUB_PUBLISH_STRATEGY = "pull_request"');
         expect(config).toContain('GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"');
-        expect(config).toContain('crons = ["0 0,2,4,6,8,10,12,14,15,16,17,18,19,20,21,22,23 * * *"]');
+        expect(config).not.toMatch(/^\s*crons\s*=/m);
         expect(config).toContain('DAILY_PUBLISH_MODE = "structured"');
-        expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "true"');
+        expect(config).toContain('EXTERNAL_WRITES_ENABLED = "false"');
+        expect(config).toContain('DAILY_STRUCTURED_WRITES_ENABLED = "false"');
         expect(config).toContain('DAILY_STRUCTURED_START_DATE = "2026-07-16"');
         expect(config).toContain('CONTENT_DATABASE_MIRROR_ENABLED = "true"');
-        expect(config).toContain('CONTENT_DATABASE_PUBLICATION_ENABLED = "true"');
+        expect(config).toContain('CONTENT_DATABASE_PUBLICATION_ENABLED = "false"');
+        expect(config).toContain('DAILY_EDITORIAL_ENRICHMENT_ENABLED = "false"');
+        expect(config).toContain('DAILY_TOP_STORY_SCORING_ENABLED = "false"');
         expect(config).toContain('CONTENT_BACKLOG_REPLAY_SECRET');
         expect(config).toContain('KAZIKE_FEED_ID = "187702008971600955"');
         expect(config).toContain('KAZIKE_FETCH_PAGES = "1"');
@@ -421,7 +424,7 @@ describe('worker regression guards', () => {
         expect(config).toContain('id = "a8155f35059c4b2faf4b06ef43c30fa3"');
     });
 
-    it('promotes automation publication pull requests only after all required checks', async () => {
+    it('does not auto-promote retired daily publication pull requests', async () => {
         const [workflow, siteWorkflow] = await Promise.all([
             readFile(new URL('../../.github/workflows/worker-ci.yml', import.meta.url), 'utf8'),
             readFile(
@@ -429,16 +432,9 @@ describe('worker regression guards', () => {
                 'utf8',
             ),
         ]);
-        expect(workflow).toContain('promote-publication:');
-        expect(workflow).toContain(
-            'needs: [worker-security, astro-verify, database-security]',
-        );
-        expect(workflow).toContain("startsWith(github.head_ref, 'automation/daily/')");
-        expect(workflow).toContain('github.event.pull_request.head.repo.full_name == github.repository');
-        expect(workflow).toContain('ref: ${{ github.event.pull_request.base.sha }}');
-        expect(workflow).toContain('node scripts/verify-publication-pr.mjs');
-        expect(workflow).toContain('--match-head-commit "$PR_HEAD_SHA"');
-        expect(workflow).toContain('actions: write');
+		expect(workflow).not.toContain('promote-publication:');
+		expect(workflow).not.toContain("startsWith(github.head_ref, 'automation/daily/')");
+		expect(workflow).not.toContain('node scripts/verify-publication-pr.mjs');
         expect(workflow).not.toContain('gh workflow run build-and-deploy.yml');
         expect(siteWorkflow).toContain('npm run verify --prefix astro');
         expect(siteWorkflow).toContain('path: astro/dist');

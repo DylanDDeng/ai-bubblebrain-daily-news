@@ -1,16 +1,16 @@
 import type { APIRoute } from 'astro';
 
-import { LEGACY_SECTIONS } from '../../lib/legacyContent';
+import { PUBLIC_LEGACY_SECTIONS } from '../../lib/legacyContent';
 import { loadSiteManifest, renderRss, xmlResponse } from '../../lib/siteManifest';
 
-const sections = ['daily', ...LEGACY_SECTIONS] as const;
+const sections = PUBLIC_LEGACY_SECTIONS;
 
 export function getStaticPaths() {
 	return sections.map((section) => ({ params: { section } }));
 }
 
 export const GET: APIRoute = async ({ params }) => {
-	const section = params.section ?? 'daily';
+	const section = params.section ?? 'highlights';
 	const records = (await loadSiteManifest()).filter(
 		(record) => record.locale === 'zh-CN' && record.section === section,
 	);

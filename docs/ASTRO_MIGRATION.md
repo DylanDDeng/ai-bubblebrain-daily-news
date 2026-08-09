@@ -1,5 +1,8 @@
 # Astro migration plan
 
+> [!NOTE]
+> 这是一份已结束阶段的历史迁移记录。Bubble's Brain 现已转向纯知识库，日报页面、日报搜索和自动抓取不再属于当前产品与构建契约。
+
 ## Goal
 
 Replace Hugo as the presentation layer without coupling ingestion to a specific site generator or
