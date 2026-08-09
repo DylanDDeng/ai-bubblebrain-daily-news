@@ -820,28 +820,26 @@ describe("automatic code release boundary", () => {
     ]);
   });
 
-  it.each([
-    "content/about/index.md",
-    "data/daily/2026-07-15.json",
-    "assets/daily.json",
-    "unknown/release-input.json",
-  ])("rejects a mixed release containing %s", (forbiddenPath) => {
-    expect(() =>
-      validateCodeReleaseChangeSet(
-        comparison([
-          { filename: "astro/src/pages/index.astro", status: "modified" },
-          { filename: forbiddenPath, status: "modified" },
-        ]),
-        {
-          baseCodeSha,
-          targetCodeSha,
-          structuredCutoverDate: "2026-07-16",
-        },
-      ),
-    ).toThrow(
-      `Code release contains forbidden or unknown path: ${forbiddenPath}`,
-    );
-  });
+  it.each(["content/about/index.md", "unknown/release-input.json"])(
+    "rejects a mixed release containing %s",
+    (forbiddenPath) => {
+      expect(() =>
+        validateCodeReleaseChangeSet(
+          comparison([
+            { filename: "astro/src/pages/index.astro", status: "modified" },
+            { filename: forbiddenPath, status: "modified" },
+          ]),
+          {
+            baseCodeSha,
+            targetCodeSha,
+            structuredCutoverDate: "2026-07-16",
+          },
+        ),
+      ).toThrow(
+        `Code release contains forbidden or unknown path: ${forbiddenPath}`,
+      );
+    },
+  );
 
   it("accepts unified highlight Markdown and retired JSON removal", () => {
     expect(
@@ -850,6 +848,34 @@ describe("automatic code release boundary", () => {
           {
             filename: "content/highlights/2026-07-26-agents.md",
             status: "added",
+          },
+          {
+            filename: "content/codex-tutorials/codex-guide.md",
+            status: "added",
+          },
+          {
+            filename: "content/workbuddy-tutorials/workbuddy-guide.md",
+            status: "added",
+          },
+          {
+            filename: "static/media/workbuddy-tutorials/guide.png",
+            status: "added",
+          },
+          {
+            filename: "static/fonts/inter-latin.woff2",
+            status: "added",
+          },
+          {
+            filename: "design-reference/knowledge-base.png",
+            status: "added",
+          },
+          {
+            filename: "astro/tests/helpers/mock-content-release-server.mjs",
+            status: "removed",
+          },
+          {
+            filename: "vitest.config.js",
+            status: "modified",
           },
           {
             filename: "static/highlights.json",
@@ -866,7 +892,45 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(3);
+    ).toHaveLength(10);
+  });
+
+  it.each([
+    "assets/daily.json",
+    "data/daily/.gitkeep",
+    "content/daily/2025-07-16.md",
+    "daily/2025-07-16.md",
+  ])("allows removing retired daily path %s", (retiredPath) => {
+    expect(
+      validateCodeReleaseChangeSet(
+        comparison([{ filename: retiredPath, status: "removed" }]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toHaveLength(1);
+  });
+
+  it.each([
+    "assets/daily.json",
+    "data/daily/.gitkeep",
+    "content/daily/2025-07-16.md",
+    "daily/2025-07-16.md",
+  ])("rejects recreating retired daily path %s", (retiredPath) => {
+    expect(() =>
+      validateCodeReleaseChangeSet(
+        comparison([{ filename: retiredPath, status: "added" }]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toThrow(
+      `Code release may only remove retired daily path: ${retiredPath}`,
+    );
   });
 
   it("rejects recreating a retired highlight JSON index", () => {
