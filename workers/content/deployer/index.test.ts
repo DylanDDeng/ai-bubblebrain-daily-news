@@ -687,6 +687,10 @@ describe("automatic code release boundary", () => {
             status: "modified",
           },
           {
+            filename: "scripts/preview-media-types.mjs",
+            status: "modified",
+          },
+          {
             filename: "wrangler.content-broker.toml",
             status: "modified",
           },
@@ -723,7 +727,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(40);
+    ).toHaveLength(41);
   });
 
   it.each([

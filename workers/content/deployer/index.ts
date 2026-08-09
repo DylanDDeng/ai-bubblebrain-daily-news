@@ -261,6 +261,7 @@ const INERT_ROOT_SCRIPTS = new Set([
   "scripts/daily-localization-contract.mjs",
   "scripts/html-local-references.mjs",
   "scripts/materialize-content-addressed-artifact.mjs",
+  "scripts/preview-media-types.mjs",
   "scripts/pull-daily-content.sh",
   "scripts/request-code-release.mjs",
   "scripts/request-content-release-plan.mjs",
