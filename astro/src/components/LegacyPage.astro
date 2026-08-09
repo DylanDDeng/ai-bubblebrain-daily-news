@@ -266,7 +266,7 @@ const libraryApi =
 									? label.en
 									: label.zh}
 						</h1>
-						<p>{description}</p>
+						{record.section !== 'about' && <p>{description}</p>}
 					</div>
 					<p class="directory-count">
 						<>
