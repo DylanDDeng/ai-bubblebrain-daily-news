@@ -49,7 +49,7 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 		{
 			route: '/search/',
 			title: '知识搜索',
-			description: '搜索 Codex 教程、Prompt、模型评测与个人文章',
+			description: '搜索 Codex 教程、模型评测与知识文章',
 			locale: 'zh-CN',
 			section: 'knowledge',
 			lastmod: null,

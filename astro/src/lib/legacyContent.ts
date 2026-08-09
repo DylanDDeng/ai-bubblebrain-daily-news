@@ -20,7 +20,7 @@ export type LegacySection = (typeof LEGACY_SECTIONS)[number];
 export type LegacyLocale = 'zh-CN' | 'en';
 
 export const PUBLIC_LEGACY_SECTIONS: LegacySection[] = LEGACY_SECTIONS.filter(
-	(section) => !['ai-tools', 'my-publish'].includes(section),
+	(section) => !['ai-tools', 'my-publish', 'prompts'].includes(section),
 );
 
 export interface LegacyContentEntry {

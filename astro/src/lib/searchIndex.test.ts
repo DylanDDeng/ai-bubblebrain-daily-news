@@ -8,7 +8,7 @@ describe('knowledge search index', () => {
 
 		expect(index.schema_version).toBe(2);
 		expect(index.item_count).toBeGreaterThan(0);
-		expect(index.sections).toEqual(expect.arrayContaining(['highlights', 'prompts']));
+		expect(index.sections).toContain('highlights');
 		expect(index.sections).toContain('codex-tutorials');
 		expect(index.sections).toContain('workbuddy-tutorials');
 		expect(index.items).toEqual(
@@ -35,6 +35,7 @@ describe('knowledge search index', () => {
 		expect(index.items.every((item) => item.section !== 'x-trending')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'ai-tools')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'my-publish')).toBe(true);
+		expect(index.items.every((item) => item.section !== 'prompts')).toBe(true);
 		expect(index.items.every((item) => item.search_text.length > 0)).toBe(true);
 		expect(index.items.every((item) => item.section_label.length > 0)).toBe(true);
 	});
