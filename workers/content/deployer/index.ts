@@ -294,6 +294,11 @@ const RETIRED_HIGHLIGHT_INDEXES = new Set([
   "static/highlights.json",
   "static/en/highlights.json",
 ]);
+const RETIRED_DAILY_PATHS = new Set([
+  "assets/daily.json",
+  "data/daily/.gitkeep",
+]);
+const RETIRED_DAILY_PREFIXES = ["content/daily/", "daily/"];
 
 function assertGitHubComparePath(path: string): void {
   if (
@@ -343,12 +348,22 @@ function classifyCodeReleasePath(
   }
 
   if (
+    RETIRED_DAILY_PATHS.has(path) ||
+    RETIRED_DAILY_PREFIXES.some((prefix) => path.startsWith(prefix))
+  ) {
+    if (status === "removed") return "publishable";
+    throw new Error(`Code release may only remove retired daily path: ${path}`);
+  }
+
+  if (
     /(?:^|\/)\w[^/]*\.test\.[cm]?[jt]sx?$/.test(path) ||
     path.startsWith("workers/") ||
     path.startsWith("supabase/") ||
     path.startsWith(".github/") ||
     path.startsWith("tests/") ||
     path.startsWith("docs/") ||
+    path.startsWith("design-reference/") ||
+    path.startsWith("astro/tests/") ||
     path.startsWith("astro/.vscode/") ||
     // Root worker pipeline code and its Wrangler config do not affect the
     // site build; worker-ci guards them.
@@ -366,6 +381,7 @@ function classifyCodeReleasePath(
       "astro/vitest.config.ts",
       "package.json",
       "start.sh",
+      "vitest.config.js",
       "wrangler.content-broker.toml",
       "wrangler.content-deployer.toml",
       "wrangler.toml",
@@ -385,7 +401,11 @@ function classifyCodeReleasePath(
       "astro/src/styles/",
       "astro/src/scripts/",
       "astro/src/lib/",
+      "content/codex-tutorials/",
       "content/highlights/",
+      "content/workbuddy-tutorials/",
+      "static/fonts/",
+      "static/media/",
     ].some((prefix) => path.startsWith(prefix)) ||
     [
       "astro/src/content.config.ts",
