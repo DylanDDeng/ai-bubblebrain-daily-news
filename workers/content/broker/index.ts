@@ -108,8 +108,10 @@ type VerificationProbeResult =
 const DEFAULT_STABILITY_OFFSETS_MS = [15_000, 45_000, 120_000];
 
 function productionStabilityOffsets(value?: string): number[] {
-  if (!String(value || "").trim()) return DEFAULT_STABILITY_OFFSETS_MS;
-  const offsets = String(value)
+  const configured = String(value || "").trim();
+  if (!configured) return DEFAULT_STABILITY_OFFSETS_MS;
+  if (configured === "none") return [];
+  const offsets = configured
     .split(",")
     .map((entry) => Number(entry.trim()));
   if (
