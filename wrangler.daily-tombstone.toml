@@ -1,0 +1,8 @@
+name = "bubble-daily-tombstone"
+main = "workers/daily-tombstone/index.ts"
+compatibility_date = "2026-07-16"
+workers_dev = false
+
+routes = [
+  { pattern = "bubblenews.today/daily*", zone_name = "bubblenews.today" }
+]
