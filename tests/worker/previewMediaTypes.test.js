@@ -11,6 +11,13 @@ describe("Preview media-type contract", () => {
     expect(expectedPreviewMediaType(contentType)).toBe(contentType);
   });
 
+  it.each([
+    "image/gif",
+    "image/jpeg",
+  ])("accepts tutorial media type %s", (contentType) => {
+    expect(expectedPreviewMediaType(contentType)).toBe(contentType);
+  });
+
   it("fails closed for an undeclared media type", () => {
     expect(expectedPreviewMediaType("application/x-unknown")).toBeUndefined();
   });

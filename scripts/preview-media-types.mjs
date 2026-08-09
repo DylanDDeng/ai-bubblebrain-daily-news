@@ -6,6 +6,8 @@ const PREVIEW_MEDIA_TYPES = new Set([
   "font/ttf",
   "font/woff",
   "font/woff2",
+  "image/gif",
+  "image/jpeg",
   "image/png",
   "image/svg+xml",
   "image/vnd.microsoft.icon",
