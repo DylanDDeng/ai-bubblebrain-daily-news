@@ -226,6 +226,8 @@ const removedPrefixes = [
   "/en/ai-tools",
   "/my-publish",
   "/en/my-publish",
+  "/prompts",
+  "/en/prompts",
 ];
 for (const record of contract.records) {
   const isPreservedMyPublishMedia =
@@ -259,7 +261,8 @@ invariant(
       item.href &&
       !item.href.startsWith("/daily/") &&
       item.section !== "ai-tools" &&
-      item.section !== "my-publish",
+      item.section !== "my-publish" &&
+      item.section !== "prompts",
   ),
   "Knowledge search still contains hidden-section links",
 );

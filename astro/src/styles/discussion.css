@@ -170,6 +170,12 @@
 	resize: vertical;
 }
 
+.discussion-composer select:focus-visible {
+	outline: 0;
+	outline-offset: 0;
+	box-shadow: none;
+}
+
 .discussion-content-field,
 .discussion-reply-context,
 .discussion-composer-footer {

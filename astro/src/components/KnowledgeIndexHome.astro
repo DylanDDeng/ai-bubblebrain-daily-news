@@ -36,13 +36,6 @@ const sectionCopy: Array<{
 				icon: 'ph-book-open-text',
 			},
 			{
-				section: 'prompts',
-				label: 'Prompt library',
-				description: 'Reusable prompts for real workflows.',
-				mark: 'USE',
-				icon: 'ph-brackets-curly',
-			},
-			{
 				section: 'model-evals',
 				label: 'Model reviews',
 				description: 'Hands-on comparisons grounded in actual tasks.',
@@ -78,13 +71,6 @@ const sectionCopy: Array<{
 				description: '值得长期保存的一手资料与深度解读。',
 				mark: '阅读',
 				icon: 'ph-book-open-text',
-			},
-			{
-				section: 'prompts',
-				label: 'Prompt 库',
-				description: '经过整理、可以直接复用的实战提示词。',
-				mark: '使用',
-				icon: 'ph-brackets-curly',
 			},
 			{
 				section: 'model-evals',
@@ -134,8 +120,8 @@ const labelFor = (section: LegacySection) =>
 			<p class="knowledge-home-lede">
 				{
 					isEnglish
-						? 'Curated sources, practical guides, prompts, model reviews, and field notes—organized for retrieval rather than urgency.'
-						: '精选教程、Prompt、模型评测与实践笔记，方便检索与复用。'
+						? 'Curated sources, practical guides, model reviews, and field notes—organized for retrieval rather than urgency.'
+						: '精选教程、模型评测与实践笔记，方便检索与复用。'
 				}
 			</p>
 			<form action="/search/" method="get" role="search" class="knowledge-home-search">
@@ -147,7 +133,7 @@ const labelFor = (section: LegacySection) =>
 					id={`home-search-${locale}`}
 					name="q"
 					type="search"
-					placeholder={isEnglish ? 'Search guides, prompts, reviews…' : '搜索教程、Prompt、评测……'}
+					placeholder={isEnglish ? 'Search guides, reviews, notes…' : '搜索教程、评测、笔记……'}
 				/>
 				<button type="submit">{isEnglish ? 'Search' : '搜索'}</button>
 			</form>
@@ -202,8 +188,8 @@ const labelFor = (section: LegacySection) =>
 				<span
 					>{
 						isEnglish
-							? 'Four focused collections, one searchable archive.'
-							: '六个清晰栏目，组成一个可检索的长期知识档案。'
+							? 'Three focused collections, one searchable archive.'
+							: '五个清晰栏目，组成一个可检索的长期知识档案。'
 					}</span
 				>
 			</div>
