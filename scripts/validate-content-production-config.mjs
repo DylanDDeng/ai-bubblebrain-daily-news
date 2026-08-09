@@ -275,6 +275,31 @@ export function validateWranglerDocuments(documents) {
     );
   }
 
+  const stabilityOffsetsMs = required(
+    "Broker: PRODUCTION_STABILITY_OFFSETS_MS",
+    tomlString(
+      documents["wrangler.content-broker.toml"],
+      "PRODUCTION_STABILITY_OFFSETS_MS",
+    ),
+  )
+    .split(",")
+    .map((entry) => Number(entry.trim()));
+  if (
+    stabilityOffsetsMs.length < 3 ||
+    stabilityOffsetsMs.length > 5 ||
+    stabilityOffsetsMs.some(
+      (offset, index) =>
+        !Number.isSafeInteger(offset) ||
+        offset < 1_000 ||
+        offset > 300_000 ||
+        (index > 0 && offset <= stabilityOffsetsMs[index - 1]),
+    )
+  ) {
+    fail(
+      "Broker PRODUCTION_STABILITY_OFFSETS_MS must contain 3-5 increasing millisecond offsets",
+    );
+  }
+
   const purgeUrls = required(
     "Broker: CONTENT_API_PURGE_URLS",
     tomlString(
@@ -291,6 +316,7 @@ export function validateWranglerDocuments(documents) {
   return {
     files: WRANGLER_FILES.length,
     maximumInconsistencyMs,
+    stabilityOffsetsMs,
     minimumExactVerifierCount,
     minimumVerifierCount,
     transformedHtmlVerifierOrigins: new Set(transformedHtmlVerifierUrls).size,

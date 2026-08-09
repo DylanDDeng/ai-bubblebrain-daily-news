@@ -44,12 +44,19 @@ describe("fenced content release workflow", () => {
     expect(workflow).toContain(
       "node scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client",
     );
+    expect(workflow).toMatch(
+      /- name: Materialize exact registered R2 artifact\n\s+if: \$\{\{ steps\.resume\.outputs\.stage == 'preview' \}\}/,
+    );
     expect(workflow).toContain(
       "if: ${{ steps.resume.outputs.stage == 'build' }}",
     );
-    expect(workflow).toContain(
-      "if: ${{ steps.resume.outputs.stage != 'promote' }}",
+    expect(workflow).toMatch(
+      /- name: Verify Preview route parity and exact bytes\n\s+if: \$\{\{ steps\.resume\.outputs\.stage != 'promote' \}\}/,
     );
+    expect(workflow).toMatch(
+      /- name: Record Preview evidence\n\s+if: \$\{\{ steps\.resume\.outputs\.stage != 'promote' \}\}/,
+    );
+    expect(workflow).toContain('R2_MATERIALIZE_CONCURRENCY: "16"');
     expect(workflow).toContain(
       'node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA"',
     );
