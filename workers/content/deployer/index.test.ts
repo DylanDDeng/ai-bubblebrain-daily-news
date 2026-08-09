@@ -101,6 +101,7 @@ const valid = {
   site_release_sequence: 1,
   expected_predecessor_id: null,
   expected_content_sha: "a".repeat(64),
+  expected_manifest_sha: "c".repeat(64),
   code_sha: "b".repeat(40),
   build_environment_version: "node22-v1",
   mode: "shadow",
@@ -1182,6 +1183,7 @@ describe("automatic code release boundary", () => {
             expected_predecessor_id: baseReleaseId,
             code_sha: targetCodeSha,
             expected_content_sha: contentSha,
+            expected_manifest_sha: values[3],
             mode: "production",
           });
           return [

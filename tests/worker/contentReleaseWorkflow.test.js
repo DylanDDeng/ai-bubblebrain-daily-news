@@ -16,6 +16,13 @@ describe("fenced content release workflow", () => {
 
     expect(workflow).toContain("attempt_token:");
     expect(workflow).toContain("execution_generation:");
+    expect(workflow).toContain("expected_manifest_sha:");
+    expect(workflow).toContain(
+      "CONTENT_MANIFEST_SHA256: ${{ github.event.inputs.expected_manifest_sha }}",
+    );
+    expect(workflow).toContain(
+      '[[ "$CONTENT_MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]',
+    );
     expect(workflow).toContain(
       'if [[ "$DEPLOYMENT_MODE" == "production" || -n "$DEPLOYMENT_ATTEMPT_TOKEN" || -n "$DEPLOYMENT_EXECUTION_GENERATION" ]]',
     );
