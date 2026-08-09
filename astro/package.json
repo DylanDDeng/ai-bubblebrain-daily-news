@@ -8,8 +8,8 @@
 	},
 	"scripts": {
 		"dev": "astro dev",
-		"build": "node scripts/build-content-release.mjs",
-		"build:renderer": "astro build && tsx scripts/publish-daily-data.ts && tsx scripts/generate-redirects.ts && node scripts/build-legacy-compat.mjs && node scripts/generate-site-contract.mjs",
+		"build": "npm run build:renderer",
+		"build:renderer": "astro build && tsx scripts/generate-redirects.ts && node scripts/build-legacy-compat.mjs && node scripts/generate-site-contract.mjs",
 		"preview": "astro preview",
 		"astro": "astro",
 		"check": "astro check",
@@ -17,10 +17,9 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"test": "vitest run",
-		"validate:data": "node scripts/validate-daily-data.mjs",
 		"verify:csp": "node scripts/verify-csp.mjs",
 		"verify:site": "node ../scripts/verify-site.mjs",
-		"verify": "npm run validate:data && npm run check && npm run lint && npm run test && npm run build && npm run verify:csp && npm run verify:site"
+		"verify": "npm run check && npm run lint && npm run test && npm run build && npm run verify:csp && npm run verify:site"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^14.1.4",

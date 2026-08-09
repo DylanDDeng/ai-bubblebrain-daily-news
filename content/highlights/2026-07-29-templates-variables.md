@@ -13,8 +13,6 @@ draft: false
 
 [原文：Templates & Variables — HyperFrames](https://x.com/HyperFrames_/status/2082197435246600341)
 
-![图片](https://pbs.twimg.com/media/HOVxksYaUAAUjJ9?format=jpg&name=large)
-
 # 30 天第 23 天：把你的视频变成模板
 
 在前 22 天里，这个系列的每次渲染都只会生成一支视频。换一个标题，就意味着重新编辑；换一个名字，就意味着重新渲染。第 23 天打破了这个上限。变量可以把一个 HyperFrames 合成项目变成模板，而模板可以让一次构建根据数据表中的每一行，生成任意数量的视频。
@@ -131,8 +129,6 @@ hyperframes lambda render-batch ./my-template \
 ## 输出
 
 第 23 天的最终视频：22 秒，四座城市，一个模板。
-
-<video preload="none" tabindex="-1" playsinline="" aria-label="嵌入视频" poster="https://pbs.twimg.com/amplify_video_thumb/2082196246132092928/img/UndjWtJC1tc33Zq0.jpg" style="width: 100%; height: 100%; position: absolute; background-color: black; top: 0%; left: 0%; transform: rotate(0deg) scale(1.005);"><source type="video/mp4"></video>
 
 ![](https://pbs.twimg.com/amplify_video_thumb/2082196246132092928/img/UndjWtJC1tc33Zq0.jpg?name=large)
 

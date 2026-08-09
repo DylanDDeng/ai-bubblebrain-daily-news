@@ -10,7 +10,7 @@ export const GET: APIRoute = async () =>
 			(await loadSiteManifest()).filter((record) => record.locale === 'en'),
 			{
 				title: "Bubble's Brain",
-				description: 'Recent AI briefings and knowledge archive updates',
+				description: 'Recent personal AI knowledge base updates',
 				route: '/en/rss.xml',
 				locale: 'en',
 			},

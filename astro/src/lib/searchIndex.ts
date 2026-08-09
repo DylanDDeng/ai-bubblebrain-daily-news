@@ -1,181 +1,161 @@
-import { readdir } from 'node:fs/promises';
-
 import {
-	canonicalTaxonomyRecord,
-	canonicalizeTaxonomyIds,
-	entitiesById,
-	knowledgeTaxonomy,
-	taxonomyLabel,
-	topicsById,
-	type KnowledgeLocale,
-	type TaxonomyRecord,
-} from './knowledge';
-import {
-	dailyDataDirectory,
-	loadPublishedDailyReport,
-} from './structuredDailyLocal';
-import type { StructuredDailyItem } from './structuredDaily';
+	legacyEntryIsRoutable,
+	loadLegacyContent,
+	type LegacyLocale,
+	type LegacySection,
+} from './legacyContent';
 
 export interface KnowledgeSearchItem {
 	key: string;
-	id: string;
-	date: string;
 	href: string;
 	title: string;
 	summary: string;
-	source_name: string;
-	source_type: string;
-	content_type: StructuredDailyItem['content_type'];
-	category: string;
-	published_at: string | null;
-	published_date: string | null;
-	topic_ids: string[];
-	entity_ids: string[];
+	section: LegacySection;
+	section_label: string;
+	date: string | null;
+	tags: string[];
 	search_text: string;
 }
 
 export interface KnowledgeSearchIndex {
-	schema_version: 1;
-	taxonomy_version: 1;
-	site_release_id: string | null;
+	schema_version: 2;
 	item_count: number;
-	report_dates: string[];
+	sections: LegacySection[];
 	items: KnowledgeSearchItem[];
 }
 
-const STATIC_SEARCH_MAX_REPORT_DAYS = 7;
-const STATIC_SEARCH_MAX_BYTES = 8 * 1024 * 1024;
+const sectionLabels: Record<LegacyLocale, Record<LegacySection, string>> = {
+	'zh-CN': {
+		about: '关于',
+		'ai-tools': 'AI 工具',
+		'codex-tutorials': 'Codex 教程',
+		'workbuddy-tutorials': 'WorkBuddy 教程',
+		curations: '研究笔记',
+		highlights: '精选阅读',
+		'model-evals': '模型评测',
+		'my-publish': '我的文章',
+		prompts: 'Prompt 库',
+		'x-trending': 'X 热门内容',
+	},
+	en: {
+		about: 'About',
+		'ai-tools': 'AI tools',
+		'codex-tutorials': 'Codex tutorials',
+		'workbuddy-tutorials': 'WorkBuddy tutorials',
+		curations: 'Research notes',
+		highlights: 'Highlights',
+		'model-evals': 'Model reviews',
+		'my-publish': 'My writing',
+		prompts: 'Prompt library',
+		'x-trending': 'X trending',
+	},
+};
 
-function itemHref(date: string, id: string): string {
-	const [year, month] = date.split('-');
-	return `/daily/${year}/${month}/${date}/#news-${id}`;
+function stringTags(value: unknown): string[] {
+	return Array.isArray(value)
+		? value.filter((tag): tag is string => typeof tag === 'string' && tag.trim().length > 0)
+		: [];
 }
 
-function searchText(item: StructuredDailyItem, locale: KnowledgeLocale): string {
-	const topicTerms = item.topic_ids.flatMap((id) => {
-		const topic = topicsById.get(id);
-		if (!topic) return [];
-		const canonical = canonicalTaxonomyRecord(topic, topicsById);
-		return taxonomySearchTerms([topic, canonical], locale);
-	});
-	const entityTerms = item.entity_ids.flatMap((id) => {
-		const entity = entitiesById.get(id);
-		if (!entity) return [];
-		const canonical = canonicalTaxonomyRecord(entity, entitiesById);
-		return taxonomySearchTerms([entity, canonical], locale);
-	});
-	return [
-		item.title,
-		item.summary,
-		item.source.name,
-		item.source_type,
-		item.content_type,
-		item.category,
-		...topicTerms,
-		...entityTerms,
-	]
-		.join(' ')
-		.normalize('NFKC')
-		.toLocaleLowerCase(locale);
+interface DirectoryRecord {
+	id: string;
+	title?: string;
+	name?: string;
+	description?: string;
+	company?: string;
+	domain?: string;
+	releaseDate?: string;
+	date?: string;
+	tags?: string[];
+	detailUrl?: string;
 }
 
-function taxonomySearchTerms(records: TaxonomyRecord[], locale: KnowledgeLocale): string[] {
-	return [
-		...new Set(
-			records.flatMap((record) => [
-				taxonomyLabel(record, locale),
-				...record.aliases,
-				...record.keywords,
-			]),
-		),
-	];
-}
-
-function compareSearchItems(left: KnowledgeSearchItem, right: KnowledgeSearchItem): number {
-	if (left.date !== right.date) return right.date.localeCompare(left.date);
-	const leftTime = left.published_at ?? left.published_date ?? '';
-	const rightTime = right.published_at ?? right.published_date ?? '';
-	return rightTime.localeCompare(leftTime) || left.id.localeCompare(right.id);
+function sortableDate(value: string | undefined): string | null {
+	if (!value) return null;
+	if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+	if (/^\d{4}-\d{2}$/.test(value)) return `${value}-01`;
+	return null;
 }
 
 export async function buildKnowledgeSearchIndex(
-	options: {
-		directory?: string;
-		locale?: KnowledgeLocale;
-		siteReleaseId?: string | null;
-	} = {},
+	options: { locale?: LegacyLocale } = {},
 ): Promise<KnowledgeSearchIndex> {
-	const directory = dailyDataDirectory(options.directory);
 	const locale = options.locale ?? 'zh-CN';
-	const siteReleaseId =
-		options.siteReleaseId === undefined
-			? (process.env.CONTENT_RELEASE_ID ?? null)
-			: options.siteReleaseId;
-	if (
-		siteReleaseId !== null &&
-		!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-			siteReleaseId,
+	const legacyEntries = await loadLegacyContent();
+	const items = legacyEntries
+		.filter(
+			(entry) =>
+				entry.locale === locale &&
+				!entry.isIndex &&
+				entry.section !== 'about' &&
+				entry.section !== 'x-trending' &&
+				legacyEntryIsRoutable(entry),
 		)
-	) {
-		throw new Error('Invalid site release identity for search index');
+		.map((entry): KnowledgeSearchItem => {
+			const tags = stringTags(entry.frontmatter.tags);
+			const sectionLabel = sectionLabels[locale][entry.section];
+			return {
+				key: entry.route,
+				href: entry.route,
+				title: entry.title,
+				summary: entry.description,
+				section: entry.section,
+				section_label: sectionLabel,
+				date: entry.date?.toISOString().slice(0, 10) ?? null,
+				tags,
+				search_text: [entry.title, entry.description, sectionLabel, ...tags]
+					.join(' ')
+					.normalize('NFKC')
+					.toLocaleLowerCase(locale),
+			};
+		})
+		.sort((left, right) => {
+			const dateOrder = (right.date ?? '').localeCompare(left.date ?? '');
+			return dateOrder || left.title.localeCompare(right.title, locale);
+		});
+	const knownRoutes = new Set(
+		legacyEntries.filter(legacyEntryIsRoutable).map((entry) => entry.route),
+	);
+	const staticRoot = resolve(process.cwd(), '../static', locale === 'en' ? 'en' : '');
+	for (const section of ['curations', 'model-evals'] as const) {
+		const records = JSON.parse(
+			await readFile(resolve(staticRoot, `${section}.json`), 'utf8'),
+		) as DirectoryRecord[];
+		for (const record of records) {
+			if (record.detailUrl && knownRoutes.has(record.detailUrl)) continue;
+			const title = record.title ?? record.name ?? record.id;
+			const tags = stringTags(record.tags);
+			const sectionLabel = sectionLabels[locale][section];
+			const summary =
+				record.description ?? [record.company, record.domain].filter(Boolean).join(' · ');
+			items.push({
+				key: `${section}:${record.id}`,
+				href: `${locale === 'en' ? '/en' : ''}/${section}/`,
+				title,
+				summary,
+				section,
+				section_label: sectionLabel,
+				date: sortableDate(record.date ?? record.releaseDate),
+				tags,
+				search_text: [title, summary, record.company, record.domain, sectionLabel, ...tags]
+					.filter(Boolean)
+					.join(' ')
+					.normalize('NFKC')
+					.toLocaleLowerCase(locale),
+			});
+		}
 	}
-	let names: string[];
-	try {
-		names = await readdir(directory);
-	} catch (error) {
-		if ((error as NodeJS.ErrnoException).code === 'ENOENT') names = [];
-		else throw error;
-	}
-	const availableReportDates = names
-		.filter((name) => /^\d{4}-\d{2}-\d{2}\.json$/.test(name))
-		.map((name) => name.slice(0, -5))
-		.sort((left, right) => right.localeCompare(left));
-	const reportDates = availableReportDates.slice(0, STATIC_SEARCH_MAX_REPORT_DAYS);
-	const items: KnowledgeSearchItem[] = [];
-	for (const date of reportDates) {
-		const report = await loadPublishedDailyReport(date, { directory });
-		if (!report) throw new Error(`Structured daily report disappeared: ${date}`);
-		items.push(
-			...report.items.map((item) => ({
-				key: `${report.date}:${item.id}`,
-				id: item.id,
-				date: report.date,
-				href: itemHref(report.date, item.id),
-				title: item.title,
-				summary: item.summary,
-				source_name: item.source.name,
-				source_type: item.source_type,
-				content_type: item.content_type,
-				category: item.category,
-				published_at: item.published_at,
-				published_date: item.published_date,
-				topic_ids: canonicalizeTaxonomyIds(item.topic_ids, knowledgeTaxonomy.topics, topicsById),
-				entity_ids: canonicalizeTaxonomyIds(
-					item.entity_ids,
-					knowledgeTaxonomy.entities,
-					entitiesById,
-				),
-				search_text: searchText(item, locale),
-			})),
-		);
-	}
-	items.sort(compareSearchItems);
-	const result: KnowledgeSearchIndex = {
-		schema_version: 1,
-		taxonomy_version: 1,
-		site_release_id: siteReleaseId,
+	items.sort((left, right) => {
+		const dateOrder = (right.date ?? '').localeCompare(left.date ?? '');
+		return dateOrder || left.title.localeCompare(right.title, locale);
+	});
+
+	return {
+		schema_version: 2,
 		item_count: items.length,
-		report_dates: reportDates,
+		sections: [...new Set(items.map((item) => item.section))].sort(),
 		items,
 	};
-	const encoder = new TextEncoder();
-	while (
-		result.items.length > 0 &&
-		encoder.encode(JSON.stringify(result)).byteLength > STATIC_SEARCH_MAX_BYTES
-	) {
-		result.items.pop();
-	}
-	result.item_count = result.items.length;
-	result.report_dates = [...new Set(result.items.map((item) => item.date))];
-	return result;
 }
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';

@@ -1,7 +1,3 @@
-import { getCollection } from 'astro:content';
-
-import { dailyPermalink, filterDailyEntries } from './daily';
-import { knowledgeTaxonomy } from './knowledge';
 import { legacyEntryIsRoutable, loadLegacyContent } from './legacyContent';
 
 export { renderRss } from './siteRss';
@@ -32,15 +28,12 @@ function canonical(route: string): string {
 }
 
 export async function loadSiteManifest(): Promise<SiteRecord[]> {
-	const [dailyEntries, legacyEntries] = await Promise.all([
-		getCollection('daily'),
-		loadLegacyContent(),
-	]);
+	const legacyEntries = await loadLegacyContent();
 	const records: Omit<SiteRecord, 'alternateRoute'>[] = [
 		{
 			route: '/',
 			title: "Bubble's Brain",
-			description: 'AI 资讯与个人知识库',
+			description: '精选、可检索、可复用的个人 AI 知识库',
 			locale: 'zh-CN',
 			section: 'home',
 			lastmod: null,
@@ -48,67 +41,20 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 		{
 			route: '/en/',
 			title: "Bubble's Brain",
-			description: 'AI briefings and personal knowledge archive',
+			description: 'A curated, searchable, reusable personal AI knowledge base',
 			locale: 'en',
 			section: 'home',
 			lastmod: null,
 		},
 		{
-			route: '/daily/',
-			title: '资讯日报',
-			description: '按日期浏览 AI 资讯日报',
-			locale: 'zh-CN',
-			section: 'daily',
-			lastmod: null,
-		},
-		{
-			route: '/en/daily/',
-			title: 'Daily Brief',
-			description: 'Browse AI briefings by date',
-			locale: 'en',
-			section: 'daily',
-			lastmod: null,
-		},
-		{
 			route: '/search/',
 			title: '知识搜索',
-			description: '搜索资讯、主题与实体',
-			locale: 'zh-CN',
-			section: 'knowledge',
-			lastmod: null,
-		},
-		{
-			route: '/topics/',
-			title: '主题',
-			description: '浏览知识主题',
-			locale: 'zh-CN',
-			section: 'knowledge',
-			lastmod: null,
-		},
-		{
-			route: '/entities/',
-			title: '实体',
-			description: '浏览人物、组织、产品与模型',
+			description: '搜索 Codex 教程、Prompt、模型评测与个人文章',
 			locale: 'zh-CN',
 			section: 'knowledge',
 			lastmod: null,
 		},
 	];
-
-	for (const locale of ['zh-CN', 'en'] as const) {
-		for (const entry of filterDailyEntries(dailyEntries, locale)) {
-			const route = dailyPermalink(entry.id);
-			if (!route) continue;
-			records.push({
-				route,
-				title: entry.data.title,
-				description: entry.data.description,
-				locale,
-				section: 'daily',
-				lastmod: entry.data.lastmod ?? entry.data.date,
-			});
-		}
-	}
 
 	for (const entry of legacyEntries) {
 		if (!legacyEntryIsRoutable(entry)) continue;
@@ -122,22 +68,6 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 		});
 	}
 
-	for (const [kind, taxonomyRecords] of [
-		['topics', knowledgeTaxonomy.topics],
-		['entities', knowledgeTaxonomy.entities],
-	] as const) {
-		for (const entry of taxonomyRecords.filter((record) => record.status !== 'merged')) {
-			records.push({
-				route: `/${kind}/${entry.slug}/`,
-				title: entry.labels.zh,
-				description: `${entry.labels.zh}相关资讯归档`,
-				locale: 'zh-CN',
-				section: 'knowledge',
-				lastmod: null,
-			});
-		}
-	}
-
 	const byRoute = new Map<string, Omit<SiteRecord, 'alternateRoute'>>();
 	for (const record of records) {
 		if (byRoute.has(record.route))
@@ -149,10 +79,7 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 		.map((record) => {
 			const alternateRoute =
 				record.locale === 'en' ? record.route.replace(/^\/en/, '') : `/en${record.route}`;
-			return {
-				...record,
-				alternateRoute: byRoute.has(alternateRoute) ? alternateRoute : null,
-			};
+			return { ...record, alternateRoute: byRoute.has(alternateRoute) ? alternateRoute : null };
 		})
 		.sort((a, b) => a.route.localeCompare(b.route));
 }

@@ -16,6 +16,7 @@ import ImageCompressTool from './tools/ImageCompressTool.astro';
 import AIInfographicTool from './tools/AIInfographicTool.astro';
 import Discussion from './Discussion.astro';
 import DirectoryItemRow from './DirectoryItemRow.astro';
+import ArticleOutline from './ArticleOutline.astro';
 import { commentThreadId } from '../lib/comments/threadId';
 import '../styles/legacy-pages.css';
 import '../styles/ai-infographic.css';
@@ -89,15 +90,17 @@ interface CurationItem {
 }
 
 type DirectoryKind =
-	'highlights' | 'prompts' | 'model-evals' | 'x-trending' | 'ai-tools' | 'curations';
+	| 'highlights'
+	| 'prompts'
+	| 'model-evals'
+	| 'x-trending'
+	| 'ai-tools'
+	| 'curations'
+	| 'codex-tutorials'
+	| 'workbuddy-tutorials';
 
 const { record, markdownId, markdownCollection } = Astro.props;
 const isEnglish = record.locale === 'en';
-const monthFormatter = new Intl.DateTimeFormat(record.locale, {
-	year: 'numeric',
-	month: 'long',
-	timeZone: 'Asia/Shanghai',
-});
 const allRecords = await loadLegacyContent();
 const alternate = legacyAlternate(record, allRecords);
 const children = legacyChildren(record, allRecords);
@@ -109,10 +112,18 @@ const markdownEntry =
 			: null;
 const rendered = markdownEntry ? await render(markdownEntry) : null;
 const MarkdownContent = rendered?.Content;
+const outlineHeadings =
+	rendered?.headings.filter((heading) => heading.depth === 2 || heading.depth === 3) ?? [];
 const staticRoot = resolve(process.cwd(), '../static');
 const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 	about: { zh: '关于', en: 'About', kicker: 'ABOUT THE ARCHIVE' },
 	'ai-tools': { zh: 'AI 工具', en: 'AI Tools', kicker: 'USEFUL INSTRUMENTS' },
+	'codex-tutorials': { zh: 'Codex 教程', en: 'Codex Tutorials', kicker: 'CODEX GUIDE' },
+	'workbuddy-tutorials': {
+		zh: 'WorkBuddy 教程',
+		en: 'WorkBuddy Tutorials',
+		kicker: 'WORKBUDDY GUIDE',
+	},
 	curations: { zh: '论文精选', en: 'Curations', kicker: 'PAPER DIGESTS' },
 	highlights: { zh: '精选阅读', en: 'Highlights', kicker: 'EDITOR’S SELECTION' },
 	'model-evals': { zh: '模型评测', en: 'Model Reviews', kicker: 'MODEL LEDGER' },
@@ -132,53 +143,45 @@ let directoryItems: Array<
 	HighlightItem | PromptItem | ModelEvalItem | XTrendingItem | AiToolItem | CurationItem
 > = [];
 let directoryKind: DirectoryKind | null = null;
-let highlightGroups: Array<{ monthKey: string | null; items: HighlightItem[] }> = [];
 if (
 	record.isIndex &&
-	['highlights', 'prompts', 'model-evals', 'x-trending', 'ai-tools', 'curations'].includes(
-		record.section,
-	)
+	[
+		'highlights',
+		'prompts',
+		'model-evals',
+		'x-trending',
+		'ai-tools',
+		'curations',
+		'codex-tutorials',
+		'workbuddy-tutorials',
+	].includes(record.section)
 ) {
 	directoryKind = record.section as DirectoryKind;
 	if (record.section === 'highlights') {
-		directoryItems = children.map((child) => {
-			const kind = child.frontmatter.kind === 'article' ? 'article' : 'bookmark';
-			return {
-				id:
-					typeof child.frontmatter.externalId === 'string'
-						? child.frontmatter.externalId
-						: child.id,
-				title: child.title,
-				description: child.description,
-				thumb: typeof child.frontmatter.cover === 'string' ? child.frontmatter.cover : undefined,
-				tags: Array.isArray(child.frontmatter.tags)
-					? child.frontmatter.tags.filter((tag): tag is string => typeof tag === 'string')
-					: [],
-				originalUrl:
-					typeof child.frontmatter.sourceUrl === 'string' ? child.frontmatter.sourceUrl : undefined,
-				detailUrl: kind === 'article' ? child.route : undefined,
-				date: child.date?.toISOString().slice(0, 10),
-			};
-		});
-		const dateOf = (item: HighlightItem): string | null => item.date ?? null;
-		const byMonth = new Map<string | null, HighlightItem[]>();
-		for (const item of directoryItems as HighlightItem[]) {
-			const monthKey = dateOf(item)?.slice(0, 7) ?? null;
-			const group = byMonth.get(monthKey);
-			if (group) group.push(item);
-			else byMonth.set(monthKey, [item]);
-		}
-		highlightGroups = [...byMonth.entries()]
-			.sort((a, b) => {
-				if (a[0] === null) return 1;
-				if (b[0] === null) return -1;
-				return b[0].localeCompare(a[0]);
+		directoryItems = children
+			.map((child) => {
+				const kind = child.frontmatter.kind === 'article' ? 'article' : 'bookmark';
+				return {
+					id:
+						typeof child.frontmatter.externalId === 'string'
+							? child.frontmatter.externalId
+							: child.id,
+					title: child.title,
+					description: child.description,
+					thumb: typeof child.frontmatter.cover === 'string' ? child.frontmatter.cover : undefined,
+					tags: Array.isArray(child.frontmatter.tags)
+						? child.frontmatter.tags.filter((tag): tag is string => typeof tag === 'string')
+						: [],
+					originalUrl:
+						typeof child.frontmatter.sourceUrl === 'string'
+							? child.frontmatter.sourceUrl
+							: undefined,
+					detailUrl: kind === 'article' ? child.route : undefined,
+					date: child.date?.toISOString().slice(0, 10),
+				};
 			})
-			.map(([monthKey, items]) => ({
-				monthKey,
-				items: items.sort((a, b) => (dateOf(b) ?? '').localeCompare(dateOf(a) ?? '')),
-			}));
-	} else if (record.section === 'prompts') {
+			.sort((left, right) => (right.date ?? '').localeCompare(left.date ?? ''));
+	} else if (['prompts', 'codex-tutorials', 'workbuddy-tutorials'].includes(record.section)) {
 		directoryItems = children.map((child) => ({
 			id: child.route,
 			title: child.title,
@@ -273,11 +276,14 @@ const libraryApi =
 					</p>
 				</header>
 
-				{MarkdownContent && directoryKind !== 'highlights' && (
-					<div class="directory-intro">
-						<MarkdownContent />
-					</div>
-				)}
+				{MarkdownContent &&
+					!['highlights', 'codex-tutorials', 'workbuddy-tutorials'].includes(
+						directoryKind ?? '',
+					) && (
+						<div class="directory-intro">
+							<MarkdownContent />
+						</div>
+					)}
 
 				{directoryKind && directoryItems.length > 0 ? (
 					<>
@@ -302,52 +308,13 @@ const libraryApi =
 							</div>
 						</div>
 						<div
-							class:list={[
-								`content-directory content-directory--${directoryKind}`,
-								{ 'daily-archive': directoryKind === 'highlights' },
-							]}
+							class={`content-directory content-directory--${directoryKind}`}
 							data-directory-list
 							data-source={directoryKind === 'highlights' ? undefined : `${directoryKind}.json`}
 						>
-							{directoryKind === 'highlights' && highlightGroups.length > 0
-								? highlightGroups.map((group, index) => (
-										<details
-											class="month-group"
-											open={(group.monthKey !== null && index < 3) || undefined}
-										>
-											<summary class="month-heading">
-												<h2>
-													{group.monthKey
-														? monthFormatter.format(new Date(`${group.monthKey}-01T00:00:00+08:00`))
-														: isEnglish
-															? 'Undated'
-															: '未注明日期'}
-												</h2>
-												<span class="count">
-													{isEnglish ? `${group.items.length} items` : `${group.items.length} 条`}
-												</span>
-												{group.monthKey && (
-													<span class="range">
-														{`${group.items.at(-1)!.date!.slice(5)} — ${group.items[0].date!.slice(5)}`}
-													</span>
-												)}
-											</summary>
-											{group.items.map((item) => (
-												<DirectoryItemRow
-													item={item}
-													locale={record.locale}
-													knownRoutes={knownRoutes}
-												/>
-											))}
-										</details>
-									))
-								: directoryItems.map((item) => (
-										<DirectoryItemRow
-											item={item}
-											locale={record.locale}
-											knownRoutes={knownRoutes}
-										/>
-									))}
+							{directoryItems.map((item) => (
+								<DirectoryItemRow item={item} locale={record.locale} knownRoutes={knownRoutes} />
+							))}
 						</div>
 						<p class="directory-empty" data-directory-empty hidden>
 							{isEnglish ? 'No matching records.' : '没有匹配的记录。'}
@@ -389,45 +356,62 @@ const libraryApi =
 					)}
 					{description && <p class="article-lede">{description}</p>}
 				</header>
-				{isStandaloneHtml ? (
-					<iframe
-						class="standalone-article"
-						title={title}
-						src={standaloneSrc ?? undefined}
-						sandbox="allow-scripts allow-same-origin"
-						loading="lazy"
-					/>
-				) : MarkdownContent ? (
-					<div class="article-content">
-						<MarkdownContent />
-					</div>
-				) : (
-					<p class="article-empty">
-						{isEnglish ? 'This archive entry has no body content yet.' : '这条归档目前还没有正文。'}
-					</p>
-				)}
-				{threadId && <Discussion threadId={threadId} locale={record.locale} />}
-				<nav class="article-pagination" aria-label={isEnglish ? 'Article navigation' : '文章导航'}>
-					<div>
-						{newer && (
-							<>
-								<span>{isEnglish ? 'Newer' : '较新'}</span>
-								<a href={newer.route}>← {newer.title}</a>
-							</>
+				<div
+					class:list={[
+						'article-layout',
+						{ 'article-layout--with-outline': outlineHeadings.length > 0 },
+					]}
+				>
+					<div class="article-main">
+						{isStandaloneHtml ? (
+							<iframe
+								class="standalone-article"
+								title={title}
+								src={standaloneSrc ?? undefined}
+								sandbox="allow-scripts allow-same-origin"
+								loading="lazy"
+							/>
+						) : MarkdownContent ? (
+							<div class="article-content">
+								<MarkdownContent />
+							</div>
+						) : (
+							<p class="article-empty">
+								{isEnglish
+									? 'This archive entry has no body content yet.'
+									: '这条归档目前还没有正文。'}
+							</p>
 						)}
+						{threadId && <Discussion threadId={threadId} locale={record.locale} />}
+						<nav
+							class="article-pagination"
+							aria-label={isEnglish ? 'Article navigation' : '文章导航'}
+						>
+							<div>
+								{newer && (
+									<>
+										<span>{isEnglish ? 'Newer' : '较新'}</span>
+										<a href={newer.route}>← {newer.title}</a>
+									</>
+								)}
+							</div>
+							<a class="article-back" href={sectionHref}>
+								{isEnglish ? 'Back to archive' : '返回归档'}
+							</a>
+							<div>
+								{older && (
+									<>
+										<span>{isEnglish ? 'Older' : '较早'}</span>
+										<a href={older.route}>{older.title} →</a>
+									</>
+								)}
+							</div>
+						</nav>
 					</div>
-					<a class="article-back" href={sectionHref}>
-						{isEnglish ? 'Back to archive' : '返回归档'}
-					</a>
-					<div>
-						{older && (
-							<>
-								<span>{isEnglish ? 'Older' : '较早'}</span>
-								<a href={older.route}>{older.title} →</a>
-							</>
-						)}
-					</div>
-				</nav>
+					{outlineHeadings.length > 0 && (
+						<ArticleOutline headings={outlineHeadings} locale={record.locale} />
+					)}
+				</div>
 			</article>
 		)
 	}
@@ -440,4 +424,5 @@ const libraryApi =
 }
 <script>
 	import '../scripts/legacy-directory.js';
+	import '../scripts/article-outline.ts';
 </script>

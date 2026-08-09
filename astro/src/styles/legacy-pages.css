@@ -123,7 +123,10 @@
 	object-fit: contain;
 }
 
-.content-directory article:not(:has(> img)) {
+.content-directory:not(.content-directory--highlights):not(.content-directory--codex-tutorials):not(
+		.content-directory--workbuddy-tutorials
+	)
+	article:not(:has(> img)) {
 	grid-template-columns: 1fr;
 }
 
@@ -174,24 +177,46 @@
 /* Highlights top section: drop the stacked hairlines — the hero ends with
    whitespace instead of a rule, and the search becomes a quiet boxed field
    with the icon inside, so the first month heading is the only rule left. */
-.directory-page[data-directory-page='highlights'] .directory-hero {
+.directory-page:is(
+		[data-directory-page='highlights'],
+		[data-directory-page='codex-tutorials'],
+		[data-directory-page='workbuddy-tutorials']
+	)
+	.directory-hero {
 	padding-bottom: 8px;
 	border-bottom: 0;
 }
 
-.directory-page[data-directory-page='highlights'] .directory-toolbar {
+.directory-page:is(
+		[data-directory-page='highlights'],
+		[data-directory-page='codex-tutorials'],
+		[data-directory-page='workbuddy-tutorials']
+	)
+	.directory-toolbar {
 	margin-top: 10px;
 	padding: 0;
 	border-block: 0;
 }
 
-.directory-page[data-directory-page='highlights'] .directory-toolbar > div {
+.directory-page:is(
+		[data-directory-page='highlights'],
+		[data-directory-page='codex-tutorials'],
+		[data-directory-page='workbuddy-tutorials']
+	)
+	.directory-toolbar
+	> div {
 	position: relative;
 	display: block;
 	max-width: 320px;
 }
 
-.directory-page[data-directory-page='highlights'] .directory-toolbar i {
+.directory-page:is(
+		[data-directory-page='highlights'],
+		[data-directory-page='codex-tutorials'],
+		[data-directory-page='workbuddy-tutorials']
+	)
+	.directory-toolbar
+	i {
 	position: absolute;
 	top: 50%;
 	left: 10px;
@@ -199,7 +224,13 @@
 	pointer-events: none;
 }
 
-.directory-page[data-directory-page='highlights'] .directory-toolbar input {
+.directory-page:is(
+		[data-directory-page='highlights'],
+		[data-directory-page='codex-tutorials'],
+		[data-directory-page='workbuddy-tutorials']
+	)
+	.directory-toolbar
+	input {
 	min-height: 38px;
 	padding: 4px 10px 4px 32px;
 	border: 1px solid var(--rule);
@@ -207,65 +238,91 @@
 	background: var(--paper-raised);
 }
 
-.directory-page[data-directory-page='highlights'] .directory-toolbar input:focus {
+.directory-page:is(
+		[data-directory-page='highlights'],
+		[data-directory-page='codex-tutorials'],
+		[data-directory-page='workbuddy-tutorials']
+	)
+	.directory-toolbar
+	input:focus {
 	outline: 1px solid var(--blue);
 	outline-offset: 0;
 }
 
-/* Highlights: plain ledger rows inside collapsible month groups, mirroring
-   the daily archive. The `daily-archive` class on the list container supplies
-   the month-group/summary styling; these rules cover the rows themselves.
-   Scoped so the other directory sections keep the shared card layout. */
-.content-directory--highlights {
+/* Highlights uses the same editorial list rhythm as My Writing. */
+.content-directory--highlights,
+.content-directory--codex-tutorials,
+.content-directory--workbuddy-tutorials {
 	display: block;
-	margin-top: 22px;
+	margin-top: 28px;
+	border-top: 1px solid var(--rule);
 	border-left: 0;
 }
 
-.content-directory--highlights article {
-	display: block;
+.content-directory--highlights article,
+.content-directory--codex-tutorials article,
+.content-directory--workbuddy-tutorials article {
+	display: grid;
+	grid-template-columns: 112px minmax(0, 1fr);
+	gap: 28px;
 	min-height: 0;
-	padding: 18px 8px;
+	padding: 28px 0;
 	border-right: 0;
-	transition: background 0.12s ease;
 }
 
-.content-directory--highlights article > img {
+.content-directory--highlights article > img,
+.content-directory--codex-tutorials article > img,
+.content-directory--workbuddy-tutorials article > img {
 	display: none;
 }
 
-.content-directory--highlights article > div {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: baseline;
-	gap: 3px 18px;
+.content-directory--highlights article > div,
+.content-directory--codex-tutorials article > div,
+.content-directory--workbuddy-tutorials article > div {
+	display: contents;
 }
 
-.content-directory--highlights article > div > :not(ul) {
+.content-directory--highlights .directory-item-meta,
+.content-directory--codex-tutorials .directory-item-meta,
+.content-directory--workbuddy-tutorials .directory-item-meta {
 	grid-column: 1;
+	grid-row: 1;
+	margin: 0;
+	color: var(--blue);
+	font-size: 0.68rem;
 }
 
-.content-directory--highlights article > div > ul {
+.content-directory--highlights article > div > ul,
+.content-directory--codex-tutorials article > div > ul,
+.content-directory--workbuddy-tutorials article > div > ul {
+	display: none;
+}
+
+.content-directory--highlights h2,
+.content-directory--codex-tutorials h2,
+.content-directory--workbuddy-tutorials h2 {
 	grid-column: 2;
-	grid-row: 1 / -1;
+	grid-row: 1;
 	margin: 0;
+	font-size: clamp(1.25rem, 2.5vw, 1.8rem);
 }
 
-.content-directory--highlights h2 {
-	margin: 0;
-	font-size: 1.02rem;
+.content-directory--highlights h2 + p,
+.content-directory--codex-tutorials h2 + p,
+.content-directory--workbuddy-tutorials h2 + p {
+	display: block;
+	grid-column: 2;
+	grid-row: 2;
+	max-width: 68ch;
+	margin: 8px 0 0;
+	color: var(--ink-soft);
+	font-size: inherit;
+	line-height: inherit;
 }
 
-.content-directory--highlights h2 + p {
-	margin-top: 2px;
-	-webkit-line-clamp: 1;
-}
-
-.content-directory--highlights article:hover {
-	background: var(--paper-raised);
-}
-
-.content-directory--highlights article:hover h2 a {
+.content-directory--highlights article:hover h2 a,
+.content-directory--codex-tutorials article:hover h2 a,
+.content-directory--workbuddy-tutorials article:hover h2 a {
 	color: var(--blue);
 }
 
@@ -319,6 +376,103 @@
 	margin: 20px 0 0;
 	font-size: 0.95rem;
 	line-height: 1.75;
+}
+
+.legacy-article:has(.article-outline) {
+	max-width: 1200px;
+}
+
+.legacy-article:has(.article-outline) .article-header {
+	max-width: 820px;
+}
+
+.article-layout--with-outline {
+	display: grid;
+	grid-template-columns: minmax(0, 820px) minmax(200px, 240px);
+	align-items: start;
+	justify-content: space-between;
+	gap: clamp(36px, 5vw, 72px);
+}
+
+.article-main {
+	min-width: 0;
+}
+
+.article-outline {
+	position: sticky;
+	top: 92px;
+	margin-top: 40px;
+	border-block: 1px solid var(--rule);
+}
+
+.article-outline summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 2px;
+	color: var(--ink-faint);
+	font-family: var(--mono);
+	font-size: 0.66rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	list-style: none;
+	cursor: pointer;
+}
+
+.article-outline summary::-webkit-details-marker {
+	display: none;
+}
+
+.article-outline summary i {
+	color: var(--blue);
+	font-size: 0.75rem;
+	transition: transform 160ms ease;
+}
+
+.article-outline:not([open]) summary i {
+	transform: rotate(-90deg);
+}
+
+.article-outline nav {
+	padding-bottom: 14px;
+}
+
+.article-outline ol {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.article-outline a {
+	display: block;
+	padding: 6px 0 6px 14px;
+	border-left: 1px solid var(--rule);
+	color: var(--ink-faint);
+	font-size: 0.7rem;
+	line-height: 1.5;
+	text-decoration: none;
+	transition:
+		border-color 140ms ease,
+		color 140ms ease;
+}
+
+.article-outline li[data-depth='3'] a {
+	padding-left: 26px;
+}
+
+.article-outline a:hover {
+	color: var(--ink);
+}
+
+.article-outline a.is-active {
+	border-left-color: var(--blue);
+	color: var(--blue);
+	font-weight: 600;
+}
+
+.article-content :is(h2, h3) {
+	scroll-margin-top: 104px;
 }
 
 .prompt-library-source[hidden] {
@@ -502,14 +656,35 @@
 		grid-template-columns: 1fr;
 	}
 
-	.content-directory--highlights article > div {
+	.content-directory--highlights article,
+	.content-directory--codex-tutorials article,
+	.content-directory--workbuddy-tutorials article {
 		grid-template-columns: 1fr;
+		gap: 8px;
 	}
 
-	.content-directory--highlights article > div > ul {
+	.content-directory--highlights :is(.directory-item-meta, h2, h2 + p),
+	.content-directory--codex-tutorials :is(.directory-item-meta, h2, h2 + p),
+	.content-directory--workbuddy-tutorials :is(.directory-item-meta, h2, h2 + p) {
 		grid-column: 1;
-		grid-row: auto;
-		margin-top: 8px;
+	}
+
+	.content-directory--highlights .directory-item-meta,
+	.content-directory--codex-tutorials .directory-item-meta,
+	.content-directory--workbuddy-tutorials .directory-item-meta {
+		grid-row: 1;
+	}
+
+	.content-directory--highlights h2,
+	.content-directory--codex-tutorials h2,
+	.content-directory--workbuddy-tutorials h2 {
+		grid-row: 2;
+	}
+
+	.content-directory--highlights h2 + p,
+	.content-directory--codex-tutorials h2 + p,
+	.content-directory--workbuddy-tutorials h2 + p {
+		grid-row: 3;
 	}
 
 	.editorial-archive article {
@@ -542,6 +717,31 @@
 	.compress-note,
 	.compress-summary {
 		grid-column: 1;
+	}
+}
+
+@media (max-width: 980px) {
+	.article-layout--with-outline {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+
+	.article-outline {
+		position: static;
+		grid-row: 1;
+		margin-top: 28px;
+		border: 1px solid var(--rule);
+		background: var(--paper-raised);
+	}
+
+	.article-outline summary {
+		padding-inline: 16px;
+	}
+
+	.article-outline nav {
+		max-height: 320px;
+		overflow-y: auto;
+		padding: 0 16px 16px;
 	}
 }
 

@@ -16,13 +16,12 @@ describe('production schedule contract', () => {
         expect(new Set(SCHEDULE_UTC_HOURS).size).toBe(17);
     });
 
-    it('keeps wrangler cron hours exactly aligned with the shared contract', async () => {
+    it('does not register the dormant schedule with the production worker', async () => {
         const config = await readFile(
             new URL('../../wrangler.toml', import.meta.url),
             'utf8',
         );
-        const cron = config.match(/crons\s*=\s*\["0 ([0-9,]+) \* \* \*"\]/)?.[1];
-        expect(cron).toBe(SCHEDULE_UTC_HOURS.join(','));
+        expect(config).not.toMatch(/^\s*crons\s*=/m);
     });
 
     it('maps every run for one Beijing report date to its cumulative batch', () => {

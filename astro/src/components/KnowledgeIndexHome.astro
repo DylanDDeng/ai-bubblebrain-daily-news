@@ -1,0 +1,264 @@
+---
+import { legacyEntryIsRoutable, loadLegacyContent, type LegacySection } from '../lib/legacyContent';
+import { buildKnowledgeSearchIndex } from '../lib/searchIndex';
+import '../styles/knowledge-home.css';
+
+interface Props {
+	locale: 'zh-CN' | 'en';
+}
+
+const { locale } = Astro.props;
+const isEnglish = locale === 'en';
+const prefix = isEnglish ? '/en' : '';
+const entries = (await loadLegacyContent()).filter(
+	(entry) =>
+		entry.locale === locale &&
+		!entry.isIndex &&
+		entry.section !== 'about' &&
+		entry.section !== 'x-trending' &&
+		legacyEntryIsRoutable(entry),
+);
+const searchIndex = await buildKnowledgeSearchIndex({ locale });
+
+const sectionCopy: Array<{
+	section: LegacySection;
+	label: string;
+	description: string;
+	mark: string;
+	icon: string;
+}> = isEnglish
+	? [
+			{
+				section: 'highlights',
+				label: 'Highlights',
+				description: 'Curated primary sources and durable explainers.',
+				mark: 'READ',
+				icon: 'ph-book-open-text',
+			},
+			{
+				section: 'prompts',
+				label: 'Prompt library',
+				description: 'Reusable prompts for real workflows.',
+				mark: 'USE',
+				icon: 'ph-brackets-curly',
+			},
+			{
+				section: 'model-evals',
+				label: 'Model reviews',
+				description: 'Hands-on comparisons grounded in actual tasks.',
+				mark: 'TEST',
+				icon: 'ph-flask',
+			},
+			{
+				section: 'curations',
+				label: 'Research notes',
+				description: 'Papers and technical material made approachable.',
+				mark: 'STUDY',
+				icon: 'ph-files',
+			},
+		]
+	: [
+			{
+				section: 'codex-tutorials',
+				label: 'Codex 教程',
+				description: '从入门到实战，系统掌握 Codex 的使用方法。',
+				mark: '上手',
+				icon: 'ph-terminal-window',
+			},
+			{
+				section: 'workbuddy-tutorials',
+				label: 'WorkBuddy 教程',
+				description: '从办公协作到自动化，系统掌握 WorkBuddy 的使用方法。',
+				mark: '办公',
+				icon: 'ph-briefcase',
+			},
+			{
+				section: 'highlights',
+				label: '精选阅读',
+				description: '值得长期保存的一手资料与深度解读。',
+				mark: '阅读',
+				icon: 'ph-book-open-text',
+			},
+			{
+				section: 'prompts',
+				label: 'Prompt 库',
+				description: '经过整理、可以直接复用的实战提示词。',
+				mark: '使用',
+				icon: 'ph-brackets-curly',
+			},
+			{
+				section: 'model-evals',
+				label: '模型评测',
+				description: '从真实任务出发，记录模型能力与边界。',
+				mark: '验证',
+				icon: 'ph-flask',
+			},
+			{
+				section: 'curations',
+				label: '研究笔记',
+				description: '把论文和技术材料整理成容易吸收的知识。',
+				mark: '学习',
+				icon: 'ph-files',
+			},
+		];
+
+const countFor = (section: LegacySection) =>
+	searchIndex.items.filter((entry) => entry.section === section).length;
+const featured = [...entries]
+	.sort((left, right) => {
+		const featuredOrder =
+			Number(right.frontmatter.featured === true) - Number(left.frontmatter.featured === true);
+		return featuredOrder || (right.date?.getTime() ?? 0) - (left.date?.getTime() ?? 0);
+	})
+	.slice(0, 6);
+const dateFormatter = new Intl.DateTimeFormat(locale, {
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+	timeZone: 'Asia/Shanghai',
+});
+const labelFor = (section: LegacySection) =>
+	sectionCopy.find((item) => item.section === section)?.label ?? section;
+---
+
+<section class="knowledge-home">
+	<header class="knowledge-home-hero">
+		<div class="knowledge-home-hero-copy">
+			<div class="knowledge-home-badges">
+				<span>{isEnglish ? 'PERSONAL AI LIBRARY' : '个人 AI 知识库'}</span>
+				<span>{isEnglish ? 'CURATED · BILINGUAL' : '人工整理 · 双语内容'}</span>
+			</div>
+			<h1>
+				{isEnglish ? 'Turn AI practice into durable knowledge.' : 'AI 知识，随时复用。'}
+			</h1>
+			<p class="knowledge-home-lede">
+				{
+					isEnglish
+						? 'Curated sources, practical guides, prompts, model reviews, and field notes—organized for retrieval rather than urgency.'
+						: '精选教程、Prompt、模型评测与实践笔记，方便检索与复用。'
+				}
+			</p>
+			<form action="/search/" method="get" role="search" class="knowledge-home-search">
+				<label class="sr-only" for={`home-search-${locale}`}
+					>{isEnglish ? 'Search the knowledge base' : '搜索知识库'}</label
+				>
+				<i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+				<input
+					id={`home-search-${locale}`}
+					name="q"
+					type="search"
+					placeholder={isEnglish ? 'Search guides, prompts, reviews…' : '搜索教程、Prompt、评测……'}
+				/>
+				<button type="submit">{isEnglish ? 'Search' : '搜索'}</button>
+			</form>
+		</div>
+
+		<div class="knowledge-map" aria-label={isEnglish ? 'Knowledge map' : '知识地图'}>
+			<div class="knowledge-map-chrome">
+				<span class="knowledge-map-lights" aria-hidden="true"><i></i><i></i><i></i></span>
+				<span>bubblenews.today</span>
+			</div>
+			<div class="knowledge-map-body">
+				<header>
+					<span class="knowledge-map-icon"><i class="ph ph-books" aria-hidden="true"></i></span>
+					<div>
+						<strong>{isEnglish ? 'Knowledge map' : '知识地图'}</strong>
+						<small>{isEnglish ? 'organized for retrieval' : '按用途组织，随时可检索'}</small>
+					</div>
+					<em>v1.0</em>
+				</header>
+				<div class="knowledge-map-grid">
+					{
+						sectionCopy.slice(0, 4).map((item) => (
+							<a href={`${prefix}/${item.section}/`}>
+								<i class={`ph ${item.icon}`} aria-hidden="true" />
+								<strong>{item.label}</strong>
+								<span>
+									{countFor(item.section)} {isEnglish ? 'entries' : '篇内容'}
+								</span>
+							</a>
+						))
+					}
+				</div>
+				<div class="knowledge-map-routes">
+					<span>{isEnglish ? 'START HERE' : '从这里开始'}</span>
+					<a href="#library">#library</a>
+					<a href="#recent">#recent</a>
+					<a href="/search/">/search</a>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<section
+		id="library"
+		class="knowledge-home-section"
+		aria-labelledby={`library-heading-${locale}`}
+	>
+		<header class="knowledge-home-section-heading">
+			<div>
+				<p>{isEnglish ? 'EXPLORE THE LIBRARY' : '浏览知识库'}</p>
+				<h2 id={`library-heading-${locale}`}>{isEnglish ? 'Knowledge collections' : '知识栏目'}</h2>
+				<span
+					>{
+						isEnglish
+							? 'Four focused collections, one searchable archive.'
+							: '六个清晰栏目，组成一个可检索的长期知识档案。'
+					}</span
+				>
+			</div>
+		</header>
+		<div class="knowledge-collection-grid">
+			{
+				sectionCopy.map((item) => (
+					<a href={`${prefix}/${item.section}/`} class="knowledge-collection-card">
+						<span class="knowledge-collection-icon">
+							<i class={`ph ${item.icon}`} aria-hidden="true" />
+						</span>
+						<span class="knowledge-collection-mark">{item.mark}</span>
+						<h3>{item.label}</h3>
+						<p>{item.description}</p>
+						<span class="knowledge-collection-count">
+							{countFor(item.section)} {isEnglish ? 'entries' : '篇内容'}
+						</span>
+					</a>
+				))
+			}
+		</div>
+	</section>
+
+	<section id="recent" class="knowledge-home-section" aria-labelledby={`recent-heading-${locale}`}>
+		<header class="knowledge-home-section-heading">
+			<div>
+				<p>{isEnglish ? 'CURATED & MAINTAINED' : '持续整理与维护'}</p>
+				<h2 id={`recent-heading-${locale}`}>
+					{isEnglish ? 'Recently added knowledge' : '最近收录'}
+				</h2>
+			</div>
+			<a href="/search/">{isEnglish ? 'Browse all →' : '查看全部 →'}</a>
+		</header>
+		<div class="knowledge-recent-list">
+			{
+				featured.map((entry, index) => (
+					<article>
+						<span class="knowledge-recent-index">{String(index + 1).padStart(2, '0')}</span>
+						<div>
+							<p class="knowledge-recent-meta">
+								<span>{labelFor(entry.section)}</span>
+								{entry.date && (
+									<time datetime={entry.date.toISOString()}>
+										{dateFormatter.format(entry.date)}
+									</time>
+								)}
+							</p>
+							<h3>
+								<a href={entry.route}>{entry.title}</a>
+							</h3>
+							{entry.description && <p>{entry.description}</p>}
+						</div>
+					</article>
+				))
+			}
+		</div>
+	</section>
+</section>

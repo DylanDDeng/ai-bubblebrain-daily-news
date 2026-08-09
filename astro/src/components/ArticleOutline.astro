@@ -1,0 +1,33 @@
+---
+interface OutlineHeading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	headings: OutlineHeading[];
+	locale: 'zh-CN' | 'en';
+}
+
+const { headings, locale } = Astro.props;
+const isEnglish = locale === 'en';
+---
+
+<details class="article-outline" data-article-outline open>
+	<summary>
+		<span>{isEnglish ? 'On this page' : '本文目录'}</span>
+		<i class="ph ph-caret-down" aria-hidden="true"></i>
+	</summary>
+	<nav aria-label={isEnglish ? 'On this page' : '本文目录'}>
+		<ol>
+			{
+				headings.map((heading) => (
+					<li data-depth={heading.depth}>
+						<a href={`#${heading.slug}`}>{heading.text}</a>
+					</li>
+				))
+			}
+		</ol>
+	</nav>
+</details>

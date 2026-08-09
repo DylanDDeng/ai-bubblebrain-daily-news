@@ -6,8 +6,8 @@ Phase 4 uses an explicit build-time coexistence boundary. Cloudflare Pages publi
 - Astro owns the homepage, both daily archives, every daily detail route, the canonical structured
   daily JSON routes under `/data/daily/`, knowledge search,
   topic/entity routes, metadata feeds, sitemaps, robots, redirects, and the custom 404.
-- Hugo remains a build-time compatibility renderer for `about`, `ai-tools`, `curations`,
-  `highlights`, `model-evals`, `my-publish`, `prompts`, and `x-trending`, including their English
+- Hugo remains a build-time compatibility renderer for `about`, `codex-tutorials`, `curations`,
+  `highlights`, `model-evals`, `prompts`, and `x-trending`, including their English
   routes. These trees depend on specialized templates, JSON, and browser behavior that a generic
   Markdown renderer cannot preserve.
 

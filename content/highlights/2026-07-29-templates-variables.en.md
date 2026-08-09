@@ -13,8 +13,6 @@ draft: false
 
 [Original article by HyperFrames](https://x.com/HyperFrames_/status/2082197435246600341)
 
-![Image](https://pbs.twimg.com/media/HOVxksYaUAAUjJ9?format=jpg&name=large)
-
 # Day 23 of 30: Turning your video into a template
 
 For 22 days, every render in this series has produced exactly one video. New headline meant a new edit. New name meant a new render. Day 23 removes that ceiling. Variables turn a HyperFrames composition into a template, and a template turns one build into as many videos as you have rows of data.
@@ -131,8 +129,6 @@ Today's film is the feature demonstrating itself. There is exactly one card comp
 ## Output
 
 The finished Day 23 video: 22 seconds, four cities, one template.
-
-<video preload="none" tabindex="-1" playsinline="" aria-label="Embedded video" poster="https://pbs.twimg.com/amplify_video_thumb/2082196246132092928/img/UndjWtJC1tc33Zq0.jpg" style="width: 100%; height: 100%; position: absolute; background-color: black; top: 0%; left: 0%; transform: rotate(0deg) scale(1.005);"><source type="video/mp4"></video>
 
 ![](https://pbs.twimg.com/amplify_video_thumb/2082196246132092928/img/UndjWtJC1tc33Zq0.jpg?name=large)
 

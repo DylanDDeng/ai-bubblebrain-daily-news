@@ -31,8 +31,8 @@ export const GET: APIRoute = () =>
   <main id="main-content" tabindex="-1">
     <p>404 · NOT FOUND</p>
     <h1>This knowledge path does not exist.</h1>
-    <p>Return home or continue with the daily archive.</p>
-    <nav aria-label="404 navigation"><a href="/en/">Home</a><a href="/en/daily/">Daily archive</a></nav>
+    <p>Return home or continue exploring the knowledge base.</p>
+    <nav aria-label="404 navigation"><a href="/en/">Home</a><a href="/search/">Search</a></nav>
   </main>
 </body>
 </html>`,

@@ -1,10 +1,10 @@
 ---
-import type { DailyLocale } from '../lib/daily';
+import type { LegacyLocale } from '../lib/legacyContent';
 import '../styles/discussion.css';
 
 interface Props {
 	threadId: string;
-	locale: DailyLocale;
+	locale: LegacyLocale;
 }
 
 const { threadId, locale } = Astro.props;

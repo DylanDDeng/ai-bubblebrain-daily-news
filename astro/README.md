@@ -1,43 +1,37 @@
-# Bubble's Brain Astro renderer
+# Bubble's Brain Astro site
 
-This is the parallel Astro renderer created for the Bubble's Brain migration. It is intentionally
-not connected to the production deployment yet.
+Astro 是 Bubble's Brain 知识库的正式展示层。它从 `../content` 读取 Codex 教程、WorkBuddy 教程、精选阅读、Prompt、模型评测、研究笔记与个人文章，并生成静态站点。AI 工具内容暂时保留在源码中，但不会生成公开栏目、搜索结果或 RSS。
 
-## Day 0 capabilities
+## 站点能力
 
-- Astro 7 static build with strict TypeScript.
-- Reads the existing Hugo daily Markdown from `../content/daily`.
-- Preserves Chinese and English daily permalink shapes.
-- Reuses the repository's `../static` directory as Astro's public directory.
-- Defines and validates the framework-neutral daily report contract.
-- Includes formatting, linting, type checking, tests, and a production build verification command.
+- Astro 7 静态构建与严格 TypeScript。
+- 中文和英文内容路由。
+- Markdown 驱动的知识栏目。
+- 面向所有知识内容的静态搜索。
+- RSS、Sitemap、canonical、hreflang 与无 JavaScript 可读性。
+- 构建产物路由契约、CSP 与内部链接验证。
 
-Malformed historical filenames, including `content/daily/202-22.en.md`, are deliberately excluded
-from the collection instead of being silently rewritten.
-
-## Requirements
-
-- Node.js 22.17 or a later supported LTS release.
-- npm 10 or later.
+日报页面和结构化日报数据不会进入构建产物；生产 Worker 也不再注册自动抓取 cron。
 
 ## Commands
 
 ```sh
 npm install
 npm run dev
+npm run check
+npm run lint
+npm run test
+npm run build
 npm run verify
 ```
 
-The generated site is written to `astro/dist/`. Hugo continues to build the production `public/`
-directory from the repository root.
+构建产物位于 `dist/`。
 
 ## Content flow
 
 ```text
-Cloudflare Worker
-  -> data/daily/YYYY-MM-DD.json (structured source of truth)
-  -> content/daily/YYYY-MM-DD.md (compatibility output)
-  -> Hugo or Astro renderer
+content/**/*.md
+  -> Astro content collections
+  -> knowledge pages and search index
+  -> RSS, sitemap, and static release artifact
 ```
-
-See [`../docs/ASTRO_MIGRATION.md`](../docs/ASTRO_MIGRATION.md) for phases and cutover gates.

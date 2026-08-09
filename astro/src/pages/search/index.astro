@@ -1,85 +1,96 @@
 ---
 import KnowledgeResults from '../../components/KnowledgeResults.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { activeTaxonomyRecords, knowledgeTaxonomy, taxonomyLabel } from '../../lib/knowledge';
 import { buildKnowledgeSearchIndex } from '../../lib/searchIndex';
 import '../../styles/knowledge.css';
 
 const index = await buildKnowledgeSearchIndex();
-const contentApiOrigin = process.env.PUBLIC_CONTENT_API_ORIGIN ?? '';
-const topics = activeTaxonomyRecords(knowledgeTaxonomy.topics);
-const entities = activeTaxonomyRecords(knowledgeTaxonomy.entities);
+const sectionLabels = new Map(index.items.map((item) => [item.section, item.section_label]));
 ---
 
-<BaseLayout title="搜索 · Bubble's Brain" description="按新闻条目搜索资讯日报">
-	<section
-		class="knowledge-shell knowledge-search"
-		data-knowledge-search
-		data-content-release-id={index.site_release_id ?? undefined}
-		data-content-api-origin={index.site_release_id ? contentApiOrigin : undefined}
-	>
+<BaseLayout
+	title="知识搜索 · Bubble's Brain"
+	description="搜索 Codex 教程、Prompt、模型评测与个人文章"
+>
+	<section class="knowledge-shell knowledge-search" data-knowledge-search>
 		<header class="knowledge-heading knowledge-search-heading">
 			<div>
-				<p class="knowledge-kicker">SEARCH THE LEDGER · 新闻级索引</p>
-				<h1>从日报里，找到那一条。</h1>
-				<p>搜索标题、摘要与来源；主题和实体使用永久 ID，分享链接不会因改名失效。</p>
+				<p class="knowledge-kicker">知识搜索</p>
+				<h1>搜索知识库</h1>
+				<p>按关键词和栏目，快速找到 Codex 教程、Prompt、评测与文章。</p>
 			</div>
 			<p class="knowledge-index-state">
-				<strong>{index.item_count}</strong>
-				<span>{index.report_dates.length} 期日报</span>
+				<strong>{index.item_count}</strong><span>篇内容</span>
 			</p>
 		</header>
 
 		<form class="knowledge-search-form" data-knowledge-search-form method="get" role="search">
 			<div class="knowledge-query-field">
-				<label for="knowledge-query">搜索词</label>
+				<i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+				<label class="sr-only" for="knowledge-query">搜索词</label>
 				<input
 					id="knowledge-query"
 					name="q"
 					type="search"
 					autocomplete="off"
-					placeholder="标题、摘要或来源"
+					placeholder="搜索标题、摘要或标签…"
 				/>
 			</div>
 			<div class="knowledge-filter-field">
-				<label for="knowledge-type">内容类型</label>
-				<select id="knowledge-type" name="type">
-					<option value="all">全部类型</option>
-					<option value="news">资讯</option>
-					<option value="project">项目</option>
-					<option value="paper">论文</option>
-				</select>
-			</div>
-			<div class="knowledge-filter-field">
-				<label for="knowledge-topic">主题</label>
-				<select id="knowledge-topic" name="topic">
-					<option value="">全部主题</option>
-					{topics.map((topic) => <option value={topic.id}>{taxonomyLabel(topic, 'zh-CN')}</option>)}
-				</select>
-			</div>
-			<div class="knowledge-filter-field">
-				<label for="knowledge-entity">实体</label>
-				<select id="knowledge-entity" name="entity">
-					<option value="">全部实体</option>
+				<i class="ph ph-books" aria-hidden="true"></i>
+				<label class="sr-only" for="knowledge-section">知识栏目</label>
+				<select
+					id="knowledge-section"
+					name="section"
+					class="sr-only"
+					tabindex="-1"
+					aria-hidden="true"
+				>
+					<option value="">全部栏目</option>
 					{
-						entities.map((entity) => (
-							<option value={entity.id}>{taxonomyLabel(entity, 'zh-CN')}</option>
+						index.sections.map((section) => (
+							<option value={section}>{sectionLabels.get(section)}</option>
 						))
 					}
 				</select>
+				<details class="knowledge-filter-menu" data-knowledge-filter-menu>
+					<summary>
+						<span data-knowledge-filter-label>全部栏目</span>
+						<i class="ph ph-caret-down" aria-hidden="true"></i>
+					</summary>
+					<div class="knowledge-filter-options" role="menu" aria-label="选择知识栏目">
+						<button type="button" role="menuitemradio" aria-checked="true" data-section-value="">
+							<span>全部栏目</span><i class="ph ph-check" aria-hidden="true"></i>
+						</button>
+						{
+							index.sections.map((section) => (
+								<button
+									type="button"
+									role="menuitemradio"
+									aria-checked="false"
+									data-section-value={section}
+								>
+									<span>{sectionLabels.get(section)}</span>
+									<i class="ph ph-check" aria-hidden="true" />
+								</button>
+							))
+						}
+					</div>
+				</details>
 			</div>
-			<button type="submit">应用筛选</button>
+			<button class="knowledge-search-submit" type="submit"
+				><span>搜索</span><i class="ph ph-arrow-right" aria-hidden="true"></i></button
+			>
 		</form>
 
 		<div class="knowledge-search-status" aria-live="polite">
 			<span><strong data-search-result-count>{index.item_count}</strong> 条结果</span>
-			<span data-search-error hidden></span>
-			<noscript>JavaScript 关闭时展示完整索引；搜索参数仍可复制分享。</noscript>
+			<noscript>JavaScript 关闭时展示完整知识索引。</noscript>
 		</div>
 
 		<KnowledgeResults items={index.items} filterable />
 		<div class="knowledge-empty" data-search-empty hidden={index.item_count !== 0}>
-			<p>{index.item_count === 0 ? '尚无结构化日报可供索引。' : '没有符合当前条件的资讯。'}</p>
+			<p>{index.item_count === 0 ? '知识库还没有可检索的内容。' : '没有找到符合条件的内容。'}</p>
 			{
 				index.item_count > 0 && (
 					<button type="button" data-clear-search>
