@@ -660,6 +660,7 @@ export function validateDispatchPayload(
     (value.expected_predecessor_id !== null &&
       !UUID.test(String(value.expected_predecessor_id))) ||
     !/^[a-f0-9]{64}$/.test(String(value.expected_content_sha)) ||
+    !/^[a-f0-9]{64}$/.test(String(value.expected_manifest_sha)) ||
     !/^[a-f0-9]{40}$/.test(String(value.code_sha)) ||
     typeof value.build_environment_version !== "string" ||
     !["shadow", "production"].includes(String(value.mode))
@@ -1387,6 +1388,7 @@ export async function handleCodeReleaseRequest(
       site_release_sequence: Number(reservation.site_release_sequence),
       expected_predecessor_id: reservation.expected_predecessor_id,
       expected_content_sha: base.content_root_sha256,
+      expected_manifest_sha: manifestObject.sha256,
       code_sha: targetCodeSha,
       build_environment_version: CODE_RELEASE_BUILD_ENVIRONMENT,
       mode: "production",

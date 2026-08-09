@@ -18,6 +18,9 @@ on:
       expected_content_sha:
         required: true
         type: string
+      expected_manifest_sha:
+        required: true
+        type: string
       code_sha:
         required: true
         type: string
@@ -58,6 +61,7 @@ jobs:
       CONTENT_RELEASE_SEQUENCE: ${{ github.event.inputs.site_release_sequence }}
       EXPECTED_PREDECESSOR_ID: ${{ github.event.inputs.expected_predecessor_id }}
       CONTENT_ROOT_SHA256: ${{ github.event.inputs.expected_content_sha }}
+      CONTENT_MANIFEST_SHA256: ${{ github.event.inputs.expected_manifest_sha }}
       CONTENT_SCHEMA_VERSION: ${{ vars.CONTENT_SCHEMA_VERSION || '1' }}
       CONTENT_TAXONOMY_VERSION: ${{ vars.CONTENT_TAXONOMY_VERSION || '1' }}
       CONTENT_SERIALIZER_VERSION: ${{ vars.CONTENT_SERIALIZER_VERSION || 'daily-json-c14n-v1' }}
@@ -92,6 +96,7 @@ jobs:
           fi
           [[ "$CONTENT_RELEASE_SEQUENCE" =~ ^[1-9][0-9]*$ ]]
           [[ "$CONTENT_ROOT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$CONTENT_MANIFEST_SHA256" =~ ^[0-9a-f]{64}$ ]]
           [[ "$EXACT_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]
           if [[ -n "$SOURCE_CODE_SHA" ]]; then
             [[ "$SOURCE_CODE_SHA" =~ ^[0-9a-f]{40}$ ]]

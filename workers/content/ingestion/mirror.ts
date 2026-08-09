@@ -292,6 +292,7 @@ export async function mirrorStructuredReport(
       site_release_sequence: reservation.site_release_sequence,
       expected_predecessor_id: reservation.expected_predecessor_id,
       expected_content_sha: contentRootSha256,
+      expected_manifest_sha: manifestObject.sha256,
       code_sha: buildCodeSha,
       source_code_sha: sourceCodeSha,
       build_environment_version:
