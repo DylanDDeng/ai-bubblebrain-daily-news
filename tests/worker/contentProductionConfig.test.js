@@ -82,7 +82,7 @@ describe("content production preflight", () => {
       maximumInconsistencyMs: 120000,
       minimumExactVerifierCount: 2,
       minimumVerifierCount: 3,
-      stabilityOffsetsMs: [5000, 15000, 30000],
+      stabilityOffsetsMs: [],
       transformedHtmlVerifierOrigins: 1,
       verifierOrigins: 2,
     });
@@ -91,7 +91,7 @@ describe("content production preflight", () => {
     invalidStability["wrangler.content-broker.toml"] = invalidStability[
       "wrangler.content-broker.toml"
     ].replace(
-      'PRODUCTION_STABILITY_OFFSETS_MS = "5000,15000,30000"',
+      'PRODUCTION_STABILITY_OFFSETS_MS = "none"',
       'PRODUCTION_STABILITY_OFFSETS_MS = "5000,5000,30000"',
     );
     expect(() => validateWranglerDocuments(invalidStability)).toThrow(

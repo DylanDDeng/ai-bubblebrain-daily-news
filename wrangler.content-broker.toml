@@ -17,10 +17,10 @@ VERIFY_MIN_EXACT_ENDPOINTS = "2"
 # origins are probed in parallel until this hard limit; exceeding it restores
 # the last-known-good release while leaving the database pointer unchanged.
 MAX_PRODUCTION_INCONSISTENCY_MS = "120000"
-# Knowledge-base releases are immutable static artifacts. After exact
-# multi-origin convergence, three probes over 30 seconds catch immediate edge
-# drift without retaining the former two-minute daily-publication hold.
-PRODUCTION_STABILITY_OFFSETS_MS = "5000,15000,30000"
+# Knowledge-base releases are immutable static artifacts. Exact multi-origin
+# verification runs before the pointer commits, and the scheduled reconciler
+# continues checking production afterwards, so no time-based hold is needed.
+PRODUCTION_STABILITY_OFFSETS_MS = "none"
 # Configure at least two independently routed verifier origins before enabling publication.
 PRODUCTION_VERIFY_URLS = "https://bubblenews.today,https://ai-bubblebrain-daily-news.pages.dev"
 # Cloudflare Email Address Obfuscation intentionally rewrites HTML on the

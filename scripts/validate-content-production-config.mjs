@@ -275,17 +275,21 @@ export function validateWranglerDocuments(documents) {
     );
   }
 
-  const stabilityOffsetsMs = required(
+  const stabilityOffsetsValue = required(
     "Broker: PRODUCTION_STABILITY_OFFSETS_MS",
     tomlString(
       documents["wrangler.content-broker.toml"],
       "PRODUCTION_STABILITY_OFFSETS_MS",
     ),
-  )
-    .split(",")
-    .map((entry) => Number(entry.trim()));
+  );
+  const stabilityOffsetsMs =
+    stabilityOffsetsValue === "none"
+      ? []
+      : stabilityOffsetsValue
+          .split(",")
+          .map((entry) => Number(entry.trim()));
   if (
-    stabilityOffsetsMs.length < 3 ||
+    (stabilityOffsetsMs.length > 0 && stabilityOffsetsMs.length < 3) ||
     stabilityOffsetsMs.length > 5 ||
     stabilityOffsetsMs.some(
       (offset, index) =>
