@@ -764,11 +764,17 @@ async function criticalArtifactFiles(
     .filter((path) => /^data\/daily\/\d{4}-\d{2}-\d{2}\.json$/.test(path))
     .sort()
     .at(-1);
-  if (!dailyJson)
-    throw new Error("Artifact has no release-pinned daily JSON to verify");
-  const date = dailyJson.slice("data/daily/".length, -".json".length);
-  const dailyHtml = `daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/index.html`;
-  const required = ["index.html", dailyHtml, dailyJson, "search/index.json"];
+  const hasDailyHtml = inventory.some((path) =>
+    /^daily\/\d{4}\/\d{2}\/\d{4}-\d{2}-\d{2}\/index\.html$/.test(path),
+  );
+  if (hasDailyHtml && !dailyJson)
+    throw new Error("Artifact daily route has no release-pinned JSON");
+  const required = ["index.html", "search/index.json"];
+  if (dailyJson) {
+    const date = dailyJson.slice("data/daily/".length, -".json".length);
+    const dailyHtml = `daily/${date.slice(0, 4)}/${date.slice(5, 7)}/${date}/index.html`;
+    required.splice(1, 0, dailyHtml, dailyJson);
+  }
   const files: TarFile[] = [];
   for (const path of required) {
     if (bundle.kind === "tar") {

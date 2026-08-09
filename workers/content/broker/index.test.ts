@@ -1843,6 +1843,30 @@ describe("production convergence verification", () => {
     });
   });
 
+  it("verifies knowledge-base artifacts without retired daily routes", async () => {
+    const value = setup();
+    const clock = controlledClock();
+    const knowledgeFiles = files.filter(
+      (file) => !file.path.startsWith("daily/") && !file.path.startsWith("data/daily/"),
+    );
+    await expect(
+      verifyDeployment(
+        context,
+        "https://deploy.pages.dev",
+        value.env,
+        { kind: "tar", files: knowledgeFiles },
+        clock.startedAt,
+        clock.dependencies,
+      ),
+    ).resolves.toMatchObject({
+      multi_edge_verified: true,
+      endpoints: [
+        { exact_paths: ["/", "/search/index.json"] },
+        { exact_paths: ["/", "/search/index.json"] },
+      ],
+    });
+  });
+
   it("allows declared custom-domain HTML transforms while keeping two exact-byte origins", async () => {
     const value = setup(false, 0, true);
     const clock = controlledClock();
