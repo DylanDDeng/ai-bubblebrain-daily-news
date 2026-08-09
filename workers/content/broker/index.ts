@@ -21,6 +21,7 @@ type Env = {
   VERIFY_MIN_ENDPOINTS?: string;
   VERIFY_MIN_EXACT_ENDPOINTS?: string;
   MAX_PRODUCTION_INCONSISTENCY_MS?: string;
+  PRODUCTION_STABILITY_OFFSETS_MS?: string;
 };
 
 type JsonRecord = Record<string, unknown>;
@@ -103,6 +104,29 @@ type VerificationDependencies = {
 type VerificationProbeResult =
   | { ok: true; evidence: JsonRecord }
   | { ok: false; failure: VerificationFailure };
+
+const DEFAULT_STABILITY_OFFSETS_MS = [15_000, 45_000, 120_000];
+
+function productionStabilityOffsets(value?: string): number[] {
+  if (!String(value || "").trim()) return DEFAULT_STABILITY_OFFSETS_MS;
+  const offsets = String(value)
+    .split(",")
+    .map((entry) => Number(entry.trim()));
+  if (
+    offsets.length < 3 ||
+    offsets.length > 5 ||
+    offsets.some(
+      (offset, index) =>
+        !Number.isSafeInteger(offset) ||
+        offset < 1_000 ||
+        offset > 300_000 ||
+        (index > 0 && offset <= offsets[index - 1]),
+    )
+  ) {
+    throw new Error("Production stability offsets are invalid");
+  }
+  return offsets;
+}
 
 const UUID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -1148,9 +1172,9 @@ export async function verifyDeployment(
       failures,
     );
   }
-  const stabilityOffsets = dependencies.stabilityOffsetsMs ?? [
-    15_000, 45_000, 120_000,
-  ];
+  const stabilityOffsets =
+    dependencies.stabilityOffsetsMs ??
+    productionStabilityOffsets(env.PRODUCTION_STABILITY_OFFSETS_MS);
   if (
     stabilityOffsets.some(
       (offset, index) =>

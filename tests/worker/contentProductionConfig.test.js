@@ -79,12 +79,24 @@ describe("content production preflight", () => {
     );
     expect(validateWranglerDocuments(configuredWranglerDocuments())).toEqual({
       files: 7,
-      maximumInconsistencyMs: 300000,
+      maximumInconsistencyMs: 120000,
       minimumExactVerifierCount: 2,
       minimumVerifierCount: 3,
+      stabilityOffsetsMs: [5000, 15000, 30000],
       transformedHtmlVerifierOrigins: 1,
       verifierOrigins: 2,
     });
+
+    const invalidStability = configuredWranglerDocuments();
+    invalidStability["wrangler.content-broker.toml"] = invalidStability[
+      "wrangler.content-broker.toml"
+    ].replace(
+      'PRODUCTION_STABILITY_OFFSETS_MS = "5000,15000,30000"',
+      'PRODUCTION_STABILITY_OFFSETS_MS = "5000,5000,30000"',
+    );
+    expect(() => validateWranglerDocuments(invalidStability)).toThrow(
+      /PRODUCTION_STABILITY_OFFSETS_MS/,
+    );
   });
 
   it("rejects an Attestation audience that differs from its Access application", () => {

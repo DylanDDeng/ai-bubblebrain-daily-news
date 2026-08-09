@@ -392,13 +392,13 @@ jobs:
           node "$RUNNER_TEMP/content-release-helper.mjs" callback artifact_registered "$evidence"
 
       - name: Materialize exact registered R2 artifact
-        if: ${{ steps.resume.outputs.stage != 'build' }}
+        if: ${{ steps.resume.outputs.stage == 'preview' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ARTIFACT_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_ARTIFACT_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: auto
           R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
-          R2_MATERIALIZE_CONCURRENCY: "8"
+          R2_MATERIALIZE_CONCURRENCY: "16"
         run: |
           node scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client > materialize-summary.json
           jq -e '.site_release_id == env.SITE_RELEASE_ID and .artifact_sha256 == env.ARTIFACT_SHA256' materialize-summary.json >/dev/null
@@ -415,9 +415,11 @@ jobs:
           echo "PREVIEW_URL=$preview_url" >> "$GITHUB_ENV"
 
       - name: Verify Preview route parity and exact bytes
+        if: ${{ steps.resume.outputs.stage != 'promote' }}
         run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/client/release-manifests/site-route-manifest.json
 
       - name: Record Preview evidence
+        if: ${{ steps.resume.outputs.stage != 'promote' }}
         run: |
           evidence="$(jq -nc --arg url "$PREVIEW_URL" --arg artifact "$ARTIFACT_SHA256" --arg content "$CONTENT_ROOT_SHA256" --arg code "$EXACT_CODE_SHA" --arg contract "$RESUME_CONTRACT_VERSION" '{preview_url:$url,artifact_sha256:$artifact,content_sha256:$content,code_sha:$code,route_parity:true,resume_contract_version:($contract | if length > 0 then . else null end)}')"
           node "$RUNNER_TEMP/content-release-helper.mjs" callback preview_verified "$evidence"

@@ -1853,13 +1853,20 @@ describe("production convergence verification", () => {
       verifyDeployment(
         context,
         "https://deploy.pages.dev",
-        value.env,
+        {
+          ...value.env,
+          MAX_PRODUCTION_INCONSISTENCY_MS: "120000",
+          PRODUCTION_STABILITY_OFFSETS_MS: "5000,15000,30000",
+        },
         { kind: "tar", files: knowledgeFiles },
         clock.startedAt,
         clock.dependencies,
       ),
     ).resolves.toMatchObject({
       multi_edge_verified: true,
+      maximum_inconsistency_ms: 120000,
+      stability_elapsed_ms: 30000,
+      stability_offsets: [5000, 15000, 30000],
       endpoints: [
         { exact_paths: ["/", "/search/index.json"] },
         { exact_paths: ["/", "/search/index.json"] },
