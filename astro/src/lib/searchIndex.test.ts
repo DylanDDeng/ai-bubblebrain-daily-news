@@ -33,6 +33,10 @@ describe('knowledge search index', () => {
 					href: '/workbuddy-tutorials/workbuddy-mobile-workflow-guide/',
 					section_label: 'WorkBuddy 教程',
 				}),
+				expect.objectContaining({
+					href: '/workbuddy-tutorials/workbuddy-advanced-workflow-guide/',
+					section_label: 'WorkBuddy 教程',
+				}),
 			]),
 		);
 		expect(index.items.every((item) => !item.href.startsWith('/daily/'))).toBe(true);
