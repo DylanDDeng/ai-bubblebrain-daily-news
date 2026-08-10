@@ -9,6 +9,8 @@ const expectedArticleRoutes = [
 	'/highlights/2025-11-15-vibe-coding/',
 	'/highlights/2025-11-16-claude-skills-example/',
 	'/highlights/2025-11-18-how-three-startups-use-claudecode/',
+	'/highlights/2026-07-15-lets-build-claude-code-harness-step-by-step/',
+	'/en/highlights/2026-07-15-lets-build-claude-code-harness-step-by-step/',
 	'/highlights/2026-07-24-why-software-factories-fail/',
 	'/en/highlights/2026-07-24-why-software-factories-fail/',
 	'/highlights/2026-07-25-claude-design/',
