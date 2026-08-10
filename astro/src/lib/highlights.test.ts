@@ -23,6 +23,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-07-28-we-rewrote-our-agent-durable-object-pi-agents-sdk-code-mode/',
 	'/highlights/2026-07-29-templates-variables/',
 	'/en/highlights/2026-07-29-templates-variables/',
+	'/highlights/2026-07-30-the-session-you-cannot-take-with-you/',
+	'/en/highlights/2026-07-30-the-session-you-cannot-take-with-you/',
 	'/highlights/2026-08-09-minimax-h3-ama/',
 	'/en/highlights/2026-08-09-minimax-h3-ama/',
 ];
