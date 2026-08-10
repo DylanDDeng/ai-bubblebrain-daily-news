@@ -2,7 +2,12 @@
 // <script> import in LegacyPage.astro. The production deployer does not allow
 // releasing static/js/legacy-directory.js, so the Astro site maintains its
 // own copy here; the static/ copy remains for the legacy Hugo renderer only.
-(() => {
+let cleanupDirectory = () => {};
+
+function setupDirectory() {
+	cleanupDirectory();
+	cleanupDirectory = () => {};
+
 	const root = document.querySelector('[data-directory-page]');
 	if (!(root instanceof HTMLElement)) return;
 	const input = root.querySelector('[data-directory-query]');
@@ -11,6 +16,8 @@
 	const count = root.querySelector('[data-directory-count]');
 	const kind = root.dataset.directoryPage;
 	if (!(input instanceof HTMLInputElement)) return;
+	const controller = new AbortController();
+	cleanupDirectory = () => controller.abort();
 
 	const locale = document.documentElement.lang || 'zh-CN';
 	const apply = () => {
@@ -31,7 +38,7 @@
 			group.hidden = !anyVisible;
 		}
 	};
-	input.addEventListener('input', apply);
+	input.addEventListener('input', apply, { signal: controller.signal });
 
 	const api = root.dataset.libraryApi;
 	if (!api || !(list instanceof HTMLElement)) return;
@@ -218,7 +225,7 @@
 		apply();
 	};
 
-	fetch(api, { headers: { Accept: 'application/json' } })
+	fetch(api, { headers: { Accept: 'application/json' }, signal: controller.signal })
 		.then((response) => {
 			if (!response.ok) throw new Error('content library unavailable');
 			return response.json();
@@ -229,4 +236,7 @@
 		.catch(() => {
 			// Server-rendered legacy content remains the no-JS and outage fallback.
 		});
-})();
+}
+
+document.addEventListener('astro:page-load', setupDirectory);
+setupDirectory();
