@@ -1076,6 +1076,11 @@ h1 {
 	border: 1px solid var(--rule);
 }
 
+.legacy-content img,
+.article-content img {
+	max-width: min(100%, 680px);
+}
+
 .error-page nav,
 .home-actions {
 	display: flex;
