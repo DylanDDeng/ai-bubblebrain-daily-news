@@ -15,27 +15,27 @@
 }
 
 /*
- * Bubble's Brain × Ricoui Retro Blue
+ * Bubble's Brain × editorial neo-brutalism
  *
- * The visual language follows the MIT-licensed Ricoui Astro Starter while
- * retaining this project's existing routes, components, and accessibility
- * behavior.
+ * A restrained hybrid: hard edges and offset shadows establish the brand,
+ * while article and directory surfaces stay quiet enough for long reading.
  */
 
 :root {
-	--paper: #fdfaf5;
-	--paper-raised: #ffffff;
-	--paper-muted: #f3f6fb;
-	--ink: #3f4a5a;
-	--ink-soft: #5e6877;
-	--ink-faint: #7a8190;
-	--rule: #dfe4ed;
-	--blue: #2d6dc3;
-	--blue-strong: #0066ff;
-	--blue-soft: #eaf2fc;
-	--accent: #fad13b;
-	--accent-soft: #fff6cf;
-	--focus: #0066ff;
+	--paper: #fbf7ef;
+	--paper-raised: #fffdfa;
+	--paper-muted: #edf1f8;
+	--ink: #171b23;
+	--ink-soft: #414a59;
+	--ink-faint: #697180;
+	--rule: #aeb7c5;
+	--blue: #1f62d3;
+	--blue-strong: #004fc4;
+	--blue-soft: #dfeaff;
+	--accent: #ffd83d;
+	--accent-soft: #fff0a8;
+	--focus: #005de0;
+	--hard-shadow: #171b23;
 	--sans:
 		Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', ui-sans-serif, system-ui,
 		sans-serif;
@@ -50,25 +50,31 @@
 }
 
 :root[data-theme='dark'] {
-	--paper: #0b1220;
-	--paper-raised: #0f1b2d;
-	--paper-muted: #142238;
-	--ink: #c5cedb;
-	--ink-soft: #aeb9c8;
-	--ink-faint: #8fa1ba;
-	--rule: #2b3b52;
-	--blue: #3884eb;
-	--blue-strong: #8fb9ff;
-	--blue-soft: #172b47;
+	--paper: #11151d;
+	--paper-raised: #171c25;
+	--paper-muted: #202a3a;
+	--ink: #f3efe6;
+	--ink-soft: #c8ced8;
+	--ink-faint: #9ca8ba;
+	--rule: #65718a;
+	--blue: #70a4ff;
+	--blue-strong: #a8c7ff;
+	--blue-soft: #253755;
 	--accent: #fad13b;
-	--accent-soft: #3a3318;
+	--accent-soft: #4b421c;
 	--focus: #8fb9ff;
+	--hard-shadow: #05070a;
 }
 
 body {
 	background: var(--paper);
 	color: var(--ink);
 	font-family: var(--sans);
+}
+
+::selection {
+	background: var(--accent);
+	color: #171b23;
 }
 
 h1,
@@ -93,11 +99,10 @@ h3 {
 	height: auto;
 	margin: 16px auto 0;
 	padding: 8px 10px;
-	border: 1px solid color-mix(in srgb, var(--blue) 14%, var(--rule));
-	border-radius: 18px;
-	background: color-mix(in srgb, var(--paper-raised) 92%, transparent);
-	box-shadow: 0 12px 34px color-mix(in srgb, var(--blue) 8%, transparent);
-	backdrop-filter: blur(18px);
+	border: 2px solid var(--ink);
+	border-radius: 8px;
+	background: var(--paper-raised);
+	box-shadow: 5px 5px 0 var(--blue);
 }
 
 .rail-topline {
@@ -121,11 +126,12 @@ h3 {
 	width: 40px;
 	height: 40px;
 	flex: 0 0 40px;
-	border-radius: 50%;
+	border: 1px solid var(--ink);
+	border-radius: 5px;
 	background: var(--blue);
 	color: #ffffff;
 	place-items: center;
-	box-shadow: 0 4px 10px color-mix(in srgb, var(--blue) 24%, transparent);
+	box-shadow: 2px 2px 0 var(--accent);
 	text-decoration: none;
 }
 
@@ -162,7 +168,8 @@ h3 {
 
 .rail-nav a {
 	padding: 10px 11px;
-	border-radius: 9px;
+	border: 1px solid transparent;
+	border-radius: 3px;
 	color: var(--ink);
 	font-size: 0.78rem;
 	font-weight: 550;
@@ -174,8 +181,9 @@ h3 {
 
 .rail-nav a:hover,
 .rail-nav a[aria-current='page'] {
-	background: color-mix(in srgb, var(--blue) 7%, transparent);
-	color: var(--blue);
+	border-color: var(--ink);
+	background: var(--accent);
+	color: #171b23;
 }
 
 .rail-nav a[aria-current='page']::before {
@@ -198,18 +206,23 @@ h3 {
 	width: auto;
 	min-height: 38px;
 	padding: 0 12px;
-	border: 1px solid color-mix(in srgb, var(--blue) 16%, var(--rule));
-	border-radius: 999px;
+	border: 1px solid var(--ink);
+	border-radius: 3px;
 	background: var(--paper-raised);
 	color: var(--ink);
 	font-size: 0.72rem;
+	transition:
+		box-shadow 140ms ease,
+		transform 140ms ease;
 }
 
 .rail-controls > a:hover,
 .rail-controls > button:hover,
 .rail-controls .auth-trigger:hover {
-	border-color: color-mix(in srgb, var(--blue) 36%, var(--rule));
-	color: var(--blue);
+	border-color: var(--ink);
+	box-shadow: 2px 2px 0 var(--accent);
+	color: var(--ink);
+	transform: translate(-1px, -1px);
 }
 
 .rail-controls .auth-panel {
@@ -217,8 +230,9 @@ h3 {
 	right: 0;
 	bottom: auto;
 	left: auto;
-	border-radius: 12px;
-	box-shadow: 0 18px 40px color-mix(in srgb, #0b1220 16%, transparent);
+	border: 2px solid var(--ink);
+	border-radius: 4px;
+	box-shadow: 5px 5px 0 var(--blue);
 }
 
 .site-canvas {
@@ -235,10 +249,10 @@ h3 {
 	display: inline-flex;
 	width: fit-content;
 	padding: 4px 9px;
-	border: 1px dashed color-mix(in srgb, var(--blue) 26%, var(--rule));
-	border-radius: 6px;
-	background: color-mix(in srgb, var(--blue) 6%, transparent);
-	color: var(--blue);
+	border: 1px solid var(--ink);
+	border-radius: 2px;
+	background: var(--accent);
+	color: #171b23;
 }
 
 .directory-hero {
@@ -251,10 +265,10 @@ h3 {
 }
 
 .content-directory article {
-	border: 1px solid color-mix(in srgb, var(--blue) 12%, var(--rule));
-	border-radius: 14px;
+	border: 1px solid var(--ink);
+	border-radius: 4px;
 	background: var(--paper-raised);
-	box-shadow: 0 8px 24px color-mix(in srgb, var(--blue) 4%, transparent);
+	box-shadow: 4px 4px 0 var(--rule);
 	transition:
 		transform 180ms ease,
 		border-color 180ms ease,
@@ -262,9 +276,9 @@ h3 {
 }
 
 .content-directory article:hover {
-	border-color: color-mix(in srgb, var(--blue) 28%, var(--rule));
-	box-shadow: 0 14px 32px color-mix(in srgb, var(--blue) 9%, transparent);
-	transform: translateY(-3px);
+	border-color: var(--ink);
+	box-shadow: 6px 6px 0 var(--blue);
+	transform: translate(-2px, -2px);
 }
 
 .content-directory:is(
@@ -305,7 +319,7 @@ h3 {
 	width: min(calc(100% - 48px), 1200px);
 	margin: 72px auto 0;
 	padding: 48px 0 28px;
-	border-top: 1px dashed color-mix(in srgb, var(--blue) 20%, var(--rule));
+	border-top: 2px solid var(--ink);
 }
 
 .site-footer-intro {
@@ -351,7 +365,7 @@ h3 {
 	justify-content: space-between;
 	gap: 20px;
 	padding-top: 24px;
-	border-top: 1px dashed color-mix(in srgb, var(--blue) 12%, var(--rule));
+	border-top: 1px solid var(--rule);
 	color: var(--ink-faint);
 	font-size: 0.72rem;
 }
@@ -403,8 +417,8 @@ h3 {
 		width: 40px;
 		height: 40px;
 		min-height: 40px;
-		border: 1px solid color-mix(in srgb, var(--blue) 14%, var(--rule));
-		border-radius: 50%;
+		border: 1px solid var(--ink);
+		border-radius: 3px;
 		background: var(--paper-raised);
 	}
 
@@ -413,8 +427,8 @@ h3 {
 		width: 40px;
 		height: 40px;
 		margin-left: 4px;
-		border: 1px solid color-mix(in srgb, var(--blue) 14%, var(--rule));
-		border-radius: 50%;
+		border: 1px solid var(--ink);
+		border-radius: 3px;
 		background: var(--paper-raised);
 		place-items: center;
 	}
@@ -428,11 +442,10 @@ h3 {
 		max-height: calc(100dvh - 96px);
 		overflow-y: auto;
 		padding: 14px;
-		border: 1px dashed color-mix(in srgb, var(--blue) 24%, var(--rule));
-		border-radius: 16px;
-		background: color-mix(in srgb, var(--paper-raised) 96%, transparent);
-		box-shadow: 0 18px 46px color-mix(in srgb, #0b1220 18%, transparent);
-		backdrop-filter: blur(18px);
+		border: 2px solid var(--ink);
+		border-radius: 4px;
+		background: var(--paper-raised);
+		box-shadow: 5px 5px 0 var(--blue);
 	}
 
 	.rail-menu.is-open {
