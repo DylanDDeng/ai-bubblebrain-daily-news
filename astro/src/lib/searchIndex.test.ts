@@ -46,6 +46,7 @@ describe('knowledge search index', () => {
 		expect(index.items.every((item) => !item.href.startsWith('/daily/'))).toBe(true);
 		expect(index.items.every((item) => item.section !== 'x-trending')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'ai-tools')).toBe(true);
+		expect(index.items.every((item) => item.section !== 'curations')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'model-evals')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'my-publish')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'prompts')).toBe(true);
