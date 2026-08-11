@@ -228,6 +228,8 @@ const removedPrefixes = [
   "/en/my-publish",
   "/prompts",
   "/en/prompts",
+  "/model-evals",
+  "/en/model-evals",
 ];
 for (const record of contract.records) {
   const isPreservedMyPublishMedia =
@@ -261,6 +263,7 @@ invariant(
       item.href &&
       !item.href.startsWith("/daily/") &&
       item.section !== "ai-tools" &&
+      item.section !== "model-evals" &&
       item.section !== "my-publish" &&
       item.section !== "prompts",
   ),
@@ -446,10 +449,6 @@ const specializedMarkers = new Map([
       'id="workbuddy-tutorials-search"',
       "content-directory--workbuddy-tutorials",
     ],
-  ],
-  [
-    "model-evals/index.html",
-    ['id="eval-search"', "model-evals.json", "<script"],
   ],
   [
     "highlights/index.html",

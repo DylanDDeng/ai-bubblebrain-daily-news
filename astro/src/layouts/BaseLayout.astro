@@ -32,7 +32,6 @@ const navLinks = isEnglish
 	? [
 			{ href: '/search/', label: 'Search' },
 			{ href: '/en/highlights/', label: 'Highlights' },
-			{ href: '/en/model-evals/', label: 'Model reviews' },
 			{ href: '/en/about/', label: 'About' },
 		]
 	: [
@@ -40,7 +39,6 @@ const navLinks = isEnglish
 			{ href: '/codex-tutorials/', label: 'Codex 教程' },
 			{ href: '/workbuddy-tutorials/', label: 'WorkBuddy 教程' },
 			{ href: '/highlights/', label: '精选阅读' },
-			{ href: '/model-evals/', label: '模型评测' },
 			{ href: '/about/', label: '关于' },
 		];
 ---
@@ -145,8 +143,8 @@ const navLinks = isEnglish
 						<p>
 							{
 								isEnglish
-									? 'A curated AI knowledge base for sources, evaluations, and field notes.'
-									: '一个持续整理的个人 AI 知识库，收录 Codex 与 WorkBuddy 教程、一手资料、模型评测与实践笔记。'
+									? 'A curated AI knowledge base for sources and field notes.'
+									: '一个持续整理的个人 AI 知识库，收录 Codex 与 WorkBuddy 教程、一手资料与实践笔记。'
 							}
 						</p>
 					</div>
@@ -157,9 +155,6 @@ const navLinks = isEnglish
 							{!isEnglish && <a href="/workbuddy-tutorials/">WorkBuddy 教程</a>}
 							<a href={isEnglish ? '/en/highlights/' : '/highlights/'}
 								>{isEnglish ? 'Highlights' : '精选阅读'}</a
-							>
-							<a href={isEnglish ? '/en/model-evals/' : '/model-evals/'}
-								>{isEnglish ? 'Model reviews' : '模型评测'}</a
 							>
 						</nav>
 						<nav aria-label={isEnglish ? 'Resources' : '更多资源'}>
