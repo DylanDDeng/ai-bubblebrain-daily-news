@@ -117,7 +117,7 @@ export async function buildKnowledgeSearchIndex(
 		legacyEntries.filter(legacyEntryIsRoutable).map((entry) => entry.route),
 	);
 	const staticRoot = resolve(process.cwd(), '../static', locale === 'en' ? 'en' : '');
-	for (const section of ['curations', 'model-evals'] as const) {
+	for (const section of ['curations'] as const) {
 		const records = JSON.parse(
 			await readFile(resolve(staticRoot, `${section}.json`), 'utf8'),
 		) as DirectoryRecord[];
