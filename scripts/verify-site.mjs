@@ -228,6 +228,8 @@ const removedPrefixes = [
   "/en/my-publish",
   "/prompts",
   "/en/prompts",
+  "/curations",
+  "/en/curations",
   "/model-evals",
   "/en/model-evals",
 ];
@@ -263,12 +265,19 @@ invariant(
       item.href &&
       !item.href.startsWith("/daily/") &&
       item.section !== "ai-tools" &&
+      item.section !== "curations" &&
       item.section !== "model-evals" &&
       item.section !== "my-publish" &&
       item.section !== "prompts",
   ),
   "Knowledge search still contains hidden-section links",
 );
+for (const route of ["/curations.json", "/en/curations.json"]) {
+  invariant(
+    !byRoute.has(route),
+    `Removed curation data is still published: ${route}`,
+  );
+}
 for (const item of searchIndex.items) {
   invariant(
     byRoute.get(item.href)?.status === 200,

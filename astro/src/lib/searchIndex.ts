@@ -57,26 +57,6 @@ function stringTags(value: unknown): string[] {
 		: [];
 }
 
-interface DirectoryRecord {
-	id: string;
-	title?: string;
-	name?: string;
-	description?: string;
-	company?: string;
-	domain?: string;
-	releaseDate?: string;
-	date?: string;
-	tags?: string[];
-	detailUrl?: string;
-}
-
-function sortableDate(value: string | undefined): string | null {
-	if (!value) return null;
-	if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
-	if (/^\d{4}-\d{2}$/.test(value)) return `${value}-01`;
-	return null;
-}
-
 export async function buildKnowledgeSearchIndex(
 	options: { locale?: LegacyLocale } = {},
 ): Promise<KnowledgeSearchIndex> {
@@ -113,43 +93,6 @@ export async function buildKnowledgeSearchIndex(
 			const dateOrder = (right.date ?? '').localeCompare(left.date ?? '');
 			return dateOrder || left.title.localeCompare(right.title, locale);
 		});
-	const knownRoutes = new Set(
-		legacyEntries.filter(legacyEntryIsRoutable).map((entry) => entry.route),
-	);
-	const staticRoot = resolve(process.cwd(), '../static', locale === 'en' ? 'en' : '');
-	for (const section of ['curations'] as const) {
-		const records = JSON.parse(
-			await readFile(resolve(staticRoot, `${section}.json`), 'utf8'),
-		) as DirectoryRecord[];
-		for (const record of records) {
-			if (record.detailUrl && knownRoutes.has(record.detailUrl)) continue;
-			const title = record.title ?? record.name ?? record.id;
-			const tags = stringTags(record.tags);
-			const sectionLabel = sectionLabels[locale][section];
-			const summary =
-				record.description ?? [record.company, record.domain].filter(Boolean).join(' · ');
-			items.push({
-				key: `${section}:${record.id}`,
-				href: `${locale === 'en' ? '/en' : ''}/${section}/`,
-				title,
-				summary,
-				section,
-				section_label: sectionLabel,
-				date: sortableDate(record.date ?? record.releaseDate),
-				tags,
-				search_text: [title, summary, record.company, record.domain, sectionLabel, ...tags]
-					.filter(Boolean)
-					.join(' ')
-					.normalize('NFKC')
-					.toLocaleLowerCase(locale),
-			});
-		}
-	}
-	items.sort((left, right) => {
-		const dateOrder = (right.date ?? '').localeCompare(left.date ?? '');
-		return dateOrder || left.title.localeCompare(right.title, locale);
-	});
-
 	return {
 		schema_version: 2,
 		item_count: items.length,
@@ -157,5 +100,3 @@ export async function buildKnowledgeSearchIndex(
 		items,
 	};
 }
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';

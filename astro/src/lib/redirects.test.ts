@@ -4,10 +4,20 @@ import type { LegacyContentEntry } from './legacyContent';
 import { legacyRedirectLines, renderCloudflareRedirects } from './redirectManifest';
 
 const entry = {
-	route: '/curations/amo-bench/',
-	section: 'curations',
-	aliases: ['/curations/amo-gemini/'],
-} as LegacyContentEntry;
+	id: 'example.md',
+	route: '/highlights/example/',
+	section: 'highlights',
+	locale: 'zh-CN',
+	title: 'Example',
+	description: '',
+	date: null,
+	draft: false,
+	aliases: ['/highlights/legacy-example/'],
+	isIndex: false,
+	sourcePath: '/content/highlights/example.md',
+	body: '',
+	frontmatter: { kind: 'article' },
+} satisfies LegacyContentEntry;
 
 const hiddenToolEntry = {
 	route: '/ai-tools/image-compress/',
@@ -15,10 +25,16 @@ const hiddenToolEntry = {
 	aliases: ['/tools/image-compress/'],
 } as LegacyContentEntry;
 
+const hiddenCurationEntry = {
+	route: '/curations/amo-bench/',
+	section: 'curations',
+	aliases: ['/curations/amo-gemini/'],
+} as LegacyContentEntry;
+
 describe('Cloudflare redirects', () => {
 	it('keeps content aliases and feed compatibility redirects', () => {
 		expect(legacyRedirectLines([entry])).toEqual([
-			'/curations/amo-gemini/ /curations/amo-bench/ 301',
+			'/highlights/legacy-example/ /highlights/example/ 301',
 		]);
 		const redirects = renderCloudflareRedirects([entry]);
 		expect(redirects).toContain('/index.xml /rss.xml 301');
@@ -26,9 +42,9 @@ describe('Cloudflare redirects', () => {
 		expect(redirects).not.toContain('/daily/');
 	});
 
-	it('does not publish aliases for temporarily hidden sections', () => {
-		expect(legacyRedirectLines([entry, hiddenToolEntry])).toEqual([
-			'/curations/amo-gemini/ /curations/amo-bench/ 301',
+	it('does not publish aliases for hidden sections', () => {
+		expect(legacyRedirectLines([entry, hiddenToolEntry, hiddenCurationEntry])).toEqual([
+			'/highlights/legacy-example/ /highlights/example/ 301',
 		]);
 	});
 });
