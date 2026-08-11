@@ -1078,7 +1078,9 @@ h1 {
 
 .legacy-content img,
 .article-content img {
+	width: auto;
 	max-width: min(100%, 680px);
+	object-fit: contain;
 }
 
 .error-page nav,
