@@ -14,28 +14,23 @@
 	src: url('/fonts/inter-latin.woff2') format('woff2');
 }
 
-/*
- * Bubble's Brain × editorial neo-brutalism
- *
- * A restrained hybrid: hard edges and offset shadows establish the brand,
- * while article and directory surfaces stay quiet enough for long reading.
- */
+/* Bubble's Brain kinetic editorial system */
 
 :root {
-	--paper: #fbf7ef;
-	--paper-raised: #fffdfa;
-	--paper-muted: #edf1f8;
-	--ink: #171b23;
-	--ink-soft: #414a59;
-	--ink-faint: #697180;
-	--rule: #aeb7c5;
-	--blue: #1f62d3;
-	--blue-strong: #004fc4;
-	--blue-soft: #dfeaff;
-	--accent: #ffd83d;
-	--accent-soft: #fff0a8;
-	--focus: #005de0;
-	--hard-shadow: #171b23;
+	--paper: #ffffff;
+	--paper-raised: #ffffff;
+	--paper-muted: #f5f5f2;
+	--ink: #000000;
+	--ink-soft: #333333;
+	--ink-faint: #6c6c6c;
+	--rule: #dedede;
+	--blue: #ff4d2e;
+	--blue-strong: #d9341c;
+	--blue-soft: #fff0ec;
+	--accent: #ff4d2e;
+	--accent-soft: #fff0ec;
+	--focus: #ff4d2e;
+	--hard-shadow: transparent;
 	--sans:
 		Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', ui-sans-serif, system-ui,
 		sans-serif;
@@ -49,23 +44,6 @@
 	--serif: var(--sans);
 }
 
-:root[data-theme='dark'] {
-	--paper: #11151d;
-	--paper-raised: #171c25;
-	--paper-muted: #202a3a;
-	--ink: #f3efe6;
-	--ink-soft: #c8ced8;
-	--ink-faint: #9ca8ba;
-	--rule: #65718a;
-	--blue: #70a4ff;
-	--blue-strong: #a8c7ff;
-	--blue-soft: #253755;
-	--accent: #fad13b;
-	--accent-soft: #4b421c;
-	--focus: #8fb9ff;
-	--hard-shadow: #05070a;
-}
-
 body {
 	background: var(--paper);
 	color: var(--ink);
@@ -74,13 +52,13 @@ body {
 
 ::selection {
 	background: var(--accent);
-	color: #171b23;
+	color: #ffffff;
 }
 
 h1,
 h2,
 h3 {
-	color: var(--blue);
+	color: var(--ink);
 }
 
 .site-frame {
@@ -90,22 +68,47 @@ h3 {
 
 .site-rail {
 	position: sticky;
-	top: 16px;
+	top: 12px;
 	z-index: 100;
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	align-items: center;
-	width: min(calc(100% - 32px), 1200px);
+	width: min(calc(100% - 64px), 1320px);
 	height: auto;
-	margin: 16px auto 0;
-	padding: 8px 10px;
-	border: 2px solid var(--ink);
-	border-radius: 8px;
-	background: var(--paper-raised);
-	box-shadow: 5px 5px 0 var(--blue);
+	margin: 12px auto 0;
+	padding: 12px 16px;
+	border: 1px solid rgb(255 255 255 / 0.58);
+	border-radius: 18px;
+	background: linear-gradient(
+		135deg,
+		rgb(255 255 255 / 0.34),
+		rgb(255 255 255 / 0.16) 58%,
+		rgb(255 240 236 / 0.18)
+	);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.95),
+		inset 0 -1px 0 rgb(255 77 46 / 0.07),
+		0 12px 36px rgb(28 15 52 / 0.08),
+		0 2px 8px rgb(28 15 52 / 0.05);
+	backdrop-filter: blur(11px) saturate(165%) contrast(104%);
+	-webkit-backdrop-filter: blur(11px) saturate(165%) contrast(104%);
+}
+
+.site-rail::after {
+	position: absolute;
+	top: 1px;
+	right: 18px;
+	left: 18px;
+	height: 42%;
+	border-radius: 16px 16px 50% 50%;
+	background: linear-gradient(180deg, rgb(255 255 255 / 0.18), transparent);
+	content: '';
+	pointer-events: none;
 }
 
 .rail-topline {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	align-items: center;
 }
@@ -115,23 +118,23 @@ h3 {
 	align-items: center;
 	gap: 10px;
 	font-family: inherit;
-	font-size: 0.92rem;
-	font-weight: 700;
-	letter-spacing: -0.02em;
+	font-size: 0.78rem;
+	font-weight: 650;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 }
 
 .site-brand-mark {
 	display: inline-grid;
 	overflow: hidden;
-	width: 40px;
-	height: 40px;
-	flex: 0 0 40px;
-	border: 1px solid var(--ink);
-	border-radius: 5px;
-	background: var(--blue);
-	color: #ffffff;
+	width: 32px;
+	height: 32px;
+	flex: 0 0 32px;
+	border: 0;
+	border-radius: 8px;
+	background: var(--paper-muted);
 	place-items: center;
-	box-shadow: 2px 2px 0 var(--accent);
+	box-shadow: none;
 	text-decoration: none;
 }
 
@@ -147,6 +150,8 @@ h3 {
 }
 
 .rail-menu {
+	position: relative;
+	z-index: 1;
 	display: flex;
 	min-width: 0;
 	flex-direction: row;
@@ -167,13 +172,14 @@ h3 {
 }
 
 .rail-nav a {
-	padding: 10px 11px;
-	border: 1px solid transparent;
-	border-radius: 3px;
+	padding: 9px 12px;
+	border: 0;
+	border-radius: 0;
 	color: var(--ink);
-	font-size: 0.78rem;
-	font-weight: 550;
-	letter-spacing: 0;
+	font-size: 0.7rem;
+	font-weight: 650;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 	transition:
 		color 160ms ease,
 		background 160ms ease;
@@ -181,9 +187,8 @@ h3 {
 
 .rail-nav a:hover,
 .rail-nav a[aria-current='page'] {
-	border-color: var(--ink);
-	background: var(--accent);
-	color: #171b23;
+	background: transparent;
+	color: var(--blue);
 }
 
 .rail-nav a[aria-current='page']::before {
@@ -206,8 +211,8 @@ h3 {
 	width: auto;
 	min-height: 38px;
 	padding: 0 12px;
-	border: 1px solid var(--ink);
-	border-radius: 3px;
+	border: 1px solid var(--rule);
+	border-radius: 999px;
 	background: var(--paper-raised);
 	color: var(--ink);
 	font-size: 0.72rem;
@@ -219,10 +224,10 @@ h3 {
 .rail-controls > a:hover,
 .rail-controls > button:hover,
 .rail-controls .auth-trigger:hover {
-	border-color: var(--ink);
-	box-shadow: 2px 2px 0 var(--accent);
-	color: var(--ink);
-	transform: translate(-1px, -1px);
+	border-color: var(--blue);
+	box-shadow: none;
+	color: var(--blue);
+	transform: none;
 }
 
 .rail-controls .auth-panel {
@@ -230,9 +235,9 @@ h3 {
 	right: 0;
 	bottom: auto;
 	left: auto;
-	border: 2px solid var(--ink);
-	border-radius: 4px;
-	box-shadow: 5px 5px 0 var(--blue);
+	border: 1px solid var(--rule);
+	border-radius: 12px;
+	box-shadow: 0 18px 50px rgb(0 0 0 / 0.1);
 }
 
 .site-canvas {
@@ -249,10 +254,14 @@ h3 {
 	display: inline-flex;
 	width: fit-content;
 	padding: 4px 9px;
-	border: 1px solid var(--ink);
-	border-radius: 2px;
-	background: var(--accent);
-	color: #171b23;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--blue);
+	font-family: var(--sans);
+	font-size: 0.68rem;
+	font-weight: 650;
+	letter-spacing: 0.16em;
 }
 
 .directory-hero {
@@ -319,7 +328,7 @@ h3 {
 	width: min(calc(100% - 48px), 1200px);
 	margin: 72px auto 0;
 	padding: 48px 0 28px;
-	border-top: 2px solid var(--ink);
+	border-top: 1px solid var(--rule);
 }
 
 .site-footer-intro {
@@ -399,10 +408,11 @@ h3 {
 		position: sticky;
 		top: 10px;
 		display: block;
-		width: min(calc(100% - 24px), 1200px);
+		width: calc(100% - 20px);
 		margin-top: 10px;
-		padding: 8px 10px;
-		border-bottom: 1px solid color-mix(in srgb, var(--blue) 14%, var(--rule));
+		padding: 10px 12px;
+		border: 1px solid rgb(255 255 255 / 0.58);
+		border-radius: 16px;
 	}
 
 	.site-brand-name {
@@ -417,9 +427,9 @@ h3 {
 		width: 40px;
 		height: 40px;
 		min-height: 40px;
-		border: 1px solid var(--ink);
-		border-radius: 3px;
-		background: var(--paper-raised);
+		border: 1px solid var(--rule);
+		border-radius: 50%;
+		background: rgb(255 255 255 / 0.46);
 	}
 
 	.mobile-nav-toggle {
@@ -427,25 +437,28 @@ h3 {
 		width: 40px;
 		height: 40px;
 		margin-left: 4px;
-		border: 1px solid var(--ink);
-		border-radius: 3px;
-		background: var(--paper-raised);
+		border: 0;
+		border-radius: 50%;
+		background: var(--ink);
+		color: #ffffff;
 		place-items: center;
 	}
 
 	.rail-menu {
 		position: absolute;
-		top: calc(100% + 8px);
+		top: calc(100% + 10px);
 		right: 0;
 		left: 0;
 		display: none;
 		max-height: calc(100dvh - 96px);
 		overflow-y: auto;
-		padding: 14px;
-		border: 2px solid var(--ink);
-		border-radius: 4px;
-		background: var(--paper-raised);
-		box-shadow: 5px 5px 0 var(--blue);
+		padding: 20px 16px 28px;
+		border: 1px solid rgb(255 255 255 / 0.74);
+		border-radius: 16px;
+		background: rgb(255 255 255 / 0.78);
+		box-shadow: 0 18px 40px rgb(0 0 0 / 0.1);
+		backdrop-filter: blur(24px) saturate(170%);
+		-webkit-backdrop-filter: blur(24px) saturate(170%);
 	}
 
 	.rail-menu.is-open {
@@ -458,7 +471,7 @@ h3 {
 		margin: 0 0 8px;
 		padding: 10px 8px 14px;
 		border-block: 0;
-		border-bottom: 1px dashed var(--rule);
+		border-bottom: 1px solid var(--rule);
 	}
 
 	.rail-today strong {
@@ -473,8 +486,8 @@ h3 {
 	}
 
 	.rail-nav a {
-		padding: 11px 10px;
-		font-size: 0.88rem;
+		padding: 14px 8px;
+		font-size: 1.15rem;
 	}
 
 	.rail-controls {
@@ -483,7 +496,7 @@ h3 {
 		gap: 8px;
 		margin: 12px 0 0;
 		padding: 12px 0 0;
-		border-top: 1px dashed var(--rule);
+		border-top: 1px solid var(--rule);
 		border-left: 0;
 	}
 

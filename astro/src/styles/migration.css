@@ -109,6 +109,13 @@ a:hover {
 	outline-offset: 3px;
 }
 
+input[type='search']:focus,
+input[type='search']:focus-visible {
+	border-color: var(--rule);
+	box-shadow: none;
+	outline: 0;
+}
+
 button,
 input,
 select,
