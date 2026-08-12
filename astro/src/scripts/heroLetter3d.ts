@@ -99,6 +99,7 @@ export const mountHeroLetter3d = (host: HTMLElement) => {
 	let pointerX = 0;
 	let pointerY = 0;
 	let animationFrame = 0;
+	let isReady = false;
 	const clock = new THREE.Clock();
 
 	const onPointerMove = (event: PointerEvent) => {
@@ -129,6 +130,11 @@ export const mountHeroLetter3d = (host: HTMLElement) => {
 			letter.rotation.y = -0.34;
 		}
 		renderer.render(scene, camera);
+		if (!isReady) {
+			isReady = true;
+			host.classList.add('is-ready');
+			host.closest('.knowledge-home-hero')?.classList.add('is-3d-ready');
+		}
 		animationFrame = window.requestAnimationFrame(render);
 	};
 
@@ -137,7 +143,6 @@ export const mountHeroLetter3d = (host: HTMLElement) => {
 	window.addEventListener('pointermove', onPointerMove, { passive: true });
 	resize();
 	render();
-	host.classList.add('is-ready');
 
 	return () => {
 		window.cancelAnimationFrame(animationFrame);
@@ -148,6 +153,7 @@ export const mountHeroLetter3d = (host: HTMLElement) => {
 		sideMaterial.dispose();
 		renderer.dispose();
 		renderer.domElement.remove();
+		host.closest('.knowledge-home-hero')?.classList.remove('is-3d-ready');
 		host.dataset.mounted = 'false';
 	};
 };

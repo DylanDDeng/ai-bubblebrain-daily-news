@@ -23,7 +23,6 @@
 .knowledge-home-badges span,
 .knowledge-home-section-heading > div > p,
 .knowledge-recent-meta,
-.knowledge-collection-mark,
 .knowledge-collection-count {
 	font-family: var(--mono);
 	font-size: 0.68rem;
@@ -426,15 +425,6 @@
 	font-size: 1.35rem;
 }
 
-.knowledge-collection-mark {
-	position: absolute;
-	top: 26px;
-	right: 22px;
-	padding: 0;
-	background: transparent;
-	color: var(--blue);
-}
-
 .knowledge-collection-card h3 {
 	margin: 0;
 	color: var(--ink);
@@ -753,19 +743,23 @@
 .knowledge-home-hero h1 b {
 	display: block;
 	font: inherit;
+	transform: translateY(110%);
+}
+
+.knowledge-home-hero.is-3d-ready h1 b {
 	animation: hero-title-reveal 760ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.knowledge-home-hero h1 span:nth-child(1) b {
-	animation-delay: 400ms;
+.knowledge-home-hero.is-3d-ready h1 span:nth-child(1) b {
+	animation-delay: 0ms;
 }
 
-.knowledge-home-hero h1 span:nth-child(2) b {
-	animation-delay: 540ms;
+.knowledge-home-hero.is-3d-ready h1 span:nth-child(2) b {
+	animation-delay: 90ms;
 }
 
-.knowledge-home-hero h1 span:nth-child(3) b {
-	animation-delay: 680ms;
+.knowledge-home-hero.is-3d-ready h1 span:nth-child(3) b {
+	animation-delay: 180ms;
 }
 
 .knowledge-home > .knowledge-home-section {
@@ -868,5 +862,13 @@
 	.knowledge-home-hero-action,
 	.knowledge-home-hero h1 b {
 		animation: none;
+	}
+
+	.knowledge-home-hero-letter canvas {
+		transition: none;
+	}
+
+	.knowledge-home-hero.is-3d-ready h1 b {
+		transform: none;
 	}
 }
