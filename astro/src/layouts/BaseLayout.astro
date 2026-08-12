@@ -50,7 +50,7 @@ const navLinks = isEnglish
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content={description} />
-		<meta name="theme-color" content="#fbf7ef" />
+		<meta name="theme-color" content="#ffffff" />
 		{noindex && <meta name="robots" content="noindex, nofollow" />}
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content={title} />
@@ -71,7 +71,6 @@ const navLinks = isEnglish
 			href={isEnglish && alternateUrl ? alternateUrl : canonicalUrl}
 		/>
 		<title>{title}</title>
-		<script is:inline src="/js/theme-bootstrap.js"></script>
 		<ClientRouter fallback="swap" />
 		<script is:inline type="module" src="/js/navigation.js"></script>
 	</head>
@@ -82,7 +81,7 @@ const navLinks = isEnglish
 				<div class="rail-topline">
 					<a class="site-brand" href={homeHref} aria-label="Bubble's Brain">
 						<span class="site-brand-mark" aria-hidden="true">
-							<img src="/favicon-512x512.png" alt="" width="40" height="40" />
+							<img src="/favicon-512x512.png" alt="" width="32" height="32" />
 						</span>
 						<span class="site-brand-name">Bubble's Brain</span>
 					</a>
@@ -119,14 +118,6 @@ const navLinks = isEnglish
 					<div class="rail-controls">
 						<AuthControls locale={lang} />
 						<a href={languageHref}>{isEnglish ? '中文' : 'EN'}</a>
-						<button
-							type="button"
-							data-theme-toggle
-							aria-label={isEnglish ? 'Toggle theme' : '切换主题'}
-						>
-							<i class="ph ph-sun" data-theme-icon aria-hidden="true"></i>
-							<span>{isEnglish ? 'Light / dark' : '浅色 / 深色'}</span>
-						</button>
 					</div>
 					<p class="rail-motto">{isEnglish ? 'Build links, not noise.' : '建立连接，长期主义。'}</p>
 				</div>
@@ -138,7 +129,7 @@ const navLinks = isEnglish
 				<footer class="site-footer">
 					<div class="site-footer-intro">
 						<a class="site-brand-mark" href={homeHref} aria-label="Bubble's Brain">
-							<img src="/favicon-512x512.png" alt="" width="40" height="40" />
+							<img src="/favicon-512x512.png" alt="" width="32" height="32" />
 						</a>
 						<p>
 							{

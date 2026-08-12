@@ -81,68 +81,36 @@ const labelFor = (section: LegacySection) =>
 
 <section class="knowledge-home">
 	<header class="knowledge-home-hero">
-		<div class="knowledge-home-hero-copy">
-			<div class="knowledge-home-badges">
-				<span>{isEnglish ? 'PERSONAL AI LIBRARY' : '个人 AI 知识库'}</span>
-				<span>{isEnglish ? 'CURATED · BILINGUAL' : '人工整理 · 双语内容'}</span>
-			</div>
-			<h1>
-				{isEnglish ? 'Turn AI practice into durable knowledge.' : 'AI 知识，随时复用。'}
-			</h1>
-			<p class="knowledge-home-lede">
-				{
-					isEnglish
-						? 'Curated sources, practical guides, and field notes—organized for retrieval rather than urgency.'
-						: '精选教程、一手资料与实践笔记，方便检索与复用。'
-				}
-			</p>
-			<form action="/search/" method="get" role="search" class="knowledge-home-search">
-				<label class="sr-only" for={`home-search-${locale}`}
-					>{isEnglish ? 'Search the knowledge base' : '搜索知识库'}</label
-				>
-				<i class="ph ph-magnifying-glass" aria-hidden="true"></i>
-				<input
-					id={`home-search-${locale}`}
-					name="q"
-					type="search"
-					placeholder={isEnglish ? 'Search guides, highlights, notes…' : '搜索教程、文章、笔记……'}
-				/>
-				<button type="submit">{isEnglish ? 'Search' : '搜索'}</button>
-			</form>
+		<div class="knowledge-home-hero-letter" data-hero-letter-3d aria-hidden="true">
+			<span class="knowledge-home-hero-letter-fallback">B</span>
 		</div>
+		<div class="knowledge-home-hero-wash" aria-hidden="true"></div>
 
-		<div class="knowledge-map" aria-label={isEnglish ? 'Knowledge map' : '知识地图'}>
-			<div class="knowledge-map-chrome">
-				<span class="knowledge-map-lights" aria-hidden="true"><i></i><i></i><i></i></span>
-				<span>bubblenews.today</span>
+		<div class="knowledge-home-hero-inner">
+			<div class="knowledge-home-hero-top">
+				<p>{isEnglish ? 'PERSONAL AI KNOWLEDGE BASE' : '个人 AI 知识库'}</p>
 			</div>
-			<div class="knowledge-map-body">
-				<header>
-					<span class="knowledge-map-icon"><i class="ph ph-books" aria-hidden="true"></i></span>
-					<div>
-						<strong>{isEnglish ? 'Knowledge map' : '知识地图'}</strong>
-						<small>{isEnglish ? 'organized for retrieval' : '按用途组织，随时可检索'}</small>
-					</div>
-					<em>v1.0</em>
-				</header>
-				<div class="knowledge-map-grid">
-					{
-						sectionCopy.slice(0, 4).map((item) => (
-							<a href={`${prefix}/${item.section}/`}>
-								<i class={`ph ${item.icon}`} aria-hidden="true" />
-								<strong>{item.label}</strong>
-								<span>
-									{countFor(item.section)} {isEnglish ? 'entries' : '篇内容'}
-								</span>
-							</a>
-						))
-					}
+
+			<div class="knowledge-home-hero-bottom">
+				<div class="knowledge-home-hero-action">
+					<a href="/search/">
+						{isEnglish ? 'SEARCH THE LIBRARY' : '搜索知识库'}
+						<i class="ph ph-arrow-up-right" aria-hidden="true"></i>
+					</a>
 				</div>
-				<div class="knowledge-map-routes">
-					<span>{isEnglish ? 'START HERE' : '从这里开始'}</span>
-					<a href="#library">#library</a>
-					<a href="#recent">#recent</a>
-					<a href="/search/">/search</a>
+
+				<div class="knowledge-home-hero-title-row">
+					<p class="knowledge-home-hero-description">
+						{
+							isEnglish
+								? 'CURATED SOURCES, PRACTICAL GUIDES, AND FIELD NOTES—ORGANIZED FOR RETRIEVAL.'
+								: '精选教程、一手资料与实践笔记，整理成可检索、可长期复用的 AI 知识。'
+						}
+					</p>
+					<h1 aria-label="Bubble's Knowledege">
+						<span><b>BUBBLE'S</b></span>
+						<span><b>KNOWLEDEGE</b></span>
+					</h1>
 				</div>
 			</div>
 		</div>
@@ -220,3 +188,16 @@ const labelFor = (section: LegacySection) =>
 		</div>
 	</section>
 </section>
+
+<script>
+	import { mountHeroLetter3d } from '../scripts/heroLetter3d';
+
+	const mountLetters = () => {
+		document.querySelectorAll<HTMLElement>('[data-hero-letter-3d]').forEach((letter) => {
+			mountHeroLetter3d(letter);
+		});
+	};
+
+	mountLetters();
+	document.addEventListener('astro:page-load', mountLetters);
+</script>

@@ -27,8 +27,12 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-07-29-templates-variables/',
 	'/highlights/2026-07-30-the-session-you-cannot-take-with-you/',
 	'/en/highlights/2026-07-30-the-session-you-cannot-take-with-you/',
+	'/highlights/2026-07-30-ai-basics-cli-harness-skills-html-github/',
+	'/en/highlights/2026-07-30-ai-basics-cli-harness-skills-html-github/',
 	'/highlights/2026-08-09-minimax-h3-ama/',
 	'/en/highlights/2026-08-09-minimax-h3-ama/',
+	'/highlights/2026-08-10-inside-the-harness-pi/',
+	'/en/highlights/2026-08-10-inside-the-harness-pi/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -36,6 +40,34 @@ function highlightRecords(entries: LegacyContentEntry[]) {
 }
 
 describe('unified highlights content', () => {
+	it('keeps the Inside the Harness article complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'inside-the-harness-pi',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(7);
+			expect(entry.body).toContain('25,635');
+			expect(entry.body).toContain('pi-extensions');
+			expect(entry.body).toContain('bosun');
+		}
+	});
+
+	it('keeps the AI basics article bilingual with all source media', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'ai-basics-cli-harness-skills-html-github',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(
+				entry.body.match(/\/media\/highlights\/ai-basics-cli-harness-skills-html-github\//g),
+			).toHaveLength(12);
+			expect(entry.body).toContain('npx skills add heygen-com/hyperframes --full-depth');
+		}
+	});
+
 	it('preserves every migrated Chinese and English record in Markdown', async () => {
 		const records = highlightRecords(await loadLegacyContent());
 		const chinese = records.filter((entry) => entry.locale === 'zh-CN');

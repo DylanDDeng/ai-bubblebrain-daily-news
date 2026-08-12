@@ -8,10 +8,7 @@ const index = await buildKnowledgeSearchIndex();
 const sectionLabels = new Map(index.items.map((item) => [item.section, item.section_label]));
 ---
 
-<BaseLayout
-	title="知识搜索 · Bubble's Brain"
-	description="搜索 Codex、WorkBuddy 教程与知识文章"
->
+<BaseLayout title="知识搜索 · Bubble's Brain" description="搜索 Codex、WorkBuddy 教程与知识文章">
 	<section class="knowledge-shell knowledge-search" data-knowledge-search>
 		<header class="knowledge-heading knowledge-search-heading">
 			<div>
@@ -39,13 +36,7 @@ const sectionLabels = new Map(index.items.map((item) => [item.section, item.sect
 			<div class="knowledge-filter-field">
 				<i class="ph ph-books" aria-hidden="true"></i>
 				<label class="sr-only" for="knowledge-section">知识栏目</label>
-				<select
-					id="knowledge-section"
-					name="section"
-					hidden
-					tabindex="-1"
-					aria-hidden="true"
-				>
+				<select id="knowledge-section" name="section" hidden tabindex="-1" aria-hidden="true">
 					<option value="">全部栏目</option>
 					{
 						index.sections.map((section) => (
@@ -78,9 +69,7 @@ const sectionLabels = new Map(index.items.map((item) => [item.section, item.sect
 					</div>
 				</details>
 			</div>
-			<button class="knowledge-search-submit" type="submit"
-				><span>搜索</span><i class="ph ph-arrow-right" aria-hidden="true"></i></button
-			>
+			<button class="knowledge-search-submit" type="submit">搜索</button>
 		</form>
 
 		<div class="knowledge-search-status" aria-live="polite">
