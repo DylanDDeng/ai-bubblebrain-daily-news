@@ -24,7 +24,6 @@ const sectionCopy: Array<{
 	section: LegacySection;
 	label: string;
 	description: string;
-	mark: string;
 	icon: string;
 }> = isEnglish
 	? [
@@ -32,7 +31,6 @@ const sectionCopy: Array<{
 				section: 'highlights',
 				label: 'Highlights',
 				description: 'Curated primary sources and durable explainers.',
-				mark: 'READ',
 				icon: 'ph-book-open-text',
 			},
 		]
@@ -41,21 +39,18 @@ const sectionCopy: Array<{
 				section: 'codex-tutorials',
 				label: 'Codex 教程',
 				description: '从入门到实战，系统掌握 Codex 的使用方法。',
-				mark: '上手',
 				icon: 'ph-terminal-window',
 			},
 			{
 				section: 'workbuddy-tutorials',
 				label: 'WorkBuddy 教程',
 				description: '从办公协作到自动化，系统掌握 WorkBuddy 的使用方法。',
-				mark: '办公',
 				icon: 'ph-briefcase',
 			},
 			{
 				section: 'highlights',
 				label: '精选阅读',
 				description: '值得长期保存的一手资料与深度解读。',
-				mark: '阅读',
 				icon: 'ph-book-open-text',
 			},
 		];
@@ -116,13 +111,6 @@ const labelFor = (section: LegacySection) =>
 			<div>
 				<p>{isEnglish ? 'EXPLORE THE LIBRARY' : '浏览知识库'}</p>
 				<h2 id={`library-heading-${locale}`}>{isEnglish ? 'Knowledge collections' : '知识栏目'}</h2>
-				<span
-					>{
-						isEnglish
-							? 'One focused collection, one searchable archive.'
-							: '三个清晰栏目，组成一个可检索的长期知识档案。'
-					}</span
-				>
 			</div>
 		</header>
 		<div class="knowledge-collection-grid">
@@ -132,7 +120,6 @@ const labelFor = (section: LegacySection) =>
 						<span class="knowledge-collection-icon">
 							<i class={`ph ${item.icon}`} aria-hidden="true" />
 						</span>
-						<span class="knowledge-collection-mark">{item.mark}</span>
 						<h3>{item.label}</h3>
 						<p>{item.description}</p>
 						<span class="knowledge-collection-count">

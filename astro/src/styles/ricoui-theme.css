@@ -371,7 +371,7 @@ h3 {
 .site-footer-meta {
 	display: flex;
 	grid-column: 1 / -1;
-	justify-content: space-between;
+	justify-content: flex-start;
 	gap: 20px;
 	padding-top: 24px;
 	border-top: 1px solid var(--rule);
