@@ -33,6 +33,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-08-09-minimax-h3-ama/',
 	'/highlights/2026-08-10-inside-the-harness-pi/',
 	'/en/highlights/2026-08-10-inside-the-harness-pi/',
+	'/highlights/2026-08-07-how-to-keep-thinking/',
+	'/en/highlights/2026-08-07-how-to-keep-thinking/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -40,6 +42,19 @@ function highlightRecords(entries: LegacyContentEntry[]) {
 }
 
 describe('unified highlights content', () => {
+	it('keeps the How to keep thinking article complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'how-to-keep-thinking',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(3);
+			expect(entry.body).toContain('https://www.youtube.com/watch?v=f84n5oFoZBc');
+			expect(entry.body).toContain('[^3]');
+		}
+	});
+
 	it('keeps the Inside the Harness article complete in both languages', async () => {
 		const records = highlightRecords(await loadLegacyContent()).filter(
 			(entry) => entry.frontmatter.externalId === 'inside-the-harness-pi',
