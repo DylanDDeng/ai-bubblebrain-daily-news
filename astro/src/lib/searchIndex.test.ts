@@ -10,6 +10,7 @@ describe('knowledge search index', () => {
 		expect(index.item_count).toBeGreaterThan(0);
 		expect(index.sections).toContain('highlights');
 		expect(index.sections).toContain('codex-tutorials');
+		expect(index.sections).toContain('deepseek-harness-tutorials');
 		expect(index.sections).toContain('workbuddy-tutorials');
 		expect(index.items).toEqual(
 			expect.arrayContaining([
@@ -24,6 +25,18 @@ describe('knowledge search index', () => {
 				expect.objectContaining({
 					href: '/codex-tutorials/codex-app-practical-tips/',
 					section_label: 'Codex 教程',
+				}),
+				expect.objectContaining({
+					href: '/deepseek-harness-tutorials/deepseek-harness-overview/',
+					section_label: 'DeepSeek Harness 教程',
+				}),
+				expect.objectContaining({
+					href: '/deepseek-harness-tutorials/deepseek-harness-getting-started/',
+					section_label: 'DeepSeek Harness 教程',
+				}),
+				expect.objectContaining({
+					href: '/deepseek-harness-tutorials/deepseek-harness-first-plugin/',
+					section_label: 'DeepSeek Harness 教程',
 				}),
 				expect.objectContaining({
 					href: '/workbuddy-tutorials/workbuddy-beginner-guide/',

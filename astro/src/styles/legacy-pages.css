@@ -129,8 +129,8 @@
 }
 
 .content-directory:not(.content-directory--highlights):not(.content-directory--codex-tutorials):not(
-		.content-directory--workbuddy-tutorials
-	)
+		.content-directory--deepseek-harness-tutorials
+	):not(.content-directory--workbuddy-tutorials)
 	article:not(:has(> img)) {
 	grid-template-columns: 1fr;
 }
@@ -185,6 +185,7 @@
 .directory-page:is(
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
+		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-hero {
@@ -195,6 +196,7 @@
 .directory-page:is(
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
+		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar {
@@ -206,6 +208,7 @@
 .directory-page:is(
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
+		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -218,6 +221,7 @@
 .directory-page:is(
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
+		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -232,6 +236,7 @@
 .directory-page:is(
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
+		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -246,6 +251,7 @@
 .directory-page:is(
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
+		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -260,6 +266,7 @@
 /* Highlights uses the same editorial list rhythm as My Writing. */
 .content-directory--highlights,
 .content-directory--codex-tutorials,
+.content-directory--deepseek-harness-tutorials,
 .content-directory--workbuddy-tutorials {
 	display: block;
 	margin-top: 28px;
@@ -269,6 +276,7 @@
 
 .content-directory--highlights article,
 .content-directory--codex-tutorials article,
+.content-directory--deepseek-harness-tutorials article,
 .content-directory--workbuddy-tutorials article {
 	display: grid;
 	grid-template-columns: 112px minmax(0, 1fr);
@@ -280,18 +288,21 @@
 
 .content-directory--highlights article > img,
 .content-directory--codex-tutorials article > img,
+.content-directory--deepseek-harness-tutorials article > img,
 .content-directory--workbuddy-tutorials article > img {
 	display: none;
 }
 
 .content-directory--highlights article > div,
 .content-directory--codex-tutorials article > div,
+.content-directory--deepseek-harness-tutorials article > div,
 .content-directory--workbuddy-tutorials article > div {
 	display: contents;
 }
 
 .content-directory--highlights .directory-item-meta,
 .content-directory--codex-tutorials .directory-item-meta,
+.content-directory--deepseek-harness-tutorials .directory-item-meta,
 .content-directory--workbuddy-tutorials .directory-item-meta {
 	grid-column: 1;
 	grid-row: 1;
@@ -305,12 +316,14 @@
 
 .content-directory--highlights article > div > ul,
 .content-directory--codex-tutorials article > div > ul,
+.content-directory--deepseek-harness-tutorials article > div > ul,
 .content-directory--workbuddy-tutorials article > div > ul {
 	display: none;
 }
 
 .content-directory--highlights h2,
 .content-directory--codex-tutorials h2,
+.content-directory--deepseek-harness-tutorials h2,
 .content-directory--workbuddy-tutorials h2 {
 	grid-column: 2;
 	grid-row: 1;
@@ -323,6 +336,7 @@
 
 .content-directory--highlights h2 + p,
 .content-directory--codex-tutorials h2 + p,
+.content-directory--deepseek-harness-tutorials h2 + p,
 .content-directory--workbuddy-tutorials h2 + p {
 	display: block;
 	grid-column: 2;
@@ -336,6 +350,7 @@
 
 .content-directory--highlights article:hover h2 a,
 .content-directory--codex-tutorials article:hover h2 a,
+.content-directory--deepseek-harness-tutorials article:hover h2 a,
 .content-directory--workbuddy-tutorials article:hover h2 a {
 	color: var(--blue);
 }
@@ -555,6 +570,55 @@
 	color: #f7f7f7;
 }
 
+.article-table-scroll {
+	max-width: 100%;
+	margin: 32px 0 40px;
+	overflow-x: auto;
+	border: 1px solid var(--rule);
+	border-radius: 8px;
+	background: var(--paper-raised);
+	-webkit-overflow-scrolling: touch;
+}
+
+.article-table-scroll:focus-visible {
+	outline: 2px solid var(--blue);
+	outline-offset: 3px;
+}
+
+.article-table-scroll table {
+	width: 100%;
+	min-width: 560px;
+	margin: 0;
+	border-collapse: collapse;
+	font-size: 0.92rem;
+	line-height: 1.55;
+}
+
+.article-table-scroll :is(th, td) {
+	padding: 13px 15px;
+	border-right: 1px solid var(--rule);
+	border-bottom: 1px solid var(--rule);
+	text-align: left;
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+
+.article-table-scroll th {
+	background: var(--paper-muted);
+	font-family: var(--sans);
+	font-size: 0.82rem;
+	font-weight: 650;
+	letter-spacing: 0.02em;
+}
+
+.article-table-scroll tr > :last-child {
+	border-right: 0;
+}
+
+.article-table-scroll tbody tr:last-child td {
+	border-bottom: 0;
+}
+
 .article-content :is(h2, h3) {
 	scroll-margin-top: 104px;
 }
@@ -739,6 +803,7 @@
 
 	.content-directory--highlights article,
 	.content-directory--codex-tutorials article,
+	.content-directory--deepseek-harness-tutorials article,
 	.content-directory--workbuddy-tutorials article {
 		grid-template-columns: 1fr;
 		gap: 8px;
@@ -746,24 +811,28 @@
 
 	.content-directory--highlights :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--codex-tutorials :is(.directory-item-meta, h2, h2 + p),
+	.content-directory--deepseek-harness-tutorials :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--workbuddy-tutorials :is(.directory-item-meta, h2, h2 + p) {
 		grid-column: 1;
 	}
 
 	.content-directory--highlights .directory-item-meta,
 	.content-directory--codex-tutorials .directory-item-meta,
+	.content-directory--deepseek-harness-tutorials .directory-item-meta,
 	.content-directory--workbuddy-tutorials .directory-item-meta {
 		grid-row: 1;
 	}
 
 	.content-directory--highlights h2,
 	.content-directory--codex-tutorials h2,
+	.content-directory--deepseek-harness-tutorials h2,
 	.content-directory--workbuddy-tutorials h2 {
 		grid-row: 2;
 	}
 
 	.content-directory--highlights h2 + p,
 	.content-directory--codex-tutorials h2 + p,
+	.content-directory--deepseek-harness-tutorials h2 + p,
 	.content-directory--workbuddy-tutorials h2 + p {
 		grid-row: 3;
 	}
@@ -832,6 +901,14 @@
 	.content-directory article {
 		grid-template-columns: 64px minmax(0, 1fr);
 		padding: 18px;
+	}
+
+	.content-directory--highlights article,
+	.content-directory--codex-tutorials article,
+	.content-directory--deepseek-harness-tutorials article,
+	.content-directory--workbuddy-tutorials article {
+		grid-template-columns: 1fr;
+		padding: 28px 0;
 	}
 
 	.content-directory article > img {

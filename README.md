@@ -5,6 +5,7 @@ Bubble's Brain 是一个面向 AI 实践者的个人知识库，用来沉淀值�
 站点内容包括：
 
 - Codex 教程：从安装入门到真实工作流的系统指南。
+- DeepSeek Harness 教程：从 Web UI 到 CLI、SDK 与插件开发的分篇指南。
 - WorkBuddy 教程：从安装入门到办公自动化的实用指南。
 - 精选阅读：一手资料、官方文章与深度解读。
 - Prompt 库：可以直接用于真实工作流的提示词。
@@ -48,7 +49,8 @@ npm run verify --prefix astro
 ```text
 content/
   codex-tutorials/ Codex 教程
-	workbuddy-tutorials/ WorkBuddy 教程
+  deepseek-harness-tutorials/ DeepSeek Harness 教程
+  workbuddy-tutorials/ WorkBuddy 教程
   highlights/   精选阅读
   prompts/      Prompt 库
   model-evals/  模型评测

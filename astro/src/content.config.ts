@@ -30,6 +30,7 @@ const legacy = defineCollection({
 			'about/**/*.md',
 			'ai-tools/**/*.md',
 			'codex-tutorials/**/*.md',
+			'deepseek-harness-tutorials/**/*.md',
 			'workbuddy-tutorials/**/*.md',
 			'curations/**/*.md',
 			'highlights/_index*.md',

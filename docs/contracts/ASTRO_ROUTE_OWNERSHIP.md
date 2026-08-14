@@ -3,13 +3,12 @@
 Phase 4 uses an explicit build-time coexistence boundary. Cloudflare Pages publishes one artifact,
 `astro/dist`, while route ownership is split as follows:
 
-- Astro owns the homepage, both daily archives, every daily detail route, the canonical structured
-  daily JSON routes under `/data/daily/`, knowledge search,
-  topic/entity routes, metadata feeds, sitemaps, robots, redirects, and the custom 404.
-- Hugo remains a build-time compatibility renderer for `about`, `codex-tutorials`, `curations`,
-  `highlights`, `model-evals`, `prompts`, and `x-trending`, including their English
-  routes. These trees depend on specialized templates, JSON, and browser behavior that a generic
-  Markdown renderer cannot preserve.
+- Astro owns the homepage, knowledge search, every public knowledge section (including
+  `about`, `codex-tutorials`, `deepseek-harness-tutorials`, `workbuddy-tutorials`,
+  `highlights`, and `x-trending`), metadata feeds, sitemaps, robots, redirects, and the
+  custom 404.
+- The Hugo compatibility allowlist is currently empty. The build-time compatibility renderer remains
+  available for an explicitly reviewed legacy route, but it does not own a public route by default.
 
 The machine-readable allowlist is `astro/route-ownership.json`. `npm run build --prefix astro`
 builds Astro first, generates Cloudflare redirects, builds Hugo 0.147.9 in an isolated temporary

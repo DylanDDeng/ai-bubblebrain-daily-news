@@ -1,5 +1,25 @@
 let cleanupOutline = () => {};
 
+function setupArticleTables(): void {
+	const isEnglish = document.documentElement.lang.toLowerCase().startsWith('en');
+
+	for (const table of document.querySelectorAll<HTMLTableElement>('.article-content table')) {
+		if (table.parentElement?.classList.contains('article-table-scroll')) continue;
+
+		const wrapper = document.createElement('div');
+		wrapper.className = 'article-table-scroll';
+		wrapper.tabIndex = 0;
+		wrapper.setAttribute('role', 'region');
+		wrapper.setAttribute(
+			'aria-label',
+			isEnglish ? 'Scrollable article table' : '可横向滚动的文章表格',
+		);
+
+		table.before(wrapper);
+		wrapper.append(table);
+	}
+}
+
 function setupArticleOutline(): void {
 	cleanupOutline();
 
@@ -51,4 +71,6 @@ function setupArticleOutline(): void {
 }
 
 document.addEventListener('astro:page-load', setupArticleOutline);
+document.addEventListener('astro:page-load', setupArticleTables);
 setupArticleOutline();
+setupArticleTables();

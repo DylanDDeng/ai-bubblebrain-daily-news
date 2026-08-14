@@ -293,6 +293,7 @@ h3 {
 .content-directory:is(
 	.content-directory--highlights,
 	.content-directory--codex-tutorials,
+	.content-directory--deepseek-harness-tutorials,
 	.content-directory--workbuddy-tutorials
 ) {
 	gap: 0;
@@ -301,6 +302,7 @@ h3 {
 .content-directory:is(
 		.content-directory--highlights,
 		.content-directory--codex-tutorials,
+		.content-directory--deepseek-harness-tutorials,
 		.content-directory--workbuddy-tutorials
 	)
 	article {
@@ -313,6 +315,7 @@ h3 {
 .content-directory:is(
 		.content-directory--highlights,
 		.content-directory--codex-tutorials,
+		.content-directory--deepseek-harness-tutorials,
 		.content-directory--workbuddy-tutorials
 	)
 	article:hover {
