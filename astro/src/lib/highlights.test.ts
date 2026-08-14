@@ -35,6 +35,7 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-08-10-inside-the-harness-pi/',
 	'/highlights/2026-08-07-how-to-keep-thinking/',
 	'/en/highlights/2026-08-07-how-to-keep-thinking/',
+	'/highlights/2026-08-11-compression-is-prediction/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -42,6 +43,20 @@ function highlightRecords(entries: LegacyContentEntry[]) {
 }
 
 describe('unified highlights content', () => {
+	it('keeps the Compression is prediction interpretation grounded and linked', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'compression-is-prediction',
+		);
+
+		expect(records).toHaveLength(1);
+		expect(records[0]?.locale).toBe('zh-CN');
+		expect(records[0]?.body.match(/^## /gm)).toHaveLength(7);
+		expect(records[0]?.body.match(/https:\/\/ngrok\.com\/blog\/compression-is-prediction/g)).toHaveLength(2);
+		expect(records[0]?.body).toContain('0.3876953125');
+		expect(records[0]?.body).toContain('GPT-2');
+		expect(records[0]?.body).toContain('https://arxiv.org/abs/2309.10668');
+	});
+
 	it('keeps the How to keep thinking article complete in both languages', async () => {
 		const records = highlightRecords(await loadLegacyContent()).filter(
 			(entry) => entry.frontmatter.externalId === 'how-to-keep-thinking',
