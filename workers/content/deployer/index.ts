@@ -413,6 +413,7 @@ function classifyCodeReleasePath(
       "astro/src/scripts/",
       "astro/src/lib/",
       "content/codex-tutorials/",
+      "content/deepseek-harness-tutorials/",
       "content/highlights/",
       "content/workbuddy-tutorials/",
       "static/fonts/",

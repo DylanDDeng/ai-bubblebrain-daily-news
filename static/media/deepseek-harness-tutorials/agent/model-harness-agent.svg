@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Model、Harness 与 Agent 的关系</title>
+  <desc id="desc">用户目标进入 Harness，Harness 组织上下文并请求模型做决定，再经过权限边界调用工具，结果写入会话并返回下一轮。</desc>
+  <defs>
+    <linearGradient id="blueGlow" x1="0" x2="1">
+      <stop offset="0" stop-color="#3157d5" />
+      <stop offset="1" stop-color="#72a0ff" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#172554" flood-opacity=".08" />
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8b93a7" />
+    </marker>
+    <style>
+      .label { font: 700 25px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .small { font: 500 18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #5f6675; }
+      .micro { font: 600 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #667085; letter-spacing: .04em; }
+      .flow { fill: none; stroke: url(#blueGlow); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 12 16; animation: dash 2.2s linear infinite; }
+      .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 2.8s ease-in-out infinite; }
+      .pulse-delay { animation-delay: -1.4s; }
+      @keyframes dash { to { stroke-dashoffset: -56; } }
+      @keyframes pulse { 0%, 100% { transform: scale(1); opacity: .88; } 50% { transform: scale(1.035); opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) {
+        .flow, .pulse { animation: none !important; }
+      }
+    </style>
+  </defs>
+
+  <rect width="1200" height="720" rx="34" fill="#fbfcff" />
+  <text x="62" y="66" class="micro" fill="#3157d5">MODEL + HARNESS = AGENT SYSTEM</text>
+  <text x="62" y="112" class="label" font-size="34">Agent 不是另一个模型，而是一套会行动的系统</text>
+  <text x="62" y="145" class="small">Model 提供判断，Harness 负责让判断在有状态、有工具、有边界的环境中持续执行。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="62" y="238" width="198" height="190" rx="28" fill="#fff" stroke="#dfe3ec" />
+    <circle cx="161" cy="293" r="30" fill="#f2f4f8" />
+    <path d="M145 292c0-10 7-18 16-18 10 0 18 8 18 18 0 8-5 14-11 17v10h-14v-10c-6-3-9-9-9-17z" fill="#111827" opacity=".9" />
+    <text x="161" y="356" class="label" text-anchor="middle">用户目标</text>
+    <text x="161" y="388" class="small" text-anchor="middle">“修复这个问题”</text>
+  </g>
+
+  <g filter="url(#shadow)" class="pulse">
+    <rect x="354" y="198" width="492" height="330" rx="34" fill="#fff" stroke="#3157d5" stroke-width="2" />
+    <rect x="354" y="198" width="492" height="72" rx="34" fill="#eef3ff" />
+    <path d="M354 236h492v34H354z" fill="#eef3ff" />
+    <circle cx="395" cy="234" r="10" fill="#3157d5" />
+    <text x="424" y="243" class="label">Harness</text>
+    <text x="792" y="242" class="micro" text-anchor="end">运行与控制层</text>
+
+    <rect x="386" y="302" width="198" height="82" rx="18" fill="#f8f9fc" stroke="#e1e5ee" />
+    <text x="485" y="337" class="small" text-anchor="middle" font-weight="700">上下文组装</text>
+    <text x="485" y="363" class="micro" text-anchor="middle">提示词 · 历史 · 工具 Schema</text>
+
+    <rect x="616" y="302" width="198" height="82" rx="18" fill="#f8f9fc" stroke="#e1e5ee" />
+    <text x="715" y="337" class="small" text-anchor="middle" font-weight="700">Agent Loop</text>
+    <text x="715" y="363" class="micro" text-anchor="middle">Turn · Step · Continue</text>
+
+    <rect x="386" y="414" width="198" height="82" rx="18" fill="#f8f9fc" stroke="#e1e5ee" />
+    <text x="485" y="449" class="small" text-anchor="middle" font-weight="700">权限与沙箱</text>
+    <text x="485" y="475" class="micro" text-anchor="middle">Allow · Ask · Deny</text>
+
+    <rect x="616" y="414" width="198" height="82" rx="18" fill="#f8f9fc" stroke="#e1e5ee" />
+    <text x="715" y="449" class="small" text-anchor="middle" font-weight="700">会话与记忆</text>
+    <text x="715" y="475" class="micro" text-anchor="middle">Event Log · Resume</text>
+  </g>
+
+  <g filter="url(#shadow)" class="pulse pulse-delay">
+    <rect x="940" y="178" width="198" height="154" rx="28" fill="#111827" />
+    <circle cx="981" cy="223" r="17" fill="#6f91ff" />
+    <circle cx="1003" cy="223" r="17" fill="#9cb4ff" opacity=".72" />
+    <text x="1039" y="230" class="label" fill="#fff">Model</text>
+    <text x="1039" y="267" class="small" fill="#d9dfed" text-anchor="middle">理解 · 推理 · 选择下一步</text>
+    <text x="1039" y="296" class="micro" fill="#9cb4ff" text-anchor="middle">不直接修改外部世界</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="940" y="384" width="198" height="188" rx="28" fill="#fff" stroke="#dfe3ec" />
+    <text x="1039" y="429" class="label" text-anchor="middle">Tools</text>
+    <rect x="967" y="453" width="65" height="40" rx="12" fill="#eef3ff" />
+    <rect x="1045" y="453" width="65" height="40" rx="12" fill="#eef3ff" />
+    <rect x="967" y="506" width="65" height="40" rx="12" fill="#eef3ff" />
+    <rect x="1045" y="506" width="65" height="40" rx="12" fill="#eef3ff" />
+    <text x="999" y="478" class="micro" text-anchor="middle">Files</text>
+    <text x="1077" y="478" class="micro" text-anchor="middle">Bash</text>
+    <text x="999" y="531" class="micro" text-anchor="middle">Web</text>
+    <text x="1077" y="531" class="micro" text-anchor="middle">MCP</text>
+  </g>
+
+  <path d="M260 333H354" stroke="#8b93a7" stroke-width="3" marker-end="url(#arrow)" />
+  <path d="M846 269C889 269 895 252 940 252" stroke="#8b93a7" stroke-width="3" marker-end="url(#arrow)" />
+  <path d="M940 293C892 293 895 319 846 319" stroke="#8b93a7" stroke-width="3" marker-end="url(#arrow)" />
+  <path d="M846 451H940" stroke="#8b93a7" stroke-width="3" marker-end="url(#arrow)" />
+  <path d="M940 518C893 518 890 490 846 490" stroke="#8b93a7" stroke-width="3" marker-end="url(#arrow)" />
+
+  <path class="flow" d="M270 321H344" />
+  <path class="flow" d="M856 257C891 257 899 240 930 240" />
+  <path class="flow" d="M856 439H930" />
+
+  <rect x="62" y="630" width="1076" height="1" fill="#e1e5ee" />
+  <circle cx="91" cy="668" r="7" fill="#3157d5" />
+  <text x="110" y="675" class="small">模型决定下一步</text>
+  <circle cx="365" cy="668" r="7" fill="#111827" />
+  <text x="384" y="675" class="small">Harness 管理循环和边界</text>
+  <circle cx="715" cy="668" r="7" fill="#8ba7ff" />
+  <text x="734" y="675" class="small">工具读取或改变外部世界</text>
+</svg>

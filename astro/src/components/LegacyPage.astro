@@ -97,6 +97,7 @@ type DirectoryKind =
 	| 'ai-tools'
 	| 'curations'
 	| 'codex-tutorials'
+	| 'deepseek-harness-tutorials'
 	| 'workbuddy-tutorials';
 
 const { record, markdownId, markdownCollection } = Astro.props;
@@ -119,6 +120,11 @@ const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 	about: { zh: '关于', en: 'About', kicker: 'ABOUT THE ARCHIVE' },
 	'ai-tools': { zh: 'AI 工具', en: 'AI Tools', kicker: 'USEFUL INSTRUMENTS' },
 	'codex-tutorials': { zh: 'Codex 教程', en: 'Codex Tutorials', kicker: 'CODEX GUIDE' },
+	'deepseek-harness-tutorials': {
+		zh: 'DeepSeek Harness 教程',
+		en: 'DeepSeek Harness Tutorials',
+		kicker: 'DEEPSEEK HARNESS GUIDE',
+	},
 	'workbuddy-tutorials': {
 		zh: 'WorkBuddy 教程',
 		en: 'WorkBuddy Tutorials',
@@ -153,6 +159,7 @@ if (
 		'ai-tools',
 		'curations',
 		'codex-tutorials',
+		'deepseek-harness-tutorials',
 		'workbuddy-tutorials',
 	].includes(record.section)
 ) {
@@ -181,7 +188,11 @@ if (
 				};
 			})
 			.sort((left, right) => (right.date ?? '').localeCompare(left.date ?? ''));
-	} else if (['prompts', 'codex-tutorials', 'workbuddy-tutorials'].includes(record.section)) {
+	} else if (
+		['prompts', 'codex-tutorials', 'deepseek-harness-tutorials', 'workbuddy-tutorials'].includes(
+			record.section,
+		)
+	) {
 		directoryItems = children.map((child) => ({
 			id: child.route,
 			title: child.title,
@@ -277,9 +288,12 @@ const libraryApi =
 				</header>
 
 				{MarkdownContent &&
-					!['highlights', 'codex-tutorials', 'workbuddy-tutorials'].includes(
-						directoryKind ?? '',
-					) && (
+					![
+						'highlights',
+						'codex-tutorials',
+						'deepseek-harness-tutorials',
+						'workbuddy-tutorials',
+					].includes(directoryKind ?? '') && (
 						<div class="directory-intro">
 							<MarkdownContent />
 						</div>

@@ -859,6 +859,11 @@ describe("automatic code release boundary", () => {
             status: "added",
           },
           {
+            filename:
+              "content/deepseek-harness-tutorials/deepseek-harness-guide.md",
+            status: "added",
+          },
+          {
             filename: "content/workbuddy-tutorials/workbuddy-guide.md",
             status: "added",
           },
@@ -897,7 +902,7 @@ describe("automatic code release boundary", () => {
           structuredCutoverDate: "2026-07-16",
         },
       ),
-    ).toHaveLength(10);
+    ).toHaveLength(11);
   });
 
   it.each([
