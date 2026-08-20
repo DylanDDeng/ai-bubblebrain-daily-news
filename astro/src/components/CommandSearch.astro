@@ -1,0 +1,74 @@
+---
+import '../styles/command-search.css';
+
+interface Props {
+	locale: 'zh-CN' | 'en';
+}
+
+const { locale } = Astro.props;
+const isEnglish = locale === 'en';
+const indexUrl = isEnglish ? '/en/index.json' : '/search/index.json';
+const searchHref = isEnglish ? '/search/?locale=en' : '/search/';
+---
+
+<dialog
+	class="command-search-dialog"
+	data-command-search
+	data-index-url={indexUrl}
+	data-search-href={searchHref}
+	data-locale={locale}
+	aria-labelledby={`command-search-title-${locale}`}
+>
+	<header class="command-search-header">
+		<p id={`command-search-title-${locale}`}>
+			<kbd>⌘K</kbd>
+			<span>{isEnglish ? 'Search the knowledge base' : '搜索知识库'}</span>
+		</p>
+		<button type="button" data-command-search-close>
+			<span class="sr-only">{isEnglish ? 'Close search' : '关闭搜索'}</span>
+			<kbd>Esc</kbd>
+		</button>
+	</header>
+
+	<form class="command-search-form" data-command-search-form role="search">
+		<i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+		<label class="sr-only" for={`command-search-input-${locale}`}>
+			{isEnglish ? 'Search articles' : '搜索文章'}
+		</label>
+		<input
+			id={`command-search-input-${locale}`}
+			data-command-search-input
+			type="search"
+			autocomplete="off"
+			placeholder={isEnglish ? 'Search titles, sections, or ideas' : '搜索标题、栏目或关键词'}
+			aria-controls={`command-search-results-${locale}`}
+			aria-autocomplete="list"
+		/>
+	</form>
+
+	<div class="command-search-body">
+		<div class="command-search-state" data-command-search-state aria-live="polite">
+			<span>{isEnglish ? 'RECENTLY ADDED' : '最近收录'}</span>
+			<p>{isEnglish ? 'Loading the knowledge index…' : '正在载入知识索引…'}</p>
+		</div>
+		<div
+			class="command-search-results"
+			id={`command-search-results-${locale}`}
+			data-command-search-results
+			role="listbox"
+			aria-label={isEnglish ? 'Search results' : '搜索结果'}
+		>
+		</div>
+	</div>
+
+	<footer class="command-search-footer">
+		<span><kbd>↑</kbd><kbd>↓</kbd>{isEnglish ? 'Navigate' : '选择'}</span>
+		<span><kbd>↵</kbd>{isEnglish ? 'Open' : '打开'}</span>
+		<span><kbd>Esc</kbd>{isEnglish ? 'Close' : '关闭'}</span>
+		<a href={searchHref}>{isEnglish ? 'Full search →' : '完整搜索 →'}</a>
+	</footer>
+</dialog>
+
+<script>
+	import '../scripts/commandSearch';
+</script>
