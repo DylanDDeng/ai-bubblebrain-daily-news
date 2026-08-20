@@ -92,16 +92,16 @@ const labelFor = (section: LegacySection) =>
 
 			<div class="knowledge-home-hero-bottom">
 				<div class="knowledge-home-hero-action">
-					<a href="/search/">
+					<a href={isEnglish ? '/search/?locale=en' : '/search/'} data-command-search-trigger>
 						{isEnglish ? 'SEARCH THE LIBRARY' : '搜索知识库'}
 						<i class="ph ph-arrow-up-right" aria-hidden="true"></i>
 					</a>
 				</div>
 
 				<div class="knowledge-home-hero-title-row">
-					<h1 aria-label="Bubble's Knowledege">
+					<h1 aria-label="Bubble's Knowledge">
 						<span><b>BUBBLE'S</b></span>
-						<span><b>KNOWLEDEGE</b></span>
+						<span><b>KNOWLEDGE</b></span>
 					</h1>
 				</div>
 			</div>
@@ -119,7 +119,10 @@ const labelFor = (section: LegacySection) =>
 				<h2 id={`library-heading-${locale}`}>{isEnglish ? 'Knowledge collections' : '知识栏目'}</h2>
 			</div>
 		</header>
-		<div class="knowledge-collection-grid">
+		<div
+			class="knowledge-collection-grid"
+			style={`--collection-columns: ${Math.min(sectionCopy.length, 4)}`}
+		>
 			{
 				sectionCopy.map((item) => (
 					<a href={`${prefix}/${item.section}/`} class="knowledge-collection-card">

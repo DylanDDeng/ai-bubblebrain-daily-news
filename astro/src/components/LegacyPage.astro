@@ -115,6 +115,26 @@ const rendered = markdownEntry ? await render(markdownEntry) : null;
 const MarkdownContent = rendered?.Content;
 const outlineHeadings =
 	rendered?.headings.filter((heading) => heading.depth === 2 || heading.depth === 3) ?? [];
+const sourceUrl =
+	typeof record.frontmatter.sourceUrl === 'string' ? record.frontmatter.sourceUrl : null;
+const articleTags = Array.isArray(record.frontmatter.tags)
+	? record.frontmatter.tags.filter((tag): tag is string => typeof tag === 'string')
+	: [];
+const readingUnits =
+	(record.body.match(/[\u3400-\u9fff]/g)?.length ?? 0) +
+	(record.body.replace(/[\u3400-\u9fff]/g, ' ').match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g)
+		?.length ?? 0);
+const readingMinutes = Math.max(1, Math.ceil(readingUnits / (isEnglish ? 220 : 360)));
+const sourceLabel = sourceUrl
+	? (() => {
+			try {
+				return new URL(sourceUrl).hostname.replace(/^www\./, '');
+			} catch {
+				return isEnglish ? 'Original source' : '原文链接';
+			}
+		})()
+	: null;
+const articleFactCount = 2 + Number(Boolean(record.date)) + Number(Boolean(sourceUrl));
 const staticRoot = resolve(process.cwd(), '../static');
 const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 	about: { zh: '关于', en: 'About', kicker: 'ABOUT THE ARCHIVE' },
@@ -361,14 +381,49 @@ const libraryApi =
 				<header class="article-header">
 					<p class="page-kicker">{label.kicker}</p>
 					<h1>{title}</h1>
-					{record.date && (
-						<p class="article-meta">
-							<time datetime={record.date.toISOString()}>
-								{record.date.toISOString().slice(0, 10)}
-							</time>
-						</p>
-					)}
 					{description && <p class="article-lede">{description}</p>}
+					<dl class="article-facts" style={`--article-fact-columns: ${articleFactCount}`}>
+						{record.date && (
+							<div>
+								<dt>{isEnglish ? 'Published' : '发布于'}</dt>
+								<dd>
+									<time datetime={record.date.toISOString()}>
+										{record.date.toISOString().slice(0, 10)}
+									</time>
+								</dd>
+							</div>
+						)}
+						<div>
+							<dt>{isEnglish ? 'Collection' : '所属栏目'}</dt>
+							<dd>
+								<a href={sectionHref}>{isEnglish ? label.en : label.zh}</a>
+							</dd>
+						</div>
+						<div>
+							<dt>{isEnglish ? 'Reading time' : '阅读时间'}</dt>
+							<dd>
+								{readingMinutes} {isEnglish ? 'min' : '分钟'}
+							</dd>
+						</div>
+						{sourceUrl && (
+							<div>
+								<dt>{isEnglish ? 'Source' : '资料来源'}</dt>
+								<dd>
+									<a href={sourceUrl} target="_blank" rel="noreferrer">
+										{sourceLabel}
+										<i class="ph ph-arrow-up-right" aria-hidden="true" />
+									</a>
+								</dd>
+							</div>
+						)}
+					</dl>
+					{articleTags.length > 0 && (
+						<ul class="article-tags" aria-label={isEnglish ? 'Topics' : '主题标签'}>
+							{articleTags.map((tag) => (
+								<li>{tag}</li>
+							))}
+						</ul>
+					)}
 				</header>
 				<div
 					class:list={[

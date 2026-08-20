@@ -3,6 +3,7 @@ import '../styles/migration.css';
 import '../styles/ricoui-theme.css';
 import { ClientRouter } from 'astro:transitions';
 import AuthControls from '../components/AuthControls.astro';
+import CommandSearch from '../components/CommandSearch.astro';
 
 interface Props {
 	title: string;
@@ -30,12 +31,12 @@ const canonicalUrl = new URL(canonicalPath, Astro.site);
 const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
 const navLinks = isEnglish
 	? [
-			{ href: '/search/', label: 'Search' },
+			{ href: '/search/', label: 'Search', commandSearch: true },
 			{ href: '/en/highlights/', label: 'Highlights' },
 			{ href: '/en/about/', label: 'About' },
 		]
 	: [
-			{ href: '/search/', label: '知识搜索' },
+			{ href: '/search/', label: '知识搜索', commandSearch: true },
 			{ href: '/codex-tutorials/', label: 'Codex 教程' },
 			{ href: '/deepseek-harness-tutorials/', label: 'DeepSeek Harness 教程' },
 			{ href: '/workbuddy-tutorials/', label: 'WorkBuddy 教程' },
@@ -109,9 +110,11 @@ const navLinks = isEnglish
 							navLinks.map((link) => (
 								<a
 									href={link.href}
+									data-command-search-trigger={link.commandSearch ? '' : undefined}
 									aria-current={Astro.url.pathname.startsWith(link.href) ? 'page' : undefined}
 								>
-									{link.label}
+									<span>{link.label}</span>
+									{link.commandSearch && <kbd aria-hidden="true">⌘K</kbd>}
 								</a>
 							))
 						}
@@ -162,6 +165,7 @@ const navLinks = isEnglish
 				</footer>
 			</div>
 		</div>
+		<CommandSearch locale={lang} />
 		<script is:inline type="module" src="/js/site-shell.js"></script>
 	</body>
 </html>
