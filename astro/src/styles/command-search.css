@@ -91,6 +91,7 @@
 
 .command-search-form input::placeholder {
 	color: color-mix(in srgb, var(--ink-faint) 76%, transparent);
+	font-size: clamp(0.95rem, 1.4vw, 1.1rem);
 }
 
 .command-search-form input::-webkit-search-cancel-button {
