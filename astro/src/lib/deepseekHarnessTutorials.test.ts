@@ -57,7 +57,7 @@ describe('DeepSeek Harness tutorial series', () => {
 			(item) => item.route === '/deepseek-harness-tutorials/deepseek-harness-agent-model-harness/',
 		);
 
-		expect(entry?.body).toContain('Agent 系统 = Model + Harness + Tools + Context + Feedback');
+		expect(entry?.body).toContain('Agent = Model + Harness');
 		expect(entry?.body).toContain(
 			'/media/deepseek-harness-tutorials/agent/model-harness-agent.svg',
 		);
