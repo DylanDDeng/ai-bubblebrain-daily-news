@@ -38,6 +38,8 @@ const expectedArticleRoutes = [
 	'/highlights/2026-08-11-compression-is-prediction/',
 	'/highlights/2026-08-20-hot-take-llm-can-jump/',
 	'/en/highlights/2026-08-20-hot-take-llm-can-jump/',
+	'/highlights/2026-08-21-what-is-reasoning/',
+	'/en/highlights/2026-08-21-what-is-reasoning/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -115,6 +117,24 @@ describe('unified highlights content', () => {
 
 		const chinese = records.find((entry) => entry.locale === 'zh-CN');
 		expect(chinese?.body).not.toMatch(/\*\*[^*\n]+[。！？，；：]\*\*[^\s]/u);
+	});
+
+	it('keeps the What Is Reasoning article complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'what-is-reasoning',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(3);
+			expect(entry.body).toContain('https://arxiv.org/html/2608.09867v1');
+			expect(entry.body).toContain('<|channel|>analysis<|message|>');
+			expect(entry.body).toContain('https://github.com/antirez/ds4');
+			expect(entry.body).toContain('mitsuhiko/0904a3d89741e8e3bcca1ca93ea076de');
+			expect(entry.body).toContain(
+				'/media/highlights/what-is-reasoning/gpt-5.6-terra-spell-check.png',
+			);
+		}
 	});
 
 	it('preserves every migrated Chinese and English record in Markdown', async () => {
