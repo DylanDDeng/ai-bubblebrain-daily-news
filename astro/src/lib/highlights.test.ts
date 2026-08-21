@@ -36,6 +36,8 @@ const expectedArticleRoutes = [
 	'/highlights/2026-08-07-how-to-keep-thinking/',
 	'/en/highlights/2026-08-07-how-to-keep-thinking/',
 	'/highlights/2026-08-11-compression-is-prediction/',
+	'/highlights/2026-08-20-hot-take-llm-can-jump/',
+	'/en/highlights/2026-08-20-hot-take-llm-can-jump/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -95,6 +97,20 @@ describe('unified highlights content', () => {
 				entry.body.match(/\/media\/highlights\/ai-basics-cli-harness-skills-html-github\//g),
 			).toHaveLength(12);
 			expect(entry.body).toContain('npx skills add heygen-com/hyperframes --full-depth');
+		}
+	});
+
+	it('keeps the LLM can jump argument complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'hot-take-llm-can-jump',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(6);
+			expect(entry.body).toContain('https://arxiv.org/pdf/2111.00333');
+			expect(entry.body).toContain('https://aclanthology.org/2025.emnlp-main.490/');
+			expect(entry.body).toContain('Machine Studying');
 		}
 	});
 
