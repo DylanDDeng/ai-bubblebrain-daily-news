@@ -112,6 +112,9 @@ describe('unified highlights content', () => {
 			expect(entry.body).toContain('https://aclanthology.org/2025.emnlp-main.490/');
 			expect(entry.body).toContain('Machine Studying');
 		}
+
+		const chinese = records.find((entry) => entry.locale === 'zh-CN');
+		expect(chinese?.body).not.toMatch(/\*\*[^*\n]+[。！？，；：]\*\*[^\s]/u);
 	});
 
 	it('preserves every migrated Chinese and English record in Markdown', async () => {
