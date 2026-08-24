@@ -1,8 +1,10 @@
 ---
+import VibeCodingPatternDetail from '../../../components/VibeCodingPatternDetail.astro';
 import VibeCodingTermDetail from '../../../components/VibeCodingTermDetail.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getVibeCodingConcepts, type VibeCodingConcept } from '../../../data/vibeCodingTerms';
 import { vibeCodingDetailProfiles } from '../../../data/vibeCodingTermDetails';
+import { vibeCodingPatternProfiles } from '../../../data/vibeCodingPatternDetails';
 
 interface Props {
 	concept: VibeCodingConcept;
@@ -23,8 +25,12 @@ export function getStaticPaths() {
 }
 
 const { concept, previousConcept, nextConcept } = Astro.props;
-const profile = vibeCodingDetailProfiles[concept.id] ?? vibeCodingDetailProfiles[concept.categoryId];
-if (!profile) throw new Error(`Missing Vibe Coding detail profile: ${concept.categoryId}`);
+const patternProfile = concept.isCategory ? undefined : vibeCodingPatternProfiles[concept.id];
+const profile = patternProfile
+	? undefined
+	: (vibeCodingDetailProfiles[concept.id] ?? vibeCodingDetailProfiles[concept.categoryId]);
+if (!patternProfile && !profile)
+	throw new Error(`Missing Vibe Coding detail profile: ${concept.categoryId}`);
 ---
 
 <BaseLayout
@@ -33,10 +39,21 @@ if (!profile) throw new Error(`Missing Vibe Coding detail profile: ${concept.cat
 	canonicalPath={`/vibe-coding/terms/${concept.id}/`}
 	section="vibe-coding"
 >
-	<VibeCodingTermDetail
-		concept={concept}
-		profile={profile}
-		previousConcept={previousConcept}
-		nextConcept={nextConcept}
-	/>
+	{
+		patternProfile ? (
+			<VibeCodingPatternDetail
+				concept={concept}
+				profile={patternProfile}
+				previousConcept={previousConcept}
+				nextConcept={nextConcept}
+			/>
+		) : (
+			<VibeCodingTermDetail
+				concept={concept}
+				profile={profile!}
+				previousConcept={previousConcept}
+				nextConcept={nextConcept}
+			/>
+		)
+	}
 </BaseLayout>

@@ -472,6 +472,45 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 		warning:
 			'浏览器存储在用户手里：能被查看、修改和清空。别往里放密钥和敏感信息，重要数据永远以后端为准。',
 	},
+	'ui-patterns': {
+		question: '是什么？为什么要认识这些界面零件的名字？',
+		visualTitle: '从认出它，到说出它',
+		visualCaption: '认识界面零件的名字，你就能精确地指挥 AI 改任何一块。',
+		analogy:
+			'界面图鉴像汽车配件手册：你不用会造车，但知道那个零件叫「后视镜」，才能让修车师傅一听就懂你要修哪里。',
+		steps: [
+			{
+				label: 'See',
+				detail: '在页面上认出这一块',
+				result: '首屏大图、顶部横条、右下角小弹窗——你天天见到它们。',
+			},
+			{
+				label: 'Name',
+				detail: '知道它的通用名字',
+				result: '那块叫 Hero，那条叫导航栏，那个小弹窗叫 Toast。',
+			},
+			{
+				label: 'Anatomy',
+				detail: '了解它由什么组成',
+				result: '每个零件都有自己的构造：标题、按钮、配图各就各位。',
+			},
+			{
+				label: 'Prompt',
+				detail: '用名字指挥 AI 修改',
+				result: '「把 hero 的副标题缩小一号」——一句话，改得又快又准。',
+			},
+		],
+		scenes: [
+			{ title: '提需求', description: '不再说「上面那块」，而是直接叫出它的名字。' },
+			{ title: '看懂方案', description: 'AI 说「加一个 toast 提示」时，你知道它长什么样。' },
+			{ title: '拆解设计', description: '看到喜欢的网站，能按零件拆出它的做法。' },
+		],
+		practice: {
+			question: '你想让 AI 改「页面顶上那个横着的菜单」。用哪个词能一次说准？',
+			answer: '导航栏（Navbar）。用通用名字指代，AI 不用猜你说的是哪一块，改动也不会误伤别的区域。',
+		},
+		warning: '名字是用来沟通的，不是用来炫的。同一个零件在不同框架里可能叫法不同，说清位置和作用永远是保底方案。',
+	},
 	backend: {
 		visualTitle: '一次请求如何被处理',
 		visualCaption: '后端接收请求、执行规则、访问数据，再把可信结果返回给前端。',

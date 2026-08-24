@@ -303,6 +303,38 @@ export const vibeCodingTermCategories: VibeCodingTermCategory[] = [
 			},
 		],
 	},
+	{
+		id: 'ui-patterns',
+		name: 'UI Patterns',
+		label: '界面图鉴',
+		description: '屏幕上每一块的通用名字——认得它，才能让 AI 精确地改它。',
+		terms: [
+			{
+				id: 'hero',
+				name: 'Hero',
+				chineseName: 'Hero 区',
+				description: '首屏最上方那块用大标题和行动按钮定调的区域，整个页面的开场白。',
+			},
+			{
+				id: 'navbar',
+				name: 'Navbar',
+				chineseName: '导航栏',
+				description: '固定在页面顶部的横条，放站点标志和主要入口，负责「你在哪、能去哪」。',
+			},
+			{
+				id: 'footer',
+				name: 'Footer',
+				chineseName: '页脚',
+				description: '页面底部的收尾区，放次要链接、版权和联系方式，是页面的「片尾字幕」。',
+			},
+			{
+				id: 'card',
+				name: 'Card',
+				chineseName: '卡片',
+				description: '把一条内容装进带边界的小方块，成组排列，方便扫视和点击。',
+			},
+		],
+	},
 ];
 
 export interface VibeCodingConcept extends VibeCodingTerm {

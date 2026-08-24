@@ -1,0 +1,703 @@
+---
+import type { VibeCodingConcept } from '../data/vibeCodingTerms';
+import type { VibeCodingPatternProfile } from '../data/vibeCodingPatternDetails';
+import '../styles/vibe-coding-term-detail.css';
+import '../styles/vibe-coding-pattern-detail.css';
+
+interface Props {
+	concept: VibeCodingConcept;
+	profile: VibeCodingPatternProfile;
+	previousConcept: VibeCodingConcept | null;
+	nextConcept: VibeCodingConcept | null;
+}
+
+const { concept, profile, previousConcept, nextConcept } = Astro.props;
+const isHero = concept.id === 'hero';
+const isNavbar = concept.id === 'navbar';
+const isFooter = concept.id === 'footer';
+const isCard = concept.id === 'card';
+---
+
+<article class="concept-detail" data-vibe-coding-term-detail={concept.id}>
+	<a class="concept-detail-back" href={`/vibe-coding/terms/#${concept.categoryId}`}>
+		<i class="ph ph-arrow-left" aria-hidden="true"></i>
+		返回术语
+	</a>
+
+	<header class="concept-detail-hero">
+		<p>{concept.categoryLabel}</p>
+		<h1>
+			{concept.chineseName}
+			<span>{concept.name}</span>
+		</h1>
+		<div class="concept-detail-qa">
+			<div class="concept-qa-row concept-qa-question">
+				<span class="concept-qa-glyph" aria-hidden="true">Q</span>
+				<div class="concept-qa-body">
+					<span class="concept-qa-label">你可能会问</span>
+					<p>
+						<em>{concept.chineseName}</em>{profile.question}
+					</p>
+				</div>
+			</div>
+			<div class="concept-qa-row concept-qa-answer">
+				<span class="concept-qa-glyph" aria-hidden="true">A</span>
+				<div class="concept-qa-body">
+					<span class="concept-qa-label">简单来说</span>
+					<p>{concept.description}</p>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<section class="concept-section" aria-labelledby="pattern-anatomy-title">
+		<div class="concept-section-heading">
+			<p class="concept-section-index">01 · 拆开看看</p>
+			<h2 id="pattern-anatomy-title">这一块由什么组成</h2>
+			<p>{profile.anatomyIntro}</p>
+		</div>
+		<div class="pattern-anatomy">
+			{
+				isHero ? (
+					<div class="pattern-anatomy-mock" aria-hidden="true">
+						<div class="pattern-mock-nav">
+							<b />
+							<i />
+							<i />
+							<i />
+						</div>
+						<div class="pattern-mock-hero">
+							<div class="pattern-mock-copy">
+								<span class="pattern-mock-eyebrow" data-part-target="1">
+									全新 2.0
+								</span>
+								<span class="pattern-mock-title" data-part-target="2" />
+								<span class="pattern-mock-title is-short" data-part-target="2" />
+								<span class="pattern-mock-sub" data-part-target="3" />
+								<span class="pattern-mock-actions" data-part-target="4">
+									<b>开始使用</b>
+									<i>查看文档</i>
+								</span>
+							</div>
+							<div class="pattern-mock-visual" data-part-target="5">
+								<i class="ph ph-image" />
+							</div>
+						</div>
+						<span class="pattern-part-badge" style="left: 6%; top: 26%;" data-part-target="1">
+							1
+						</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 44%;" data-part-target="2">
+							2
+						</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 63%;" data-part-target="3">
+							3
+						</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 82%;" data-part-target="4">
+							4
+						</span>
+						<span class="pattern-part-badge" style="right: 5%; top: 30%;" data-part-target="5">
+							5
+						</span>
+					</div>
+				) : isNavbar ? (
+					<div class="pattern-anatomy-mock" aria-hidden="true">
+						<div class="pam-nav">
+							<b class="pam-nav-logo" data-part-target="1">Bubble</b>
+							<span class="pam-nav-links" data-part-target="2">
+								<i>产品</i>
+								<i>定价</i>
+								<i>文档</i>
+							</span>
+							<em class="pam-nav-action" data-part-target="3">开始使用</em>
+							<span class="pam-nav-burger" data-part-target="4">
+								<b />
+								<b />
+								<b />
+							</span>
+						</div>
+						<div class="pam-ghost">
+							<span />
+							<span />
+							<span class="is-short" />
+						</div>
+						<span class="pattern-part-badge" style="left: 5%; top: 46%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 32%; top: 46%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 21%; top: 46%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 3%; top: 46%;" data-part-target="4">4</span>
+					</div>
+				) : isFooter ? (
+					<div class="pattern-anatomy-mock" aria-hidden="true">
+						<div class="pam-ghost is-top">
+							<span />
+							<span class="is-short" />
+						</div>
+						<div class="pam-footer">
+							<div class="pam-ft-top">
+								<span class="pam-ft-brand" data-part-target="1">
+									<b>Bubble</b>
+									<i />
+									<i class="is-short" />
+								</span>
+								<span class="pam-ft-cols" data-part-target="2">
+									<span>
+										<b />
+										<i />
+										<i />
+									</span>
+									<span>
+										<b />
+										<i />
+										<i />
+									</span>
+									<span>
+										<b />
+										<i />
+										<i />
+									</span>
+								</span>
+							</div>
+							<div class="pam-ft-bottom">
+								<span class="pam-ft-legal" data-part-target="4">© 2026 Bubble · 隐私政策</span>
+								<span class="pam-ft-social" data-part-target="3">
+									<i />
+									<i />
+									<i />
+								</span>
+							</div>
+						</div>
+						<span class="pattern-part-badge" style="left: 4%; top: 34%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="right: 27%; top: 28%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 4%; top: 82%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="left: 4%; top: 82%;" data-part-target="4">4</span>
+					</div>
+				) : isCard ? (
+					<div class="pattern-anatomy-mock pam-card-wrap" aria-hidden="true">
+						<div class="pam-card">
+							<span class="pam-card-cover" data-part-target="1">
+								<i class="ph ph-image" />
+							</span>
+							<span class="pam-card-title" data-part-target="2">三天上线你的知识库</span>
+							<span class="pam-card-desc" data-part-target="3">
+								<i />
+								<i class="is-short" />
+							</span>
+							<span class="pam-card-meta" data-part-target="4">
+								<i>8 月 24 日</i>
+								<i>教程</i>
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="right: 21%; top: 16%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="right: 21%; top: 52%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 21%; top: 68%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 21%; top: 86%;" data-part-target="4">4</span>
+					</div>
+				) : null
+			}
+			<ol class="pattern-part-list">
+				{
+					profile.parts.map((part, index) => (
+						<li data-part={String(index + 1)}>
+							<span class="pattern-part-num" aria-hidden="true">
+								{index + 1}
+							</span>
+							<div>
+								<h3>
+									{part.name}
+									<small>{part.en}</small>
+								</h3>
+								<p>{part.note}</p>
+							</div>
+						</li>
+					))
+				}
+			</ol>
+		</div>
+	</section>
+
+	<section class="concept-section" aria-labelledby="pattern-variants-title">
+		<div class="concept-section-heading">
+			<p class="concept-section-index">02 · 常见变体</p>
+			<h2 id="pattern-variants-title">同一个零件，几种摆法</h2>
+		</div>
+		<div class="pattern-variants">
+			{
+				profile.variants.map((variant) => (
+					<figure>
+						<div class={`pattern-variant-sketch is-${variant.sketch}`} aria-hidden="true">
+							{variant.sketch === 'center' ? (
+								<>
+									<b class="pv-title" />
+									<b class="pv-sub" />
+									<b class="pv-btn" />
+								</>
+							) : null}
+							{variant.sketch === 'split' ? (
+								<>
+									<span class="pv-col">
+										<b class="pv-title" />
+										<b class="pv-sub" />
+										<b class="pv-btn" />
+									</span>
+									<span class="pv-img" />
+								</>
+							) : null}
+							{variant.sketch === 'full' ? (
+								<>
+									<b class="pv-title is-light" />
+									<b class="pv-btn is-light" />
+								</>
+							) : null}
+							{variant.sketch === 'nav-standard' ? (
+								<>
+									<span class="pv-nav">
+										<b class="pv-logo" />
+										<i class="pv-link" />
+										<i class="pv-link" />
+										<i class="pv-link" />
+										<em class="pv-pill" />
+									</span>
+									<span class="pv-ghost" />
+								</>
+							) : null}
+							{variant.sketch === 'nav-center' ? (
+								<>
+									<span class="pv-nav is-center">
+										<i class="pv-link" />
+										<i class="pv-link" />
+										<i class="pv-link" />
+									</span>
+									<span class="pv-ghost" />
+								</>
+							) : null}
+							{variant.sketch === 'nav-burger' ? (
+								<>
+									<span class="pv-nav is-burger">
+										<b class="pv-logo" />
+										<span class="pv-burger">
+											<b />
+											<b />
+											<b />
+										</span>
+									</span>
+									<span class="pv-ghost" />
+								</>
+							) : null}
+							{variant.sketch === 'ft-columns' ? (
+								<>
+									<span class="pv-ghost" />
+									<span class="pv-ft-cols">
+										<i />
+										<i />
+										<i />
+										<i />
+									</span>
+									<span class="pv-ft-line" />
+								</>
+							) : null}
+							{variant.sketch === 'ft-minimal' ? (
+								<>
+									<span class="pv-ghost is-tall" />
+									<span class="pv-ft-line" />
+								</>
+							) : null}
+							{variant.sketch === 'ft-cta' ? (
+								<>
+									<span class="pv-ghost" />
+									<span class="pv-cta">
+										<b class="pv-title" />
+										<b class="pv-btn" />
+									</span>
+									<span class="pv-ft-line" />
+								</>
+							) : null}
+							{variant.sketch === 'card-media' ? (
+								<span class="pv-card">
+									<b class="pv-cover" />
+									<i class="pv-bar" />
+									<i class="pv-bar is-short" />
+								</span>
+							) : null}
+							{variant.sketch === 'card-row' ? (
+								<span class="pv-card is-row">
+									<b class="pv-cover is-sq" />
+									<span>
+										<i class="pv-bar" />
+										<i class="pv-bar is-short" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'card-text' ? (
+								<span class="pv-card">
+									<i class="pv-bar is-dark" />
+									<i class="pv-bar" />
+									<i class="pv-bar is-short" />
+								</span>
+							) : null}
+						</div>
+						<figcaption>
+							<strong>{variant.title}</strong>
+							<p>{variant.description}</p>
+						</figcaption>
+					</figure>
+				))
+			}
+		</div>
+	</section>
+
+	{
+		profile.spot ? (
+			<section class="concept-section" aria-labelledby="pattern-spot-title">
+				<div class="concept-section-heading">
+					<p class="concept-section-index">03 · 火眼金睛</p>
+					<h2 id="pattern-spot-title">{profile.spot.title}</h2>
+					<p>{profile.spot.intro}</p>
+				</div>
+				<div class="pattern-spot" data-pick>
+					{isHero ? (
+						<div class="pattern-spot-mock">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-navbar"
+								for={`spot-${concept.id}-navbar`}
+								data-pick-option="navbar"
+								aria-label="导航栏区域"
+							>
+								<b />
+								<i />
+								<i />
+								<i />
+								<em>登录</em>
+							</label>
+							<label
+								class="pattern-spot-region ps-hero"
+								for={`spot-${concept.id}-hero`}
+								data-pick-option="hero"
+								aria-label="Hero 区域"
+							>
+								<span class="ps-copy">
+									<span class="ps-eyebrow">BUBBLE NOTES</span>
+									<span class="ps-title">会后不用手动整理纪要</span>
+									<span class="ps-sub" />
+									<span class="ps-actions">
+										<b>上传一段录音</b>
+									</span>
+								</span>
+								<span class="ps-visual">
+									<i class="ph ph-image" aria-hidden="true" />
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-logos"
+								for={`spot-${concept.id}-logos`}
+								data-pick-option="logos"
+								aria-label="客户标志条区域"
+							>
+								<i>ACME</i>
+								<i>ORBIT</i>
+								<i>VERDE</i>
+								<i>NORTH</i>
+							</label>
+							<label
+								class="pattern-spot-region ps-features"
+								for={`spot-${concept.id}-features`}
+								data-pick-option="features"
+								aria-label="功能卡片区域"
+							>
+								<span>
+									<em>01</em>
+									<b />
+								</span>
+								<span>
+									<em>02</em>
+									<b />
+								</span>
+								<span>
+									<em>03</em>
+									<b />
+								</span>
+							</label>
+						</div>
+					) : isNavbar || isFooter || isCard ? (
+						<div class="pattern-spot-mock">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-navbar"
+								for={`spot-${concept.id}-navbar`}
+								data-pick-option="navbar"
+								aria-label="导航栏区域"
+							>
+								<b />
+								<i />
+								<i />
+								<i />
+								<em>登录</em>
+							</label>
+							<label
+								class="pattern-spot-region ps-hero-lite"
+								for={`spot-${concept.id}-hero`}
+								data-pick-option="hero"
+								aria-label="Hero 区域"
+							>
+								<span class="ps-title">给团队的会议纪要助手</span>
+								<span class="ps-sub" />
+								<span class="ps-actions">
+									<b>免费试用</b>
+								</span>
+							</label>
+							{isNavbar ? (
+								<label
+									class="pattern-spot-region ps-tabs"
+									for={`spot-${concept.id}-tabs`}
+									data-pick-option="tabs"
+									aria-label="标签页区域"
+								>
+									<span class="ps-tab-row">
+										<i class="is-on">功能</i>
+										<i>价格</i>
+										<i>评价</i>
+									</span>
+									<span class="ps-tab-body">
+										<i />
+										<i class="is-short" />
+									</span>
+								</label>
+							) : null}
+							{isFooter ? (
+								<label
+									class="pattern-spot-region ps-cta"
+									for={`spot-${concept.id}-cta`}
+									data-pick-option="cta"
+									aria-label="行动区块"
+								>
+									<span>准备好开始了吗？</span>
+									<b>免费试用</b>
+								</label>
+							) : null}
+							{isCard ? (
+								<label
+									class="pattern-spot-region ps-cards"
+									for={`spot-${concept.id}-cards`}
+									data-pick-option="cards"
+									aria-label="卡片区域"
+								>
+									<span>
+										<em>
+											<i class="ph ph-image" />
+										</em>
+										<b />
+										<i />
+									</span>
+									<span>
+										<em>
+											<i class="ph ph-image" />
+										</em>
+										<b />
+										<i />
+									</span>
+									<span>
+										<em>
+											<i class="ph ph-image" />
+										</em>
+										<b />
+										<i />
+									</span>
+								</label>
+							) : null}
+							{isCard ? (
+								<label
+									class="pattern-spot-region ps-list"
+									for={`spot-${concept.id}-list`}
+									data-pick-option="list"
+									aria-label="列表区域"
+								>
+									<span>
+										<b />
+										<i />
+									</span>
+									<span>
+										<b />
+										<i />
+									</span>
+									<span>
+										<b />
+										<i />
+									</span>
+								</label>
+							) : null}
+							{isNavbar || isFooter ? (
+								<label
+									class={`pattern-spot-region ${isFooter ? 'ps-footer-full' : 'ps-footer-mini'}`}
+									for={`spot-${concept.id}-footer`}
+									data-pick-option="footer"
+									aria-label="页脚区域"
+								>
+									<span class="ps-ft-cols">
+										<i />
+										<i />
+										<i />
+									</span>
+									<span class="ps-ft-legal">© 2026 Bubble</span>
+								</label>
+							) : null}
+						</div>
+					) : null}
+					<div class="pattern-spot-panel">
+						<p class="pattern-spot-hint" data-pick-note="">
+							<i class="ph ph-cursor-click" aria-hidden="true" />
+							点一块试试，看看它叫什么
+						</p>
+						{profile.spot.regions.map((region) => (
+							<div
+								class="pattern-spot-note"
+								data-pick-note={region.id}
+								data-good={region.correct ? 'true' : 'false'}
+								hidden
+							>
+								<strong>
+									{region.correct ? (
+										<i class="ph ph-check-circle" aria-hidden="true" />
+									) : (
+										<i class="ph ph-x-circle" aria-hidden="true" />
+									)}
+									{region.name}
+									{region.en ? <small>{region.en}</small> : null}
+								</strong>
+								<p>{region.note}</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+		) : null
+	}
+
+	<section class="concept-section" aria-labelledby="pattern-usage-title">
+		<div class="concept-section-heading">
+			<p class="concept-section-index">04 · 用与不用</p>
+			<h2 id="pattern-usage-title">什么时候该上它</h2>
+		</div>
+		<div class="pattern-usage">
+			<div class="pattern-usage-card is-fit">
+				<span><i class="ph ph-check-circle" aria-hidden="true"></i>适合</span>
+				<ul>
+					{profile.usage.fit.map((item) => <li>{item}</li>)}
+				</ul>
+			</div>
+			<div class="pattern-usage-card is-unfit">
+				<span><i class="ph ph-x-circle" aria-hidden="true"></i>先别用</span>
+				<ul>
+					{profile.usage.unfit.map((item) => <li>{item}</li>)}
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	{
+		profile.quiz ? (
+			<section class="concept-section" aria-labelledby="pattern-quiz-title">
+				<div class="concept-section-heading">
+					<p class="concept-section-index">05 · 想一想</p>
+					<h2 id="pattern-quiz-title">一道题，检查眼力</h2>
+					<p>{profile.quiz.question}</p>
+				</div>
+				<div class="pattern-quiz" data-pick>
+					{profile.quiz.options.map((option) => (
+						<input
+							class="pattern-pick-input"
+							type="radio"
+							name={`quiz-${concept.id}`}
+							id={`quiz-${concept.id}-${option.key}`}
+							value={option.key}
+						/>
+					))}
+					{profile.quiz.options.map((option) => (
+						<label
+							class="pattern-quiz-option"
+							for={`quiz-${concept.id}-${option.key}`}
+							data-pick-option={option.key}
+						>
+							<b>{option.key}</b>
+							<span>{option.text}</span>
+						</label>
+					))}
+					{profile.quiz.options.map((option) => (
+						<p
+							class="pattern-quiz-feedback"
+							data-pick-note={option.key}
+							data-good={option.correct ? 'true' : 'false'}
+							hidden
+						>
+							{option.feedback}
+						</p>
+					))}
+				</div>
+			</section>
+		) : null
+	}
+
+	<section class="concept-section" aria-labelledby="pattern-prompts-title">
+		<div class="concept-section-heading">
+			<p class="concept-section-index">06 · 说给 AI 听</p>
+			<h2 id="pattern-prompts-title">让 AI 改它时，这样说</h2>
+			<p>{profile.promptTip}</p>
+		</div>
+		<div class="pattern-prompts">
+			{
+				profile.prompts.map((prompt) => (
+					<p class="pattern-prompt-bubble">
+						<i class="ph ph-chat-circle-text" aria-hidden="true" />
+						<span>{prompt}</span>
+						<button type="button" data-copy={prompt} aria-label="复制这句话">
+							复制
+						</button>
+					</p>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="concept-boundary" aria-labelledby="concept-boundary-title">
+		<span>老师提醒</span>
+		<div>
+			<h2 id="concept-boundary-title">最容易踩的坑</h2>
+			<p>{profile.warning}</p>
+		</div>
+	</section>
+
+	<nav class="concept-detail-pagination" aria-label="相邻术语">
+		{
+			previousConcept ? (
+				<a href={`/vibe-coding/terms/${previousConcept.id}/`} rel="prev">
+					<span>上一个</span>
+					<strong>{previousConcept.chineseName}</strong>
+				</a>
+			) : null
+		}
+		{
+			nextConcept ? (
+				<a href={`/vibe-coding/terms/${nextConcept.id}/`} rel="next">
+					<span>下一个</span>
+					<strong>{nextConcept.chineseName}</strong>
+				</a>
+			) : null
+		}
+	</nav>
+</article>
+
+<script is:inline type="module" src="/js/vibe-coding-pattern-detail.js"></script>
