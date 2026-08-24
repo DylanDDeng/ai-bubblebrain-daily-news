@@ -197,6 +197,8 @@ const requiredRoutes = [
   "/",
   "/en/",
   "/search/",
+  "/vibe-coding/terms/",
+  "/vibe-coding/terms/frontend/",
   "/search/index.json",
   "/index.json",
   "/en/index.json",
@@ -448,6 +450,18 @@ for (const entry of legacyManifest.copied) {
 }
 
 const specializedMarkers = new Map([
+  [
+    "vibe-coding/terms/index.html",
+    ["data-vibe-coding-terms", 'id="vibe-coding"', 'id="agent"'],
+  ],
+  [
+    "vibe-coding/terms/frontend/index.html",
+    [
+      'data-vibe-coding-term-detail="frontend"',
+      'data-concept-animation="frontend"',
+      "什么时候会遇到它",
+    ],
+  ],
   [
     "codex-tutorials/index.html",
     ['id="codex-tutorials-search"', "content-directory--codex-tutorials"],

@@ -15,6 +15,21 @@ interface Props {
 	section?: string;
 }
 
+interface NavLink {
+	kind: 'link';
+	href: string;
+	label: string;
+	commandSearch?: boolean;
+}
+
+interface NavGroup {
+	kind: 'group';
+	label: string;
+	items: NavLink[];
+}
+
+type NavItem = NavLink | NavGroup;
+
 const {
 	title,
 	description = "Bubble's Brain personal knowledge base",
@@ -29,20 +44,29 @@ const homeHref = isEnglish ? '/en/' : '/';
 const languageHref = alternateHref ?? (isEnglish ? '/' : '/en/');
 const canonicalUrl = new URL(canonicalPath, Astro.site);
 const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
-const navLinks = isEnglish
+const tutorialLinks: NavLink[] = [
+	{ kind: 'link', href: '/codex-tutorials/', label: 'Codex 教程' },
+	{ kind: 'link', href: '/deepseek-harness-tutorials/', label: 'DeepSeek Harness 教程' },
+	{ kind: 'link', href: '/workbuddy-tutorials/', label: 'WorkBuddy 教程' },
+];
+const vibeCodingLinks: NavLink[] = [{ kind: 'link', href: '/vibe-coding/terms/', label: '术语' }];
+const navItems: NavItem[] = isEnglish
 	? [
-			{ href: '/search/', label: 'Search', commandSearch: true },
-			{ href: '/en/highlights/', label: 'Highlights' },
-			{ href: '/en/about/', label: 'About' },
+			{ kind: 'link', href: '/search/', label: 'Search', commandSearch: true },
+			{ kind: 'link', href: '/en/highlights/', label: 'Highlights' },
+			{ kind: 'link', href: '/en/about/', label: 'About' },
 		]
 	: [
-			{ href: '/search/', label: '知识搜索', commandSearch: true },
-			{ href: '/codex-tutorials/', label: 'Codex 教程' },
-			{ href: '/deepseek-harness-tutorials/', label: 'DeepSeek Harness 教程' },
-			{ href: '/workbuddy-tutorials/', label: 'WorkBuddy 教程' },
-			{ href: '/highlights/', label: '精选阅读' },
-			{ href: '/about/', label: '关于' },
+			{ kind: 'link', href: '/search/', label: '知识搜索', commandSearch: true },
+			{ kind: 'group', label: '教程', items: tutorialLinks },
+			{ kind: 'group', label: 'Vibe Coding', items: vibeCodingLinks },
+			{ kind: 'link', href: '/highlights/', label: '精选阅读' },
+			{ kind: 'link', href: '/about/', label: '关于' },
 		];
+const navItemIsActive = (item: NavItem) =>
+	item.kind === 'link'
+		? Astro.url.pathname.startsWith(item.href)
+		: item.items.some((child) => Astro.url.pathname.startsWith(child.href));
 ---
 
 <!doctype html>
@@ -107,16 +131,35 @@ const navLinks = isEnglish
 					</div>
 					<nav class="rail-nav" aria-label={isEnglish ? 'Primary navigation' : '主导航'}>
 						{
-							navLinks.map((link) => (
-								<a
-									href={link.href}
-									data-command-search-trigger={link.commandSearch ? '' : undefined}
-									aria-current={Astro.url.pathname.startsWith(link.href) ? 'page' : undefined}
-								>
-									<span>{link.label}</span>
-									{link.commandSearch && <kbd aria-hidden="true">⌘K</kbd>}
-								</a>
-							))
+							navItems.map((item) =>
+								item.kind === 'group' ? (
+									<details class="rail-nav-group" data-nav-group>
+										<summary aria-current={navItemIsActive(item) ? 'page' : undefined}>
+											<span>{item.label}</span>
+											<i class="ph ph-caret-down" aria-hidden="true" />
+										</summary>
+										<div class="rail-nav-submenu">
+											{item.items.map((child) => (
+												<a
+													href={child.href}
+													aria-current={navItemIsActive(child) ? 'page' : undefined}
+												>
+													{child.label}
+												</a>
+											))}
+										</div>
+									</details>
+								) : (
+									<a
+										href={item.href}
+										data-command-search-trigger={item.commandSearch ? '' : undefined}
+										aria-current={navItemIsActive(item) ? 'page' : undefined}
+									>
+										<span>{item.label}</span>
+										{item.commandSearch && <kbd aria-hidden="true">⌘K</kbd>}
+									</a>
+								),
+							)
 						}
 					</nav>
 					<div class="rail-controls">
@@ -149,6 +192,7 @@ const navLinks = isEnglish
 							{!isEnglish && <a href="/codex-tutorials/">Codex 教程</a>}
 							{!isEnglish && <a href="/deepseek-harness-tutorials/">DeepSeek Harness 教程</a>}
 							{!isEnglish && <a href="/workbuddy-tutorials/">WorkBuddy 教程</a>}
+							{!isEnglish && <a href="/vibe-coding/terms/">Vibe Coding 术语</a>}
 							<a href={isEnglish ? '/en/highlights/' : '/highlights/'}
 								>{isEnglish ? 'Highlights' : '精选阅读'}</a
 							>

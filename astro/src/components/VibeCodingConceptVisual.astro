@@ -1,0 +1,41 @@
+---
+import type { VibeCodingConcept } from '../data/vibeCodingTerms';
+import type { VibeCodingDetailProfile } from '../data/vibeCodingTermDetails';
+
+interface Props {
+	concept: VibeCodingConcept;
+	profile: VibeCodingDetailProfile;
+}
+
+const { concept, profile } = Astro.props;
+---
+
+<figure class="concept-visual" data-concept-animation={concept.categoryId}>
+	<header class="concept-visual-header">
+		<span>动态说明</span>
+		<strong>{profile.visualTitle}</strong>
+		<small>{concept.name}</small>
+	</header>
+
+	<div class="concept-flow" aria-label={profile.visualTitle}>
+		{
+			profile.steps.map((step, index) => (
+				<div class="concept-flow-node" style={`--step-index: ${index}`}>
+					<span>{String(index + 1).padStart(2, '0')}</span>
+					<strong>{step.label}</strong>
+					<small>{step.detail}</small>
+					{index < profile.steps.length - 1 && (
+						<i class="concept-flow-connector" aria-hidden="true">
+							<b />
+						</i>
+					)}
+				</div>
+			))
+		}
+	</div>
+
+	<figcaption>
+		<i aria-hidden="true"></i>
+		{profile.visualCaption}
+	</figcaption>
+</figure>

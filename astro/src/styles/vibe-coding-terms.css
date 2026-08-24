@@ -1,0 +1,264 @@
+@font-face {
+	font-family: 'Baloo 2';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('/fonts/baloo2-bold-latin.woff2') format('woff2');
+}
+
+.vibe-terms {
+	width: min(calc(100% - 64px), 1120px);
+	margin: 0 auto;
+	padding: clamp(72px, 9vw, 116px) 0 clamp(96px, 12vw, 152px);
+}
+
+.vibe-terms-header {
+	max-width: 680px;
+	margin-bottom: 44px;
+}
+
+.vibe-terms-header > p {
+	margin: 0 0 12px;
+	color: var(--blue);
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+}
+
+.vibe-terms-header h1 {
+	margin: 0;
+	font-family: var(--sans);
+	font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+	font-weight: 720;
+	letter-spacing: -0.05em;
+	line-height: 1.02;
+}
+
+.vibe-terms-header > span {
+	display: block;
+	margin-top: 16px;
+	color: var(--ink-soft);
+	font-size: 0.9rem;
+	line-height: 1.8;
+}
+
+.vibe-category-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px 34px;
+	margin-bottom: clamp(64px, 8vw, 96px);
+}
+
+.vibe-category-nav a {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 3px;
+	color: var(--ink-soft);
+	font-size: 0.85rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition:
+		color 0.2s ease,
+		translate 0.2s ease;
+}
+
+.vibe-category-nav span {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding-bottom: 4px;
+	background: linear-gradient(var(--blue), var(--blue)) left bottom / 0 2px no-repeat;
+	transition: background-size 0.25s ease;
+}
+
+.vibe-category-nav span::after {
+	content: attr(data-label);
+	height: 0;
+	overflow: hidden;
+	visibility: hidden;
+	font-weight: 700;
+}
+
+.vibe-category-nav small {
+	color: var(--ink-faint);
+	font-size: 0.6rem;
+	font-weight: 600;
+	line-height: 1.4;
+	transition: color 0.2s ease;
+}
+
+.vibe-category-nav a:hover {
+	color: var(--ink);
+	translate: 0 -2px;
+}
+
+.vibe-category-nav a:hover span {
+	font-weight: 700;
+	background-size: 100% 2px;
+}
+
+.vibe-category-nav a:hover small {
+	color: var(--blue);
+}
+
+.vibe-term-category {
+	display: grid;
+	grid-template-columns: minmax(200px, 0.62fr) minmax(0, 2fr);
+	gap: clamp(36px, 6vw, 80px);
+	margin-top: clamp(72px, 9vw, 104px);
+	scroll-margin-top: 96px;
+}
+
+.vibe-term-category:first-child {
+	margin-top: 0;
+}
+
+.vibe-category-header {
+	position: sticky;
+	top: 108px;
+	align-self: start;
+}
+
+.vibe-category-index {
+	display: block;
+	font-family: 'Baloo 2', var(--sans);
+	font-size: 2.6rem;
+	font-weight: 700;
+	line-height: 1;
+	color: color-mix(in srgb, var(--ink) 14%, transparent);
+	user-select: none;
+}
+
+.vibe-category-header h2 {
+	margin: 10px 0 0;
+	font-family: var(--sans);
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+}
+
+.vibe-category-header p {
+	margin: 10px 0 0;
+	max-width: 240px;
+	color: var(--ink-soft);
+	font-size: 0.8rem;
+	line-height: 1.75;
+}
+
+.vibe-category-header > a {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 18px;
+	color: var(--ink-faint);
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.vibe-category-header > a:hover {
+	color: var(--blue);
+}
+
+.vibe-terms-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: clamp(20px, 3vw, 30px) clamp(28px, 4vw, 48px);
+	align-items: start;
+}
+
+.vibe-term {
+	display: block;
+	color: var(--ink);
+	scroll-margin-top: 96px;
+	text-decoration: none;
+}
+
+.vibe-term h3 {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+	margin: 0;
+	font-family: var(--sans);
+	font-size: 1.14rem;
+	font-weight: 700;
+	letter-spacing: -0.015em;
+	transition: color 0.2s ease;
+}
+
+.vibe-term h3 span {
+	color: var(--ink-faint);
+	font-size: 0.72rem;
+	font-weight: 600;
+}
+
+.vibe-term-arrow {
+	color: var(--blue);
+	font-size: 0.8rem;
+	opacity: 0;
+	translate: -5px 2px;
+	transition:
+		opacity 0.2s ease,
+		translate 0.2s ease;
+}
+
+.vibe-term:hover h3,
+.vibe-term:focus-visible h3 {
+	color: var(--blue-strong);
+}
+
+.vibe-term:hover .vibe-term-arrow,
+.vibe-term:focus-visible .vibe-term-arrow {
+	opacity: 1;
+	translate: 0 2px;
+}
+
+.vibe-term p {
+	margin: 7px 0 0;
+	color: var(--ink-soft);
+	font-size: 0.82rem;
+	line-height: 1.75;
+}
+
+@media (max-width: 920px) {
+	.vibe-term-category {
+		grid-template-columns: 1fr;
+		gap: 28px;
+	}
+
+	.vibe-category-header {
+		position: static;
+	}
+
+	.vibe-category-header p {
+		max-width: 480px;
+	}
+}
+
+@media (max-width: 760px) {
+	.vibe-terms-list {
+		grid-template-columns: 1fr;
+		gap: 22px;
+	}
+}
+
+@media (max-width: 680px) {
+	.vibe-terms {
+		width: min(calc(100% - 32px), 1120px);
+		padding-top: 56px;
+	}
+
+	.vibe-terms-header {
+		margin-bottom: 30px;
+	}
+
+	.vibe-category-nav {
+		gap: 12px 26px;
+	}
+
+	.vibe-category-index {
+		font-size: 2.1rem;
+	}
+}

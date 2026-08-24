@@ -1,0 +1,236 @@
+---
+import type { VibeCodingConcept } from '../data/vibeCodingTerms';
+import type { VibeCodingDetailProfile } from '../data/vibeCodingTermDetails';
+import '../styles/vibe-coding-flow-lab.css';
+
+interface Props {
+	concept: VibeCodingConcept;
+	profile: VibeCodingDetailProfile;
+}
+
+const { concept, profile } = Astro.props;
+const isFrontend = concept.categoryId === 'frontend';
+
+const labTitles: Record<string, string> = {
+	frontend: '一个页面是怎样做出来的？',
+	backend: '一次请求会经过哪些部分？',
+	'ai-agent': 'Agent 怎样把目标变成结果？',
+	'data-storage': '一条数据怎样被保存和取回？',
+	'engineering-workflow': '一次改动怎样安全进入主线？',
+	'deployment-runtime': '代码怎样一步步变成线上服务？',
+};
+
+const stageNames: Record<string, string[]> = {
+	frontend: ['结构', '样式', '交互', '呈现'],
+	backend: ['请求', '校验', '处理', '响应'],
+	'ai-agent': ['目标', '上下文', '工具', '验证'],
+	'data-storage': ['定义', '写入', '查询', '返回'],
+	'engineering-workflow': ['编辑', '差异', '测试', '提交'],
+	'deployment-runtime': ['源码', '构建', '部署', '观察'],
+};
+
+const labels = stageNames[concept.categoryId] ?? profile.steps.map((step) => step.label);
+---
+
+<section class="concept-section" aria-labelledby="concept-flow-title">
+	<div class="concept-section-heading">
+		<p class="concept-section-index">02 · 点击演示</p>
+		<h2 id="concept-flow-title">{labTitles[concept.categoryId] ?? profile.visualTitle}</h2>
+		<p>突出显示的部分，就是当前概念在整条流程中负责的位置。</p>
+	</div>
+
+	<div
+		class="concept-process-demo"
+		data-concept-flow-lab
+		data-active-step="0"
+		style="--flow-progress: 0%"
+	>
+		<ol class="concept-process-panels">
+			{
+				profile.steps.map((step, index) => (
+					<li data-flow-step-item data-state={index === 0 ? 'active' : 'idle'}>
+						<article class="concept-process-panel">
+							<button
+								type="button"
+								class="concept-process-panel-select"
+								data-flow-step
+								data-step-index={index}
+								data-step-label={step.label}
+								data-step-detail={step.detail}
+								aria-pressed={index === 0 ? 'true' : 'false'}
+							>
+								<header>
+									<span>{String(index + 1).padStart(2, '0')}</span>
+									<strong>
+										{step.label} · {labels[index]}
+									</strong>
+								</header>
+							</button>
+
+							<div class="concept-process-panel-body">
+								{isFrontend && index === 0 ? (
+									<div class="concept-html-preview">
+										<p>
+											<code>&lt;h1&gt;</code>
+											<input
+												type="text"
+												value="欢迎来到知识库"
+												aria-label="修改页面标题"
+												data-flow-editor="heading"
+												maxlength="18"
+												autocomplete="off"
+												spellcheck="false"
+											/>
+										</p>
+										<p>
+											<code>&lt;p&gt;</code>
+											<input
+												type="text"
+												value="结构、样式和交互已经组合。"
+												aria-label="修改页面说明"
+												data-flow-editor="description"
+												maxlength="28"
+												autocomplete="off"
+												spellcheck="false"
+											/>
+										</p>
+										<p>
+											<code>&lt;button&gt;</code>
+											<input
+												type="text"
+												value="点我试试"
+												aria-label="修改按钮文字"
+												data-flow-editor="button"
+												maxlength="10"
+												autocomplete="off"
+												spellcheck="false"
+											/>
+										</p>
+									</div>
+								) : null}
+
+								{isFrontend && index === 1 ? (
+									<div class="concept-css-preview">
+										<p>
+											<input
+												type="color"
+												value="#151515"
+												aria-label="修改文字颜色"
+												data-flow-style-editor="--preview-text"
+											/>
+											<span>文字</span>
+											<output data-flow-style-value="--preview-text">#151515</output>
+										</p>
+										<p>
+											<input
+												type="color"
+												value="#ff5c50"
+												aria-label="修改强调颜色"
+												data-flow-style-editor="--preview-accent"
+											/>
+											<span>强调</span>
+											<output data-flow-style-value="--preview-accent">#FF5C50</output>
+										</p>
+										<p>
+											<span class="concept-spacing-symbol" aria-hidden="true">↔</span>
+											<span>间距</span>
+											<label class="concept-spacing-editor">
+												<input
+													type="number"
+													value="16"
+													min="8"
+													max="32"
+													step="1"
+													aria-label="修改页面间距"
+													data-flow-style-editor="--preview-spacing"
+													data-flow-style-unit="px"
+												/>
+												<span>px</span>
+											</label>
+										</p>
+									</div>
+								) : null}
+
+								{isFrontend && index === 2 ? (
+									<div class="concept-js-preview">
+										<p>
+											<i class="ph ph-cursor-click" aria-hidden="true" /> click
+										</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<button type="button" data-flow-demo-button disabled>
+											触发一次
+										</button>
+										<output data-flow-demo-output>等待 JavaScript</output>
+									</div>
+								) : null}
+
+								{isFrontend && index === 3 ? (
+									<div
+										class="concept-browser-preview"
+										data-flow-browser-preview
+										style="--preview-text: #151515; --preview-accent: #ff5c50; --preview-spacing: 16px"
+									>
+										<small>Bubble's Lab</small>
+										<h4 data-flow-preview="heading">欢迎来到知识库</h4>
+										<p data-flow-preview="description">结构、样式和交互已经组合。</p>
+										<button
+											type="button"
+											data-flow-demo-button
+											data-flow-finish
+											data-flow-preview="button"
+											disabled
+										>
+											点我试试
+										</button>
+										<output data-flow-demo-output>等待 JavaScript</output>
+									</div>
+								) : null}
+
+								{!isFrontend ? (
+									<div class="concept-generic-process-preview">
+										<i
+											class={`ph ${index === 3 ? 'ph-check-circle' : 'ph-arrow-circle-right'}`}
+											aria-hidden="true"
+										/>
+										<strong>{labels[index]}</strong>
+										<p>{step.detail}</p>
+									</div>
+								) : null}
+							</div>
+
+							<footer>
+								<i class="ph ph-check-circle" aria-hidden="true" />
+								<span data-flow-panel-status>{index === 0 ? '当前步骤' : '等待进入'}</span>
+							</footer>
+						</article>
+						{index < profile.steps.length - 1 ? (
+							<i class="ph ph-arrow-right concept-process-arrow" aria-hidden="true" />
+						) : null}
+					</li>
+				))
+			}
+		</ol>
+
+		<div class="concept-process-controls">
+			<button type="button" data-flow-previous disabled>
+				<i class="ph ph-arrow-left" aria-hidden="true"></i>
+				上一步
+			</button>
+			<div>
+				<strong><span data-flow-current>1</span> / {profile.steps.length}</strong>
+				<p>
+					<span data-flow-title>{profile.steps[0].label}</span> · <span data-flow-detail
+						>{profile.steps[0].detail}</span
+					>
+				</p>
+			</div>
+			<button type="button" data-flow-next>
+				下一步
+				<i class="ph ph-arrow-right" aria-hidden="true"></i>
+			</button>
+		</div>
+	</div>
+
+</section>
+
+<script is:inline type="module" src="/js/vibe-coding-flow-lab.js"></script>

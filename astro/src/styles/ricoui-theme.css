@@ -195,6 +195,65 @@ h3 {
 	display: none;
 }
 
+.rail-nav-group {
+	position: relative;
+}
+
+.rail-nav-group summary {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 9px 12px;
+	color: var(--ink);
+	cursor: pointer;
+	font-size: 0.7rem;
+	font-weight: 650;
+	letter-spacing: 0.08em;
+	list-style: none;
+	text-transform: uppercase;
+}
+
+.rail-nav-group summary::-webkit-details-marker {
+	display: none;
+}
+
+.rail-nav-group summary:hover,
+.rail-nav-group summary[aria-current='page'] {
+	color: var(--blue);
+}
+
+.rail-nav-group summary i {
+	font-size: 0.66rem;
+	transition: transform 160ms ease;
+}
+
+.rail-nav-group[open] summary i {
+	transform: rotate(180deg);
+}
+
+.rail-nav-submenu {
+	position: absolute;
+	top: calc(100% + 8px);
+	left: 0;
+	z-index: 140;
+	display: grid;
+	min-width: 240px;
+	padding: 8px;
+	border: 1px solid rgb(255 255 255 / 0.72);
+	border-radius: 12px;
+	background: rgb(255 255 255 / 0.88);
+	box-shadow: 0 16px 36px rgb(0 0 0 / 0.1);
+	backdrop-filter: blur(20px) saturate(160%);
+	-webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
+.rail-nav-submenu a {
+	padding: 10px 12px;
+	font-size: 0.68rem;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+}
+
 .rail-controls {
 	display: flex;
 	align-items: center;
@@ -491,6 +550,31 @@ h3 {
 	.rail-nav a {
 		padding: 14px 8px;
 		font-size: 1.15rem;
+	}
+
+	.rail-nav-group summary {
+		justify-content: space-between;
+		padding: 14px 8px;
+		font-size: 1.15rem;
+	}
+
+	.rail-nav-submenu {
+		position: static;
+		min-width: 0;
+		margin: 0 8px 8px;
+		padding: 0 0 2px 14px;
+		border: 0;
+		border-left: 1px solid var(--rule);
+		border-radius: 0;
+		background: transparent;
+		box-shadow: none;
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+
+	.rail-nav-submenu a {
+		padding: 10px 8px;
+		font-size: 0.84rem;
 	}
 
 	.rail-controls {

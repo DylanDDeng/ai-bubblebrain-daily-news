@@ -1,4 +1,5 @@
 import { legacyEntryIsRoutable, loadLegacyContent } from './legacyContent';
+import { getVibeCodingConcepts } from '../data/vibeCodingTerms';
 
 export { renderRss } from './siteRss';
 
@@ -54,7 +55,26 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 			section: 'knowledge',
 			lastmod: null,
 		},
+		{
+			route: '/vibe-coding/terms/',
+			title: 'Vibe Coding 术语',
+			description: 'Vibe Coding 与 AI 编程常见术语解释',
+			locale: 'zh-CN',
+			section: 'vibe-coding',
+			lastmod: null,
+		},
 	];
+
+	for (const concept of getVibeCodingConcepts()) {
+		records.push({
+			route: `/vibe-coding/terms/${concept.id}/`,
+			title: `${concept.chineseName}（${concept.name}）`,
+			description: concept.description,
+			locale: 'zh-CN',
+			section: 'vibe-coding',
+			lastmod: null,
+		});
+	}
 
 	for (const entry of legacyEntries) {
 		if (!legacyEntryIsRoutable(entry)) continue;

@@ -1,0 +1,56 @@
+---
+import { vibeCodingTermCategories } from '../data/vibeCodingTerms';
+import '../styles/vibe-coding-terms.css';
+---
+
+<section class="vibe-terms" data-vibe-coding-terms>
+	<header class="vibe-terms-header">
+		<p>VIBE CODING</p>
+		<h1>术语</h1>
+		<span>按开发环节理解 AI 编程中的常见概念。</span>
+	</header>
+
+	<nav class="vibe-category-nav" aria-label="术语分类">
+		{
+			vibeCodingTermCategories.map((category) => (
+				<a href={`#${category.id}`}>
+					<span data-label={category.label}>{category.label}</span>
+					<small>{category.terms.length}</small>
+				</a>
+			))
+		}
+	</nav>
+
+	<div class="vibe-term-categories">
+		{
+			vibeCodingTermCategories.map((category, categoryIndex) => (
+				<section class="vibe-term-category" id={category.id}>
+					<header class="vibe-category-header">
+						<span class="vibe-category-index" aria-hidden="true">
+							{String(categoryIndex + 1).padStart(2, '0')}
+						</span>
+						<h2>{category.label}</h2>
+						<p>{category.description}</p>
+						<a href={`/vibe-coding/terms/${category.id}/`}>
+							查看图解
+							<i class="ph ph-arrow-up-right" aria-hidden="true" />
+						</a>
+					</header>
+
+					<div class="vibe-terms-list">
+						{category.terms.map((term) => (
+							<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
+								<h3>
+									{term.name}
+									<span>{term.chineseName}</span>
+									<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
+								</h3>
+								<p>{term.description}</p>
+							</a>
+						))}
+					</div>
+				</section>
+			))
+		}
+	</div>
+</section>
