@@ -3,6 +3,8 @@ export interface VibeCodingTerm {
 	name: string;
 	chineseName: string;
 	description: string;
+	/** 可选：分类内的分组名（如界面图鉴按用途分组） */
+	group?: string;
 }
 
 export interface VibeCodingTermCategory {
@@ -310,28 +312,144 @@ export const vibeCodingTermCategories: VibeCodingTermCategory[] = [
 		description: '屏幕上每一块的通用名字——认得它，才能让 AI 精确地改它。',
 		terms: [
 			{
+				group: '布局骨架',
 				id: 'hero',
 				name: 'Hero',
 				chineseName: 'Hero 区',
 				description: '首屏最上方那块用大标题和行动按钮定调的区域，整个页面的开场白。',
 			},
 			{
+				group: '布局骨架',
 				id: 'navbar',
 				name: 'Navbar',
 				chineseName: '导航栏',
 				description: '固定在页面顶部的横条，放站点标志和主要入口，负责「你在哪、能去哪」。',
 			},
 			{
+				group: '布局骨架',
 				id: 'footer',
 				name: 'Footer',
 				chineseName: '页脚',
 				description: '页面底部的收尾区，放次要链接、版权和联系方式，是页面的「片尾字幕」。',
 			},
 			{
+				group: '布局骨架',
 				id: 'card',
 				name: 'Card',
 				chineseName: '卡片',
 				description: '把一条内容装进带边界的小方块，成组排列，方便扫视和点击。',
+			},
+			{
+				group: '布局骨架',
+				id: 'sidebar',
+				name: 'Sidebar',
+				chineseName: '侧边栏',
+				description: '占住左侧一列的竖向导航，把更深的目录常驻在屏幕上。',
+			},
+			{
+				group: '布局骨架',
+				id: 'section',
+				name: 'Section',
+				chineseName: '区块',
+				description: '页面的段落：一个通栏讲一件事，一个接一个摞出整个页面。',
+			},
+			{
+				group: '输入控件',
+				id: 'form',
+				name: 'Form',
+				chineseName: '表单',
+				description: '一组输入项加一个提交按钮，把用户手里的信息收进系统。',
+			},
+			{
+				group: '输入控件',
+				id: 'input',
+				name: 'Input',
+				chineseName: '输入框',
+				description: '接收用户键入内容的基础控件，细节全在标签、提示和状态上。',
+			},
+			{
+				group: '输入控件',
+				id: 'select',
+				name: 'Select',
+				chineseName: '下拉选择',
+				description: '点开一个列表从中挑一项，把「能选什么」提前圈定。',
+			},
+			{
+				group: '输入控件',
+				id: 'toggle',
+				name: 'Toggle',
+				chineseName: '开关',
+				description: '非开即关的两态控件，拨一下立即生效，不需要保存按钮。',
+			},
+			{
+				group: '输入控件',
+				id: 'slider',
+				name: 'Slider',
+				chineseName: '滑块',
+				description: '拖动手柄在一段范围里取值的控件，适合「大概多少」，不适合「精确多少」。',
+			},
+			{
+				group: '浮层',
+				id: 'modal',
+				name: 'Modal',
+				chineseName: '弹窗',
+				description: '覆盖在页面上的对话框，把页面暂停下来，要求用户先处理一件事。',
+			},
+			{
+				group: '浮层',
+				id: 'toast',
+				name: 'Toast',
+				chineseName: '轻提示',
+				description: '在角落短暂出现又自己消失的小消息条，告诉你「刚才那件事成了」。',
+			},
+			{
+				group: '浮层',
+				id: 'drawer',
+				name: 'Drawer',
+				chineseName: '抽屉',
+				description: '从屏幕边缘滑出的面板，手机上的汉堡菜单点开后就是它。',
+			},
+			{
+				group: '反馈状态',
+				id: 'skeleton',
+				name: 'Skeleton',
+				chineseName: '骨架屏',
+				description: '加载时按真实内容的形状先画一版灰色占位，让等待显得更短。',
+			},
+			{
+				group: '反馈状态',
+				id: 'empty-state',
+				name: 'Empty State',
+				chineseName: '空状态',
+				description: '列表还没有内容时显示的引导：说清为什么是空的、下一步做什么。',
+			},
+			{
+				group: '反馈状态',
+				id: 'badge',
+				name: 'Badge',
+				chineseName: '徽标',
+				description: '挂在图标或标签角上的小数字或圆点，宣告「这里有新东西」。',
+			},
+			{
+				group: '导航寻路',
+				id: 'tabs',
+				name: 'Tabs',
+				chineseName: '标签页',
+				description: '同一块区域里的几个平级视图，点标签切换，一次只看一个。',
+			},
+			{
+				group: '导航寻路',
+				id: 'breadcrumb',
+				name: 'Breadcrumb',
+				chineseName: '面包屑',
+				description: '一行层级路径，显示你在站点的第几层，每一层都能点回去。',
+			},
+			{
+				group: '导航寻路',
+				id: 'pagination',
+				name: 'Pagination',
+				chineseName: '分页',
+				description: '把一长串内容切成一页一页，底部给页码和前后翻页。',
 			},
 		],
 	},

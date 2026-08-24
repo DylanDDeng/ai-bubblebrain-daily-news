@@ -1,6 +1,20 @@
 ---
-import { vibeCodingTermCategories } from '../data/vibeCodingTerms';
+import { vibeCodingTermCategories, type VibeCodingTerm } from '../data/vibeCodingTerms';
 import '../styles/vibe-coding-terms.css';
+
+function groupTerms(terms: VibeCodingTerm[]): { name: string | null; terms: VibeCodingTerm[] }[] {
+	const groups: { name: string | null; terms: VibeCodingTerm[] }[] = [];
+	for (const term of terms) {
+		const name = term.group ?? null;
+		const last = groups[groups.length - 1];
+		if (last && last.name === name) {
+			last.terms.push(term);
+		} else {
+			groups.push({ name, terms: [term] });
+		}
+	}
+	return groups;
+}
 ---
 
 <section class="vibe-terms" data-vibe-coding-terms>
@@ -37,16 +51,23 @@ import '../styles/vibe-coding-terms.css';
 						</a>
 					</header>
 
-					<div class="vibe-terms-list">
-						{category.terms.map((term) => (
-							<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
-								<h3>
-									{term.name}
-									<span>{term.chineseName}</span>
-									<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
-								</h3>
-								<p>{term.description}</p>
-							</a>
+					<div class="vibe-terms-groups">
+						{groupTerms(category.terms).map((group) => (
+							<div class="vibe-terms-group">
+								{group.name ? <h3 class="vibe-term-group-title">{group.name}</h3> : null}
+								<div class="vibe-terms-list">
+									{group.terms.map((term) => (
+										<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
+											<h3>
+												{term.name}
+												<span>{term.chineseName}</span>
+												<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
+											</h3>
+											<p>{term.description}</p>
+										</a>
+									))}
+								</div>
+							</div>
 						))}
 					</div>
 				</section>

@@ -289,3 +289,16 @@
 		font-size: 2.1rem;
 	}
 }
+
+.vibe-terms-groups {
+	display: grid;
+	gap: 34px;
+}
+
+.vibe-term-group-title {
+	margin: 0 0 16px;
+	color: var(--blue);
+	font-size: 0.67rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+}
