@@ -33,7 +33,9 @@ const { concept, profile, previousConcept, nextConcept } = Astro.props;
 				<div class="concept-qa-body">
 					<span class="concept-qa-label">你可能会问</span>
 					<p>
-						<em>{concept.chineseName}</em>到底是什么？它在一条完整的开发流程里，负责哪一段？
+						<em>{concept.chineseName}</em>{
+							profile.question ?? '到底是什么？它在一条完整的开发流程里，负责哪一段？'
+						}
 					</p>
 				</div>
 			</div>
@@ -74,7 +76,7 @@ const { concept, profile, previousConcept, nextConcept } = Astro.props;
 			{
 				profile.scenes.map((scene, index) => (
 					<article>
-						<span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+						<span aria-hidden="true">{index + 1}</span>
 						<h3>{scene.title}</h3>
 						<p>{scene.description}</p>
 					</article>

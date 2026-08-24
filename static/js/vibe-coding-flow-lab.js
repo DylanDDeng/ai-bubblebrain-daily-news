@@ -33,8 +33,18 @@ const setupConceptFlowLabs = () => {
       root.querySelectorAll("[data-flow-style-value]"),
     );
     const browserPreview = root.querySelector("[data-flow-browser-preview]");
+    const counterButtons = Array.from(
+      root.querySelectorAll("[data-flow-counter-button]"),
+    );
+    const choiceButtons = Array.from(
+      root.querySelectorAll("[data-flow-choice]"),
+    );
+    const counterDisplays = Array.from(
+      root.querySelectorAll("[data-flow-counter-display]"),
+    );
     let activeStep = 0;
     let demoClicks = 0;
+    let counterValue = 0;
     let previewUpdateTimer;
 
     const signalPreviewUpdate = () => {
@@ -101,6 +111,8 @@ const setupConceptFlowLabs = () => {
       }
 
       for (const demoButton of demoButtons) demoButton.disabled = index < 2;
+      for (const counterButton of counterButtons)
+        counterButton.disabled = index < 2;
       for (const output of demoOutputs) {
         output.textContent =
           index < 2
@@ -169,6 +181,44 @@ const setupConceptFlowLabs = () => {
           );
         }
         applyStyleValue();
+      });
+    }
+    for (const choiceButton of choiceButtons) {
+      choiceButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const ownItem = choiceButton.closest("[data-flow-step-item]");
+        const ownIndex = items.indexOf(ownItem);
+        if (ownIndex >= 0 && ownIndex !== activeStep) update(ownIndex);
+        const group = choiceButton.dataset.flowChoiceGroup;
+        const value = choiceButton.dataset.flowChoice;
+        for (const other of choiceButtons) {
+          if (other.dataset.flowChoiceGroup === group) {
+            other.setAttribute(
+              "aria-pressed",
+              other === choiceButton ? "true" : "false",
+            );
+          }
+        }
+        for (const target of root.querySelectorAll(
+          `[data-flow-choice-target="${group}"]`,
+        )) {
+          target.setAttribute(`data-choice-${group}`, value);
+        }
+        for (const text of root.querySelectorAll(
+          `[data-flow-choice-text="${group}"]`,
+        )) {
+          text.textContent = value;
+        }
+        signalPreviewUpdate();
+      });
+    }
+    for (const counterButton of counterButtons) {
+      counterButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        counterValue += 1;
+        for (const display of counterDisplays)
+          display.textContent = String(counterValue);
+        signalPreviewUpdate();
       });
     }
     for (const demoButton of demoButtons) {

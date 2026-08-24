@@ -8,6 +8,10 @@ interface Props {
 }
 
 const { concept, profile } = Astro.props;
+const isComponent = concept.id === 'component';
+const isState = concept.id === 'state';
+const isProps = concept.id === 'props';
+const isResponsive = concept.id === 'responsive-design';
 ---
 
 <figure class="concept-visual" data-concept-animation={concept.categoryId}>
@@ -17,22 +21,179 @@ const { concept, profile } = Astro.props;
 		<small>{concept.name}</small>
 	</header>
 
-	<div class="concept-flow" aria-label={profile.visualTitle}>
-		{
-			profile.steps.map((step, index) => (
-				<div class="concept-flow-node" style={`--step-index: ${index}`}>
-					<span>{String(index + 1).padStart(2, '0')}</span>
-					<strong>{step.label}</strong>
-					<small>{step.detail}</small>
-					{index < profile.steps.length - 1 && (
-						<i class="concept-flow-connector" aria-hidden="true">
-							<b />
-						</i>
-					)}
+	{
+		isResponsive ? (
+			<div class="concept-instance-visual concept-rd-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>一份内容</small>
+					<p>
+						<code>nav</code>
+						<span>导航 × 1</span>
+					</p>
+					<p>
+						<code>cards</code>
+						<span>卡片 × 3</span>
+					</p>
+					<p>
+						<code>cta</code>
+						<span>按钮 × 1</span>
+					</p>
+					<strong>内容只写一份</strong>
 				</div>
-			))
-		}
-	</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-rd-stage">
+					<div class="concept-rd-frame" aria-hidden="true">
+						<div class="concept-rd-bar">
+							<b />
+							<b />
+							<b />
+							<em class="concept-state-flip">
+								<i class="concept-state-a">1200px</i>
+								<i class="concept-state-b">390px</i>
+							</em>
+						</div>
+						<span class="concept-rd-nav" />
+						<div class="concept-rd-cards">
+							<b />
+							<b />
+							<b />
+						</div>
+						<span class="concept-rd-cta" />
+					</div>
+					<strong>屏幕一变，布局跟着变</strong>
+				</div>
+			</div>
+		) : isProps ? (
+			<div class="concept-instance-visual concept-props-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>Button.def</small>
+					<p>
+						<code>label</code>
+						<span class="concept-props-hole">待传入</span>
+					</p>
+					<p>
+						<code>variant</code>
+						<span class="concept-props-hole">待传入</span>
+					</p>
+					<strong>样子交给 props 决定</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-props-row" style="--props-index: 0">
+						<code>label="加入购物车"</code>
+						<b class="concept-props-chip is-solid">加入购物车</b>
+					</div>
+					<div class="concept-props-row" style="--props-index: 1">
+						<code>label="取消" ghost</code>
+						<b class="concept-props-chip is-ghost">取消</b>
+					</div>
+					<div class="concept-props-row" style="--props-index: 2">
+						<code>label="删除" dark</code>
+						<b class="concept-props-chip is-dark">删除</b>
+					</div>
+					<strong>同一份定义，三种样子</strong>
+				</div>
+			</div>
+		) : isState ? (
+			<div class="concept-instance-visual concept-state-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>state</small>
+					<p>
+						<code>menu</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">"收起"</i>
+							<i class="concept-state-b">"展开"</i>
+						</span>
+					</p>
+					<p>
+						<code>unread</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">0</i>
+							<i class="concept-state-b">3</i>
+						</span>
+					</p>
+					<strong>一份数据，自己在变</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-state-topbar" aria-hidden="true">
+						<span class="concept-state-burger">
+							<b />
+							<b />
+							<b />
+						</span>
+						<span class="concept-state-bell">
+							<i class="ph ph-bell" />
+							<em>3</em>
+						</span>
+					</div>
+					<div class="concept-state-body" aria-hidden="true">
+						<span class="concept-state-drawer">
+							<b />
+							<b />
+							<b />
+						</span>
+						<span class="concept-state-content" />
+					</div>
+					<strong>界面照着数据画</strong>
+				</div>
+			</div>
+		) : isComponent ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>Button.def</small>
+					<p>
+						<code>label</code>
+						<span>加入购物车</span>
+					</p>
+					<p>
+						<code>color</code>
+						<i class="concept-instance-swatch" aria-hidden="true" />
+					</p>
+					<strong>一份定义</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-instance-slot" style="--instance-index: 0">
+						<span>导航栏</span>
+						<b class="concept-instance-chip">加入购物车</b>
+					</div>
+					<div class="concept-instance-slot" style="--instance-index: 1">
+						<span>文章卡片</span>
+						<b class="concept-instance-chip">加入购物车</b>
+					</div>
+					<div class="concept-instance-slot" style="--instance-index: 2">
+						<span>登录表单</span>
+						<b class="concept-instance-chip">加入购物车</b>
+					</div>
+					<strong>三个实例，跟着定义一起变</strong>
+				</div>
+			</div>
+		) : (
+			<div class="concept-flow" aria-label={profile.visualTitle}>
+				{profile.steps.map((step, index) => (
+					<div class="concept-flow-node" style={`--step-index: ${index}`}>
+						<span>{String(index + 1).padStart(2, '0')}</span>
+						<strong>{step.label}</strong>
+						<small>{step.detail}</small>
+						{index < profile.steps.length - 1 && (
+							<i class="concept-flow-connector" aria-hidden="true">
+								<b />
+							</i>
+						)}
+					</div>
+				))}
+			</div>
+		)
+	}
 
 	<figcaption>
 		<i aria-hidden="true"></i>

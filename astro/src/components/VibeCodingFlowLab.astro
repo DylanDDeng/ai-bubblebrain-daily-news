@@ -9,9 +9,18 @@ interface Props {
 }
 
 const { concept, profile } = Astro.props;
-const isFrontend = concept.categoryId === 'frontend';
+const isComponent = concept.id === 'component';
+const isState = concept.id === 'state';
+const isProps = concept.id === 'props';
+const isResponsive = concept.id === 'responsive-design';
+const isFrontend =
+	!isComponent && !isState && !isProps && !isResponsive && concept.categoryId === 'frontend';
 
 const labTitles: Record<string, string> = {
+	component: '一个按钮组件，怎样复用出整个页面？',
+	state: '点一下按钮，状态经历了什么？',
+	props: '同一个按钮，怎么被传成不同样子？',
+	'responsive-design': '拖一拖屏宽，页面怎么变？',
 	frontend: '一个页面是怎样做出来的？',
 	backend: '一次请求会经过哪些部分？',
 	'ai-agent': 'Agent 怎样把目标变成结果？',
@@ -21,6 +30,10 @@ const labTitles: Record<string, string> = {
 };
 
 const stageNames: Record<string, string[]> = {
+	component: ['定义', '配置', '组合', '复用'],
+	state: ['初始', '事件', '更新', '渲染'],
+	props: ['准备', '传入', '读取', '呈现'],
+	'responsive-design': ['内容', '断点', '布局', '适配'],
 	frontend: ['结构', '样式', '交互', '呈现'],
 	backend: ['请求', '校验', '处理', '响应'],
 	'ai-agent': ['目标', '上下文', '工具', '验证'],
@@ -29,13 +42,18 @@ const stageNames: Record<string, string[]> = {
 	'deployment-runtime': ['源码', '构建', '部署', '观察'],
 };
 
-const labels = stageNames[concept.categoryId] ?? profile.steps.map((step) => step.label);
+const labels =
+	stageNames[concept.id] ??
+	stageNames[concept.categoryId] ??
+	profile.steps.map((step) => step.label);
 ---
 
 <section class="concept-section" aria-labelledby="concept-flow-title">
 	<div class="concept-section-heading">
 		<p class="concept-section-index">02 · 点击演示</p>
-		<h2 id="concept-flow-title">{labTitles[concept.categoryId] ?? profile.visualTitle}</h2>
+		<h2 id="concept-flow-title">
+			{labTitles[concept.id] ?? labTitles[concept.categoryId] ?? profile.visualTitle}
+		</h2>
 		<p>突出显示的部分，就是当前概念在整条流程中负责的位置。</p>
 	</div>
 
@@ -68,6 +86,330 @@ const labels = stageNames[concept.categoryId] ?? profile.steps.map((step) => ste
 							</button>
 
 							<div class="concept-process-panel-body">
+								{isResponsive && index === 0 ? (
+									<div class="concept-component-def">
+										<small>内容只有一份</small>
+										<p>
+											<code>nav</code>
+											<span>导航 × 1</span>
+										</p>
+										<p>
+											<code>cards</code>
+											<span>卡片 × 3</span>
+										</p>
+										<p>
+											<code>cta</code>
+											<span>按钮 × 1</span>
+										</p>
+									</div>
+								) : null}
+
+								{isResponsive && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>@media (max-width: 680px)</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>换一套布局规则</p>
+									</div>
+								) : null}
+
+								{isResponsive && index === 2 ? (
+									<div class="concept-rd-layouts">
+										<figure>
+											<div class="concept-rd-thumb is-wide" aria-hidden="true">
+												<span />
+												<div>
+													<b />
+													<b />
+													<b />
+												</div>
+											</div>
+											<figcaption>宽屏 · 三栏</figcaption>
+										</figure>
+										<figure>
+											<div class="concept-rd-thumb is-narrow" aria-hidden="true">
+												<span />
+												<div>
+													<b />
+													<b />
+													<b />
+												</div>
+											</div>
+											<figcaption>窄屏 · 单栏</figcaption>
+										</figure>
+									</div>
+								) : null}
+
+								{isResponsive && index === 3 ? (
+									<div class="concept-rd-play" data-flow-browser-preview style="--rd-width: 172px">
+										<label class="concept-rd-slider">
+											<i class="ph ph-arrows-out-line-horizontal" aria-hidden="true" />
+											<input
+												type="range"
+												min="92"
+												max="172"
+												value="172"
+												step="1"
+												aria-label="拖动调整屏幕宽度"
+												data-flow-style-editor="--rd-width"
+												data-flow-style-unit="px"
+											/>
+											<output data-flow-style-value="--rd-width">172</output>
+										</label>
+										<div class="concept-rd-frame concept-rd-frame-live" aria-hidden="true">
+											<div class="concept-rd-bar">
+												<b />
+												<b />
+												<b />
+											</div>
+											<span class="concept-rd-nav" />
+											<div class="concept-rd-cards">
+												<b />
+												<b />
+												<b />
+											</div>
+											<span class="concept-rd-cta" />
+										</div>
+									</div>
+								) : null}
+
+								{isProps && index === 0 ? (
+									<div class="concept-props-editor">
+										<div class="concept-html-preview">
+											<p>
+												<code>label</code>
+												<input
+													type="text"
+													value="加入购物车"
+													aria-label="修改按钮文字"
+													data-flow-editor="props-label"
+													maxlength="10"
+													autocomplete="off"
+													spellcheck="false"
+												/>
+											</p>
+										</div>
+										<div class="concept-props-choices" role="group" aria-label="选择按钮样式">
+											<code>variant</code>
+											<button
+												type="button"
+												data-flow-choice="solid"
+												data-flow-choice-group="variant"
+												aria-pressed="true"
+											>
+												实心
+											</button>
+											<button
+												type="button"
+												data-flow-choice="ghost"
+												data-flow-choice-group="variant"
+												aria-pressed="false"
+											>
+												描边
+											</button>
+											<button
+												type="button"
+												data-flow-choice="dark"
+												data-flow-choice-group="variant"
+												aria-pressed="false"
+											>
+												墨色
+											</button>
+										</div>
+										<small>你扮演父组件：决定要传下去的值</small>
+									</div>
+								) : null}
+
+								{isProps && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>&lt;Button label=… /&gt;</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>像给函数传参数</p>
+									</div>
+								) : null}
+
+								{isProps && index === 2 ? (
+									<div class="concept-component-def">
+										<small>子组件读到的 props（只读）</small>
+										<p>
+											<code>label</code>
+											<span data-flow-preview="props-label">加入购物车</span>
+										</p>
+										<p>
+											<code>variant</code>
+											<span data-flow-choice-text="variant">solid</span>
+										</p>
+									</div>
+								) : null}
+
+								{isProps && index === 3 ? (
+									<div
+										class="concept-props-stage"
+										data-flow-browser-preview
+										data-flow-choice-target="variant"
+										data-choice-variant="solid"
+									>
+										<b class="concept-props-render">
+											<span data-flow-preview="props-label">加入购物车</span>
+										</b>
+										<code>
+											&lt;Button label="<span data-flow-preview="props-label">加入购物车</span>"
+											variant="<span data-flow-choice-text="variant">solid</span>" /&gt;
+										</code>
+									</div>
+								) : null}
+
+								{isState && index === 0 ? (
+									<div class="concept-component-def">
+										<small>初始 state</small>
+										<p>
+											<code>liked</code>
+											<span>false</span>
+										</p>
+										<p>
+											<code>count</code>
+											<span>0</span>
+										</p>
+									</div>
+								) : null}
+
+								{isState && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>
+											<i class="ph ph-cursor-click" aria-hidden="true" /> click
+										</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>「该更新了」</p>
+									</div>
+								) : null}
+
+								{isState && index === 2 ? (
+									<div class="concept-state-update">
+										<p>
+											<code>count</code>
+											<output data-flow-counter-display>0</output>
+										</p>
+										<button type="button" data-flow-counter-button disabled>
+											点赞 +1
+										</button>
+										<small>先变的是数据，不是界面</small>
+									</div>
+								) : null}
+
+								{isState && index === 3 ? (
+									<div class="concept-browser-preview concept-state-render" data-flow-browser-preview>
+										<small>同一份 count · 两处显示</small>
+										<div class="concept-state-render-row">
+											<span>
+												<i class="ph ph-heart" aria-hidden="true" />
+												角标
+											</span>
+											<b data-flow-counter-display>0</b>
+										</div>
+										<div class="concept-state-render-row">
+											<span>文字</span>
+											<em><b data-flow-counter-display>0</b> 人觉得有用</em>
+										</div>
+										<button type="button" data-flow-counter-button disabled>
+											在这里点也一样
+										</button>
+									</div>
+								) : null}
+
+								{isComponent && index === 0 ? (
+									<div class="concept-component-def">
+										<small>Button 组件定义</small>
+										<p>
+											<code>label</code>
+											<span>按钮文字</span>
+										</p>
+										<p>
+											<code>color</code>
+											<span>主色</span>
+										</p>
+										<p>
+											<code>onClick</code>
+											<span>点击行为</span>
+										</p>
+									</div>
+								) : null}
+
+								{isComponent && index === 1 ? (
+									<div class="concept-component-props">
+										<div class="concept-html-preview">
+											<p>
+												<code>label</code>
+												<input
+													type="text"
+													value="加入购物车"
+													aria-label="修改按钮文字"
+													data-flow-editor="button-label"
+													maxlength="10"
+													autocomplete="off"
+													spellcheck="false"
+												/>
+											</p>
+										</div>
+										<div class="concept-css-preview">
+											<p>
+												<input
+													type="color"
+													value="#ff5c50"
+													aria-label="修改按钮主色"
+													data-flow-style-editor="--preview-accent"
+												/>
+												<span>color</span>
+												<output data-flow-style-value="--preview-accent">#FF5C50</output>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isComponent && index === 2 ? (
+									<div class="concept-component-compose">
+										<p>
+											<span>导航栏</span>
+											<b>Button</b>
+										</p>
+										<p>
+											<span>文章卡片</span>
+											<b>Button</b>
+										</p>
+										<p>
+											<span>登录表单</span>
+											<b>Button</b>
+										</p>
+									</div>
+								) : null}
+
+								{isComponent && index === 3 ? (
+									<div
+										class="concept-browser-preview concept-component-preview"
+										data-flow-browser-preview
+										style="--preview-text: #151515; --preview-accent: #ff5c50; --preview-spacing: 14px"
+									>
+										<small>同一个 Button · 三个位置</small>
+										<div>
+											<span>导航栏</span>
+											<button type="button" data-flow-demo-button data-flow-preview="button-label" disabled>
+												加入购物车
+											</button>
+										</div>
+										<div>
+											<span>文章卡片</span>
+											<button type="button" data-flow-demo-button data-flow-preview="button-label" disabled>
+												加入购物车
+											</button>
+										</div>
+										<div>
+											<span>登录表单</span>
+											<button type="button" data-flow-demo-button data-flow-preview="button-label" disabled>
+												加入购物车
+											</button>
+										</div>
+										<output data-flow-demo-output>等待 JavaScript</output>
+									</div>
+								) : null}
+
 								{isFrontend && index === 0 ? (
 									<div class="concept-html-preview">
 										<p>
@@ -186,7 +528,7 @@ const labels = stageNames[concept.categoryId] ?? profile.steps.map((step) => ste
 									</div>
 								) : null}
 
-								{!isFrontend ? (
+								{!isFrontend && !isComponent && !isState && !isProps && !isResponsive ? (
 									<div class="concept-generic-process-preview">
 										<i
 											class={`ph ${index === 3 ? 'ph-check-circle' : 'ph-arrow-circle-right'}`}

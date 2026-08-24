@@ -10,6 +10,8 @@ export interface ConceptScene {
 }
 
 export interface VibeCodingDetailProfile {
+	/** hero 提问中术语名之后的部分；缺省时使用通用模板句 */
+	question?: string;
 	visualTitle: string;
 	visualCaption: string;
 	analogy: string;
@@ -61,6 +63,168 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 				'先确认成功提示是否来自真实的后端响应，再检查刷新页面时有没有正确重新读取已保存的数据。',
 		},
 		warning: '发送到浏览器的代码可以被查看和修改。密钥、价格与权限判断不能只放在前端。',
+	},
+	component: {
+		question: '到底是什么？为什么工程师总在说「把它拆成组件」？',
+		visualTitle: '定义一次，复用出整个界面',
+		visualCaption: '同一个按钮组件被放进导航、卡片和表单，一处修改，处处生效。',
+		analogy:
+			'组件像乐高积木：同一款积木块可以拼进城堡，也可以拼进飞船。块的形状和拼法是固定的，拼在哪里、拼多少次由你决定。',
+		steps: [
+			{
+				label: 'Define',
+				detail: '把一段界面封装成组件',
+				result: '按钮的样子和行为被写成一份独立定义，从此有了自己的名字。',
+			},
+			{
+				label: 'Props',
+				detail: '用属性配置文字与颜色',
+				result: '不改定义本身，传入不同属性，同一个组件就能呈现不同内容。',
+			},
+			{
+				label: 'Compose',
+				detail: '把组件拼装成页面',
+				result: '按钮被放进导航、卡片和表单，页面像积木一样拼了出来。',
+			},
+			{
+				label: 'Reuse',
+				detail: '一处修改，处处生效',
+				result: '改一次组件定义，页面上每个用到它的地方同时更新。',
+			},
+		],
+		scenes: [
+			{ title: '保持一致', description: '全站的按钮和弹窗长得一样，因为它们来自同一份定义。' },
+			{ title: '快速搭建', description: '新页面大多是把现成组件重新组合，而不是从零开始写。' },
+			{ title: '隔离改动', description: '改导航栏只动它自己的文件，不会波及页面的其他部分。' },
+		],
+		practice: {
+			question: '站点 20 个页面的按钮都要从直角改成圆角。用了组件和没用组件，工作量差在哪里？',
+			answer:
+				'有按钮组件时，只改这一个组件的样式，20 个页面同时生效；没有组件，就要找出每一处按钮逐个修改，还很容易漏掉几个。',
+		},
+		warning: '拆组件是为了复用和隔离，不是越碎越好。只出现一次、也不会再变的界面，硬拆成一层层组件反而更难读。',
+	},
+	state: {
+		question: '到底是什么？为什么界面能「记得」你刚才做过什么？',
+		visualTitle: '界面的样子，由一份数据决定',
+		visualCaption: '状态一变，读它的界面就跟着变——界面是状态的镜子。',
+		analogy:
+			'状态像球场的记分牌：比分记在牌子上，而不是观众的喊声里。每得一分先改记分牌，全场看到的比分自然同时更新。',
+		steps: [
+			{
+				label: 'Initial',
+				detail: '给界面一个初始状态',
+				result: '页面第一次渲染：菜单收起、计数为零，一切都来自初始值。',
+			},
+			{
+				label: 'Event',
+				detail: '用户操作触发事件',
+				result: '一次点击本身并不改变界面，它只是发出「该更新了」的信号。',
+			},
+			{
+				label: 'Update',
+				detail: '事件更新状态数据',
+				result: '数据从 0 变成 1。此刻界面还没动，先变的只是那份数据。',
+			},
+			{
+				label: 'Render',
+				detail: '界面按新状态重绘',
+				result: '所有读这份状态的地方一起刷新，界面追上了数据。',
+			},
+		],
+		scenes: [
+			{ title: '记住操作', description: '菜单展开还是收起、深色还是浅色模式，背后都是一份状态。' },
+			{ title: '同步显示', description: '购物车角标、列表和结算价读同一份状态，所以永远一致。' },
+			{ title: '排查错乱', description: '界面显示不对时，先看状态数据对不对，再查渲染逻辑。' },
+		],
+		practice: {
+			question: '点了「收藏」，图标变红了；刷新页面又变回了灰色。这说明状态存在哪里？',
+			answer:
+				'变红说明点击更新了内存里的状态；刷新后丢失，说明它只存在内存里，没有写到后端或本地存储。想让页面「记住」，就要把状态持久化。',
+		},
+		warning: '状态越多，界面越难预测。能从现有状态算出来的值（比如总价）不要再存一份，两份数据迟早会对不上。',
+	},
+	props: {
+		question: '到底是什么？同一个组件，为什么在每个地方长得都不一样？',
+		visualTitle: '同一份定义，传入什么就长成什么',
+		visualCaption: '组件定义不动，父组件传入不同的属性，就得到不同的按钮。',
+		analogy:
+			'Props 像咖啡店的点单小票：同一台咖啡机，小票上写大杯、少糖、加冰，做出来的就是那一杯。机器不用改，改的只是单子。',
+		steps: [
+			{
+				label: 'Parent',
+				detail: '父组件准备好数据',
+				result: '父组件决定要一个什么样的按钮：什么文字、什么样式。',
+			},
+			{
+				label: 'Pass',
+				detail: '像参数一样传进组件',
+				result: '数据顺着标签写进组件，就像给函数传参数。',
+			},
+			{
+				label: 'Read',
+				detail: '子组件读取属性',
+				result: '组件拿到 label 和 variant，照着它们渲染自己。',
+			},
+			{
+				label: 'Render',
+				detail: '不同属性，不同样子',
+				result: '同一份定义，因为传入不同，呈现出完全不同的按钮。',
+			},
+		],
+		scenes: [
+			{ title: '配置内容', description: '列表里每张卡片的标题、封面都不同，数据全来自 props。' },
+			{ title: '控制形态', description: '同一个弹窗组件，传 confirm 或 alert，按钮组合就不一样。' },
+			{ title: '排查显示', description: '组件显示不对时，先看父组件传进来的 props 对不对。' },
+		],
+		practice: {
+			question: '一个头像组件在页面 A 是圆形，页面 B 想要方形。应该复制一份组件改样式吗？',
+			answer:
+				'不用复制。给组件加一个 shape 属性（默认圆形），页面 B 传入方形即可——定义保持一份，差异交给 props 表达。',
+		},
+		warning:
+			'Props 是自上而下的单行道：子组件只读它，不该偷偷修改它。想改数据，应该通知父组件去改，否则两边就说不清谁是真相了。',
+	},
+	'responsive-design': {
+		question: '到底是什么？为什么同一个网页在手机和电脑上长得不一样？',
+		visualTitle: '同一个页面，适应不同屏幕',
+		visualCaption: '内容只有一份，布局规则跟着屏幕宽度自动切换。',
+		analogy:
+			'响应式像倒进不同杯子的水：水还是那些水，杯子是什么形状，它就呈现什么形状。内容不变，变的是容器里的排布。',
+		steps: [
+			{
+				label: 'Content',
+				detail: '内容只写一份',
+				result: '标题、卡片和按钮只有一份，不为每种设备单独做页面。',
+			},
+			{
+				label: 'Breakpoint',
+				detail: '设定宽度分界点',
+				result: '约定在哪些宽度切换布局，比如窄于 680px 算手机。',
+			},
+			{
+				label: 'Layout',
+				detail: '为不同区间安排布局',
+				result: '宽屏三栏并排，窄屏叠成一列，字号和间距同步调整。',
+			},
+			{
+				label: 'Adapt',
+				detail: '浏览器自动套用',
+				result: '屏幕一变，浏览器立刻套用对应规则，页面自己换形。',
+			},
+		],
+		scenes: [
+			{ title: '手机优先', description: '大多数访问来自手机，先做好窄屏体验，再扩展到宽屏。' },
+			{ title: '适配平板', description: '中间宽度最容易被忽略，断点让平板也有合理的布局。' },
+			{ title: '排查错位', description: '某个宽度下元素挤成一团，多半是断点之间漏了规则。' },
+		],
+		practice: {
+			question: '设计稿只画了电脑版，手机上导航放不下了。是再做一个手机版网站吗？',
+			answer:
+				'不用。同一份页面加断点：窄屏时导航折叠成菜单按钮、多栏叠成单栏——一份内容，配多套布局规则，这正是响应式的做法。',
+		},
+		warning:
+			'响应式不只是「能塞下」。窄屏要重新考虑信息优先级：什么先看到、什么收起来，而不是把桌面版等比例缩小。',
 	},
 	backend: {
 		visualTitle: '一次请求如何被处理',

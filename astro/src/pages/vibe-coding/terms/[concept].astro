@@ -23,7 +23,7 @@ export function getStaticPaths() {
 }
 
 const { concept, previousConcept, nextConcept } = Astro.props;
-const profile = vibeCodingDetailProfiles[concept.categoryId];
+const profile = vibeCodingDetailProfiles[concept.id] ?? vibeCodingDetailProfiles[concept.categoryId];
 if (!profile) throw new Error(`Missing Vibe Coding detail profile: ${concept.categoryId}`);
 ---
 
