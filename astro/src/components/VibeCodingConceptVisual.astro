@@ -12,6 +12,12 @@ const isComponent = concept.id === 'component';
 const isState = concept.id === 'state';
 const isProps = concept.id === 'props';
 const isResponsive = concept.id === 'responsive-design';
+const isDom = concept.id === 'dom';
+const isHydration = concept.id === 'hydration';
+const isEvent = concept.id === 'event';
+const isRouting = concept.id === 'routing';
+const isSsr = concept.id === 'ssr';
+const isStorage = concept.id === 'browser-storage';
 ---
 
 <figure class="concept-visual" data-concept-animation={concept.categoryId}>
@@ -22,7 +28,220 @@ const isResponsive = concept.id === 'responsive-design';
 	</header>
 
 	{
-		isResponsive ? (
+		isEvent ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>监听登记表</small>
+					<p>
+						<code>click</code>
+						<span>更新计数</span>
+					</p>
+					<p>
+						<code>input</code>
+						<span>校验格式</span>
+					</p>
+					<strong>先登记，才有人接</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<b class="concept-ev-btn" aria-hidden="true">点我</b>
+					<p class="concept-ev-count" aria-hidden="true">
+						<code>count</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">0</i>
+							<i class="concept-state-b">1</i>
+						</span>
+					</p>
+					<strong>有人听，点击才有下文</strong>
+				</div>
+			</div>
+		) : isRouting ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>路由表</small>
+					<p>
+						<code>/</code>
+						<span>首页</span>
+					</p>
+					<p>
+						<code>/blog</code>
+						<span>博客</span>
+					</p>
+					<p>
+						<code>其他</code>
+						<span>404</span>
+					</p>
+					<strong>一条路径，一个页面</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-rt-addr" aria-hidden="true">
+						<b />
+						<b />
+						<em class="concept-state-flip">
+							<i class="concept-state-a">site.com/</i>
+							<i class="concept-state-b">site.com/blog</i>
+						</em>
+					</div>
+					<div class="concept-rt-views" aria-hidden="true">
+						<div class="concept-rt-view concept-state-a">
+							<span class="concept-rt-hero" />
+							<span class="concept-rt-line" />
+							<b class="concept-dom-mini-btn">开始</b>
+						</div>
+						<div class="concept-rt-view concept-state-b">
+							<span class="concept-rt-row" />
+							<span class="concept-rt-row" />
+							<span class="concept-rt-row" />
+						</div>
+					</div>
+					<strong>地址变，视图跟着换</strong>
+				</div>
+			</div>
+		) : isSsr ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>服务器上</small>
+					<p>
+						<code>数据</code>
+						<span>已查好</span>
+					</p>
+					<p>
+						<code>模板</code>
+						<span>已填充</span>
+					</p>
+					<p>
+						<code>HTML</code>
+						<span>已拼装</span>
+					</p>
+					<strong>页面在服务器拼好</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-ssr-pair" aria-hidden="true">
+						<figure>
+							<div class="concept-ssr-mini is-csr">
+								<span class="concept-ssr-spin" />
+							</div>
+							<figcaption>CSR · 还在拼</figcaption>
+						</figure>
+						<figure>
+							<div class="concept-ssr-mini">
+								<span class="concept-dom-mini-nav" />
+								<span class="concept-dom-mini-line" />
+								<b class="concept-dom-mini-btn">立即阅读</b>
+							</div>
+							<figcaption>SSR · 已经能看</figcaption>
+						</figure>
+					</div>
+					<strong>同一时刻，两种首屏</strong>
+				</div>
+			</div>
+		) : isStorage ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>这台设备的抽屉</small>
+					<p>
+						<code>theme</code>
+						<span>"dark"</span>
+					</p>
+					<p>
+						<code>draft</code>
+						<span>"写到一半…"</span>
+					</p>
+					<strong>数据留在用户这边</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-st-tag" aria-hidden="true">
+						<i class="concept-state-a">刷新页面…</i>
+						<i class="concept-state-b">读到 theme = "dark"</i>
+					</em>
+					<div class="concept-st-row" aria-hidden="true">
+						<code>theme</code>
+						<span>"dark"</span>
+						<i class="ph ph-check-circle concept-state-b" />
+					</div>
+					<strong>刷新之后，它还在</strong>
+				</div>
+			</div>
+		) : isDom ? (
+			<div class="concept-instance-visual concept-dom-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>HTML</small>
+					<p>
+						<code>&lt;nav&gt;</code>
+						<span>导航</span>
+					</p>
+					<p>
+						<code>&lt;main&gt;</code>
+						<span>正文容器</span>
+					</p>
+					<p>
+						<code>&lt;button&gt;</code>
+						<span>按钮</span>
+					</p>
+					<strong>标签嵌套的文档</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-dom-tree" aria-hidden="true">
+						<p>body</p>
+						<p class="is-l1">├─ nav</p>
+						<p class="is-l1">└─ main</p>
+						<p class="is-l2">├─ h1</p>
+						<p class="is-l2 concept-dom-hot">└─ button</p>
+					</div>
+					<div class="concept-dom-mini" aria-hidden="true">
+						<span class="concept-dom-mini-nav" />
+						<span class="concept-dom-mini-line" />
+						<b class="concept-dom-mini-btn concept-dom-hot-follow">按钮</b>
+					</div>
+					<strong>拉一下树上的线，木偶就动</strong>
+				</div>
+			</div>
+		) : isHydration ? (
+			<div class="concept-instance-visual concept-hyd-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>两份材料</small>
+					<p>
+						<code>page.html</code>
+						<span>已经能看</span>
+					</p>
+					<p>
+						<code>app.js</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">加载中…</i>
+							<i class="concept-state-b">已就绪</i>
+						</span>
+					</p>
+					<strong>结构先到，交互后到</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<span class="concept-dom-mini-nav" aria-hidden="true" />
+					<span class="concept-dom-mini-line" aria-hidden="true" />
+					<b class="concept-hyd-btn" aria-hidden="true">立即订阅</b>
+					<em class="concept-state-flip concept-hyd-tag">
+						<i class="concept-state-a">能看，还不能点</i>
+						<i class="concept-state-b">已激活，可以点了</i>
+					</em>
+					<strong>从「能看」到「能用」</strong>
+				</div>
+			</div>
+		) : isResponsive ? (
 			<div class="concept-instance-visual concept-rd-visual" aria-label={profile.visualTitle}>
 				<div class="concept-instance-source">
 					<small>一份内容</small>

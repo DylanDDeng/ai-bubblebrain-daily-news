@@ -215,6 +215,23 @@ const setupConceptFlowLabs = () => {
     for (const counterButton of counterButtons) {
       counterButton.addEventListener("click", (event) => {
         event.stopPropagation();
+        const gate = counterButton.dataset.flowCounterGate;
+        if (gate) {
+          const gateTarget = root.querySelector(
+            `[data-flow-choice-target="${gate}"]`,
+          );
+          const gateValue = gateTarget?.getAttribute(`data-choice-${gate}`);
+          const statusFields = root.querySelectorAll(
+            "[data-flow-counter-status]",
+          );
+          if (gateValue !== counterButton.dataset.flowCounterWhen) {
+            for (const status of statusFields)
+              status.textContent = "点了，但没人在听——什么都没发生";
+            return;
+          }
+          for (const status of statusFields)
+            status.textContent = "监听器听到了，处理函数跑了一次";
+        }
         counterValue += 1;
         for (const display of counterDisplays)
           display.textContent = String(counterValue);

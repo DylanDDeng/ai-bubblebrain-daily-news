@@ -56,6 +56,30 @@ export const vibeCodingTermCategories: VibeCodingTermCategory[] = [
 				chineseName: '水合',
 				description: '在浏览器中为服务端生成的静态 HTML 接上 JavaScript 交互能力。',
 			},
+			{
+				id: 'event',
+				name: 'Event',
+				chineseName: '事件',
+				description: '用户操作或浏览器变化发出的信号，代码监听它来做出反应。',
+			},
+			{
+				id: 'routing',
+				name: 'Routing',
+				chineseName: '路由',
+				description: '把网址和页面对应起来的规则，决定访问某个地址时看到什么。',
+			},
+			{
+				id: 'ssr',
+				name: 'SSR',
+				chineseName: '服务端渲染',
+				description: '在服务器上先把页面拼装成 HTML 再发给浏览器，第一眼就能看到内容。',
+			},
+			{
+				id: 'browser-storage',
+				name: 'Browser Storage',
+				chineseName: '浏览器存储',
+				description: '把少量数据存在用户浏览器里，刷新或下次再来时还能读到。',
+			},
 		],
 	},
 	{

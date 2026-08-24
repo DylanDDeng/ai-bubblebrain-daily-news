@@ -13,14 +13,37 @@ const isComponent = concept.id === 'component';
 const isState = concept.id === 'state';
 const isProps = concept.id === 'props';
 const isResponsive = concept.id === 'responsive-design';
-const isFrontend =
-	!isComponent && !isState && !isProps && !isResponsive && concept.categoryId === 'frontend';
+const isDom = concept.id === 'dom';
+const isHydration = concept.id === 'hydration';
+const isEvent = concept.id === 'event';
+const isRouting = concept.id === 'routing';
+const isSsr = concept.id === 'ssr';
+const isStorage = concept.id === 'browser-storage';
+const customLabIds = new Set([
+	'component',
+	'state',
+	'props',
+	'responsive-design',
+	'dom',
+	'hydration',
+	'event',
+	'routing',
+	'ssr',
+	'browser-storage',
+]);
+const isFrontend = !customLabIds.has(concept.id) && concept.categoryId === 'frontend';
 
 const labTitles: Record<string, string> = {
 	component: '一个按钮组件，怎样复用出整个页面？',
 	state: '点一下按钮，状态经历了什么？',
 	props: '同一个按钮，怎么被传成不同样子？',
 	'responsive-design': '拖一拖屏宽，页面怎么变？',
+	dom: '改一个节点，页面哪里会动？',
+	hydration: '同一个按钮，水合前后差在哪？',
+	event: '点一下按钮，谁在听？',
+	routing: '换一个地址，会打开哪一页？',
+	ssr: 'CSR 和 SSR，首屏差在哪？',
+	'browser-storage': '存一条数据，刷新后还在吗？',
 	frontend: '一个页面是怎样做出来的？',
 	backend: '一次请求会经过哪些部分？',
 	'ai-agent': 'Agent 怎样把目标变成结果？',
@@ -34,6 +57,12 @@ const stageNames: Record<string, string[]> = {
 	state: ['初始', '事件', '更新', '渲染'],
 	props: ['准备', '传入', '读取', '呈现'],
 	'responsive-design': ['内容', '断点', '布局', '适配'],
+	dom: ['标签', '成树', '查找', '修改'],
+	hydration: ['直出', '加载', '接线', '激活'],
+	event: ['触发', '监听', '处理', '反应'],
+	routing: ['地址', '匹配', '渲染', '跳转'],
+	ssr: ['请求', '拼装', '送达', '接力'],
+	'browser-storage': ['写入', '留存', '读取', '边界'],
 	frontend: ['结构', '样式', '交互', '呈现'],
 	backend: ['请求', '校验', '处理', '响应'],
 	'ai-agent': ['目标', '上下文', '工具', '验证'],
@@ -86,6 +115,397 @@ const labels =
 							</button>
 
 							<div class="concept-process-panel-body">
+								{isEvent && index === 0 ? (
+									<div class="concept-js-preview">
+										<p>
+											<i class="ph ph-cursor-click" aria-hidden="true" /> click
+										</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>「按钮被点了一下」</p>
+									</div>
+								) : null}
+
+								{isEvent && index === 1 ? (
+									<div class="concept-ev-bind">
+										<p class="concept-ev-bind-code">addEventListener('click')</p>
+										<div class="concept-props-choices" role="group" aria-label="是否绑定监听器">
+											<code>监听器</code>
+											<button
+												type="button"
+												data-flow-choice="off"
+												data-flow-choice-group="listen"
+												aria-pressed="true"
+											>
+												未绑定
+											</button>
+											<button
+												type="button"
+												data-flow-choice="on"
+												data-flow-choice-group="listen"
+												aria-pressed="false"
+											>
+												已绑定
+											</button>
+										</div>
+										<small>先登记，才有人接——试试两种都选一遍</small>
+									</div>
+								) : null}
+
+								{isEvent && index === 2 ? (
+									<div class="concept-js-preview">
+										<p>处理函数：count + 1</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>只有登记过的，才会被叫起来</p>
+									</div>
+								) : null}
+
+								{isEvent && index === 3 ? (
+									<div class="concept-ev-react" data-flow-choice-target="listen" data-choice-listen="off">
+										<div class="concept-ev-listen-row is-on" aria-hidden="true">
+											<i class="ph ph-ear" />
+											click → count + 1
+										</div>
+										<div class="concept-ev-listen-row is-off" aria-hidden="true">
+											<i class="ph ph-ear-slash" />
+											没有监听器在听
+										</div>
+										<button type="button" data-flow-counter-button data-flow-counter-gate="listen" data-flow-counter-when="on" disabled>
+											点我
+										</button>
+										<p class="concept-ev-count-row">
+											<code>count</code>
+											<output data-flow-counter-display>0</output>
+										</p>
+										<output class="concept-ev-status" data-flow-counter-status>点点看会发生什么</output>
+									</div>
+								) : null}
+
+								{isRouting && index === 0 ? (
+									<div class="concept-component-def">
+										<small>文件即路由</small>
+										<p>
+											<code>index</code>
+											<span>/</span>
+										</p>
+										<p>
+											<code>blog</code>
+											<span>/blog</span>
+										</p>
+										<p>
+											<code>about</code>
+											<span>/about</span>
+										</p>
+									</div>
+								) : null}
+
+								{isRouting && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>/blog</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>查路由表 → 博客页</p>
+									</div>
+								) : null}
+
+								{isRouting && index === 2 ? (
+									<div class="concept-rd-layouts">
+										<figure>
+											<div class="concept-ssr-mini" aria-hidden="true">
+												<span class="concept-dom-mini-nav" />
+												<span class="concept-dom-mini-line" />
+												<b class="concept-dom-mini-btn">页面</b>
+											</div>
+											<figcaption>匹配到 · 渲染</figcaption>
+										</figure>
+										<figure>
+											<div class="concept-ssr-mini is-csr concept-rt-404" aria-hidden="true">
+												<b>404</b>
+											</div>
+											<figcaption>没匹配到 · 兜底</figcaption>
+										</figure>
+									</div>
+								) : null}
+
+								{isRouting && index === 3 ? (
+									<div
+										class="concept-rt-play"
+										data-flow-browser-preview
+										data-flow-choice-target="route"
+										data-choice-route="/"
+									>
+										<div class="concept-props-choices" role="group" aria-label="选择要访问的地址">
+											<button
+												type="button"
+												data-flow-choice="/"
+												data-flow-choice-group="route"
+												aria-pressed="true"
+											>
+												/
+											</button>
+											<button
+												type="button"
+												data-flow-choice="/blog"
+												data-flow-choice-group="route"
+												aria-pressed="false"
+											>
+												/blog
+											</button>
+											<button
+												type="button"
+												data-flow-choice="/xyz"
+												data-flow-choice-group="route"
+												aria-pressed="false"
+											>
+												/xyz
+											</button>
+										</div>
+										<div class="concept-rt-addr" aria-hidden="true">
+											<b />
+											<b />
+											<em>
+												site.com<span data-flow-choice-text="route">/</span>
+											</em>
+										</div>
+										<div class="concept-rt-stage" aria-hidden="true">
+											<div class="concept-rt-view is-home">
+												<span class="concept-rt-hero" />
+												<span class="concept-rt-line" />
+												<b class="concept-dom-mini-btn">开始</b>
+											</div>
+											<div class="concept-rt-view is-blog">
+												<span class="concept-rt-row" />
+												<span class="concept-rt-row" />
+												<span class="concept-rt-row" />
+											</div>
+											<div class="concept-rt-view is-404">
+												<b>404</b>
+												<span>这条路径没有登记</span>
+											</div>
+										</div>
+									</div>
+								) : null}
+
+								{isSsr && index === 0 ? (
+									<div class="concept-js-preview">
+										<p>GET /blog</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>请求到达服务器</p>
+									</div>
+								) : null}
+
+								{isSsr && index === 1 ? (
+									<div class="concept-component-def">
+										<small>在服务器上完成</small>
+										<p>
+											<code>数据</code>
+											<span>已查好</span>
+										</p>
+										<p>
+											<code>模板</code>
+											<span>已填充</span>
+										</p>
+										<p>
+											<code>HTML</code>
+											<span>已拼装</span>
+										</p>
+									</div>
+								) : null}
+
+								{isSsr && index === 2 ? (
+									<div class="concept-rd-layouts">
+										<figure>
+											<div class="concept-ssr-mini is-csr" aria-hidden="true">
+												<span class="concept-ssr-spin" />
+											</div>
+											<figcaption>CSR · 还在拼</figcaption>
+										</figure>
+										<figure>
+											<div class="concept-ssr-mini" aria-hidden="true">
+												<span class="concept-dom-mini-nav" />
+												<span class="concept-dom-mini-line" />
+												<b class="concept-dom-mini-btn">立即阅读</b>
+											</div>
+											<figcaption>SSR · 已经能看</figcaption>
+										</figure>
+									</div>
+								) : null}
+
+								{isSsr && index === 3 ? (
+									<div class="concept-js-preview">
+										<p>页面可见 ✓</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<a class="concept-ssr-link" href="/vibe-coding/terms/hydration/">
+											交互部分 → 交给水合
+											<i class="ph ph-arrow-up-right" aria-hidden="true" />
+										</a>
+									</div>
+								) : null}
+
+								{isStorage && index === 0 ? (
+									<div class="concept-storage-write">
+										<div class="concept-html-preview">
+											<p>
+												<code>theme</code>
+												<input
+													type="text"
+													value="dark"
+													aria-label="修改要存储的值"
+													data-flow-editor="storage-value"
+													maxlength="8"
+													autocomplete="off"
+													spellcheck="false"
+												/>
+											</p>
+										</div>
+										<small>往浏览器的抽屉里放一张便签</small>
+									</div>
+								) : null}
+
+								{isStorage && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>关闭页面 ✕</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>数据还躺在浏览器里</p>
+									</div>
+								) : null}
+
+								{isStorage && index === 2 ? (
+									<div class="concept-storage-read">
+										<p class="concept-storage-refresh">
+											<i class="ph ph-arrow-clockwise" aria-hidden="true" />
+											刷新页面后读取
+										</p>
+										<div class="concept-st-row">
+											<code>theme</code>
+											<span>"<b data-flow-preview="storage-value">dark</b>"</span>
+											<i class="ph ph-check-circle" aria-hidden="true" />
+										</div>
+									</div>
+								) : null}
+
+								{isStorage && index === 3 ? (
+									<div class="concept-rd-layouts">
+										<figure>
+											<div class="concept-st-row" aria-hidden="true">
+												<code>theme</code>
+												<span>"<b data-flow-preview="storage-value">dark</b>"</span>
+											</div>
+											<figcaption>这台设备 · 还在</figcaption>
+										</figure>
+										<figure>
+											<div class="concept-st-row is-empty" aria-hidden="true">
+												<code>theme</code>
+												<span>空的</span>
+											</div>
+											<figcaption>另一台设备 · 没有</figcaption>
+										</figure>
+									</div>
+								) : null}
+
+								{isEvent && index === 0 ? null : null}
+								{isDom && index === 0 ? (
+									<div class="concept-component-def">
+										<small>写好的标签</small>
+										<p>
+											<code>&lt;nav&gt;</code>
+											<span>导航</span>
+										</p>
+										<p>
+											<code>&lt;main&gt;</code>
+											<span>正文容器</span>
+										</p>
+										<p>
+											<code>&lt;button&gt;</code>
+											<span>按钮</span>
+										</p>
+									</div>
+								) : null}
+
+								{isDom && index === 1 ? (
+									<div class="concept-dom-tree is-plain">
+										<p>body</p>
+										<p class="is-l1">├─ nav</p>
+										<p class="is-l1">└─ main</p>
+										<p class="is-l2">├─ h1</p>
+										<p class="is-l2">└─ button</p>
+									</div>
+								) : null}
+
+								{isDom && index === 2 ? (
+									<div class="concept-js-preview">
+										<p>querySelector('button')</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>沿着树找到它</p>
+									</div>
+								) : null}
+
+								{isDom && index === 3 ? (
+									<div class="concept-dom-play">
+										<div class="concept-html-preview">
+											<p>
+												<code>text</code>
+												<input
+													type="text"
+													value="开始体验"
+													aria-label="修改按钮文字"
+													data-flow-editor="dom-text"
+													maxlength="8"
+													autocomplete="off"
+													spellcheck="false"
+												/>
+											</p>
+										</div>
+										<p class="concept-dom-play-tree">
+											└─ button · "<span data-flow-preview="dom-text">开始体验</span>"
+										</p>
+										<div class="concept-dom-mini" aria-hidden="true">
+											<span class="concept-dom-mini-nav" />
+											<span class="concept-dom-mini-line" />
+											<b class="concept-dom-mini-btn">
+												<span data-flow-preview="dom-text">开始体验</span>
+											</b>
+										</div>
+									</div>
+								) : null}
+
+								{isHydration && index === 0 ? (
+									<div class="concept-browser-preview concept-hyd-stage">
+										<span class="concept-dom-mini-nav" aria-hidden="true" />
+										<span class="concept-dom-mini-line" aria-hidden="true" />
+										<button type="button" data-flow-demo-button disabled>
+											立即订阅
+										</button>
+										<output data-flow-demo-output>等待 JavaScript</output>
+									</div>
+								) : null}
+
+								{isHydration && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>app.js ▂▄▆ 下载中</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>页面照常显示</p>
+									</div>
+								) : null}
+
+								{isHydration && index === 2 ? (
+									<div class="concept-js-preview">
+										<p>addEventListener('click')</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>接到已有的按钮上</p>
+									</div>
+								) : null}
+
+								{isHydration && index === 3 ? (
+									<div class="concept-browser-preview concept-hyd-stage">
+										<span class="concept-dom-mini-nav" aria-hidden="true" />
+										<span class="concept-dom-mini-line" aria-hidden="true" />
+										<button type="button" data-flow-demo-button disabled>
+											立即订阅
+										</button>
+										<output data-flow-demo-output>等待 JavaScript</output>
+										<small>同一个页面，现在能用了</small>
+									</div>
+								) : null}
+
 								{isResponsive && index === 0 ? (
 									<div class="concept-component-def">
 										<small>内容只有一份</small>
@@ -528,7 +948,7 @@ const labels =
 									</div>
 								) : null}
 
-								{!isFrontend && !isComponent && !isState && !isProps && !isResponsive ? (
+								{!isFrontend && !customLabIds.has(concept.id) ? (
 									<div class="concept-generic-process-preview">
 										<i
 											class={`ph ${index === 3 ? 'ph-check-circle' : 'ph-arrow-circle-right'}`}

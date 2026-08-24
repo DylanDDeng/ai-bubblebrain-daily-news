@@ -36,7 +36,7 @@
 .concept-detail-hero h1 {
 	margin: 0;
 	font-family: var(--sans);
-	font-size: clamp(2.3rem, 6vw, 5rem);
+	font-size: clamp(2.1rem, 4.6vw, 3.8rem);
 	font-weight: 720;
 	letter-spacing: -0.055em;
 	line-height: 0.98;
@@ -575,6 +575,385 @@
 	100% {
 		width: 100%;
 	}
+}
+
+.concept-dom-tree {
+	display: grid;
+	gap: 3px;
+	padding-bottom: 10px;
+	border-bottom: 1px dashed #e4e4e0;
+}
+
+.concept-dom-tree p {
+	margin: 0;
+	color: #737b85;
+	font:
+		600 0.62rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-dom-tree p.is-l1 {
+	padding-left: 12px;
+}
+
+.concept-dom-tree p.is-l2 {
+	padding-left: 28px;
+}
+
+.concept-dom-hot {
+	width: max-content;
+	padding: 1px 5px;
+	border-radius: 5px;
+	animation: concept-dom-pulse 3s ease-in-out infinite;
+}
+
+.concept-dom-mini {
+	display: grid;
+	gap: 6px;
+	justify-items: start;
+	padding-top: 2px;
+}
+
+.concept-dom-mini-nav {
+	width: 100%;
+	height: 8px;
+	border-radius: 4px;
+	background: #ececea;
+}
+
+.concept-dom-mini-line {
+	width: 62%;
+	height: 7px;
+	border-radius: 4px;
+	background: #f1f1ee;
+}
+
+.concept-dom-mini-btn {
+	padding: 5px 12px;
+	border-radius: 7px;
+	background: var(--blue);
+	color: #fff;
+	font: 650 0.6rem var(--sans);
+}
+
+.concept-dom-hot-follow {
+	animation: concept-dom-pulse-follow 3s ease-in-out infinite;
+	animation-delay: 0.3s;
+}
+
+@keyframes concept-dom-pulse {
+	0%,
+	14% {
+		background: color-mix(in srgb, var(--blue) 18%, transparent);
+		color: var(--blue-strong);
+	}
+
+	28%,
+	100% {
+		background: transparent;
+		color: #737b85;
+	}
+}
+
+@keyframes concept-dom-pulse-follow {
+	0%,
+	14% {
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 22%, transparent);
+		transform: translateY(-1px);
+	}
+
+	28%,
+	100% {
+		box-shadow: 0 0 0 0 transparent;
+		transform: none;
+	}
+}
+
+.concept-hyd-btn {
+	width: max-content;
+	padding: 6px 14px;
+	border-radius: 8px;
+	background: #e8e8e4;
+	color: #a2a29d;
+	font: 650 0.62rem var(--sans);
+	animation: concept-hyd-power 6s ease-in-out infinite;
+	animation-delay: 0.35s;
+}
+
+.concept-hyd-tag {
+	color: var(--ink-faint);
+	font-size: 0.6rem;
+	font-style: normal;
+	font-weight: 650;
+}
+
+.concept-hyd-tag .concept-state-b {
+	color: var(--blue-strong);
+}
+
+@keyframes concept-hyd-power {
+	0%,
+	45% {
+		background: #e8e8e4;
+		color: #a2a29d;
+		box-shadow: none;
+	}
+
+	52%,
+	93% {
+		background: var(--blue);
+		color: #fff;
+		box-shadow: 0 4px 12px color-mix(in srgb, var(--blue) 30%, transparent);
+	}
+
+	100% {
+		background: #e8e8e4;
+		color: #a2a29d;
+		box-shadow: none;
+	}
+}
+
+.concept-ev-btn {
+	width: max-content;
+	padding: 7px 16px;
+	border-radius: 8px;
+	background: var(--blue);
+	color: #fff;
+	font: 650 0.62rem var(--sans);
+	position: relative;
+	animation: concept-ev-press 6s ease-in-out infinite;
+}
+
+.concept-ev-btn::after {
+	content: '';
+	position: absolute;
+	inset: -2px;
+	border: 2px solid var(--blue);
+	border-radius: 10px;
+	opacity: 0;
+	animation: concept-ev-ring 6s ease-out infinite;
+}
+
+.concept-ev-count {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 7px 10px;
+	border: 1px dashed #dcdcd8;
+	border-radius: 8px;
+	color: var(--ink-soft);
+	font-size: 0.62rem;
+}
+
+.concept-ev-count code,
+.concept-st-row code {
+	padding: 3px 6px;
+	border: 1px solid #e4e4e0;
+	border-radius: 6px;
+	background: #f7f7f4;
+	color: #55606c;
+	font:
+		650 0.58rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-ev-count .concept-state-flip {
+	font:
+		750 0.72rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-ev-count .concept-state-b {
+	color: var(--blue-strong);
+}
+
+@keyframes concept-ev-press {
+	0%,
+	42% {
+		transform: none;
+	}
+
+	46% {
+		transform: scale(0.92);
+	}
+
+	52%,
+	100% {
+		transform: none;
+	}
+}
+
+@keyframes concept-ev-ring {
+	0%,
+	44% {
+		inset: -2px;
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 0.7;
+	}
+
+	64% {
+		inset: -12px;
+		opacity: 0;
+	}
+
+	100% {
+		inset: -12px;
+		opacity: 0;
+	}
+}
+
+.concept-rt-addr {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	padding: 6px 9px;
+	border: 1px solid #ececea;
+	border-radius: 999px;
+	background: #fafaf8;
+}
+
+.concept-rt-addr b {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: #d8d8d3;
+}
+
+.concept-rt-addr em {
+	margin-left: 5px;
+	color: var(--ink-soft);
+	font:
+		650 0.56rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+	font-style: normal;
+}
+
+.concept-rt-addr .concept-state-b {
+	color: var(--blue-strong);
+}
+
+.concept-rt-views {
+	display: grid;
+}
+
+.concept-rt-view {
+	grid-area: 1 / 1;
+	display: grid;
+	gap: 6px;
+	justify-items: start;
+}
+
+.concept-rt-hero {
+	width: 78%;
+	height: 14px;
+	border-radius: 5px;
+	background: #ececea;
+}
+
+.concept-rt-line {
+	width: 56%;
+	height: 7px;
+	border-radius: 4px;
+	background: #f1f1ee;
+}
+
+.concept-rt-row {
+	width: 100%;
+	height: 12px;
+	border: 1px solid #ececea;
+	border-radius: 6px;
+	background: #f7f7f4;
+}
+
+.concept-ssr-pair {
+	display: flex;
+	gap: 12px;
+}
+
+.concept-ssr-pair figure {
+	display: grid;
+	gap: 6px;
+	justify-items: center;
+	margin: 0;
+}
+
+.concept-ssr-pair figcaption {
+	color: var(--ink-faint);
+	font-size: 0.56rem;
+	font-weight: 650;
+}
+
+.concept-ssr-mini {
+	display: grid;
+	gap: 6px;
+	align-content: start;
+	justify-items: start;
+	width: 108px;
+	min-height: 76px;
+	padding: 9px;
+	border: 1px solid #ececea;
+	border-radius: 9px;
+	background: #fff;
+}
+
+.concept-ssr-mini.is-csr {
+	place-items: center;
+	align-content: center;
+}
+
+.concept-ssr-spin {
+	width: 16px;
+	height: 16px;
+	border: 2px solid #ececea;
+	border-top-color: var(--blue);
+	border-radius: 50%;
+	animation: concept-ssr-spin 1s linear infinite;
+}
+
+@keyframes concept-ssr-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.concept-st-tag {
+	color: var(--ink-faint);
+	font-size: 0.6rem;
+	font-style: normal;
+	font-weight: 650;
+}
+
+.concept-st-tag .concept-state-b {
+	color: var(--blue-strong);
+}
+
+.concept-st-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border: 1px solid #ececea;
+	border-radius: 8px;
+	background: #fff;
+	color: var(--ink-soft);
+	font-size: 0.62rem;
+}
+
+.concept-st-row > i {
+	color: #31954a;
+	font-size: 0.8rem;
 }
 
 .concept-state-flip {
@@ -1879,6 +2258,12 @@
 	.concept-state-drawer,
 	.concept-props-row,
 	.concept-rd-frame,
+	.concept-dom-hot,
+	.concept-dom-hot-follow,
+	.concept-hyd-btn,
+	.concept-ev-btn,
+	.concept-ev-btn::after,
+	.concept-ssr-spin,
 	.concept-visual figcaption i,
 	.concept-flow-stage-progress i,
 	.concept-step-list button,
