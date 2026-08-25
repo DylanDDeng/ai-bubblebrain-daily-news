@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import HighlightArchive from '../../../components/HighlightArchive.astro';
+import {
+	highlightArchiveFor,
+	highlightMonthGroups,
+	type HighlightArchiveItem,
+	type HighlightYear,
+} from '../../../lib/highlightsArchive';
+import { legacyEntryIsRoutable, loadLegacyContent } from '../../../lib/legacyContent';
+
+interface Props {
+	year: string;
+	items: HighlightArchiveItem[];
+	years: HighlightYear[];
+}
+
+// The newest year lives on /en/highlights/ itself; only older years get
+// their own archive page here.
+export async function getStaticPaths() {
+	const { items, years } = await highlightArchiveFor('en');
+	return years.slice(1).map((entry) => ({
+		params: { year: entry.year },
+		props: {
+			year: entry.year,
+			years,
+			items: items.filter((item) => item.date?.startsWith(entry.year)),
+		} satisfies Props,
+	}));
+}
+
+const { year, items, years } = Astro.props;
+const months = highlightMonthGroups(items, 'en');
+const allRecords = await loadLegacyContent();
+const knownRoutes = new Set(allRecords.filter(legacyEntryIsRoutable).map((entry) => entry.route));
+---
+
+<BaseLayout
+	title={`${year} · Highlights · Bubble's Brain`}
+	description={`${items.length} picks archived in ${year}.`}
+	lang="en"
+	canonicalPath={`/en/highlights/${year}/`}
+>
+	<section class="legacy-shell directory-page" data-directory-page="highlights">
+		<header class="directory-hero">
+			<div>
+				<p class="page-kicker">EDITOR’S SELECTION</p>
+				<h1>{year} · Highlights</h1>
+				<p>Articles, reports, and interviews archived this year.</p>
+			</div>
+			<p class="directory-count directory-count--series">
+				<strong data-directory-count>{items.length}</strong>
+				<span>picks · {year} archive</span>
+			</p>
+		</header>
+
+		<HighlightArchive
+			months={months}
+			years={years}
+			activeYear={year}
+			locale="en"
+			knownRoutes={knownRoutes}
+		/>
+	</section>
+</BaseLayout>
+
+<script>
+	import '../../../scripts/legacy-directory.js';
+</script>

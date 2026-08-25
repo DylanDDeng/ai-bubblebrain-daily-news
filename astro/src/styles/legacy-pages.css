@@ -1388,3 +1388,70 @@
 		display: none;
 	}
 }
+
+/* Year navigation for the Highlights archive — the terms-page pill nav,
+   with the newest year living on the section index itself. */
+.hl-year-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 26px;
+	margin-top: 26px;
+}
+
+.hl-year-nav a {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 3px;
+	color: var(--ink-soft);
+	font-size: 0.85rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition:
+		color 0.2s ease,
+		translate 0.2s ease;
+}
+
+.hl-year-nav span {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding-bottom: 4px;
+	background: linear-gradient(var(--blue), var(--blue)) left bottom / 0 2px no-repeat;
+	transition: background-size 0.25s ease;
+}
+
+.hl-year-nav span::after {
+	content: attr(data-label);
+	overflow: hidden;
+	height: 0;
+	font-weight: 700;
+	visibility: hidden;
+}
+
+.hl-year-nav small {
+	color: var(--ink-faint);
+	font-size: 0.6rem;
+	font-weight: 600;
+	line-height: 1.4;
+	transition: color 0.2s ease;
+}
+
+.hl-year-nav a:hover {
+	color: var(--ink);
+	translate: 0 -2px;
+}
+
+.hl-year-nav a:hover span,
+.hl-year-nav a.is-active span {
+	font-weight: 700;
+	background-size: 100% 2px;
+}
+
+.hl-year-nav a:hover small,
+.hl-year-nav a.is-active small {
+	color: var(--blue);
+}
+
+.hl-year-nav a.is-active {
+	color: var(--ink);
+}

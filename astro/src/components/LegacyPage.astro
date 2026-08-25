@@ -16,6 +16,13 @@ import ImageCompressTool from './tools/ImageCompressTool.astro';
 import AIInfographicTool from './tools/AIInfographicTool.astro';
 import Discussion from './Discussion.astro';
 import DirectoryItemRow from './DirectoryItemRow.astro';
+import HighlightArchive from './HighlightArchive.astro';
+import {
+	highlightItemsFor,
+	highlightMonthGroups,
+	highlightYears,
+	type HighlightArchiveItem,
+} from '../lib/highlightsArchive';
 import ArticleOutline from './ArticleOutline.astro';
 import { commentThreadId } from '../lib/comments/threadId';
 import '../styles/legacy-pages.css';
@@ -195,29 +202,7 @@ if (
 ) {
 	directoryKind = record.section as DirectoryKind;
 	if (record.section === 'highlights') {
-		directoryItems = children
-			.map((child) => {
-				const kind = child.frontmatter.kind === 'article' ? 'article' : 'bookmark';
-				return {
-					id:
-						typeof child.frontmatter.externalId === 'string'
-							? child.frontmatter.externalId
-							: child.id,
-					title: child.title,
-					description: child.description,
-					thumb: typeof child.frontmatter.cover === 'string' ? child.frontmatter.cover : undefined,
-					tags: Array.isArray(child.frontmatter.tags)
-						? child.frontmatter.tags.filter((tag): tag is string => typeof tag === 'string')
-						: [],
-					originalUrl:
-						typeof child.frontmatter.sourceUrl === 'string'
-							? child.frontmatter.sourceUrl
-							: undefined,
-					detailUrl: kind === 'article' ? child.route : undefined,
-					date: child.date?.toISOString().slice(0, 10),
-				};
-			})
-			.sort((left, right) => (right.date ?? '').localeCompare(left.date ?? ''));
+		directoryItems = highlightItemsFor(children);
 	} else if (
 		['prompts', 'codex-tutorials', 'deepseek-harness-tutorials', 'workbuddy-tutorials'].includes(
 			record.section,
@@ -260,24 +245,13 @@ const chapters = isTutorialIndex
 				minutes: readingMinutesFor(child.body),
 			}))
 	: [];
-const monthLabelFor = (key: string) => {
-	if (!key) return isEnglish ? 'Undated' : '未标日期';
-	const [year, month] = key.split('-');
-	return isEnglish
-		? `${['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][Number(month) - 1]} ${year}`
-		: `${year} 年 ${Number(month)} 月`;
-};
-const highlightMonths = isHighlightsIndex
-	? (directoryItems as HighlightItem[]).reduce<
-			Array<{ key: string; label: string; items: HighlightItem[] }>
-		>((groups, item) => {
-			const key = item.date?.slice(0, 7) ?? '';
-			const group = groups.find((candidate) => candidate.key === key);
-			if (group) group.items.push(item);
-			else groups.push({ key, label: monthLabelFor(key), items: [item] });
-			return groups;
-		}, [])
-	: [];
+const highlightAll = isHighlightsIndex ? (directoryItems as HighlightArchiveItem[]) : [];
+const highlightYearList = highlightYears(highlightAll);
+const latestHighlightYear = highlightYearList[0]?.year ?? '';
+const mainHighlightItems = highlightAll.filter(
+	(item) => !item.date || item.date.startsWith(latestHighlightYear),
+);
+const highlightMonths = highlightMonthGroups(mainHighlightItems, record.locale);
 const otherSeries = isTutorialIndex
 	? tutorialKinds
 			.filter((kind) => kind !== record.section)
@@ -478,49 +452,13 @@ const libraryApi =
 						</div>
 					</div>
 				) : isHighlightsIndex && directoryItems.length > 0 ? (
-					<>
-						<div class="directory-toolbar">
-							<label for="highlight-search">
-								{isEnglish ? 'Search this archive' : '搜索当前归档'}
-							</label>
-							<div>
-								<i class="ph ph-magnifying-glass" aria-hidden="true" />
-								<input
-									id="highlight-search"
-									type="search"
-									data-directory-query
-									placeholder={isEnglish ? 'Title, tag, or description' : '标题、标签或描述'}
-								/>
-							</div>
-						</div>
-						<div class="hl-months" data-directory-list>
-							{highlightMonths.map((group) => (
-								<section class="month-group hl-month">
-									<header class="hl-month-header">
-										<span class="hl-month-index" aria-hidden="true">
-											{group.key ? group.key.slice(5) : '——'}
-										</span>
-										<h2>{group.label}</h2>
-										<p>
-											{group.items.length} {isEnglish ? 'picks' : '篇'}
-										</p>
-									</header>
-									<div class="hl-month-list">
-										{group.items.map((item) => (
-											<DirectoryItemRow
-												item={item}
-												locale={record.locale}
-												knownRoutes={knownRoutes}
-											/>
-										))}
-									</div>
-								</section>
-							))}
-						</div>
-						<p class="directory-empty" data-directory-empty hidden>
-							{isEnglish ? 'No matching records.' : '没有匹配的记录。'}
-						</p>
-					</>
+					<HighlightArchive
+						months={highlightMonths}
+						years={highlightYearList}
+						activeYear={latestHighlightYear}
+						locale={record.locale}
+						knownRoutes={knownRoutes}
+					/>
 				) : directoryKind && directoryItems.length > 0 ? (
 					<>
 						<div class="directory-toolbar">

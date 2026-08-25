@@ -1,0 +1,74 @@
+---
+import DirectoryItemRow from './DirectoryItemRow.astro';
+import '../styles/legacy-pages.css';
+import type { HighlightMonthGroup, HighlightYear } from '../lib/highlightsArchive';
+import type { LegacyLocale } from '../lib/legacyContent';
+
+interface Props {
+	months: HighlightMonthGroup[];
+	years: HighlightYear[];
+	/** Year the current page shows; the newest year lives on the section index. */
+	activeYear: string;
+	locale: LegacyLocale;
+	knownRoutes: Set<string>;
+}
+
+const { months, years, activeYear, locale, knownRoutes } = Astro.props;
+const isEnglish = locale === 'en';
+const localePrefix = isEnglish ? '/en' : '';
+const latestYear = years[0]?.year;
+const yearHref = (year: string) =>
+	year === latestYear ? `${localePrefix}/highlights/` : `${localePrefix}/highlights/${year}/`;
+---
+
+{
+	years.length > 1 && (
+		<nav class="hl-year-nav" aria-label={isEnglish ? 'Browse by year' : '按年份浏览'}>
+			{years.map((entry) => (
+				<a href={yearHref(entry.year)} class:list={[{ 'is-active': entry.year === activeYear }]}>
+					<span data-label={entry.year}>{entry.year}</span>
+					<small>{entry.count}</small>
+				</a>
+			))}
+		</nav>
+	)
+}
+
+<div class="directory-toolbar">
+	<label for="highlight-search">{isEnglish ? 'Search this page' : '搜索本页收录'}</label>
+	<div>
+		<i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+		<input
+			id="highlight-search"
+			type="search"
+			data-directory-query
+			placeholder={isEnglish ? 'Title, tag, or description' : '标题、标签或描述'}
+		/>
+	</div>
+</div>
+
+<div class="hl-months" data-directory-list>
+	{
+		months.map((group) => (
+			<section class="month-group hl-month">
+				<header class="hl-month-header">
+					<span class="hl-month-index" aria-hidden="true">
+						{group.key ? group.key.slice(5) : '——'}
+					</span>
+					<h2>{group.label}</h2>
+					<p>
+						{group.items.length} {isEnglish ? 'picks' : '篇'}
+					</p>
+				</header>
+				<div class="hl-month-list">
+					{group.items.map((item) => (
+						<DirectoryItemRow item={item} locale={locale} knownRoutes={knownRoutes} />
+					))}
+				</div>
+			</section>
+		))
+	}
+</div>
+<p class="directory-empty" data-directory-empty hidden>
+	{isEnglish ? 'No matching records.' : '没有匹配的记录。'}
+</p>
