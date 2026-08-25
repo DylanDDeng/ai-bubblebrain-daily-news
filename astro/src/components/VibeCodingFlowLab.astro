@@ -19,7 +19,21 @@ const isEvent = concept.id === 'event';
 const isRouting = concept.id === 'routing';
 const isSsr = concept.id === 'ssr';
 const isStorage = concept.id === 'browser-storage';
+const isBackendLab = concept.id === 'backend';
+const isApi = concept.id === 'api';
+const isEndpoint = concept.id === 'endpoint';
+const isRuntimeLab = concept.id === 'runtime';
+const isMwLab = concept.id === 'middleware';
+const isAuthLab = concept.id === 'authentication';
+const isEnvLab = concept.id === 'environment-variable';
 const customLabIds = new Set([
+	'backend',
+	'api',
+	'endpoint',
+	'runtime',
+	'middleware',
+	'authentication',
+	'environment-variable',
 	'component',
 	'state',
 	'props',
@@ -40,6 +54,12 @@ const labTitles: Record<string, string> = {
 	'responsive-design': '拖一拖屏宽，页面怎么变？',
 	dom: '改一个节点，页面哪里会动？',
 	hydration: '同一个按钮，水合前后差在哪？',
+	api: '调一次天气 API，会发生什么？',
+	endpoint: '一个地址，怎么装下查和建？',
+	runtime: '同一行代码，插在哪个运行时上？',
+	middleware: '一个请求，要过几道公用的关？',
+	authentication: '登录之后，系统凭什么一直认得你？',
+	'environment-variable': '一份代码，怎么在两个环境各连各的库？',
 	event: '点一下按钮，谁在听？',
 	routing: '换一个地址，会打开哪一页？',
 	ssr: 'CSR 和 SSR，首屏差在哪？',
@@ -59,6 +79,12 @@ const stageNames: Record<string, string[]> = {
 	'responsive-design': ['内容', '断点', '布局', '适配'],
 	dom: ['标签', '成树', '查找', '修改'],
 	hydration: ['直出', '加载', '接线', '激活'],
+	api: ['约定', '调用', '返回', '使用'],
+	endpoint: ['地址', '方法', '参数', '处理'],
+	runtime: ['代码', '环境', '能力', '执行'],
+	middleware: ['进入', '鉴权', '记录', '抵达'],
+	authentication: ['声明', '核验', '发证', '通行'],
+	'environment-variable': ['占位', '保管', '注入', '切换'],
 	event: ['触发', '监听', '处理', '反应'],
 	routing: ['地址', '匹配', '渲染', '跳转'],
 	ssr: ['请求', '拼装', '送达', '接力'],
@@ -115,6 +141,563 @@ const labels =
 							</button>
 
 							<div class="concept-process-panel-body">
+								{isRuntimeLab && index === 0 ? (
+									<div class="concept-js-preview">
+										<p>document.querySelector('h1')</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>想找页面上的大标题</p>
+									</div>
+								) : null}
+
+								{isRuntimeLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="env" data-choice-env="browser">
+										<div class="concept-props-choices" role="group" aria-label="选择运行时">
+											<button
+												type="button"
+												data-flow-choice="browser"
+												data-flow-choice-group="env"
+												aria-pressed="true"
+											>
+												浏览器
+											</button>
+											<button
+												type="button"
+												data-flow-choice="node"
+												data-flow-choice-group="env"
+												aria-pressed="false"
+											>
+												Node.js
+											</button>
+											<button
+												type="button"
+												data-flow-choice="edge"
+												data-flow-choice-group="env"
+												aria-pressed="false"
+											>
+												Workers
+											</button>
+										</div>
+										<small class="concept-lab-hint">同一行代码，插到不同的水土里</small>
+									</div>
+								) : null}
+
+								{isRuntimeLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="env" data-choice-env="browser">
+										<div class="env-when-browser concept-component-def">
+											<small>浏览器的能力清单</small>
+											<p>
+												<code>DOM</code>
+												<span>✓ 有</span>
+											</p>
+											<p>
+												<code>fetch</code>
+												<span>✓ 有</span>
+											</p>
+											<p>
+												<code>文件系统</code>
+												<span>✗ 没有</span>
+											</p>
+										</div>
+										<div class="env-when-node concept-component-def">
+											<small>Node.js 的能力清单</small>
+											<p>
+												<code>文件系统</code>
+												<span>✓ 有</span>
+											</p>
+											<p>
+												<code>fetch</code>
+												<span>✓ 有</span>
+											</p>
+											<p>
+												<code>DOM</code>
+												<span>✗ 没有</span>
+											</p>
+										</div>
+										<div class="env-when-edge concept-component-def">
+											<small>Workers 的能力清单</small>
+											<p>
+												<code>fetch</code>
+												<span>✓ 有</span>
+											</p>
+											<p>
+												<code>KV 存储</code>
+												<span>✓ 有</span>
+											</p>
+											<p>
+												<code>DOM / 文件</code>
+												<span>✗ 没有</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isRuntimeLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="env" data-choice-env="browser">
+										<div class="env-when-browser concept-bk-resp is-200">
+											<b>OK</b>
+											<span>找到了 h1</span>
+											<small>DOM 是浏览器的本土能力</small>
+										</div>
+										<div class="env-when-node concept-bk-resp is-400">
+											<b>Error</b>
+											<span>document is not defined</span>
+											<small>Node 里没有页面，自然没有 DOM</small>
+										</div>
+										<div class="env-when-edge concept-bk-resp is-400">
+											<b>Error</b>
+											<span>document is not defined</span>
+											<small>边缘节点上同样没有页面</small>
+										</div>
+									</div>
+								) : null}
+
+								{isMwLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mw" data-choice-mw="ok">
+										<div class="concept-props-choices" role="group" aria-label="选择请求带不带凭证">
+											<button
+												type="button"
+												data-flow-choice="ok"
+												data-flow-choice-group="mw"
+												aria-pressed="true"
+											>
+												带凭证 🎫
+											</button>
+											<button
+												type="button"
+												data-flow-choice="bad"
+												data-flow-choice-group="mw"
+												aria-pressed="false"
+											>
+												没带凭证
+											</button>
+										</div>
+										<div class="concept-component-def">
+											<small>GET /orders</small>
+											<p>
+												<code>凭证</code>
+												<span class="mw-when-ok">🎫 有效</span>
+												<span class="mw-when-bad bk-missing">（没有）</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isMwLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mw" data-choice-mw="ok">
+										<div class="mw-when-ok concept-bk-verdict is-pass">
+											<i class="ph ph-shield-check" aria-hidden="true" />
+											凭证有效——放行，下一关
+										</div>
+										<div class="mw-when-bad concept-bk-verdict is-block">
+											<i class="ph ph-shield-warning" aria-hidden="true" />
+											401 · 没有凭证——原路返回
+										</div>
+									</div>
+								) : null}
+
+								{isMwLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mw" data-choice-mw="ok">
+										<div class="mw-when-ok concept-js-preview">
+											<p>log: user_42 GET /orders</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>顺手记一笔，继续往前</p>
+										</div>
+										<div class="mw-when-bad concept-bk-skip">
+											没走到这一关——
+											<br />
+											请求在鉴权时已被送回
+										</div>
+									</div>
+								) : null}
+
+								{isMwLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mw" data-choice-mw="ok">
+										<div class="mw-when-ok concept-bk-resp is-200">
+											<b>200</b>
+											<span>业务逻辑收到请求</span>
+											<small>穿过通道的，才见得到它</small>
+										</div>
+										<div class="mw-when-bad concept-bk-resp is-400">
+											<b>401</b>
+											<span>业务代码毫不知情</span>
+											<small>这正是中间件的价值：脏活累活挡在门外</small>
+										</div>
+									</div>
+								) : null}
+
+								{isAuthLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>你说你是</small>
+										<p>
+											<code>邮箱</code>
+											<span>you@example.com</span>
+										</p>
+										<p>
+											<code>密码</code>
+											<span>••••••••</span>
+										</p>
+									</div>
+								) : null}
+
+								{isAuthLab && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>比对密码哈希 ✓</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>核验通过，可以发证了</p>
+									</div>
+								) : null}
+
+								{isAuthLab && index === 2 ? (
+									<div class="concept-auth-token">
+										<i class="ph ph-ticket" aria-hidden="true" />
+										<b>token · abc12…</b>
+										<span>7 天有效</span>
+									</div>
+								) : null}
+
+								{isAuthLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="tk" data-choice-tk="ok">
+										<div class="concept-props-choices" role="group" aria-label="选择凭证状态">
+											<button
+												type="button"
+												data-flow-choice="ok"
+												data-flow-choice-group="tk"
+												aria-pressed="true"
+											>
+												凭证有效
+											</button>
+											<button
+												type="button"
+												data-flow-choice="bad"
+												data-flow-choice-group="tk"
+												aria-pressed="false"
+											>
+												已过期
+											</button>
+										</div>
+										<div class="tk-when-ok concept-bk-resp is-200">
+											<b>200</b>
+											<span>欢迎回来，user_42</span>
+											<small>凭证在手，不用再输密码</small>
+										</div>
+										<div class="tk-when-bad concept-bk-resp is-400">
+											<b>401</b>
+											<span>凭证过期，请重新登录</span>
+											<small>好的做法：快到期时静默续期，别让用户被踢</small>
+										</div>
+									</div>
+								) : null}
+
+								{isEnvLab && index === 0 ? (
+									<div class="concept-js-preview">
+										<p>connect(process.env.DB_URL)</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>代码里只有名字，没有值</p>
+									</div>
+								) : null}
+
+								{isEnvLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ev" data-choice-ev="local">
+										<div class="concept-props-choices" role="group" aria-label="选择当前环境">
+											<button
+												type="button"
+												data-flow-choice="local"
+												data-flow-choice-group="ev"
+												aria-pressed="true"
+											>
+												本地
+											</button>
+											<button
+												type="button"
+												data-flow-choice="prod"
+												data-flow-choice-group="ev"
+												aria-pressed="false"
+											>
+												线上
+											</button>
+										</div>
+										<div class="ev-when-local concept-component-def">
+											<small>.env 文件（不进仓库）</small>
+											<p>
+												<code>DB_URL</code>
+												<span>test_db</span>
+											</p>
+										</div>
+										<div class="ev-when-prod concept-component-def">
+											<small>平台的环境变量设置</small>
+											<p>
+												<code>DB_URL</code>
+												<span>live_db</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isEnvLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ev" data-choice-ev="local">
+										<div class="ev-when-local concept-js-preview">
+											<p>DB_URL → "test_db"</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>启动时，名字换成本地的值</p>
+										</div>
+										<div class="ev-when-prod concept-js-preview">
+											<p>DB_URL → "live_db"</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>启动时，名字换成线上的值</p>
+										</div>
+									</div>
+								) : null}
+
+								{isEnvLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ev" data-choice-ev="local">
+										<div class="ev-when-local concept-bk-resp is-200">
+											<b>🧪</b>
+											<span>连上了测试库</span>
+											<small>随便折腾，坏了也不心疼</small>
+										</div>
+										<div class="ev-when-prod concept-bk-resp is-200">
+											<b>🚀</b>
+											<span>连上了正式库</span>
+											<small>同一份代码，一行没改</small>
+										</div>
+									</div>
+								) : null}
+
+								{isEndpoint && index === 0 ? (
+									<div class="concept-component-def">
+										<small>按资源分地盘</small>
+										<p>
+											<code>/orders</code>
+											<span>订单们</span>
+										</p>
+										<p>
+											<code>/orders/42</code>
+											<span>42 号订单</span>
+										</p>
+										<p>
+											<code>/users</code>
+											<span>用户们</span>
+										</p>
+									</div>
+								) : null}
+
+								{isEndpoint && index === 1 ? (
+									<div class="concept-ep-pick" data-flow-choice-target="ep" data-choice-ep="get">
+										<div class="concept-props-choices" role="group" aria-label="选择请求方法">
+											<button
+												type="button"
+												data-flow-choice="get"
+												data-flow-choice-group="ep"
+												aria-pressed="true"
+											>
+												GET
+											</button>
+											<button
+												type="button"
+												data-flow-choice="post"
+												data-flow-choice-group="ep"
+												aria-pressed="false"
+											>
+												POST
+											</button>
+											<button
+												type="button"
+												data-flow-choice="delete"
+												data-flow-choice-group="ep"
+												aria-pressed="false"
+											>
+												DELETE
+											</button>
+										</div>
+										<p class="concept-ep-meaning ep-when-get">查：拿一份数据，不改变任何东西</p>
+										<p class="concept-ep-meaning ep-when-post">建：新增一条数据</p>
+										<p class="concept-ep-meaning ep-when-delete">删：移除一条数据</p>
+									</div>
+								) : null}
+
+								{isEndpoint && index === 2 ? (
+									<div class="concept-js-preview">
+										<p>/orders/42</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>路径点名：第 42 号订单</p>
+									</div>
+								) : null}
+
+								{isEndpoint && index === 3 ? (
+									<div class="concept-ep-result" data-flow-choice-target="ep" data-choice-ep="get">
+										<p class="concept-ep-req">
+											<span data-flow-choice-text="ep">get</span> /orders/42
+										</p>
+										<div class="ep-when-get concept-bk-resp is-200">
+											<b>200</b>
+											<span>返回 42 号订单详情</span>
+											<small>查，是这道菜的本分</small>
+										</div>
+										<div class="ep-when-delete concept-bk-resp is-200">
+											<b>204</b>
+											<span>删掉了，没有内容需要返回</span>
+											<small>204 的意思是「办妥了，没啥可说的」</small>
+										</div>
+										<div class="ep-when-post concept-bk-resp is-400">
+											<b>405</b>
+											<span>这个地址没有 POST 这道菜</span>
+											<small>方法也得在约定里——不是所有地址都能「来一份」</small>
+										</div>
+									</div>
+								) : null}
+
+								{isApi && index === 0 ? (
+									<div class="concept-component-def">
+										<small>双方的约定</small>
+										<p>
+											<code>路径</code>
+											<span>GET /weather</span>
+										</p>
+										<p>
+											<code>参数</code>
+											<span>city</span>
+										</p>
+										<p>
+											<code>返回</code>
+											<span>&#123; temp, sky &#125;</span>
+										</p>
+									</div>
+								) : null}
+
+								{isApi && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>GET /weather?city=上海</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>照约定发出</p>
+									</div>
+								) : null}
+
+								{isApi && index === 2 ? (
+									<div class="concept-api-code">
+										<p>&#123;</p>
+										<p class="is-line">
+											<em>"temp"</em>: 25,
+										</p>
+										<p class="is-line">
+											<em>"sky"</em>: "晴"
+										</p>
+										<p>&#125;</p>
+										<small>按约定的格式返回</small>
+									</div>
+								) : null}
+
+								{isApi && index === 3 ? (
+									<div class="concept-api-use" data-flow-choice-target="field" data-choice-field="ok">
+										<div class="concept-props-choices" role="group" aria-label="选择代码里取哪个字段">
+											<code>取</code>
+											<button
+												type="button"
+												data-flow-choice="ok"
+												data-flow-choice-group="field"
+												aria-pressed="true"
+											>
+												data.temp
+											</button>
+											<button
+												type="button"
+												data-flow-choice="bad"
+												data-flow-choice-group="field"
+												aria-pressed="false"
+											>
+												data.temperature
+											</button>
+										</div>
+										<div class="api-when-ok concept-api-widget-live is-ok">
+											<i class="ph ph-sun" aria-hidden="true" />
+											上海 · 25°C
+										</div>
+										<div class="api-when-bad concept-api-widget-live is-bad">
+											<i class="ph ph-warning-circle" aria-hidden="true" />
+											上海 · undefined°C
+										</div>
+										<small class="api-when-ok">字段名和约定一致，数据到手</small>
+										<small class="api-when-bad">约定里没有 temperature 这个字段——九成的接口 bug 长这样</small>
+									</div>
+								) : null}
+
+								{isBackendLab && index === 0 ? (
+									<div class="concept-bk-req" data-flow-choice-target="req" data-choice-req="ok">
+										<div class="concept-props-choices" role="group" aria-label="选择要发送的请求">
+											<button
+												type="button"
+												data-flow-choice="ok"
+												data-flow-choice-group="req"
+												aria-pressed="true"
+											>
+												完整订单
+											</button>
+											<button
+												type="button"
+												data-flow-choice="bad"
+												data-flow-choice-group="req"
+												aria-pressed="false"
+											>
+												漏填邮箱
+											</button>
+										</div>
+										<div class="concept-component-def">
+											<small>POST /orders</small>
+											<p>
+												<code>商品</code>
+												<span>拿铁 × 1</span>
+											</p>
+											<p>
+												<code>邮箱</code>
+												<span class="bk-when-ok">you@example.com</span>
+												<span class="bk-when-bad bk-missing">（空）</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isBackendLab && index === 1 ? (
+									<div class="concept-bk-gate" data-flow-choice-target="req" data-choice-req="ok">
+										<div class="bk-when-ok concept-bk-verdict is-pass">
+											<i class="ph ph-shield-check" aria-hidden="true" />
+											字段齐全、身份有效——放行
+										</div>
+										<div class="bk-when-bad concept-bk-verdict is-block">
+											<i class="ph ph-shield-warning" aria-hidden="true" />
+											缺少邮箱——请求在这里被拦下
+										</div>
+									</div>
+								) : null}
+
+								{isBackendLab && index === 2 ? (
+									<div class="concept-bk-gate" data-flow-choice-target="req" data-choice-req="ok">
+										<div class="bk-when-ok concept-js-preview">
+											<p>写入订单库</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>库存 −1，生成订单号</p>
+										</div>
+										<div class="bk-when-bad concept-bk-skip">
+											没走到这一步——
+											<br />
+											请求在校验时已被退回
+										</div>
+									</div>
+								) : null}
+
+								{isBackendLab && index === 3 ? (
+									<div class="concept-bk-gate" data-flow-choice-target="req" data-choice-req="ok">
+										<div class="bk-when-ok concept-bk-resp is-200">
+											<b>200</b>
+											<span>订单创建成功</span>
+											<small>前端拿到结果，跳转成功页</small>
+										</div>
+										<div class="bk-when-bad concept-bk-resp is-400">
+											<b>400</b>
+											<span>缺少邮箱</span>
+											<small>前端拿到错误码，提示用户补填</small>
+										</div>
+									</div>
+								) : null}
+
 								{isEvent && index === 0 ? (
 									<div class="concept-js-preview">
 										<p>

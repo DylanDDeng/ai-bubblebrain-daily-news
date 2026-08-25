@@ -1273,3 +1273,345 @@
 	font-size: 0.58rem;
 	text-align: center;
 }
+
+.concept-bk-req {
+	display: grid;
+	gap: 4px;
+}
+
+.concept-bk-req .concept-props-choices {
+	padding-top: 0;
+	justify-content: center;
+}
+
+[data-choice-req='ok'] .bk-when-bad {
+	display: none;
+}
+
+[data-choice-req='bad'] .bk-when-ok {
+	display: none;
+}
+
+.bk-missing {
+	color: #c2402a;
+	font-weight: 650;
+}
+
+.concept-bk-gate {
+	display: grid;
+	justify-items: center;
+}
+
+.concept-bk-verdict {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 14px;
+	border-radius: 10px;
+	font-size: 0.62rem;
+	font-weight: 700;
+	text-align: left;
+	line-height: 1.6;
+}
+
+.concept-bk-verdict i {
+	font-size: 0.95rem;
+}
+
+.concept-bk-verdict.is-pass {
+	border: 1.5px dashed rgb(44 138 68 / 0.4);
+	background: rgb(44 138 68 / 0.07);
+	color: #2c8a44;
+}
+
+.concept-bk-verdict.is-block {
+	border: 1.5px dashed rgb(212 85 63 / 0.45);
+	background: rgb(212 85 63 / 0.07);
+	color: #c2402a;
+}
+
+.concept-bk-skip {
+	padding: 14px 16px;
+	border: 1.5px dashed #d9dde2;
+	border-radius: 10px;
+	color: #a0a6ae;
+	font-size: 0.6rem;
+	line-height: 1.7;
+	text-align: center;
+}
+
+.concept-bk-resp {
+	display: grid;
+	gap: 5px;
+	justify-items: center;
+	padding: 14px 18px;
+	border-radius: 12px;
+	text-align: center;
+}
+
+.concept-bk-resp b {
+	font:
+		750 1.1rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-bk-resp span {
+	font-size: 0.64rem;
+	font-weight: 700;
+}
+
+.concept-bk-resp small {
+	color: #9ba1a9;
+	font-size: 0.54rem;
+}
+
+.concept-bk-resp.is-200 {
+	border: 1.5px dashed rgb(44 138 68 / 0.4);
+	background: rgb(44 138 68 / 0.06);
+}
+
+.concept-bk-resp.is-200 b,
+.concept-bk-resp.is-200 span {
+	color: #2c8a44;
+}
+
+.concept-bk-resp.is-400 {
+	border: 1.5px dashed rgb(212 85 63 / 0.45);
+	background: rgb(212 85 63 / 0.06);
+}
+
+.concept-bk-resp.is-400 b,
+.concept-bk-resp.is-400 span {
+	color: #c2402a;
+}
+
+.concept-api-code {
+	display: grid;
+	gap: 3px;
+	justify-self: center;
+	padding: 12px 16px;
+	border: 1px dashed #dfe4e8;
+	border-radius: 9px;
+	background: #fafbfc;
+}
+
+.concept-api-code p {
+	margin: 0;
+	color: #55606c;
+	font:
+		600 0.62rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-api-code p.is-line {
+	padding-left: 14px;
+}
+
+.concept-api-code em {
+	color: var(--blue-strong);
+	font-style: normal;
+}
+
+.concept-api-code small {
+	margin-top: 6px;
+	color: #9ba1a9;
+	font-size: 0.56rem;
+	text-align: center;
+}
+
+.concept-api-use {
+	display: grid;
+	gap: 10px;
+	justify-items: center;
+}
+
+.concept-api-use .concept-props-choices {
+	padding-top: 0;
+}
+
+.concept-api-use .concept-props-choices button {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+[data-choice-field='ok'] .api-when-bad {
+	display: none;
+}
+
+[data-choice-field='bad'] .api-when-ok {
+	display: none;
+}
+
+.concept-api-widget-live {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 9px 14px;
+	border-radius: 10px;
+	font-size: 0.68rem;
+	font-weight: 700;
+}
+
+.concept-api-widget-live i {
+	font-size: 0.9rem;
+}
+
+.concept-api-widget-live.is-ok {
+	border: 1.5px dashed rgb(44 138 68 / 0.4);
+	background: rgb(44 138 68 / 0.06);
+	color: #2c8a44;
+}
+
+.concept-api-widget-live.is-ok i {
+	color: #e8a13a;
+}
+
+.concept-api-widget-live.is-bad {
+	border: 1.5px dashed rgb(212 85 63 / 0.45);
+	background: rgb(212 85 63 / 0.06);
+	color: #c2402a;
+}
+
+.concept-api-use > small {
+	color: #9ba1a9;
+	font-size: 0.56rem;
+	text-align: center;
+}
+
+.concept-ep-pick {
+	display: grid;
+	gap: 12px;
+	justify-items: center;
+}
+
+.concept-ep-pick .concept-props-choices {
+	padding-top: 0;
+}
+
+.concept-ep-pick .concept-props-choices button {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+[data-choice-ep='get'] .ep-when-post,
+[data-choice-ep='get'] .ep-when-delete,
+[data-choice-ep='post'] .ep-when-get,
+[data-choice-ep='post'] .ep-when-delete,
+[data-choice-ep='delete'] .ep-when-get,
+[data-choice-ep='delete'] .ep-when-post {
+	display: none;
+}
+
+.concept-ep-meaning {
+	margin: 0;
+	padding: 9px 13px;
+	border: 1px dashed #dfe4e8;
+	border-radius: 8px;
+	background: #fafbfc;
+	color: #68717c;
+	font-size: 0.62rem;
+	font-weight: 650;
+}
+
+.concept-ep-result {
+	display: grid;
+	gap: 10px;
+	justify-items: center;
+}
+
+.concept-ep-req {
+	margin: 0;
+	padding: 8px 12px;
+	border: 1px solid #dfe4e8;
+	border-radius: 8px;
+	background: #f7f8fa;
+	color: #55606c;
+	font:
+		650 0.64rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-ep-req span {
+	color: var(--blue-strong);
+	text-transform: uppercase;
+}
+
+.concept-lab-pick {
+	display: grid;
+	gap: 12px;
+	justify-items: center;
+}
+
+.concept-lab-pick .concept-props-choices {
+	padding-top: 0;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.concept-lab-hint {
+	color: #9ba1a9;
+	font-size: 0.58rem;
+	text-align: center;
+}
+
+[data-choice-env='browser'] .env-when-node,
+[data-choice-env='browser'] .env-when-edge,
+[data-choice-env='node'] .env-when-browser,
+[data-choice-env='node'] .env-when-edge,
+[data-choice-env='edge'] .env-when-browser,
+[data-choice-env='edge'] .env-when-node {
+	display: none;
+}
+
+[data-choice-mw='ok'] .mw-when-bad,
+[data-choice-mw='bad'] .mw-when-ok {
+	display: none;
+}
+
+[data-choice-tk='ok'] .tk-when-bad,
+[data-choice-tk='bad'] .tk-when-ok {
+	display: none;
+}
+
+[data-choice-ev='local'] .ev-when-prod,
+[data-choice-ev='prod'] .ev-when-local {
+	display: none;
+}
+
+.concept-lab-pick .concept-component-def {
+	justify-self: stretch;
+}
+
+.concept-auth-token {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	justify-self: center;
+	padding: 12px 16px;
+	border: 1.5px dashed color-mix(in srgb, var(--blue) 45%, #dfe4e8);
+	border-radius: 12px;
+	background: #fff7f4;
+}
+
+.concept-auth-token i {
+	color: var(--blue-strong);
+	font-size: 1rem;
+}
+
+.concept-auth-token b {
+	font:
+		750 0.66rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-auth-token span {
+	color: #9ba1a9;
+	font-size: 0.56rem;
+	font-weight: 650;
+}

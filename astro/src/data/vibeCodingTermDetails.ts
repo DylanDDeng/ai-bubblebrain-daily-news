@@ -511,6 +511,255 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 		},
 		warning: '名字是用来沟通的，不是用来炫的。同一个零件在不同框架里可能叫法不同，说清位置和作用永远是保底方案。',
 	},
+	api: {
+		question: '到底是什么？大家天天说「调 API」，到底在调什么？',
+		visualTitle: '一纸约定，两边照办',
+		visualCaption: '调用方按约定发请求，提供方按约定回数据——谁也不用知道对方内部怎么实现。',
+		analogy:
+			'API 像餐厅的菜单：你不进后厨，也不用知道菜怎么做——照着菜单点、按约定付钱，后厨就按约定上菜。菜单上没有的，你点不了。',
+		steps: [
+			{
+				label: 'Contract',
+				detail: '约定路径、参数和返回格式',
+				result: '双方说好：GET /weather?city=…，返回 temp 和 sky 两个字段。',
+			},
+			{
+				label: 'Call',
+				detail: '调用方按约定发请求',
+				result: '前端发出 GET /weather?city=上海——完全照菜单点单。',
+			},
+			{
+				label: 'Serve',
+				detail: '提供方处理并返回',
+				result: '服务把结果按约定的格式打包成 JSON 送回来。',
+			},
+			{
+				label: 'Use',
+				detail: '拿到数据渲染界面',
+				result: '前端把 25°C 显示到页面上——全程没碰过对方的内部实现。',
+			},
+		],
+		scenes: [
+			{ title: '前后端分工', description: '前端管界面、后端管数据，中间全靠 API 说话。' },
+			{ title: '借用外部能力', description: '天气、支付、AI 模型——都是在调别人家的 API。' },
+			{ title: '排查对不上', description: '前端说传了、后端说没收到？先对照约定查字段名和路径。' },
+		],
+		practice: {
+			question: 'AI 帮你接入了天气 API，页面却一直显示不出温度。你会先检查什么？',
+			answer:
+				'打开开发者工具看这次请求：路径和参数对不对、返回的是 200 还是报错、返回 JSON 里的字段名和代码里取的是否一致——API 出问题，九成是两边没按同一份约定办事。',
+		},
+		warning:
+			'API 是承诺：改字段名、改路径就是毁约，所有调用方一起坏。要改就发新版本（/v2），旧版先留着。',
+	},
+	endpoint: {
+		question: '到底是什么？它和 API 是一回事吗？',
+		visualTitle: '一本菜单，一道道菜',
+		visualCaption: '一个 API 由许多 endpoint 组成——地址加方法，唯一定位其中一个。',
+		analogy:
+			'如果 API 是整本菜单，Endpoint 就是菜单上的一道菜：/orders 是「订单」这道菜，GET 是看一份、POST 是来一份——地址加动作，唯一确定你点的是什么。',
+		steps: [
+			{
+				label: 'Path',
+				detail: '一条具体的地址',
+				result: '/orders 管订单、/users 管用户——按资源划分地盘。',
+			},
+			{
+				label: 'Method',
+				detail: '配上一个动作',
+				result: '同一个 /orders：GET 是查、POST 是建——方法不同，就是不同的 endpoint。',
+			},
+			{
+				label: 'Params',
+				detail: '路径里带上参数',
+				result: '/orders/42 指的就是第 42 号订单——地址本身就能点名。',
+			},
+			{
+				label: 'Handle',
+				detail: '各自对接处理逻辑',
+				result: '每个 endpoint 背后是一段专属的处理代码，各管各的。',
+			},
+		],
+		scenes: [
+			{
+				title: '拆解需求',
+				description: '「加个收藏功能」，翻译过来就是新增 POST /favorites 和 DELETE /favorites/:id。',
+			},
+			{ title: '看懂报错', description: '404 常常是 endpoint 地址写错了，不一定是数据不存在。' },
+			{ title: '对照文档', description: 'API 文档就是 endpoint 清单：地址、方法、参数、返回。' },
+		],
+		practice: {
+			question: 'GET /orders 和 POST /orders，是同一个 endpoint 吗？',
+			answer:
+				'不是。地址相同但方法不同，就是两个 endpoint：GET /orders 查订单列表，POST /orders 创建新订单——背后对接的是两段不同的处理代码。',
+		},
+		warning:
+			'Endpoint 的命名就是它的说明书：用资源名词（/orders），别用动词（/getOrderList）。风格统一，AI 和队友都能猜对下一个地址长什么样。',
+	},
+	runtime: {
+		question: '到底是什么？为什么同一份代码换个地方就跑不起来？',
+		visualTitle: '同一份代码，不同的水土',
+		visualCaption: '代码本身只是文本；跑在哪个运行时里，决定了它能调用哪些能力。',
+		analogy:
+			'运行时像代码的水土：同一份 JavaScript，种在浏览器里能用 DOM 和 window，种在 Node.js 里能读文件、连数据库——水土不同，长得出的能力不同；水土不服，就地报错。',
+		steps: [
+			{
+				label: 'Code',
+				detail: '写下一份 JavaScript',
+				result: '此刻它只是文本，什么也做不了。',
+			},
+			{
+				label: 'Runtime',
+				detail: '选一个执行环境',
+				result: '浏览器、Node.js、Workers——每家提供的能力清单不一样。',
+			},
+			{
+				label: 'APIs',
+				detail: '取用环境提供的能力',
+				result: '浏览器给你 DOM 和 fetch，Node 给你文件系统和网络底层。',
+			},
+			{
+				label: 'Run',
+				detail: '代码真正跑起来',
+				result: '同一份逻辑，在不同水土里各有各的边界。',
+			},
+		],
+		scenes: [
+			{ title: '选部署形态', description: '传统服务器跑 Node，边缘节点跑 Workers——按需选水土。' },
+			{ title: '看懂报错', description: '「window is not defined」= 在服务端跑了浏览器专属的代码。' },
+			{ title: '对齐版本', description: '本地 Node 22、线上 Node 18，同一份代码可能两种表现。' },
+		],
+		practice: {
+			question: '代码在你电脑上跑得好好的，部署上线就报「fs is not defined」。怎么回事？',
+			answer:
+				'代码用了 Node.js 的文件能力（fs），但线上是边缘运行时，那里没有文件系统——不是代码坏了，是水土换了。让 AI 改用目标运行时支持的方案即可。',
+		},
+		warning:
+			'写代码前先问一句「这段跑在哪」。运行时决定能力边界，跨界调用是「本地好好的，一上线就崩」最常见的原因。',
+	},
+	middleware: {
+		question: '到底是什么？请求在见到业务逻辑之前，都过了谁的手？',
+		visualTitle: '一条公用的通道',
+		visualCaption: '每个请求都先穿过同一串中间件，再抵达各自的处理逻辑。',
+		analogy:
+			'中间件像机场的安检通道：不管你飞哪儿，都先过同样几道关——查身份、称行李、留记录。目的地各不相同，通道却是公用的：一次搭好，所有航班共享。',
+		steps: [
+			{
+				label: 'Enter',
+				detail: '请求进入通道',
+				result: '不管去哪个 endpoint，都从同一个入口进来。',
+			},
+			{
+				label: 'Auth',
+				detail: '鉴权中间件查身份',
+				result: '没带有效凭证的，在这一关就被送回去了。',
+			},
+			{
+				label: 'Log',
+				detail: '日志中间件记一笔',
+				result: '谁、什么时候、请求了什么——顺手留档。',
+			},
+			{
+				label: 'Handler',
+				detail: '抵达业务逻辑',
+				result: '穿过整条通道的请求，才见得到真正的处理代码。',
+			},
+		],
+		scenes: [
+			{ title: '统一鉴权', description: '登录校验写一次，所有要保护的 endpoint 共享。' },
+			{ title: '统一记录', description: '日志和耗时统计在通道里顺手完成，业务代码保持干净。' },
+			{ title: '统一限流', description: '同一个来源请求太猛？在通道口就拦下，别打进业务。' },
+		],
+		practice: {
+			question: '十个 endpoint 都需要登录才能访问。把校验代码复制十份，还是有更好的办法？',
+			answer:
+				'写一个鉴权中间件，挂在这十个 endpoint 前面。校验逻辑只有一份，改一次全体生效——和组件「一处修改、处处生效」是同一个道理。',
+		},
+		warning:
+			'中间件的顺序就是流水线的顺序：日志放在鉴权前还是后，记下来的东西完全不同。加中间件时，想清楚它站在队伍的第几位。',
+	},
+	authentication: {
+		question: '到底是什么？系统怎么知道「你就是你」？',
+		visualTitle: '从「你说你是」到「系统确认」',
+		visualCaption: '核验通过后发一张有期限的凭证，之后的每次请求都靠它自证身份。',
+		analogy:
+			'身份验证像小区门禁：第一次来要登记（注册），之后刷卡进门（登录拿凭证），卡丢了挂失补办（重置密码）。门禁认卡不认脸——凭证在谁手里，谁就是「你」。',
+		steps: [
+			{
+				label: 'Claim',
+				detail: '你说你是谁',
+				result: '输入邮箱和密码——此刻系统还不能信你。',
+			},
+			{
+				label: 'Verify',
+				detail: '系统核对凭据',
+				result: '密码比对、验证码、第三方确认——总得过一道关。',
+			},
+			{
+				label: 'Token',
+				detail: '发放一张凭证',
+				result: '核验通过，系统发一张有期限的「门禁卡」。',
+			},
+			{
+				label: 'Visit',
+				detail: '之后带着凭证访问',
+				result: '每次请求带上它，不用回回都输密码。',
+			},
+		],
+		scenes: [
+			{ title: '保护接口', description: '没带有效凭证的请求，在中间件那关就被拦下。' },
+			{ title: '保持登录', description: '凭证放在浏览器存储里，关掉重开还认得你。' },
+			{ title: '第三方登录', description: '「用 Google 登录」= 请 Google 替你核验，回来照样发凭证。' },
+		],
+		practice: {
+			question: '用户反馈「登着登着突然被踢出去了」。最可能的原因是什么？',
+			answer:
+				'凭证过期了。门禁卡都有有效期，到期就得重新核验——想少打扰用户，可以在快到期时静默续期（刷新凭证）。',
+		},
+		warning:
+			'「你是谁」（验证）和「你能干什么」（授权）是两件事：登录了不等于什么都能改。别把「已登录」当成「有权限」。',
+	},
+	'environment-variable': {
+		question: '到底是什么？为什么密钥不能直接写进代码里？',
+		visualTitle: '代码之外的口袋',
+		visualCaption: '代码里只写变量名，真实的值在每个环境里各自保管。',
+		analogy:
+			'环境变量像酒店房间的保险箱：贵重物品（密钥）不塞进行李箱（代码）拖着走，而是放进每个房间自带的保险箱——行李箱谁都可能翻到，保险箱只有住这间房的人能开。',
+		steps: [
+			{
+				label: 'Name',
+				detail: '代码里只写名字',
+				result: 'process.env.API_KEY——代码只知道有这么个名字。',
+			},
+			{
+				label: 'Store',
+				detail: '值存在环境里',
+				result: '本地写在 .env 文件，线上配在平台的设置面板。',
+			},
+			{
+				label: 'Inject',
+				detail: '启动时注入真实值',
+				result: '代码跑起来的那一刻，名字被换成当前环境里的值。',
+			},
+			{
+				label: 'Switch',
+				detail: '换环境即换值',
+				result: '本地连测试库、线上连正式库——代码一行不用改。',
+			},
+		],
+		scenes: [
+			{ title: '保管密钥', description: 'API Key、数据库密码——绝不进代码仓库。' },
+			{ title: '区分环境', description: '同一份代码，本地、测试、线上各配各的值。' },
+			{ title: '排查配置', description: '线上行为怪异？先查环境变量是不是漏配或配错了。' },
+		],
+		practice: {
+			question: 'AI 生成的代码里直接写着 apiKey = "sk-abc…"，还被推上了 GitHub。现在怎么办？',
+			answer:
+				'立刻去服务商后台吊销这把密钥、换新的——只从代码里删掉没用，推上去过就当已泄露。然后把新密钥放进环境变量，代码里只留 process.env.API_KEY。',
+		},
+		warning:
+			'前端代码里的「环境变量」构建后会打进产物、人人可见——真正的秘密只能放在服务端。名字带 PUBLIC 前缀的，才是设计给前端用的。',
+	},
 	backend: {
 		visualTitle: '一次请求如何被处理',
 		visualCaption: '后端接收请求、执行规则、访问数据，再把可信结果返回给前端。',

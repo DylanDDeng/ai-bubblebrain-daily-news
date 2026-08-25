@@ -762,6 +762,87 @@
 		monospace;
 }
 
+.concept-bk-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border: 1px solid #ececea;
+	border-radius: 8px;
+	background: #fff;
+	color: var(--ink-soft);
+	font-size: 0.62rem;
+	font-weight: 650;
+}
+
+.concept-bk-row > i {
+	color: #8a8a85;
+	font-size: 0.78rem;
+}
+
+.concept-bk-row > em {
+	margin-left: auto;
+	color: #2c8a44;
+	font-size: 0.8rem;
+	opacity: 0;
+	animation: concept-bk-check 6s ease-in-out infinite;
+	animation-delay: calc(var(--bk-index, 0) * 0.7s);
+}
+
+.concept-bk-ok {
+	width: max-content;
+	padding: 6px 11px;
+	border: 1px solid rgb(44 138 68 / 0.35);
+	border-radius: 999px;
+	background: rgb(44 138 68 / 0.08);
+	color: #2c8a44;
+	font:
+		700 0.58rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+	opacity: 0;
+	animation: concept-bk-ok 6s ease-in-out infinite;
+}
+
+@keyframes concept-bk-check {
+	0%,
+	8% {
+		opacity: 0;
+		transform: scale(0.6);
+	}
+
+	13%,
+	78% {
+		opacity: 1;
+		transform: none;
+	}
+
+	86%,
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes concept-bk-ok {
+	0%,
+	42% {
+		opacity: 0;
+		translate: 0 4px;
+	}
+
+	50%,
+	86% {
+		opacity: 1;
+		translate: 0 0;
+	}
+
+	94%,
+	100% {
+		opacity: 0;
+	}
+}
+
 .concept-ev-count .concept-state-flip {
 	font:
 		750 0.72rem ui-monospace,
@@ -954,6 +1035,185 @@
 .concept-st-row > i {
 	color: #31954a;
 	font-size: 0.8rem;
+}
+
+.concept-api-json {
+	display: grid;
+	gap: 3px;
+	padding: 10px 12px;
+	border: 1px dashed #e0e0db;
+	border-radius: 9px;
+	background: #fafaf8;
+}
+
+.concept-api-json p {
+	margin: 0;
+	color: #55606c;
+	font:
+		600 0.62rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-api-json p.is-line {
+	padding-left: 14px;
+	animation: concept-api-line 6s ease-in-out infinite;
+	animation-delay: calc(var(--api-index, 0) * 0.5s);
+}
+
+.concept-api-json em {
+	color: var(--blue-strong);
+	font-style: normal;
+}
+
+.concept-api-widget {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	width: max-content;
+	padding: 7px 12px;
+	border: 1px solid #ececea;
+	border-radius: 9px;
+	background: #fff;
+	box-shadow: 0 6px 16px rgb(0 0 0 / 0.06);
+	font-size: 0.66rem;
+	font-weight: 700;
+	opacity: 0;
+	animation: concept-bk-ok 6s ease-in-out infinite;
+}
+
+.concept-api-widget i {
+	color: #e8a13a;
+	font-size: 0.85rem;
+}
+
+@keyframes concept-api-line {
+	0%,
+	4% {
+		opacity: 0.15;
+	}
+
+	10%,
+	82% {
+		opacity: 1;
+	}
+
+	90%,
+	100% {
+		opacity: 0.15;
+	}
+}
+
+.concept-ep-flip i.is-get {
+	color: #2c8a44;
+}
+
+.concept-ep-flip i.is-post {
+	color: var(--blue-strong);
+}
+
+.concept-ep-row {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border: 1px solid #ececea;
+	border-radius: 8px;
+	background: #fff;
+	font-size: 0.62rem;
+}
+
+.concept-ep-row > b {
+	min-width: 34px;
+	font:
+		750 0.56rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-ep-row > b.is-get {
+	color: #2c8a44;
+}
+
+.concept-ep-row > b.is-post {
+	color: var(--blue-strong);
+}
+
+.concept-ep-row > code {
+	color: #55606c;
+	font:
+		650 0.6rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-ep-row > span {
+	margin-left: auto;
+	color: var(--ink-faint);
+	font-size: 0.56rem;
+	font-weight: 650;
+}
+
+.concept-ep-row.is-dim {
+	opacity: 0.45;
+}
+
+.concept-ep-glow {
+	position: absolute;
+	inset: -1px;
+	border: 1.5px solid color-mix(in srgb, var(--blue) 55%, var(--rule));
+	border-radius: 9px;
+	background: color-mix(in srgb, var(--blue-soft) 40%, transparent);
+	pointer-events: none;
+}
+
+.concept-rtm-head {
+	color: var(--ink-soft);
+	font-size: 0.62rem;
+	font-style: normal;
+	font-weight: 750;
+}
+
+.concept-rtm-head .concept-state-b {
+	color: var(--blue-strong);
+}
+
+.concept-rtm-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 8px 10px;
+	border: 1px solid #ececea;
+	border-radius: 8px;
+	background: #fff;
+}
+
+.concept-rtm-row > code {
+	color: #55606c;
+	font:
+		650 0.6rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+}
+
+.concept-rtm-row span,
+.concept-rtm-row .concept-state-flip {
+	font-size: 0.58rem;
+	font-weight: 650;
+}
+
+.concept-rtm-yes {
+	color: #2c8a44;
+}
+
+.concept-rtm-no {
+	color: #c2402a;
 }
 
 .concept-state-flip {
@@ -2264,6 +2524,11 @@
 	.concept-ev-btn,
 	.concept-ev-btn::after,
 	.concept-ssr-spin,
+	.concept-bk-row > em,
+	.concept-bk-ok,
+	.concept-api-json p.is-line,
+	.concept-api-widget,
+	.concept-ep-glow,
 	.concept-visual figcaption i,
 	.concept-flow-stage-progress i,
 	.concept-step-list button,
@@ -2273,4 +2538,12 @@
 		animation: none;
 		transition: none;
 	}
+}
+
+.concept-rtm-row i.concept-rtm-yes {
+	color: #2c8a44;
+}
+
+.concept-rtm-row i.concept-rtm-no {
+	color: #c2402a;
 }

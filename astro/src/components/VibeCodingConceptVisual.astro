@@ -18,6 +18,13 @@ const isEvent = concept.id === 'event';
 const isRouting = concept.id === 'routing';
 const isSsr = concept.id === 'ssr';
 const isStorage = concept.id === 'browser-storage';
+const isBackend = concept.id === 'backend';
+const isApi = concept.id === 'api';
+const isEndpoint = concept.id === 'endpoint';
+const isRuntime = concept.id === 'runtime';
+const isMiddleware = concept.id === 'middleware';
+const isAuth = concept.id === 'authentication';
+const isEnvVar = concept.id === 'environment-variable';
 ---
 
 <figure class="concept-visual" data-concept-animation={concept.categoryId}>
@@ -28,7 +35,275 @@ const isStorage = concept.id === 'browser-storage';
 	</header>
 
 	{
-		isEvent ? (
+		isRuntime ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>code.js · 同一份代码</small>
+					<p>
+						<code>fetch()</code>
+						<span>发起请求</span>
+					</p>
+					<p>
+						<code>document</code>
+						<span>操作页面</span>
+					</p>
+					<p>
+						<code>fs.read()</code>
+						<span>读取文件</span>
+					</p>
+					<strong>此刻它只是文本</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">跑在浏览器里</i>
+						<i class="concept-state-b">跑在 Node.js 里</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>fetch()</code>
+						<span class="concept-rtm-yes">✓ 都有</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>document</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 有</i>
+							<i class="concept-state-b concept-rtm-no">✗ is not defined</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>fs.read()</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ is not defined</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 有</i>
+						</span>
+					</div>
+					<strong>水土不同，能力清单不同</strong>
+				</div>
+			</div>
+		) : isMiddleware ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>一个请求进入通道</small>
+					<p>
+						<code>GET</code>
+						<span>/orders</span>
+					</p>
+					<p>
+						<code>凭证</code>
+						<span>🎫 有效</span>
+					</p>
+					<strong>不管去哪，都走这条道</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-shield-check" />
+						鉴权 · 查验凭证
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-notebook" />
+						日志 · 顺手记一笔
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-gauge" />
+						限流 · 频率正常
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">→ 抵达 orders 的处理逻辑</div>
+					<strong>过完公用的关，才见业务</strong>
+				</div>
+			</div>
+		) : isAuth ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>你说你是</small>
+					<p>
+						<code>邮箱</code>
+						<span>you@example.com</span>
+					</p>
+					<p>
+						<code>密码</code>
+						<span>••••••••</span>
+					</p>
+					<strong>此刻系统还不能信你</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-key" />
+						核对密码
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-ticket" />
+						发放凭证 · 7 天有效
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">之后每次请求：带上 🎫 即可通行</div>
+					<strong>凭证在手，不用回回输密码</strong>
+				</div>
+			</div>
+		) : isEnvVar ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>代码里只有名字</small>
+					<p>
+						<code>DB_URL</code>
+						<span>process.env.DB_URL</span>
+					</p>
+					<p>
+						<code>API_KEY</code>
+						<span>process.env.API_KEY</span>
+					</p>
+					<strong>值不在代码里</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">本地 · .env 文件</i>
+						<i class="concept-state-b">线上 · 平台设置</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>DB_URL</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">test_db 🧪</i>
+							<i class="concept-state-b">live_db 🚀</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>API_KEY</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">sk_test_…</i>
+							<i class="concept-state-b">sk_live_…</i>
+						</span>
+					</div>
+					<strong>换环境换值，代码一行不动</strong>
+				</div>
+			</div>
+		) : isEndpoint ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>同一个地址</small>
+					<p>
+						<code>方法</code>
+						<span class="concept-state-flip concept-ep-flip">
+							<i class="concept-state-a is-get">GET</i>
+							<i class="concept-state-b is-post">POST</i>
+						</span>
+					</p>
+					<p>
+						<code>路径</code>
+						<span>/orders</span>
+					</p>
+					<strong>一个地址，两个动作</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-ep-row" aria-hidden="true">
+						<u class="concept-ep-glow concept-state-a" />
+						<b class="is-get">GET</b>
+						<code>/orders</code>
+						<span>查订单列表</span>
+					</div>
+					<div class="concept-ep-row" aria-hidden="true">
+						<u class="concept-ep-glow concept-state-b" />
+						<b class="is-post">POST</b>
+						<code>/orders</code>
+						<span>创建新订单</span>
+					</div>
+					<div class="concept-ep-row is-dim" aria-hidden="true">
+						<b class="is-get">GET</b>
+						<code>/users</code>
+						<span>查用户列表</span>
+					</div>
+					<strong>方法不同，就是菜单上不同的菜</strong>
+				</div>
+			</div>
+		) : isApi ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>照约定点单</small>
+					<p>
+						<code>GET</code>
+						<span>/weather</span>
+					</p>
+					<p>
+						<code>city</code>
+						<span>"上海"</span>
+					</p>
+					<strong>调用方发出请求</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-api-json" aria-hidden="true">
+						<p style="--api-index: 0">&#123;</p>
+						<p class="is-line" style="--api-index: 1">
+							<em>"temp"</em>: 25,
+						</p>
+						<p class="is-line" style="--api-index: 2">
+							<em>"sky"</em>: "晴"
+						</p>
+						<p style="--api-index: 3">&#125;</p>
+					</div>
+					<div class="concept-api-widget" aria-hidden="true">
+						<i class="ph ph-sun" />
+						上海 · 25°C
+					</div>
+					<strong>照约定上菜，前端拿来就用</strong>
+				</div>
+			</div>
+		) : isBackend ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>浏览器发出</small>
+					<p>
+						<code>POST</code>
+						<span>/orders</span>
+					</p>
+					<p>
+						<code>body</code>
+						<span>拿铁 × 1，邮箱 ✓</span>
+					</p>
+					<strong>一张请求单</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-shield-check" />
+						校验身份与字段
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-gear" />
+						执行业务规则
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-database" />
+						写入数据库
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">200 · 处理完成，返回前端</div>
+					<strong>服务器里走完这一趟</strong>
+				</div>
+			</div>
+		) : isEvent ? (
 			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
 				<div class="concept-instance-source">
 					<small>监听登记表</small>
