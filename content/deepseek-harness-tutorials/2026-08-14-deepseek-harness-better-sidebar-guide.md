@@ -3,6 +3,7 @@ title: "better-sidebar 插件：把 Harness 变成完整开发工作台"
 slug: "deepseek-harness-better-sidebar-guide"
 description: "安装 dsh-better-sidebar，并实测文件编辑、Git diff、真实终端、Markdown 预览、内嵌浏览器和移动端侧栏。"
 date: 2026-08-14T05:00:00Z
+weight: 9
 tags: ["DeepSeek Harness", "better-sidebar", "插件", "开发工作台", "新手教程"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/omdsh-dev/DSH-better-sidebar"

@@ -3,6 +3,7 @@ title: "只用手机完成工作：WorkBuddy 移动端教程"
 slug: "workbuddy-mobile-workflow-guide"
 description: "介绍 WorkBuddy 移动端的云端工作、连接电脑、自动化、文件处理与微信分享，体验只用手机调度 Agent 的完整办公流程。"
 date: 2026-08-09
+weight: 4
 tags: ["WorkBuddy", "移动办公", "远程控制", "自动化", "AI 办公", "Agent"]
 author: "BubbleBrain"
 sourceUrl: "https://mp.weixin.qq.com/s/kJoiEhC7LlYWYukixd85sg"

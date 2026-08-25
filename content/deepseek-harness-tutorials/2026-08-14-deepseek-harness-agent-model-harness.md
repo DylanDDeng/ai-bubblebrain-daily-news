@@ -3,6 +3,7 @@ title: "Agent 入门：Model 如何在 Harness 中完成任务"
 slug: "deepseek-harness-agent-model-harness"
 description: "从 Model、Tools 与 Harness 的分工出发，看懂 DeepSeek Harness 如何用 Turn、Step、工具调用和会话日志组成一个 Agent。"
 date: 2026-08-14T04:00:00Z
+weight: 2
 tags: ["DeepSeek Harness", "AI Agent", "Agent Loop", "Model", "工具调用"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/deepseek-ai/deepseek-harness"

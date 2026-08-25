@@ -31,7 +31,7 @@ function setupDirectory() {
 		if (empty instanceof HTMLElement) empty.hidden = visible !== 0;
 		// Grouped lists (highlights year groups) collapse a group once every
 		// row inside it has been filtered out.
-		for (const group of root.querySelectorAll('details.month-group')) {
+		for (const group of root.querySelectorAll('.month-group')) {
 			const anyVisible = [...group.querySelectorAll('[data-directory-item]')].some(
 				(item) => !item.hidden,
 			);

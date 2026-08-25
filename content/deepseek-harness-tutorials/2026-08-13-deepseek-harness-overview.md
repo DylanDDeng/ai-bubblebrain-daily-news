@@ -3,6 +3,7 @@ title: "认识 DeepSeek Harness：它解决什么问题"
 slug: "deepseek-harness-overview"
 description: "先理解模型、Agent 与 Harness 的区别，再看 DeepSeek Harness 的插件架构、适用人群和学习路线。"
 date: 2026-08-13T06:00:00Z
+weight: 1
 tags: ["DeepSeek Harness", "Agent Harness", "Cordis", "入门教程"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/deepseek-ai/deepseek-harness"

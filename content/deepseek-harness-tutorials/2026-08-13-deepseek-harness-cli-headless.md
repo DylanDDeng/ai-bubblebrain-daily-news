@@ -3,6 +3,7 @@ title: "CLI 与 Headless：让 Agent 完成一次性任务"
 slug: "deepseek-harness-cli-headless"
 description: "理解 profile、Headless 输出与退出码，在项目目录中运行一次性 Agent 任务，并检查最终组合配置。"
 date: 2026-08-13T03:00:00Z
+weight: 5
 tags: ["DeepSeek Harness", "CLI", "Headless", "自动化", "Profile"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/deepseek-ai/deepseek-harness"

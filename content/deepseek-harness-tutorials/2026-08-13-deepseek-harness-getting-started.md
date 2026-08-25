@@ -3,6 +3,7 @@ title: "启动 Web UI：从零完成第一个任务"
 slug: "deepseek-harness-getting-started"
 description: "安装运行条件，用一条 npx 命令启动 DeepSeek Harness，配置密钥、选择工作区并完成第一次仓库分析。"
 date: 2026-08-13T05:00:00Z
+weight: 3
 tags: ["DeepSeek Harness", "Web UI", "npx", "工作区", "入门教程"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/deepseek-ai/deepseek-harness"

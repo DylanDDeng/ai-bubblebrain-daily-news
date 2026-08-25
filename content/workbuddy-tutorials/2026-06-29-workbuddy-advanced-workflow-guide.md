@@ -3,6 +3,7 @@ title: "WorkBuddy 进阶指南：模型、知识库、会议、设计与自动�
 slug: "workbuddy-advanced-workflow-guide"
 description: "介绍如何为 WorkBuddy 配置第三方模型、连接知识库与腾讯会议，并使用设计工具和自动化工作流提升日常办公效率。"
 date: 2026-06-29
+weight: 2
 tags: ["WorkBuddy", "进阶教程", "知识库", "腾讯会议", "自动化", "AI 办公"]
 author: "BubbleBrain"
 sourceUrl: "https://mp.weixin.qq.com/s/yiFijIq-Oft4Bv48t8rmlA"

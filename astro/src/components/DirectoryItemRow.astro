@@ -49,6 +49,9 @@ const meta = item.company ?? (item.model || item.date) ?? item.author_name ?? it
 						rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
 					>
 						{name}
+						{href.startsWith('http') && (
+							<i class="ph ph-arrow-up-right directory-item-external" aria-hidden="true" />
+						)}
 					</a>
 				) : (
 					name

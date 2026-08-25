@@ -3,6 +3,7 @@ title: "WorkBuddy 混元 3 实战：数据分析、视频制作与产品需求"
 slug: "workbuddy-hunyuan3-workflow-guide"
 description: "通过混元 3、表格 Skill、视频专家和产品战略专家团，演示如何在 WorkBuddy 中完成数据分析、视频制作与产品需求研究。"
 date: 2026-07-07
+weight: 3
 tags: ["WorkBuddy", "混元 3", "数据分析", "视频制作", "产品经理", "AI 办公"]
 author: "BubbleBrain"
 sourceUrl: "https://mp.weixin.qq.com/s/TMHgCYPbxmdVLi1EXpfCVQ"

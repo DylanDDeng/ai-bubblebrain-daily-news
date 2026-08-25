@@ -3,6 +3,7 @@ title: "插件开发：添加第一个自定义工具"
 slug: "deepseek-harness-first-plugin"
 description: "从源码启动 Harness，创建最小 Cordis 插件，再注册一个能被模型调用的 greet 工具。"
 date: 2026-08-13T01:00:00Z
+weight: 7
 tags: ["DeepSeek Harness", "插件开发", "Cordis", "Tool", "TypeScript"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/deepseek-ai/deepseek-harness"
