@@ -39,6 +39,9 @@ describe('Cloudflare redirects', () => {
 		const redirects = renderCloudflareRedirects([entry]);
 		expect(redirects).toContain('/index.xml /rss.xml 301');
 		expect(redirects).toContain('/en/index.xml /en/rss.xml 301');
+		expect(redirects).toContain(
+			'/vibe-coding/terms/context/ /vibe-coding/terms/context-window/ 301',
+		);
 		expect(redirects).not.toContain('/daily/');
 	});
 

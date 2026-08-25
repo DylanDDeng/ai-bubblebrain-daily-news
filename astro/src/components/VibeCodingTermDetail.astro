@@ -25,7 +25,7 @@ const { concept, profile, previousConcept, nextConcept } = Astro.props;
 		<p>{concept.isCategory ? '术语分类' : concept.categoryLabel}</p>
 		<h1>
 			{concept.chineseName}
-			<span>{concept.name}</span>
+			{concept.name !== concept.chineseName ? <span>{concept.name}</span> : null}
 		</h1>
 		<div class="concept-detail-qa">
 			<div class="concept-qa-row concept-qa-question">

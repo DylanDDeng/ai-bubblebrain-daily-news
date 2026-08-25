@@ -34,7 +34,9 @@ if (!patternProfile && !profile)
 ---
 
 <BaseLayout
-	title={`${concept.chineseName}（${concept.name}）· Vibe Coding 术语`}
+	title={concept.name !== concept.chineseName
+		? `${concept.chineseName}（${concept.name}）· Vibe Coding 术语`
+		: `${concept.chineseName} · Vibe Coding 术语`}
 	description={concept.description}
 	canonicalPath={`/vibe-coding/terms/${concept.id}/`}
 	section="vibe-coding"

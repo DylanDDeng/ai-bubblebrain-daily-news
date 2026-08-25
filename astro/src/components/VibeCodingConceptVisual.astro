@@ -25,6 +25,13 @@ const isRuntime = concept.id === 'runtime';
 const isMiddleware = concept.id === 'middleware';
 const isAuth = concept.id === 'authentication';
 const isEnvVar = concept.id === 'environment-variable';
+const isPrompt = concept.id === 'prompt';
+const isAgentTerm = concept.id === 'agent';
+const isVibeCoding = concept.id === 'vibe-coding';
+const isContextWindow = concept.id === 'context-window';
+const isHarness = concept.id === 'harness';
+const isMcp = concept.id === 'mcp';
+const isSkillTerm = concept.id === 'skill';
 ---
 
 <figure class="concept-visual" data-concept-animation={concept.categoryId}>
@@ -35,7 +42,332 @@ const isEnvVar = concept.id === 'environment-variable';
 	</header>
 
 	{
-		isRuntime ? (
+		isVibeCoding ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">第一轮 · 说意图</i>
+						<i class="concept-state-b">第二轮 · 说反馈</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>你说</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">「卡片加个悬停阴影」</i>
+							<i class="concept-state-b">「浮起的幅度小一半」</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>AI</code>
+						<span>改代码 · 几秒钟</span>
+					</div>
+					<strong>需求用人话说</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">运行 · 第一版</i>
+						<i class="concept-state-b">运行 · 第二版</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>阴影</code>
+						<span class="concept-rtm-yes">✓ 有了</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>浮起</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">有点夸张</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 刚刚好</i>
+						</span>
+					</div>
+					<strong>结果，是下一句话的依据</strong>
+				</div>
+			</div>
+		) : isContextWindow ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">第 3 轮 · 还宽敞</i>
+						<i class="concept-state-b">第 60 轮 · 满了</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>开头约定</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 看得见</i>
+							<i class="concept-state-b concept-rtm-no">已出窗</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>中途代码</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 看得见</i>
+							<i class="concept-state-b">压成一句概要</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>最新消息</code>
+						<span class="concept-rtm-yes">✓ 看得见</span>
+					</div>
+					<strong>桌面就这么大</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">回答守规矩</i>
+						<i class="concept-state-b">开始违反约定</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>表现</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 记得规矩</i>
+							<i class="concept-state-b concept-rtm-no">✗ 当没说过</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>对策</code>
+						<span>关键约定写进文件</span>
+					</div>
+					<strong>写进文件的，才是可靠记忆</strong>
+				</div>
+			</div>
+		) : isHarness ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>模型的输出 · 一段文字</small>
+					<p>
+						<code>动作</code>
+						<span>「删掉 build 目录」</span>
+					</p>
+					<p>
+						<code>此刻</code>
+						<span>还什么都没发生</span>
+					</p>
+					<strong>光会说，没有手</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-shield-check" />
+						校验权限 · 删除类，先确认
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-terminal-window" />
+						真正执行 · rm -rf ./build
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-arrows-clockwise" />
+						结果回填 · 进入下一轮
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						文字变成了行动
+					</div>
+					<strong>说到做到，靠的是框架</strong>
+				</div>
+			</div>
+		) : isMcp ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">没有统一协议</i>
+						<i class="concept-state-b">有了 MCP</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>日历</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">专属插件 × 每个应用</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 一个 MCP 服务器</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>数据库</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">专属插件 × 每个应用</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 一个 MCP 服务器</i>
+						</span>
+					</div>
+					<strong>三个服务，两种接法</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">每换应用，重写一遍</i>
+						<i class="concept-state-b">一次接入，到处能用</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>接入成本</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">服务 × 应用 份胶水</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 各写一次</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>新工具</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 又要写适配</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 接上就能用</i>
+						</span>
+					</div>
+					<strong>对齐一个标准，省掉一堆胶水</strong>
+				</div>
+			</div>
+		) : isSkillTerm ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">每次现说</i>
+						<i class="concept-state-b">一句话触发</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>你说</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">格式是…口吻是…数据从…</i>
+							<i class="concept-state-b">「写周报」</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>说明</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">300 字，还漏了两条</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 技能里全有</i>
+						</span>
+					</div>
+					<strong>重复的说明，值得打包</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">产出看运气</i>
+						<i class="concept-state-b">每次同一水准</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>本周</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">格式碰巧对了</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 按模板</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>下周</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 口吻又变了</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 还是那套</i>
+						</span>
+					</div>
+					<strong>稳定，来自封装</strong>
+				</div>
+			</div>
+		) : isAgentTerm ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>拆开一个 Agent</small>
+					<p>
+						<code>Model</code>
+						<span>大脑 · 决定下一步</span>
+					</p>
+					<p>
+						<code>Harness</code>
+						<span>手脚 · 工具、权限、循环</span>
+					</p>
+					<strong>少了哪半，都不是 Agent</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-brain" />
+						Model · 「先跑一遍测试」
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-terminal-window" />
+						Harness · 执行命令，结果递回
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-brain" />
+						Model · 「一处失败，改 utils.js」
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 3" aria-hidden="true">
+						<i class="ph ph-wrench" />
+						Harness · 改文件，重跑测试
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						✓ 测试通过 · 任务完成
+					</div>
+					<strong>一个出主意，一个动手，循环到做完</strong>
+				</div>
+			</div>
+		) : isPrompt ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">随口一说</i>
+						<i class="concept-state-b">一份清楚的委托单</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>目标</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">「弄个深色模式」</i>
+							<i class="concept-state-b">设置页加深色开关</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>约束</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">（没说）</i>
+							<i class="concept-state-b">全局样式不动</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>验收</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">（没说）</i>
+							<i class="concept-state-b">刷新后保持选择</i>
+						</span>
+					</div>
+					<strong>说得越清楚，AI 猜得越少</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">AI 只能靠猜</i>
+						<i class="concept-state-b">AI 照单执行</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>做了什么</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 整站都改黑了</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 设置页新增开关</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>刷新之后</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 又变回白色</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 记住了深色</i>
+						</span>
+					</div>
+					<strong>产出质量，在提示词里就定了一半</strong>
+				</div>
+			</div>
+		) : isRuntime ? (
 			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
 				<div class="concept-instance-source">
 					<small>code.js · 同一份代码</small>
@@ -115,7 +447,9 @@ const isEnvVar = concept.id === 'environment-variable';
 						限流 · 频率正常
 						<em class="ph ph-check-circle" />
 					</div>
-					<div class="concept-bk-ok" aria-hidden="true">→ 抵达 orders 的处理逻辑</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						→ 抵达 orders 的处理逻辑
+					</div>
 					<strong>过完公用的关，才见业务</strong>
 				</div>
 			</div>
@@ -147,7 +481,9 @@ const isEnvVar = concept.id === 'environment-variable';
 						发放凭证 · 7 天有效
 						<em class="ph ph-check-circle" />
 					</div>
-					<div class="concept-bk-ok" aria-hidden="true">之后每次请求：带上 🎫 即可通行</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						之后每次请求：带上 🎫 即可通行
+					</div>
 					<strong>凭证在手，不用回回输密码</strong>
 				</div>
 			</div>
@@ -299,7 +635,9 @@ const isEnvVar = concept.id === 'environment-variable';
 						写入数据库
 						<em class="ph ph-check-circle" />
 					</div>
-					<div class="concept-bk-ok" aria-hidden="true">200 · 处理完成，返回前端</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						200 · 处理完成，返回前端
+					</div>
 					<strong>服务器里走完这一趟</strong>
 				</div>
 			</div>
@@ -321,7 +659,9 @@ const isEnvVar = concept.id === 'environment-variable';
 					<b />
 				</i>
 				<div class="concept-instance-page">
-					<b class="concept-ev-btn" aria-hidden="true">点我</b>
+					<b class="concept-ev-btn" aria-hidden="true">
+						点我
+					</b>
 					<p class="concept-ev-count" aria-hidden="true">
 						<code>count</code>
 						<span class="concept-state-flip">
@@ -508,7 +848,9 @@ const isEnvVar = concept.id === 'environment-variable';
 				<div class="concept-instance-page">
 					<span class="concept-dom-mini-nav" aria-hidden="true" />
 					<span class="concept-dom-mini-line" aria-hidden="true" />
-					<b class="concept-hyd-btn" aria-hidden="true">立即订阅</b>
+					<b class="concept-hyd-btn" aria-hidden="true">
+						立即订阅
+					</b>
 					<em class="concept-state-flip concept-hyd-tag">
 						<i class="concept-state-a">能看，还不能点</i>
 						<i class="concept-state-b">已激活，可以点了</i>

@@ -26,7 +26,21 @@ const isRuntimeLab = concept.id === 'runtime';
 const isMwLab = concept.id === 'middleware';
 const isAuthLab = concept.id === 'authentication';
 const isEnvLab = concept.id === 'environment-variable';
+const isPromptLab = concept.id === 'prompt';
+const isAgentLab = concept.id === 'agent';
+const isVibeLab = concept.id === 'vibe-coding';
+const isWindowLab = concept.id === 'context-window';
+const isHarnessLab = concept.id === 'harness';
+const isMcpLab = concept.id === 'mcp';
+const isSkillLab = concept.id === 'skill';
 const customLabIds = new Set([
+	'prompt',
+	'agent',
+	'vibe-coding',
+	'context-window',
+	'harness',
+	'mcp',
+	'skill',
 	'backend',
 	'api',
 	'endpoint',
@@ -64,9 +78,16 @@ const labTitles: Record<string, string> = {
 	routing: '换一个地址，会打开哪一页？',
 	ssr: 'CSR 和 SSR，首屏差在哪？',
 	'browser-storage': '存一条数据，刷新后还在吗？',
+	prompt: '同一个愿望，怎么说才不跑偏？',
 	frontend: '一个页面是怎样做出来的？',
 	backend: '一次请求会经过哪些部分？',
-	'ai-agent': 'Agent 怎样把目标变成结果？',
+	agent: 'Model 和 Harness，怎样搭档完成任务？',
+	'vibe-coding': '同样的需求，一口气说完还是一轮轮调？',
+	'context-window': '聊到第 60 轮，开头的约定还在吗？',
+	harness: '模型说「删了它」，框架照做吗？',
+	mcp: '接入一个工单系统，要写几遍代码？',
+	skill: '每周都要发的周报，怎么不用每次重新教？',
+	'ai-agent': 'AI 工具怎样把目标变成结果？',
 	'data-storage': '一条数据怎样被保存和取回？',
 	'engineering-workflow': '一次改动怎样安全进入主线？',
 	'deployment-runtime': '代码怎样一步步变成线上服务？',
@@ -89,8 +110,15 @@ const stageNames: Record<string, string[]> = {
 	routing: ['地址', '匹配', '渲染', '跳转'],
 	ssr: ['请求', '拼装', '送达', '接力'],
 	'browser-storage': ['写入', '留存', '读取', '边界'],
+	prompt: ['目标', '上下文', '约束', '验收'],
 	frontend: ['结构', '样式', '交互', '呈现'],
 	backend: ['请求', '校验', '处理', '响应'],
+	agent: ['目标', '模型', '框架', '循环'],
+	'vibe-coding': ['意图', '生成', '运行', '反馈'],
+	'context-window': ['进入', '装满', '压缩', '固定'],
+	harness: ['组装', '决策', '执行', '回填'],
+	mcp: ['封装', '连接', '发现', '调用'],
+	skill: ['沉淀', '打包', '触发', '复用'],
 	'ai-agent': ['目标', '上下文', '工具', '验证'],
 	'data-storage': ['定义', '写入', '查询', '返回'],
 	'engineering-workflow': ['编辑', '差异', '测试', '提交'],
@@ -141,6 +169,568 @@ const labels =
 							</button>
 
 							<div class="concept-process-panel-body">
+								{isPromptLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="pr" data-choice-pr="vague">
+										<div class="concept-props-choices" role="group" aria-label="选择提示词的说法">
+											<button
+												type="button"
+												data-flow-choice="vague"
+												data-flow-choice-group="pr"
+												aria-pressed="true"
+											>
+												随口一说
+											</button>
+											<button
+												type="button"
+												data-flow-choice="clear"
+												data-flow-choice-group="pr"
+												aria-pressed="false"
+											>
+												说清楚
+											</button>
+										</div>
+										<div class="pr-when-vague concept-component-def">
+											<small>你发给 AI 的话</small>
+											<p>
+												<code>需求</code>
+												<span>「帮我弄个深色模式」</span>
+											</p>
+										</div>
+										<div class="pr-when-clear concept-component-def">
+											<small>你发给 AI 的话</small>
+											<p>
+												<code>目标</code>
+												<span>设置页加一个深色模式开关</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isPromptLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="pr" data-choice-pr="vague">
+										<div class="pr-when-vague concept-js-preview">
+											<p>AI：这项目用什么写的？</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>没说——那就按最常见的猜一个</p>
+										</div>
+										<div class="pr-when-clear concept-component-def">
+											<small>你补充的背景</small>
+											<p>
+												<code>技术栈</code>
+												<span>Astro + 原生 CSS</span>
+											</p>
+											<p>
+												<code>主题变量</code>
+												<span>已有 theme.css</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isPromptLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="pr" data-choice-pr="vague">
+										<div class="pr-when-vague concept-bk-verdict is-block">
+											<i class="ph ph-warning" aria-hidden="true" />
+											没划边界——AI 顺手把全站样式都动了
+										</div>
+										<div class="pr-when-clear concept-bk-verdict is-pass">
+											<i class="ph ph-shield-check" aria-hidden="true" />
+											「只改设置页」——其余文件一行不动
+										</div>
+									</div>
+								) : null}
+
+								{isPromptLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="pr" data-choice-pr="vague">
+										<div class="pr-when-vague concept-bk-resp is-400">
+											<b>返工</b>
+											<span>整站变黑，刷新还原</span>
+											<small>没写验收标准，只能凭感觉再来一轮</small>
+										</div>
+										<div class="pr-when-clear concept-bk-resp is-200">
+											<b>通过</b>
+											<span>开关生效，刷新后保持</span>
+											<small>验收写在提示词里，结果可以被检查</small>
+										</div>
+									</div>
+								) : null}
+
+								{isAgentLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ag" data-choice-ag="full">
+										<div class="concept-props-choices" role="group" aria-label="选择 Agent 的配置">
+											<button
+												type="button"
+												data-flow-choice="full"
+												data-flow-choice-group="ag"
+												aria-pressed="true"
+											>
+												Model + Harness
+											</button>
+											<button
+												type="button"
+												data-flow-choice="model"
+												data-flow-choice-group="ag"
+												aria-pressed="false"
+											>
+												只有 Model
+											</button>
+										</div>
+										<div class="concept-component-def">
+											<small>接到的任务</small>
+											<p>
+												<code>目标</code>
+												<span>把失败的测试修好</span>
+											</p>
+											<p>
+												<code>验收</code>
+												<span>npm test 全绿</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isAgentLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ag" data-choice-ag="full">
+										<div class="ag-when-full concept-js-preview">
+											<p>Model：先跑一遍测试看看</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>下一步动作：npm test</p>
+										</div>
+										<div class="ag-when-model concept-js-preview">
+											<p>Model：先跑一遍测试看看</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>可它没有手——命令发给谁？</p>
+										</div>
+									</div>
+								) : null}
+
+								{isAgentLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ag" data-choice-ag="full">
+										<div class="ag-when-full concept-js-preview">
+											<p>$ npm test</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>1 failed · 输出原样递回 Model</p>
+										</div>
+										<div class="ag-when-model concept-bk-skip">
+											这一步没人接——
+											<br />
+											没有 Harness，动作只停在文字里
+										</div>
+									</div>
+								) : null}
+
+								{isAgentLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ag" data-choice-ag="full">
+										<div class="ag-when-full concept-bk-resp is-200">
+											<b>完成</b>
+											<span>改完重跑，测试全绿</span>
+											<small>每一步都有真实输出作证据</small>
+										</div>
+										<div class="ag-when-model concept-bk-resp is-400">
+											<b>建议</b>
+											<span>「你可以试试改 utils.js」</span>
+											<small>只有 Model 就只是聊天——差的那半正是 Harness</small>
+										</div>
+									</div>
+								) : null}
+
+								{isVibeLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vc" data-choice-vc="once">
+										<div class="concept-props-choices" role="group" aria-label="选择提需求的节奏">
+											<button
+												type="button"
+												data-flow-choice="once"
+												data-flow-choice-group="vc"
+												aria-pressed="true"
+											>
+												一口气说完
+											</button>
+											<button
+												type="button"
+												data-flow-choice="loop"
+												data-flow-choice-group="vc"
+												aria-pressed="false"
+											>
+												一轮轮调
+											</button>
+										</div>
+										<div class="vc-when-once concept-component-def">
+											<small>你说</small>
+											<p>
+												<code>需求</code>
+												<span>「卡片列表，要阴影、动效、深色模式、还能拖拽」</span>
+											</p>
+										</div>
+										<div class="vc-when-loop concept-component-def">
+											<small>你说</small>
+											<p>
+												<code>需求</code>
+												<span>「先来个卡片列表」</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isVibeLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vc" data-choice-vc="once">
+										<div class="vc-when-once concept-js-preview">
+											<p>AI 一次改了 9 个文件</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>哪行对应哪个需求？很难说</p>
+										</div>
+										<div class="vc-when-loop concept-js-preview">
+											<p>AI 只改了 1 个文件</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>这轮只做列表，别的以后说</p>
+										</div>
+									</div>
+								) : null}
+
+								{isVibeLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vc" data-choice-vc="once">
+										<div class="vc-when-once concept-bk-verdict is-block">
+											<i class="ph ph-warning" aria-hidden="true" />
+											跑起来：拖拽把动效弄坏了——坏在哪句？
+										</div>
+										<div class="vc-when-loop concept-bk-verdict is-pass">
+											<i class="ph ph-check-circle" aria-hidden="true" />
+											跑起来：列表正常——这一步稳了
+										</div>
+									</div>
+								) : null}
+
+								{isVibeLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vc" data-choice-vc="once">
+										<div class="vc-when-once concept-bk-resp is-400">
+											<b>难调</b>
+											<span>只能整段重说，或者钻进代码</span>
+											<small>一大坨变化，定位不了是哪句话的锅</small>
+										</div>
+										<div class="vc-when-loop concept-bk-resp is-200">
+											<b>继续</b>
+											<span>「下一步：加悬停动效」</span>
+											<small>小步快跑，每句话的效果都看得见</small>
+										</div>
+									</div>
+								) : null}
+
+								{isWindowLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cw" data-choice-cw="chat">
+										<div class="concept-props-choices" role="group" aria-label="选择约定存放的位置">
+											<button
+												type="button"
+												data-flow-choice="chat"
+												data-flow-choice-group="cw"
+												aria-pressed="true"
+											>
+												只说在聊天里
+											</button>
+											<button
+												type="button"
+												data-flow-choice="file"
+												data-flow-choice-group="cw"
+												aria-pressed="false"
+											>
+												也写进文件
+											</button>
+										</div>
+										<div class="cw-when-chat concept-component-def">
+											<small>第 1 轮定下的约定</small>
+											<p>
+												<code>规矩</code>
+												<span>日期全用 UTC 存</span>
+											</p>
+											<p>
+												<code>存放</code>
+												<span>只在聊天记录里</span>
+											</p>
+										</div>
+										<div class="cw-when-file concept-component-def">
+											<small>第 1 轮定下的约定</small>
+											<p>
+												<code>规矩</code>
+												<span>日期全用 UTC 存</span>
+											</p>
+											<p>
+												<code>存放</code>
+												<span>聊天 + 项目文档</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isWindowLab && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>第 60 轮 · 窗口用到 98%</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>新内容还在进来，旧内容留不全了</p>
+									</div>
+								) : null}
+
+								{isWindowLab && index === 2 ? (
+									<div class="concept-bk-verdict is-block">
+										<i class="ph ph-eraser" aria-hidden="true" />
+										最早的内容被压缩或移出——包括那条约定
+									</div>
+								) : null}
+
+								{isWindowLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cw" data-choice-cw="chat">
+										<div class="cw-when-chat concept-bk-resp is-400">
+											<b>翻车</b>
+											<span>新代码用了本地时区</span>
+											<small>约定只活在聊天里，出窗即消失</small>
+										</div>
+										<div class="cw-when-file concept-bk-resp is-200">
+											<b>找回</b>
+											<span>重读项目文档，约定回到窗口</span>
+											<small>文件是窗外的锚点，随时能再读入</small>
+										</div>
+									</div>
+								) : null}
+
+								{isHarnessLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="hn" data-choice-hn="loose">
+										<div class="concept-props-choices" role="group" aria-label="选择框架的权限策略">
+											<button
+												type="button"
+												data-flow-choice="loose"
+												data-flow-choice-group="hn"
+												aria-pressed="true"
+											>
+												不设防
+											</button>
+											<button
+												type="button"
+												data-flow-choice="guard"
+												data-flow-choice-group="hn"
+												aria-pressed="false"
+											>
+												有把关
+											</button>
+										</div>
+										<div class="concept-component-def">
+											<small>框架递给模型的上下文</small>
+											<p>
+												<code>任务</code>
+												<span>清理旧的构建产物</span>
+											</p>
+											<p>
+												<code>工具</code>
+												<span>终端、文件读写</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isHarnessLab && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>模型输出：rm -rf ./build</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>此刻它只是一段文字</p>
+									</div>
+								) : null}
+
+								{isHarnessLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="hn" data-choice-hn="loose">
+										<div class="hn-when-loose concept-bk-verdict is-block">
+											<i class="ph ph-warning" aria-hidden="true" />
+											什么命令都直接跑——这次删对了，下次呢？
+										</div>
+										<div class="hn-when-guard concept-bk-verdict is-pass">
+											<i class="ph ph-shield-check" aria-hidden="true" />
+											识别为删除操作：先弹确认，你点头才执行
+										</div>
+									</div>
+								) : null}
+
+								{isHarnessLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="hn" data-choice-hn="loose">
+										<div class="hn-when-loose concept-bk-resp is-400">
+											<b>风险</b>
+											<span>手一滑连源码一起删，就是这么来的</span>
+											<small>模型不会替你踩刹车——刹车装在框架上</small>
+										</div>
+										<div class="hn-when-guard concept-bk-resp is-200">
+											<b>可控</b>
+											<span>确认后删除，结果回填继续</span>
+											<small>权限边界让 Agent 敢用，也放心用</small>
+										</div>
+									</div>
+								) : null}
+
+								{isMcpLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mc" data-choice-mc="glue">
+										<div class="concept-props-choices" role="group" aria-label="选择接入方式">
+											<button
+												type="button"
+												data-flow-choice="glue"
+												data-flow-choice-group="mc"
+												aria-pressed="true"
+											>
+												各写各的
+											</button>
+											<button
+												type="button"
+												data-flow-choice="mcp"
+												data-flow-choice-group="mc"
+												aria-pressed="false"
+											>
+												走 MCP
+											</button>
+										</div>
+										<div class="mc-when-glue concept-component-def">
+											<small>想接入的能力</small>
+											<p>
+												<code>工单系统</code>
+												<span>为每个 AI 应用写专属插件</span>
+											</p>
+										</div>
+										<div class="mc-when-mcp concept-component-def">
+											<small>想接入的能力</small>
+											<p>
+												<code>工单系统</code>
+												<span>包成一个 MCP 服务器</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isMcpLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mc" data-choice-mc="glue">
+										<div class="mc-when-glue concept-js-preview">
+											<p>终端一套、桌面端一套、IDE 一套…</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>每个应用各写一份胶水</p>
+										</div>
+										<div class="mc-when-mcp concept-component-def">
+											<small>连接方式</small>
+											<p>
+												<code>配置</code>
+												<span>声明服务器地址，完成</span>
+											</p>
+											<p>
+												<code>适用</code>
+												<span>所有兼容 MCP 的应用</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isMcpLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mc" data-choice-mc="glue">
+										<div class="mc-when-glue concept-bk-verdict is-block">
+											<i class="ph ph-plugs" aria-hidden="true" />
+											接口五花八门，模型每家都要重新适配
+										</div>
+										<div class="mc-when-mcp concept-bk-verdict is-pass">
+											<i class="ph ph-plugs-connected" aria-hidden="true" />
+											工具以统一格式出现在模型面前
+										</div>
+									</div>
+								) : null}
+
+								{isMcpLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mc" data-choice-mc="glue">
+										<div class="mc-when-glue concept-bk-resp is-400">
+											<b>维护</b>
+											<span>服务一升级，几份插件跟着改</span>
+											<small>胶水代码越积越多</small>
+										</div>
+										<div class="mc-when-mcp concept-bk-resp is-200">
+											<b>通用</b>
+											<span>查工单像查日历一样自然</span>
+											<small>写一次，生态里到处能用</small>
+										</div>
+									</div>
+								) : null}
+
+								{isSkillLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sk" data-choice-sk="adhoc">
+										<div class="concept-props-choices" role="group" aria-label="选择经验的沉淀方式">
+											<button
+												type="button"
+												data-flow-choice="adhoc"
+												data-flow-choice-group="sk"
+												aria-pressed="true"
+											>
+												每次现说
+											</button>
+											<button
+												type="button"
+												data-flow-choice="skill"
+												data-flow-choice-group="sk"
+												aria-pressed="false"
+											>
+												沉淀成技能
+											</button>
+										</div>
+										<div class="sk-when-adhoc concept-component-def">
+											<small>每周的任务</small>
+											<p>
+												<code>周报</code>
+												<span>靠记忆，每次现场描述要求</span>
+											</p>
+										</div>
+										<div class="sk-when-skill concept-component-def">
+											<small>每周的任务</small>
+											<p>
+												<code>周报</code>
+												<span>把格式、口吻、模板写下来</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isSkillLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sk" data-choice-sk="adhoc">
+										<div class="sk-when-adhoc concept-js-preview">
+											<p>描述散落在各次聊天记录里</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>哪次说得最全？找不到了</p>
+										</div>
+										<div class="sk-when-skill concept-component-def">
+											<small>技能包</small>
+											<p>
+												<code>skill.md</code>
+												<span>格式 + 口吻 + 检查单</span>
+											</p>
+											<p>
+												<code>脚本</code>
+												<span>自动拉取本周数据</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isSkillLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sk" data-choice-sk="adhoc">
+										<div class="sk-when-adhoc concept-bk-verdict is-block">
+											<i class="ph ph-warning" aria-hidden="true" />
+											这次忘了说「不超过一页」——产出跑偏
+										</div>
+										<div class="sk-when-skill concept-bk-verdict is-pass">
+											<i class="ph ph-lightning" aria-hidden="true" />
+											你说「写周报」，技能自动带上全部要求
+										</div>
+									</div>
+								) : null}
+
+								{isSkillLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sk" data-choice-sk="adhoc">
+										<div class="sk-when-adhoc concept-bk-resp is-400">
+											<b>碰运气</b>
+											<span>每周质量起伏，看当天说得全不全</span>
+											<small>经验留在脑子里，没沉淀下来</small>
+										</div>
+										<div class="sk-when-skill concept-bk-resp is-200">
+											<b>稳定</b>
+											<span>周周同一水准，改进一次全员受益</span>
+											<small>技能，是团队的肌肉记忆</small>
+										</div>
+									</div>
+								) : null}
+
 								{isRuntimeLab && index === 0 ? (
 									<div class="concept-js-preview">
 										<p>document.querySelector('h1')</p>
@@ -150,7 +740,11 @@ const labels =
 								) : null}
 
 								{isRuntimeLab && index === 1 ? (
-									<div class="concept-lab-pick" data-flow-choice-target="env" data-choice-env="browser">
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="env"
+										data-choice-env="browser"
+									>
 										<div class="concept-props-choices" role="group" aria-label="选择运行时">
 											<button
 												type="button"
@@ -182,7 +776,11 @@ const labels =
 								) : null}
 
 								{isRuntimeLab && index === 2 ? (
-									<div class="concept-lab-pick" data-flow-choice-target="env" data-choice-env="browser">
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="env"
+										data-choice-env="browser"
+									>
 										<div class="env-when-browser concept-component-def">
 											<small>浏览器的能力清单</small>
 											<p>
@@ -232,7 +830,11 @@ const labels =
 								) : null}
 
 								{isRuntimeLab && index === 3 ? (
-									<div class="concept-lab-pick" data-flow-choice-target="env" data-choice-env="browser">
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="env"
+										data-choice-env="browser"
+									>
 										<div class="env-when-browser concept-bk-resp is-200">
 											<b>OK</b>
 											<span>找到了 h1</span>
@@ -587,8 +1189,16 @@ const labels =
 								) : null}
 
 								{isApi && index === 3 ? (
-									<div class="concept-api-use" data-flow-choice-target="field" data-choice-field="ok">
-										<div class="concept-props-choices" role="group" aria-label="选择代码里取哪个字段">
+									<div
+										class="concept-api-use"
+										data-flow-choice-target="field"
+										data-choice-field="ok"
+									>
+										<div
+											class="concept-props-choices"
+											role="group"
+											aria-label="选择代码里取哪个字段"
+										>
 											<code>取</code>
 											<button
 												type="button"
@@ -616,7 +1226,9 @@ const labels =
 											上海 · undefined°C
 										</div>
 										<small class="api-when-ok">字段名和约定一致，数据到手</small>
-										<small class="api-when-bad">约定里没有 temperature 这个字段——九成的接口 bug 长这样</small>
+										<small class="api-when-bad">
+											约定里没有 temperature 这个字段——九成的接口 bug 长这样
+										</small>
 									</div>
 								) : null}
 
@@ -743,7 +1355,11 @@ const labels =
 								) : null}
 
 								{isEvent && index === 3 ? (
-									<div class="concept-ev-react" data-flow-choice-target="listen" data-choice-listen="off">
+									<div
+										class="concept-ev-react"
+										data-flow-choice-target="listen"
+										data-choice-listen="off"
+									>
 										<div class="concept-ev-listen-row is-on" aria-hidden="true">
 											<i class="ph ph-ear" />
 											click → count + 1
@@ -752,14 +1368,22 @@ const labels =
 											<i class="ph ph-ear-slash" />
 											没有监听器在听
 										</div>
-										<button type="button" data-flow-counter-button data-flow-counter-gate="listen" data-flow-counter-when="on" disabled>
+										<button
+											type="button"
+											data-flow-counter-button
+											data-flow-counter-gate="listen"
+											data-flow-counter-when="on"
+											disabled
+										>
 											点我
 										</button>
 										<p class="concept-ev-count-row">
 											<code>count</code>
 											<output data-flow-counter-display>0</output>
 										</p>
-										<output class="concept-ev-status" data-flow-counter-status>点点看会发生什么</output>
+										<output class="concept-ev-status" data-flow-counter-status>
+											点点看会发生什么
+										</output>
 									</div>
 								) : null}
 
@@ -959,7 +1583,9 @@ const labels =
 										</p>
 										<div class="concept-st-row">
 											<code>theme</code>
-											<span>"<b data-flow-preview="storage-value">dark</b>"</span>
+											<span>
+												"<b data-flow-preview="storage-value">dark</b>"
+											</span>
 											<i class="ph ph-check-circle" aria-hidden="true" />
 										</div>
 									</div>
@@ -970,7 +1596,9 @@ const labels =
 										<figure>
 											<div class="concept-st-row" aria-hidden="true">
 												<code>theme</code>
-												<span>"<b data-flow-preview="storage-value">dark</b>"</span>
+												<span>
+													"<b data-flow-preview="storage-value">dark</b>"
+												</span>
 											</div>
 											<figcaption>这台设备 · 还在</figcaption>
 										</figure>
@@ -1299,7 +1927,10 @@ const labels =
 								) : null}
 
 								{isState && index === 3 ? (
-									<div class="concept-browser-preview concept-state-render" data-flow-browser-preview>
+									<div
+										class="concept-browser-preview concept-state-render"
+										data-flow-browser-preview
+									>
 										<small>同一份 count · 两处显示</small>
 										<div class="concept-state-render-row">
 											<span>
@@ -1310,7 +1941,9 @@ const labels =
 										</div>
 										<div class="concept-state-render-row">
 											<span>文字</span>
-											<em><b data-flow-counter-display>0</b> 人觉得有用</em>
+											<em>
+												<b data-flow-counter-display>0</b> 人觉得有用
+											</em>
 										</div>
 										<button type="button" data-flow-counter-button disabled>
 											在这里点也一样
@@ -1393,19 +2026,34 @@ const labels =
 										<small>同一个 Button · 三个位置</small>
 										<div>
 											<span>导航栏</span>
-											<button type="button" data-flow-demo-button data-flow-preview="button-label" disabled>
+											<button
+												type="button"
+												data-flow-demo-button
+												data-flow-preview="button-label"
+												disabled
+											>
 												加入购物车
 											</button>
 										</div>
 										<div>
 											<span>文章卡片</span>
-											<button type="button" data-flow-demo-button data-flow-preview="button-label" disabled>
+											<button
+												type="button"
+												data-flow-demo-button
+												data-flow-preview="button-label"
+												disabled
+											>
 												加入购物车
 											</button>
 										</div>
 										<div>
 											<span>登录表单</span>
-											<button type="button" data-flow-demo-button data-flow-preview="button-label" disabled>
+											<button
+												type="button"
+												data-flow-demo-button
+												data-flow-preview="button-label"
+												disabled
+											>
 												加入购物车
 											</button>
 										</div>
@@ -1477,7 +2125,9 @@ const labels =
 											<output data-flow-style-value="--preview-accent">#FF5C50</output>
 										</p>
 										<p>
-											<span class="concept-spacing-symbol" aria-hidden="true">↔</span>
+											<span class="concept-spacing-symbol" aria-hidden="true">
+												↔
+											</span>
 											<span>间距</span>
 											<label class="concept-spacing-editor">
 												<input
@@ -1575,7 +2225,6 @@ const labels =
 			</button>
 		</div>
 	</div>
-
 </section>
 
 <script is:inline type="module" src="/js/vibe-coding-flow-lab.js"></script>

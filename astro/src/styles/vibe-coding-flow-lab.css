@@ -1582,6 +1582,41 @@
 	display: none;
 }
 
+[data-choice-pr='vague'] .pr-when-clear,
+[data-choice-pr='clear'] .pr-when-vague {
+	display: none;
+}
+
+[data-choice-ag='full'] .ag-when-model,
+[data-choice-ag='model'] .ag-when-full {
+	display: none;
+}
+
+[data-choice-vc='once'] .vc-when-loop,
+[data-choice-vc='loop'] .vc-when-once {
+	display: none;
+}
+
+[data-choice-cw='chat'] .cw-when-file,
+[data-choice-cw='file'] .cw-when-chat {
+	display: none;
+}
+
+[data-choice-hn='loose'] .hn-when-guard,
+[data-choice-hn='guard'] .hn-when-loose {
+	display: none;
+}
+
+[data-choice-mc='glue'] .mc-when-mcp,
+[data-choice-mc='mcp'] .mc-when-glue {
+	display: none;
+}
+
+[data-choice-sk='adhoc'] .sk-when-skill,
+[data-choice-sk='skill'] .sk-when-adhoc {
+	display: none;
+}
+
 .concept-lab-pick .concept-component-def {
 	justify-self: stretch;
 }

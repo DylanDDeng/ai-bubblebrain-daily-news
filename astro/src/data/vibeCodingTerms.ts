@@ -130,8 +130,8 @@ export const vibeCodingTermCategories: VibeCodingTermCategory[] = [
 	},
 	{
 		id: 'ai-agent',
-		name: 'AI & Agent',
-		label: 'AI 与 Agent',
+		name: 'AI',
+		label: 'AI',
 		description: '理解 AI 编码工具如何接收上下文、调用工具并完成任务。',
 		terms: [
 			{
@@ -148,16 +148,11 @@ export const vibeCodingTermCategories: VibeCodingTermCategory[] = [
 				description: '交给 AI 的任务说明。清晰的提示词通常包含目标、上下文、约束和验收标准。',
 			},
 			{
-				id: 'context',
-				name: 'Context',
-				chineseName: '上下文',
-				description: '模型当前能看到的代码、文档、对话与工具结果，决定回答是否贴合项目实际。',
-			},
-			{
 				id: 'context-window',
 				name: 'Context Window',
 				chineseName: '上下文窗口',
-				description: '模型一次能够处理的信息容量。超出窗口后，较早的细节可能被压缩或移出。',
+				description:
+					'模型此刻能看到的全部内容和它的容量上限。窗口装满后，较早的细节可能被压缩或移出。',
 			},
 			{
 				id: 'agent',

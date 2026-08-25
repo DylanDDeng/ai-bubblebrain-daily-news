@@ -102,7 +102,8 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 			answer:
 				'有按钮组件时，只改这一个组件的样式，20 个页面同时生效；没有组件，就要找出每一处按钮逐个修改，还很容易漏掉几个。',
 		},
-		warning: '拆组件是为了复用和隔离，不是越碎越好。只出现一次、也不会再变的界面，硬拆成一层层组件反而更难读。',
+		warning:
+			'拆组件是为了复用和隔离，不是越碎越好。只出现一次、也不会再变的界面，硬拆成一层层组件反而更难读。',
 	},
 	state: {
 		question: '到底是什么？为什么界面能「记得」你刚才做过什么？',
@@ -142,7 +143,8 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 			answer:
 				'变红说明点击更新了内存里的状态；刷新后丢失，说明它只存在内存里，没有写到后端或本地存储。想让页面「记住」，就要把状态持久化。',
 		},
-		warning: '状态越多，界面越难预测。能从现有状态算出来的值（比如总价）不要再存一份，两份数据迟早会对不上。',
+		warning:
+			'状态越多，界面越难预测。能从现有状态算出来的值（比如总价）不要再存一份，两份数据迟早会对不上。',
 	},
 	props: {
 		question: '到底是什么？同一个组件，为什么在每个地方长得都不一样？',
@@ -378,7 +380,10 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 			},
 		],
 		scenes: [
-			{ title: '组织页面', description: '首页、列表、详情各占一个路径，项目的文件结构常常就是路由。' },
+			{
+				title: '组织页面',
+				description: '首页、列表、详情各占一个路径，项目的文件结构常常就是路由。',
+			},
 			{ title: '可分享链接', description: '每个内容有自己的网址，用户可以直接收藏或转发。' },
 			{ title: '兜底 404', description: '访问不存在的路径时，给用户一个明确的出口，而不是白屏。' },
 		],
@@ -387,8 +392,7 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 			answer:
 				'从首页点进去走的是前端跳转，路径在浏览器里被匹配；直接刷新时请求打到了服务器，而服务器上没有这条路径的规则，于是 404。解法是让服务器把这类路径交回给前端路由处理。',
 		},
-		warning:
-			'路径是接口，也是承诺：改路由等于改掉别人收藏的链接。上线后调整路径，记得留下重定向。',
+		warning: '路径是接口，也是承诺：改路由等于改掉别人收藏的链接。上线后调整路径，记得留下重定向。',
 	},
 	ssr: {
 		question: '到底是什么？页面是在谁的电脑上「拼」出来的？',
@@ -509,7 +513,8 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 			question: '你想让 AI 改「页面顶上那个横着的菜单」。用哪个词能一次说准？',
 			answer: '导航栏（Navbar）。用通用名字指代，AI 不用猜你说的是哪一块，改动也不会误伤别的区域。',
 		},
-		warning: '名字是用来沟通的，不是用来炫的。同一个零件在不同框架里可能叫法不同，说清位置和作用永远是保底方案。',
+		warning:
+			'名字是用来沟通的，不是用来炫的。同一个零件在不同框架里可能叫法不同，说清位置和作用永远是保底方案。',
 	},
 	api: {
 		question: '到底是什么？大家天天说「调 API」，到底在调什么？',
@@ -583,7 +588,8 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 		scenes: [
 			{
 				title: '拆解需求',
-				description: '「加个收藏功能」，翻译过来就是新增 POST /favorites 和 DELETE /favorites/:id。',
+				description:
+					'「加个收藏功能」，翻译过来就是新增 POST /favorites 和 DELETE /favorites/:id。',
 			},
 			{ title: '看懂报错', description: '404 常常是 endpoint 地址写错了，不一定是数据不存在。' },
 			{ title: '对照文档', description: 'API 文档就是 endpoint 清单：地址、方法、参数、返回。' },
@@ -626,7 +632,10 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 		],
 		scenes: [
 			{ title: '选部署形态', description: '传统服务器跑 Node，边缘节点跑 Workers——按需选水土。' },
-			{ title: '看懂报错', description: '「window is not defined」= 在服务端跑了浏览器专属的代码。' },
+			{
+				title: '看懂报错',
+				description: '「window is not defined」= 在服务端跑了浏览器专属的代码。',
+			},
 			{ title: '对齐版本', description: '本地 Node 22、线上 Node 18，同一份代码可能两种表现。' },
 		],
 		practice: {
@@ -709,7 +718,10 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 		scenes: [
 			{ title: '保护接口', description: '没带有效凭证的请求，在中间件那关就被拦下。' },
 			{ title: '保持登录', description: '凭证放在浏览器存储里，关掉重开还认得你。' },
-			{ title: '第三方登录', description: '「用 Google 登录」= 请 Google 替你核验，回来照样发凭证。' },
+			{
+				title: '第三方登录',
+				description: '「用 Google 登录」= 请 Google 替你核验，回来照样发凭证。',
+			},
 		],
 		practice: {
 			question: '用户反馈「登着登着突然被踢出去了」。最可能的原因是什么？',
@@ -797,10 +809,353 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 		},
 		warning: '不要相信前端传来的价格、角色或完成状态；关键规则必须在服务端重新验证。',
 	},
+	'vibe-coding': {
+		question: '到底是什么？不亲手写代码也能做出软件，这事靠谱吗？',
+		visualTitle: '用话推进，用结果校准',
+		visualCaption: '你描述想要什么，AI 负责改代码；每次运行的结果，都是你下一句话的依据。',
+		analogy:
+			'氛围编程像坐在副驾驶指路：方向盘在 AI 手上，但去哪、走哪条路、开错了要不要掉头，都由你一句句说。车开得快，指路的人得清醒。',
+		steps: [
+			{
+				label: 'Say',
+				detail: '用自然语言说出意图',
+				result: '「卡片加个阴影，悬停时浮起来」——需求用人话说出口，不用先翻 API 文档。',
+			},
+			{
+				label: 'Generate',
+				detail: 'AI 生成或修改代码',
+				result: '几秒后代码改好了。你可以看看 diff，也可以先跑起来再说。',
+			},
+			{
+				label: 'Run',
+				detail: '运行起来看真实效果',
+				result: '刷新页面：阴影有了，悬停也动了——但浮得有点夸张。',
+			},
+			{
+				label: 'Feedback',
+				detail: '用结果说出下一句',
+				result: '「浮起的幅度小一半」——运行结果变成新的输入，循环继续，越说越准。',
+			},
+		],
+		scenes: [
+			{ title: '快速起步', description: '一句话生成页面骨架，先跑起来，再一轮轮调成想要的样子。' },
+			{
+				title: '边看边调',
+				description: '对着真实页面说「这里再大一点」，比对着代码猜参数快得多。',
+			},
+			{ title: '不熟的领域', description: '写不来正则或配置文件？描述清楚意图，让 AI 给第一版。' },
+		],
+		practice: {
+			question: 'AI 生成的功能一次就跑通了，代码你完全没看。直接进入下一个需求吗？',
+			answer:
+				'至少扫一眼关键部分：数据存在哪、有没有写死的密钥、边界情况怎么处理。氛围编程省的是打字，不是判断——看不懂的代码越积越多，出问题时没人知道从哪查起。',
+		},
+		warning:
+			'「能跑」不等于「能上线」。氛围编程适合快速探索和验证想法；安全、性能、数据这些看不见的部分，仍然需要有人真正理解。',
+	},
+	prompt: {
+		question: '到底是什么？同样是打字提需求，为什么别人一次就中，我却来回返工？',
+		visualTitle: '同一个愿望，两种说法，两种结果',
+		visualCaption: '目标、约束和验收说得越清楚，AI 需要猜的就越少，产出就越贴近你想要的。',
+		analogy:
+			'提示词像给装修师傅的委托单：只说「弄好看点」，师傅只能按他的理解来；写清楚刷哪面墙、用什么色、怎样算完工，交付才会像你想的那样。',
+		steps: [
+			{
+				label: 'Goal',
+				detail: '说清楚要做成什么样',
+				result: '「弄一下深色模式」变成「给设置页加一个深色模式开关」，任务有了明确的完成形态。',
+			},
+			{
+				label: 'Context',
+				detail: '交代项目背景和现状',
+				result: 'AI 知道项目用什么技术、已有哪些约定，不再凭空发明一套新的。',
+			},
+			{
+				label: 'Constraint',
+				detail: '划出边界和不能动的部分',
+				result: '「只改设置页，别动全局样式」——跑偏的空间被提前收窄。',
+			},
+			{
+				label: 'Accept',
+				detail: '定义怎样才算完成',
+				result: '「刷新后保持选择」成了验收标准，结果可以被检查，而不是「感觉还行」。',
+			},
+		],
+		scenes: [
+			{
+				title: '布置新任务',
+				description: '开工前把目标、范围和验收写进第一条提示词，少走返工的弯路。',
+			},
+			{
+				title: '纠正跑偏',
+				description: '结果不对时，补上缺失的上下文或约束，而不是把原话重复一遍再试。',
+			},
+			{
+				title: '沉淀成模板',
+				description: '把反复用到的说明整理成提示词模板或技能，团队里每个人都能复用。',
+			},
+		],
+		practice: {
+			question:
+				'「帮我优化一下这个页面」和「首页手机端首屏要 3 秒内可见，先把图片压到 200KB 以内」，哪一条更可能一次成功？',
+			answer:
+				'后者。它有明确目标（首屏速度）、范围（首页手机端）和验收标准（200KB 以内），AI 不用猜「优化」指什么；前者连要优化性能还是外观都没说清，只能靠 AI 碰运气。',
+		},
+		warning:
+			'提示词不是咒语，堆「请务必」「一定要」不会提升质量。真正起作用的是信息量：目标、上下文、约束、验收标准，缺哪个补哪个。',
+	},
+	'context-window': {
+		question: '到底是什么？聊久了 AI 为什么会「忘了」前面说好的事？',
+		visualTitle: '窗口装满之后，最早的先让位',
+		visualCaption:
+			'模型一次能处理的信息有上限；超出后，早期内容会被压缩或移出——它不是忘性大，是桌面就这么大。',
+		analogy:
+			'上下文窗口像开会用的白板：讨论时想到什么写什么，写满之后再添新内容，就得擦掉最早的。靠谱的做法是擦掉之前把关键结论抄到别处，而不是指望白板永远够用。',
+		steps: [
+			{
+				label: 'Fill',
+				detail: '对话和文件不断进入窗口',
+				result: '每句话、每份代码、每条工具输出都占据容量；而窗口外的内容，模型等于看不见。',
+			},
+			{
+				label: 'Full',
+				detail: '容量逼近上限',
+				result: '窗口快满了：新内容还要进来，旧内容不可能全部留下。',
+			},
+			{
+				label: 'Compress',
+				detail: '早期内容被压缩或移出',
+				result: '开头定过的约定变成一句概要，甚至彻底出窗——模型真的「看不见」了。',
+			},
+			{
+				label: 'Anchor',
+				detail: '关键信息固定在窗外',
+				result: '写进文档、注释或任务清单的内容可以随时重新读入，不怕窗口翻页。',
+			},
+		],
+		scenes: [
+			{
+				title: '长对话变糊',
+				description: '聊到第 50 轮，AI 突然违反开头定的规矩——那条规矩已经出窗了。',
+			},
+			{
+				title: '大仓库塞不下',
+				description: '整个项目塞不进窗口，所以工具靠检索相关片段，而不是全量投喂。',
+			},
+			{
+				title: '及时开新对话',
+				description: '一个任务收尾就另起对话，比在旧窗口里继续堆更省心。',
+			},
+		],
+		practice: {
+			question: '聊了一下午的对话里，AI 开始重复犯已经纠正过的错。为什么？怎么办？',
+			answer:
+				'当初的纠正已经被挤出窗口，模型看不到了。把重要约定写进项目文档这类会被重新读入的地方，或者开个新对话、把关键结论带过去。',
+		},
+		warning: '重要约定别只留在聊天记录里——窗口一翻页它就没了。写进文件的，才是可靠的记忆。',
+	},
+	agent: {
+		question: '到底是什么？同样是 AI，它和只会聊天的机器人差在哪？',
+		visualTitle: 'Agent = Model + Harness',
+		visualCaption:
+			'模型负责想清楚下一步，运行框架负责真正执行并把结果递回——一轮轮循环，直到任务完成。',
+		analogy:
+			'Agent 像一位驻场工程师：脑子里想方案的是 Model，手上的终端和工具箱是 Harness。只出主意不动手的叫顾问，能想、能做、做完还自查的，才叫 Agent。',
+		steps: [
+			{
+				label: 'Goal',
+				detail: '接下一个可检查的任务',
+				result: '目标和验收都摆在明面上：把失败的测试修好，npm test 全绿才算完。',
+			},
+			{
+				label: 'Model',
+				detail: '模型决定下一步做什么',
+				result: '大脑开始工作：结合上下文，模型给出一个具体动作——先跑一遍测试看看。',
+			},
+			{
+				label: 'Harness',
+				detail: '框架执行动作，结果递回',
+				result: '手脚开始工作：运行框架真正调用工具，把命令输出原样递回给模型。',
+			},
+			{
+				label: 'Loop',
+				detail: '带着结果循环，直到验证通过',
+				result: '不符合就再想一轮、再做一轮；完成的证据是真实的工具输出，不是模型的感觉。',
+			},
+		],
+		scenes: [
+			{ title: '修改代码', description: '定位文件、编辑实现并运行测试，直到全部通过。' },
+			{
+				title: '操作真实系统',
+				description: '通过终端、浏览器或 MCP 完成跨应用任务，而不只是给出步骤。',
+			},
+			{
+				title: '长任务自治',
+				description: '一个目标拆成几十步工具调用，中途自己纠错，不必每步都问你。',
+			},
+		],
+		practice: {
+			question: 'Agent 说“测试已经通过”，但没有真正运行测试，这算完成了吗？',
+			answer: '不算。结论必须有真实工具输出作为证据；应实际运行测试，并检查退出状态和关键结果。',
+		},
+		warning: '模型生成的计划和结论不等于真实结果。涉及文件、数据或发布时仍要验证工具输出。',
+	},
+	harness: {
+		question: '到底是什么？同一个模型，为什么装进不同工具里，能力差那么多？',
+		visualTitle: '模型的能力，由运行框架兑现',
+		visualCaption:
+			'模型只会输出文字；把文字变成真实的读文件、跑命令、验证结果的，是围着它的运行框架。',
+		analogy:
+			'Harness 像赛车的整车：引擎（模型）再强，也要靠底盘、变速箱和方向盘才能上路。同一台引擎装进不同的车，跑出完全不同的成绩。',
+		steps: [
+			{
+				label: 'Assemble',
+				detail: '组装上下文交给模型',
+				result: '系统提示、对话、文件内容被拼成一份输入——模型能看到什么，由框架决定。',
+			},
+			{
+				label: 'Decide',
+				detail: '模型输出下一步动作',
+				result: '模型说「删掉 build 目录」——此刻这只是一段文字，还什么都没发生。',
+			},
+			{
+				label: 'Execute',
+				detail: '框架校验权限并真正执行',
+				result: '框架判断这个动作允不允许、要不要先问你，然后才真的去执行。',
+			},
+			{
+				label: 'Return',
+				detail: '结果回填，进入下一轮',
+				result: '工具输出被装回上下文，模型带着新信息继续——整个循环由框架驱动。',
+			},
+		],
+		scenes: [
+			{
+				title: '同模型不同产品',
+				description: '终端工具、网页聊天、IDE 插件可能用同一个模型，差别几乎全在框架。',
+			},
+			{
+				title: '权限和安全',
+				description: '哪些命令能直接跑、哪些要先问你，是框架在把关，不是模型自觉。',
+			},
+			{
+				title: '挑选工具',
+				description: '比较 AI 编码工具时，除了比模型，更要比工具集、上下文管理和执行循环。',
+			},
+		],
+		practice: {
+			question: '同一个模型，在 A 工具里能自己跑测试改代码，在 B 里只能贴代码给建议。差别在哪？',
+			answer:
+				'差在框架：A 给了模型终端和文件工具，并驱动着执行循环；B 只做一问一答。模型没变，变的是围绕它的手脚和流程。',
+		},
+		warning:
+			'框架决定权限边界。给 Agent 接上工具前先想清楚：它能碰什么、不能碰什么、出错时怎么停——这些模型自己不会替你把关。',
+	},
+	mcp: {
+		question: '到底是什么？为什么各家服务都在出自己的 MCP？',
+		visualTitle: '一个接口，接入所有工具',
+		visualCaption:
+			'没有统一协议，每个 AI 应用对每个服务都要单独写接入；有了 MCP，双方只需对齐这一个标准。',
+		analogy:
+			'MCP 像 USB-C：以前每台设备一种充电口，线越积越多；接口统一后，设备和配件各自只管兼容这一个口，就能随意组合。',
+		steps: [
+			{
+				label: 'Expose',
+				detail: '服务把能力包成 MCP 服务器',
+				result: '数据库、日历、搜索……各自声明「我能做什么、怎么调用」。',
+			},
+			{
+				label: 'Connect',
+				detail: 'AI 应用按协议连接',
+				result: '不用为每个服务写专属代码——认识协议，就认识所有服务器。',
+			},
+			{
+				label: 'Discover',
+				detail: '模型看到统一的工具清单',
+				result: '接上的能力以同一种格式出现在模型面前，随取随用。',
+			},
+			{
+				label: 'Call',
+				detail: '按标准调用并拿到结果',
+				result: '查日历和查数据库走同一套流程；生态里的新工具，接上就能用。',
+			},
+		],
+		scenes: [
+			{
+				title: '接内部系统',
+				description: '把公司的工单、文档、数据库包成 MCP 服务器，各种 AI 工具都能用。',
+			},
+			{
+				title: '一次接入到处用',
+				description: '同一个 MCP 服务器，终端、桌面端和其他兼容应用都认识。',
+			},
+			{
+				title: '先找现成的',
+				description: '需要某个能力时先找找有没有现成的 MCP 服务器，别急着写胶水代码。',
+			},
+		],
+		practice: {
+			question: '想让 AI 助手能查公司内部的工单系统。没有 MCP 和有 MCP，接入方式差在哪？',
+			answer:
+				'没有协议时，要为这个助手写一套专属插件，换个 AI 应用还得重写一套；有 MCP，把工单系统包成一个 MCP 服务器，所有兼容应用都能直接连——写一次，到处用。',
+		},
+		warning:
+			'MCP 服务器拿到的权限，模型就可能用到。接入第三方服务器前先看清它能读什么、写什么，别把生产数据的写权限随手交出去。',
+	},
+	skill: {
+		question: '到底是什么？和每次把要求重新说一遍，差在哪？',
+		visualTitle: '把一套做法打包，随叫随到',
+		visualCaption:
+			'把某类任务的方法、约束和脚本封装成技能；Agent 遇到这类任务时加载它，按同一套流程稳定完成。',
+		analogy:
+			'Skill 像餐厅的菜谱卡：老师傅的火候、配比和摆盘写成卡片，任何厨师照着做，出品都是那道菜。不写卡片，全靠现场口传，味道就看运气。',
+		steps: [
+			{
+				label: 'Capture',
+				detail: '把有效做法写下来',
+				result: '周报的格式、发版的步骤、评审的检查单——从口头经验变成文字。',
+			},
+			{
+				label: 'Package',
+				detail: '连同脚本素材打包成技能',
+				result: '方法、约束、模板和脚本放进一个技能包，有了名字和触发条件。',
+			},
+			{
+				label: 'Invoke',
+				detail: '遇到匹配的任务时加载',
+				result: '你说「写周报」，Agent 自动加载技能，按里面的流程办事。',
+			},
+			{
+				label: 'Reuse',
+				detail: '每次执行都是同一水准',
+				result: '这周和上个月的产出一个标准；技能改进一次，之后每次都受益。',
+			},
+		],
+		scenes: [
+			{
+				title: '固定流程',
+				description: '周报、发版、数据导出这类重复任务，写成技能后一句话触发。',
+			},
+			{
+				title: '团队对齐',
+				description: '把最佳实践放进共享技能，新人第一次干活就是老手水准。',
+			},
+			{ title: '沉淀改进', description: '这次踩的坑补进技能里，下次自动绕开。' },
+		],
+		practice: {
+			question: '每次让 AI 写周报都要重新描述格式和口吻，偶尔还漏。这种任务适合怎么处理？',
+			answer:
+				'写成技能：格式、口吻、数据来源和模板都放进去，以后一句「写周报」就够了。判断标准很简单——同样的说明你已经重复第三遍了，就该沉淀成技能。',
+		},
+		warning:
+			'技能不是写完就完事。流程变了要跟着更新，否则 Agent 会拿着过期的流程认真执行——错得整整齐齐。',
+	},
 	'ai-agent': {
-		visualTitle: 'Agent 如何完成一个任务',
-		visualCaption: '目标进入模型后，Agent 会结合上下文调用工具，并用结果继续推理和验证。',
-		analogy: 'Agent 更像一位能使用工具的协作者：不仅回答问题，还会查看现场、执行操作并检查结果。',
+		question: ' 编码工具到底在做什么？大模型、聊天机器人、Agent，说的是一回事吗？',
+		visualTitle: 'AI 工具如何完成一个任务',
+		visualCaption: '目标进入模型后，AI 会结合上下文调用工具，并用结果继续推理和验证。',
+		analogy:
+			'AI 编码工具更像一位能使用工具的协作者：不仅回答问题，还会查看现场、执行操作并检查结果。',
 		steps: [
 			{
 				label: 'Goal',
@@ -810,7 +1165,7 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 			{
 				label: 'Context',
 				detail: '读取代码、文档和已有对话',
-				result: 'Agent 知道自己正在什么项目里工作，也知道哪些约束不能破坏。',
+				result: 'AI 知道自己正在什么项目里工作，也知道哪些约束不能破坏。',
 			},
 			{
 				label: 'Tool',
@@ -829,10 +1184,11 @@ export const vibeCodingDetailProfiles: Record<string, VibeCodingDetailProfile> =
 			{ title: '操作工具', description: '通过浏览器、MCP 或脚本完成跨应用任务。' },
 		],
 		practice: {
-			question: 'Agent 说“测试已经通过”，但没有真正运行测试，这算完成了吗？',
-			answer: '不算。结论必须有真实工具输出作为证据；应实际运行测试，并检查退出状态和关键结果。',
+			question: '同一个问题，为什么 AI 有时答得很准，有时一本正经地胡说？',
+			answer:
+				'差别常在它能看到什么：上下文里有真实代码和文档时，回答有依据；什么都没给时，它只能凭训练记忆补全，就容易编。先想「它看到了什么」，再判断答案可不可信。',
 		},
-		warning: '模型生成的计划和结论不等于真实结果。涉及文件、数据或发布时仍要验证工具输出。',
+		warning: 'AI 的输出是概率生成的，不是权威答案。越是没给上下文、越是冷门的问题，越要自己验证。',
 	},
 	'data-storage': {
 		visualTitle: '数据如何安全地保存和取回',
