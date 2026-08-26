@@ -11,10 +11,6 @@ const expectedRoutes = [
 	'/pi-agent-tutorials/pi-agent-session-storage/',
 	'/pi-agent-tutorials/pi-agent-context-engineering/',
 	'/pi-agent-tutorials/pi-agent-tool-system/',
-	'/pi-agent-tutorials/pi-agent-getting-started/',
-	'/pi-agent-tutorials/pi-agent-project-context/',
-	'/pi-agent-tutorials/pi-agent-sessions/',
-	'/pi-agent-tutorials/pi-agent-skills-extensions/',
 ];
 
 const expectedVisuals = [
@@ -26,14 +22,10 @@ const expectedVisuals = [
 	'pi-context-assembly.svg',
 	'pi-tool-guards.svg',
 	'pi-tool-dispatch.svg',
-	'pi-first-session.svg',
-	'pi-context-stack.svg',
-	'pi-session-tree.svg',
-	'pi-extension-layers.svg',
 ];
 
 describe('Pi Agent tutorial series', () => {
-	it('publishes a nine-part beginner path and an index', async () => {
+	it('publishes a five-part source-reading path and an index', async () => {
 		const entries = (await loadLegacyContent()).filter(
 			(entry) => entry.section === 'pi-agent-tutorials',
 		);

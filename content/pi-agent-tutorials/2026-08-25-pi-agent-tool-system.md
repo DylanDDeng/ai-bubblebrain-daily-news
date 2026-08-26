@@ -5,7 +5,7 @@ description: "解剖 Pi 的工具：一个工具由什么构成、四个内置�
 date: 2026-08-25
 lastmod: 2026-08-25
 draft: false
-weight: 5
+weight: 4
 sourceUrl: "https://github.com/earendil-works/pi"
 tags: ["Pi Agent", "工具系统", "Tools", "Agent Harness"]
 ---
@@ -34,7 +34,7 @@ Read the contents of a file. Supports text files and images (jpg, png, gif, webp
 Use offset/limit for large files. When you need the full file, continue with offset until complete.
 ```
 
-截断规则（上一章的闸门 2）、遇到大文件该怎么办，全都提前写进了工具说明——**工具描述本身就是一层提示词工程**：与其等模型撞上截断再猜，不如注册工具时就把路指好。
+截断规则（第二章的闸门 2）、遇到大文件该怎么办，全都提前写进了工具说明——**工具描述本身就是一层提示词工程**：与其等模型撞上截断再猜，不如注册工具时就把路指好。
 
 ## 四个内置工具，各带什么参数
 
@@ -53,7 +53,7 @@ harness 层内置的核心工具就四个，参数都不复杂：
 
 ## 一次调用的完整旅程
 
-模型发出的 `toolCall` 只是一段 JSON。Pi 拿到后：按 Schema 校验参数 → 调用工具的 `execute` → 拿到结果内容（文本或图片块）→ 经过截断（上一章）→ 包成 `toolResult` 进上下文。
+模型发出的 `toolCall` 只是一段 JSON。Pi 拿到后：按 Schema 校验参数 → 调用工具的 `execute` → 拿到结果内容（文本或图片块）→ 经过截断（第二章）→ 包成 `toolResult` 进上下文。
 
 `execute` 的签名透露了不少设计：
 
@@ -92,8 +92,8 @@ return executeToolCallsParallel(currentContext, assistantMessage, toolCalls, con
 ## 实践上你需要知道的
 
 - 模型选错工具、填错参数，第一个该检查的是工具的 `description` 和 Schema 里的字段说明——那是模型唯一的"说明书"，改说明比改提示词管用；
-- 自定义工具（通过 Extension 注册）和内置工具是同一个形状：name + description + Schema + execute——学会解剖 `read`，就学会了写自己的工具，第九章会真的写一个；
+- 自定义工具（通过 Extension 注册）和内置工具是同一个形状：name + description + Schema + execute——学会解剖 `read`，就学会了写自己的工具；
 - 如果你的自定义工具对执行顺序敏感，声明 `executionMode: "sequential"`，让调度器替你兜底；
 - `bash` 没有默认超时——长命令会一直跑。给可能卡住的命令带上 `timeout` 参数，或让模型这么做。
 
-工具系统看完，"Pi 是怎么干活的"这条线就齐了。下一篇终于动手：安装 Pi，跑通第一个真实任务。
+工具系统看完，“Pi 是怎么干活的”这条线就齐了。最后一篇看这一切落盘的地方：循环生产的消息、压缩写下的摘要，都存进了哪个文件、长成了什么形状。

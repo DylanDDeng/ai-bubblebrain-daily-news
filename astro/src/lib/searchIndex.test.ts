@@ -44,7 +44,7 @@ describe('knowledge search index', () => {
 					section_label: 'Pi Agent 教程',
 				}),
 				expect.objectContaining({
-					href: '/pi-agent-tutorials/pi-agent-getting-started/',
+					href: '/pi-agent-tutorials/pi-agent-tool-system/',
 					section_label: 'Pi Agent 教程',
 				}),
 				expect.objectContaining({

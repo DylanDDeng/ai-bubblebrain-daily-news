@@ -5,7 +5,7 @@ description: "循环在生产消息，压缩在改写消息——它们最终都
 date: 2026-08-25
 lastmod: 2026-08-25
 draft: false
-weight: 3
+weight: 5
 sourceUrl: "https://github.com/earendil-works/pi"
 tags: ["Pi Agent", "Session", "JSONL", "会话存储"]
 ---
@@ -14,7 +14,7 @@ tags: ["Pi Agent", "Session", "JSONL", "会话存储"]
 
 ## 一切都落在一个文件里
 
-前两章看到的东西——循环里一轮轮堆出来的消息、压缩生成的摘要——最终都要有个去处。Pi 的答案朴素到可以一句话说完：**每个会话就是一个 JSONL 文件，每发生一件事，就往文件末尾追加一行 JSON**。
+前面几章看到的东西——循环里一轮轮堆出来的消息、压缩写下的摘要——最终都要有个去处。Pi 的答案朴素到可以一句话说完：**每个会话就是一个 JSONL 文件，每发生一件事，就往文件末尾追加一行 JSON**。
 
 文件的位置也完全可预测（来自官方 `session-format.md`）：
 
@@ -37,7 +37,7 @@ export interface SessionEntryBase {
 }
 ```
 
-在这个基座上派生出各种 `type`：`message` 只是最常见的一种，**换模型（`model_change`）、调思考强度（`thinking_level_change`）、打标签（`label`）、上一章讲的压缩（`compaction`）和分支摘要（`branch_summary`），统统都是一行记录**。这个设计的好处是：会话里发生过的任何事都有一行可查的痕迹，回放一个会话就是从头把文件读一遍。
+在这个基座上派生出各种 `type`：`message` 只是最常见的一种，**换模型（`model_change`）、调思考强度（`thinking_level_change`）、打标签（`label`）、第三章讲的压缩（`compaction`）和分支摘要（`branch_summary`），统统都是一行记录**。这个设计的好处是：会话里发生过的任何事都有一行可查的痕迹，回放一个会话就是从头把文件读一遍。
 
 ## parentId 把一列行长成一棵树
 
@@ -47,7 +47,7 @@ export interface SessionEntryBase {
 
 想从对话中间的某个点重来一次？往文件里追加一行，`parentId` 指回那个点就行——**同一个文件里就长出了分支，不需要复制任何东西**（官方文档的说法是 *in-place branching without creating new files*）。你此刻看到的"对话"，其实是从最新的叶子沿着 `parentId` 一路回溯到根的那条路径。
 
-这就是下一批章节里 `/tree`、分支和恢复的全部底层：所谓切换分支，只是换了一片叶子重新回溯。
+这就是 Pi 的 `/tree`、分支和恢复功能的全部底层：所谓切换分支，只是换了一片叶子重新回溯。
 
 ## 崩溃也不会写坏文件
 
@@ -79,4 +79,4 @@ async function publishFileAtomically(
 - 老会话不作废：格式从 v1（线性）演进到 v2（树）再到 v3，加载时自动迁移；
 - 别手改文件里的 `id`/`parentId`——树的完整性全靠它们，改坏一行可能让整条分支找不到路。
 
-树上存着全部历史，但每轮发给模型的并不是全部。下一篇看最后一块拼图：Pi 怎么把系统提示词、消息和工具结果现场组装成一份输入。
+到这里，五章的源码线索合上了：循环怎么转、每轮输入怎么组装、上下文怎么瘦身、工具怎么定义和调度、一切最终落盘在哪——Pi 这台机器的图纸，你已经完整看过一遍了。剩下的事，就是装上它，亲手转一圈。

@@ -89,17 +89,13 @@ Pi 的官方介绍明确写着：它提供强力默认配置，但不会把Subag
 
 ## 你将学到什么
 
-这套入门教程分为九篇：
+这套教程分为五篇，沿着源码把 Pi 拆开看：
 
 1. 当前这篇：理解 Model、Harness、Tools 与 Agent Loop；
-2. [从源码看 Pi 的 Compaction 策略](/pi-agent-tutorials/pi-agent-compaction/)；
-3. [Pi 的会话存储](/pi-agent-tutorials/pi-agent-session-storage/)；
-4. [Pi 的上下文工程](/pi-agent-tutorials/pi-agent-context-engineering/)；
-5. [Pi 的工具系统](/pi-agent-tutorials/pi-agent-tool-system/)；
-6. [安装 Pi，并完成第一个真实任务](/pi-agent-tutorials/pi-agent-getting-started/)；
-7. [用 AGENTS.md 和文件引用让 Pi 读懂项目](/pi-agent-tutorials/pi-agent-project-context/)；
-8. [理解会话、分支与上下文压缩](/pi-agent-tutorials/pi-agent-sessions/)；
-9. [用 Skills 与 Extensions 扩展 Pi](/pi-agent-tutorials/pi-agent-skills-extensions/)。
+2. [Pi 的上下文工程](/pi-agent-tutorials/pi-agent-context-engineering/)；
+3. [从源码看 Pi 的 Compaction 策略](/pi-agent-tutorials/pi-agent-compaction/)；
+4. [Pi 的工具系统](/pi-agent-tutorials/pi-agent-tool-system/)；
+5. [Pi 的会话存储](/pi-agent-tutorials/pi-agent-session-storage/)。
 
 ## 开始前需要知道的安全边界
 
@@ -111,4 +107,4 @@ Pi 默认以启动它的用户权限运行，并没有内置文件、进程、�
 - 不要在不可信仓库里直接加载陌生 Extensions 或 Skills；
 - 无人值守或高风险任务放进容器、虚拟机或独立沙箱。
 
-下一篇我们顺着这个循环继续看源码：上下文一轮轮变大之后，Pi 是怎么给它“瘦身”的。
+下一篇我们顺着这个循环继续看源码：每次调用模型之前，Pi 是怎么现场组装那份完整输入的。
