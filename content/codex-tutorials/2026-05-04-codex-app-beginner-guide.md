@@ -3,6 +3,7 @@ title: "Codex App 纯小白入门指南"
 slug: "codex-app-beginner-guide"
 description: "从安装登录、界面布局到 AGENTS.md、内置浏览器、插件、Computer Use、自动化和 Hatch Pet，完整了解 Codex App 的核心用法。"
 date: 2026-05-04
+weight: 1
 tags: ["Codex", "Codex App", "入门教程", "AGENTS.md", "Computer Use"]
 author: "BubbleBrain"
 sourceUrl: "https://mp.weixin.qq.com/s/rOnvAP3tQw2e9WPk-tlyIQ"

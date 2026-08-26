@@ -1,7 +1,8 @@
 ---
 import { legacyEntryIsRoutable, loadLegacyContent, type LegacySection } from '../lib/legacyContent';
 import { buildKnowledgeSearchIndex } from '../lib/searchIndex';
-import '../styles/knowledge-home.css';
+import { vibeCodingTermCategories } from '../data/vibeCodingTerms';
+import '../styles/knowledge-home-v2.css';
 
 interface Props {
 	locale: 'zh-CN' | 'en';
@@ -24,14 +25,12 @@ const sectionCopy: Array<{
 	section: LegacySection;
 	label: string;
 	description: string;
-	icon: string;
 }> = isEnglish
 	? [
 			{
 				section: 'highlights',
 				label: 'Highlights',
 				description: 'Curated primary sources and durable explainers.',
-				icon: 'ph-book-open-text',
 			},
 		]
 	: [
@@ -39,30 +38,34 @@ const sectionCopy: Array<{
 				section: 'codex-tutorials',
 				label: 'Codex 教程',
 				description: '从入门到实战，系统掌握 Codex 的使用方法。',
-				icon: 'ph-terminal-window',
 			},
 			{
 				section: 'deepseek-harness-tutorials',
 				label: 'DeepSeek Harness 教程',
 				description: '从 Web UI 到插件开发，循序掌握开源 Agent Harness。',
-				icon: 'ph-circuitry',
+			},
+			{
+				section: 'pi-agent-tutorials',
+				label: 'Pi Agent 教程',
+				description: '从终端第一步到 Skills 与 Extensions，理解并用好极简 Agent Harness。',
 			},
 			{
 				section: 'workbuddy-tutorials',
 				label: 'WorkBuddy 教程',
 				description: '从办公协作到自动化，系统掌握 WorkBuddy 的使用方法。',
-				icon: 'ph-briefcase',
 			},
 			{
 				section: 'highlights',
 				label: '精选阅读',
 				description: '值得长期保存的一手资料与深度解读。',
-				icon: 'ph-book-open-text',
 			},
 		];
 
 const countFor = (section: LegacySection) =>
 	searchIndex.items.filter((entry) => entry.section === section).length;
+const termCount = vibeCodingTermCategories.reduce((sum, category) => sum + category.terms.length, 0);
+const articleCount = searchIndex.items.length;
+const collectionCount = sectionCopy.length + (isEnglish ? 0 : 1);
 const featured = [...entries]
 	.sort((left, right) => {
 		const featuredOrder =
@@ -80,94 +83,113 @@ const labelFor = (section: LegacySection) =>
 	sectionCopy.find((item) => item.section === section)?.label ?? section;
 ---
 
-<section class="knowledge-home">
-	<header class="knowledge-home-hero">
-		<div class="knowledge-home-hero-letter" data-hero-letter-3d aria-hidden="true"></div>
-		<div class="knowledge-home-hero-wash" aria-hidden="true"></div>
-
-		<div class="knowledge-home-hero-inner">
-			<div class="knowledge-home-hero-top">
-				<p>{isEnglish ? 'PERSONAL AI KNOWLEDGE BASE' : '个人 AI 知识库'}</p>
-			</div>
-
-			<div class="knowledge-home-hero-bottom">
-				<div class="knowledge-home-hero-action">
-					<a href={isEnglish ? '/search/?locale=en' : '/search/'} data-command-search-trigger>
-						{isEnglish ? 'SEARCH THE LIBRARY' : '搜索知识库'}
-						<i class="ph ph-arrow-up-right" aria-hidden="true"></i>
-					</a>
-				</div>
-
-				<div class="knowledge-home-hero-title-row">
-					<h1 aria-label="Bubble's Knowledge">
-						<span><b>BUBBLE'S</b></span>
-						<span><b>KNOWLEDGE</b></span>
-					</h1>
-				</div>
-			</div>
+<section class="kh">
+	<header class="kh-hero">
+		<div class="kh-hero-copy">
+			<p class="kh-eyebrow">{isEnglish ? 'PERSONAL AI KNOWLEDGE BASE' : '个人 AI 知识库'}</p>
+			<h1>
+				Bubble's <em>Brain</em>
+			</h1>
+			<p class="kh-lede">
+				{
+					isEnglish
+						? 'Agent tutorials, illustrated glossaries and primary sources worth keeping — for people who build things with AI.'
+						: '收录 Agent 教程、Vibe Coding 图解与值得留存的一手资料——写给正在用 AI 做东西的人。'
+				}
+			</p>
+			<a
+				class="kh-search"
+				href={isEnglish ? '/search/?locale=en' : '/search/'}
+				data-command-search-trigger
+			>
+				<i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+				<span>{isEnglish ? 'Search the library…' : '搜点什么，比如「水合」「Endpoint」…'}</span>
+				<kbd>⌘K</kbd>
+			</a>
+			<p class="kh-stats">
+				<span><b>{articleCount}</b>{isEnglish ? ' entries' : ' 篇内容'}</span>
+				{
+					!isEnglish && (
+						<span>
+							<b>{termCount}</b> 个术语图解
+						</span>
+					)
+				}
+				<span><b>{collectionCount}</b>{isEnglish ? ' collections' : ' 个栏目'}</span>
+			</p>
 		</div>
+
+		<figure class="kh-cat" id="kh-cat-fig" aria-hidden="true">
+			<img
+				id="kh-cat-img"
+				src="/images/brain-cat.jpg"
+				alt=""
+				loading="eager"
+				decoding="async"
+				width="1100"
+				height="765"
+			/>
+			<canvas class="kh-eyecanvas" id="kh-cat-canvas"></canvas>
+		</figure>
 	</header>
 
-	<section
-		id="library"
-		class="knowledge-home-section"
-		aria-labelledby={`library-heading-${locale}`}
-	>
-		<header class="knowledge-home-section-heading">
-			<div>
-				<p>{isEnglish ? 'EXPLORE THE LIBRARY' : '浏览知识库'}</p>
-				<h2 id={`library-heading-${locale}`}>{isEnglish ? 'Knowledge collections' : '知识栏目'}</h2>
-			</div>
+	<section id="library" class="kh-section" aria-labelledby={`library-heading-${locale}`}>
+		<header class="kh-section-heading">
+			<p>{isEnglish ? 'EXPLORE THE LIBRARY' : '浏览知识库'}</p>
+			<h2 id={`library-heading-${locale}`}>{isEnglish ? 'Collections' : '知识栏目'}</h2>
 		</header>
-		<div
-			class="knowledge-collection-grid"
-			style={`--collection-columns: ${Math.min(sectionCopy.length, 4)}`}
-		>
+		<div class="kh-collections">
 			{
 				sectionCopy.map((item) => (
-					<a href={`${prefix}/${item.section}/`} class="knowledge-collection-card">
-						<span class="knowledge-collection-icon">
-							<i class={`ph ${item.icon}`} aria-hidden="true" />
-						</span>
-						<h3>{item.label}</h3>
+					<a href={`${prefix}/${item.section}/`} class="kh-collection">
+						<h3>
+							{item.label}
+							<sup>{countFor(item.section)}</sup>
+							<i class="ph ph-arrow-up-right" aria-hidden="true" />
+						</h3>
 						<p>{item.description}</p>
-						<span class="knowledge-collection-count">
-							{countFor(item.section)} {isEnglish ? 'entries' : '篇内容'}
-						</span>
 					</a>
 				))
+			}
+			{
+				!isEnglish && (
+					<a href="/vibe-coding/terms/" class="kh-collection">
+						<h3>
+							Vibe Coding 术语
+							<sup>{termCount}</sup>
+							<i class="ph ph-arrow-up-right" aria-hidden="true" />
+						</h3>
+						<p>把 AI 编程的概念一块一块拆开：图解、比喻加可以上手玩的演示。</p>
+					</a>
+				)
 			}
 		</div>
 	</section>
 
-	<section id="recent" class="knowledge-home-section" aria-labelledby={`recent-heading-${locale}`}>
-		<header class="knowledge-home-section-heading">
-			<div>
-				<p>{isEnglish ? 'CURATED & MAINTAINED' : '持续整理与维护'}</p>
-				<h2 id={`recent-heading-${locale}`}>
-					{isEnglish ? 'Recently added knowledge' : '最近收录'}
-				</h2>
-			</div>
-			<a href="/search/">{isEnglish ? 'Browse all →' : '查看全部 →'}</a>
+	<section id="recent" class="kh-section" aria-labelledby={`recent-heading-${locale}`}>
+		<header class="kh-section-heading">
+			<p>{isEnglish ? 'CURATED & MAINTAINED' : '持续整理与维护'}</p>
+			<h2 id={`recent-heading-${locale}`}>{isEnglish ? 'Recently added' : '最近收录'}</h2>
+			<a class="kh-more" href="/search/">{isEnglish ? 'Browse all →' : '查看全部 →'}</a>
 		</header>
-		<div class="knowledge-recent-list">
+		<div class="kh-recent">
 			{
 				featured.map((entry, index) => (
-					<article>
-						<span class="knowledge-recent-index">{String(index + 1).padStart(2, '0')}</span>
+					<article class="kh-recent-item">
+						<span class="kh-recent-num" aria-hidden="true">
+							{index + 1}
+						</span>
 						<div>
-							<p class="knowledge-recent-meta">
+							<p class="kh-recent-meta">
 								<span>{labelFor(entry.section)}</span>
 								{entry.date && (
-									<time datetime={entry.date.toISOString()}>
-										{dateFormatter.format(entry.date)}
-									</time>
+									<time datetime={entry.date.toISOString()}>{dateFormatter.format(entry.date)}</time>
 								)}
 							</p>
 							<h3>
 								<a href={entry.route}>{entry.title}</a>
 							</h3>
-							{entry.description && <p>{entry.description}</p>}
+							{entry.description && <p class="kh-recent-desc">{entry.description}</p>}
 						</div>
 					</article>
 				))
@@ -176,15 +198,4 @@ const labelFor = (section: LegacySection) =>
 	</section>
 </section>
 
-<script>
-	import { mountHeroLetter3d } from '../scripts/heroLetter3d';
-
-	const mountLetters = () => {
-		document.querySelectorAll<HTMLElement>('[data-hero-letter-3d]').forEach((letter) => {
-			mountHeroLetter3d(letter);
-		});
-	};
-
-	mountLetters();
-	document.addEventListener('astro:page-load', mountLetters);
-</script>
+<script is:inline type="module" src="/js/knowledge-home-v2.js"></script>

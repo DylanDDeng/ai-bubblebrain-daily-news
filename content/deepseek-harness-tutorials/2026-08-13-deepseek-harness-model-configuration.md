@@ -3,6 +3,7 @@ title: "模型配置：DeepSeek 与自定义 Provider"
 slug: "deepseek-harness-model-configuration"
 description: "学会保存 DeepSeek API Key、添加 OpenAI 兼容端点、声明图片输入能力，并处理常见模型配置错误。"
 date: 2026-08-13T04:00:00Z
+weight: 4
 tags:
   [
     "DeepSeek Harness",

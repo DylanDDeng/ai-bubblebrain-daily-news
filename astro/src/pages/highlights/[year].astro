@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HighlightArchive from '../../components/HighlightArchive.astro';
+import {
+	highlightArchiveFor,
+	highlightMonthGroups,
+	type HighlightArchiveItem,
+	type HighlightYear,
+} from '../../lib/highlightsArchive';
+import { legacyEntryIsRoutable, loadLegacyContent } from '../../lib/legacyContent';
+
+interface Props {
+	year: string;
+	items: HighlightArchiveItem[];
+	years: HighlightYear[];
+}
+
+// The newest year lives on /highlights/ itself; only older years get
+// their own archive page here.
+export async function getStaticPaths() {
+	const { items, years } = await highlightArchiveFor('zh-CN');
+	return years.slice(1).map((entry) => ({
+		params: { year: entry.year },
+		props: {
+			year: entry.year,
+			years,
+			items: items.filter((item) => item.date?.startsWith(entry.year)),
+		} satisfies Props,
+	}));
+}
+
+const { year, items, years } = Astro.props;
+const months = highlightMonthGroups(items, 'zh-CN');
+const allRecords = await loadLegacyContent();
+const knownRoutes = new Set(allRecords.filter(legacyEntryIsRoutable).map((entry) => entry.route));
+---
+
+<BaseLayout
+	title={`${year} · 精选阅读 · Bubble's Brain`}
+	description={`${year} 年收录的 ${items.length} 篇精选阅读。`}
+	canonicalPath={`/highlights/${year}/`}
+>
+	<section class="legacy-shell directory-page" data-directory-page="highlights">
+		<header class="directory-hero">
+			<div>
+				<p class="page-kicker">EDITOR’S SELECTION</p>
+				<h1>{year} · 精选阅读</h1>
+				<p>这一年收进档案的文章、报告与访谈。</p>
+			</div>
+			<p class="directory-count directory-count--series">
+				<strong data-directory-count>{items.length}</strong>
+				<span>篇 · {year} 年归档</span>
+			</p>
+		</header>
+
+		<HighlightArchive
+			months={months}
+			years={years}
+			activeYear={year}
+			locale="zh-CN"
+			knownRoutes={knownRoutes}
+		/>
+	</section>
+</BaseLayout>
+
+<script>
+	import '../../scripts/legacy-directory.js';
+</script>

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 96 1092 518" role="img" aria-labelledby="title desc">
+  <title id="title">一条回复里的多个工具调用怎么执行</title>
+  <desc id="desc">模型一条回复里可以带多个 toolCall。默认全部并行执行；但只要配置要求顺序、或其中任何一个工具声明了 executionMode 为 sequential，整批就降级为顺序执行。并行时，修改同一个文件的操作会按规范路径自动排队。每个调用产出一条 toolResult，经截断后进入上下文。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .gate{font-size:13.5px;letter-spacing:2px;font-weight:700;fill:#d9341c}
+    .t{font-size:17px;font-weight:650;fill:#111}
+    .sub{font-size:14px;fill:#6c6c6c}
+    .subm{font-size:14px;fill:#555}
+    .ok{font-size:14px;font-weight:650;fill:#2c8a44}
+    .lbl{font-size:13.5px;fill:#6c6c6c}
+    .lblg{font-size:13.5px;font-weight:650;fill:#2c8a44}
+    .lblr{font-size:13.5px;font-weight:650;fill:#d9341c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .card-gate{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .card-ok{fill:#fff;stroke:#2c8a44;stroke-width:1.5}
+    .mini{fill:#f5f5f2;stroke:#dedede;stroke-width:1}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .link{fill:none;stroke:#c6c6c2;stroke-width:1.5;stroke-dasharray:3 5}
+  </style>
+
+  <g class="sans">
+    <rect class="card" x="72" y="180" width="280" height="130"/>
+    <text x="94" y="214" class="t">模型回复</text>
+    <text x="94" y="242" class="mono subm">edit("a.ts", …)</text>
+    <text x="94" y="264" class="mono subm">write("a.ts", …)</text>
+    <text x="94" y="286" class="mono subm">bash("npm test")</text>
+
+    <path class="wire" d="M352 245H412"/>
+
+    <rect class="card-gate" x="420" y="180" width="300" height="130"/>
+    <text x="442" y="212" class="mono gate">调度判定</text>
+    <text x="442" y="242" class="t">有人要求顺序吗？</text>
+    <text x="442" y="268" class="mono subm">executionMode === "sequential"</text>
+    <text x="442" y="290" class="sub">任一工具要求，或全局配置要求</text>
+
+    <path class="wire" d="M720 218C760 218 760 180 800 180"/>
+    <text x="800" y="108" class="mono lblg">✗ 都没有 · 默认并行</text>
+    <rect class="card" x="800" y="120" width="328" height="130"/>
+    <text x="822" y="152" class="t">并行执行</text>
+    <rect class="mini" x="822" y="168" width="88" height="34"/><text x="836" y="190" class="mono sub">edit</text>
+    <rect class="mini" x="920" y="168" width="88" height="34"/><text x="934" y="190" class="mono sub">write</text>
+    <rect class="mini" x="1018" y="168" width="88" height="34"/><text x="1032" y="190" class="mono sub">bash</text>
+    <text x="822" y="230" class="sub">三个同时开跑，谁先完谁先回</text>
+
+    <path class="wire" d="M720 282C760 282 760 350 800 350"/>
+    <text x="800" y="280" class="mono lblr">✓ 有 · 整批降级为顺序</text>
+    <rect class="card" x="800" y="290" width="328" height="130"/>
+    <text x="822" y="322" class="t">顺序执行</text>
+    <rect class="mini" x="822" y="338" width="80" height="34"/><text x="836" y="360" class="mono sub">1 edit</text>
+    <path class="wire" d="M902 355H916"/>
+    <rect class="mini" x="924" y="338" width="84" height="34"/><text x="938" y="360" class="mono sub">2 write</text>
+    <path class="wire" d="M1008 355H1022"/>
+    <rect class="mini" x="1030" y="338" width="76" height="34"/><text x="1044" y="360" class="mono sub">3 bash</text>
+    <text x="822" y="400" class="sub">一个做完再做下一个，可中途中止</text>
+
+    <rect class="card" x="72" y="440" width="460" height="120"/>
+    <text x="94" y="472" class="mono gate">并行的保险丝</text>
+    <text x="94" y="500" class="t">同一个文件的修改，自动排队</text>
+    <text x="94" y="526" class="mono subm">withFileMutationQueue · 按规范路径</text>
+    <text x="94" y="548" class="sub">edit("a.ts") 和 write("a.ts") 并行时也不会互相打架</text>
+    <path class="link" d="M532 470C640 470 700 300 800 240"/>
+
+    <path class="wire" d="M964 250V282"/>
+    <path class="wire" d="M964 420V452"/>
+    <rect class="card-ok" x="640" y="460" width="488" height="100"/>
+    <text x="662" y="492" class="t">toolResult × 3</text>
+    <text x="662" y="518" class="mono subm">各自经双限截断（上一章）后，进入上下文</text>
+    <text x="662" y="542" class="mono ok">✓ 下一轮，模型带着三份结果继续推理</text>
+  </g>
+</svg>

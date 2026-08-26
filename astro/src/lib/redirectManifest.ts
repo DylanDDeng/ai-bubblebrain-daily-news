@@ -12,6 +12,7 @@ export function renderCloudflareRedirects(entries: LegacyContentEntry[] = []): s
 		...legacyRedirectLines(entries),
 		'/en/index.xml /en/rss.xml 301',
 		'/index.xml /rss.xml 301',
+		'/vibe-coding/terms/context/ /vibe-coding/terms/context-window/ 301',
 		'/zh-cn/ / 301',
 	];
 	const sources = new Set<string>();

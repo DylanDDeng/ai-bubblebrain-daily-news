@@ -34,7 +34,7 @@
 	border: 1px solid var(--ink);
 	border-radius: 2px;
 	background: var(--blue-soft);
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .knowledge-home-badges span:last-child {
@@ -91,7 +91,7 @@
 }
 
 .knowledge-home-search i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.05rem;
 }
 
@@ -125,7 +125,7 @@
 }
 
 .knowledge-home-search button:hover {
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #ffffff;
 	transform: none;
 }
@@ -225,7 +225,7 @@
 	padding: 4px 7px;
 	border: 1px dashed var(--ink);
 	border-radius: 2px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 0.6rem;
 	font-style: normal;
@@ -261,7 +261,7 @@
 .knowledge-map-grid i {
 	grid-row: 1 / 3;
 	align-self: center;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1rem;
 }
 
@@ -302,7 +302,7 @@
 	border: 1px solid var(--rule);
 	border-radius: 2px;
 	background: var(--paper-muted);
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 0.64rem;
 	text-decoration: none;
@@ -327,7 +327,7 @@
 	padding: 0;
 	border: 0;
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--sans);
 	font-weight: 650;
 	letter-spacing: 0.14em;
@@ -362,7 +362,7 @@
 	border-radius: 0;
 	background: transparent;
 	box-shadow: none;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.78rem;
 	text-decoration: none;
 	transition:
@@ -424,7 +424,7 @@
 	margin-bottom: 26px;
 	border: 0;
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.35rem;
 }
 
@@ -471,7 +471,7 @@
 }
 
 .knowledge-recent-list article:hover {
-	border-color: var(--blue);
+	border-color: var(--blue-strong);
 	box-shadow: none;
 	transform: translateX(4px);
 }
@@ -484,7 +484,7 @@
 	border: 0;
 	background: transparent;
 	box-shadow: none;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 0.7rem;
 }
@@ -498,7 +498,7 @@
 }
 
 .knowledge-recent-meta span {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .knowledge-recent-list h3 {
@@ -714,7 +714,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: clamp(1rem, 2vw, 1.65rem);
 	font-weight: 650;
 	letter-spacing: 0.08em;

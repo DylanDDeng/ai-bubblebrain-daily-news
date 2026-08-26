@@ -10,6 +10,11 @@ export default defineConfig({
 	site: 'https://bubblenews.today',
 	output: 'static',
 	trailingSlash: 'always',
+	markdown: {
+		shikiConfig: {
+			theme: 'min-light',
+		},
+	},
 	publicDir: '../static',
 	i18n: {
 		defaultLocale: 'zh-CN',

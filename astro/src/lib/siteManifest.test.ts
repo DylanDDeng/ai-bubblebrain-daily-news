@@ -1,9 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
-import type { SiteRecord } from './siteManifest';
+import { loadSiteManifest, type SiteRecord } from './siteManifest';
 import { renderRss } from './siteRss';
 
 describe('site feeds', () => {
+	it('publishes the Vibe Coding terms route', async () => {
+		const records = await loadSiteManifest();
+
+		expect(records).toContainEqual(
+			expect.objectContaining({
+				route: '/vibe-coding/terms/',
+				title: 'Vibe Coding 术语',
+				section: 'vibe-coding',
+			}),
+		);
+		expect(records).toContainEqual(
+			expect.objectContaining({
+				route: '/vibe-coding/terms/frontend/',
+				title: '前端（Frontend）',
+				section: 'vibe-coding',
+			}),
+		);
+	});
+
 	it('keeps every dated compatibility record instead of silently truncating the feed', () => {
 		const records: SiteRecord[] = Array.from({ length: 150 }, (_, index) => ({
 			route: `/daily/2026/01/item-${index}/`,

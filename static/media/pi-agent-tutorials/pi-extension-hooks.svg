@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 170 1092 574" role="img" aria-labelledby="title desc">
+  <title id="title">Extension 的钩子挂在循环的哪些位置</title>
+  <desc id="desc">左侧是第一章见过的 Agent Loop 骨架：启动、用户输入、组装上下文并调用模型、执行工具、一轮结束。每个阶段右侧列出扩展能订阅的事件：灰色事件只能观察，橙色事件可以出手——input 可拦截改写、context 可修改消息列表、tool_call 返回 block 即拦下、tool_result 可改写结果。扩展按加载顺序被依次询问，谁先返回 block，这次调用就到此为止。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .stage{font-size:17px;font-weight:650;fill:#111}
+    .ev{font-size:14px;fill:#555}
+    .ev-hl{font-size:14px;font-weight:650;fill:#d9341c}
+    .guard{font-size:13.5px;fill:#6c6c6c}
+    .guard-hl{font-size:13.5px;font-weight:650;fill:#d9341c}
+    .note{font-size:14px;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .chip{fill:#fff;stroke:#c9c9c5;stroke-width:1.2}
+    .chip-hl{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round}
+    .wire-a{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+  </style>
+
+  <g class="sans">
+    <rect class="card" x="72" y="188" width="300" height="60"/>
+    <text x="94" y="214" class="mono num">01</text>
+    <text x="134" y="215" class="stage">启动，进入会话</text>
+    <rect class="card" x="72" y="292" width="300" height="60"/>
+    <text x="94" y="318" class="mono num">02</text>
+    <text x="134" y="319" class="stage">用户输入</text>
+    <rect class="card" x="72" y="396" width="300" height="60"/>
+    <text x="94" y="422" class="mono num">03</text>
+    <text x="134" y="423" class="stage">组装上下文，调用模型</text>
+    <rect class="card" x="72" y="500" width="300" height="60"/>
+    <text x="94" y="526" class="mono num">04</text>
+    <text x="134" y="527" class="stage">执行工具</text>
+    <rect class="card" x="72" y="604" width="300" height="60"/>
+    <text x="94" y="630" class="mono num">05</text>
+    <text x="134" y="631" class="stage">一轮结束，回到循环</text>
+  </g>
+
+  <path class="wire-a" d="M222 248V284"/>
+  <path class="wire-a" d="M222 352V388"/>
+  <path class="wire-a" d="M222 456V492"/>
+  <path class="wire-a" d="M222 560V596"/>
+
+  <path class="wire" d="M372 218H508"/>
+  <path class="wire" d="M372 322H508"/>
+  <path class="wire" d="M372 426H508"/>
+  <path class="wire" d="M372 507H508"/>
+  <path class="wire" d="M372 549H508"/>
+  <path class="wire" d="M372 634H508"/>
+
+  <g class="mono">
+    <rect class="chip" x="512" y="200" width="336" height="36"/>
+    <text x="528" y="223" class="ev">session_start · resources_discover</text>
+    <text x="868" y="223" class="guard">观察：会话开始、发现资源</text>
+
+    <rect class="chip-hl" x="512" y="304" width="336" height="36"/>
+    <text x="528" y="327" class="ev-hl">input</text>
+    <text x="868" y="327" class="guard-hl">可拦截、可改写你敲的内容</text>
+
+    <rect class="chip-hl" x="512" y="408" width="336" height="36"/>
+    <text x="528" y="431" class="ev-hl">before_agent_start · context</text>
+    <text x="868" y="431" class="guard-hl">可注入消息、修改消息列表</text>
+
+    <rect class="chip-hl" x="512" y="490" width="336" height="34"/>
+    <text x="528" y="512" class="ev-hl">tool_call</text>
+    <text x="868" y="512" class="guard-hl">返回 {block:true} 即拦下</text>
+
+    <rect class="chip-hl" x="512" y="532" width="336" height="34"/>
+    <text x="528" y="554" class="ev-hl">tool_result</text>
+    <text x="868" y="554" class="guard-hl">可改写进上下文的结果</text>
+
+    <rect class="chip" x="512" y="616" width="336" height="36"/>
+    <text x="528" y="639" class="ev">turn_end · agent_end</text>
+    <text x="868" y="639" class="guard">观察：统计、收尾、通知</text>
+  </g>
+
+  <text x="72" y="712" class="mono note">扩展按加载顺序被依次询问；tool_call 上谁先返回 block，这次调用就到此为止（runner.ts · emitToolCall）</text>
+</svg>

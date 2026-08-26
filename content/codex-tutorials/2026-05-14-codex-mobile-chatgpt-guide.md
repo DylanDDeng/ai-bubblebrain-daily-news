@@ -3,6 +3,7 @@ title: "如何在手机上使用 Codex"
 slug: "codex-mobile-chatgpt-guide"
 description: "通过 ChatGPT App 将手机与 Mac 上的 Codex App 配对，同步对话并在移动端继续编程。"
 date: 2026-05-14
+weight: 3
 tags: ["Codex", "Codex App", "ChatGPT", "移动端", "使用教程"]
 author: "BubbleBrain"
 sourceUrl: "https://mp.weixin.qq.com/s/lTxFr-teWe4Y3gvKoz7naQ"

@@ -15,10 +15,10 @@
 	max-width: 16ch;
 	margin-top: 14px;
 	font-family: var(--sans);
-	font-size: clamp(2.5rem, 5vw, 4.75rem);
-	font-weight: 650;
-	letter-spacing: -0.065em;
-	line-height: 0.92;
+	font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+	font-weight: 720;
+	letter-spacing: -0.055em;
+	line-height: 0.98;
 }
 
 .directory-hero > div > p:last-child {
@@ -37,7 +37,7 @@
 }
 
 .directory-count strong {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--sans);
 	font-size: clamp(1.5rem, 2.4vw, 2.1rem);
 	font-weight: 400;
@@ -80,7 +80,7 @@
 }
 
 .directory-toolbar i {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .directory-toolbar input {
@@ -130,7 +130,7 @@
 
 .content-directory:not(.content-directory--highlights):not(.content-directory--codex-tutorials):not(
 		.content-directory--deepseek-harness-tutorials
-	):not(.content-directory--workbuddy-tutorials)
+	):not(.content-directory--pi-agent-tutorials):not(.content-directory--workbuddy-tutorials)
 	article:not(:has(> img)) {
 	grid-template-columns: 1fr;
 }
@@ -186,6 +186,7 @@
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
+		[data-directory-page='pi-agent-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-hero {
@@ -197,6 +198,7 @@
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
+		[data-directory-page='pi-agent-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar {
@@ -209,6 +211,7 @@
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
+		[data-directory-page='pi-agent-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -222,6 +225,7 @@
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
+		[data-directory-page='pi-agent-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -237,6 +241,7 @@
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
+		[data-directory-page='pi-agent-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -252,21 +257,20 @@
 		[data-directory-page='highlights'],
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
+		[data-directory-page='pi-agent-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
-	input:focus,
-.directory-toolbar input[type='search']:focus-visible {
+	input:focus {
 	border-color: #b9b9b5;
 	box-shadow: none;
-	outline: 0;
-	outline-offset: 0;
 }
 
 /* Highlights uses the same editorial list rhythm as My Writing. */
 .content-directory--highlights,
 .content-directory--codex-tutorials,
 .content-directory--deepseek-harness-tutorials,
+.content-directory--pi-agent-tutorials,
 .content-directory--workbuddy-tutorials {
 	display: block;
 	margin-top: 28px;
@@ -277,6 +281,7 @@
 .content-directory--highlights article,
 .content-directory--codex-tutorials article,
 .content-directory--deepseek-harness-tutorials article,
+.content-directory--pi-agent-tutorials article,
 .content-directory--workbuddy-tutorials article {
 	display: grid;
 	grid-template-columns: 112px minmax(0, 1fr);
@@ -289,6 +294,7 @@
 .content-directory--highlights article > img,
 .content-directory--codex-tutorials article > img,
 .content-directory--deepseek-harness-tutorials article > img,
+.content-directory--pi-agent-tutorials article > img,
 .content-directory--workbuddy-tutorials article > img {
 	display: none;
 }
@@ -296,6 +302,7 @@
 .content-directory--highlights article > div,
 .content-directory--codex-tutorials article > div,
 .content-directory--deepseek-harness-tutorials article > div,
+.content-directory--pi-agent-tutorials article > div,
 .content-directory--workbuddy-tutorials article > div {
 	display: contents;
 }
@@ -303,11 +310,12 @@
 .content-directory--highlights .directory-item-meta,
 .content-directory--codex-tutorials .directory-item-meta,
 .content-directory--deepseek-harness-tutorials .directory-item-meta,
+.content-directory--pi-agent-tutorials .directory-item-meta,
 .content-directory--workbuddy-tutorials .directory-item-meta {
 	grid-column: 1;
 	grid-row: 1;
 	margin: 0;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--sans);
 	font-weight: 650;
 	letter-spacing: 0.08em;
@@ -317,6 +325,7 @@
 .content-directory--highlights article > div > ul,
 .content-directory--codex-tutorials article > div > ul,
 .content-directory--deepseek-harness-tutorials article > div > ul,
+.content-directory--pi-agent-tutorials article > div > ul,
 .content-directory--workbuddy-tutorials article > div > ul {
 	display: none;
 }
@@ -324,6 +333,7 @@
 .content-directory--highlights h2,
 .content-directory--codex-tutorials h2,
 .content-directory--deepseek-harness-tutorials h2,
+.content-directory--pi-agent-tutorials h2,
 .content-directory--workbuddy-tutorials h2 {
 	grid-column: 2;
 	grid-row: 1;
@@ -337,6 +347,7 @@
 .content-directory--highlights h2 + p,
 .content-directory--codex-tutorials h2 + p,
 .content-directory--deepseek-harness-tutorials h2 + p,
+.content-directory--pi-agent-tutorials h2 + p,
 .content-directory--workbuddy-tutorials h2 + p {
 	display: block;
 	grid-column: 2;
@@ -351,8 +362,9 @@
 .content-directory--highlights article:hover h2 a,
 .content-directory--codex-tutorials article:hover h2 a,
 .content-directory--deepseek-harness-tutorials article:hover h2 a,
+.content-directory--pi-agent-tutorials article:hover h2 a,
 .content-directory--workbuddy-tutorials article:hover h2 a {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .directory-empty,
@@ -376,7 +388,7 @@
 }
 
 .editorial-archive time {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 0.68rem;
 }
@@ -456,7 +468,7 @@
 }
 
 .article-outline summary i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.75rem;
 	transition: transform 160ms ease;
 }
@@ -497,25 +509,24 @@
 }
 
 .article-outline a.is-active {
-	border-left-color: var(--blue);
-	color: var(--blue);
+	border-left-color: var(--blue-strong);
+	color: var(--blue-strong);
 	font-weight: 600;
 }
 
 .article-header {
 	max-width: 980px;
-	padding-bottom: clamp(36px, 6vw, 64px);
-	border-bottom: 1px solid var(--rule);
+	padding-bottom: clamp(24px, 4vw, 40px);
 }
 
 .article-header h1 {
 	margin-top: 18px;
 	color: var(--ink);
 	font-family: var(--sans);
-	font-size: clamp(2.5rem, 5vw, 4.2rem);
-	font-weight: 650;
-	letter-spacing: -0.05em;
-	line-height: 1.02;
+	font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+	font-weight: 720;
+	letter-spacing: -0.055em;
+	line-height: 0.98;
 }
 
 .article-facts {
@@ -523,7 +534,6 @@
 	grid-template-columns: repeat(var(--article-fact-columns, 4), minmax(0, 1fr));
 	margin: clamp(30px, 4vw, 44px) 0 0;
 	border-top: 1px solid var(--ink);
-	border-bottom: 1px solid var(--rule);
 }
 
 .article-facts > div {
@@ -572,7 +582,7 @@
 }
 
 .article-facts a:hover {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .article-tags {
@@ -595,31 +605,47 @@
 	color: var(--ink);
 	font-size: clamp(1rem, 1.5vw, 1.08rem);
 	line-height: 1.9;
+	counter-reset: article-section;
 }
 
 .article-content :is(h2, h3, h4) {
 	color: var(--ink);
 	font-family: var(--sans);
-	font-weight: 650;
+	font-weight: 700;
 	letter-spacing: -0.035em;
 }
 
 .article-content h2 {
 	padding-top: 0.25em;
 	font-size: clamp(1.75rem, 3.5vw, 2.6rem);
+	counter-increment: article-section;
+}
+
+/* The terms-page section index, stamped onto every article heading. */
+.article-content h2::before {
+	content: counter(article-section, decimal-leading-zero);
+	display: block;
+	margin-bottom: 10px;
+	color: var(--blue-strong);
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	font-weight: 650;
+	letter-spacing: 0.14em;
 }
 
 .article-content h3 {
 	font-size: clamp(1.3rem, 2.5vw, 1.8rem);
 }
 
-.article-content a {
-	color: var(--blue);
+.article-content li::marker {
+	color: var(--blue-strong);
+	font-family: var(--mono);
+	font-size: 0.85em;
+	font-weight: 650;
 }
 
-.article-content blockquote {
-	border-left-color: var(--blue);
-	background: var(--blue-soft);
+.article-content a {
+	color: var(--blue-strong);
 }
 
 .article-content :is(img, video) {
@@ -628,10 +654,28 @@
 }
 
 .article-content pre {
-	border: 0;
-	border-radius: 8px;
-	background: #111111;
-	color: #f7f7f7;
+	position: relative;
+	overflow: auto;
+	padding: 28px 22px 22px;
+	border: 1px solid var(--rule);
+	border-radius: 2px;
+	background: var(--paper-muted) !important;
+	font-size: 0.82rem;
+	line-height: 1.75;
+}
+
+/* Shiki stamps the language on the block — surface it as a quiet mono tag. */
+.article-content pre::before {
+	content: attr(data-language);
+	position: absolute;
+	top: 10px;
+	right: 14px;
+	color: var(--ink-faint);
+	font-family: var(--mono);
+	font-size: 0.58rem;
+	font-weight: 650;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
 }
 
 .article-table-scroll {
@@ -698,17 +742,29 @@
 
 .article-pagination {
 	display: grid;
+	align-items: stretch;
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-	gap: 20px;
-	margin-top: 64px;
-	padding-top: 24px;
-	border-top: 1px solid var(--rule);
+	gap: 16px;
+	margin-top: 72px;
 	font-size: 0.72rem;
 }
 
 .article-pagination > div {
 	display: grid;
-	gap: 5px;
+	gap: 6px;
+}
+
+.article-pagination > div:has(a) {
+	align-content: center;
+	min-height: 84px;
+	padding: 16px 18px;
+	border: 1px solid var(--rule);
+	background: #fff;
+	transition: background 0.2s ease;
+}
+
+.article-pagination > div:has(a):hover {
+	background: var(--blue-soft);
 }
 
 .article-pagination > div:last-child {
@@ -725,9 +781,15 @@
 	text-decoration: none;
 }
 
+.article-pagination > div a {
+	font-size: 0.8rem;
+	font-weight: 650;
+	letter-spacing: -0.01em;
+}
+
 .article-back {
-	align-self: end;
-	color: var(--blue);
+	align-self: center;
+	color: var(--blue-strong);
 }
 
 .tool-shell {
@@ -755,7 +817,7 @@
 
 .compress-dropzone i {
 	margin-bottom: 18px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 3rem;
 }
 
@@ -884,6 +946,7 @@
 	.content-directory--highlights article,
 	.content-directory--codex-tutorials article,
 	.content-directory--deepseek-harness-tutorials article,
+	.content-directory--pi-agent-tutorials article,
 	.content-directory--workbuddy-tutorials article {
 		grid-template-columns: 1fr;
 		gap: 8px;
@@ -892,6 +955,7 @@
 	.content-directory--highlights :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--codex-tutorials :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--deepseek-harness-tutorials :is(.directory-item-meta, h2, h2 + p),
+	.content-directory--pi-agent-tutorials :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--workbuddy-tutorials :is(.directory-item-meta, h2, h2 + p) {
 		grid-column: 1;
 	}
@@ -899,6 +963,7 @@
 	.content-directory--highlights .directory-item-meta,
 	.content-directory--codex-tutorials .directory-item-meta,
 	.content-directory--deepseek-harness-tutorials .directory-item-meta,
+	.content-directory--pi-agent-tutorials .directory-item-meta,
 	.content-directory--workbuddy-tutorials .directory-item-meta {
 		grid-row: 1;
 	}
@@ -906,6 +971,7 @@
 	.content-directory--highlights h2,
 	.content-directory--codex-tutorials h2,
 	.content-directory--deepseek-harness-tutorials h2,
+	.content-directory--pi-agent-tutorials h2,
 	.content-directory--workbuddy-tutorials h2 {
 		grid-row: 2;
 	}
@@ -913,6 +979,7 @@
 	.content-directory--highlights h2 + p,
 	.content-directory--codex-tutorials h2 + p,
 	.content-directory--deepseek-harness-tutorials h2 + p,
+	.content-directory--pi-agent-tutorials h2 + p,
 	.content-directory--workbuddy-tutorials h2 + p {
 		grid-row: 3;
 	}
@@ -986,6 +1053,7 @@
 	.content-directory--highlights article,
 	.content-directory--codex-tutorials article,
 	.content-directory--deepseek-harness-tutorials article,
+	.content-directory--pi-agent-tutorials article,
 	.content-directory--workbuddy-tutorials article {
 		grid-template-columns: 1fr;
 		padding: 28px 0;
@@ -999,5 +1067,482 @@
 	.compress-controls {
 		grid-template-columns: 1fr;
 		padding: 22px;
+	}
+}
+
+/* ————————————————————————————————————————————————————————————
+   Editorial v2 for Highlights + tutorial series: transplant the
+   asymmetric rail grid from the Vibe Coding terms page (sticky left
+   header with a ghost index numeral, content on the right) and the
+   numbered-circle item language from the home page. */
+
+.directory-count--series {
+	gap: 6px;
+	font-family: var(--mono);
+	letter-spacing: 0.04em;
+}
+
+.directory-count--series strong {
+	color: var(--blue-strong);
+	font-family: var(--mono);
+	font-size: 0.85rem;
+	font-weight: 650;
+}
+
+.directory-item-external {
+	margin-left: 4px;
+	color: var(--ink-faint);
+	font-size: 0.7em;
+	vertical-align: 0.15em;
+}
+
+/* Highlights: one section per month — ghost month numeral in the rail. */
+.hl-months {
+	display: grid;
+	gap: clamp(64px, 8vw, 96px);
+	margin-top: 48px;
+}
+
+.hl-month {
+	display: grid;
+	grid-template-columns: minmax(200px, 0.62fr) minmax(0, 2fr);
+	gap: clamp(36px, 6vw, 80px);
+}
+
+.hl-month[hidden] {
+	display: none;
+}
+
+.hl-month-header {
+	position: sticky;
+	top: 108px;
+	align-self: start;
+}
+
+.hl-month-index,
+.series-rail-index {
+	display: block;
+	font-family: 'Baloo 2', var(--sans);
+	font-size: 2.6rem;
+	font-weight: 700;
+	line-height: 1;
+	color: color-mix(in srgb, var(--ink) 14%, transparent);
+	user-select: none;
+}
+
+.hl-month-header h2 {
+	margin: 10px 0 0;
+	font-family: var(--sans);
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+}
+
+.hl-month-header p {
+	margin: 10px 0 0;
+	color: var(--ink-faint);
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	letter-spacing: 0.05em;
+}
+
+.hl-month-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: clamp(26px, 4vw, 40px) clamp(28px, 4vw, 48px);
+	align-items: start;
+}
+
+.hl-month-list article {
+	display: block;
+}
+
+.hl-month-list article[hidden] {
+	display: none;
+}
+
+.hl-month-list article > img {
+	display: none;
+}
+
+.hl-month-list .directory-item-meta {
+	margin: 0;
+	color: var(--blue-strong);
+	font-family: var(--mono);
+	font-size: 0.64rem;
+	font-weight: 650;
+	letter-spacing: 0.05em;
+}
+
+.hl-month-list h3 {
+	margin: 7px 0 0;
+	font-family: var(--sans);
+	font-size: 1.05rem;
+	font-weight: 720;
+	letter-spacing: -0.01em;
+	line-height: 1.45;
+}
+
+.hl-month-list h3 a {
+	color: var(--ink);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.hl-month-list article:hover h3 a {
+	color: var(--blue-strong);
+}
+
+.hl-month-list h3 + p {
+	display: -webkit-box;
+	overflow: hidden;
+	margin: 7px 0 0;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	color: var(--ink-soft);
+	font-size: 0.75rem;
+	line-height: 1.7;
+}
+
+.hl-month-list article ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin: 10px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.hl-month-list article li {
+	padding: 2px 6px;
+	border: 1px solid var(--rule);
+	color: var(--ink-faint);
+	font-size: 0.6rem;
+}
+
+/* Tutorial series: sticky rail + numbered chapter path. */
+.series-layout {
+	display: grid;
+	grid-template-columns: minmax(200px, 0.62fr) minmax(0, 2fr);
+	gap: clamp(36px, 6vw, 80px);
+	margin-top: 48px;
+}
+
+.series-rail {
+	position: sticky;
+	top: 108px;
+	align-self: start;
+}
+
+.series-rail h2 {
+	margin: 10px 0 0;
+	font-family: var(--sans);
+	font-size: 1.5rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+}
+
+.series-rail-intro {
+	max-width: 260px;
+	margin: 12px 0 0;
+	color: var(--ink-soft);
+	font-size: 0.8rem;
+	line-height: 1.75;
+}
+
+.series-rail-intro p {
+	margin: 0 0 8px;
+}
+
+.series-rail-intro > :last-child {
+	margin-bottom: 0;
+}
+
+.series-rail-start {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 20px;
+	padding: 10px 18px;
+	border: 1.5px solid var(--ink);
+	border-radius: 999px;
+	color: var(--ink);
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-decoration: none;
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease,
+		color 0.2s ease;
+}
+
+.series-rail-start:hover {
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
+	color: #fff;
+}
+
+.series-rail-others {
+	max-width: 260px;
+	margin-top: 34px;
+	padding-top: 20px;
+	border-top: 1px solid var(--rule);
+}
+
+.series-rail-others p {
+	margin: 0 0 8px;
+	color: var(--blue-strong);
+	font-size: 0.6rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+}
+
+.series-rail-others a {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 7px 0;
+	color: var(--ink-soft);
+	font-size: 0.75rem;
+	font-weight: 650;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.series-rail-others a:hover {
+	color: var(--blue-strong);
+}
+
+.series-rail-others a span {
+	color: var(--ink-faint);
+	font-family: var(--mono);
+	font-size: 0.62rem;
+}
+
+.series-chapters {
+	display: grid;
+	gap: clamp(30px, 4vw, 40px);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.series-main {
+	min-width: 0;
+}
+
+.series-toolbar {
+	margin: 0 0 30px;
+	padding-top: 0;
+	border-top: 0;
+}
+
+.series-chapters li {
+	position: relative;
+}
+
+.series-chapters li:not(:last-child)::before {
+	content: '';
+	position: absolute;
+	top: 40px;
+	bottom: calc(-1 * clamp(30px, 4vw, 40px) + 4px);
+	left: 15px;
+	border-left: 2px dotted color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.series-chapters a {
+	display: flex;
+	gap: 16px;
+	color: inherit;
+	text-decoration: none;
+}
+
+.chapter-num {
+	position: relative;
+	z-index: 1;
+	display: grid;
+	flex: none;
+	width: 32px;
+	height: 32px;
+	margin-top: 2px;
+	padding-top: 1px;
+	border: 2px solid var(--ink);
+	border-radius: 50%;
+	font-family: 'Baloo 2', var(--sans);
+	font-size: 0.85rem;
+	font-weight: 700;
+	place-items: center;
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease,
+		color 0.2s ease;
+}
+
+.series-chapters a:hover .chapter-num {
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
+	color: #fff;
+}
+
+.chapter-body {
+	display: grid;
+	gap: 7px;
+}
+
+.chapter-meta {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: var(--ink-faint);
+	font-family: var(--mono);
+	font-size: 0.62rem;
+	letter-spacing: 0.04em;
+}
+
+.chapter-body h3 {
+	margin: 0;
+	font-family: var(--sans);
+	font-size: 1.18rem;
+	font-weight: 720;
+	letter-spacing: -0.015em;
+	line-height: 1.4;
+	transition: color 0.2s ease;
+}
+
+.series-chapters a:hover .chapter-body h3 {
+	color: var(--blue-strong);
+}
+
+.chapter-body small {
+	max-width: 62ch;
+	color: var(--ink-soft);
+	font-size: 0.78rem;
+	line-height: 1.7;
+}
+
+@media (max-width: 860px) {
+	.hl-month,
+	.series-layout {
+		grid-template-columns: 1fr;
+		gap: 22px;
+	}
+
+	.hl-month-header,
+	.series-rail {
+		position: static;
+	}
+
+	.hl-month-index,
+	.series-rail-index {
+		display: none;
+	}
+
+	.hl-month-header h2 {
+		display: inline;
+		font-size: 1.2rem;
+	}
+
+	.hl-month-header p {
+		display: inline;
+		margin-left: 10px;
+	}
+
+	.hl-month-list {
+		grid-template-columns: 1fr;
+	}
+
+	.series-rail-others {
+		display: none;
+	}
+}
+
+/* Year navigation for the Highlights archive — the terms-page pill nav,
+   with the newest year living on the section index itself. */
+.hl-year-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 26px;
+	margin-top: 26px;
+}
+
+.hl-year-nav a {
+	display: inline-flex;
+	align-items: flex-start;
+	gap: 3px;
+	color: var(--ink-soft);
+	font-size: 0.85rem;
+	font-weight: 500;
+	text-decoration: none;
+	transition:
+		color 0.2s ease,
+		translate 0.2s ease;
+}
+
+.hl-year-nav span {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding-bottom: 4px;
+	background: linear-gradient(var(--blue), var(--blue)) left bottom / 0 2px no-repeat;
+	transition: background-size 0.25s ease;
+}
+
+.hl-year-nav span::after {
+	content: attr(data-label);
+	overflow: hidden;
+	height: 0;
+	font-weight: 700;
+	visibility: hidden;
+}
+
+.hl-year-nav small {
+	color: var(--ink-faint);
+	font-size: 0.6rem;
+	font-weight: 600;
+	line-height: 1.4;
+	transition: color 0.2s ease;
+}
+
+.hl-year-nav a:hover {
+	color: var(--ink);
+	translate: 0 -2px;
+}
+
+.hl-year-nav a:hover span,
+.hl-year-nav a.is-active span {
+	font-weight: 700;
+	background-size: 100% 2px;
+}
+
+.hl-year-nav a:hover small,
+.hl-year-nav a.is-active small {
+	color: var(--blue-strong);
+}
+
+.hl-year-nav a.is-active {
+	color: var(--ink);
+}
+
+/* Article figures: let diagrams breathe wider than the prose column on
+   large screens (into the page margin and column gutter only — never
+   under the sticky outline), and open full-size in a new tab on click. */
+.article-img-zoom {
+	display: block;
+	cursor: zoom-in;
+}
+
+@media (min-width: 1100px) {
+	.article-content img,
+	.article-content .article-img-zoom {
+		width: calc(100% + 64px);
+		max-width: none;
+		margin-left: -28px;
+	}
+
+	.article-content .article-img-zoom img {
+		width: 100%;
+		margin-left: 0;
 	}
 }

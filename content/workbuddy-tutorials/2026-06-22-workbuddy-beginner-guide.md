@@ -3,6 +3,7 @@ title: "WorkBuddy 入门指南"
 slug: "workbuddy-beginner-guide"
 description: "从安装登录、工作模式和模型配置，到专家、Skills、自动化、连接器与远程设置，系统了解 WorkBuddy 的核心用法。"
 date: 2026-06-22
+weight: 1
 tags: ["WorkBuddy", "入门教程", "Skills", "自动化", "MCP", "AI 办公"]
 author: "BubbleBrain"
 sourceUrl: "https://mp.weixin.qq.com/s/n2MY3-H1k3tSLs27Pm75vw"

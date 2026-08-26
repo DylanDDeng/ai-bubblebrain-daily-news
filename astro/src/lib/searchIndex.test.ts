@@ -11,6 +11,7 @@ describe('knowledge search index', () => {
 		expect(index.sections).toContain('highlights');
 		expect(index.sections).toContain('codex-tutorials');
 		expect(index.sections).toContain('deepseek-harness-tutorials');
+		expect(index.sections).toContain('pi-agent-tutorials');
 		expect(index.sections).toContain('workbuddy-tutorials');
 		expect(index.items).toEqual(
 			expect.arrayContaining([
@@ -37,6 +38,14 @@ describe('knowledge search index', () => {
 				expect.objectContaining({
 					href: '/deepseek-harness-tutorials/deepseek-harness-first-plugin/',
 					section_label: 'DeepSeek Harness 教程',
+				}),
+				expect.objectContaining({
+					href: '/pi-agent-tutorials/pi-agent-overview/',
+					section_label: 'Pi Agent 教程',
+				}),
+				expect.objectContaining({
+					href: '/pi-agent-tutorials/pi-agent-tool-system/',
+					section_label: 'Pi Agent 教程',
 				}),
 				expect.objectContaining({
 					href: '/workbuddy-tutorials/workbuddy-beginner-guide/',

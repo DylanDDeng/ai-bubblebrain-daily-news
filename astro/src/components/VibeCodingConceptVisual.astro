@@ -1,0 +1,1084 @@
+---
+import type { VibeCodingConcept } from '../data/vibeCodingTerms';
+import type { VibeCodingDetailProfile } from '../data/vibeCodingTermDetails';
+
+interface Props {
+	concept: VibeCodingConcept;
+	profile: VibeCodingDetailProfile;
+}
+
+const { concept, profile } = Astro.props;
+const isComponent = concept.id === 'component';
+const isState = concept.id === 'state';
+const isProps = concept.id === 'props';
+const isResponsive = concept.id === 'responsive-design';
+const isDom = concept.id === 'dom';
+const isHydration = concept.id === 'hydration';
+const isEvent = concept.id === 'event';
+const isRouting = concept.id === 'routing';
+const isSsr = concept.id === 'ssr';
+const isStorage = concept.id === 'browser-storage';
+const isBackend = concept.id === 'backend';
+const isApi = concept.id === 'api';
+const isEndpoint = concept.id === 'endpoint';
+const isRuntime = concept.id === 'runtime';
+const isMiddleware = concept.id === 'middleware';
+const isAuth = concept.id === 'authentication';
+const isEnvVar = concept.id === 'environment-variable';
+const isPrompt = concept.id === 'prompt';
+const isAgentTerm = concept.id === 'agent';
+const isVibeCoding = concept.id === 'vibe-coding';
+const isContextWindow = concept.id === 'context-window';
+const isHarness = concept.id === 'harness';
+const isMcp = concept.id === 'mcp';
+const isSkillTerm = concept.id === 'skill';
+const isRag = concept.id === 'rag';
+---
+
+<figure class="concept-visual" data-concept-animation={concept.categoryId}>
+	<header class="concept-visual-header">
+		<span>动态说明</span>
+		<strong>{profile.visualTitle}</strong>
+		<small>{concept.name}</small>
+	</header>
+
+	{
+		isRag ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">闭卷 · 直接问</i>
+						<i class="concept-state-b">RAG · 先查再答</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>问题</code>
+						<span>报销上限是多少？</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>员工手册</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">（模型没学过）</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 检索到第 3 章</i>
+						</span>
+					</div>
+					<strong>答案不在模型脑子里</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">凭记忆补全</i>
+						<i class="concept-state-b">对着资料作答</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>回答</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">「大概 500 元？」</i>
+							<i class="concept-state-b">单日上限 800 元</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>出处</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 说不出来</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 手册 3.2 节</i>
+						</span>
+					</div>
+					<strong>有据可查，才敢当真</strong>
+				</div>
+			</div>
+		) : isVibeCoding ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">第一轮 · 说意图</i>
+						<i class="concept-state-b">第二轮 · 说反馈</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>你说</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">「卡片加个悬停阴影」</i>
+							<i class="concept-state-b">「浮起的幅度小一半」</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>AI</code>
+						<span>改代码 · 几秒钟</span>
+					</div>
+					<strong>需求用人话说</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">运行 · 第一版</i>
+						<i class="concept-state-b">运行 · 第二版</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>阴影</code>
+						<span class="concept-rtm-yes">✓ 有了</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>浮起</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">有点夸张</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 刚刚好</i>
+						</span>
+					</div>
+					<strong>结果，是下一句话的依据</strong>
+				</div>
+			</div>
+		) : isContextWindow ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">第 3 轮 · 还宽敞</i>
+						<i class="concept-state-b">第 60 轮 · 满了</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>开头约定</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 看得见</i>
+							<i class="concept-state-b concept-rtm-no">已出窗</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>中途代码</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 看得见</i>
+							<i class="concept-state-b">压成一句概要</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>最新消息</code>
+						<span class="concept-rtm-yes">✓ 看得见</span>
+					</div>
+					<strong>桌面就这么大</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">回答守规矩</i>
+						<i class="concept-state-b">开始违反约定</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>表现</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 记得规矩</i>
+							<i class="concept-state-b concept-rtm-no">✗ 当没说过</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>对策</code>
+						<span>关键约定写进文件</span>
+					</div>
+					<strong>写进文件的，才是可靠记忆</strong>
+				</div>
+			</div>
+		) : isHarness ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>模型的输出 · 一段文字</small>
+					<p>
+						<code>动作</code>
+						<span>「删掉 build 目录」</span>
+					</p>
+					<p>
+						<code>此刻</code>
+						<span>还什么都没发生</span>
+					</p>
+					<strong>光会说，没有手</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-shield-check" />
+						校验权限 · 删除类，先确认
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-terminal-window" />
+						真正执行 · rm -rf ./build
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-arrows-clockwise" />
+						结果回填 · 进入下一轮
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						文字变成了行动
+					</div>
+					<strong>说到做到，靠的是框架</strong>
+				</div>
+			</div>
+		) : isMcp ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">没有统一协议</i>
+						<i class="concept-state-b">有了 MCP</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>日历</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">专属插件 × 每个应用</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 一个 MCP 服务器</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>数据库</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">专属插件 × 每个应用</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 一个 MCP 服务器</i>
+						</span>
+					</div>
+					<strong>三个服务，两种接法</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">每换应用，重写一遍</i>
+						<i class="concept-state-b">一次接入，到处能用</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>接入成本</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">服务 × 应用 份胶水</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 各写一次</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>新工具</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 又要写适配</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 接上就能用</i>
+						</span>
+					</div>
+					<strong>对齐一个标准，省掉一堆胶水</strong>
+				</div>
+			</div>
+		) : isSkillTerm ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">每次现说</i>
+						<i class="concept-state-b">一句话触发</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>你说</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">格式是…口吻是…数据从…</i>
+							<i class="concept-state-b">「写周报」</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>说明</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">300 字，还漏了两条</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 技能里全有</i>
+						</span>
+					</div>
+					<strong>重复的说明，值得打包</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">产出看运气</i>
+						<i class="concept-state-b">每次同一水准</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>本周</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">格式碰巧对了</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 按模板</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>下周</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 口吻又变了</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 还是那套</i>
+						</span>
+					</div>
+					<strong>稳定，来自封装</strong>
+				</div>
+			</div>
+		) : isAgentTerm ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>拆开一个 Agent</small>
+					<p>
+						<code>Model</code>
+						<span>大脑 · 决定下一步</span>
+					</p>
+					<p>
+						<code>Harness</code>
+						<span>手脚 · 工具、权限、循环</span>
+					</p>
+					<strong>少了哪半，都不是 Agent</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-brain" />
+						Model · 「先跑一遍测试」
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-terminal-window" />
+						Harness · 执行命令，结果递回
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-brain" />
+						Model · 「一处失败，改 utils.js」
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 3" aria-hidden="true">
+						<i class="ph ph-wrench" />
+						Harness · 改文件，重跑测试
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						✓ 测试通过 · 任务完成
+					</div>
+					<strong>一个出主意，一个动手，循环到做完</strong>
+				</div>
+			</div>
+		) : isPrompt ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">随口一说</i>
+						<i class="concept-state-b">一份清楚的委托单</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>目标</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">「弄个深色模式」</i>
+							<i class="concept-state-b">设置页加深色开关</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>约束</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">（没说）</i>
+							<i class="concept-state-b">全局样式不动</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>验收</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">（没说）</i>
+							<i class="concept-state-b">刷新后保持选择</i>
+						</span>
+					</div>
+					<strong>说得越清楚，AI 猜得越少</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">AI 只能靠猜</i>
+						<i class="concept-state-b">AI 照单执行</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>做了什么</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 整站都改黑了</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 设置页新增开关</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>刷新之后</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 又变回白色</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 记住了深色</i>
+						</span>
+					</div>
+					<strong>产出质量，在提示词里就定了一半</strong>
+				</div>
+			</div>
+		) : isRuntime ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>code.js · 同一份代码</small>
+					<p>
+						<code>fetch()</code>
+						<span>发起请求</span>
+					</p>
+					<p>
+						<code>document</code>
+						<span>操作页面</span>
+					</p>
+					<p>
+						<code>fs.read()</code>
+						<span>读取文件</span>
+					</p>
+					<strong>此刻它只是文本</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">跑在浏览器里</i>
+						<i class="concept-state-b">跑在 Node.js 里</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>fetch()</code>
+						<span class="concept-rtm-yes">✓ 都有</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>document</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">✓ 有</i>
+							<i class="concept-state-b concept-rtm-no">✗ is not defined</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>fs.read()</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ is not defined</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 有</i>
+						</span>
+					</div>
+					<strong>水土不同，能力清单不同</strong>
+				</div>
+			</div>
+		) : isMiddleware ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>一个请求进入通道</small>
+					<p>
+						<code>GET</code>
+						<span>/orders</span>
+					</p>
+					<p>
+						<code>凭证</code>
+						<span>🎫 有效</span>
+					</p>
+					<strong>不管去哪，都走这条道</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-shield-check" />
+						鉴权 · 查验凭证
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-notebook" />
+						日志 · 顺手记一笔
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-gauge" />
+						限流 · 频率正常
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						→ 抵达 orders 的处理逻辑
+					</div>
+					<strong>过完公用的关，才见业务</strong>
+				</div>
+			</div>
+		) : isAuth ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>你说你是</small>
+					<p>
+						<code>邮箱</code>
+						<span>you@example.com</span>
+					</p>
+					<p>
+						<code>密码</code>
+						<span>••••••••</span>
+					</p>
+					<strong>此刻系统还不能信你</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-key" />
+						核对密码
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-ticket" />
+						发放凭证 · 7 天有效
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						之后每次请求：带上 🎫 即可通行
+					</div>
+					<strong>凭证在手，不用回回输密码</strong>
+				</div>
+			</div>
+		) : isEnvVar ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>代码里只有名字</small>
+					<p>
+						<code>DB_URL</code>
+						<span>process.env.DB_URL</span>
+					</p>
+					<p>
+						<code>API_KEY</code>
+						<span>process.env.API_KEY</span>
+					</p>
+					<strong>值不在代码里</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">本地 · .env 文件</i>
+						<i class="concept-state-b">线上 · 平台设置</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>DB_URL</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">test_db 🧪</i>
+							<i class="concept-state-b">live_db 🚀</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>API_KEY</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">sk_test_…</i>
+							<i class="concept-state-b">sk_live_…</i>
+						</span>
+					</div>
+					<strong>换环境换值，代码一行不动</strong>
+				</div>
+			</div>
+		) : isEndpoint ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>同一个地址</small>
+					<p>
+						<code>方法</code>
+						<span class="concept-state-flip concept-ep-flip">
+							<i class="concept-state-a is-get">GET</i>
+							<i class="concept-state-b is-post">POST</i>
+						</span>
+					</p>
+					<p>
+						<code>路径</code>
+						<span>/orders</span>
+					</p>
+					<strong>一个地址，两个动作</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-ep-row" aria-hidden="true">
+						<u class="concept-ep-glow concept-state-a" />
+						<b class="is-get">GET</b>
+						<code>/orders</code>
+						<span>查订单列表</span>
+					</div>
+					<div class="concept-ep-row" aria-hidden="true">
+						<u class="concept-ep-glow concept-state-b" />
+						<b class="is-post">POST</b>
+						<code>/orders</code>
+						<span>创建新订单</span>
+					</div>
+					<div class="concept-ep-row is-dim" aria-hidden="true">
+						<b class="is-get">GET</b>
+						<code>/users</code>
+						<span>查用户列表</span>
+					</div>
+					<strong>方法不同，就是菜单上不同的菜</strong>
+				</div>
+			</div>
+		) : isApi ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>照约定点单</small>
+					<p>
+						<code>GET</code>
+						<span>/weather</span>
+					</p>
+					<p>
+						<code>city</code>
+						<span>"上海"</span>
+					</p>
+					<strong>调用方发出请求</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-api-json" aria-hidden="true">
+						<p style="--api-index: 0">&#123;</p>
+						<p class="is-line" style="--api-index: 1">
+							<em>"temp"</em>: 25,
+						</p>
+						<p class="is-line" style="--api-index: 2">
+							<em>"sky"</em>: "晴"
+						</p>
+						<p style="--api-index: 3">&#125;</p>
+					</div>
+					<div class="concept-api-widget" aria-hidden="true">
+						<i class="ph ph-sun" />
+						上海 · 25°C
+					</div>
+					<strong>照约定上菜，前端拿来就用</strong>
+				</div>
+			</div>
+		) : isBackend ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>浏览器发出</small>
+					<p>
+						<code>POST</code>
+						<span>/orders</span>
+					</p>
+					<p>
+						<code>body</code>
+						<span>拿铁 × 1，邮箱 ✓</span>
+					</p>
+					<strong>一张请求单</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-bk-row" style="--bk-index: 0" aria-hidden="true">
+						<i class="ph ph-shield-check" />
+						校验身份与字段
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 1" aria-hidden="true">
+						<i class="ph ph-gear" />
+						执行业务规则
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-row" style="--bk-index: 2" aria-hidden="true">
+						<i class="ph ph-database" />
+						写入数据库
+						<em class="ph ph-check-circle" />
+					</div>
+					<div class="concept-bk-ok" aria-hidden="true">
+						200 · 处理完成，返回前端
+					</div>
+					<strong>服务器里走完这一趟</strong>
+				</div>
+			</div>
+		) : isEvent ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>监听登记表</small>
+					<p>
+						<code>click</code>
+						<span>更新计数</span>
+					</p>
+					<p>
+						<code>input</code>
+						<span>校验格式</span>
+					</p>
+					<strong>先登记，才有人接</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<b class="concept-ev-btn" aria-hidden="true">
+						点我
+					</b>
+					<p class="concept-ev-count" aria-hidden="true">
+						<code>count</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">0</i>
+							<i class="concept-state-b">1</i>
+						</span>
+					</p>
+					<strong>有人听，点击才有下文</strong>
+				</div>
+			</div>
+		) : isRouting ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>路由表</small>
+					<p>
+						<code>/</code>
+						<span>首页</span>
+					</p>
+					<p>
+						<code>/blog</code>
+						<span>博客</span>
+					</p>
+					<p>
+						<code>其他</code>
+						<span>404</span>
+					</p>
+					<strong>一条路径，一个页面</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-rt-addr" aria-hidden="true">
+						<b />
+						<b />
+						<em class="concept-state-flip">
+							<i class="concept-state-a">site.com/</i>
+							<i class="concept-state-b">site.com/blog</i>
+						</em>
+					</div>
+					<div class="concept-rt-views" aria-hidden="true">
+						<div class="concept-rt-view concept-state-a">
+							<span class="concept-rt-hero" />
+							<span class="concept-rt-line" />
+							<b class="concept-dom-mini-btn">开始</b>
+						</div>
+						<div class="concept-rt-view concept-state-b">
+							<span class="concept-rt-row" />
+							<span class="concept-rt-row" />
+							<span class="concept-rt-row" />
+						</div>
+					</div>
+					<strong>地址变，视图跟着换</strong>
+				</div>
+			</div>
+		) : isSsr ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>服务器上</small>
+					<p>
+						<code>数据</code>
+						<span>已查好</span>
+					</p>
+					<p>
+						<code>模板</code>
+						<span>已填充</span>
+					</p>
+					<p>
+						<code>HTML</code>
+						<span>已拼装</span>
+					</p>
+					<strong>页面在服务器拼好</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-ssr-pair" aria-hidden="true">
+						<figure>
+							<div class="concept-ssr-mini is-csr">
+								<span class="concept-ssr-spin" />
+							</div>
+							<figcaption>CSR · 还在拼</figcaption>
+						</figure>
+						<figure>
+							<div class="concept-ssr-mini">
+								<span class="concept-dom-mini-nav" />
+								<span class="concept-dom-mini-line" />
+								<b class="concept-dom-mini-btn">立即阅读</b>
+							</div>
+							<figcaption>SSR · 已经能看</figcaption>
+						</figure>
+					</div>
+					<strong>同一时刻，两种首屏</strong>
+				</div>
+			</div>
+		) : isStorage ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>这台设备的抽屉</small>
+					<p>
+						<code>theme</code>
+						<span>"dark"</span>
+					</p>
+					<p>
+						<code>draft</code>
+						<span>"写到一半…"</span>
+					</p>
+					<strong>数据留在用户这边</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-st-tag" aria-hidden="true">
+						<i class="concept-state-a">刷新页面…</i>
+						<i class="concept-state-b">读到 theme = "dark"</i>
+					</em>
+					<div class="concept-st-row" aria-hidden="true">
+						<code>theme</code>
+						<span>"dark"</span>
+						<i class="ph ph-check-circle concept-state-b" />
+					</div>
+					<strong>刷新之后，它还在</strong>
+				</div>
+			</div>
+		) : isDom ? (
+			<div class="concept-instance-visual concept-dom-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>HTML</small>
+					<p>
+						<code>&lt;nav&gt;</code>
+						<span>导航</span>
+					</p>
+					<p>
+						<code>&lt;main&gt;</code>
+						<span>正文容器</span>
+					</p>
+					<p>
+						<code>&lt;button&gt;</code>
+						<span>按钮</span>
+					</p>
+					<strong>标签嵌套的文档</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-dom-tree" aria-hidden="true">
+						<p>body</p>
+						<p class="is-l1">├─ nav</p>
+						<p class="is-l1">└─ main</p>
+						<p class="is-l2">├─ h1</p>
+						<p class="is-l2 concept-dom-hot">└─ button</p>
+					</div>
+					<div class="concept-dom-mini" aria-hidden="true">
+						<span class="concept-dom-mini-nav" />
+						<span class="concept-dom-mini-line" />
+						<b class="concept-dom-mini-btn concept-dom-hot-follow">按钮</b>
+					</div>
+					<strong>拉一下树上的线，木偶就动</strong>
+				</div>
+			</div>
+		) : isHydration ? (
+			<div class="concept-instance-visual concept-hyd-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>两份材料</small>
+					<p>
+						<code>page.html</code>
+						<span>已经能看</span>
+					</p>
+					<p>
+						<code>app.js</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">加载中…</i>
+							<i class="concept-state-b">已就绪</i>
+						</span>
+					</p>
+					<strong>结构先到，交互后到</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<span class="concept-dom-mini-nav" aria-hidden="true" />
+					<span class="concept-dom-mini-line" aria-hidden="true" />
+					<b class="concept-hyd-btn" aria-hidden="true">
+						立即订阅
+					</b>
+					<em class="concept-state-flip concept-hyd-tag">
+						<i class="concept-state-a">能看，还不能点</i>
+						<i class="concept-state-b">已激活，可以点了</i>
+					</em>
+					<strong>从「能看」到「能用」</strong>
+				</div>
+			</div>
+		) : isResponsive ? (
+			<div class="concept-instance-visual concept-rd-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>一份内容</small>
+					<p>
+						<code>nav</code>
+						<span>导航 × 1</span>
+					</p>
+					<p>
+						<code>cards</code>
+						<span>卡片 × 3</span>
+					</p>
+					<p>
+						<code>cta</code>
+						<span>按钮 × 1</span>
+					</p>
+					<strong>内容只写一份</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-rd-stage">
+					<div class="concept-rd-frame" aria-hidden="true">
+						<div class="concept-rd-bar">
+							<b />
+							<b />
+							<b />
+							<em class="concept-state-flip">
+								<i class="concept-state-a">1200px</i>
+								<i class="concept-state-b">390px</i>
+							</em>
+						</div>
+						<span class="concept-rd-nav" />
+						<div class="concept-rd-cards">
+							<b />
+							<b />
+							<b />
+						</div>
+						<span class="concept-rd-cta" />
+					</div>
+					<strong>屏幕一变，布局跟着变</strong>
+				</div>
+			</div>
+		) : isProps ? (
+			<div class="concept-instance-visual concept-props-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>Button.def</small>
+					<p>
+						<code>label</code>
+						<span class="concept-props-hole">待传入</span>
+					</p>
+					<p>
+						<code>variant</code>
+						<span class="concept-props-hole">待传入</span>
+					</p>
+					<strong>样子交给 props 决定</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-props-row" style="--props-index: 0">
+						<code>label="加入购物车"</code>
+						<b class="concept-props-chip is-solid">加入购物车</b>
+					</div>
+					<div class="concept-props-row" style="--props-index: 1">
+						<code>label="取消" ghost</code>
+						<b class="concept-props-chip is-ghost">取消</b>
+					</div>
+					<div class="concept-props-row" style="--props-index: 2">
+						<code>label="删除" dark</code>
+						<b class="concept-props-chip is-dark">删除</b>
+					</div>
+					<strong>同一份定义，三种样子</strong>
+				</div>
+			</div>
+		) : isState ? (
+			<div class="concept-instance-visual concept-state-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>state</small>
+					<p>
+						<code>menu</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">"收起"</i>
+							<i class="concept-state-b">"展开"</i>
+						</span>
+					</p>
+					<p>
+						<code>unread</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">0</i>
+							<i class="concept-state-b">3</i>
+						</span>
+					</p>
+					<strong>一份数据，自己在变</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-state-topbar" aria-hidden="true">
+						<span class="concept-state-burger">
+							<b />
+							<b />
+							<b />
+						</span>
+						<span class="concept-state-bell">
+							<i class="ph ph-bell" />
+							<em>3</em>
+						</span>
+					</div>
+					<div class="concept-state-body" aria-hidden="true">
+						<span class="concept-state-drawer">
+							<b />
+							<b />
+							<b />
+						</span>
+						<span class="concept-state-content" />
+					</div>
+					<strong>界面照着数据画</strong>
+				</div>
+			</div>
+		) : isComponent ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<small>Button.def</small>
+					<p>
+						<code>label</code>
+						<span>加入购物车</span>
+					</p>
+					<p>
+						<code>color</code>
+						<i class="concept-instance-swatch" aria-hidden="true" />
+					</p>
+					<strong>一份定义</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<div class="concept-instance-slot" style="--instance-index: 0">
+						<span>导航栏</span>
+						<b class="concept-instance-chip">加入购物车</b>
+					</div>
+					<div class="concept-instance-slot" style="--instance-index: 1">
+						<span>文章卡片</span>
+						<b class="concept-instance-chip">加入购物车</b>
+					</div>
+					<div class="concept-instance-slot" style="--instance-index: 2">
+						<span>登录表单</span>
+						<b class="concept-instance-chip">加入购物车</b>
+					</div>
+					<strong>三个实例，跟着定义一起变</strong>
+				</div>
+			</div>
+		) : (
+			<div class="concept-flow" aria-label={profile.visualTitle}>
+				{profile.steps.map((step, index) => (
+					<div class="concept-flow-node" style={`--step-index: ${index}`}>
+						<span>{String(index + 1).padStart(2, '0')}</span>
+						<strong>{step.label}</strong>
+						<small>{step.detail}</small>
+						{index < profile.steps.length - 1 && (
+							<i class="concept-flow-connector" aria-hidden="true">
+								<b />
+							</i>
+						)}
+					</div>
+				))}
+			</div>
+		)
+	}
+
+	<figcaption>
+		<i aria-hidden="true"></i>
+		{profile.visualCaption}
+	</figcaption>
+</figure>

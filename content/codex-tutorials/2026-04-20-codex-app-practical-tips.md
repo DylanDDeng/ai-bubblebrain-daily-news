@@ -3,6 +3,7 @@ title: "6 个实用的 Codex App 技巧"
 slug: "codex-app-practical-tips"
 description: "从自由聊天、内置浏览器和 Computer Use，到 Plan、Agent Team、Memory 与 Chronicle，整理 Codex App 的实用玩法。"
 date: 2026-04-20
+weight: 2
 tags:
   ["Codex", "Codex App", "使用技巧", "Computer Use", "Agent Team", "Chronicle"]
 author: "BubbleBrain"

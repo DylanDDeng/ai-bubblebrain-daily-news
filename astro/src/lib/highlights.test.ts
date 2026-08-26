@@ -40,6 +40,7 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-08-20-hot-take-llm-can-jump/',
 	'/highlights/2026-08-21-what-is-reasoning/',
 	'/en/highlights/2026-08-21-what-is-reasoning/',
+	'/highlights/2026-08-25-ai-engineering-skills-map-building-deploying-ai-applications/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -135,6 +136,21 @@ describe('unified highlights content', () => {
 				'/media/highlights/what-is-reasoning/gpt-5.6-terra-spell-check.png',
 			);
 		}
+	});
+
+	it('keeps the AI Engineering Skills Map article complete and source-linked', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) =>
+				entry.frontmatter.externalId ===
+				'ai-engineering-skills-map-building-deploying-ai-applications',
+		);
+
+		expect(records).toHaveLength(1);
+		expect(records[0]?.locale).toBe('zh-CN');
+		expect(records[0]?.body.match(/^## /gm)).toHaveLength(8);
+		expect(records[0]?.body).toContain('https://x.com/AndrewYNg/status/2090840747738374568');
+		expect(records[0]?.body).toContain('LLM-as-a-judge');
+		expect(records[0]?.body).toContain('Computer Use Agent');
 	});
 
 	it('preserves every migrated Chinese and English record in Markdown', async () => {

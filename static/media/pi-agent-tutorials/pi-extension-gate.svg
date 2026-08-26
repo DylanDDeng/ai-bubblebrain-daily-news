@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 170 1092 400" role="img" aria-labelledby="title desc">
+  <title id="title">一次 toolCall 递到检查员手里的三种结局</title>
+  <desc id="desc">动画演示：模型发出的 toolCall（橙点）递给扩展的 tool_call 钩子，三幕轮播三种结局——检查员什么都不返回就是放行，execute 照常执行；返回 block:true 就是拦下，工具不执行，reason 作为失败结果回给模型；原地修改 event.input 就是改写，照常执行但用的是改过的参数。多个扩展依次过检，谁先返回 block，后面的不再被问。</desc>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .name{font-size:17px;font-weight:650;fill:#111}
+    .sub{font-size:14px;fill:#6c6c6c}
+    .code{font-size:14px;fill:#555}
+    .verdict-hl{font-size:14px;font-weight:650;fill:#d9341c}
+    .ok{font-size:14px;font-weight:650;fill:#2c8a44}
+    .note{font-size:14px;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .gate{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round}
+    .dot{fill:#ff4d2e}
+    .d1{animation:dot1 12s linear infinite}
+    .d2{animation:dot2 12s linear infinite}
+    .d3{animation:dot3 12s linear infinite}
+    .p1{animation:pulse1 12s linear infinite}
+    .p2{animation:pulse2 12s linear infinite}
+    .p3{animation:pulse3 12s linear infinite}
+    @keyframes dot1{0%{opacity:0}2%,29%{opacity:1}31%,100%{opacity:0}}
+    @keyframes dot2{0%,33%{opacity:0}35%,62%{opacity:1}64%,100%{opacity:0}}
+    @keyframes dot3{0%,66%{opacity:0}68%,95%{opacity:1}97%,100%{opacity:0}}
+    @keyframes pulse1{0%,14%{stroke:#dedede}18%,29%{stroke:#ff4d2e}33%,100%{stroke:#dedede}}
+    @keyframes pulse2{0%,47%{stroke:#dedede}51%,62%{stroke:#ff4d2e}66%,100%{stroke:#dedede}}
+    @keyframes pulse3{0%,81%{stroke:#dedede}85%,95%{stroke:#ff4d2e}99%,100%{stroke:#dedede}}
+    @media(prefers-reduced-motion:reduce){
+      .d1,.d2,.d3{animation:none;opacity:0}
+      .p1,.p2,.p3{animation:none}
+    }
+  </style>
+
+  <g class="sans">
+    <rect class="card" x="72" y="188" width="430" height="68"/>
+    <text x="94" y="216" class="sub">模型发出的 toolCall</text>
+    <text x="94" y="242" class="mono code">bash · { command: "rm -rf build/" }</text>
+
+    <rect class="gate" x="650" y="188" width="330" height="68"/>
+    <text x="672" y="216" class="name">tool_call 检查员</text>
+    <text x="672" y="242" class="sub">你用 pi.on() 挂上的钩子函数</text>
+  </g>
+
+  <path class="wire" d="M502 222H646"/>
+  <path class="wire" d="M815 256V300"/>
+  <path class="wire" d="M237 300H921"/>
+  <path class="wire" d="M237 300V344"/>
+  <path class="wire" d="M579 300V344"/>
+  <path class="wire" d="M921 300V344"/>
+
+  <g class="sans">
+    <rect class="card p1" x="72" y="348" width="330" height="120"/>
+    <text x="94" y="380" class="mono num">01</text>
+    <text x="134" y="381" class="name">放行</text>
+    <text x="94" y="410" class="mono code">检查员什么都不返回</text>
+    <text x="94" y="440" class="ok">execute() 照常执行</text>
+
+    <rect class="card p2" x="414" y="348" width="330" height="120"/>
+    <text x="436" y="380" class="mono num">02</text>
+    <text x="476" y="381" class="name">拦下</text>
+    <text x="436" y="410" class="mono code">return { block: true, reason }</text>
+    <text x="436" y="440" class="verdict-hl">工具不执行，reason 回给模型</text>
+
+    <rect class="card p3" x="756" y="348" width="330" height="120"/>
+    <text x="778" y="380" class="mono num">03</text>
+    <text x="818" y="381" class="name">改写</text>
+    <text x="778" y="410" class="mono code">原地修改 event.input</text>
+    <text x="778" y="440" class="verdict-hl">照常执行，但参数已是改过的</text>
+  </g>
+
+  <circle class="dot d1" r="7">
+    <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear"
+      keyPoints="0;1;1" keyTimes="0;0.18;1"
+      path="M507 222 H815 V300 H237 V338"/>
+  </circle>
+  <circle class="dot d2" r="7">
+    <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear"
+      keyPoints="0;0;1;1" keyTimes="0;0.333;0.513;1"
+      path="M507 222 H815 V300 H579 V338"/>
+  </circle>
+  <circle class="dot d3" r="7">
+    <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear"
+      keyPoints="0;0;1;1" keyTimes="0;0.667;0.847;1"
+      path="M507 222 H815 V300 H921 V338"/>
+  </circle>
+
+  <text x="72" y="540" class="mono note">多个扩展依次过检：谁先返回 block，后面的检查员不再被问（runner.ts · emitToolCall）</text>
+</svg>

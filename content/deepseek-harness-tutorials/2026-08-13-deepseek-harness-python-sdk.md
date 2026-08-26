@@ -3,6 +3,7 @@ title: "Python SDK：在程序中调用 DeepSeek Harness"
 slug: "deepseek-harness-python-sdk"
 description: "安装 deepseek-harness-sdk，运行官方 JSON-RPC 示例，并正确管理 workspace、session id 与 Harness 生命周期。"
 date: 2026-08-13T02:00:00Z
+weight: 6
 tags: ["DeepSeek Harness", "Python SDK", "JSON-RPC", "Agent API", "自动化"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/deepseek-ai/deepseek-harness"

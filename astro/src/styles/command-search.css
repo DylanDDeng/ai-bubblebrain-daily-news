@@ -48,7 +48,7 @@
 }
 
 .command-search-header p > kbd {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .command-search-header button {
@@ -73,7 +73,7 @@
 }
 
 .command-search-form i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.25rem;
 }
 
@@ -162,7 +162,7 @@
 .command-search-result-index {
 	align-self: start;
 	padding-top: 2px;
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .command-search-result-body {
@@ -223,7 +223,7 @@
 
 .command-search-footer a {
 	margin-left: auto;
-	color: var(--blue);
+	color: var(--blue-strong);
 	text-decoration: none;
 }
 

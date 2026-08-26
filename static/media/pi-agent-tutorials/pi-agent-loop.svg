@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 136 1092 498" role="img" aria-labelledby="title desc">
+  <title id="title">Pi Agent Loop</title>
+  <desc id="desc">用户请求进入循环：模型判断下一步，调用工具，把真实结果送回模型，循环直到没有工具调用。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .label{font-size:24px;font-weight:720;letter-spacing:-0.5px;fill:#111}
+    .sub{font-size:14px;fill:#6c6c6c}
+    .note{font-size:14px;fill:#6c6c6c}
+    .done{font-size:14px;fill:#2c8a44}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;stroke-linejoin:round}
+    .arrowed{marker-end:url(#arrow)}
+    @media(prefers-reduced-motion:reduce){.packet{display:none}}
+  </style>
+
+  <!-- the loop ring: an orange packet orbits it, hiding under the cards -->
+  <circle class="packet" r="6" fill="#ff4d2e">
+    <animateMotion dur="7s" repeatCount="indefinite" path="M760 210 A190 190 0 1 1 759.9 210"/>
+  </circle>
+
+  <!-- entry into the loop -->
+  <path class="wire arrowed" d="M272 210H652"/>
+
+  <!-- full ring track, faint, behind the cards -->
+  <circle cx="760" cy="400" r="190" fill="none" stroke="#e0e0dd" stroke-width="2" stroke-dasharray="0.1 9" stroke-linecap="round"/>
+
+  <!-- ring arcs, clockwise: Model → Tools → Result → Model -->
+  <path class="wire arrowed" d="M877 250A190 190 0 0 1 950 407"/>
+  <path class="wire arrowed" d="M861 561A190 190 0 0 1 659 561"/>
+  <path class="wire arrowed" d="M571 417A190 190 0 0 1 659 239"/>
+
+  <g class="sans">
+    <rect class="card" x="72" y="150" width="200" height="120"/>
+    <text x="94" y="184" class="mono num">01</text>
+    <text x="94" y="220" class="label">用户请求</text>
+    <text x="94" y="248" class="sub">「先读懂，再修复」</text>
+
+    <rect class="card" x="660" y="150" width="200" height="120"/>
+    <text x="682" y="184" class="mono num">02</text>
+    <text x="682" y="220" class="label">Model</text>
+    <text x="682" y="248" class="sub">判断下一步做什么</text>
+
+    <rect class="card" x="824" y="435" width="200" height="120"/>
+    <text x="846" y="469" class="mono num">03</text>
+    <text x="846" y="505" class="label">Tools</text>
+    <text x="846" y="533" class="mono sub" style="font-size:14px">read·write·edit·bash</text>
+
+    <rect class="card" x="496" y="435" width="200" height="120"/>
+    <text x="518" y="469" class="mono num">04</text>
+    <text x="518" y="505" class="label">Result</text>
+    <text x="518" y="533" class="sub">把真实结果送回模型</text>
+  </g>
+
+  <!-- the loop's exit condition, at its heart -->
+  <text x="760" y="392" text-anchor="middle" class="mono note">还有工具调用，就再转一圈</text>
+  <text x="760" y="420" text-anchor="middle" class="mono done">✓ 没有了，本轮结束</text>
+</svg>

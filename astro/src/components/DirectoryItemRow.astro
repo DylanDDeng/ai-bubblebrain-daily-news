@@ -20,9 +20,12 @@ interface Props {
 	item: DirectoryItem;
 	locale: string;
 	knownRoutes: Set<string>;
+	/** h3 when rows sit under an h2 group heading (e.g. highlights months). */
+	headingTag?: 'h2' | 'h3';
 }
 
-const { item, locale, knownRoutes } = Astro.props;
+const { item, locale, knownRoutes, headingTag = 'h2' } = Astro.props;
+const Heading = headingTag;
 
 const tags = Array.isArray(item.tags) ? item.tags : [];
 const name = item.name ?? item.title ?? '';
@@ -40,7 +43,7 @@ const meta = item.company ?? (item.model || item.date) ?? item.author_name ?? it
 	{image && <img src={image} alt="" loading="lazy" referrerpolicy="no-referrer" />}
 	<div>
 		<p class="directory-item-meta">{meta}</p>
-		<h2>
+		<Heading>
 			{
 				href ? (
 					<a
@@ -49,12 +52,15 @@ const meta = item.company ?? (item.model || item.date) ?? item.author_name ?? it
 						rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
 					>
 						{name}
+						{href.startsWith('http') && (
+							<i class="ph ph-arrow-up-right directory-item-external" aria-hidden="true" />
+						)}
 					</a>
 				) : (
 					name
 				)
 			}
-		</h2>
+		</Heading>
 		{detail && <p>{detail}</p>}
 		{
 			tags.length > 0 && (

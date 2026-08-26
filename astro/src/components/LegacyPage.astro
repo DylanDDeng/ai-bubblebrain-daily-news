@@ -16,6 +16,13 @@ import ImageCompressTool from './tools/ImageCompressTool.astro';
 import AIInfographicTool from './tools/AIInfographicTool.astro';
 import Discussion from './Discussion.astro';
 import DirectoryItemRow from './DirectoryItemRow.astro';
+import HighlightArchive from './HighlightArchive.astro';
+import {
+	highlightItemsFor,
+	highlightMonthGroups,
+	highlightYears,
+	type HighlightArchiveItem,
+} from '../lib/highlightsArchive';
 import ArticleOutline from './ArticleOutline.astro';
 import { commentThreadId } from '../lib/comments/threadId';
 import '../styles/legacy-pages.css';
@@ -98,6 +105,7 @@ type DirectoryKind =
 	| 'curations'
 	| 'codex-tutorials'
 	| 'deepseek-harness-tutorials'
+	| 'pi-agent-tutorials'
 	| 'workbuddy-tutorials';
 
 const { record, markdownId, markdownCollection } = Astro.props;
@@ -120,11 +128,14 @@ const sourceUrl =
 const articleTags = Array.isArray(record.frontmatter.tags)
 	? record.frontmatter.tags.filter((tag): tag is string => typeof tag === 'string')
 	: [];
-const readingUnits =
-	(record.body.match(/[\u3400-\u9fff]/g)?.length ?? 0) +
-	(record.body.replace(/[\u3400-\u9fff]/g, ' ').match(/[A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)*/g)
-		?.length ?? 0);
-const readingMinutes = Math.max(1, Math.ceil(readingUnits / (isEnglish ? 220 : 360)));
+const readingMinutesFor = (body: string) => {
+	const units =
+		(body.match(/[\u3400-\u9fff]/g)?.length ?? 0) +
+		(body.replace(/[\u3400-\u9fff]/g, ' ').match(/[A-Za-z0-9]+(?:['\u2019-][A-Za-z0-9]+)*/g)
+			?.length ?? 0);
+	return Math.max(1, Math.ceil(units / (isEnglish ? 220 : 360)));
+};
+const readingMinutes = readingMinutesFor(record.body);
 const sourceLabel = sourceUrl
 	? (() => {
 			try {
@@ -145,6 +156,11 @@ const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 		en: 'DeepSeek Harness Tutorials',
 		kicker: 'DEEPSEEK HARNESS GUIDE',
 	},
+	'pi-agent-tutorials': {
+		zh: 'Pi Agent 教程',
+		en: 'Pi Agent Tutorials',
+		kicker: 'PI AGENT GUIDE',
+	},
 	'workbuddy-tutorials': {
 		zh: 'WorkBuddy 教程',
 		en: 'WorkBuddy Tutorials',
@@ -158,8 +174,15 @@ const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 	'x-trending': { zh: 'X 热门内容', en: 'X Trending', kicker: 'SOCIAL SIGNALS' },
 };
 const label = pageLabels[record.section];
-const title =
-	record.title && !record.title.includes('-') ? record.title : isEnglish ? label.en : label.zh;
+const title = record.isIndex
+	? isEnglish
+		? label.en
+		: label.zh
+	: record.title && !record.title.includes('-')
+		? record.title
+		: isEnglish
+			? label.en
+			: label.zh;
 const description =
 	record.description ||
 	(isEnglish ? `Browse the ${label.en.toLowerCase()} archive.` : `浏览${label.zh}的历史内容。`);
@@ -180,38 +203,21 @@ if (
 		'curations',
 		'codex-tutorials',
 		'deepseek-harness-tutorials',
+		'pi-agent-tutorials',
 		'workbuddy-tutorials',
 	].includes(record.section)
 ) {
 	directoryKind = record.section as DirectoryKind;
 	if (record.section === 'highlights') {
-		directoryItems = children
-			.map((child) => {
-				const kind = child.frontmatter.kind === 'article' ? 'article' : 'bookmark';
-				return {
-					id:
-						typeof child.frontmatter.externalId === 'string'
-							? child.frontmatter.externalId
-							: child.id,
-					title: child.title,
-					description: child.description,
-					thumb: typeof child.frontmatter.cover === 'string' ? child.frontmatter.cover : undefined,
-					tags: Array.isArray(child.frontmatter.tags)
-						? child.frontmatter.tags.filter((tag): tag is string => typeof tag === 'string')
-						: [],
-					originalUrl:
-						typeof child.frontmatter.sourceUrl === 'string'
-							? child.frontmatter.sourceUrl
-							: undefined,
-					detailUrl: kind === 'article' ? child.route : undefined,
-					date: child.date?.toISOString().slice(0, 10),
-				};
-			})
-			.sort((left, right) => (right.date ?? '').localeCompare(left.date ?? ''));
+		directoryItems = highlightItemsFor(children);
 	} else if (
-		['prompts', 'codex-tutorials', 'deepseek-harness-tutorials', 'workbuddy-tutorials'].includes(
-			record.section,
-		)
+		[
+			'prompts',
+			'codex-tutorials',
+			'deepseek-harness-tutorials',
+			'pi-agent-tutorials',
+			'workbuddy-tutorials',
+		].includes(record.section)
 	) {
 		directoryItems = children.map((child) => ({
 			id: child.route,
@@ -232,7 +238,63 @@ if (
 		directoryItems = JSON.parse(await readFile(resolve(staticRoot, dataPrefix, filename), 'utf8'));
 	}
 }
+const tutorialKinds = [
+	'codex-tutorials',
+	'deepseek-harness-tutorials',
+	'pi-agent-tutorials',
+	'workbuddy-tutorials',
+];
+const isTutorialIndex = record.isIndex && tutorialKinds.includes(record.section);
+const isHighlightsIndex = record.isIndex && record.section === 'highlights';
+const chapters = isTutorialIndex
+	? [...children]
+			.sort((a, b) => {
+				const weightA = typeof a.frontmatter.weight === 'number' ? a.frontmatter.weight : 999;
+				const weightB = typeof b.frontmatter.weight === 'number' ? b.frontmatter.weight : 999;
+				return weightA - weightB || (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0);
+			})
+			.map((child) => ({
+				route: child.route,
+				title: child.title,
+				description: child.description,
+				date: child.date?.toISOString().slice(0, 10),
+				minutes: readingMinutesFor(child.body),
+			}))
+	: [];
+const highlightAll = isHighlightsIndex ? (directoryItems as HighlightArchiveItem[]) : [];
+const highlightYearList = highlightYears(highlightAll);
+const latestHighlightYear = highlightYearList[0]?.year ?? '';
+const mainHighlightItems = highlightAll.filter(
+	(item) => !item.date || item.date.startsWith(latestHighlightYear),
+);
+const highlightMonths = highlightMonthGroups(mainHighlightItems, record.locale);
+const otherSeries = isTutorialIndex
+	? tutorialKinds
+			.filter((kind) => kind !== record.section)
+			.map((kind) => {
+				const indexEntry = allRecords.find(
+					(entry) => entry.section === kind && entry.locale === record.locale && entry.isIndex,
+				);
+				const count = allRecords.filter(
+					(entry) =>
+						entry.section === kind &&
+						entry.locale === record.locale &&
+						!entry.isIndex &&
+						legacyEntryIsRoutable(entry),
+				).length;
+				return indexEntry && count > 0
+					? {
+							href: `${isEnglish ? '/en' : ''}/${kind}/`,
+							title: isEnglish ? pageLabels[kind].en : pageLabels[kind].zh,
+							description: indexEntry.description,
+							count,
+						}
+					: null;
+			})
+			.filter((series): series is NonNullable<typeof series> => series !== null)
+	: [];
 const knownRoutes = new Set(allRecords.filter(legacyEntryIsRoutable).map((entry) => entry.route));
+const isTutorialArticle = !record.isIndex && tutorialKinds.includes(record.section);
 const articleSiblings = allRecords
 	.filter(
 		(entry) =>
@@ -241,7 +303,15 @@ const articleSiblings = allRecords
 			!entry.isIndex &&
 			legacyEntryIsRoutable(entry),
 	)
-	.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+	.sort((a, b) => {
+		// Tutorial series read in curated chapter order; archives stay newest-first.
+		if (isTutorialArticle) {
+			const weightA = typeof a.frontmatter.weight === 'number' ? a.frontmatter.weight : 999;
+			const weightB = typeof b.frontmatter.weight === 'number' ? b.frontmatter.weight : 999;
+			return weightA - weightB;
+		}
+		return (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0);
+	});
 const articleIndex = articleSiblings.findIndex((entry) => entry.route === record.route);
 const newer = articleIndex > 0 ? articleSiblings[articleIndex - 1] : null;
 const older =
@@ -299,12 +369,19 @@ const libraryApi =
 						</h1>
 						{record.section !== 'about' && <p>{description}</p>}
 					</div>
-					<p class="directory-count">
-						<>
-							<strong data-directory-count>{directoryItems.length || children.length}</strong>
-							<span>{isEnglish ? 'records' : '条记录'}</span>
-						</>
-					</p>
+					{isTutorialIndex ? null : isHighlightsIndex ? (
+						<p class="directory-count directory-count--series">
+							<strong data-directory-count>{directoryItems.length}</strong>
+							<span>{isEnglish ? 'picks · updated continually' : '篇 · 持续收录中'}</span>
+						</p>
+					) : (
+						<p class="directory-count">
+							<>
+								<strong data-directory-count>{directoryItems.length || children.length}</strong>
+								<span>{isEnglish ? 'records' : '条记录'}</span>
+							</>
+						</p>
+					)}
 				</header>
 
 				{MarkdownContent &&
@@ -312,6 +389,7 @@ const libraryApi =
 						'highlights',
 						'codex-tutorials',
 						'deepseek-harness-tutorials',
+						'pi-agent-tutorials',
 						'workbuddy-tutorials',
 					].includes(directoryKind ?? '') && (
 						<div class="directory-intro">
@@ -319,7 +397,95 @@ const libraryApi =
 						</div>
 					)}
 
-				{directoryKind && directoryItems.length > 0 ? (
+				{isTutorialIndex ? (
+					<div class="series-layout">
+						<aside class="series-rail">
+							<span class="series-rail-index" aria-hidden="true">
+								{String(chapters.length).padStart(2, '0')}
+							</span>
+							<h2>{isEnglish ? 'Learning path' : '学习路径'}</h2>
+							{MarkdownContent ? (
+								<div class="series-rail-intro">
+									<MarkdownContent />
+								</div>
+							) : (
+								<p class="series-rail-intro">{description}</p>
+							)}
+							{chapters[0] && (
+								<a class="series-rail-start" href={chapters[0].route}>
+									{isEnglish ? 'Start here' : '从这里开始'}
+									<i class="ph ph-arrow-right" aria-hidden="true" />
+								</a>
+							)}
+							{otherSeries.length > 0 && (
+								<div class="series-rail-others">
+									<p>{isEnglish ? 'MORE SERIES' : '其他教程系列'}</p>
+									{otherSeries.map((series) => (
+										<a href={series.href}>
+											{series.title}
+											<span>
+												{series.count} {isEnglish ? 'ch.' : '章'}
+											</span>
+										</a>
+									))}
+								</div>
+							)}
+						</aside>
+						<div class={`series-main content-directory--${record.section}`}>
+							<div class="directory-toolbar series-toolbar">
+								<label for={`${record.section}-search`}>
+									{isEnglish ? 'Search this series' : '搜索本系列'}
+								</label>
+								<div>
+									<i class="ph ph-magnifying-glass" aria-hidden="true" />
+									<input
+										id={`${record.section}-search`}
+										type="search"
+										data-directory-query
+										placeholder={isEnglish ? 'Title or description' : '标题或简介'}
+									/>
+								</div>
+							</div>
+							<ol class="series-chapters" data-directory-list>
+								{chapters.map((chapter, index) => (
+									<li
+										data-directory-item
+										data-search={`${chapter.title} ${chapter.description ?? ''}`.toLocaleLowerCase(
+											record.locale,
+										)}
+									>
+										<a href={chapter.route}>
+											<span class="chapter-num" aria-hidden="true">
+												{index + 1}
+											</span>
+											<div class="chapter-body">
+												<span class="chapter-meta">
+													{chapter.date && <time datetime={chapter.date}>{chapter.date}</time>}
+													<span>
+														{chapter.minutes} {isEnglish ? 'min read' : '分钟'}
+													</span>
+												</span>
+												<h3>{chapter.title}</h3>
+												{chapter.description && <small>{chapter.description}</small>}
+											</div>
+										</a>
+									</li>
+								))}
+							</ol>
+							<p class="directory-empty" data-directory-empty hidden>
+								{isEnglish ? 'No matching chapters.' : '没有匹配的章节。'}
+							</p>
+						</div>
+					</div>
+				) : isHighlightsIndex && directoryItems.length > 0 ? (
+					<HighlightArchive
+						months={highlightMonths}
+						years={highlightYearList}
+						activeYear={latestHighlightYear}
+						locale={record.locale}
+						knownRoutes={knownRoutes}
+					/>
+				) : directoryKind && directoryItems.length > 0 ? (
 					<>
 						<div class="directory-toolbar">
 							<label for={`${directoryKind}-search`}>
@@ -459,7 +625,15 @@ const libraryApi =
 							<div>
 								{newer && (
 									<>
-										<span>{isEnglish ? 'Newer' : '较新'}</span>
+										<span>
+											{isTutorialArticle
+												? isEnglish
+													? 'Previous chapter'
+													: '上一章'
+												: isEnglish
+													? 'Newer'
+													: '较新'}
+										</span>
 										<a href={newer.route}>← {newer.title}</a>
 									</>
 								)}
@@ -470,7 +644,15 @@ const libraryApi =
 							<div>
 								{older && (
 									<>
-										<span>{isEnglish ? 'Older' : '较早'}</span>
+										<span>
+											{isTutorialArticle
+												? isEnglish
+													? 'Next chapter'
+													: '下一章'
+												: isEnglish
+													? 'Older'
+													: '较早'}
+										</span>
 										<a href={older.route}>{older.title} →</a>
 									</>
 								)}
@@ -494,4 +676,5 @@ const libraryApi =
 <script>
 	import '../scripts/legacy-directory.js';
 	import '../scripts/article-outline.ts';
+	import '../scripts/article-image-zoom.ts';
 </script>

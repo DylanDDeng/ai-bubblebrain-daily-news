@@ -1,0 +1,61 @@
+---
+import VibeCodingPatternDetail from '../../../components/VibeCodingPatternDetail.astro';
+import VibeCodingTermDetail from '../../../components/VibeCodingTermDetail.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getVibeCodingConcepts, type VibeCodingConcept } from '../../../data/vibeCodingTerms';
+import { vibeCodingDetailProfiles } from '../../../data/vibeCodingTermDetails';
+import { vibeCodingPatternProfiles } from '../../../data/vibeCodingPatternDetails';
+
+interface Props {
+	concept: VibeCodingConcept;
+	previousConcept: VibeCodingConcept | null;
+	nextConcept: VibeCodingConcept | null;
+}
+
+export function getStaticPaths() {
+	const concepts = getVibeCodingConcepts();
+	return concepts.map((concept, index) => ({
+		params: { concept: concept.id },
+		props: {
+			concept,
+			previousConcept: concepts[index - 1] ?? null,
+			nextConcept: concepts[index + 1] ?? null,
+		},
+	}));
+}
+
+const { concept, previousConcept, nextConcept } = Astro.props;
+const patternProfile = concept.isCategory ? undefined : vibeCodingPatternProfiles[concept.id];
+const profile = patternProfile
+	? undefined
+	: (vibeCodingDetailProfiles[concept.id] ?? vibeCodingDetailProfiles[concept.categoryId]);
+if (!patternProfile && !profile)
+	throw new Error(`Missing Vibe Coding detail profile: ${concept.categoryId}`);
+---
+
+<BaseLayout
+	title={concept.name !== concept.chineseName
+		? `${concept.chineseName}（${concept.name}）· Vibe Coding 术语`
+		: `${concept.chineseName} · Vibe Coding 术语`}
+	description={concept.description}
+	canonicalPath={`/vibe-coding/terms/${concept.id}/`}
+	section="vibe-coding"
+>
+	{
+		patternProfile ? (
+			<VibeCodingPatternDetail
+				concept={concept}
+				profile={patternProfile}
+				previousConcept={previousConcept}
+				nextConcept={nextConcept}
+			/>
+		) : (
+			<VibeCodingTermDetail
+				concept={concept}
+				profile={profile!}
+				previousConcept={previousConcept}
+				nextConcept={nextConcept}
+			/>
+		)
+	}
+</BaseLayout>

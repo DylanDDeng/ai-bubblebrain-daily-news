@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 176 1092 458" role="img" aria-labelledby="title desc">
+  <title id="title">工具输出进上下文前的两道闸</title>
+  <desc id="desc">闸门一在执行之前：模型回复若因输出上限被截断，所有 toolCall 一律判失败、不执行，让模型带完整参数重来。闸门二在执行之后：工具的原始输出经过双限截断——最多 2000 行、50KB、绝不截半行——附上 truncated 标记后才作为 toolResult 进入上下文。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+    <marker id="arrowred" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#d9341c"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .gate{font-size:13.5px;letter-spacing:2px;font-weight:700;fill:#d9341c}
+    .t{font-size:17px;font-weight:650;fill:#111}
+    .sub{font-size:14px;fill:#6c6c6c}
+    .subm{font-size:14px;fill:#555}
+    .big{font-size:14px;font-weight:650;fill:#d9341c}
+    .ok{font-size:14px;font-weight:650;fill:#2c8a44}
+    .fail{font-size:14px;font-weight:650;fill:#d9341c}
+    .lbl{font-size:13.5px;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .card-gate{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .card-fail{fill:#fff;stroke:#ff4d2e;stroke-width:1.2;stroke-dasharray:5 5}
+    .card-ok{fill:#fff;stroke:#2c8a44;stroke-width:1.5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .wirered{fill:none;stroke:#d9341c;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrowred)}
+  </style>
+
+  <g class="sans">
+    <g>
+      <rect class="card" x="72" y="190" width="230" height="110"/>
+      <text x="94" y="224" class="t">模型回复</text>
+      <text x="94" y="252" class="mono subm">toolCall:</text>
+      <text x="94" y="274" class="mono subm">bash("cat big.log")</text>
+    </g>
+    <g>
+      <path class="wire" d="M302 245H344"/>
+      <rect class="card-gate" x="352" y="190" width="260" height="110"/>
+      <text x="374" y="220" class="mono gate">闸门 1 · 执行之前</text>
+      <text x="374" y="250" class="t">回复完整吗？</text>
+      <text x="374" y="276" class="mono subm">stopReason === "length" ?</text>
+    </g>
+    <g>
+      <path class="wirered" d="M482 300V332"/>
+      <rect class="card-fail" x="352" y="340" width="260" height="84"/>
+      <text x="374" y="372" class="mono fail">✗ 回复被截断</text>
+      <text x="374" y="398" class="sub">所有 toolCall 判失败，一个不执行</text>
+      <path class="wirered" d="M352 382H187V308"/>
+      <text x="210" y="374" class="mono lbl">带完整参数重来一轮</text>
+    </g>
+    <g>
+      <path class="wire" d="M612 245H654"/>
+      <text x="614" y="233" class="mono ok">✓ 完整</text>
+      <rect class="card" x="662" y="190" width="230" height="110"/>
+      <text x="684" y="224" class="t">执行工具</text>
+      <text x="684" y="252" class="mono subm">$ cat big.log</text>
+      <text x="684" y="274" class="sub">这次是真的跑了</text>
+      <path class="wire" d="M777 300V440H222V482"/>
+    </g>
+    <g>
+      <rect class="card" x="72" y="490" width="300" height="110"/>
+      <text x="94" y="524" class="t">原始输出</text>
+      <text x="94" y="552" class="mono big">313,000 行 · 8.2MB</text>
+      <text x="94" y="578" class="sub">窗口根本装不下</text>
+    </g>
+    <g>
+      <path class="wire" d="M372 545H414"/>
+      <rect class="card-gate" x="422" y="490" width="270" height="110"/>
+      <text x="444" y="520" class="mono gate">闸门 2 · 执行之后</text>
+      <text x="444" y="550" class="t">双限截断</text>
+      <text x="444" y="576" class="mono subm">≤ 2000 行 · ≤ 50KB · 不截半行</text>
+    </g>
+    <g>
+      <path class="wire" d="M692 545H734"/>
+      <rect class="card-ok" x="742" y="490" width="386" height="110"/>
+      <text x="764" y="520" class="t">toolResult · 进上下文</text>
+      <text x="764" y="548" class="mono subm">前 2000 行 + [truncated] 标记</text>
+      <text x="764" y="576" class="mono ok">✓ 有界、可重试，窗口安全</text>
+    </g>
+  </g>
+</svg>

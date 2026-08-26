@@ -3,6 +3,7 @@ title: "cc-tui 插件：在终端运行 DeepSeek Harness"
 slug: "deepseek-harness-cc-tui-guide"
 description: "安装 dsh-cc-tui，用 dsh --profile cc-tui 启动终端界面，并完成模型、模式、主题和会话的基础操作。"
 date: 2026-08-13T00:00:00Z
+weight: 8
 tags: ["DeepSeek Harness", "cc-tui", "终端", "插件", "新手教程"]
 author: "BubbleBrain"
 sourceUrl: "https://github.com/ccch1mneyyy/dsh-TUI"

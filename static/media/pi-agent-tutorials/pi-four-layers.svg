@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 174 1092 460" role="img" aria-labelledby="title desc">
+  <title id="title">Pi 的四层扩展结构</title>
+  <desc id="desc">Prompt Templates 复用一段常用提示，Skills 按需加载知识、流程与脚本，Extensions 用 TypeScript 改变工具、命令与界面；这三类资源被装进一个 Pi Package，通过 npm 或 Git 分享给任何人。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .name{font-size:21px;font-weight:720;letter-spacing:-0.4px;fill:#111}
+    .sub{font-size:14px;fill:#6c6c6c}
+    .path{font-size:14px;fill:#a9a9a5}
+    .chip{font-size:14px;fill:#333}
+    .share{font-size:14px;font-weight:650;fill:#d9341c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .chipbox{fill:#f5f5f2;stroke:#dedede;stroke-width:1}
+    .pill{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .p1{animation:pulse1 8s linear infinite}.p2{animation:pulse2 8s linear infinite}
+    .p3{animation:pulse3 8s linear infinite}.p4{animation:pulse4 8s linear infinite}
+    .w1{animation:show1 8s linear infinite}.w2{animation:show2 8s linear infinite}
+    .w3{animation:show3 8s linear infinite}.s4{animation:show4 8s linear infinite}
+    @keyframes pulse1{0%,3%{stroke:#dedede}5%,15%{stroke:#ff4d2e}19%,100%{stroke:#dedede}}
+    @keyframes pulse2{0%,21%{stroke:#dedede}23%,33%{stroke:#ff4d2e}37%,100%{stroke:#dedede}}
+    @keyframes pulse3{0%,39%{stroke:#dedede}41%,51%{stroke:#ff4d2e}55%,100%{stroke:#dedede}}
+    @keyframes pulse4{0%,57%{stroke:#dedede}59%,72%{stroke:#ff4d2e}76%,100%{stroke:#dedede}}
+    @keyframes show1{0%,10%{opacity:0}14%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show2{0%,28%{opacity:0}32%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show3{0%,46%{opacity:0}50%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show4{0%,66%{opacity:0}70%,93%{opacity:1}97%,100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){.p1,.p2,.p3,.p4,.w1,.w2,.w3,.s4{animation:none}}
+  </style>
+
+  <g class="sans">
+    <rect class="card p1" x="72" y="188" width="440" height="104"/>
+    <text x="94" y="222" class="mono num">01</text>
+    <text x="94" y="252" class="name">Prompt Templates</text>
+    <text x="94" y="278" class="sub">复用一段常用提示</text>
+    <text x="496" y="214" text-anchor="end" class="mono path">prompt-templates.ts</text>
+
+    <rect class="card p2" x="72" y="316" width="440" height="104"/>
+    <text x="94" y="350" class="mono num">02</text>
+    <text x="94" y="380" class="name">Skills</text>
+    <text x="94" y="406" class="sub">按需加载知识、流程与脚本</text>
+    <text x="496" y="342" text-anchor="end" class="mono path">skills.ts</text>
+
+    <rect class="card p3" x="72" y="444" width="440" height="104"/>
+    <text x="94" y="478" class="mono num">03</text>
+    <text x="94" y="508" class="name">Extensions</text>
+    <text x="94" y="534" class="sub">用 TypeScript 改变工具、命令与界面</text>
+    <text x="496" y="470" text-anchor="end" class="mono path">examples/extensions/</text>
+  </g>
+
+  <path class="wire w1" d="M512 240C620 240 644 322 716 322"/>
+  <path class="wire w2" d="M512 368C610 368 640 362 716 362"/>
+  <path class="wire w3" d="M512 496C620 496 644 402 716 402"/>
+
+  <g class="sans">
+    <rect class="card p4" x="724" y="240" width="404" height="240"/>
+    <text x="748" y="276" class="mono num">04</text>
+    <text x="790" y="278" class="name">Pi Package</text>
+    <text x="1104" y="270" text-anchor="end" class="mono path">package-manager.ts</text>
+    <g class="w1">
+      <rect class="chipbox" x="748" y="304" width="356" height="36"/>
+      <text x="762" y="327" class="mono chip">templates/ · 提示模板</text>
+    </g>
+    <g class="w2">
+      <rect class="chipbox" x="748" y="348" width="356" height="36"/>
+      <text x="762" y="371" class="mono chip">skills/ · 技能目录</text>
+    </g>
+    <g class="w3">
+      <rect class="chipbox" x="748" y="392" width="356" height="36"/>
+      <text x="762" y="415" class="mono chip">extension.ts · 扩展代码</text>
+    </g>
+  </g>
+
+  <g class="s4">
+    <path class="wire" d="M926 480V528"/>
+    <rect class="pill" x="782" y="536" width="288" height="46" rx="23"/>
+    <text x="926" y="565" text-anchor="middle" class="mono share">通过 npm 或 Git 分享出去</text>
+  </g>
+</svg>

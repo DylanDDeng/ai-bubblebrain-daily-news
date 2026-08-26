@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 162 1120 472" role="img" aria-labelledby="title desc">
+  <title id="title">一个 JSONL 文件里的会话树</title>
+  <desc id="desc">会话文件每追加一行，右侧的树就长出一个节点：header 是根，每条消息用 parentId 指向上一条；当一条新消息把 parentId 指回中间某条时，同一个文件里就长出了分支；压缩记录也是树上的一个节点。</desc>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .ln{font-size:14px;fill:#555}
+    .lnhl{font-size:14px;fill:#d9341c}
+    .nodetext{font-size:13.5px;font-weight:650;fill:#111}
+    .nodetext-hl{font-size:13.5px;font-weight:650;fill:#d9341c}
+    .note{font-size:14px;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .filetitle{font-size:14px;letter-spacing:2px;font-weight:700;fill:#6c6c6c}
+    .node{fill:#fff;stroke:#111;stroke-width:2}
+    .node-hl{fill:#fff;stroke:#ff4d2e;stroke-width:2}
+    .edge{stroke:#c9c9c5;stroke-width:2;fill:none}
+    .edge-hl{stroke:#ff4d2e;stroke-width:2;fill:none;stroke-dasharray:4 5}
+    .a1{animation:s1 8s linear infinite}.a2{animation:s2 8s linear infinite}
+    .a3{animation:s3 8s linear infinite}.a4{animation:s4 8s linear infinite}
+    .a5{animation:s5 8s linear infinite}.a6{animation:s6 8s linear infinite}
+    @keyframes s1{0%,4%{opacity:0}7%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s2{0%,18%{opacity:0}21%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s3{0%,32%{opacity:0}35%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s4{0%,46%{opacity:0}49%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s5{0%,60%{opacity:0}63%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s6{0%,74%{opacity:0}77%,93%{opacity:1}97%,100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){.a1,.a2,.a3,.a4,.a5,.a6{animation:none}}
+  </style>
+
+  <rect class="card" x="72" y="176" width="580" height="392"/>
+  <text x="94" y="208" class="mono filetitle">~/.PI/AGENT/SESSIONS/…/SESSION.JSONL</text>
+  <g class="mono">
+    <text x="94" y="248" class="ln a1">{"type":"session","id":"s1","cwd":"~/demo"}</text>
+    <text x="94" y="296" class="ln a2">{"type":"message","id":"m1","parentId":null}   ← 你的第一句</text>
+    <text x="94" y="344" class="ln a3">{"type":"message","id":"m2","parentId":"m1"}</text>
+    <text x="94" y="392" class="ln a4">{"type":"message","id":"m3","parentId":"m2"}</text>
+    <text x="94" y="440" class="lnhl a5">{"type":"message","id":"m4","parentId":"m2"}   ← 又指回 m2：分叉！</text>
+    <text x="94" y="488" class="ln a6">{"type":"compaction","id":"c1","parentId":"m4"}</text>
+    <text x="94" y="536" class="note">每一行只做一件事：把自己挂到 parentId 指着的那一行后面</text>
+  </g>
+
+  <!-- tree -->
+  <g class="a1">
+    <circle class="node" cx="900" cy="230" r="20"/>
+    <text x="900" y="235" text-anchor="middle" class="mono nodetext">s1</text>
+  </g>
+  <g class="a2">
+    <path class="edge" d="M900 250V286"/>
+    <circle class="node" cx="900" cy="306" r="20"/>
+    <text x="900" y="311" text-anchor="middle" class="mono nodetext">m1</text>
+  </g>
+  <g class="a3">
+    <path class="edge" d="M900 326V362"/>
+    <circle class="node" cx="900" cy="382" r="20"/>
+    <text x="900" y="387" text-anchor="middle" class="mono nodetext">m2</text>
+  </g>
+  <g class="a4">
+    <path class="edge" d="M888 398 826 442"/>
+    <circle class="node" cx="812" cy="458" r="20"/>
+    <text x="812" y="463" text-anchor="middle" class="mono nodetext">m3</text>
+  </g>
+  <g class="a5">
+    <path class="edge-hl" d="M912 398 974 442"/>
+    <circle class="node-hl" cx="988" cy="458" r="20"/>
+    <text x="988" y="463" text-anchor="middle" class="mono nodetext-hl">m4</text>
+    <text x="1030" y="446" class="mono note">m2 的第二个孩子</text>
+    <text x="1030" y="468" class="mono note">= 同一文件里的分支</text>
+  </g>
+  <g class="a6">
+    <path class="edge" d="M988 478V514"/>
+    <circle class="node" cx="988" cy="534" r="20"/>
+    <text x="988" y="539" text-anchor="middle" class="mono nodetext">c1</text>
+    <text x="760" y="600" class="mono note">当前活跃路径：s1 → m1 → m2 → m4 → c1</text>
+  </g>
+</svg>
