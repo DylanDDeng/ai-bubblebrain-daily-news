@@ -24,6 +24,7 @@ const expectedVisuals = [
 	'pi-tool-guards.svg',
 	'pi-tool-dispatch.svg',
 	'pi-extension-hooks.svg',
+	'pi-extension-gate.svg',
 ];
 
 describe('Pi Agent tutorial series', () => {

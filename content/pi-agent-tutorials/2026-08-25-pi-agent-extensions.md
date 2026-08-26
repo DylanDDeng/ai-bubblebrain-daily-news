@@ -40,7 +40,12 @@ export default function (pi: ExtensionAPI) {
 
 眼熟吗？`name` + `description` + `parameters` + `execute`——**和第四章解剖的内置工具 `read` 是同一个形状**。第四章说"学会解剖 `read`，就学会了写自己的工具"，指的就是这里：自定义工具经 `pi.registerTool()` 注册后，和内置工具走完全一样的校验、调度、截断流水线。
 
-能注册的远不止工具：`pi.registerCommand()` 加一条 `/mycommand`、`pi.registerShortcut()` 绑一个快捷键、`pi.registerProvider()` 接一个自定义模型服务，甚至 `pi.appendEntry()` 往会话文件里写一行自定义记录——第五章"一切皆 entry"的设计在这里又赚了一次：扩展的状态也是树上的一行，随会话一起保存和恢复。
+这里先把一个容易混淆的点说清：**Extension 不等于自定义工具**。注册工具只是扩展能做的两类事之一：
+
+- **加装备**——让 Pi 能干更多的事：`pi.registerTool()` 给模型添一样新工具，`pi.registerCommand()` 给你添一条 `/mycommand`，`pi.registerShortcut()` 绑快捷键，`pi.registerProvider()` 接自定义模型服务；
+- **改流程**——改变 Pi 干事的方式：用 `pi.on()` 订阅事件，在 Pi 原有的流程里插一脚，比如拦下一条危险命令、改写发给模型的消息、换掉整个压缩策略。这是扩展真正的能量所在，下面两节细讲。
+
+两类可以写在同一个文件里。另外扩展还能用 `pi.appendEntry()` 往会话文件里写自定义记录——第五章"一切皆 entry"的设计在这里又赚了一次：扩展的状态也是树上的一行，随会话一起保存和恢复。
 
 ## 扩展从哪里被发现
 
@@ -63,11 +68,11 @@ Pi 启动时会去固定的位置找扩展，`loader.ts` 的注释把规则写�
 
 ## 事件：把钩子挂进循环
 
-注册工具只是给模型添装备，Extension 真正的能量在**事件**上：第一章那个循环的每个关节处，Pi 都会停下来问一圈扩展"你有什么意见"。
+第一章的循环是一条自顾自转的流水线：用户输入 → 组装上下文 → 调用模型 → 执行工具，一圈一圈转。正常情况下，你的代码插不进去。**`pi.on("事件名", 函数)` 做的事，就是在流水线的某个工位旁安一个"检查员"**：流水线每转到那个工位，先停下来，把手里的东西递给你的函数过目，再决定怎么继续。你的函数就是"钩子"（hook），事件名决定了它安在哪个工位：
 
 ![Agent Loop 五个阶段旁的事件钩子：session_start 只可观察；input 可拦截改写；before_agent_start 和 context 可修改消息；tool_call 返回 block 即拦下；tool_result 可改写结果；turn_end、agent_end 只可观察](/media/pi-agent-tutorials/pi-extension-hooks.svg)
 
-事件分两类。一类只能**观察**：`session_start`、`turn_end`、`agent_end` 这些，适合做统计、通知、收尾清理。另一类可以**出手**：`input` 能拦截或改写你敲的内容，`context` 能修改发给模型的消息列表（第二章的重建结果，扩展还有最后一次修改机会），`session_before_compact` 能取消或接管一次压缩（第三章的策略不合口味，可以整个换掉），而用得最多的是下面这对。
+检查员分两种。一种**只能看**（图里灰色）：`session_start`、`turn_end`、`agent_end` 递过来的东西只供登记，适合做统计、通知、收尾清理。另一种**能出手**（图里橙色）：`input` 能拦截或改写你敲的内容，`context` 能修改发给模型的消息列表（第二章重建的结果，扩展还有最后一次修改的机会），`session_before_compact` 能取消或接管一次压缩（第三章的策略不合口味，可以整个换掉）。而所有工位里用得最多的那个，安在"执行工具"旁边——单独用一节讲。
 
 ## 拦截一次工具调用
 
@@ -82,7 +87,13 @@ pi.on("tool_call", async (event, ctx) => {
 });
 ```
 
-它能生效的机制在 `runner.ts` 里（`packages/coding-agent/src/core/extensions/runner.ts`）。第四章讲过一次工具调用的旅程：校验参数 → `execute` → 截断 → 进上下文。现在补上被省略的一步——**`execute` 之前，事件先过一遍所有扩展**：
+一次 `toolCall` 递到检查员手里，结局只有三种——什么都不返回是放行，返回 `block` 是拦下，原地改 `event.input` 是改写：
+
+![一次 toolCall 的三种结局：什么都不返回则 execute 照常执行；返回 block:true 则工具不执行，reason 作为失败结果回给模型；原地修改 event.input 则照常执行但用的是改过的参数](/media/pi-agent-tutorials/pi-extension-gate.svg)
+
+"改写"那条值得多说一句：类型定义里写明了口径（`types.ts`）——*`event.input` is mutable. Mutate it in place to patch tool arguments before execution*。不用返回任何东西，直接改 `event.input`，后续检查员和真正的执行看到的就是改过的参数。
+
+这套机制在 `runner.ts` 里（`packages/coding-agent/src/core/extensions/runner.ts`）。第四章讲过一次工具调用的旅程：校验参数 → `execute` → 截断 → 进上下文。现在补上被省略的一步——**`execute` 之前，先把这次调用递给每一个检查员过目**：
 
 ```ts
 async emitToolCall(event: ToolCallEvent): Promise<ToolCallEventResult | undefined> {
@@ -107,9 +118,9 @@ async emitToolCall(event: ToolCallEvent): Promise<ToolCallEventResult | undefine
 }
 ```
 
-规则一眼可读：**按加载顺序依次询问，谁先返回 `block`，立刻短路**——后面的扩展不再被问，工具不执行，`reason` 作为失败结果回给模型。是不是想起第四章调度器的"一票否决"？Pi 在两处用了同一种保守哲学：拦截权是每个扩展独立的，放行却需要全体沉默。
+规则一眼可读：**按加载顺序依次问过每个检查员，谁先返回 `block`，立刻短路**——后面的检查员不再被问，工具不执行，`reason` 作为失败结果回给模型。是不是想起第四章调度器的"一票否决"？Pi 在两处用了同一种保守哲学：拦截权是每个检查员独立的，放行却需要全体沉默。
 
-想改参数而不是拦下？类型定义里写明了口径（`types.ts`）：*`event.input` is mutable. Mutate it in place to patch tool arguments before execution*——直接原地改 `event.input`，后续扩展和真正的执行看到的就是改过的参数。配套的 `tool_result` 事件则在执行后触发，可以改写进上下文的结果。一进一出两个钩子，足够实现权限门、路径保护、结果脱敏这类安全层。
+`tool_call` 管进，配套的 `tool_result` 管出——它在工具执行完后触发，可以改写进上下文的结果。一进一出两个检查员，足够实现权限门、路径保护、结果脱敏这类安全层。
 
 ## 实践上你需要知道的
 
