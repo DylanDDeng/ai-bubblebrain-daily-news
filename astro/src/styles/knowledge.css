@@ -486,7 +486,7 @@
 	padding: 0;
 	border: 0;
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 0.68rem;
 	font-weight: 500;
@@ -521,7 +521,7 @@
 }
 
 .knowledge-search .knowledge-index-state strong {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.15rem;
 	font-weight: 700;
 	letter-spacing: -0.03em;
@@ -564,7 +564,7 @@
 
 .knowledge-search :is(.knowledge-query-field, .knowledge-filter-field) > i {
 	flex: 0 0 auto;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1rem;
 }
 
@@ -620,7 +620,7 @@
 .knowledge-filter-menu summary:focus-visible {
 	border-radius: 8px;
 	background: color-mix(in srgb, var(--blue) 5%, transparent);
-	color: var(--blue);
+	color: var(--blue-strong);
 	outline: 0;
 }
 
@@ -669,13 +669,13 @@
 .knowledge-search .knowledge-filter-options button:hover,
 .knowledge-search .knowledge-filter-options button:focus-visible {
 	background: color-mix(in srgb, var(--blue) 7%, transparent);
-	color: var(--blue);
+	color: var(--blue-strong);
 	outline: 0;
 }
 
 .knowledge-search .knowledge-filter-options button[aria-checked='true'] {
 	background: color-mix(in srgb, var(--blue) 9%, transparent);
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-weight: 700;
 }
 
@@ -702,7 +702,7 @@
 
 .knowledge-search .knowledge-result-date time,
 .knowledge-search .knowledge-result-meta {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .knowledge-search .knowledge-result-tags li {

@@ -95,7 +95,7 @@
 .pattern-mock-actions b {
 	padding: 6px 12px;
 	border-radius: 7px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font: 650 0.55rem var(--sans);
 }
@@ -205,8 +205,8 @@
 }
 
 .pattern-part-list li:hover .pattern-part-num {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -225,8 +225,8 @@
 .pattern-anatomy:has(li[data-part='3']:hover) .pattern-part-badge[data-part-target='3'],
 .pattern-anatomy:has(li[data-part='4']:hover) .pattern-part-badge[data-part-target='4'],
 .pattern-anatomy:has(li[data-part='5']:hover) .pattern-part-badge[data-part-target='5'] {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 	outline: none;
 }
@@ -305,8 +305,7 @@
 	justify-items: center;
 	align-content: center;
 	background:
-		linear-gradient(rgb(0 0 0 / 0.42), rgb(0 0 0 / 0.42)),
-		linear-gradient(145deg, #8f8f88, #6e6e67);
+		linear-gradient(rgb(0 0 0 / 0.42), rgb(0 0 0 / 0.42)), linear-gradient(145deg, #8f8f88, #6e6e67);
 	border-color: transparent;
 }
 
@@ -422,7 +421,7 @@
 .pattern-prompt-bubble i {
 	flex: none;
 	margin-top: 2px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1rem;
 }
 
@@ -491,7 +490,7 @@
 }
 
 .pattern-spot-region.is-picked {
-	border-color: var(--blue);
+	border-color: var(--blue-strong);
 	background: color-mix(in srgb, var(--blue-soft) 50%, transparent);
 }
 
@@ -570,7 +569,7 @@
 	margin-top: 3px;
 	padding: 6px 13px;
 	border-radius: 7px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font: 650 0.58rem var(--sans);
 }
@@ -617,7 +616,7 @@
 }
 
 .ps-features em {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.52rem;
 	font-style: normal;
 	font-weight: 750;
@@ -650,7 +649,7 @@
 }
 
 .pattern-spot-hint i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1rem;
 }
 
@@ -723,7 +722,7 @@
 }
 
 .pattern-quiz-option.is-picked {
-	border-color: var(--blue);
+	border-color: var(--blue-strong);
 	background: color-mix(in srgb, var(--blue-soft) 45%, transparent);
 }
 
@@ -745,8 +744,8 @@
 }
 
 .pattern-quiz-option.is-picked b {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -795,7 +794,7 @@
 }
 
 .pattern-prompt-bubble button:hover {
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -841,7 +840,7 @@
 	margin-left: auto;
 	padding: 5px 11px;
 	border-radius: 7px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.54rem;
 	font-style: normal;
@@ -1095,7 +1094,7 @@
 .ps-cta > b {
 	padding: 5px 11px;
 	border-radius: 7px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.54rem;
 	font-weight: 650;
@@ -1418,7 +1417,7 @@
 .pam-modal-actions b {
 	padding: 5px 11px;
 	border-radius: 7px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.54rem;
 	font-weight: 650;
@@ -1509,7 +1508,7 @@
 .pam-form-submit {
 	padding: 8px;
 	border-radius: 8px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.6rem;
 	font-weight: 650;
@@ -1680,8 +1679,8 @@
 }
 
 .ps-float-modal em.is-danger {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -1750,7 +1749,7 @@
 	min-width: 14px;
 	height: 14px;
 	border-radius: 999px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.5rem;
 	font-style: normal;
@@ -1801,7 +1800,7 @@
 .ps-form > em {
 	padding: 7px;
 	border-radius: 7px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.56rem;
 	font-style: normal;
@@ -2405,7 +2404,7 @@
 .pam-empty em {
 	padding: 6px 12px;
 	border-radius: 7px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.56rem;
 	font-style: normal;
@@ -2434,7 +2433,7 @@
 	min-width: 19px;
 	height: 19px;
 	border-radius: 999px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.6rem;
 	font-style: normal;
@@ -2519,8 +2518,8 @@
 }
 
 .pam-pg b.is-on {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -2727,8 +2726,8 @@
 }
 
 .ps-pg b.is-on {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -2819,7 +2818,7 @@
 .ps-empty em {
 	padding: 4px 9px;
 	border-radius: 6px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.5rem;
 	font-style: normal;
@@ -2841,7 +2840,7 @@
 	width: 14px;
 	height: 14px;
 	border: 2px solid #ececea;
-	border-top-color: var(--blue);
+	border-top-color: var(--blue-strong);
 	border-radius: 50%;
 	animation: concept-ssr-spin 1s linear infinite;
 	display: block;
@@ -3083,7 +3082,7 @@
 	height: 15px;
 	padding: 0 3px;
 	border-radius: 999px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.48rem;
 	font-style: normal;
@@ -3161,8 +3160,8 @@
 }
 
 .pv-pg b.is-on {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -3271,4 +3270,11 @@
 	border-radius: 5px;
 	background: #ececea;
 	text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pam-shimmer,
+	.ps-spinner-ring {
+		animation: none;
+	}
 }

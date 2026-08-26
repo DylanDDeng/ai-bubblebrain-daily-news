@@ -19,7 +19,7 @@
 
 .vibe-terms-header > p {
 	margin: 0 0 12px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.68rem;
 	font-weight: 700;
 	letter-spacing: 0.14em;
@@ -100,7 +100,7 @@
 
 .vibe-category-nav a:hover small,
 .vibe-category-nav a.is-active small {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .vibe-category-nav a.is-active {
@@ -182,7 +182,7 @@
 }
 
 .vibe-category-header > a:hover {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .vibe-terms-list {
@@ -218,7 +218,7 @@
 }
 
 .vibe-term-arrow {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.8rem;
 	opacity: 0;
 	translate: -5px 2px;
@@ -297,8 +297,14 @@
 
 .vibe-term-group-title {
 	margin: 0 0 16px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.67rem;
 	font-weight: 700;
 	letter-spacing: 0.14em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.vibe-term-category {
+		animation: none;
+	}
 }

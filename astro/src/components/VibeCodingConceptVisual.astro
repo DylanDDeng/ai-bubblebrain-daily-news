@@ -32,6 +32,7 @@ const isContextWindow = concept.id === 'context-window';
 const isHarness = concept.id === 'harness';
 const isMcp = concept.id === 'mcp';
 const isSkillTerm = concept.id === 'skill';
+const isRag = concept.id === 'rag';
 ---
 
 <figure class="concept-visual" data-concept-animation={concept.categoryId}>
@@ -42,7 +43,52 @@ const isSkillTerm = concept.id === 'skill';
 	</header>
 
 	{
-		isVibeCoding ? (
+		isRag ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">闭卷 · 直接问</i>
+						<i class="concept-state-b">RAG · 先查再答</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>问题</code>
+						<span>报销上限是多少？</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>员工手册</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">（模型没学过）</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 检索到第 3 章</i>
+						</span>
+					</div>
+					<strong>答案不在模型脑子里</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">凭记忆补全</i>
+						<i class="concept-state-b">对着资料作答</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>回答</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">「大概 500 元？」</i>
+							<i class="concept-state-b">单日上限 800 元</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>出处</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">✗ 说不出来</i>
+							<i class="concept-state-b concept-rtm-yes">✓ 手册 3.2 节</i>
+						</span>
+					</div>
+					<strong>有据可查，才敢当真</strong>
+				</div>
+			</div>
+		) : isVibeCoding ? (
 			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
 				<div class="concept-instance-source">
 					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">

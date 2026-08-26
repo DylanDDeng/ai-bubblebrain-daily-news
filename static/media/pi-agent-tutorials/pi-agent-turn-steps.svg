@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 162 1092 512" role="img" aria-labelledby="title desc">
+  <title id="title">一轮之内的六步</title>
+  <desc id="desc">对应到动作：一，把用户消息和上下文交给模型；二，流式接收模型回复；三，找出回复里的 toolCall；四，执行工具，生成 toolResult；五，结果加入上下文，模型决定下一步；六，不再调用工具，本轮结束。右侧演示上下文中依次堆入用户消息、模型回复、toolCall 与 toolResult；还有工具调用就回到第一步，没有则本轮结束。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .step{font-size:19px;font-weight:600;fill:#111}
+    .check{font-size:16px;font-weight:700;fill:#2c8a44}
+    .ptitle{font-size:13.5px;letter-spacing:3px;font-weight:700;fill:#6c6c6c}
+    .chip{font-size:14px;fill:#333}
+    .chip-call{font-size:14px;fill:#d9341c}
+    .chip-result{font-size:14px;fill:#2c8a44}
+    .out{font-size:14px;fill:#6c6c6c}
+    .out-done{font-size:14px;fill:#2c8a44}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .chipbox{fill:#f5f5f2;stroke:#dedede;stroke-width:1}
+    .chipbox-call{fill:#fff;stroke:#ff4d2e;stroke-width:1.2}
+    .chipbox-result{fill:#fff;stroke:#2c8a44;stroke-width:1.2}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .r1{animation:pulse1 9.6s linear infinite}.r2{animation:pulse2 9.6s linear infinite}
+    .r3{animation:pulse3 9.6s linear infinite}.r4{animation:pulse4 9.6s linear infinite}
+    .r5{animation:pulse5 9.6s linear infinite}.r6{animation:pulse6 9.6s linear infinite}
+    .a1{animation:show1 9.6s linear infinite}.a2{animation:show2 9.6s linear infinite}
+    .a3{animation:show3 9.6s linear infinite}.a4{animation:show4 9.6s linear infinite}
+    .a5{animation:show5 9.6s linear infinite}.a6{animation:show6 9.6s linear infinite}
+    @keyframes pulse1{0%,5%{stroke:#dedede}7%,16%{stroke:#ff4d2e}19%,100%{stroke:#dedede}}
+    @keyframes pulse2{0%,18%{stroke:#dedede}20%,29%{stroke:#ff4d2e}32%,100%{stroke:#dedede}}
+    @keyframes pulse3{0%,31%{stroke:#dedede}33%,42%{stroke:#ff4d2e}45%,100%{stroke:#dedede}}
+    @keyframes pulse4{0%,44%{stroke:#dedede}46%,55%{stroke:#ff4d2e}58%,100%{stroke:#dedede}}
+    @keyframes pulse5{0%,57%{stroke:#dedede}59%,68%{stroke:#ff4d2e}71%,100%{stroke:#dedede}}
+    @keyframes pulse6{0%,70%{stroke:#dedede}72%,81%{stroke:#ff4d2e}84%,100%{stroke:#dedede}}
+    @keyframes show1{0%,7%{opacity:0}10%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show2{0%,20%{opacity:0}23%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show3{0%,33%{opacity:0}36%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show4{0%,46%{opacity:0}49%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show5{0%,59%{opacity:0}62%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show6{0%,72%{opacity:0}75%,93%{opacity:1}97%,100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){
+      .r1,.r2,.r3,.r4,.r5,.r6,.a1,.a2,.a3,.a4,.a5,.a6{animation:none}
+    }
+  </style>
+
+  <g class="sans">
+    <rect class="card r1" x="72" y="176" width="600" height="62"/>
+    <text x="94" y="214" class="mono num">01</text>
+    <text x="136" y="215" class="step">把用户消息和上下文交给模型</text>
+    <text x="632" y="215" text-anchor="middle" class="mono check a1">✓</text>
+
+    <rect class="card r2" x="72" y="252" width="600" height="62"/>
+    <text x="94" y="290" class="mono num">02</text>
+    <text x="136" y="291" class="step">流式接收模型回复</text>
+    <text x="632" y="291" text-anchor="middle" class="mono check a2">✓</text>
+
+    <rect class="card r3" x="72" y="328" width="600" height="62"/>
+    <text x="94" y="366" class="mono num">03</text>
+    <text x="136" y="367" class="step">找出回复里的 toolCall</text>
+    <text x="632" y="367" text-anchor="middle" class="mono check a3">✓</text>
+
+    <rect class="card r4" x="72" y="404" width="600" height="62"/>
+    <text x="94" y="442" class="mono num">04</text>
+    <text x="136" y="443" class="step">执行工具，生成 toolResult</text>
+    <text x="632" y="443" text-anchor="middle" class="mono check a4">✓</text>
+
+    <rect class="card r5" x="72" y="480" width="600" height="62"/>
+    <text x="94" y="518" class="mono num">05</text>
+    <text x="136" y="519" class="step">结果加入上下文，模型决定下一步</text>
+    <text x="632" y="519" text-anchor="middle" class="mono check a5">✓</text>
+
+    <rect class="card r6" x="72" y="556" width="600" height="62"/>
+    <text x="94" y="594" class="mono num">06</text>
+    <text x="136" y="595" class="step">不再调用工具，本轮结束</text>
+    <text x="632" y="595" text-anchor="middle" class="mono check a6">✓</text>
+  </g>
+
+  <path class="wire" d="M672 300H752"/>
+
+  <!-- what the context looks like while the steps run -->
+  <rect class="card" x="760" y="176" width="368" height="252"/>
+  <text x="784" y="210" class="mono ptitle">CONTEXT · 上下文</text>
+  <g class="a1">
+    <rect class="chipbox" x="784" y="224" width="320" height="40"/>
+    <text x="798" y="249" class="mono chip">user · 帮我理解项目并跑测试</text>
+  </g>
+  <g class="a2">
+    <rect class="chipbox" x="784" y="272" width="320" height="40"/>
+    <text x="798" y="297" class="mono chip">assistant · 先看 README …</text>
+  </g>
+  <g class="a3">
+    <rect class="chipbox-call" x="784" y="320" width="320" height="40"/>
+    <text x="798" y="345" class="mono chip-call">toolCall · bash("npm test")</text>
+  </g>
+  <g class="a4">
+    <rect class="chipbox-result" x="784" y="368" width="320" height="40"/>
+    <text x="798" y="393" class="mono chip-result">toolResult · 1 failed …</text>
+  </g>
+
+  <g class="a5">
+    <text x="760" y="474" class="mono out">↻ 还有 toolCall，回到 01 再来一轮</text>
+  </g>
+  <g class="a6">
+    <text x="760" y="506" class="mono out-done">✓ 没有了，本轮结束</text>
+  </g>
+</svg>

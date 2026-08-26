@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 172 1092 522" role="img" aria-labelledby="title desc">
+  <title id="title">Pi 的一次 Compaction</title>
+  <desc id="desc">压缩前：上下文逼近窗口上限，只剩不到 16k 的预留空间。压缩：较早的消息被折叠成一张结构化摘要卡，最近约 20k token 的消息原样保留。压缩后：模型看到的是系统提示、摘要卡和最近的消息，响应空间重新腾了出来。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .act{font-size:13.5px;letter-spacing:3px;font-weight:700;fill:#6c6c6c}
+    .cell{font-size:13.5px;fill:#555}
+    .cellhl{font-size:13.5px;fill:#d9341c}
+    .note{font-size:14px;fill:#6c6c6c}
+    .ok{font-size:13.5px;font-weight:650;fill:#2c8a44}
+    .sumline{font-size:13.5px;fill:#555}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .box{fill:#fff;stroke:#c9c9c5;stroke-width:1.2}
+    .boxold{fill:#fff;stroke:#ff4d2e;stroke-width:1.2}
+    .boxsum{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .boxfree{fill:#f5f5f2;stroke:#dedede;stroke-width:1;stroke-dasharray:3 4}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .a1{animation:show1 9s linear infinite}
+    .a2{animation:show2 9s linear infinite}
+    .a3{animation:show3 9s linear infinite}
+    @keyframes show1{0%,3%{opacity:0}7%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show2{0%,30%{opacity:0}34%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes show3{0%,60%{opacity:0}64%,93%{opacity:1}97%,100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){.a1,.a2,.a3{animation:none}}
+  </style>
+
+  <!-- Act 1: before -->
+  <g class="a1">
+    <text x="72" y="188" class="mono act">BEFORE · 上下文逼近窗口上限</text>
+    <g class="mono">
+      <rect class="box" x="72" y="204" width="96" height="46"/><text x="86" y="232" class="cell">system</text>
+      <rect class="boxold" x="176" y="204" width="88" height="46"/><text x="196" y="232" class="cellhl">usr</text>
+      <rect class="boxold" x="272" y="204" width="88" height="46"/><text x="292" y="232" class="cellhl">ass</text>
+      <rect class="boxold" x="368" y="204" width="96" height="46"/><text x="386" y="232" class="cellhl">tool</text>
+      <rect class="boxold" x="472" y="204" width="88" height="46"/><text x="492" y="232" class="cellhl">ass</text>
+      <rect class="box" x="568" y="204" width="88" height="46"/><text x="588" y="232" class="cell">usr</text>
+      <rect class="box" x="664" y="204" width="88" height="46"/><text x="684" y="232" class="cell">ass</text>
+      <rect class="box" x="760" y="204" width="96" height="46"/><text x="778" y="232" class="cell">tool</text>
+      <rect class="box" x="864" y="204" width="88" height="46"/><text x="884" y="232" class="cell">ass</text>
+      <rect class="boxfree" x="960" y="204" width="168" height="46"/><text x="982" y="232" class="cellhl">&lt; 16k 预留</text>
+    </g>
+    <text x="176" y="278" class="mono note">└ 较早的消息（keepRecentTokens 之外）</text>
+    <text x="1128" y="278" text-anchor="end" class="mono note">contextTokens &gt; window − reserve → 触发 ┘</text>
+  </g>
+
+  <!-- Act 2: fold into summary -->
+  <g class="a2">
+    <path class="wire" d="M316 288V336"/>
+    <rect class="boxsum" x="176" y="344" width="392" height="150"/>
+    <text x="198" y="376" class="mono cellhl">SUMMARY · 结构化摘要</text>
+    <g class="mono">
+      <text x="198" y="404" class="sumline">## Goal · 在做什么</text>
+      <text x="198" y="428" class="sumline">## Progress · 做完 / 进行中</text>
+      <text x="198" y="452" class="sumline">## Key Decisions · 关键决定</text>
+      <text x="198" y="476" class="sumline">## Next Steps · 下一步</text>
+    </g>
+    <text x="600" y="420" class="mono note">旧消息不是被删掉，</text>
+    <text x="600" y="444" class="mono note">而是被另一次 LLM 调用改写成检查点</text>
+  </g>
+
+  <!-- Act 3: after -->
+  <g class="a3">
+    <path class="wire" d="M372 502V550"/>
+    <text x="72" y="546" class="mono act">AFTER · 下一轮模型看到的</text>
+    <g class="mono">
+      <rect class="box" x="72" y="562" width="96" height="46"/><text x="86" y="590" class="cell">system</text>
+      <rect class="boxsum" x="176" y="562" width="128" height="46"/><text x="196" y="590" class="cellhl">summary</text>
+      <rect class="box" x="312" y="562" width="88" height="46"/><text x="332" y="590" class="cell">usr</text>
+      <rect class="box" x="408" y="562" width="88" height="46"/><text x="428" y="590" class="cell">ass</text>
+      <rect class="box" x="504" y="562" width="96" height="46"/><text x="522" y="590" class="cell">tool</text>
+      <rect class="box" x="608" y="562" width="88" height="46"/><text x="628" y="590" class="cell">ass</text>
+      <rect class="boxfree" x="704" y="562" width="424" height="46"/><text x="856" y="590" class="ok">✓ 响应空间腾出来了</text>
+    </g>
+    <text x="312" y="640" class="mono note">└ 最近约 20k token 原样保留（firstKeptEntryId 起）</text>
+  </g>
+</svg>

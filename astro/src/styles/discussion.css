@@ -39,7 +39,7 @@
 }
 
 .discussion-heading > span {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 1rem;
 }
@@ -128,7 +128,7 @@
 	padding: 0;
 	border: 0;
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.78rem;
 	cursor: pointer;
 }

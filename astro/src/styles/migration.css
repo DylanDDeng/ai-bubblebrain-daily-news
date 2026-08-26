@@ -101,7 +101,7 @@ a {
 }
 
 a:hover {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 :is(a, button, input, select, textarea, summary):focus-visible {
@@ -109,11 +109,9 @@ a:hover {
 	outline-offset: 3px;
 }
 
-input[type='search']:focus,
-input[type='search']:focus-visible {
+input[type='search']:focus {
 	border-color: var(--rule);
 	box-shadow: none;
-	outline: 0;
 }
 
 button,
@@ -246,7 +244,7 @@ iframe {
 	padding: 0;
 	border: 0;
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 	text-align: left;
 	cursor: pointer;
 }
@@ -307,7 +305,7 @@ iframe {
 }
 
 .rail-today strong {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 0.92rem;
 	font-weight: 500;
@@ -329,7 +327,7 @@ iframe {
 }
 
 .rail-nav a[aria-current='page'] {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-weight: 600;
 }
 
@@ -559,7 +557,7 @@ h1 {
 	padding: 0 2px;
 	border: 0;
 	background: none;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: inherit;
 	font-size: 0.82rem;
 	cursor: pointer;
@@ -681,7 +679,7 @@ h1 {
 }
 
 .daily-archive .cell.today .day {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .daily-archive .today-flag {
@@ -691,7 +689,7 @@ h1 {
 	padding: 1px 7px;
 	border: 1px solid var(--blue);
 	border-radius: 999px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.6rem;
 	letter-spacing: 0.1em;
 }
@@ -803,7 +801,7 @@ h1 {
 }
 
 .daily-archive .mini-month:not(.empty):hover .mm-name {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .daily-archive .mini-month.empty {
@@ -896,7 +894,7 @@ h1 {
 
 .daily-archive .detail-kicker {
 	margin: 0 0 16px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--mono);
 	font-size: 0.68rem;
 	letter-spacing: 0.22em;
@@ -996,8 +994,7 @@ h1 {
 }
 
 .article-header {
-	padding-bottom: 32px;
-	border-bottom: 1px solid var(--rule);
+	padding-bottom: 16px;
 }
 
 .article-header h1 {
@@ -1047,11 +1044,30 @@ h1 {
 
 .legacy-content blockquote,
 .article-content blockquote {
-	margin: 2rem 0;
-	padding: 1px 24px;
-	border-left: 3px solid var(--red);
-	background: var(--paper-muted);
+	margin: 2.4rem 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
 	color: var(--ink-soft);
+	font-size: 0.85em;
+	line-height: 1.85;
+}
+
+.legacy-content blockquote::before,
+.article-content blockquote::before {
+	content: 'NOTE';
+	display: block;
+	margin-bottom: 4px;
+	color: var(--blue-strong);
+	font-family: var(--mono);
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+}
+
+.legacy-content blockquote > p,
+.article-content blockquote > p {
+	margin: 0.4em 0;
 }
 
 .legacy-content pre,
@@ -1104,14 +1120,14 @@ h1 {
 .primary-action {
 	padding: 10px 14px;
 	border: 1px solid var(--blue);
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	text-decoration: none;
 }
 
 .primary-action:hover {
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 @media (max-width: 900px) {

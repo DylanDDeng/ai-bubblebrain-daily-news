@@ -62,7 +62,12 @@ const yearHref = (year: string) =>
 				</header>
 				<div class="hl-month-list">
 					{group.items.map((item) => (
-						<DirectoryItemRow item={item} locale={locale} knownRoutes={knownRoutes} />
+						<DirectoryItemRow
+							item={item}
+							locale={locale}
+							knownRoutes={knownRoutes}
+							headingTag="h3"
+						/>
 					))}
 				</div>
 			</section>

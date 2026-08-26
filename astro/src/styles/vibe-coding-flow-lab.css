@@ -48,7 +48,7 @@
 }
 
 .concept-process-panels > li[data-state='active'] .concept-process-panel {
-	border-color: var(--blue);
+	border-color: var(--blue-strong);
 	box-shadow:
 		0 0 0 2px rgb(255 92 80 / 0.1),
 		0 18px 36px rgb(255 92 80 / 0.09);
@@ -97,7 +97,7 @@
 }
 
 .concept-process-panels > li[data-state='active'] .concept-process-panel-select > header span {
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -130,7 +130,7 @@
 
 .concept-process-panels > li[data-state='active'] .concept-process-panel > footer {
 	background: rgb(255 92 80 / 0.055);
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .concept-process-panels > li[data-state='complete'] .concept-process-panel > footer {
@@ -149,7 +149,7 @@
 }
 
 .concept-process-panels > li[data-state='active'] .concept-process-arrow {
-	color: var(--blue);
+	color: var(--blue-strong);
 	animation: concept-arrow-nudge 1.1s ease-in-out infinite;
 }
 
@@ -254,7 +254,7 @@
 }
 
 .concept-spacing-symbol {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.72rem;
 }
 
@@ -315,7 +315,7 @@
 	padding: 8px 11px;
 	border: 1px solid rgb(255 92 80 / 0.3);
 	border-radius: 8px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	cursor: pointer;
 	font: 650 0.65rem var(--sans);
@@ -398,7 +398,7 @@
 }
 
 .concept-generic-process-preview > i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.8rem;
 }
 
@@ -439,8 +439,8 @@
 }
 
 .concept-process-controls > button:hover:not(:disabled) {
-	border-color: var(--blue);
-	color: var(--blue);
+	border-color: var(--blue-strong);
+	color: var(--blue-strong);
 }
 
 .concept-process-controls > button:disabled {
@@ -455,7 +455,7 @@
 }
 
 .concept-process-controls > div strong {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.75rem;
 }
 
@@ -555,7 +555,7 @@
 
 .concept-component-def small {
 	margin-bottom: 5px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.56rem;
 	font-weight: 750;
 	letter-spacing: 0.06em;
@@ -614,7 +614,7 @@
 .concept-component-compose b {
 	padding: 4px 9px;
 	border-radius: 6px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font: 650 0.58rem var(--sans);
 }
@@ -677,7 +677,7 @@
 
 .concept-state-update output {
 	min-width: 18px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font:
 		750 0.85rem ui-monospace,
 		SFMono-Regular,
@@ -690,7 +690,7 @@
 	padding: 8px 11px;
 	border: 1px solid rgb(255 92 80 / 0.3);
 	border-radius: 8px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	cursor: pointer;
 	font: 650 0.65rem var(--sans);
@@ -733,7 +733,7 @@
 }
 
 .concept-state-render-row > span i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.7rem;
 }
 
@@ -744,7 +744,7 @@
 	height: 18px;
 	padding: 0 5px;
 	border-radius: 999px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	font-size: 0.56rem;
 }
@@ -756,7 +756,7 @@
 }
 
 .concept-state-render-row em b {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .concept-state-render button {
@@ -805,8 +805,8 @@
 }
 
 .concept-props-choices button[aria-pressed='true'] {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -833,14 +833,14 @@
 
 .concept-props-stage[data-choice-variant='solid'] .concept-props-render {
 	border: 1.5px solid var(--blue);
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
 .concept-props-stage[data-choice-variant='ghost'] .concept-props-render {
 	border: 1.5px solid var(--blue);
 	background: #fff;
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .concept-props-stage[data-choice-variant='dark'] .concept-props-render {
@@ -956,14 +956,14 @@
 }
 
 .concept-rd-slider > i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.85rem;
 }
 
 .concept-rd-slider input[type='range'] {
 	flex: 1;
 	min-width: 0;
-	accent-color: var(--blue);
+	accent-color: var(--blue-strong);
 	cursor: ew-resize;
 }
 
@@ -1109,7 +1109,7 @@
 }
 
 .concept-ssr-link:hover {
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 }
 
@@ -1140,7 +1140,7 @@
 }
 
 .concept-storage-refresh i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.75rem;
 }
 
@@ -1224,7 +1224,7 @@
 	padding: 8px 18px;
 	border: 1px solid rgb(255 92 80 / 0.3);
 	border-radius: 8px;
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: #fff;
 	cursor: pointer;
 	font: 650 0.65rem var(--sans);
@@ -1259,7 +1259,7 @@
 
 .concept-ev-count-row output {
 	min-width: 16px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font:
 		750 0.8rem ui-monospace,
 		SFMono-Regular,
@@ -1614,6 +1614,11 @@
 
 [data-choice-sk='adhoc'] .sk-when-skill,
 [data-choice-sk='skill'] .sk-when-adhoc {
+	display: none;
+}
+
+[data-choice-rg='bare'] .rg-when-rag,
+[data-choice-rg='rag'] .rg-when-bare {
 	display: none;
 }
 

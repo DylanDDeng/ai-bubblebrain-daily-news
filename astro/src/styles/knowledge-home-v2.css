@@ -22,7 +22,7 @@
 
 .kh-eyebrow {
 	margin: 0 0 14px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.68rem;
 	font-weight: 700;
 	letter-spacing: 0.16em;
@@ -85,7 +85,7 @@
 }
 
 .kh-search i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.05rem;
 }
 
@@ -174,7 +174,7 @@
 
 .kh-section-heading > p {
 	margin: 0 0 10px;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.66rem;
 	font-weight: 700;
 	letter-spacing: 0.14em;
@@ -218,7 +218,7 @@
 }
 
 .kh-more:hover {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .kh-collections {
@@ -250,7 +250,7 @@
 }
 
 .kh-collection h3 i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 0.82rem;
 	opacity: 0;
 	translate: -5px 2px;
@@ -306,8 +306,8 @@
 }
 
 .kh-recent-item:hover .kh-recent-num {
-	border-color: var(--blue);
-	background: var(--blue);
+	border-color: var(--blue-strong);
+	background: var(--blue-strong);
 	color: #fff;
 }
 

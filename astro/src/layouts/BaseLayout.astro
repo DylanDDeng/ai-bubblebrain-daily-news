@@ -47,6 +47,7 @@ const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
 const tutorialLinks: NavLink[] = [
 	{ kind: 'link', href: '/codex-tutorials/', label: 'Codex 教程' },
 	{ kind: 'link', href: '/deepseek-harness-tutorials/', label: 'DeepSeek Harness 教程' },
+	{ kind: 'link', href: '/pi-agent-tutorials/', label: 'Pi Agent 教程' },
 	{ kind: 'link', href: '/workbuddy-tutorials/', label: 'WorkBuddy 教程' },
 ];
 const vibeCodingLinks: NavLink[] = [{ kind: 'link', href: '/vibe-coding/terms/', label: '术语' }];
@@ -191,6 +192,7 @@ const navItemIsActive = (item: NavItem) =>
 							<strong>{isEnglish ? 'Library' : '知识库'}</strong>
 							{!isEnglish && <a href="/codex-tutorials/">Codex 教程</a>}
 							{!isEnglish && <a href="/deepseek-harness-tutorials/">DeepSeek Harness 教程</a>}
+							{!isEnglish && <a href="/pi-agent-tutorials/">Pi Agent 教程</a>}
 							{!isEnglish && <a href="/workbuddy-tutorials/">WorkBuddy 教程</a>}
 							{!isEnglish && <a href="/vibe-coding/terms/">Vibe Coding 术语</a>}
 							<a href={isEnglish ? '/en/highlights/' : '/highlights/'}

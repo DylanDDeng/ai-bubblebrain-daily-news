@@ -188,7 +188,7 @@ h3 {
 .rail-nav a:hover,
 .rail-nav a[aria-current='page'] {
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .rail-nav a[aria-current='page']::before {
@@ -219,7 +219,7 @@ h3 {
 
 .rail-nav-group summary:hover,
 .rail-nav-group summary[aria-current='page'] {
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .rail-nav-group summary i {
@@ -283,9 +283,9 @@ h3 {
 .rail-controls > a:hover,
 .rail-controls > button:hover,
 .rail-controls .auth-trigger:hover {
-	border-color: var(--blue);
+	border-color: var(--blue-strong);
 	box-shadow: none;
-	color: var(--blue);
+	color: var(--blue-strong);
 	transform: none;
 }
 
@@ -316,7 +316,7 @@ h3 {
 	border: 0;
 	border-radius: 0;
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-family: var(--sans);
 	font-size: 0.68rem;
 	font-weight: 650;
@@ -353,6 +353,7 @@ h3 {
 	.content-directory--highlights,
 	.content-directory--codex-tutorials,
 	.content-directory--deepseek-harness-tutorials,
+	.content-directory--pi-agent-tutorials,
 	.content-directory--workbuddy-tutorials
 ) {
 	gap: 0;
@@ -362,6 +363,7 @@ h3 {
 		.content-directory--highlights,
 		.content-directory--codex-tutorials,
 		.content-directory--deepseek-harness-tutorials,
+		.content-directory--pi-agent-tutorials,
 		.content-directory--workbuddy-tutorials
 	)
 	article {
@@ -375,6 +377,7 @@ h3 {
 		.content-directory--highlights,
 		.content-directory--codex-tutorials,
 		.content-directory--deepseek-harness-tutorials,
+		.content-directory--pi-agent-tutorials,
 		.content-directory--workbuddy-tutorials
 	)
 	article:hover {
@@ -537,7 +540,7 @@ h3 {
 	}
 
 	.rail-today strong {
-		color: var(--blue);
+		color: var(--blue-strong);
 	}
 
 	.rail-nav {

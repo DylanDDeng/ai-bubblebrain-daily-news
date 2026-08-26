@@ -105,6 +105,7 @@ type DirectoryKind =
 	| 'curations'
 	| 'codex-tutorials'
 	| 'deepseek-harness-tutorials'
+	| 'pi-agent-tutorials'
 	| 'workbuddy-tutorials';
 
 const { record, markdownId, markdownCollection } = Astro.props;
@@ -155,6 +156,11 @@ const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 		en: 'DeepSeek Harness Tutorials',
 		kicker: 'DEEPSEEK HARNESS GUIDE',
 	},
+	'pi-agent-tutorials': {
+		zh: 'Pi Agent 教程',
+		en: 'Pi Agent Tutorials',
+		kicker: 'PI AGENT GUIDE',
+	},
 	'workbuddy-tutorials': {
 		zh: 'WorkBuddy 教程',
 		en: 'WorkBuddy Tutorials',
@@ -197,6 +203,7 @@ if (
 		'curations',
 		'codex-tutorials',
 		'deepseek-harness-tutorials',
+		'pi-agent-tutorials',
 		'workbuddy-tutorials',
 	].includes(record.section)
 ) {
@@ -204,9 +211,13 @@ if (
 	if (record.section === 'highlights') {
 		directoryItems = highlightItemsFor(children);
 	} else if (
-		['prompts', 'codex-tutorials', 'deepseek-harness-tutorials', 'workbuddy-tutorials'].includes(
-			record.section,
-		)
+		[
+			'prompts',
+			'codex-tutorials',
+			'deepseek-harness-tutorials',
+			'pi-agent-tutorials',
+			'workbuddy-tutorials',
+		].includes(record.section)
 	) {
 		directoryItems = children.map((child) => ({
 			id: child.route,
@@ -227,7 +238,12 @@ if (
 		directoryItems = JSON.parse(await readFile(resolve(staticRoot, dataPrefix, filename), 'utf8'));
 	}
 }
-const tutorialKinds = ['codex-tutorials', 'deepseek-harness-tutorials', 'workbuddy-tutorials'];
+const tutorialKinds = [
+	'codex-tutorials',
+	'deepseek-harness-tutorials',
+	'pi-agent-tutorials',
+	'workbuddy-tutorials',
+];
 const isTutorialIndex = record.isIndex && tutorialKinds.includes(record.section);
 const isHighlightsIndex = record.isIndex && record.section === 'highlights';
 const chapters = isTutorialIndex
@@ -278,6 +294,7 @@ const otherSeries = isTutorialIndex
 			.filter((series): series is NonNullable<typeof series> => series !== null)
 	: [];
 const knownRoutes = new Set(allRecords.filter(legacyEntryIsRoutable).map((entry) => entry.route));
+const isTutorialArticle = !record.isIndex && tutorialKinds.includes(record.section);
 const articleSiblings = allRecords
 	.filter(
 		(entry) =>
@@ -286,7 +303,15 @@ const articleSiblings = allRecords
 			!entry.isIndex &&
 			legacyEntryIsRoutable(entry),
 	)
-	.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+	.sort((a, b) => {
+		// Tutorial series read in curated chapter order; archives stay newest-first.
+		if (isTutorialArticle) {
+			const weightA = typeof a.frontmatter.weight === 'number' ? a.frontmatter.weight : 999;
+			const weightB = typeof b.frontmatter.weight === 'number' ? b.frontmatter.weight : 999;
+			return weightA - weightB;
+		}
+		return (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0);
+	});
 const articleIndex = articleSiblings.findIndex((entry) => entry.route === record.route);
 const newer = articleIndex > 0 ? articleSiblings[articleIndex - 1] : null;
 const older =
@@ -364,6 +389,7 @@ const libraryApi =
 						'highlights',
 						'codex-tutorials',
 						'deepseek-harness-tutorials',
+						'pi-agent-tutorials',
 						'workbuddy-tutorials',
 					].includes(directoryKind ?? '') && (
 						<div class="directory-intro">
@@ -432,16 +458,16 @@ const libraryApi =
 											<span class="chapter-num" aria-hidden="true">
 												{index + 1}
 											</span>
-											<span class="chapter-body">
+											<div class="chapter-body">
 												<span class="chapter-meta">
 													{chapter.date && <time datetime={chapter.date}>{chapter.date}</time>}
 													<span>
 														{chapter.minutes} {isEnglish ? 'min read' : '分钟'}
 													</span>
 												</span>
-												<strong>{chapter.title}</strong>
+												<h3>{chapter.title}</h3>
 												{chapter.description && <small>{chapter.description}</small>}
-											</span>
+											</div>
 										</a>
 									</li>
 								))}
@@ -599,7 +625,15 @@ const libraryApi =
 							<div>
 								{newer && (
 									<>
-										<span>{isEnglish ? 'Newer' : '较新'}</span>
+										<span>
+											{isTutorialArticle
+												? isEnglish
+													? 'Previous chapter'
+													: '上一章'
+												: isEnglish
+													? 'Newer'
+													: '较新'}
+										</span>
 										<a href={newer.route}>← {newer.title}</a>
 									</>
 								)}
@@ -610,7 +644,15 @@ const libraryApi =
 							<div>
 								{older && (
 									<>
-										<span>{isEnglish ? 'Older' : '较早'}</span>
+										<span>
+											{isTutorialArticle
+												? isEnglish
+													? 'Next chapter'
+													: '下一章'
+												: isEnglish
+													? 'Older'
+													: '较早'}
+										</span>
 										<a href={older.route}>{older.title} →</a>
 									</>
 								)}
@@ -634,4 +676,5 @@ const libraryApi =
 <script>
 	import '../scripts/legacy-directory.js';
 	import '../scripts/article-outline.ts';
+	import '../scripts/article-image-zoom.ts';
 </script>

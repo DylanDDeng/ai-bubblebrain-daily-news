@@ -19,7 +19,7 @@
 }
 
 .infographic-tool__privacy i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.4rem;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .infographic-panel header i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 1.2rem;
 }
 
@@ -151,7 +151,7 @@
 	gap: 9px;
 	min-height: 48px;
 	border: 1px solid var(--blue);
-	background: var(--blue);
+	background: var(--blue-strong);
 	color: white;
 	font-weight: 600;
 	cursor: pointer;
@@ -159,7 +159,7 @@
 
 .infographic-generate:hover:not(:disabled) {
 	background: transparent;
-	color: var(--blue);
+	color: var(--blue-strong);
 }
 
 .infographic-generate:disabled {
@@ -190,7 +190,7 @@
 }
 
 .infographic-preview--empty > i {
-	color: var(--blue);
+	color: var(--blue-strong);
 	font-size: 3rem;
 }
 

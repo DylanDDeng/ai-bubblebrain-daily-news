@@ -33,6 +33,7 @@ const isWindowLab = concept.id === 'context-window';
 const isHarnessLab = concept.id === 'harness';
 const isMcpLab = concept.id === 'mcp';
 const isSkillLab = concept.id === 'skill';
+const isRagLab = concept.id === 'rag';
 const customLabIds = new Set([
 	'prompt',
 	'agent',
@@ -41,6 +42,7 @@ const customLabIds = new Set([
 	'harness',
 	'mcp',
 	'skill',
+	'rag',
 	'backend',
 	'api',
 	'endpoint',
@@ -87,6 +89,7 @@ const labTitles: Record<string, string> = {
 	harness: '模型说「删了它」，框架照做吗？',
 	mcp: '接入一个工单系统，要写几遍代码？',
 	skill: '每周都要发的周报，怎么不用每次重新教？',
+	rag: '模型没学过的问题，怎么答对？',
 	'ai-agent': 'AI 工具怎样把目标变成结果？',
 	'data-storage': '一条数据怎样被保存和取回？',
 	'engineering-workflow': '一次改动怎样安全进入主线？',
@@ -119,6 +122,7 @@ const stageNames: Record<string, string[]> = {
 	harness: ['组装', '决策', '执行', '回填'],
 	mcp: ['封装', '连接', '发现', '调用'],
 	skill: ['沉淀', '打包', '触发', '复用'],
+	rag: ['提问', '检索', '组装', '作答'],
 	'ai-agent': ['目标', '上下文', '工具', '验证'],
 	'data-storage': ['定义', '写入', '查询', '返回'],
 	'engineering-workflow': ['编辑', '差异', '测试', '提交'],
@@ -727,6 +731,102 @@ const labels =
 											<b>稳定</b>
 											<span>周周同一水准，改进一次全员受益</span>
 											<small>技能，是团队的肌肉记忆</small>
+										</div>
+									</div>
+								) : null}
+
+								{isRagLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="rg" data-choice-rg="bare">
+										<div class="concept-props-choices" role="group" aria-label="选择作答方式">
+											<button
+												type="button"
+												data-flow-choice="bare"
+												data-flow-choice-group="rg"
+												aria-pressed="true"
+											>
+												闭卷直答
+											</button>
+											<button
+												type="button"
+												data-flow-choice="rag"
+												data-flow-choice-group="rg"
+												aria-pressed="false"
+											>
+												先查再答
+											</button>
+										</div>
+										<div class="rg-when-bare concept-component-def">
+											<small>递给模型的</small>
+											<p>
+												<code>问题</code>
+												<span>报销上限是多少？</span>
+											</p>
+											<p>
+												<code>资料</code>
+												<span>（没有）</span>
+											</p>
+										</div>
+										<div class="rg-when-rag concept-component-def">
+											<small>递给模型的</small>
+											<p>
+												<code>问题</code>
+												<span>报销上限是多少？</span>
+											</p>
+											<p>
+												<code>知识库</code>
+												<span>公司文档已接入</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isRagLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="rg" data-choice-rg="bare">
+										<div class="rg-when-bare concept-bk-skip">
+											这一步不存在——
+											<br />
+											直接作答，全凭训练记忆
+										</div>
+										<div class="rg-when-rag concept-js-preview">
+											<p>检索：报销 上限 标准</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>命中手册 3.2 节 · 相关度最高</p>
+										</div>
+									</div>
+								) : null}
+
+								{isRagLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="rg" data-choice-rg="bare">
+										<div class="rg-when-bare concept-js-preview">
+											<p>上下文里只有一句问题</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>手册？模型一个字都看不见</p>
+										</div>
+										<div class="rg-when-rag concept-component-def">
+											<small>拼进上下文的资料</small>
+											<p>
+												<code>手册 3.2</code>
+												<span>差旅报销标准…</span>
+											</p>
+											<p>
+												<code>手册 3.4</code>
+												<span>特殊审批流程…</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isRagLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="rg" data-choice-rg="bare">
+										<div class="rg-when-bare concept-bk-resp is-400">
+											<b>像真的</b>
+											<span>「一般是 500 元」——数字是编的</span>
+											<small>没有依据，错了也无从核对</small>
+										</div>
+										<div class="rg-when-rag concept-bk-resp is-200">
+											<b>有出处</b>
+											<span>单日上限 800 元（手册 3.2）</span>
+											<small>答案可核对，资料更新后回答跟着更新</small>
 										</div>
 									</div>
 								) : null}

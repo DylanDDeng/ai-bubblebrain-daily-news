@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 162 1092 532" role="img" aria-labelledby="title desc">
+  <title id="title">Pi 每轮现场组装的系统提示词</title>
+  <desc id="desc">系统提示词由六层现场拼成：身份说明、可用工具清单（只列提供了一行简介的工具）、随工具动态生成的指南、包在 project_context 标签里的项目文件、仅当 read 工具可用才注入的 Skills 清单，以及当前工作目录。</desc>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:40px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .layer{font-size:17px;font-weight:650;fill:#111}
+    .snippet{font-size:14px;fill:#6c6c6c}
+    .note{font-size:14px;fill:#6c6c6c}
+    .guard{font-size:13.5px;font-weight:650;fill:#d9341c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .card-hl{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .a1{animation:s1 9s linear infinite}.a2{animation:s2 9s linear infinite}
+    .a3{animation:s3 9s linear infinite}.a4{animation:s4 9s linear infinite}
+    .a5{animation:s5 9s linear infinite}.a6{animation:s6 9s linear infinite}
+    @keyframes s1{0%,4%{opacity:0}7%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s2{0%,16%{opacity:0}19%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s3{0%,28%{opacity:0}31%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s4{0%,40%{opacity:0}43%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s5{0%,52%{opacity:0}55%,93%{opacity:1}97%,100%{opacity:0}}
+    @keyframes s6{0%,64%{opacity:0}67%,93%{opacity:1}97%,100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){.a1,.a2,.a3,.a4,.a5,.a6{animation:none}}
+  </style>
+
+  <g class="sans">
+    <g class="a1">
+      <rect class="card" x="72" y="176" width="640" height="72"/>
+      <text x="94" y="206" class="mono num">01</text>
+      <text x="134" y="207" class="layer">身份与职责</text>
+      <text x="134" y="232" class="mono snippet">You are an expert coding assistant operating inside pi…</text>
+    </g>
+    <g class="a2">
+      <rect class="card" x="72" y="256" width="640" height="72"/>
+      <text x="94" y="286" class="mono num">02</text>
+      <text x="134" y="287" class="layer">可用工具清单</text>
+      <text x="134" y="312" class="mono snippet">- read / bash / edit / write（各配一行简介）</text>
+      <text x="736" y="290" class="mono note">← 没提供简介的工具，不进清单</text>
+    </g>
+    <g class="a3">
+      <rect class="card" x="72" y="336" width="640" height="72"/>
+      <text x="94" y="366" class="mono num">03</text>
+      <text x="134" y="367" class="layer">使用指南</text>
+      <text x="134" y="392" class="mono snippet">Guidelines: Be concise… Show file paths clearly…</text>
+      <text x="736" y="370" class="mono note">← 按实际有哪些工具动态生成</text>
+    </g>
+    <g class="a4">
+      <rect class="card" x="72" y="416" width="640" height="72"/>
+      <text x="94" y="446" class="mono num">04</text>
+      <text x="134" y="447" class="layer">项目规则</text>
+      <text x="134" y="472" class="mono snippet">&lt;project_instructions path="AGENTS.md"&gt;…&lt;/…&gt;</text>
+      <text x="736" y="450" class="mono note">← 你的项目文件，下一批章节细讲</text>
+    </g>
+    <g class="a5">
+      <rect class="card-hl" x="72" y="496" width="640" height="72"/>
+      <text x="94" y="526" class="mono num">05</text>
+      <text x="134" y="527" class="layer">Skills 清单</text>
+      <text x="134" y="552" class="mono snippet">formatSkillsForPrompt(skills)</text>
+      <text x="736" y="522" class="mono guard">← 防护：只有 read 工具可用才注入</text>
+      <text x="736" y="544" class="mono note">（读不了 skill 文件，列出来只会诱导幻觉）</text>
+    </g>
+    <g class="a6">
+      <rect class="card" x="72" y="576" width="640" height="72"/>
+      <text x="94" y="606" class="mono num">06</text>
+      <text x="134" y="607" class="layer">当前工作目录</text>
+      <text x="134" y="632" class="mono snippet">Current working directory: ~/demo</text>
+      <text x="736" y="610" class="mono note">← 换个目录启动，这一层就不同</text>
+    </g>
+  </g>
+</svg>
