@@ -41,6 +41,8 @@ const expectedArticleRoutes = [
 	'/highlights/2026-08-21-what-is-reasoning/',
 	'/en/highlights/2026-08-21-what-is-reasoning/',
 	'/highlights/2026-08-25-ai-engineering-skills-map-building-deploying-ai-applications/',
+	'/highlights/2026-08-25-build-a-long-running-agent-open-source-harness/',
+	'/en/highlights/2026-08-25-build-a-long-running-agent-open-source-harness/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -151,6 +153,24 @@ describe('unified highlights content', () => {
 		expect(records[0]?.body).toContain('https://x.com/AndrewYNg/status/2090840747738374568');
 		expect(records[0]?.body).toContain('LLM-as-a-judge');
 		expect(records[0]?.body).toContain('Computer Use Agent');
+	});
+
+	it('keeps the long-running Agent Harness article complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) =>
+				entry.frontmatter.externalId === 'build-a-long-running-agent-open-source-harness',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(11);
+			expect(entry.body.match(/https:\/\/pbs\.twimg\.com\/media\//g)).toHaveLength(4);
+			expect(entry.body).toContain('npx @truefoundry/trueforge');
+			expect(entry.body).toContain('https://github.com/truefoundry/trueforge');
+			expect(entry.body).toContain(
+				'https://github.com/Sumanth077/Hands-On-AI-Engineering/tree/main/ai_agents/trueforge_web_research_briefer',
+			);
+		}
 	});
 
 	it('preserves every migrated Chinese and English record in Markdown', async () => {
