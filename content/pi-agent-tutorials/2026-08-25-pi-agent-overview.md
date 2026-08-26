@@ -89,13 +89,14 @@ Pi 的官方介绍明确写着：它提供强力默认配置，但不会把Subag
 
 ## 你将学到什么
 
-这套教程分为五篇，沿着源码把 Pi 拆开看：
+这套教程分为六篇，沿着源码把 Pi 拆开看：
 
 1. 当前这篇：理解 Model、Harness、Tools 与 Agent Loop；
 2. [Pi 的上下文工程](/pi-agent-tutorials/pi-agent-context-engineering/)；
 3. [从源码看 Pi 的 Compaction 策略](/pi-agent-tutorials/pi-agent-compaction/)；
 4. [Pi 的工具系统](/pi-agent-tutorials/pi-agent-tool-system/)；
-5. [Pi 的会话存储](/pi-agent-tutorials/pi-agent-session-storage/)。
+5. [Pi 的会话存储](/pi-agent-tutorials/pi-agent-session-storage/)；
+6. [Pi 的 Extension 系统](/pi-agent-tutorials/pi-agent-extensions/)。
 
 ## 开始前需要知道的安全边界
 
