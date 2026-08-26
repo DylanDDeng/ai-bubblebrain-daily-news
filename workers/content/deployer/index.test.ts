@@ -905,6 +905,38 @@ describe("automatic code release boundary", () => {
     ).toHaveLength(11);
   });
 
+  it("accepts the Vibe Coding and Pi tutorial release paths", () => {
+    const releasePaths = [
+      "astro/src/data/vibeCodingPatternDetails.ts",
+      "astro/src/data/vibeCodingTermDetails.ts",
+      "astro/src/data/vibeCodingTerms.ts",
+      "content/pi-agent-tutorials/pi-agent-overview.md",
+      "static/js/knowledge-home-v2.js",
+      "static/js/vibe-coding-flow-lab.js",
+      "static/js/vibe-coding-pattern-detail.js",
+      "static/js/vibe-coding-terms.js",
+      "static/images/brain-cat.jpg",
+      "static/images/cat-pose-1.jpg",
+      "static/images/cat-pose-2.jpg",
+      "static/images/cat-pose-3.jpg",
+      "static/images/cat-pose-4.jpg",
+      "static/images/cat-pose-5.jpg",
+    ];
+
+    expect(
+      validateCodeReleaseChangeSet(
+        comparison(
+          releasePaths.map((filename) => ({ filename, status: "added" })),
+        ),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toHaveLength(releasePaths.length);
+  });
+
   it.each([
     "assets/daily.json",
     "data/daily/.gitkeep",

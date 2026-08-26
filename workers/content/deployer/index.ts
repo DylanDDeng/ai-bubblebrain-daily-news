@@ -415,12 +415,16 @@ function classifyCodeReleasePath(
       "content/codex-tutorials/",
       "content/deepseek-harness-tutorials/",
       "content/highlights/",
+      "content/pi-agent-tutorials/",
       "content/workbuddy-tutorials/",
       "static/fonts/",
       "static/media/",
     ].some((prefix) => path.startsWith(prefix)) ||
     [
       "astro/src/content.config.ts",
+      "astro/src/data/vibeCodingPatternDetails.ts",
+      "astro/src/data/vibeCodingTermDetails.ts",
+      "astro/src/data/vibeCodingTerms.ts",
       "astro/public/favicon.ico",
       "astro/public/favicon.svg",
       "astro/astro.config.mjs",
@@ -435,9 +439,19 @@ function classifyCodeReleasePath(
       "static/css/daily-timeline.css",
       "static/js/ai-infographic.js",
       "static/js/daily-timeline.js",
+      "static/js/knowledge-home-v2.js",
       "static/js/knowledge-search.js",
       "static/js/navigation.js",
       "static/js/site-shell.js",
+      "static/js/vibe-coding-flow-lab.js",
+      "static/js/vibe-coding-pattern-detail.js",
+      "static/js/vibe-coding-terms.js",
+      "static/images/brain-cat.jpg",
+      "static/images/cat-pose-1.jpg",
+      "static/images/cat-pose-2.jpg",
+      "static/images/cat-pose-3.jpg",
+      "static/images/cat-pose-4.jpg",
+      "static/images/cat-pose-5.jpg",
     ].includes(path)
   ) {
     return "publishable";
