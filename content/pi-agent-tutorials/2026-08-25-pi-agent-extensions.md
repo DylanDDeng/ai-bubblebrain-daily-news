@@ -91,7 +91,23 @@ pi.on("tool_call", async (event, ctx) => {
 
 ![一次 toolCall 的三种结局：什么都不返回则 execute 照常执行；返回 block:true 则工具不执行，reason 作为失败结果回给模型；原地修改 event.input 则照常执行但用的是改过的参数](/media/pi-agent-tutorials/pi-extension-gate.svg)
 
-"改写"那条值得多说一句：类型定义里写明了口径（`types.ts`）——*`event.input` is mutable. Mutate it in place to patch tool arguments before execution*。不用返回任何东西，直接改 `event.input`，后续检查员和真正的执行看到的就是改过的参数。
+三种结局里，"改写"最不直观，单独说清：**它改的是这次调用的参数**。钩子函数什么都不返回（所以不算拦下），但在放行之前，顺手修改了 `event.input` 里的字段——工具照常执行，只是执行的已经是改过的参数。官方文档的示例（`docs/extensions.md`）是给模型的每条 bash 命令前面补一行环境加载：
+
+```ts
+if (isToolCallEventType("bash", event)) {
+	// event.input is { command: string; timeout?: number }
+	event.input.command = `source ~/.profile\n${event.input.command}`;
+}
+```
+
+模型请求执行的是 `npm test`，真正落地的是先 `source ~/.profile` 再 `npm test`——模型全程不知情，也不需要知情。这个口径在类型定义里写得明明白白（`types.ts` 里 `tool_call` 事件的注释原文）：
+
+```
+`event.input` is mutable. Mutate it in place to patch tool arguments before execution.
+Later `tool_call` handlers see earlier mutations. No re-validation is performed after mutation.
+```
+
+注释的第二行还交代了两条边界：后面的检查员看到的是已经改过的参数；改完不会重新校验——权力交给你了，改坏了也算你的。
 
 这套机制在 `runner.ts` 里（`packages/coding-agent/src/core/extensions/runner.ts`）。第四章讲过一次工具调用的旅程：校验参数 → `execute` → 截断 → 进上下文。现在补上被省略的一步——**`execute` 之前，先把这次调用递给每一个检查员过目**：
 
