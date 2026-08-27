@@ -1438,6 +1438,502 @@ export const designBrands: DesignBrand[] = [
 		},
 		sourceFile: 'wired',
 	},
+	{
+		id: 'xai',
+		name: 'xAI',
+		category: 'AI 模型',
+		tagline: '近黑桌面上的一排白色空心药丸',
+		nameStyle: 'font-weight:400;letter-spacing:-0.02em;color:#f4f4f6',
+		heroTitle: 'xAI：把按钮做成描边，把信心做成留白',
+		lede: '#0a0a0a 的近黑画布上，全站找不到一颗实心主色按钮——交互词汇只有透明白描边的药丸。Universal Sans 以 400 字重打 96px 大字，Geist Mono 全大写标签在另一头用等宽字体说话：两种脸的对比就是品牌的声音。落日强调色藏在 token 里，几乎不出场。',
+		philosophy: [
+			'空心即品牌：白描边药丸是全站唯一交互形态，实心 CTA 是稀缺例外而非默认。',
+			'双面声音：无衬线大字负责音量，Geist Mono 大写标签负责精度。',
+			'卡片只是浅一度：#191919 卡底加发丝线，深度不靠投影靠明度差。',
+			'落日调色板藏着不用：sunset/dusk/twilight/breeze 罕见出场，克制到近乎吝啬。',
+		],
+		typePanelStyle: 'background:#191919;border-color:#2e2e2e',
+		colors: [
+			{ name: 'primary', hex: '#ffffff', role: '白 · 描边药丸与文字共用' },
+			{ name: 'canvas', hex: '#0a0a0a', role: '近黑画布' },
+			{ name: 'canvas-card', hex: '#191919', role: '卡片面 · 浅一度的黑' },
+			{ name: 'accent-sunset', hex: '#ff7a17', role: '落日橙 · 罕见出场' },
+			{ name: 'accent-dusk', hex: '#7c3aed', role: '黄昏紫' },
+			{ name: 'accent-twilight', hex: '#c4b5fd', role: '暮光淡紫' },
+			{ name: 'accent-breeze', hex: '#a0c3ec', role: '微风蓝' },
+		],
+		typeScale: [
+			{
+				sample: 'Understand the universe',
+				spec: 'display-xl · 96px / 400 / -2.4px · Universal Sans',
+				style:
+					'font-weight:400;font-size:clamp(32px,5vw,52px);letter-spacing:-0.025em;color:#f4f4f6;line-height:1.05',
+			},
+			{
+				sample: 'GROK 4 · NOW AVAILABLE',
+				spec: 'mono 标签 · Geist Mono 全大写加宽字距',
+				style:
+					'font-family:ui-monospace,monospace;font-size:12px;color:#a0a0a0;letter-spacing:0.14em;text-transform:uppercase',
+			},
+		],
+		dos: [
+			'按钮一律白描边空心药丸',
+			'display 用 400 字重大号负字距',
+			'标签用等宽全大写拉开质感对比',
+		],
+		donts: [
+			'不要给主 CTA 填充彩色——空心就是立场',
+			'不要频繁使用落日强调色，它们是储备不是涂料',
+			'不要用投影做深度',
+		],
+		plate: {
+			bg: '#0a0a0a',
+			headline: 'Understand the universe',
+			headlineStyle:
+				'color:#f4f4f6;font-weight:400;font-size:clamp(30px,4.3vw,48px);letter-spacing:-0.025em;line-height:1.05',
+			spec: 'Universal Sans 400 · 白描边药丸 · Geist Mono 标签',
+			specColor: '#a0a0a0',
+		},
+		sourceFile: 'xai',
+	},
+	{
+		id: 'cohere',
+		name: 'Cohere',
+		category: 'AI 模型',
+		tagline: '96px 纪念碑式标题下的企业编辑部气质',
+		nameStyle: 'font-weight:400;letter-spacing:-0.04em;color:#17171c',
+		heroTitle: 'Cohere：企业 AI 的编辑部气质',
+		lede: 'CohereText 打出 96px、行高 1.0、-1.92px 字距的纪念碑式标题，白色编辑画布被深绿与深藏青的色带周期性打断。CTA 是近黑或纯白的药丸，次级行动一律下划线文本链接——企业级的不吵不闹，信任感靠留白和合作方黑白标志墙堆出来。',
+		philosophy: [
+			'标题即建筑：96px / 行高 1.0 / 负字距，页面先给分量再给信息。',
+			'白纸 interrupt：深绿与藏青色带像杂志跨页一样切割白画布。',
+			'次级行动不上色：下划线链接代替彩色按钮，安静得体。',
+			'信任墙仪式：合作品牌标一律单色处理，垂直留白拉满。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#17171c', role: '近黑主色 · 药丸 CTA 用' },
+			{ name: 'canvas', hex: '#ffffff', role: '编辑式白画布' },
+		],
+		typeScale: [
+			{
+				sample: 'Enterprise AI that works',
+				spec: 'display · 96px / 400 / -1.92px / 1.0 · CohereText',
+				style:
+					'font-weight:500;font-size:clamp(32px,5vw,54px);letter-spacing:-0.03em;color:#17171c;line-height:1.02',
+			},
+			{
+				sample: 'Read the documentation →',
+				spec: 'text-link · 下划线次级行动',
+				style: 'font-size:15px;color:#17171c;text-decoration:underline;text-underline-offset:3px',
+			},
+		],
+		dos: ['标题保持超大字号加紧凑行高', '白画布上用深绿色带切分章节', '次级动作一律文本链接'],
+		donts: ['不要稀释标题的纪念碑感', '不要引入彩虹色系', '合作方标志不要彩色化'],
+		plate: {
+			bg: '#ffffff',
+			headline: 'AI built for enterprise',
+			headlineStyle:
+				'color:#17171c;font-weight:500;font-size:clamp(30px,4.4vw,48px);letter-spacing:-0.03em;line-height:1.02',
+			spec: 'CohereText · 96px / -1.92px · 白底色带 · 下划线链接',
+			specColor: '#5b6670',
+		},
+		sourceFile: 'cohere',
+	},
+	{
+		id: 'together',
+		name: 'Together AI',
+		category: 'AI 模型',
+		tagline: '一颗黑药丸与三色渐变的推理云',
+		nameStyle: 'font-weight:500;letter-spacing:-0.03em;color:#0a0a0a',
+		heroTitle: 'Together AI：所有转化都指向同一颗黑药丸',
+		lede: '定价、注册、footer——所有转化目标都由同一颗黑色 CTA 药丸承担；而整站唯一的装饰是一支橙→洋红→长春花的品牌渐变。等宽全大写眉题覆盖每个区块入口，4px 小圆角卡配暗亮交替的画布节奏，开发者气质拿摇得很稳。',
+		philosophy: [
+			'单一转化语言：黑药丸不换形不换色，出现即是行动点。',
+			'三色渐变即品牌：#fc4c02 → #ef2cc1 → #bdbbff 承担全部情绪表达。',
+			'mono 眉题系统：每个区块开头都是等宽全大写小字。',
+			'4px 克制圆角：卡片从不贪软，工程感优先。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#000000', role: '黑药丸 · 唯一 CTA 色' },
+			{ name: 'accent-orange', hex: '#fc4c02', role: '三色渐变起点' },
+			{ name: 'accent-magenta', hex: '#ef2cc1', role: '三色渐变中段' },
+			{ name: 'accent-periwinkle', hex: '#bdbbff', role: '三色渐变收尾' },
+			{ name: 'accent-mint', hex: '#c8f6f9', role: '薄荷软面' },
+		],
+		typeScale: [
+			{
+				sample: 'The fastest inference cloud',
+				spec: 'display · 64px / 500 / -1.92px · The Future',
+				style:
+					'font-weight:600;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.03em;color:#0a0a0a;line-height:1.08',
+			},
+			{
+				sample: 'OPEN SOURCE MODELS',
+				spec: 'mono-caps 眉题 · 区块标配',
+				style:
+					'font-family:ui-monospace,monospace;font-size:12px;color:#6b6b6b;letter-spacing:0.12em;text-transform:uppercase',
+			},
+		],
+		dos: ['转化点只用黑药丸', '三色渐变作为唯一装饰动机', '每块区域开头放 mono 大写眉题'],
+		donts: ['不要再发明第二颗彩色 CTA', '不要加大卡片圆角', '渐变不要铺满背景，只在局部点缀'],
+		plate: {
+			bg: '#ffffff',
+			strip: 'linear-gradient(90deg,#fc4c02,#ef2cc1 55%,#bdbbff 100%)',
+			headline: 'Inference for open models',
+			headlineStyle:
+				'color:#0a0a0a;font-weight:600;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;line-height:1.08',
+			spec: 'The Future 500 · 黑药丸 CTA · 三色渐变 · mono 眉题',
+			specColor: '#6b6b6b',
+		},
+		sourceFile: 'together',
+	},
+	{
+		id: 'ollama',
+		name: 'Ollama',
+		category: 'AI 模型',
+		tagline: '一张连续白纸上的圆润力量：curl 安装条即门面',
+		nameStyle: 'font-weight:500;color:#111111',
+		heroTitle: 'Ollama：本地模型的极简主义郑重感',
+		lede: '全页是一张没有分区切换的连续白纸，居中的 SF Pro Rounded 标题不扛大字压力——36px 就够，亲切但不幼稚。黑色药丸包办一切行动，最抢眼的位置给了那条 curl 安装命令：对开源工具而言，一行能复制的终端命令比任何文案都有说服力。',
+		philosophy: [
+			'一张纸到底：白面不分段，阅读体验是连续的卷轴。',
+			'圆润但不幼稚：SF Pro Rounded 只用到 36px，克制的友好。',
+			'黑药丸专制：不加第二行动色彩。',
+			'命令即门面：可复制的 curl 片段是首页视觉中心。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#000000', role: '纯黑 · 药丸 CTA' },
+			{ name: 'canvas', hex: '#ffffff', role: '连续白纸' },
+		],
+		typeScale: [
+			{
+				sample: 'Get up and running with large language models',
+				spec: 'display-xl · 36px / 500 / 0 · SF Pro Rounded',
+				style: 'font-weight:600;font-size:clamp(24px,3.4vw,34px);color:#111111;line-height:1.12',
+			},
+			{
+				sample: 'curl -fsSL https://ollama.com/install.sh | sh',
+				spec: 'install pill · 首页视觉中心',
+				style:
+					'font-family:ui-monospace,monospace;font-size:14px;color:#111111;background:#f5f5f4;border:1px solid #e7e5e4;padding:6px 16px;border-radius:999px;display:inline-block',
+			},
+		],
+		dos: ['保持单张白面的连续性', '标题用 SF Pro Rounded 但控制字号', '给安装命令药丸最高展示位'],
+		donts: ['不要拆分多个色面分段', '不要让标题大到失去亲切感', 'CTA 不需要第二色'],
+		plate: {
+			bg: '#ffffff',
+			headline: 'Run models locally',
+			headlineStyle:
+				'color:#111111;font-weight:600;font-size:clamp(26px,3.7vw,40px);line-height:1.1',
+			spec: 'SF Pro Rounded 500 · 黑药丸 · curl 安装条即门面',
+			specColor: '#78716c',
+		},
+		sourceFile: 'ollama',
+	},
+	{
+		id: 'warp',
+		name: 'Warp',
+		category: '开发工具',
+		tagline: '暖棕黑夜里的终端复兴：3px 直角键盘味',
+		nameStyle: 'font-weight:500;letter-spacing:-0.02em;color:#f7f5f0',
+		heroTitle: 'Warp：终端的自然色是暖黑而不是纯黑',
+		lede: '#2b2622 的暖棕黑画布是这个品牌的体温——不是科技业的冷黑。米白 #f7f5f0 同时充当文字色和按钮色；按钮圆角锁死 3/4px，从不做成药丸；Inter 配 DM Mono 打底，Instrument Serif 斜体偶尔客串编辑气质。终端 mockup 是唯一的装饰手段。',
+		philosophy: [
+			'暖棕黑即身份：#2b2622 取代行业默认冷黑，一眼认出。',
+			'米白双职：同一个颜色既是正文又是实心按钮。',
+			'直角键盘感：3/4px 圆角，拒绝 SaaS 式药丸。',
+			'只用终端截图说话：mockup 是唯一的插画体系。',
+		],
+		typePanelStyle: 'background:#221d1a;border-color:#453d36',
+		colors: [
+			{ name: 'primary', hex: '#f7f5f0', role: '米白 · 文字与按钮共用' },
+			{ name: 'canvas', hex: '#2b2622', role: '暖棕黑画布' },
+		],
+		typeScale: [
+			{
+				sample: 'The intelligent terminal',
+				spec: 'display · 64px / 400 / -1.6px · Inter',
+				style:
+					'font-weight:500;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.025em;color:#f7f5f0;line-height:1.1',
+			},
+			{
+				sample: '$ warp --agent run',
+				spec: 'terminal · DM Mono 主场',
+				style:
+					'font-family:ui-monospace,monospace;font-size:14px;color:#f7f5f0;background:#221d1a;padding:4px 12px;border-radius:4px;display:inline-block',
+			},
+		],
+		dos: [
+			'画布只用暖棕黑，绝不换成冷黑',
+			'文字与按钮共享米白',
+			'圆角锁死 3/4px',
+			'配图只用终端窗口 mockup',
+		],
+		donts: ['不要做药丸按钮', '不要加入彩色渐变氛围', '不要用插画风格装饰'],
+		plate: {
+			bg: '#2b2622',
+			headline: 'Agentic development, implemented',
+			headlineStyle:
+				'color:#f7f5f0;font-weight:500;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;line-height:1.1',
+			spec: 'Inter 500 · 米白双职 · 3px 圆角 · 终端 mockup',
+			specColor: '#a89f94',
+		},
+		sourceFile: 'warp',
+	},
+	{
+		id: 'resend',
+		name: 'Resend',
+		category: '基础设施',
+		tagline: '纯黑夜空上的六彩辉光：衬线压阵的开发者品牌',
+		nameStyle:
+			"font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.02em;color:#fcfdff",
+		heroTitle: 'Resend：发送邮件的公司做出了最好看的暗色官网',
+		lede: 'Domaine Display 衬线以 76–96px 压在全黑画布上，ABC Favorit 管营销正文，Inter 管 UI——三层分工严格。六个辉光强调色只以低透明度大气晕染的方式存在，从不当实色用；半透明的发丝描边取代了全部阴影。',
+		philosophy: [
+			'衬线领导力：最大号的字永远是衬线体。',
+			'辉光不上实色：六种彩只做低透明度的环境晕染。',
+			'半透明发丝线体制：边界用 alpha 边框表达，零投影。',
+			'邮件 mockup 是主角：产品可视化始终围绕收件箱场景。',
+		],
+		typePanelStyle: 'background:#0d0d0d;border-color:#242424',
+		colors: [
+			{ name: 'ink', hex: '#fcfdff', role: '米白主文字 / 实心按钮底' },
+			{ name: 'canvas', hex: '#000000', role: '纯黑画布' },
+			{ name: 'accent-orange', hex: '#ff801f', role: '辉光橙 · 仅低透明度晕染' },
+			{ name: 'accent-yellow', hex: '#ffc53d', role: '辉光黄' },
+			{ name: 'accent-blue', hex: '#3b9eff', role: '辉光蓝' },
+			{ name: 'accent-green', hex: '#11ff99', role: '辉光绿' },
+			{ name: 'accent-red', hex: '#ff2047', role: '辉光红' },
+		],
+		typeScale: [
+			{
+				sample: 'Email for developers',
+				spec: 'display · Domaine Display · 76–96px / 400 / -0.96px',
+				style:
+					"font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(30px,4.5vw,50px);letter-spacing:-0.02em;color:#fcfdff;line-height:1.0",
+			},
+			{
+				sample: 'Delivered in 1872ms',
+				spec: 'metrics · 等宽字报数',
+				style: 'font-family:ui-monospace,monospace;font-size:13px;color:#11ff99',
+			},
+		],
+		dos: ['hero 永远用衬线体', '强调色只以低透明度晕染出现', '边框用半透明白 hairline 取代阴影'],
+		donts: ['辉光色不要拿来做实心按钮', '不要引入投影', '正文字不要用衬线'],
+		plate: {
+			bg: '#000000',
+			headline: 'The best API to reach humans',
+			headlineStyle:
+				"font-family:Georgia,'Times New Roman',serif;color:#fcfdff;font-weight:400;font-size:clamp(29px,4.2vw,47px);letter-spacing:-0.02em;line-height:1.02",
+			spec: 'Domaine Display · 六彩辉光晕染 · 半透明 hairline · 零投影',
+			specColor: '#11ff99',
+		},
+		sourceFile: 'resend',
+	},
+	{
+		id: 'mintlify',
+		name: 'Mintlify',
+		category: '开发工具',
+		tagline: '天空蓝渐变落到一片薄荷绿：文档基建的影院感',
+		nameStyle: 'font-weight:600;letter-spacing:-0.03em;color:#0a0a0a',
+		heroTitle: 'Mintlify：把文档工作台拍成电影开场',
+		lede: '大气渐变横幅（天蓝化入奶油、青绿化入薄荷）给足首屏电影感；真正的功能色只有一片 Mintlify 薄荷绿 #00d4a4——激活态、确认态、强调 CTA 专属。Inter 写散文，Geist Mono 写代码，三栏文档布局里排着 14px 高密度正文。',
+		philosophy: [
+			'渐变氛围带：首屏永远是大气过渡，从不像 SaaS 那样平涂开屏。',
+			'一片薄荷管全局：#00d4a4 出现必有含义。',
+			'黑药丸营销 CTA：与文档区的极简形成分工。',
+			'双字体纪律：UI 散文交给 Inter，代码签名永远 Geist Mono。',
+		],
+		colors: [
+			{ name: 'brand-green', hex: '#00d4a4', role: '招牌薄荷绿 · 功能专属' },
+			{ name: 'primary', hex: '#0a0a0a', role: '黑药丸营销 CTA' },
+			{ name: 'canvas', hex: '#ffffff', role: '白色画布' },
+		],
+		typeScale: [
+			{
+				sample: 'Beautiful documentation that converts',
+				spec: 'display-xl · 56px / 600 / -1.5px · Inter',
+				style:
+					'font-weight:600;font-size:clamp(27px,3.9vw,42px);letter-spacing:-0.027em;color:#0a0a0a;line-height:1.1',
+			},
+			{
+				sample: 'import { Docs } from mintlify',
+				spec: 'code · Geist Mono 浅灰底内联',
+				style:
+					'font-family:ui-monospace,monospace;font-size:13px;color:#0a0a0a;background:#f4f4f5;padding:3px 8px;border-radius:6px',
+			},
+		],
+		dos: ['首屏用渐变氛围横幅', '薄荷绿只给有语义的位置', '营销区用黑药丸 CTA'],
+		donts: ['不要把薄荷绿当普通蓝色用', '正文不要用 mono', '不要让渐变盖过内容可读性'],
+		plate: {
+			bg: '#ffffff',
+			headline: 'Documentation your users will love',
+			headlineStyle:
+				'color:#0a0a0a;font-weight:600;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.027em;line-height:1.1',
+			spec: 'Inter 600 · 天蓝奶油渐变带 · 薄荷绿语义 · Geist Mono',
+			specColor: '#00d4a4',
+		},
+		sourceFile: 'mintlify',
+	},
+	{
+		id: 'posthog',
+		name: 'PostHog',
+		category: '数据分析',
+		tagline: '奶油纸上的一粒芥末黄与手绘刺猬军团',
+		nameStyle: 'font-weight:800;letter-spacing:-0.02em;color:#1d1db4',
+		heroTitle: 'PostHog：数据分析也可以很好玩',
+		lede: '#eeefe9 的暖奶油画布从头铺到尾，唯一的强色是一粒芥末黄 CTA #f7a501 配上橄榄深字的药丸。IBM Plex Sans 包揽全部字重从 400 到 800，手绘刺猬吉祥物是整个网站的装饰系统——在讲究效率的分析工具行业里，它选择了幽默。',
+		philosophy: [
+			'一张暖纸不分段：整页连续，没有章节之间的拼接感。',
+			'芥末黄单点爆发：唯一的主色只出现在 CTA 上。',
+			'一个字族包办一切：IBM Plex Sans 从 400 到 800 展示同一张脸的不同音量。',
+			'手绘刺猬军队：插画不是装饰而是角色演员，到处客串。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#f7a501', role: '芥末黄 · 唯一 CTA 强色' },
+			{ name: 'on-primary', hex: '#3d3000', role: '黄底深橄榄字' },
+			{ name: 'canvas', hex: '#eeefe9', role: '暖奶油画布' },
+			{ name: 'accent-blue', hex: '#2c84e0', role: '图表蓝' },
+			{ name: 'accent-red', hex: '#cd4239', role: '警示红' },
+			{ name: 'accent-green', hex: '#2c8c66', role: '增长绿' },
+			{ name: 'accent-purple', hex: '#7c44a6', role: '辅助紫' },
+		],
+		typeScale: [
+			{
+				sample: 'Seriously useful. Not boring.',
+				spec: 'display · IBM Plex Sans · 800 加粗语气',
+				style:
+					'font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;color:#1d1db4;line-height:1.15',
+			},
+			{
+				sample: 'Analytics you might actually enjoy.',
+				spec: 'body · 同一字族不同字重',
+				style: 'font-size:15px;color:#4a4a45',
+			},
+		],
+		dos: [
+			'保持单张暖纸不分段',
+			'CTA 只用芥末黄药丸配深橄榄字',
+			'用字重表达层级而不是换字体',
+			'合适的地方放一只刺猬',
+		],
+		donts: ['不要把黄色大面积铺底', '不要引入第二个品牌字体', '不要丢弃手绘风——那是品牌的人情味'],
+		plate: {
+			bg: '#eeefe9',
+			headline: 'The only product toolkit you need',
+			headlineStyle:
+				'color:#1d1db4;font-weight:800;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.025em;line-height:1.15',
+			spec: 'IBM Plex Sans 800 · 芥末黄药丸 · 手绘刺猬们',
+			specColor: '#cd4239',
+		},
+		sourceFile: 'posthog',
+	},
+	{
+		id: 'shopify',
+		name: 'Shopify',
+		category: '电商',
+		tagline: '双画布切换：330 细体的商业叙事',
+		nameStyle: 'font-weight:300;letter-spacing:0.01em;color:#000000',
+		heroTitle: 'Shopify：把薄到 330 的字重当成权力',
+		lede: '夜幕画布承担营销电影的独角戏，交易任务则转交亮白与奶油；两侧之间唯一的桥梁是全站统一的药丸按钮。Neue Haas Grotesk 打到 330 字重的 96px 是全站最大的视觉事件——在字重到处都是的时代，敢薄是一种自信。',
+		philosophy: [
+			'双画布剧场：夜幕负责惊叹，白天负责交易，各归其位。',
+			'330 细体宣言：视觉重量降到最低，话语权反而最高。',
+			'药丸统一两岸：不管哪个画布，按钮形状不变。',
+			'商业专属色：芦荟绿与开心果绿只属于亮轨，信号生长与交易。',
+		],
+		colors: [
+			{ name: 'canvas-night', hex: '#000000', role: '影月夜幕 · 电影营销' },
+			{ name: 'canvas-light', hex: '#ffffff', role: '交易日亮轨' },
+			{ name: 'canvas-cream', hex: '#fbfbf5', role: '柔和奶油过渡' },
+			{ name: 'aloe', hex: '#c1fbd4', role: '芦荟绿 · 商业信号色' },
+			{ name: 'pistachio', hex: '#d4f9e0', role: '开心果绿 · 商业信号色' },
+			{ name: 'primary', hex: '#000000', role: '黑 · 药丸按钮与夜轨主文字' },
+		],
+		typeScale: [
+			{
+				sample: 'Making commerce better for everyone',
+				spec: 'display-xxl · 96px / 330 / +2.4px 正字距',
+				style:
+					'font-weight:300;font-size:clamp(30px,4.6vw,50px);letter-spacing:0.015em;color:#000000;line-height:1.04',
+			},
+			{
+				sample: 'Start selling today',
+				spec: 'button-pill · 双画布唯一形状',
+				style:
+					'font-size:14px;color:#000000;background:#c1fbd4;padding:8px 20px;border-radius:999px;display:inline-block',
+			},
+		],
+		dos: [
+			'营销内容交给夜幕画布',
+			'display 保持 330 细字重加微正字距',
+			'亮轨内用芦荟/开心果绿做商业信号',
+		],
+		donts: [
+			'不要给 display 加粗——细才是宣言',
+			'不要在夜轨上用商业绿——它们属于日间',
+			'按钮永远不要变成非药丸形',
+		],
+		plate: {
+			bg: '#000000',
+			headline: 'Making commerce better',
+			headlineStyle:
+				'color:#ffffff;font-weight:300;font-size:clamp(30px,4.4vw,48px);letter-spacing:0.015em;line-height:1.06',
+			spec: 'Neue Haas Grotesk 330 · 双画布切换 · 药丸贯穿全球',
+			specColor: '#c1fbd4',
+		},
+		sourceFile: 'shopify',
+	},
+	{
+		id: 'mastercard',
+		name: 'Mastercard',
+		category: '金融',
+		tagline: '石色纸面上的轨道游戏：一切都很 stadium',
+		nameStyle: 'font-weight:600;letter-spacing:-0.01em;color:#1f1f1f',
+		heroTitle: 'Mastercard：把金融年报导成一本轨道图',
+		lede: '#F3F0EE 的石灰奶油纸面像一本高级年报，重要的一切都被塑成体育场形、药丸或完美圆形——40px 大圆角 hero、胶囊卡、圆形头像轨道。手绘感的橙色轨道弧线跨越整屏，连接这些圆形站点，红黄交扣的品牌遗产在角落低调共存。',
+		philosophy: [
+			'纸面温度：石灰奶油而非白，像年报的印刷纸张。',
+			'stadium 语法：超大圆角贯穿 hero、卡片与图像罩。',
+			'轨道叙事：橙色弧线跨屏连接圆形图片站点，暗示航线与轨迹。',
+			'遗产色退居二线：交扣红黄保留在符号层，不参与界面染色。',
+		],
+		colors: [
+			{ name: 'signal-orange', hex: '#cf4500', role: '信号橙 · 轨道弧线与重点强调' },
+			{ name: 'peach', hex: '#f37338', role: '桃橙变体' },
+			{ name: 'heritage-red', hex: '#eb001b', role: '交扣红 · 只在标志层' },
+			{ name: 'heritage-yellow', hex: '#f79e1b', role: '交扣黄 · 只在标志层' },
+			{ name: 'paper', hex: '#f3f0ee', role: '石灰奶油画布' },
+		],
+		typeScale: [
+			{
+				sample: 'Priceless beginnings',
+				spec: 'display · 大号加粗 · 石灰纸面上稳如磐石',
+				style:
+					'font-weight:700;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.015em;color:#1f1f1f;line-height:1.12',
+			},
+			{
+				sample: 'Explore journeys →',
+				spec: 'orbit link · 橙色常伴',
+				style: 'font-size:15px;color:#cf4500',
+			},
+		],
+		dos: [
+			'画布维持石灰奶油低饱和',
+			'重要元素都用超大纲圆角或正圆',
+			'用橙色弧线串联圆形站点讲旅程故事',
+		],
+		donts: ['不要用尖角容器', '不要把交扣红黄拿出来染界面', '弧线不要太粗，手绘感才是重点'],
+		plate: {
+			bg: '#f3f0ee',
+			headline: 'Connections that matter',
+			headlineStyle:
+				'color:#1f1f1f;font-weight:700;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.015em;line-height:1.12',
+			spec: 'stadium 圆角 · 石灰纸面 · 信号橙轨道弧线',
+			specColor: '#cf4500',
+		},
+		sourceFile: 'mastercard',
+	},
 ];
 
 export const designBrandById = new Map(designBrands.map((brand) => [brand.id, brand]));
@@ -1450,6 +1946,12 @@ export interface DesignBrandGroup {
 }
 
 export const designBrandGroups: DesignBrandGroup[] = [
+	{
+		id: 'ai-models',
+		label: 'AI 与模型',
+		note: '把智能本身当产品的公司：有的极简到只剩描边，有的热闹得像调色盘。',
+		brandIds: ['xai', 'cohere', 'together', 'ollama'],
+	},
 	{
 		id: 'tools',
 		label: '工具与 SaaS',
@@ -1464,6 +1966,9 @@ export const designBrandGroups: DesignBrandGroup[] = [
 			'raycast',
 			'supabase',
 			'framer',
+			'warp',
+			'mintlify',
+			'posthog',
 		],
 	},
 	{
@@ -1476,7 +1981,7 @@ export const designBrandGroups: DesignBrandGroup[] = [
 		id: 'commerce',
 		label: '商业与消费',
 		note: '钱与生活方式的生意：信任感、精密感，和摄影的张力。',
-		brandIds: ['stripe', 'nike', 'airbnb', 'coinbase'],
+		brandIds: ['stripe', 'nike', 'airbnb', 'coinbase', 'shopify', 'mastercard'],
 	},
 	{
 		id: 'media',
