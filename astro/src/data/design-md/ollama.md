@@ -390,12 +390,12 @@ There is no photography. The only image-like elements are:
 ### Buttons
 
 **`button-primary`** — the universal Ollama CTA
-- Background `{colors.primary}`, text `{colors.on-primary}`, type `{typography.button-md}`, padding `8px 20px`, height `36px`, rounded `{rounded.full}`.
+- Background `{colors.primary}`, text `{colors.on-primary}`, type `{typography.button-md}`, padding `12px 20px`, height `44px`, rounded `{rounded.full}`.
 - Used for "Download" (top nav), "Sign in" (top nav, paired with Download), "Create account", "Get Pro", "Get Max" — every primary action in the system.
 - Pressed state lives in `button-primary-active` — background drops to `{colors.ink-deep}`.
 
 **`button-secondary`** — outline alternative on light canvas
-- Background `{colors.canvas}`, text `{colors.ink}`, 1px solid `{colors.hairline-strong}`, type `{typography.button-md}`, padding `8px 20px`, height `36px`, rounded `{rounded.full}`.
+- Background `{colors.canvas}`, text `{colors.ink}`, 1px solid `{colors.hairline-strong}`, type `{typography.button-md}`, padding `12px 20px`, height `44px`, rounded `{rounded.full}`.
 - Used as a secondary affordance — e.g., the "Sign in" pill in the top nav when paired with the black "Download" pill, "See more apps →" arrow link in compact form.
 
 **`button-pill-on-dark`** — white pill on dark surface

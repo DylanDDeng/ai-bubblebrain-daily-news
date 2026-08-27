@@ -1355,7 +1355,7 @@ export const designBrands: DesignBrand[] = [
 				sample: 'Jump start your crypto portfolio',
 				spec: 'display-xl · 64px / 400 / -1.6px · Coinbase Display',
 				style:
-					'font-weight:500;font-size:clamp(28px,4.2vw,44px);letter-spacing:-0.025em;color:#0a0b0d;line-height:1.05',
+					'font-weight:400;font-size:clamp(28px,4.2vw,44px);letter-spacing:-0.025em;color:#0a0b0d;line-height:1.05',
 			},
 			{
 				sample: 'Buy, sell, and store cryptocurrency.',
@@ -1519,7 +1519,7 @@ export const designBrands: DesignBrand[] = [
 				sample: 'Enterprise AI that works',
 				spec: 'display · 96px / 400 / -1.92px / 1.0 · CohereText',
 				style:
-					'font-weight:500;font-size:clamp(32px,5vw,54px);letter-spacing:-0.03em;color:#17171c;line-height:1.02',
+					'font-weight:400;font-size:clamp(32px,5vw,54px);letter-spacing:-0.03em;color:#17171c;line-height:1.02',
 			},
 			{
 				sample: 'Read the documentation →',
@@ -1543,12 +1543,12 @@ export const designBrands: DesignBrand[] = [
 		id: 'together',
 		name: 'Together AI',
 		category: 'AI 模型',
-		tagline: '一颗黑药丸与三色渐变的推理云',
+		tagline: '一颗黑色按钮与三色渐变的推理云',
 		nameStyle: 'font-weight:500;letter-spacing:-0.03em;color:#0a0a0a',
-		heroTitle: 'Together AI：所有转化都指向同一颗黑药丸',
-		lede: '定价、注册、footer——所有转化目标都由同一颗黑色 CTA 药丸承担；而整站唯一的装饰是一支橙→洋红→长春花的品牌渐变。等宽全大写眉题覆盖每个区块入口，4px 小圆角卡配暗亮交替的画布节奏，开发者气质拿摇得很稳。',
+		heroTitle: 'Together AI：所有转化都指向同一颗黑色按钮',
+		lede: '定价、注册、footer——所有转化目标都由同一颗黑色 4px 圆角矩形按钮承担；而整站唯一的装饰是一支橙→洋红→长春花的品牌渐变。等宽全大写眉题覆盖每个区块入口，4px 小圆角卡配暗亮交替的画布节奏，开发者气质拿摇得很稳。',
 		philosophy: [
-			'单一转化语言：黑药丸不换形不换色，出现即是行动点。',
+			'单一转化语言：黑色 4px 圆角矩形按钮不换形不换色，出现即是行动点。',
 			'三色渐变即品牌：#fc4c02 → #ef2cc1 → #bdbbff 承担全部情绪表达。',
 			'mono 眉题系统：每个区块开头都是等宽全大写小字。',
 			'4px 克制圆角：卡片从不贪软，工程感优先。',
@@ -1565,7 +1565,7 @@ export const designBrands: DesignBrand[] = [
 				sample: 'The fastest inference cloud',
 				spec: 'display · 64px / 500 / -1.92px · The Future',
 				style:
-					'font-weight:600;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.03em;color:#0a0a0a;line-height:1.08',
+					'font-weight:500;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.03em;color:#0a0a0a;line-height:1.08',
 			},
 			{
 				sample: 'OPEN SOURCE MODELS',
@@ -1574,7 +1574,11 @@ export const designBrands: DesignBrand[] = [
 					'font-family:ui-monospace,monospace;font-size:12px;color:#6b6b6b;letter-spacing:0.12em;text-transform:uppercase',
 			},
 		],
-		dos: ['转化点只用黑药丸', '三色渐变作为唯一装饰动机', '每块区域开头放 mono 大写眉题'],
+		dos: [
+			'转化点只用黑色 4px 圆角矩形按钮',
+			'三色渐变作为唯一装饰动机',
+			'每块区域开头放 mono 大写眉题',
+		],
 		donts: ['不要再发明第二颗彩色 CTA', '不要加大卡片圆角', '渐变不要铺满背景，只在局部点缀'],
 		plate: {
 			bg: '#ffffff',
@@ -1582,7 +1586,7 @@ export const designBrands: DesignBrand[] = [
 			headline: 'Inference for open models',
 			headlineStyle:
 				'color:#0a0a0a;font-weight:600;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;line-height:1.08',
-			spec: 'The Future 500 · 黑药丸 CTA · 三色渐变 · mono 眉题',
+			spec: 'The Future 500 · 黑色 4px 按钮 · 三色渐变 · mono 眉题',
 			specColor: '#6b6b6b',
 		},
 		sourceFile: 'together',
@@ -1609,7 +1613,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Get up and running with large language models',
 				spec: 'display-xl · 36px / 500 / 0 · SF Pro Rounded',
-				style: 'font-weight:600;font-size:clamp(24px,3.4vw,34px);color:#111111;line-height:1.12',
+				style: 'font-weight:500;font-size:clamp(24px,3.4vw,34px);color:#111111;line-height:1.12',
 			},
 			{
 				sample: 'curl -fsSL https://ollama.com/install.sh | sh',
@@ -1654,7 +1658,7 @@ export const designBrands: DesignBrand[] = [
 				sample: 'The intelligent terminal',
 				spec: 'display · 64px / 400 / -1.6px · Inter',
 				style:
-					'font-weight:500;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.025em;color:#f7f5f0;line-height:1.1',
+					'font-weight:400;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.025em;color:#f7f5f0;line-height:1.1',
 			},
 			{
 				sample: '$ warp --agent run',
@@ -1737,7 +1741,7 @@ export const designBrands: DesignBrand[] = [
 		tagline: '天空蓝渐变落到一片薄荷绿：文档基建的影院感',
 		nameStyle: 'font-weight:600;letter-spacing:-0.03em;color:#0a0a0a',
 		heroTitle: 'Mintlify：把文档工作台拍成电影开场',
-		lede: '大气渐变横幅（天蓝化入奶油、青绿化入薄荷）给足首屏电影感；真正的功能色只有一片 Mintlify 薄荷绿 #00d4a4——激活态、确认态、强调 CTA 专属。Inter 写散文，Geist Mono 写代码，三栏文档布局里排着 14px 高密度正文。',
+		lede: '大气渐变横幅（天蓝化入奶油、青绿化入薄荷）给足首屏电影感；真正的功能色只有一片 Mintlify 薄荷绿 #00d4a4——激活态、确认态、强调 CTA 专属。Inter 写散文，Geist Mono 写代码，三栏文档布局里排着 16px 的长文正文（14px 留给导航与表格）。',
 		philosophy: [
 			'渐变氛围带：首屏永远是大气过渡，从不像 SaaS 那样平涂开屏。',
 			'一片薄荷管全局：#00d4a4 出现必有含义。',
@@ -1791,7 +1795,7 @@ export const designBrands: DesignBrand[] = [
 		],
 		colors: [
 			{ name: 'primary', hex: '#f7a501', role: '芥末黄 · 唯一 CTA 强色' },
-			{ name: 'on-primary', hex: '#3d3000', role: '黄底深橄榄字' },
+			{ name: 'on-primary', hex: '#23251d', role: '黄底深橄榄黑字' },
 			{ name: 'canvas', hex: '#eeefe9', role: '暖奶油画布' },
 			{ name: 'accent-blue', hex: '#2c84e0', role: '图表蓝' },
 			{ name: 'accent-red', hex: '#cd4239', role: '警示红' },
@@ -1848,14 +1852,14 @@ export const designBrands: DesignBrand[] = [
 			{ name: 'canvas-cream', hex: '#fbfbf5', role: '柔和奶油过渡' },
 			{ name: 'aloe', hex: '#c1fbd4', role: '芦荟绿 · 商业信号色' },
 			{ name: 'pistachio', hex: '#d4f9e0', role: '开心果绿 · 商业信号色' },
-			{ name: 'primary', hex: '#000000', role: '黑 · 药丸按钮与夜轨主文字' },
+			{ name: 'primary', hex: '#000000', role: '黑 · 亮轨实心药丸按钮底（夜轨文字为白色）' },
 		],
 		typeScale: [
 			{
 				sample: 'Making commerce better for everyone',
 				spec: 'display-xxl · 96px / 330 / +2.4px 正字距',
 				style:
-					'font-weight:300;font-size:clamp(30px,4.6vw,50px);letter-spacing:0.015em;color:#000000;line-height:1.04',
+					'font-weight:330;font-size:clamp(30px,4.6vw,50px);letter-spacing:0.015em;color:#000000;line-height:1.04',
 			},
 			{
 				sample: 'Start selling today',
@@ -1889,7 +1893,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'Mastercard',
 		category: '金融',
 		tagline: '石色纸面上的轨道游戏：一切都很 stadium',
-		nameStyle: 'font-weight:600;letter-spacing:-0.01em;color:#1f1f1f',
+		nameStyle: 'font-weight:600;letter-spacing:-0.01em;color:#141413',
 		heroTitle: 'Mastercard：把金融年报导成一本轨道图',
 		lede: '#F3F0EE 的石灰奶油纸面像一本高级年报，重要的一切都被塑成体育场形、药丸或完美圆形——40px 大圆角 hero、胶囊卡、圆形头像轨道。手绘感的橙色轨道弧线跨越整屏，连接这些圆形站点，红黄交扣的品牌遗产在角落低调共存。',
 		philosophy: [
@@ -1899,10 +1903,11 @@ export const designBrands: DesignBrand[] = [
 			'遗产色退居二线：交扣红黄保留在符号层，不参与界面染色。',
 		],
 		colors: [
-			{ name: 'signal-orange', hex: '#cf4500', role: '信号橙 · 轨道弧线与重点强调' },
-			{ name: 'peach', hex: '#f37338', role: '桃橙变体' },
+			{ name: 'signal-orange', hex: '#cf4500', role: '信号橙 · 同意操作与眉题点缀' },
+			{ name: 'peach', hex: '#f37338', role: '亮信号橙 · 轨道弧线装饰' },
 			{ name: 'heritage-red', hex: '#eb001b', role: '交扣红 · 只在标志层' },
 			{ name: 'heritage-yellow', hex: '#f79e1b', role: '交扣黄 · 只在标志层' },
+			{ name: 'ink-black', hex: '#141413', role: '墨色 · 标题与正文' },
 			{ name: 'paper', hex: '#f3f0ee', role: '石灰奶油画布' },
 		],
 		typeScale: [
@@ -1910,12 +1915,12 @@ export const designBrands: DesignBrand[] = [
 				sample: 'Priceless beginnings',
 				spec: 'display · 大号加粗 · 石灰纸面上稳如磐石',
 				style:
-					'font-weight:700;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.015em;color:#1f1f1f;line-height:1.12',
+					'font-weight:700;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.015em;color:#141413;line-height:1.12',
 			},
 			{
 				sample: 'Explore journeys →',
 				spec: 'orbit link · 橙色常伴',
-				style: 'font-size:15px;color:#cf4500',
+				style: 'font-size:15px;color:#f37338',
 			},
 		],
 		dos: [
@@ -1928,8 +1933,8 @@ export const designBrands: DesignBrand[] = [
 			bg: '#f3f0ee',
 			headline: 'Connections that matter',
 			headlineStyle:
-				'color:#1f1f1f;font-weight:700;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.015em;line-height:1.12',
-			spec: 'stadium 圆角 · 石灰纸面 · 信号橙轨道弧线',
+				'color:#141413;font-weight:700;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.015em;line-height:1.12',
+			spec: 'stadium 圆角 · 石灰纸面 · 亮信号橙轨道弧线',
 			specColor: '#cf4500',
 		},
 		sourceFile: 'mastercard',

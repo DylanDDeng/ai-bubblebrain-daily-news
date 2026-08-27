@@ -461,7 +461,7 @@ The brand's signature mint green ({colors.brand-green}) appears sparingly but de
 - Signature Mintlify mint green ({colors.brand-green}) reserved for accent CTAs, active states, and feature confirmations
 - Black-pill primary buttons ({colors.primary} + `{rounded.full}`) for marketing CTAs
 - Inter for all UI prose; Geist Mono for code blocks, inline code, and type/property signatures
-- 3-column documentation layout (sidebar / prose / TOC) with dense 14px body type for long-form developer reading
+- 3-column documentation layout (sidebar / prose / TOC) with dense 16px body type for long-form developer reading; 14px reserved for navigation, table cells and secondary text
 - Tightly-controlled radius scale: marketing uses `{rounded.lg}` (12px), pill buttons use `{rounded.full}` — no in-between corner softening
 - Vibrant testimonial card (`{colors.testimonial-orange}`) breaks color rhythm intentionally for emotional impact
 

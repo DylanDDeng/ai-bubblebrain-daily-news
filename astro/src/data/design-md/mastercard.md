@@ -96,7 +96,7 @@ MarkForMC is proprietary and licensed. When rebuilding a matching aesthetic with
 - Text: Canvas Cream (`#F3F0EE`) — not pure white
 - Border: 1.5px solid Ink Black (same as bg, creates crisp edge)
 - Radius: 20px
-- Padding: 6px 24px
+- Padding: 12px 24px
 - Font: MarkForMC 16px / weight 500 / letter-spacing -0.32px
 - Default: as above; solid warm-black pill on cream canvas
 - Active / pressed: subtle inward-shrink or 2px offset (not a hover variant)
@@ -107,7 +107,7 @@ MarkForMC is proprietary and licensed. When rebuilding a matching aesthetic with
 - Text: Ink Black (`#141413`)
 - Border: 1.5px solid Ink Black
 - Radius: 20px
-- Padding: 6px 24px
+- Padding: 12px 24px
 - Font: MarkForMC 16px / weight 450 / line-height 20.8px
 - Default: white-on-cream pill with crisp ink outline
 - Active / pressed: subtle compression
@@ -118,7 +118,7 @@ MarkForMC is proprietary and licensed. When rebuilding a matching aesthetic with
 - Text: White (`#FFFFFF`)
 - Border: 0
 - Radius: 24px
-- Padding: 1px 30px (very tight vertical, wide horizontal)
+- Padding: 12px 30px (balanced vertical, wide horizontal)
 - Font: MarkForMC 13px / weight 400 / letter-spacing 0.13px
 - Default: as above; bright rust pill with white text
 - Use for: cookie consent, privacy preference, and other legally-distinct confirmations. **Do not** use this orange for marketing CTAs — it reads as a compliance color.
