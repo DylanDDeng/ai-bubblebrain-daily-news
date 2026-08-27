@@ -1,6 +1,6 @@
 # Bubble's Brain Astro site
 
-Astro 是 Bubble's Brain 知识库的正式展示层。它从 `../content` 读取 Codex 教程、WorkBuddy 教程、精选阅读、Prompt、模型评测、研究笔记与个人文章，并生成静态站点。AI 工具内容暂时保留在源码中，但不会生成公开栏目、搜索结果或 RSS。
+Astro 是 Bubble's Brain 知识库的正式展示层。它从 `../content` 读取 Codex 教程、Pi Agent 教程、WorkBuddy 教程、Vibe Coding、精选阅读、Prompt、模型评测、研究笔记与个人文章，并生成静态站点。AI 工具内容暂时保留在源码中，但不会生成公开栏目、搜索结果或 RSS。
 
 ## 站点能力
 
