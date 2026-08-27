@@ -1622,6 +1622,96 @@
 	display: none;
 }
 
+[data-choice-db='mem'] .db-when-db,
+[data-choice-db='db'] .db-when-mem {
+	display: none;
+}
+
+[data-choice-sc='loose'] .sc-when-schema,
+[data-choice-sc='schema'] .sc-when-loose {
+	display: none;
+}
+
+[data-choice-mg='hand'] .mg-when-script,
+[data-choice-mg='script'] .mg-when-hand {
+	display: none;
+}
+
+[data-choice-ca='none'] .ca-when-cache,
+[data-choice-ca='cache'] .ca-when-none {
+	display: none;
+}
+
+[data-choice-vd='kw'] .vd-when-vec,
+[data-choice-vd='vec'] .vd-when-kw {
+	display: none;
+}
+
+[data-choice-gt='none'] .gt-when-git,
+[data-choice-gt='git'] .gt-when-none {
+	display: none;
+}
+
+[data-choice-df='trust'] .df-when-check,
+[data-choice-df='check'] .df-when-trust {
+	display: none;
+}
+
+[data-choice-cm='lump'] .cm-when-small,
+[data-choice-cm='small'] .cm-when-lump {
+	display: none;
+}
+
+[data-choice-br='main'] .br-when-branch,
+[data-choice-br='branch'] .br-when-main {
+	display: none;
+}
+
+[data-choice-pu='direct'] .pu-when-pr,
+[data-choice-pu='pr'] .pu-when-direct {
+	display: none;
+}
+
+[data-choice-wt='one'] .wt-when-many,
+[data-choice-wt='many'] .wt-when-one {
+	display: none;
+}
+
+[data-choice-fk='direct'] .fk-when-fork,
+[data-choice-fk='fork'] .fk-when-direct {
+	display: none;
+}
+
+[data-choice-cp='none'] .cp-when-point,
+[data-choice-cp='point'] .cp-when-none {
+	display: none;
+}
+
+[data-choice-bd='rush'] .bd-when-build,
+[data-choice-bd='build'] .bd-when-rush {
+	display: none;
+}
+
+[data-choice-ci='hand'] .ci-when-auto,
+[data-choice-ci='auto'] .ci-when-hand {
+	display: none;
+}
+
+[data-choice-sl='own'] .sl-when-less,
+[data-choice-sl='less'] .sl-when-own {
+	display: none;
+}
+
+[data-choice-ed='center'] .ed-when-edge,
+[data-choice-ed='edge'] .ed-when-center {
+	display: none;
+}
+
+[data-choice-ob='dark'] .ob-when-obs,
+[data-choice-ob='obs'] .ob-when-dark {
+	display: none;
+}
+
 .concept-lab-pick .concept-component-def {
 	justify-self: stretch;
 }

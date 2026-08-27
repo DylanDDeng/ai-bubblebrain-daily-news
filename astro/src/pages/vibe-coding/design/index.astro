@@ -1,0 +1,77 @@
+---
+import '../../../styles/design-gallery.css';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { designBrandById, designBrandGroups, designBrands } from '../../../data/designBrands';
+
+const groups = designBrandGroups
+	.map((group) => ({
+		...group,
+		brands: group.brandIds.map((id) => designBrandById.get(id)).filter(Boolean),
+	}))
+	.filter((group) => group.brands.length > 0);
+---
+
+<BaseLayout
+	title="Design 设计理念库 · Vibe Coding · Bubble's Brain"
+	description="大公司如何用 DESIGN.md 描述自己的视觉语言：色彩、字体、组件规则与设计哲学。"
+	canonicalPath="/vibe-coding/design/"
+	section="vibe-coding"
+>
+	<div class="design-page" data-design-index>
+		<header class="design-hero">
+			<p class="design-kicker">
+				<a href="/vibe-coding/terms/">Vibe Coding</a> / Design.md
+			</p>
+			<h1>Design</h1>
+			<p class="design-lede">大公司写给 AI 编码工具看的设计系统文件，逐个品牌拆解。</p>
+		</header>
+
+		<nav class="design-group-nav" aria-label="按类别浏览品牌">
+			{
+				groups.map((group) => (
+					<a href={`#${group.id}`}>
+						{group.label}
+						<sup>{group.brands.length}</sup>
+					</a>
+				))
+			}
+		</nav>
+
+		<div class="design-groups">
+			{
+				groups.map((group, groupIndex) => (
+					<section class="design-index-grid" id={group.id}>
+						<aside class="design-rail">
+							<span class="design-rail-ghost" aria-hidden="true">
+								{String(groupIndex + 1).padStart(2, '0')}
+							</span>
+							<h2>{group.label}</h2>
+							<p>{group.note}</p>
+						</aside>
+
+						<div class="design-brand-list">
+							{group.brands.map((brand) => (
+								<a class="design-brand-item" href={`/vibe-coding/design/${brand.id}/`}>
+									<h3>
+										<span class="design-item-name" style={brand.nameStyle}>
+											{brand.name}
+										</span>
+										<span class="design-item-cat">{brand.category}</span>
+										<i class="ph ph-arrow-up-right design-item-arrow" aria-hidden="true" />
+									</h3>
+									<p>{brand.tagline}</p>
+									<span class="design-row-palette" aria-hidden="true">
+										{brand.colors.map((color) => (
+											<i style={`background:${color.hex}`} />
+										))}
+									</span>
+								</a>
+							))}
+						</div>
+					</section>
+				))
+			}
+		</div>
+	</div>
+	<script is:inline type="module" src="/js/design-tabs.js"></script>
+</BaseLayout>

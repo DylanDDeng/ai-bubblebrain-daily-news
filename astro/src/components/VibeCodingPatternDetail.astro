@@ -32,9 +32,21 @@ const isBreadcrumb = concept.id === 'breadcrumb';
 const isPagination = concept.id === 'pagination';
 const isSidebar = concept.id === 'sidebar';
 const isSection = concept.id === 'section';
+const isAlert = concept.id === 'alert';
+const isCommandPalette = concept.id === 'command-palette';
+const isTooltip = concept.id === 'tooltip';
+const isDropdownMenu = concept.id === 'dropdown-menu';
+const isInfiniteScroll = concept.id === 'infinite-scroll';
+const isStepper = concept.id === 'stepper';
+const isProgressBar = concept.id === 'progress-bar';
+const isSpinner = concept.id === 'spinner';
+const isCheckbox = concept.id === 'checkbox';
+const isButton = concept.id === 'button';
+const isAccordion = concept.id === 'accordion';
+const isTable = concept.id === 'table';
 const isCtrlGroup = isInput || isSelect || isToggle;
 const isWayGroup = isBreadcrumb || isPagination || isSidebar;
-const isStatusGroup = isSkeleton || isEmpty || isBadge;
+const isStatusGroup = isSkeleton || isEmpty || isBadge || isSpinner;
 ---
 
 <article class="concept-detail" data-vibe-coding-term-detail={concept.id}>
@@ -487,6 +499,368 @@ const isStatusGroup = isSkeleton || isEmpty || isBadge;
 						<span class="pattern-part-badge" style="right: 12%; top: 44%;" data-part-target="2">2</span>
 						<span class="pattern-part-badge" style="right: 12%; top: 66%;" data-part-target="3">3</span>
 						<span class="pattern-part-badge" style="left: 12%; top: 8%;" data-part-target="4">4</span>
+					</div>
+				) : isTable ? (
+					<div class="pattern-anatomy-mock pam-tb-wrap" aria-hidden="true">
+						<div class="pam-tb">
+							<span class="pam-tb-toolbar" data-part-target="5">
+								<i class="pam-tb-search">
+									<i class="ph ph-magnifying-glass" />
+									搜索订单
+								</i>
+								<b>筛选</b>
+								<b>导出</b>
+							</span>
+							<span class="pam-tb-head" data-part-target="1">
+								<i>订单号</i>
+								<i>客户</i>
+								<i class="is-num">金额 ↓</i>
+								<i>状态</i>
+								<i />
+							</span>
+							<span class="pam-tb-row" data-part-target="2">
+								<i>#1024</i>
+								<i>林小满</i>
+								<i class="is-num pam-tb-cell" data-part-target="3">
+									¥ 1,280
+								</i>
+								<i>
+									<em>已付款</em>
+								</i>
+								<i class="pam-tb-actions" data-part-target="4">
+									···
+								</i>
+							</span>
+							<span class="pam-tb-row">
+								<i>#1023</i>
+								<i>周一</i>
+								<i class="is-num">¥ 640</i>
+								<i>
+									<em class="is-wait">待发货</em>
+								</i>
+								<i class="pam-tb-actions">···</i>
+							</span>
+							<span class="pam-tb-row">
+								<i>#1022</i>
+								<i>吴谷雨</i>
+								<i class="is-num">¥ 96</i>
+								<i>
+									<em>已付款</em>
+								</i>
+								<i class="pam-tb-actions">···</i>
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="left: 15%; top: 34%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 15%; top: 56%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="left: 47%; top: 56%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 3%; top: 56%;" data-part-target="4">4</span>
+						<span class="pattern-part-badge" style="right: 3%; top: 6%;" data-part-target="5">5</span>
+					</div>
+				) : isAccordion ? (
+					<div class="pattern-anatomy-mock pam-ac-wrap" aria-hidden="true">
+						<div class="pam-ac">
+							<span class="pam-ac-item is-open">
+								<b class="pam-ac-head" data-part-target="1">
+									怎么取消订阅？
+									<i class="ph ph-caret-down pam-ac-chevron" data-part-target="2" />
+								</b>
+								<span class="pam-ac-panel" data-part-target="3">
+									<i />
+									<i />
+									<i class="is-short" />
+								</span>
+							</span>
+							<u class="pam-ac-divider" data-part-target="4" />
+							<span class="pam-ac-item">
+								<b class="pam-ac-head">
+									退款要几天到账？
+									<i class="ph ph-caret-down pam-ac-chevron" />
+								</b>
+							</span>
+							<u class="pam-ac-divider" />
+							<span class="pam-ac-item">
+								<b class="pam-ac-head">
+									能换绑手机号吗？
+									<i class="ph ph-caret-down pam-ac-chevron" />
+								</b>
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="left: 5%; top: 12%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="right: 5%; top: 12%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 5%; top: 40%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="left: 5%; top: 60%;" data-part-target="4">4</span>
+					</div>
+				) : isButton ? (
+					<div class="pattern-anatomy-mock pam-bt-wrap" aria-hidden="true">
+						<div class="pam-bt">
+							<span class="pam-bt-main" data-part-target="3">
+								<i class="ph ph-paper-plane-tilt pam-bt-icon" data-part-target="2" />
+								<b class="pam-bt-label" data-part-target="1">
+									发送
+								</b>
+							</span>
+							<span class="pam-bt-states" data-part-target="4">
+								<span>
+									<i class="pam-bt-mini">发送</i>
+									<em>默认</em>
+								</span>
+								<span>
+									<i class="pam-bt-mini is-hover">发送</i>
+									<em>悬停</em>
+								</span>
+								<span>
+									<i class="pam-bt-mini is-disabled">发送</i>
+									<em>禁用</em>
+								</span>
+								<span>
+									<i class="pam-bt-mini is-loading">
+										<u />
+										发送中
+									</i>
+									<em>加载</em>
+								</span>
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="left: 56%; top: 14%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 26%; top: 14%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 12%; top: 30%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 70%;" data-part-target="4">4</span>
+					</div>
+				) : isCheckbox ? (
+					<div class="pattern-anatomy-mock pam-ck-wrap" aria-hidden="true">
+						<div class="pam-ck">
+							<span class="pam-ck-group">
+								<b class="pam-ck-title" data-part-target="4">
+									兴趣 · 可多选
+								</b>
+								<span class="pam-ck-row">
+									<i class="pam-ck-box is-on" data-part-target="3" />
+									<em data-part-target="2">设计</em>
+								</span>
+								<span class="pam-ck-row">
+									<i class="pam-ck-box" data-part-target="1" />
+									<em>编程</em>
+								</span>
+								<span class="pam-ck-row">
+									<i class="pam-ck-box is-on" />
+									<em>摄影</em>
+								</span>
+							</span>
+							<span class="pam-ck-group">
+								<b class="pam-ck-title">配送 · 单选</b>
+								<span class="pam-ck-row">
+									<i class="pam-ck-box is-radio is-on" />
+									<em>快递</em>
+								</span>
+								<span class="pam-ck-row">
+									<i class="pam-ck-box is-radio" />
+									<em>自提</em>
+								</span>
+								<span class="pam-ck-row">
+									<i class="pam-ck-box is-radio" />
+									<em>闪送</em>
+								</span>
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="left: 6%; top: 60%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 36%; top: 36%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 36%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 8%;" data-part-target="4">4</span>
+					</div>
+				) : isSpinner ? (
+					<div class="pattern-anatomy-mock pam-spn-wrap" aria-hidden="true">
+						<div class="pam-spn-host" data-part-target="3">
+							<span class="pam-spn-ghost" />
+							<span class="pam-spn-ghost is-short" />
+							<span class="pam-spn-center">
+								<i class="pam-spn-ring" data-part-target="1" />
+								<b class="pam-spn-label" data-part-target="2">加载中…</b>
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="left: 30%; top: 44%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="right: 26%; top: 44%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="left: 10%; top: 10%;" data-part-target="3">3</span>
+					</div>
+				) : isProgressBar ? (
+					<div class="pattern-anatomy-mock pam-pb-wrap" aria-hidden="true">
+						<div class="pam-pb">
+							<span class="pam-pb-head">
+								<b class="pam-pb-label" data-part-target="4">正在上传 report.pdf</b>
+								<em class="pam-pb-value" data-part-target="3">62%</em>
+							</span>
+							<span class="pam-pb-track" data-part-target="1">
+								<i class="pam-pb-fill" data-part-target="2" />
+							</span>
+							<span class="pam-pb-foot">还剩约 20 秒</span>
+						</div>
+						<span class="pattern-part-badge" style="right: 15%; top: 58%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 15%; top: 58%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 15%; top: 24%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="left: 15%; top: 24%;" data-part-target="4">4</span>
+					</div>
+				) : isStepper ? (
+					<div class="pattern-anatomy-mock pam-stp-wrap" aria-hidden="true">
+						<div class="pam-stp">
+							<span class="pam-stp-step is-done" data-part-target="4">
+								<b class="pam-stp-node" data-part-target="1">
+									<i class="ph ph-check" />
+								</b>
+								<em class="pam-stp-label" data-part-target="3">填资料</em>
+							</span>
+							<i class="pam-stp-line is-done" data-part-target="2" />
+							<span class="pam-stp-step is-on" data-part-target="4">
+								<b class="pam-stp-node" data-part-target="1">2</b>
+								<em class="pam-stp-label" data-part-target="3">验证邮箱</em>
+							</span>
+							<i class="pam-stp-line" data-part-target="2" />
+							<span class="pam-stp-step" data-part-target="4">
+								<b class="pam-stp-node" data-part-target="1">3</b>
+								<em class="pam-stp-label" data-part-target="3">设置密码</em>
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="left: 10%; top: 22%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 30%; top: 10%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 8%; top: 70%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 30%; top: 10%;" data-part-target="4">4</span>
+					</div>
+				) : isInfiniteScroll ? (
+					<div class="pattern-anatomy-mock pam-inf-wrap" aria-hidden="true">
+						<div class="pam-inf">
+							<span class="pam-inf-list" data-part-target="1">
+								<span class="pam-inf-item">
+									<u />
+									<i />
+								</span>
+								<span class="pam-inf-item">
+									<u />
+									<i class="is-short" />
+								</span>
+								<span class="pam-inf-item is-fade">
+									<u />
+									<i />
+								</span>
+							</span>
+							<em class="pam-inf-sentinel" data-part-target="2">触发线</em>
+							<span class="pam-inf-loader" data-part-target="3">
+								<i class="ps-spinner-ring" />
+								正在加载下一批
+							</span>
+							<b class="pam-inf-end" data-part-target="4">— 没有更多了 —</b>
+						</div>
+						<span class="pattern-part-badge" style="left: 8%; top: 20%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="right: 8%; top: 50%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="left: 8%; top: 68%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 8%; top: 86%;" data-part-target="4">4</span>
+					</div>
+				) : isDropdownMenu ? (
+					<div class="pattern-anatomy-mock pam-dd-wrap" aria-hidden="true">
+						<div class="pam-dd-row">
+							<span class="pam-dd-title" />
+							<span class="pam-dd-trigger" data-part-target="1">
+								<i class="ph ph-dots-three" />
+							</span>
+						</div>
+						<div class="pam-dd-panel" data-part-target="2">
+							<i data-part-target="3">
+								<u class="ph ph-pencil-simple" />
+								编辑
+							</i>
+							<i data-part-target="3">
+								<u class="ph ph-copy" />
+								复制
+							</i>
+							<span class="pam-dd-divider" data-part-target="4" />
+							<i class="is-danger" data-part-target="4">
+								<u class="ph ph-trash" />
+								删除
+							</i>
+						</div>
+						<span class="pattern-part-badge" style="right: 5%; top: 10%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="right: 5%; top: 44%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 44%; top: 40%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 44%; top: 78%;" data-part-target="4">4</span>
+					</div>
+				) : isTooltip ? (
+					<div class="pattern-anatomy-mock pam-tt-wrap" aria-hidden="true">
+						<div class="pam-tt-stage">
+							<span class="pam-tt-bubble" data-part-target="2">
+								复制链接
+								<i class="pam-tt-arrow" data-part-target="3" />
+							</span>
+							<span class="pam-tt-toolbar">
+								<i class="ph ph-arrow-bend-up-left" />
+								<i class="ph ph-link is-target" data-part-target="1" />
+								<i class="ph ph-share-network" />
+								<i class="ph ph-trash" />
+							</span>
+							<span class="pam-tt-delay" data-part-target="4">
+								<i class="ph ph-timer" />
+								停留 300ms 才出现
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="left: 24%; top: 48%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 52%; top: 14%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="left: 52%; top: 36%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="left: 56%; top: 74%;" data-part-target="4">4</span>
+					</div>
+				) : isCommandPalette ? (
+					<div class="pattern-anatomy-mock pam-stage pam-cp-wrap" aria-hidden="true">
+						<div class="pam-ghost is-top">
+							<span />
+							<span class="is-short" />
+						</div>
+						<div class="pam-cp">
+							<span class="pam-cp-input" data-part-target="2">
+								<i class="ph ph-magnifying-glass" />
+								<b>设置</b>
+								<em data-part-target="1">⌘K</em>
+							</span>
+							<span class="pam-cp-list" data-part-target="3">
+								<i class="is-active" data-part-target="4">
+									<u class="ph ph-gear" />
+									账号设置
+								</i>
+								<i>
+									<u class="ph ph-moon" />
+									切换深色模式
+								</i>
+								<i>
+									<u class="ph ph-file-text" />
+									通知设置
+								</i>
+							</span>
+							<span class="pam-cp-hints" data-part-target="5">
+								<b>↑↓</b>选择
+								<b>↵</b>打开
+								<b>esc</b>关闭
+							</span>
+						</div>
+						<span class="pattern-part-badge" style="right: 6%; top: 18%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 18%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="left: 6%; top: 52%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 6%; top: 38%;" data-part-target="4">4</span>
+						<span class="pattern-part-badge" style="right: 6%; top: 84%;" data-part-target="5">5</span>
+					</div>
+				) : isAlert ? (
+					<div class="pattern-anatomy-mock pam-al-wrap" aria-hidden="true">
+						<div class="pam-al">
+							<i class="ph ph-warning-circle pam-al-icon" data-part-target="1" />
+							<span class="pam-al-body" data-part-target="2">
+								<b>邮箱尚未验证</b>
+								<i>验证后才能接收通知和找回密码。</i>
+							</span>
+							<em class="pam-al-action" data-part-target="3">去验证</em>
+							<u class="pam-al-close" data-part-target="4">×</u>
+						</div>
+						<div class="pam-ghost">
+							<span />
+							<span class="is-short" />
+							<span />
+						</div>
+						<span class="pattern-part-badge" style="left: 4%; top: 46%;" data-part-target="1">1</span>
+						<span class="pattern-part-badge" style="left: 40%; top: 46%;" data-part-target="2">2</span>
+						<span class="pattern-part-badge" style="right: 20%; top: 46%;" data-part-target="3">3</span>
+						<span class="pattern-part-badge" style="right: 4%; top: 46%;" data-part-target="4">4</span>
 					</div>
 				) : null
 			}
@@ -1045,6 +1419,396 @@ const isStatusGroup = isSkeleton || isEmpty || isBadge;
 										<i class="pv-bar" />
 										<u />
 									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'tb-plain' ? (
+								<span class="pv-tb">
+									<i class="pv-tb-head" />
+									<i />
+									<i />
+									<i />
+								</span>
+							) : null}
+							{variant.sketch === 'tb-striped' ? (
+								<span class="pv-tb is-striped">
+									<i class="pv-tb-head" />
+									<i />
+									<i />
+									<i />
+								</span>
+							) : null}
+							{variant.sketch === 'tb-select' ? (
+								<span class="pv-tb is-select">
+									<i class="pv-tb-head">
+										<u />
+									</i>
+									<i class="is-on">
+										<u class="is-on" />
+									</i>
+									<i>
+										<u />
+									</i>
+									<i class="is-on">
+										<u class="is-on" />
+									</i>
+								</span>
+							) : null}
+							{variant.sketch === 'ac-single' ? (
+								<span class="pv-ac">
+									<i class="is-open">
+										<b />
+										<u />
+									</i>
+									<i>
+										<b />
+									</i>
+									<i>
+										<b />
+									</i>
+								</span>
+							) : null}
+							{variant.sketch === 'ac-multi' ? (
+								<span class="pv-ac">
+									<i class="is-open">
+										<b />
+										<u />
+									</i>
+									<i>
+										<b />
+									</i>
+									<i class="is-open">
+										<b />
+										<u />
+									</i>
+								</span>
+							) : null}
+							{variant.sketch === 'ac-flush' ? (
+								<span class="pv-ac is-flush">
+									<i>
+										<b />
+									</i>
+									<i class="is-open">
+										<b />
+										<u />
+									</i>
+									<i>
+										<b />
+									</i>
+								</span>
+							) : null}
+							{variant.sketch === 'bt-primary' ? (
+								<span class="pv-bt-row">
+									<b class="pv-bt is-primary">保存</b>
+									<b class="pv-bt is-ghost">取消</b>
+								</span>
+							) : null}
+							{variant.sketch === 'bt-secondary' ? (
+								<span class="pv-bt-row">
+									<b class="pv-bt is-outline">导出</b>
+									<b class="pv-bt is-ghost">分享</b>
+								</span>
+							) : null}
+							{variant.sketch === 'bt-icon' ? (
+								<span class="pv-bt-row">
+									<b class="pv-bt is-icon">
+										<i class="ph ph-pencil-simple" />
+									</b>
+									<b class="pv-bt is-icon">
+										<i class="ph ph-copy" />
+									</b>
+									<b class="pv-bt is-icon is-danger">
+										<i class="ph ph-trash" />
+									</b>
+								</span>
+							) : null}
+							{variant.sketch === 'ck-stack' ? (
+								<span class="pv-ck">
+									<i>
+										<u class="is-on" />
+										<b />
+									</i>
+									<i>
+										<u />
+										<b />
+									</i>
+									<i>
+										<u class="is-on" />
+										<b />
+									</i>
+								</span>
+							) : null}
+							{variant.sketch === 'ck-inline' ? (
+								<span class="pv-ck is-inline">
+									<i>
+										<u class="is-radio is-on" />
+										<b />
+									</i>
+									<i>
+										<u class="is-radio" />
+										<b />
+									</i>
+									<i>
+										<u class="is-radio" />
+										<b />
+									</i>
+								</span>
+							) : null}
+							{variant.sketch === 'ck-card' ? (
+								<span class="pv-ck is-card">
+									<i class="is-on">
+										<u class="is-radio is-on" />
+										<b />
+									</i>
+									<i>
+										<u class="is-radio" />
+										<b />
+									</i>
+								</span>
+							) : null}
+							{variant.sketch === 'spn-inline' ? (
+								<span class="pv-center">
+									<span class="pv-spn-btn">
+										<i class="pv-spn-ring" />
+										提交中…
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'spn-block' ? (
+								<span class="pv-spn-block">
+									<i class="pv-bar" />
+									<span class="pv-spn-area">
+										<i class="pv-spn-ring" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'spn-page' ? (
+								<span class="pv-spn-page">
+									<i class="pv-bar" />
+									<i class="pv-bar" />
+									<i class="pv-bar is-short" />
+									<span class="pv-spn-veil">
+										<i class="pv-spn-ring is-light" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'pb-percent' ? (
+								<span class="pv-pb">
+									<span class="pv-pb-head">
+										<i class="pv-bar" />
+										<em>62%</em>
+									</span>
+									<span class="pv-pb-track">
+										<i class="pv-pb-fill" style="width: 62%" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'pb-indeterminate' ? (
+								<span class="pv-pb">
+									<span class="pv-pb-head">
+										<i class="pv-bar" />
+									</span>
+									<span class="pv-pb-track">
+										<i class="pv-pb-fill is-runner" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'pb-steps' ? (
+								<span class="pv-pb">
+									<span class="pv-pb-head">
+										<i class="pv-bar" />
+										<em>3 / 5</em>
+									</span>
+									<span class="pv-pb-segments">
+										<i class="is-on" />
+										<i class="is-on" />
+										<i class="is-on" />
+										<i />
+										<i />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'stp-horizontal' ? (
+								<span class="pv-stp">
+									<b class="is-done" />
+									<i class="is-done" />
+									<b class="is-on" />
+									<i />
+									<b />
+								</span>
+							) : null}
+							{variant.sketch === 'stp-vertical' ? (
+								<span class="pv-stp-vert">
+									<span class="pv-stp-row">
+										<b class="is-done" />
+										<i class="pv-bar" />
+									</span>
+									<span class="pv-stp-row">
+										<b class="is-on" />
+										<span class="pv-stp-detail">
+											<i class="pv-bar" />
+											<i class="pv-bar is-input" />
+										</span>
+									</span>
+									<span class="pv-stp-row">
+										<b />
+										<i class="pv-bar is-short" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'stp-dots' ? (
+								<span class="pv-stp-dots">
+									<i class="is-done" />
+									<i class="is-on" />
+									<i />
+									<i />
+									<em>第 2 步 · 验证邮箱</em>
+								</span>
+							) : null}
+							{variant.sketch === 'inf-feed' ? (
+								<span class="pv-inf">
+									<i class="pv-bar" />
+									<i class="pv-bar" />
+									<i class="pv-bar is-fade" />
+									<span class="pv-inf-loader">
+										<i class="pv-inf-ring" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'inf-loadmore' ? (
+								<span class="pv-inf">
+									<i class="pv-bar" />
+									<i class="pv-bar" />
+									<em class="pv-inf-btn">加载更多</em>
+								</span>
+							) : null}
+							{variant.sketch === 'inf-end' ? (
+								<span class="pv-inf">
+									<i class="pv-bar" />
+									<i class="pv-bar is-short" />
+									<em class="pv-inf-end">— 到底了 —</em>
+									<em class="pv-inf-top">回到顶部 ↑</em>
+								</span>
+							) : null}
+							{variant.sketch === 'dd-icon' ? (
+								<span class="pv-dd">
+									<span class="pv-dd-trigger is-icon">
+										<i class="ph ph-dots-three" />
+									</span>
+									<span class="pv-dd-panel">
+										<i />
+										<i />
+										<i class="is-danger" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'dd-button' ? (
+								<span class="pv-dd">
+									<span class="pv-dd-trigger is-button">
+										新建
+										<i class="ph ph-caret-down" />
+									</span>
+									<span class="pv-dd-panel">
+										<i />
+										<i />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'dd-context' ? (
+								<span class="pv-dd is-context">
+									<span class="pv-ghost" />
+									<span class="pv-dd-cursor">
+										<i class="ph ph-cursor" />
+									</span>
+									<span class="pv-dd-panel is-float">
+										<i />
+										<i />
+										<i />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'tt-top' ? (
+								<span class="pv-tt">
+									<span class="pv-tt-bubble is-top">
+										<b class="pv-bar" />
+									</span>
+									<span class="pv-tt-target">
+										<i class="ph ph-link" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'tt-side' ? (
+								<span class="pv-tt is-row">
+									<span class="pv-tt-target">
+										<i class="ph ph-link" />
+									</span>
+									<span class="pv-tt-bubble is-side">
+										<b class="pv-bar" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'tt-rich' ? (
+								<span class="pv-tt">
+									<span class="pv-tt-bubble is-top">
+										<b class="pv-bar" />
+										<em>⌘C</em>
+									</span>
+									<span class="pv-tt-target">
+										<i class="ph ph-copy" />
+									</span>
+								</span>
+							) : null}
+							{variant.sketch === 'cp-search' ? (
+								<span class="pv-cp">
+									<span class="pv-cp-input">
+										<i class="ph ph-magnifying-glass" />
+										<b class="pv-bar" />
+									</span>
+									<i class="pv-cp-row is-active" />
+									<i class="pv-cp-row" />
+									<i class="pv-cp-row" />
+								</span>
+							) : null}
+							{variant.sketch === 'cp-action' ? (
+								<span class="pv-cp">
+									<span class="pv-cp-input">
+										<em>&gt;</em>
+										<b class="pv-bar" />
+									</span>
+									<i class="pv-cp-row is-active is-action" />
+									<i class="pv-cp-row is-action" />
+									<i class="pv-cp-row is-action" />
+								</span>
+							) : null}
+							{variant.sketch === 'cp-group' ? (
+								<span class="pv-cp">
+									<span class="pv-cp-input">
+										<i class="ph ph-magnifying-glass" />
+										<b class="pv-bar" />
+									</span>
+									<u class="pv-cp-group">最近</u>
+									<i class="pv-cp-row is-active" />
+									<u class="pv-cp-group">动作</u>
+									<i class="pv-cp-row" />
+								</span>
+							) : null}
+							{variant.sketch === 'al-info' ? (
+								<span class="pv-al is-info">
+									<i class="ph ph-info" />
+									<b class="pv-bar" />
+									<em>×</em>
+								</span>
+							) : null}
+							{variant.sketch === 'al-warning' ? (
+								<span class="pv-al is-warning">
+									<i class="ph ph-warning" />
+									<b class="pv-bar" />
+									<u>升级</u>
+								</span>
+							) : null}
+							{variant.sketch === 'al-error' ? (
+								<span class="pv-al is-error">
+									<i class="ph ph-x-circle" />
+									<b class="pv-bar" />
 								</span>
 							) : null}
 						</div>
@@ -1708,6 +2472,657 @@ const isStatusGroup = isSkeleton || isEmpty || isBadge;
 									<i />
 								</span>
 								<span class="ps-ft-legal">© 2026 Bubble</span>
+							</label>
+						</div>
+					) : isTable ? (
+						<div class="pattern-spot-mock ps-tb-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-tb-cards"
+								for={`spot-${concept.id}-cards`}
+								data-pick-option="cards"
+								aria-label="卡片墙"
+							>
+								<span>
+									<b>今日订单</b>
+									<em>128</em>
+								</span>
+								<span>
+									<b>待发货</b>
+									<em>16</em>
+								</span>
+								<span>
+									<b>退款中</b>
+									<em>3</em>
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-tb-table"
+								for={`spot-${concept.id}-table`}
+								data-pick-option="table"
+								aria-label="数据表"
+							>
+								<span class="ps-tb-head">
+									<i>订单号</i>
+									<i>客户</i>
+									<i class="is-num">金额</i>
+									<i>状态</i>
+								</span>
+								<span class="ps-tb-row">
+									<i>#1024</i>
+									<i>林小满</i>
+									<i class="is-num">¥ 1,280</i>
+									<i>已付款</i>
+								</span>
+								<span class="ps-tb-row">
+									<i>#1023</i>
+									<i>周一</i>
+									<i class="is-num">¥ 640</i>
+									<i>待发货</i>
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-tb-list"
+								for={`spot-${concept.id}-list`}
+								data-pick-option="list"
+								aria-label="列表"
+							>
+								<span>
+									<u />
+									<i>林小满 付款了一笔 ¥ 1,280 的订单</i>
+								</span>
+								<span>
+									<u />
+									<i>周一 的订单等待发货</i>
+								</span>
+							</label>
+						</div>
+					) : isAccordion ? (
+						<div class="pattern-spot-mock ps-ac-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-ac-tabs"
+								for={`spot-${concept.id}-tabs`}
+								data-pick-option="tabs"
+								aria-label="标签页"
+							>
+								<span class="ps-ac-tab-row">
+									<i class="is-on">账户</i>
+									<i>账单</i>
+									<i>安全</i>
+								</span>
+								<span class="ps-ac-tab-body">
+									<u />
+									<u class="is-short" />
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-ac-acc"
+								for={`spot-${concept.id}-accordion`}
+								data-pick-option="accordion"
+								aria-label="折叠面板"
+							>
+								<span class="is-open">
+									<b>
+										怎么取消订阅？
+										<i class="ph ph-caret-up" />
+									</b>
+									<u />
+									<u class="is-short" />
+								</span>
+								<span>
+									<b>
+										退款要几天到账？
+										<i class="ph ph-caret-down" />
+									</b>
+								</span>
+								<span>
+									<b>
+										能换绑手机号吗？
+										<i class="ph ph-caret-down" />
+									</b>
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-ac-links"
+								for={`spot-${concept.id}-list`}
+								data-pick-option="list"
+								aria-label="链接列表"
+							>
+								<i>
+									服务条款
+									<em class="ph ph-arrow-right" />
+								</i>
+								<i>
+									隐私政策
+									<em class="ph ph-arrow-right" />
+								</i>
+							</label>
+						</div>
+					) : isButton ? (
+						<div class="pattern-spot-mock ps-bt-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<div class="ps-bt-card">
+								<span class="ps-bt-title">
+									团队版
+									<label
+										class="pattern-spot-region ps-bt-tag"
+										for={`spot-${concept.id}-tag`}
+										data-pick-option="tag"
+										aria-label="标签"
+									>
+										新
+									</label>
+								</span>
+								<span class="ps-bt-price">
+									¥ 96
+									<i>/ 月</i>
+								</span>
+								<span class="ps-bt-lines">
+									<u />
+									<u class="is-short" />
+								</span>
+								<span class="ps-bt-foot">
+									<label
+										class="pattern-spot-region ps-bt-btn"
+										for={`spot-${concept.id}-button`}
+										data-pick-option="button"
+										aria-label="按钮"
+									>
+										开始试用
+									</label>
+									<label
+										class="pattern-spot-region ps-bt-link"
+										for={`spot-${concept.id}-link`}
+										data-pick-option="link"
+										aria-label="文字链接"
+									>
+										查看完整对比
+									</label>
+								</span>
+							</div>
+						</div>
+					) : isCheckbox ? (
+						<div class="pattern-spot-mock ps-ck-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-ck-group"
+								for={`spot-${concept.id}-checkbox`}
+								data-pick-option="checkbox"
+								aria-label="复选框"
+							>
+								<b>通知方式</b>
+								<span>
+									<i class="ps-ck-box is-on" />
+									<em>邮件</em>
+								</span>
+								<span>
+									<i class="ps-ck-box" />
+									<em>短信</em>
+								</span>
+								<span>
+									<i class="ps-ck-box is-on" />
+									<em>推送</em>
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-ck-group"
+								for={`spot-${concept.id}-radio`}
+								data-pick-option="radio"
+								aria-label="单选框"
+							>
+								<b>外观</b>
+								<span>
+									<i class="ps-ck-box is-radio" />
+									<em>浅色</em>
+								</span>
+								<span>
+									<i class="ps-ck-box is-radio is-on" />
+									<em>深色</em>
+								</span>
+								<span>
+									<i class="ps-ck-box is-radio" />
+									<em>跟随系统</em>
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-ck-group is-toggle"
+								for={`spot-${concept.id}-toggle`}
+								data-pick-option="toggle"
+								aria-label="开关"
+							>
+								<b>自动保存</b>
+								<span class="ps-ck-toggle">
+									<i />
+								</span>
+							</label>
+						</div>
+					) : isProgressBar ? (
+						<div class="pattern-spot-mock ps-pb-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-pb-row"
+								for={`spot-${concept.id}-progress`}
+								data-pick-option="progress"
+								aria-label="进度条"
+							>
+								<span class="ps-pb-head">
+									正在上传 report.pdf
+									<em>62%</em>
+								</span>
+								<span class="ps-pb-track">
+									<i class="ps-pb-fill" />
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-pb-row"
+								for={`spot-${concept.id}-slider`}
+								data-pick-option="slider"
+								aria-label="滑块"
+							>
+								<b>通知音量</b>
+								<span class="ps-pb-slider">
+									<b />
+									<i />
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-pb-spin"
+								for={`spot-${concept.id}-spinner`}
+								data-pick-option="spinner"
+								aria-label="加载指示"
+							>
+								<i class="ps-spinner-ring" />
+								正在检查更新…
+							</label>
+						</div>
+					) : isStepper ? (
+						<div class="pattern-spot-mock ps-stp-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-stp-bc"
+								for={`spot-${concept.id}-breadcrumb`}
+								data-pick-option="breadcrumb"
+								aria-label="面包屑"
+							>
+								首页 <i>/</i> 账户 <i>/</i> 注册
+							</label>
+							<label
+								class="pattern-spot-region ps-stp-tabs"
+								for={`spot-${concept.id}-tabs`}
+								data-pick-option="tabs"
+								aria-label="标签页"
+							>
+								<i class="is-on">基本信息</i>
+								<i>安全</i>
+								<i>通知</i>
+							</label>
+							<label
+								class="pattern-spot-region ps-stp-steps"
+								for={`spot-${concept.id}-stepper`}
+								data-pick-option="stepper"
+								aria-label="步骤条"
+							>
+								<b class="is-done">✓</b>
+								<i class="is-done" />
+								<b class="is-on">2</b>
+								<i />
+								<b>3</b>
+							</label>
+							<label
+								class="pattern-spot-region ps-stp-progress"
+								for={`spot-${concept.id}-progress`}
+								data-pick-option="progress"
+								aria-label="进度条"
+							>
+								<span>
+									上传头像
+									<em>62%</em>
+								</span>
+								<u>
+									<i />
+								</u>
+							</label>
+						</div>
+					) : isInfiniteScroll ? (
+						<div class="pattern-spot-mock ps-inf-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-inf-col"
+								for={`spot-${concept.id}-pagination`}
+								data-pick-option="pagination"
+								aria-label="分页列表"
+							>
+								<b />
+								<b />
+								<b class="is-short" />
+								<span class="ps-inf-pg">
+									<i>1</i>
+									<i class="is-on">2</i>
+									<i>3</i>
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-inf-col"
+								for={`spot-${concept.id}-loadmore`}
+								data-pick-option="loadmore"
+								aria-label="加载更多列表"
+							>
+								<b />
+								<b />
+								<b class="is-short" />
+								<em class="ps-inf-more">加载更多</em>
+							</label>
+							<label
+								class="pattern-spot-region ps-inf-col"
+								for={`spot-${concept.id}-infinite`}
+								data-pick-option="infinite"
+								aria-label="无限滚动列表"
+							>
+								<b />
+								<b />
+								<b class="is-fade" />
+								<span class="ps-inf-spin">
+									<i class="ps-spinner-ring" />
+									加载中
+								</span>
+							</label>
+						</div>
+					) : isDropdownMenu ? (
+						<div class="pattern-spot-mock ps-dd-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<div class="ps-dd-toolbar" aria-hidden="true">
+								<label
+									class="pattern-spot-region ps-dd-tabs"
+									for={`spot-${concept.id}-tabs`}
+									data-pick-option="tabs"
+									aria-label="标签页"
+								>
+									<b>全部</b>
+									<i>进行中</i>
+									<i>已归档</i>
+								</label>
+								<label
+									class="pattern-spot-region ps-dd-select"
+									for={`spot-${concept.id}-select`}
+									data-pick-option="select"
+									aria-label="下拉选择"
+								>
+									按更新时间
+									<i class="ph ph-caret-down" />
+								</label>
+							</div>
+							<div class="ps-dd-list" aria-hidden="true">
+								<span class="ps-dd-item">
+									<b>产品路线图</b>
+									<i />
+								</span>
+								<span class="ps-dd-item is-open">
+									<b>周会纪要</b>
+									<label
+										class="pattern-spot-region ps-dd-menu"
+										for={`spot-${concept.id}-menu`}
+										data-pick-option="menu"
+										aria-label="下拉菜单"
+									>
+										<span class="ps-dd-menu-trigger">
+											<i class="ph ph-dots-three" />
+										</span>
+										<span class="ps-dd-menu-panel">
+											<em>编辑</em>
+											<em>复制</em>
+											<em class="is-danger">删除</em>
+										</span>
+									</label>
+								</span>
+								<span class="ps-dd-item">
+									<b>招聘需求</b>
+									<i />
+								</span>
+							</div>
+						</div>
+					) : isTooltip ? (
+						<div class="pattern-spot-mock ps-tt-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<div class="ps-tt-bar" aria-hidden="true">
+								<b />
+								<i />
+								<i />
+								<label
+									class="pattern-spot-region ps-tt-popover"
+									for={`spot-${concept.id}-popover`}
+									data-pick-option="popover"
+									aria-label="弹出层"
+								>
+									<span class="ps-tt-avatar">D</span>
+									<span class="ps-tt-popover-card">
+										<b>Dylan</b>
+										<i />
+										<span>
+											<em>个人资料</em>
+											<em>退出</em>
+										</span>
+									</span>
+								</label>
+							</div>
+							<div class="ps-tt-form" aria-hidden="true">
+								<span class="ps-tt-field">
+									<b>
+										套餐
+										<label
+											class="pattern-spot-region ps-tt-tip"
+											for={`spot-${concept.id}-tooltip`}
+											data-pick-option="tooltip"
+											aria-label="气泡提示"
+										>
+											<span class="ps-tt-bubble">每月自动续费，可随时取消</span>
+											<i class="ph ph-question" />
+										</label>
+									</b>
+									<i />
+								</span>
+								<span class="ps-tt-field">
+									<b>发票抬头</b>
+									<i />
+								</span>
+							</div>
+							<label
+								class="pattern-spot-region ps-tt-toast"
+								for={`spot-${concept.id}-toast`}
+								data-pick-option="toast"
+								aria-label="轻提示"
+							>
+								<i class="ph ph-check-circle" />
+								已保存
+							</label>
+						</div>
+					) : isCommandPalette ? (
+						<div class="pattern-spot-mock ps-cp-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<div class="ps-cp-bar" aria-hidden="true">
+								<b />
+								<i />
+								<i />
+								<label
+									class="pattern-spot-region ps-cp-search"
+									for={`spot-${concept.id}-search`}
+									data-pick-option="search"
+									aria-label="搜索框"
+								>
+									<i class="ph ph-magnifying-glass" />
+									搜索文章…
+								</label>
+							</div>
+							<div class="ps-cp-body" aria-hidden="true">
+								<label
+									class="pattern-spot-region ps-cp-select"
+									for={`spot-${concept.id}-select`}
+									data-pick-option="select"
+									aria-label="下拉选择"
+								>
+									全部分类
+									<i class="ph ph-caret-down" />
+								</label>
+								<span class="ps-cp-lines">
+									<i />
+									<i />
+									<i class="is-short" />
+								</span>
+							</div>
+							<label
+								class="pattern-spot-region ps-cp-palette"
+								for={`spot-${concept.id}-palette`}
+								data-pick-option="palette"
+								aria-label="命令面板"
+							>
+								<span class="ps-cp-palette-input">
+									<i class="ph ph-magnifying-glass" />
+									<b>新建</b>
+									<em>⌘K</em>
+								</span>
+								<span class="ps-cp-palette-list">
+									<i class="is-active">
+										<u class="ph ph-plus" />
+										新建文档
+									</i>
+									<i>
+										<u class="ph ph-folder-plus" />
+										新建文件夹
+									</i>
+									<i>
+										<u class="ph ph-file-text" />
+										新手入门
+									</i>
+								</span>
+							</label>
+						</div>
+					) : isAlert ? (
+						<div class="pattern-spot-mock ps-al-stage">
+							{profile.spot.regions.map((region) => (
+								<input
+									class="pattern-pick-input"
+									type="radio"
+									name={`spot-${concept.id}`}
+									id={`spot-${concept.id}-${region.id}`}
+									value={region.id}
+								/>
+							))}
+							<label
+								class="pattern-spot-region ps-al-banner"
+								for={`spot-${concept.id}-alert`}
+								data-pick-option="alert"
+								aria-label="警告横幅"
+							>
+								<i class="ph ph-warning" />
+								<b>邮箱尚未验证</b>
+								<em>去验证</em>
+							</label>
+							<div class="ps-al-dim" aria-hidden="true">
+								<span />
+								<span class="is-short" />
+								<span />
+								<span class="is-short" />
+							</div>
+							<label
+								class="pattern-spot-region ps-al-modal"
+								for={`spot-${concept.id}-modal`}
+								data-pick-option="modal"
+								aria-label="弹窗"
+							>
+								<b>确认退出登录？</b>
+								<span>
+									<em>取消</em>
+									<em class="is-primary">退出</em>
+								</span>
+							</label>
+							<label
+								class="pattern-spot-region ps-al-toast"
+								for={`spot-${concept.id}-toast`}
+								data-pick-option="toast"
+								aria-label="轻提示"
+							>
+								<i class="ph ph-check-circle" />
+								已复制
 							</label>
 						</div>
 					) : null}

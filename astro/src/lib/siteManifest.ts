@@ -1,4 +1,5 @@
 import { legacyEntryIsRoutable, loadLegacyContent } from './legacyContent';
+import { designBrands } from '../data/designBrands';
 import { getVibeCodingConcepts } from '../data/vibeCodingTerms';
 
 export { renderRss } from './siteRss';
@@ -50,7 +51,7 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 		{
 			route: '/search/',
 			title: '知识搜索',
-			description: '搜索 Codex、DeepSeek Harness、WorkBuddy 教程与知识文章',
+			description: '搜索 Codex、Pi Agent、WorkBuddy 教程与知识文章',
 			locale: 'zh-CN',
 			section: 'knowledge',
 			lastmod: null,
@@ -63,6 +64,14 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 			section: 'vibe-coding',
 			lastmod: null,
 		},
+		{
+			route: '/vibe-coding/design/',
+			title: 'Design 设计理念库',
+			description: '大公司如何用 DESIGN.md 描述自己的视觉语言：色彩、字体、组件规则与设计哲学',
+			locale: 'zh-CN',
+			section: 'vibe-coding',
+			lastmod: null,
+		},
 	];
 
 	for (const concept of getVibeCodingConcepts()) {
@@ -70,6 +79,17 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 			route: `/vibe-coding/terms/${concept.id}/`,
 			title: `${concept.chineseName}（${concept.name}）`,
 			description: concept.description,
+			locale: 'zh-CN',
+			section: 'vibe-coding',
+			lastmod: null,
+		});
+	}
+
+	for (const brand of designBrands) {
+		records.push({
+			route: `/vibe-coding/design/${brand.id}/`,
+			title: `${brand.name} 的设计语言`,
+			description: brand.tagline,
 			locale: 'zh-CN',
 			section: 'vibe-coding',
 			lastmod: null,

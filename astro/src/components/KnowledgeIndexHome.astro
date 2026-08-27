@@ -1,6 +1,7 @@
 ---
 import { legacyEntryIsRoutable, loadLegacyContent, type LegacySection } from '../lib/legacyContent';
 import { buildKnowledgeSearchIndex } from '../lib/searchIndex';
+import { designBrands } from '../data/designBrands';
 import { vibeCodingTermCategories } from '../data/vibeCodingTerms';
 import '../styles/knowledge-home-v2.css';
 
@@ -40,11 +41,6 @@ const sectionCopy: Array<{
 				description: '从入门到实战，系统掌握 Codex 的使用方法。',
 			},
 			{
-				section: 'deepseek-harness-tutorials',
-				label: 'DeepSeek Harness 教程',
-				description: '从 Web UI 到插件开发，循序掌握开源 Agent Harness。',
-			},
-			{
 				section: 'pi-agent-tutorials',
 				label: 'Pi Agent 教程',
 				description: '从终端第一步到 Skills 与 Extensions，理解并用好极简 Agent Harness。',
@@ -63,7 +59,11 @@ const sectionCopy: Array<{
 
 const countFor = (section: LegacySection) =>
 	searchIndex.items.filter((entry) => entry.section === section).length;
-const termCount = vibeCodingTermCategories.reduce((sum, category) => sum + category.terms.length, 0);
+const designBrandCount = designBrands.length;
+const termCount = vibeCodingTermCategories.reduce(
+	(sum, category) => sum + category.terms.length,
+	0,
+);
 const articleCount = searchIndex.items.length;
 const collectionCount = sectionCopy.length + (isEnglish ? 0 : 1);
 const featured = [...entries]
@@ -163,6 +163,18 @@ const labelFor = (section: LegacySection) =>
 					</a>
 				)
 			}
+			{
+				!isEnglish && (
+					<a href="/vibe-coding/design/" class="kh-collection">
+						<h3>
+							Vibe Coding Design
+							<sup>{designBrandCount}</sup>
+							<i class="ph ph-arrow-up-right" aria-hidden="true" />
+						</h3>
+						<p>大公司写给 AI 编码工具看的 DESIGN.md，逐个品牌拆解色彩、字体与设计哲学。</p>
+					</a>
+				)
+			}
 		</div>
 	</section>
 
@@ -183,7 +195,9 @@ const labelFor = (section: LegacySection) =>
 							<p class="kh-recent-meta">
 								<span>{labelFor(entry.section)}</span>
 								{entry.date && (
-									<time datetime={entry.date.toISOString()}>{dateFormatter.format(entry.date)}</time>
+									<time datetime={entry.date.toISOString()}>
+										{dateFormatter.format(entry.date)}
+									</time>
 								)}
 							</p>
 							<h3>

@@ -10,7 +10,6 @@ describe('knowledge search index', () => {
 		expect(index.item_count).toBeGreaterThan(0);
 		expect(index.sections).toContain('highlights');
 		expect(index.sections).toContain('codex-tutorials');
-		expect(index.sections).toContain('deepseek-harness-tutorials');
 		expect(index.sections).toContain('pi-agent-tutorials');
 		expect(index.sections).toContain('workbuddy-tutorials');
 		expect(index.items).toEqual(
@@ -26,18 +25,6 @@ describe('knowledge search index', () => {
 				expect.objectContaining({
 					href: '/codex-tutorials/codex-app-practical-tips/',
 					section_label: 'Codex 教程',
-				}),
-				expect.objectContaining({
-					href: '/deepseek-harness-tutorials/deepseek-harness-overview/',
-					section_label: 'DeepSeek Harness 教程',
-				}),
-				expect.objectContaining({
-					href: '/deepseek-harness-tutorials/deepseek-harness-getting-started/',
-					section_label: 'DeepSeek Harness 教程',
-				}),
-				expect.objectContaining({
-					href: '/deepseek-harness-tutorials/deepseek-harness-first-plugin/',
-					section_label: 'DeepSeek Harness 教程',
 				}),
 				expect.objectContaining({
 					href: '/pi-agent-tutorials/pi-agent-overview/',
@@ -72,6 +59,7 @@ describe('knowledge search index', () => {
 		expect(index.items.every((item) => item.section !== 'model-evals')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'my-publish')).toBe(true);
 		expect(index.items.every((item) => item.section !== 'prompts')).toBe(true);
+		expect(index.items.every((item) => item.section !== 'deepseek-harness-tutorials')).toBe(true);
 		expect(index.items.every((item) => item.search_text.length > 0)).toBe(true);
 		expect(index.items.every((item) => item.section_label.length > 0)).toBe(true);
 	});
