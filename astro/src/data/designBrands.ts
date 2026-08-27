@@ -955,7 +955,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'Raycast',
 		category: 'SaaS',
 		tagline: '近黑阶梯上的白色药丸：键盘党的效率剧场',
-		nameStyle: 'font-weight:600;letter-spacing:-0.02em;color:#f4f4f6',
+		nameStyle: 'font-weight:600;letter-spacing:-0.02em;color:#0d0d0d',
 		heroTitle: 'Raycast：深色阶梯与一颗白色药丸',
 		lede: '#07080a 到抬升面的四级暗色阶梯里，几乎一切都是单色的；唯一的「彩色 CTA」是一颗纯白药丸。分类强调色（黄红绿蓝）只为扩展商店的品类服务，按 app 各自的品牌染色——这是把「效率」做成剧场的克制方案。',
 		philosophy: [
@@ -1091,7 +1091,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'Framer',
 		category: '设计工具',
 		tagline: '黑幕上的海报标题：85px 与 -4.25px 的动效宣言',
-		nameStyle: 'font-weight:500;letter-spacing:-0.05em;color:#ffffff',
+		nameStyle: 'font-weight:500;letter-spacing:-0.05em;color:#090909',
 		heroTitle: 'Framer：把营销页做成动效海报',
 		lede: '整站一块纯黑画布 #090909 打到底，没有任何浅色间奏；GT Walsheim 以 85px 配 -4.25px 的极端负字距砸出海报纸的节奏。白药丸是唯一 CTA 形态，紫、洋红、橙、珊瑚的渐变聚光灯卡片在黑网格里自己发光。',
 		philosophy: [
@@ -1443,7 +1443,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'xAI',
 		category: 'AI 模型',
 		tagline: '近黑桌面上的一排白色空心药丸',
-		nameStyle: 'font-weight:400;letter-spacing:-0.02em;color:#f4f4f6',
+		nameStyle: 'font-weight:400;letter-spacing:-0.02em;color:#111111',
 		heroTitle: 'xAI：把按钮做成描边，把信心做成留白',
 		lede: '#0a0a0a 的近黑画布上，全站找不到一颗实心主色按钮——交互词汇只有透明白描边的药丸。Universal Sans 以 400 字重打 96px 大字，Geist Mono 全大写标签在另一头用等宽字体说话：两种脸的对比就是品牌的声音。落日强调色藏在 token 里，几乎不出场。',
 		philosophy: [
@@ -1635,7 +1635,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'Warp',
 		category: '开发工具',
 		tagline: '暖棕黑夜里的终端复兴：3px 直角键盘味',
-		nameStyle: 'font-weight:500;letter-spacing:-0.02em;color:#f7f5f0',
+		nameStyle: 'font-weight:500;letter-spacing:-0.02em;color:#2b2622',
 		heroTitle: 'Warp：终端的自然色是暖黑而不是纯黑',
 		lede: '#2b2622 的暖棕黑画布是这个品牌的体温——不是科技业的冷黑。米白 #f7f5f0 同时充当文字色和按钮色；按钮圆角锁死 3/4px，从不做成药丸；Inter 配 DM Mono 打底，Instrument Serif 斜体偶尔客串编辑气质。终端 mockup 是唯一的装饰手段。',
 		philosophy: [
@@ -1686,7 +1686,7 @@ export const designBrands: DesignBrand[] = [
 		category: '基础设施',
 		tagline: '纯黑夜空上的六彩辉光：衬线压阵的开发者品牌',
 		nameStyle:
-			"font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.02em;color:#fcfdff",
+			"font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.02em;color:#000000",
 		heroTitle: 'Resend：发送邮件的公司做出了最好看的暗色官网',
 		lede: 'Domaine Display 衬线以 76–96px 压在全黑画布上，ABC Favorit 管营销正文，Inter 管 UI——三层分工严格。六个辉光强调色只以低透明度大气晕染的方式存在，从不当实色用；半透明的发丝描边取代了全部阴影。',
 		philosophy: [
@@ -1969,6 +1969,7 @@ export const designBrandGroups: DesignBrandGroup[] = [
 			'warp',
 			'mintlify',
 			'posthog',
+			'resend',
 		],
 	},
 	{
