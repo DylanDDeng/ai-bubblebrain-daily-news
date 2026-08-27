@@ -937,6 +937,30 @@ describe("automatic code release boundary", () => {
     ).toHaveLength(releasePaths.length);
   });
 
+  it("accepts the Vibe Coding skills release paths", () => {
+    const releasePaths = [
+      "astro/src/components/VibeCodingSkills.astro",
+      "astro/src/data/vibeCodingSkills.ts",
+      "astro/src/pages/vibe-coding/skills/[skill].astro",
+      "astro/src/styles/vibe-coding-skill-detail.css",
+      "content/skills/improve-ui.md",
+      "static/js/vibe-coding-skills.js",
+    ];
+
+    expect(
+      validateCodeReleaseChangeSet(
+        comparison(
+          releasePaths.map((filename) => ({ filename, status: "added" })),
+        ),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toHaveLength(releasePaths.length);
+  });
+
   it("accepts the design gallery release change set", () => {
     const added = [
       "astro/src/components/DesignBrandPlate.astro",
