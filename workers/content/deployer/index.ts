@@ -278,6 +278,7 @@ const INERT_ROOT_SCRIPTS = new Set([
 const RETIRED_HUGO_PATHS = new Set([
   "archetypes/daily.md",
   "hugo.toml",
+  "hugo.toml.bak",
   "scripts/auto-sync-and-cleanup.sh",
   "scripts/fix-github-dirs.sh",
   "scripts/migrate-to-cf-pages.sh",
@@ -416,12 +417,14 @@ function classifyCodeReleasePath(
       "content/deepseek-harness-tutorials/",
       "content/highlights/",
       "content/pi-agent-tutorials/",
+      "astro/src/data/design-md/",
       "content/workbuddy-tutorials/",
       "static/fonts/",
       "static/media/",
     ].some((prefix) => path.startsWith(prefix)) ||
     [
       "astro/src/content.config.ts",
+      "astro/src/data/designBrands.ts",
       "astro/src/data/vibeCodingPatternDetails.ts",
       "astro/src/data/vibeCodingTermDetails.ts",
       "astro/src/data/vibeCodingTerms.ts",
@@ -445,6 +448,9 @@ function classifyCodeReleasePath(
       "static/js/site-shell.js",
       "static/js/vibe-coding-flow-lab.js",
       "static/js/vibe-coding-pattern-detail.js",
+      "static/js/design-gallery.js",
+      "static/js/design-tabs.js",
+      "static/js/vibe-coding-patterns.js",
       "static/js/vibe-coding-terms.js",
       "static/images/brain-cat.jpg",
       "static/images/cat-pose-1.jpg",
