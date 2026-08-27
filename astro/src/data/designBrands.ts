@@ -71,7 +71,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Payments at scale',
 				spec: 'display-xxl · 56px / 300 / -1.4px · Sohne',
-				style: 'font-weight:300;font-size:clamp(30px,4.5vw,46px);letter-spacing:-0.032em;color:#0d253d;line-height:1.05',
+				style:
+					'font-weight:300;font-size:clamp(30px,4.5vw,46px);letter-spacing:-0.032em;color:#0d253d;line-height:1.05',
 			},
 			{
 				sample: 'Built for developers',
@@ -86,7 +87,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: '$1,284,502.00 · 2026-08-26',
 				spec: 'caption · 13px · tnum 等宽数字（钱必须对齐）',
-				style: 'font-size:13px;color:#64748d;font-variant-numeric:tabular-nums;letter-spacing:-0.02em',
+				style:
+					'font-size:13px;color:#64748d;font-variant-numeric:tabular-nums;letter-spacing:-0.02em',
 			},
 		],
 		dos: [
@@ -103,7 +105,8 @@ export const designBrands: DesignBrand[] = [
 		],
 		plate: {
 			bg: '#ffffff',
-			strip: 'linear-gradient(100deg, #f5e9d4, #ffb199 22%, #cabffd 47%, #533afd 72%, #ea2261 100%)',
+			strip:
+				'linear-gradient(100deg, #f5e9d4, #ffb199 22%, #cabffd 47%, #533afd 72%, #ea2261 100%)',
 			headline: 'Financial infrastructure to grow your revenue',
 			headlineStyle:
 				'font-weight:300;font-size:clamp(26px,3.6vw,40px);letter-spacing:-0.04em;color:#0d253d;line-height:1.12',
@@ -146,7 +149,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Plan and build products',
 				spec: 'display · 80px 时字距 -3.0px · 600 字重',
-				style: 'font-weight:600;font-size:clamp(28px,4vw,42px);letter-spacing:-0.035em;color:#f7f8f8;line-height:1.05',
+				style:
+					'font-weight:600;font-size:clamp(28px,4vw,42px);letter-spacing:-0.035em;color:#f7f8f8;line-height:1.05',
 			},
 			{
 				sample: 'Purpose-built for modern product development.',
@@ -214,7 +218,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Meet the night shift.',
 				spec: 'display · Notion-Sans（Inter 系）· 居中 hero',
-				style: 'font-weight:700;font-size:clamp(26px,4vw,40px);letter-spacing:-0.02em;color:#191918',
+				style:
+					'font-weight:700;font-size:clamp(26px,4vw,40px);letter-spacing:-0.02em;color:#191918',
 			},
 			{
 				sample: 'One workspace, every team.',
@@ -283,7 +288,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Develop. Preview. Ship.',
 				spec: 'display · Geist 600 · 48px 时字距 -2.4px · 句首大写',
-				style: 'font-weight:600;font-size:clamp(28px,4vw,42px);letter-spacing:-0.045em;color:#171717;line-height:1.05',
+				style:
+					'font-weight:600;font-size:clamp(28px,4vw,42px);letter-spacing:-0.045em;color:#171717;line-height:1.05',
 			},
 			{
 				sample: 'The platform for frontend developers.',
@@ -293,7 +299,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'DEPLOYS — vercel.json',
 				spec: 'caption-mono · Geist Mono · 技术眉题专用',
-				style: "font-family:ui-monospace,'SF Mono',monospace;font-size:12px;color:#888;letter-spacing:0.04em",
+				style:
+					"font-family:ui-monospace,'SF Mono',monospace;font-size:12px;color:#888;letter-spacing:0.04em",
 			},
 		],
 		dos: [
@@ -352,7 +359,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'JUST DO IT.',
 				spec: 'display-campaign · Nike Futura ND · 96px / 行高 0.9 / 全大写',
-				style: 'font-weight:900;font-size:clamp(30px,5vw,48px);text-transform:uppercase;letter-spacing:-0.02em;line-height:0.95;color:#111',
+				style:
+					'font-weight:900;font-size:clamp(30px,5vw,48px);text-transform:uppercase;letter-spacing:-0.02em;line-height:0.95;color:#111',
 			},
 			{
 				sample: 'Trail Running Collection',
@@ -392,7 +400,8 @@ export const designBrands: DesignBrand[] = [
 		name: 'Claude',
 		category: 'AI',
 		tagline: '奶油纸底 + 赤陶珊瑚的书房气质',
-		nameStyle: "font-family:Georgia,'Songti SC',serif;font-weight:400;letter-spacing:-0.01em;color:#29261b",
+		nameStyle:
+			"font-family:Georgia,'Songti SC',serif;font-weight:400;letter-spacing:-0.01em;color:#29261b",
 		heroTitle: 'Claude：AI 品类里最暖的一张纸',
 		lede: '当所有 AI 品牌都在用冷灰和科技蓝时，Claude 选了一张暖调奶油纸 #faf9f5。衬线体 Copernicus 只用 400 字重排大标题，珊瑚色 #cc785c 在单个按钮上稀缺、在整幅 callout 卡上慷慨。奶油与深色产品卡交替铺排，是整个页面的呼吸节奏。',
 		philosophy: [
@@ -420,7 +429,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Helpful, honest, harmless',
 				spec: 'display · Copernicus 衬线 · 恒 400 字重 · 负字距',
-				style: "font-family:Georgia,'Songti SC',serif;font-weight:400;font-size:clamp(26px,4vw,38px);letter-spacing:-0.02em;color:#141413",
+				style:
+					"font-family:Georgia,'Songti SC',serif;font-weight:400;font-size:clamp(26px,4vw,38px);letter-spacing:-0.02em;color:#141413",
 			},
 			{
 				sample: 'Warm paper, serif voice, one terracotta accent.',
@@ -430,7 +440,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'claude -p "explain this codebase"',
 				spec: 'code · 深色产品面上的等宽',
-				style: "font-family:ui-monospace,'SF Mono',monospace;font-size:13px;color:#faf9f5;background:#181715;padding:8px 12px;border-radius:8px;display:inline-block",
+				style:
+					"font-family:ui-monospace,'SF Mono',monospace;font-size:13px;color:#faf9f5;background:#181715;padding:8px 12px;border-radius:8px;display:inline-block",
 			},
 		],
 		dos: [
@@ -488,7 +499,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Titanium. So strong. So light. So Pro.',
 				spec: 'hero-display · SF Pro Display 600 · 负字距「Apple tight」',
-				style: 'font-weight:600;font-size:clamp(26px,3.6vw,40px);letter-spacing:-0.015em;color:#1d1d1f;line-height:1.08',
+				style:
+					'font-weight:600;font-size:clamp(26px,3.6vw,40px);letter-spacing:-0.015em;color:#1d1d1f;line-height:1.08',
 			},
 			{
 				sample: 'Body copy reads at seventeen pixels, not sixteen.',
@@ -556,7 +568,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Think bigger. Build faster.',
 				spec: 'display-xl · figmaSans · 86px 时字距 -1.72px',
-				style: 'font-weight:700;font-size:clamp(26px,3.6vw,40px);letter-spacing:-0.04em;color:#000000;line-height:1.05',
+				style:
+					'font-weight:700;font-size:clamp(26px,3.6vw,40px);letter-spacing:-0.04em;color:#000000;line-height:1.05',
 			},
 			{
 				sample: 'Body hovers at weight 320–340 of the same variable family.',
@@ -566,7 +579,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'DESIGN SYSTEMS',
 				spec: 'figmaMono · 眉题 · 永远大写、正字距',
-				style: "font-family:ui-monospace,'SF Mono',monospace;font-size:12px;letter-spacing:0.14em;color:#000000",
+				style:
+					"font-family:ui-monospace,'SF Mono',monospace;font-size:12px;letter-spacing:0.14em;color:#000000",
 			},
 		],
 		dos: [
@@ -625,7 +639,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Music for everyone.',
 				spec: 'SpotifyMixUI（CircularSp）700 · 紧凑',
-				style: 'font-weight:700;font-size:clamp(24px,3.4vw,38px);letter-spacing:-0.02em;color:#ffffff;line-height:1.1',
+				style:
+					'font-weight:700;font-size:clamp(24px,3.4vw,38px);letter-spacing:-0.02em;color:#ffffff;line-height:1.1',
 			},
 			{
 				sample: 'Compact and functional — the whole system lives in 10–24px.',
@@ -693,7 +708,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Belong anywhere.',
 				spec: 'Airbnb Cereal VF · display 500–700 · 克制字重',
-				style: 'font-weight:600;font-size:clamp(24px,3.4vw,38px);letter-spacing:-0.02em;color:#222222;line-height:1.1',
+				style:
+					'font-weight:600;font-size:clamp(24px,3.4vw,38px);letter-spacing:-0.02em;color:#222222;line-height:1.1',
 			},
 			{
 				sample: 'Photography carries the weight; type stays modest.',
@@ -761,7 +777,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: "Let's create something that changes everything",
 				spec: 'display · IBM Plex Sans 300 · 细体是签名',
-				style: 'font-weight:300;font-size:clamp(26px,3.6vw,40px);letter-spacing:-0.01em;color:#161616;line-height:1.15',
+				style:
+					'font-weight:300;font-size:clamp(26px,3.6vw,40px);letter-spacing:-0.01em;color:#161616;line-height:1.15',
 			},
 			{
 				sample: 'Body copy carries 0.16px letter-spacing — a Carbon precision detail.',
@@ -771,7 +788,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Start building →',
 				spec: 'button · 方角 0px · 蓝底白字',
-				style: 'display:inline-block;background:#0f62fe;color:#ffffff;padding:10px 18px;font-size:13.5px',
+				style:
+					'display:inline-block;background:#0f62fe;color:#ffffff;padding:10px 18px;font-size:13.5px',
 			},
 		],
 		dos: [
@@ -830,7 +848,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Tech, science, art.',
 				spec: 'Manuka display · 最大 107px · 只做 60px+',
-				style: 'font-weight:800;font-size:clamp(26px,3.8vw,42px);text-transform:uppercase;letter-spacing:-0.01em;color:#ffffff;line-height:0.95',
+				style:
+					'font-weight:800;font-size:clamp(26px,3.8vw,42px);text-transform:uppercase;letter-spacing:-0.01em;color:#ffffff;line-height:0.95',
 			},
 			{
 				sample: 'PolySans carries the body on the dark canvas.',
@@ -840,7 +859,8 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'FEB 26 · 14:02 EST',
 				spec: 'PolySans Mono · 永远大写 · 字距 1.5–1.9px',
-				style: "font-family:ui-monospace,'SF Mono',monospace;font-size:12px;letter-spacing:0.16em;color:#3cffd0",
+				style:
+					"font-family:ui-monospace,'SF Mono',monospace;font-size:12px;letter-spacing:0.16em;color:#3cffd0",
 			},
 		],
 		dos: [
@@ -865,6 +885,559 @@ export const designBrands: DesignBrand[] = [
 		},
 		sourceFile: 'theverge',
 	},
+	{
+		id: 'cursor',
+		name: 'Cursor',
+		category: '开发工具',
+		tagline: '奶油画布上的一滴橙：AI 编辑器的杂志感',
+		nameStyle: 'font-weight:400;letter-spacing:-0.02em;color:#26251e',
+		heroTitle: 'Cursor：把 IDE 做成一本安静的杂志',
+		lede: '画布不是纯白而是暖奶油色 #f7f7f4，文字是暖黑 #26251e——Cursor 从一开始就拒绝了「开发者工具＝冷灰蓝」的默认设定。橙色 #f54e00 全站只出现在一处 CTA 上；标题永远 400 字重不加粗，像杂志正文一样说话。',
+		philosophy: [
+			'奶油色画布是身份：#f7f7f4 的暖白加上 #26251e 暖黑文字，让编辑器看起来像纸而非机器。',
+			'单一 CTA 色：Cursor 橙 #f54e00 稀缺地只给主行动按钮，橙色的出现本身就是「该点这里了」。',
+			'杂志感排版：display 字重钉死在 400，从不加粗——用字距和字号做层级，不做音量。',
+			'发丝线-only 的深度系统：没有投影，1px 描边承担一切分隔，8px 小圆角是开发者方言而非 SaaS 圆润感。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#f54e00', role: 'Cursor 橙 · 全站唯一的 CTA 色' },
+			{ name: 'primary-active', hex: '#d04200', role: '按压态深橙' },
+			{ name: 'canvas', hex: '#f7f7f4', role: '暖奶油画布 · 从不用纯白' },
+			{ name: 'ink', hex: '#26251e', role: '暖黑主文字 · 从不用纯黑' },
+			{ name: 'body', hex: '#5a5852', role: '正文灰棕' },
+			{ name: 'muted', hex: '#807d72', role: '辅助说明' },
+			{ name: 'muted-soft', hex: '#a09c92', role: '弱化标注' },
+			{ name: 'hairline', hex: '#e6e5e0', role: '主要描边线 · 无投影系统的骨架' },
+			{ name: 'hairline-soft', hex: '#efeee8', role: '次级描边线' },
+		],
+		typeScale: [
+			{
+				sample: 'The AI Code Editor',
+				spec: 'display-lg · 36px / 400 / -0.72px · CursorGothic',
+				style:
+					'font-weight:400;font-size:clamp(26px,3.6vw,34px);letter-spacing:-0.02em;color:#26251e;line-height:1.2',
+			},
+			{
+				sample: 'Body text sits warm on cream, never cold.',
+				spec: 'body · 15px / 400 · 暖灰棕',
+				style: 'font-size:15px;color:#5a5852',
+			},
+			{
+				sample: 'agent · editing · reviewing · done',
+				spec: 'micro · AI 时间线的五个粉彩色阶',
+				style: 'font-size:12px;color:#807d72;letter-spacing:0.04em',
+			},
+		],
+		dos: [
+			'全站保持奶油底 + 暖黑字的纸质感',
+			'标题钉死 400 字重，靠字距做层级',
+			'橙色只给主 CTA，一屏一颗',
+			'深度只用 1px 发丝线表达',
+		],
+		donts: [
+			'不要换成纯白背景——暖奶油才是品牌',
+			'标题加粗到 600+ 就成了通用 SaaS 脸',
+			'不要给按钮换药丸形——8px 小圆角是开发者方言',
+			'不要加投影——描边就是全部深度',
+		],
+		plate: {
+			bg: '#f7f7f4',
+			headline: 'The AI Code Editor',
+			headlineStyle:
+				'color:#26251e;font-weight:400;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;line-height:1.15',
+			spec: 'CursorGothic 400 · 暖奶油画布 · 一颗橙 CTA · hairline only',
+			specColor: '#807d72',
+		},
+		sourceFile: 'cursor',
+	},
+	{
+		id: 'raycast',
+		name: 'Raycast',
+		category: 'SaaS',
+		tagline: '近黑阶梯上的白色药丸：键盘党的效率剧场',
+		nameStyle: 'font-weight:600;letter-spacing:-0.02em;color:#f4f4f6',
+		heroTitle: 'Raycast：深色阶梯与一颗白色药丸',
+		lede: '#07080a 到抬升面的四级暗色阶梯里，几乎一切都是单色的；唯一的「彩色 CTA」是一颗纯白药丸。分类强调色（黄红绿蓝）只为扩展商店的品类服务，按 app 各自的品牌染色——这是把「效率」做成剧场的克制方案。',
+		philosophy: [
+			'单一暗色模式：canvas #07080a → surface #0d0d0d → 更高抬升面，用明度阶梯代替色彩分区。',
+			'白药丸即 CTA：#ffffff 实心按钮是全站唯一的主行动语言，其余全是单色暗面。',
+			'Inter + ss03：站级启用 OpenType 替代字形，连小写 g 都在替品牌说话。',
+			'发丝线承担一切卡片边缘：没有投影，商店里的彩色是各个 App 自己的品牌色。',
+		],
+		typePanelStyle: 'background:#0d0d0d;border-color:#242728',
+		colors: [
+			{ name: 'primary', hex: '#ffffff', role: '白色药丸 · 全站唯一主 CTA' },
+			{ name: 'on-primary', hex: '#000000', role: '白底上的黑字' },
+			{ name: 'canvas', hex: '#07080a', role: '最深画布' },
+			{ name: 'surface', hex: '#0d0d0d', role: '一级抬升面' },
+			{ name: 'ink', hex: '#f4f4f6', role: '主文字' },
+			{ name: 'body', hex: '#cdcdcd', role: '正文' },
+			{ name: 'mute', hex: '#9c9c9d', role: '辅助说明' },
+			{ name: 'stone', hex: '#434345', role: '弱化文字 / 图标' },
+			{ name: 'hairline', hex: '#242728', role: '全部卡片描边' },
+			{ name: 'accent-yellow', hex: '#ffc533', role: 'Hacker News 等品类色' },
+			{ name: 'accent-red', hex: '#ff6161', role: 'Slack/Apple 等品类色' },
+			{ name: 'accent-green', hex: '#59d499', role: '生产力品类色' },
+			{ name: 'accent-blue', hex: '#57c1ff', role: '开发工具品类色' },
+		],
+		typeScale: [
+			{
+				sample: 'A shortcut to everything',
+				spec: 'display-xl · 64px / 600 / 0 · Inter ss03',
+				style:
+					'font-weight:600;font-size:clamp(30px,4.6vw,48px);letter-spacing:-0.01em;color:#f4f4f6;line-height:1.08',
+			},
+			{
+				sample: 'Extensions put your tools one keystroke away.',
+				spec: 'body · 15px / 400 · cdcdcd',
+				style: 'font-size:15px;color:#cdcdcd',
+			},
+			{
+				sample: '⌘ ⇧ P  ·  one keystroke',
+				spec: 'mono 标注 · stone 弱化',
+				style: 'font-size:13px;color:#6a6b6c;letter-spacing:0.03em',
+			},
+		],
+		dos: [
+			'主 CTA 只用纯白药丸',
+			'层级用暗色明度阶梯，不用彩色分区',
+			'卡边一律 1px 发丝线 #242728',
+			'站级开启 Inter 的 ss03 替代字形',
+		],
+		donts: [
+			'不要引入浅色模式——这个品牌只有夜晚',
+			'不要给白药丸之外再发明第二实心按钮色',
+			'不要加投影——描边和抬升就够了',
+			'品类强调色不要用在界面装饰上，它们属于扩展商店',
+		],
+		plate: {
+			bg: '#07080a',
+			headline: 'Your shortcut to everything',
+			headlineStyle:
+				'color:#f4f4f6;font-weight:600;font-size:clamp(28px,3.9vw,44px);letter-spacing:-0.015em;line-height:1.1',
+			spec: 'Inter 600 · 白药丸 CTA · 四级暗色阶梯 · 零投影',
+			specColor: '#9c9c9d',
+		},
+		sourceFile: 'raycast',
+	},
+	{
+		id: 'supabase',
+		name: 'Supabase',
+		category: '基础设施',
+		tagline: '一片翡翠绿点亮单色世界：开源后端的工程师美学',
+		nameStyle: 'font-weight:500;letter-spacing:-0.03em;color:#171717',
+		heroTitle: 'Supabase：绿色只在功能处发光',
+		lede: '整个品牌是一场单色演出，翡翠绿 #3ecf8e 是唯一被允许出现的彩色事件——而它只属于产品：数据库、认证、边缘函数的真实 UI 截图才是页面的主角。自定义人文主义无衬线体以 500 字重配负字距压阵，按钮永远是方正的 6/8px，拒绝药丸。',
+		philosophy: [
+			'唯一的彩色事件：祖母绿 #3ecf8e 只做品牌强调，其余全是灰阶层次。',
+			'产品截图即装饰：仪表盘、SQL 编辑器、日志流拼成页面主角，从不用摄影和插画。',
+			'人文学排版：自定义无衬线 display 500 字重，-1.92px 到 -0.42px 的负字距拉开层级。',
+			'夜航代码块：代码片段躺在 #1c1c1c 的深夜底色里，行内等宽字体——开发者 DNA 写在每个片段里。',
+		],
+		colors: [
+			{ name: 'brand', hex: '#3ecf8e', role: '招牌翡翠绿 · 唯一的彩色事件' },
+			{ name: 'brand-dark', hex: '#24b47e', role: '按压态深绿' },
+			{ name: 'brand-light', hex: '#4ade80', role: '浅绿变体' },
+			{ name: 'ink', hex: '#171717', role: '主文字 / 绿底上的字' },
+			{ name: 'ink-mute', hex: '#707070', role: '辅助说明' },
+			{ name: 'ink-faint', hex: '#b2b2b2', role: '弱化标注' },
+			{ name: 'night', hex: '#1c1c1c', role: '代码块深夜底色' },
+			{ name: 'on-dark', hex: '#ffffff', role: '深底文字' },
+			{ name: 'canvas', hex: '#ffffff', role: '营销区白色画布' },
+		],
+		typeScale: [
+			{
+				sample: 'Build in a weekend',
+				spec: 'display-xl · 48px / 500 / -1.44px · Circular',
+				style:
+					'font-weight:500;font-size:clamp(28px,4vw,40px);letter-spacing:-0.03em;color:#171717;line-height:1.1',
+			},
+			{
+				sample: 'Scale to millions of users.',
+				spec: 'body · 15px / 400 · 212121',
+				style: 'font-size:15px;color:#212121',
+			},
+			{
+				sample: 'const { data } = await supabase.from(...)',
+				spec: 'code · 夜航底色内联等宽',
+				style:
+					'font-family:ui-monospace,monospace;font-size:13px;color:#3ecf8e;background:#1c1c1c;padding:2px 6px;border-radius:4px',
+			},
+		],
+		dos: [
+			'绿色只用于品牌强调与激活态',
+			'每段能力介绍都配真实产品 UI 截图',
+			'display 保持 500 字重加负字距',
+			'代码示例一律进深夜底色块',
+		],
+		donts: [
+			'不要给按钮做成药丸——6/8px 方正感是工程味',
+			'不要引入第二个品牌色相',
+			'不要用摄影或插画当装饰',
+			'不要把绿色大面积铺背景',
+		],
+		plate: {
+			bg: '#ffffff',
+			headline: 'Build in a weekend, scale to millions',
+			headlineStyle:
+				'color:#171717;font-weight:500;font-size:clamp(26px,3.7vw,42px);letter-spacing:-0.03em;line-height:1.1',
+			spec: 'Circular 500 · -1.44px · 翡翠绿单点 · night 代码块',
+			specColor: '#707070',
+		},
+		sourceFile: 'supabase',
+	},
+	{
+		id: 'framer',
+		name: 'Framer',
+		category: '设计工具',
+		tagline: '黑幕上的海报标题：85px 与 -4.25px 的动效宣言',
+		nameStyle: 'font-weight:500;letter-spacing:-0.05em;color:#ffffff',
+		heroTitle: 'Framer：把营销页做成动效海报',
+		lede: '整站一块纯黑画布 #090909 打到底，没有任何浅色间奏；GT Walsheim 以 85px 配 -4.25px 的极端负字距砸出海报纸的节奏。白药丸是唯一 CTA 形态，紫、洋红、橙、珊瑚的渐变聚光灯卡片在黑网格里自己发光。',
+		philosophy: [
+			'全黑画布：hero、定价、FAQ、footer 共享 #090909，夜幕本身就是页面结构。',
+			'海报级字距：display 层 -5.5px 到 -3.1px 的负字距，字号越大越用力。',
+			'白药丸专制：主 CTA 只有纯白胶囊一种形态，次级行动降为炭黑胶囊。',
+			'自发光的渐变卡：紫罗兰、洋红、橙、珊瑚的大尺寸 spotlight 卡片像舞台灯一样嵌在黑网格中。',
+		],
+		typePanelStyle: 'background:#121212;border-color:#262626',
+		colors: [
+			{ name: 'canvas', hex: '#090909', role: '全站纯黑画布' },
+			{ name: 'primary', hex: '#ffffff', role: '白药丸 · 唯一主 CTA' },
+			{ name: 'on-primary', hex: '#000000', role: '白底黑字' },
+			{ name: 'ink', hex: '#ffffff', role: '主文字' },
+			{ name: 'ink-muted', hex: '#999999', role: '次级文字' },
+			{ name: 'hairline', hex: '#262626', role: '黑幕上的卡片描边' },
+			{ name: 'accent-blue', hex: '#0099ff', role: '品牌蓝点缀' },
+			{ name: 'gradient-violet', hex: '#6a4cf5', role: '聚光灯卡渐变起' },
+			{ name: 'gradient-magenta', hex: '#d44df0', role: '聚光灯卡洋红' },
+			{ name: 'gradient-orange', hex: '#ff7a3d', role: '聚光灯卡橙' },
+			{ name: 'gradient-coral', hex: '#ff5577', role: '聚光灯卡珊瑚收尾' },
+		],
+		typeScale: [
+			{
+				sample: 'Start designing for free',
+				spec: 'display-xl · 85px / 500 / -4.25px · GT Walsheim',
+				style:
+					'font-weight:500;font-size:clamp(32px,5.6vw,58px);letter-spacing:-0.05em;color:#ffffff;line-height:0.98',
+			},
+			{
+				sample: 'Ship sites that move like motion.',
+				spec: 'body · Inter Variable · cv01/ss03 特性',
+				style: 'font-size:15px;color:#999999',
+			},
+			{
+				sample: 'Free → Mini → Basic',
+				spec: 'pill · 炭黑次级胶囊',
+				style:
+					'font-size:13px;color:#ffffff;background:#1a1a1a;border:1px solid #262626;padding:4px 12px;border-radius:999px;display:inline-block',
+			},
+		],
+		dos: [
+			'display 用到极限负字距，越大越紧',
+			'渐变 spotlight 卡作为独立展示瓦片使用',
+			'主 CTA 统一纯白胶囊',
+			'正文字开 Inter 的 cv/ss OpenType 特性',
+		],
+		donts: [
+			'不要在黑幕上加入浅色区块',
+			'不要弱化负字距——海报感立刻塌掉',
+			'渐变只属于聚光灯卡，不要铺满背景',
+			'不要给 CTA 换形状',
+		],
+		plate: {
+			bg: '#090909',
+			headline: 'Ship sites that move',
+			headlineStyle:
+				'color:#ffffff;font-weight:500;font-size:clamp(30px,4.4vw,50px);letter-spacing:-0.045em;line-height:1.0',
+			spec: 'GT Walsheim 500 · 85px / -4.25px · 黑幕白药丸 · 渐变 spotlight',
+			specColor: '#999999',
+		},
+		sourceFile: 'framer',
+	},
+	{
+		id: 'nvidia',
+		name: 'NVIDIA',
+		category: 'AI',
+		tagline: '一角荧光绿的绝对秩序：2px 圆角的工业硬朗',
+		nameStyle: 'font-weight:700;letter-spacing:-0.01em;color:#76b900',
+		heroTitle: 'NVIDIA：一颗绿方块统治所有角落',
+		lede: '荧光绿 #76b900 承包了全部 CTA、激活态与装饰动机，其余只剩黑白灰的两极切换：hero/footer 黑章与白底正文章交替出现。全站没有一个药丸按钮，交互件圆角统一 2px，资源卡的右上角总摆着一枚小小的绿色方块徽记。',
+		philosophy: [
+			'单色独裁：荧光绿是唯一的品牌声部，出现即是官方发言。',
+			'双模式节奏：深色 hero/页脚章节与白色正文章节交替，形成可预测的呼吸。',
+			'超角几何：2px 圆角贯穿所有交互件——没有药丸、没有软糖感，一切都很工程师。',
+			'角落签名：约 12px 的绿色方块锚在资源卡一角，是全站唯一的装饰动作。',
+		],
+		colors: [
+			{ name: 'brand-green', hex: '#76b900', role: 'NVIDIA 绿 · 唯一强调色' },
+			{ name: 'green-dark', hex: '#5a8d00', role: '深绿变体 / 按压态' },
+			{ name: 'ink', hex: '#000000', role: '纯黑主文字 / 深色章节底' },
+			{ name: 'surface-soft', hex: '#f7f7f7', role: '浅灰软面' },
+			{ name: 'surface-elevated', hex: '#1a1a1a', role: '深色抬升面' },
+			{ name: 'hairline', hex: '#cccccc', role: '卡片描边' },
+			{ name: 'canvas', hex: '#ffffff', role: '正文白底' },
+		],
+		typeScale: [
+			{
+				sample: 'Accelerated Computing',
+				spec: 'display-xl · 48px / 700 / 0 · NVIDIA Sans',
+				style:
+					'font-weight:700;font-size:clamp(28px,4vw,40px);letter-spacing:-0.01em;color:#000000;line-height:1.15',
+			},
+			{
+				sample: 'Powering AI factories worldwide.',
+				spec: 'body · 16px / 400',
+				style: 'font-size:16px;color:#333333',
+			},
+			{
+				sample: '■  Developer Resources',
+				spec: 'corner-square 徽记 · 资源卡标准位',
+				style: 'font-size:13px;color:#000000',
+			},
+		],
+		dos: [
+			'绿色留给 CTA、激活态与角标方块',
+			'黑白章节交替形成页面节奏',
+			'交互件圆角锁死 2px',
+			'用 hairline 描边与软面区分层级，不靠投影',
+		],
+		donts: [
+			'不要给按钮做成药丸',
+			'不要给绿色增加同族新色相',
+			'不要去掉卡角的绿色方块签名',
+			'不要引入插画式装饰',
+		],
+		plate: {
+			bg: '#ffffff',
+			headline: 'The engine of AI',
+			headlineStyle:
+				'color:#000000;font-weight:700;font-size:clamp(26px,3.6vw,42px);letter-spacing:-0.01em;line-height:1.15',
+			spec: 'NVIDIA Sans 700 · 2px 圆角 · 单一绿 · ■ 角落徽记',
+			specColor: '#5a8d00',
+		},
+		sourceFile: 'nvidia',
+	},
+	{
+		id: 'mistral',
+		name: 'Mistral',
+		category: 'AI',
+		tagline: '山顶日落：橙色欧洲灵魂与奶油纸张',
+		nameStyle: 'font-weight:400;letter-spacing:-0.02em;color:#fa520f',
+		heroTitle: 'Mistral：把大模型写成南法日落',
+		lede: '山脊剪影压着橙红黄的落日天空摄影，页面底部横着一条向奶油过渡的「日落条带」，表单和特性卡全是奶油黄纸张——在欧洲 AI 公司里，Mistral 是唯一一个把开放精神做成风景画的品牌。饱和橙 #fa520f 承担每一次行动召唤。',
+		philosophy: [
+			'日落是 logo 也是版式：山顶剪影摄影 hero 与横向日落条带带贯穿首尾。',
+			'奶油纸张系：cream 三阶底色构成表单与特性卡的纸质温度。',
+			'衬线仪式感：PP Editorial Old 近衬线负责 hero 大字，Inter 接管其余一切。',
+			'克制的几何：8px 按钮、12px 卡片——比硅谷同行更收敛，更像出版物。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#fa520f', role: '落日橙 · 所有 CTA 的颜色' },
+			{ name: 'primary-deep', hex: '#cc3a05', role: '深橙按压态' },
+			{ name: 'sunshine', hex: '#ffd900', role: '日落条带的亮黄停' },
+			{ name: 'cream', hex: '#fff8e0', role: '奶油黄面板底' },
+			{ name: 'cream-light', hex: '#fffaeb', role: '最浅奶油' },
+			{ name: 'cream-deep', hex: '#fff0c2', role: '深一档奶油' },
+			{ name: 'beige-deep', hex: '#e6d5a8', role: '沙金分界' },
+			{ name: 'ink', hex: '#1f1f1f', role: '近黑主文字' },
+		],
+		typeScale: [
+			{
+				sample: 'Open, portable, customizable',
+				spec: 'display-lg · 64px / 400 / -1px · PP Editorial Old',
+				style:
+					"font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(30px,4.4vw,46px);letter-spacing:-0.015em;color:#1f1f1f;line-height:1.1",
+			},
+			{
+				sample: 'Frontier AI in your hands.',
+				spec: 'body · Inter · 奶油纸上仍保持清晰',
+				style: 'font-size:15px;color:#44403c',
+			},
+		],
+		dos: [
+			'hero 必须是日落山景 photography',
+			'页面底部横贯日落条带',
+			'表单/特性卡用三阶奶油底',
+			'CTA 统一饱和橙',
+		],
+		donts: [
+			'不要给几何加太多圆角——保持出版物式的收敛',
+			'不要让 Inter 做 hero——衬线的仪式感是品牌',
+			'不要把亮黄单独用作按钮',
+		],
+		plate: {
+			bg: '#fff8e0',
+			strip: 'linear-gradient(90deg,#fa520f,#ffd900 55%,#fff8e0 100%)',
+			headline: 'Frontier AI, European made',
+			headlineStyle:
+				"font-family:Georgia,'Times New Roman',serif;color:#1f1f1f;font-weight:400;font-size:clamp(27px,3.8vw,43px);letter-spacing:-0.015em;line-height:1.1",
+			spec: 'PP Editorial Old · 日落条带 · 奶油纸张 · 单橙 CTA',
+			specColor: '#cc3a05',
+		},
+		sourceFile: 'mistral',
+	},
+	{
+		id: 'minimax',
+		name: 'MiniMax',
+		category: 'AI',
+		tagline: '黑白底座上一条产品线一种荧光色',
+		nameStyle: 'font-weight:700;letter-spacing:-0.03em;color:#0a0a0a',
+		heroTitle: 'MiniMax：用色彩编码模型家族',
+		lede: '系统几乎是彻底的黑与白，但每条模型线都有自己的专属荧光色：coral 珊瑚给 M2.7、洋红给 Music、蓝给海螺、橙给语音。DM Sans 以 80px/600/-2px 的重拳开路，全站的按钮与标签全是药丸，像一家把产品矩阵当成调色盘管理的公司。',
+		philosophy: [
+			'色彩即产品地图：每个模型线锁定一种荧光色，看到颜色就知道是哪条产品线。',
+			'黑白打底：主色其实是近黑 #0a0a0a，所有的彩都发生在渐变卡与产品标识层。',
+			'药丸行星：按钮、tab 全是 full-round，矩形只在数据表格与文档密集区出没。',
+			'重拳标题：hero 80px、600 字重、-2px 字距、1.10 行高——冲击力优先。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#0a0a0a', role: '近黑主色 · 全局底座' },
+			{ name: 'on-primary', hex: '#ffffff', role: '反白' },
+			{ name: 'coral', hex: '#ff5530', role: 'M2.7 模型线专属' },
+			{ name: 'magenta', hex: '#ea5ec1', role: 'Music 模型线专属' },
+			{ name: 'blue', hex: '#1456f0', role: 'Hailuo 视频线专属' },
+			{ name: 'cyan', hex: '#3daeff', role: '辅助亮蓝' },
+			{ name: 'primary-soft', hex: '#181e25', role: '深色软面' },
+		],
+		typeScale: [
+			{
+				sample: 'Intelligence, minimized',
+				spec: 'hero-display · 80px / 600 / -2px / 1.10 · DM Sans',
+				style:
+					'font-weight:700;font-size:clamp(32px,5vw,52px);letter-spacing:-0.03em;color:#0a0a0a;line-height:1.06',
+			},
+			{
+				sample: 'One color per product line.',
+				spec: 'body · DM Sans / Inter fallback',
+				style: 'font-size:15px;color:#3f4650',
+			},
+		],
+		dos: ['每条产品线只用它的专属色', '渐变卡是颜色的合法居所', 'UI 元素尽量 pill 化'],
+		donts: ['不要跨产品线混用颜色', '不要在正文用荧光色', '表格密集区不要强行 pill'],
+		plate: {
+			bg: '#0a0a0a',
+			headline: 'Models for everyone',
+			headlineStyle:
+				'color:#ffffff;font-weight:700;font-size:clamp(30px,4.3vw,48px);letter-spacing:-0.03em;line-height:1.08',
+			spec: 'DM Sans 600 · 产品线色彩编码 · 药丸行星',
+			specColor: '#3daeff',
+		},
+		sourceFile: 'minimax',
+	},
+	{
+		id: 'coinbase',
+		name: 'Coinbase',
+		category: '金融',
+		tagline: '蓝色托管的世界：涨跌二色永不换岗',
+		nameStyle: 'font-weight:400;letter-spacing:-0.03em;color:#0052ff',
+		heroTitle: 'Coinbase：把信任炼成一种蓝',
+		lede: '#0052ff 包办了 brand CTA、字标与内联链接的一切高光时刻——用量如此节制以至于每一次出现都像盖章。展示字重从不超过 400，药丸按钮做到 100px 满半径，卡片 24px；深色 hero 里漂浮的产品 mockup 是品牌的第一视觉语言，而涨绿跌红永远只是文字色，从不填底。',
+		philosophy: [
+			'单一强调色统治：Coinbase 蓝 #0052ff 出现得越少越有分量，它是签名不是涂料。',
+			'编辑部式的克制字重：Coinbase Display 最高 400，绝不用 700 咆哮。',
+			'几何分级：CTA=100px 药丸、资产图标=full circle、卡片=24px，不同物件不同圆角阶层。',
+			'交易语义只做文字色：上涨绿 #05b169、下跌红 #cf202f，永不当背景填色。',
+		],
+		colors: [
+			{ name: 'brand-blue', hex: '#0052ff', role: '招牌蓝 · CTA 与字标专属' },
+			{ name: 'blue-active', hex: '#003ecc', role: '按压态' },
+			{ name: 'blue-disabled', hex: '#a8b8cc', role: '不可用态淡蓝' },
+			{ name: 'semantic-up', hex: '#05b169', role: '上涨绿 · 仅文字色' },
+			{ name: 'semantic-down', hex: '#cf202f', role: '下跌红 · 仅文字色' },
+			{ name: 'ink', hex: '#0a0b0d', role: '近黑主文字' },
+			{ name: 'body', hex: '#5b616e', role: '正文灰蓝' },
+			{ name: 'muted', hex: '#7c828a', role: '辅助说明' },
+			{ name: 'hairline', hex: '#dee1e6', role: '分隔线' },
+		],
+		typeScale: [
+			{
+				sample: 'Jump start your crypto portfolio',
+				spec: 'display-xl · 64px / 400 / -1.6px · Coinbase Display',
+				style:
+					'font-weight:500;font-size:clamp(28px,4.2vw,44px);letter-spacing:-0.025em;color:#0a0b0d;line-height:1.05',
+			},
+			{
+				sample: 'Buy, sell, and store cryptocurrency.',
+				spec: 'body · 16px / 400',
+				style: 'font-size:16px;color:#5b616e',
+			},
+			{
+				sample: '+2.41% BTC   -1.08% ETH',
+				spec: 'semantic up/down · 文字色语义',
+				style: 'font-variant-numeric:tabular-nums;font-size:14px',
+			},
+		],
+		dos: [
+			'蓝只给 brand 表达，稀缺使用',
+			'CTA 保持 100px 满药丸',
+			'卡片维持 24px 圆角阶层',
+			'涨跌只用文字色表达',
+		],
+		donts: ['展示字重不要超过 400', '涨跌色不要做背景填充', '不要稀释蓝色的稀缺性——泛滥即贬值'],
+		plate: {
+			bg: '#ffffff',
+			headline: 'Update your portfolio',
+			headlineStyle:
+				'color:#0a0b0d;font-weight:500;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;line-height:1.05',
+			spec: 'Coinbase Display · 100px 药丸 · 24px 卡片 · 涨跌仅文字色',
+			specColor: '#0052ff',
+		},
+		sourceFile: 'coinbase',
+	},
+	{
+		id: 'wired',
+		name: 'WIRED',
+		category: '媒体',
+		tagline: '黑白双人的排印实验场：衬线上位，方角到底',
+		nameStyle:
+			"font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.01em;color:#000000",
+		heroTitle: 'WIRED：印刷杂志的网页复刻',
+		lede: '一对纯粹的黑白双人舞：唯一的彩色破例是内联链接蓝 #057dbc。三种字脸各司其职——WiredDisplay 衬线管 display，BreveText 衬线管正文，Apercu 无衬线管元数据与按钮。按钮永远是方角，报头黑带是全站唯一的装饰动作，像一份搬上网页的印刷杂志。',
+		philosophy: [
+			'印刷品逻辑：黑白对比直接承继纸刊，彩色仅剩链接蓝一枚标本。',
+			'三脸分工：衬线 display + 衬线 body + sans metadata，按钮也是 sans 的领地。',
+			'方角党：rounded-none 贯穿全部可点击元素——直角就是媒体立场。',
+			'报头条带：细黑带居中放 wordmark，除此之外不再有任何装饰。',
+		],
+		colors: [
+			{ name: 'primary', hex: '#000000', role: '纯黑 · 双人舞的另一半' },
+			{ name: 'on-primary', hex: '#ffffff', role: '黑底反白' },
+			{ name: 'link', hex: '#057dbc', role: '唯一允许的内联链接蓝' },
+			{ name: 'ink-soft', hex: '#1a1a1a', role: '柔化黑' },
+			{ name: 'body', hex: '#757575', role: '正文灰' },
+			{ name: 'hairline', hex: '#e0e0e0', role: '故事行分隔线' },
+			{ name: 'canvas-soft', hex: '#f5f5f5', role: '次级面' },
+		],
+		typeScale: [
+			{
+				sample: 'The wired world',
+				spec: 'display-hero · 64px / 400 / -0.5px · WiredDisplay serif',
+				style:
+					"font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(30px,4.4vw,46px);letter-spacing:-0.01em;color:#000000;line-height:1.0",
+			},
+			{
+				sample: 'Longform reporting on technology and culture.',
+				spec: 'body · BreveText serif · 18px',
+				style: "font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#333333",
+			},
+		],
+		dos: [
+			'story grid 维持头条+两列+行列表的经典结构',
+			'byline 行之间用发丝线分隔',
+			'masthead 黑带永远居中放字标',
+		],
+		donts: ['不要给按钮加圆角', '除链接蓝外不要引入其它彩色', '不要让无衬线接管 display 层'],
+		plate: {
+			bg: '#ffffff',
+			headline: 'Reporting on what comes next',
+			headlineStyle:
+				"font-family:Georgia,'Times New Roman',serif;color:#000000;font-weight:400;font-size:clamp(27px,3.9vw,44px);letter-spacing:-0.01em;line-height:1.05",
+			spec: 'WiredDisplay serif · 方角按钮 · 报头黑带 · 唯一链接蓝',
+			specColor: '#057dbc',
+		},
+		sourceFile: 'wired',
+	},
 ];
 
 export const designBrandById = new Map(designBrands.map((brand) => [brand.id, brand]));
@@ -881,24 +1454,34 @@ export const designBrandGroups: DesignBrandGroup[] = [
 		id: 'tools',
 		label: '工具与 SaaS',
 		note: '效率工具和开发平台的界面语言：克制、系统化、让产品截图自己说话。',
-		brandIds: ['notion', 'linear', 'vercel', 'figma', 'ibm'],
+		brandIds: [
+			'notion',
+			'linear',
+			'vercel',
+			'figma',
+			'ibm',
+			'cursor',
+			'raycast',
+			'supabase',
+			'framer',
+		],
 	},
 	{
 		id: 'tech',
 		label: '科技产品',
 		note: '面向亿级用户的消费科技：摄影、氛围，和一个不容妥协的强调色。',
-		brandIds: ['apple', 'spotify', 'claude'],
+		brandIds: ['apple', 'spotify', 'claude', 'nvidia', 'mistral', 'minimax'],
 	},
 	{
 		id: 'commerce',
 		label: '商业与消费',
 		note: '钱与生活方式的生意：信任感、精密感，和摄影的张力。',
-		brandIds: ['stripe', 'nike', 'airbnb'],
+		brandIds: ['stripe', 'nike', 'airbnb', 'coinbase'],
 	},
 	{
 		id: 'media',
 		label: '媒体',
 		note: '内容为王的编辑视觉：最大胆的排印实验发生在这里。',
-		brandIds: ['theverge'],
+		brandIds: ['theverge', 'wired'],
 	},
 ];
