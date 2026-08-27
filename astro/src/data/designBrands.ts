@@ -190,7 +190,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'Notion',
 		category: 'SaaS',
 		tagline: '海军蓝画布上的紫色按钮与便利贴粉彩',
-		nameStyle: 'font-weight:700;letter-spacing:-0.02em;color:#191918',
+		nameStyle: 'font-weight:700;letter-spacing:-0.02em;color:#1a1a1a',
 		heroTitle: 'Notion：把工作台画成便利贴墙',
 		lede: '深海军蓝的 hero 上散着彩色便利贴圆点，正中一颗招牌紫按钮，真实的工作区截图带着深阴影从色带里探出来。往下翻，桃色、玫瑰、薄荷的粉彩卡片轮番登场——像是产品里数据库属性的颜色，蔓延到了官网。',
 		philosophy: [
@@ -219,12 +219,12 @@ export const designBrands: DesignBrand[] = [
 				sample: 'Meet the night shift.',
 				spec: 'display · Notion-Sans（Inter 系）· 居中 hero',
 				style:
-					'font-weight:700;font-size:clamp(26px,4vw,40px);letter-spacing:-0.02em;color:#191918',
+					'font-weight:700;font-size:clamp(26px,4vw,40px);letter-spacing:-0.02em;color:#1a1a1a',
 			},
 			{
 				sample: 'One workspace, every team.',
 				spec: 'subtitle · 400',
-				style: 'font-size:16px;color:#73726e',
+				style: 'font-size:16px;color:#787671',
 			},
 			{
 				sample: 'Get Notion free',
@@ -316,7 +316,7 @@ export const designBrands: DesignBrand[] = [
 			'display 字重不上 700，上限是 600',
 		],
 		plate: {
-			bg: '#000000',
+			bg: '#171717',
 			strip: 'linear-gradient(90deg, #00dfd8, #007cf0 35%, #ff0080 70%, #f9cb28 100%)',
 			headline: '▲ Develop. Preview. Ship.',
 			headlineStyle:
@@ -401,7 +401,7 @@ export const designBrands: DesignBrand[] = [
 		category: 'AI',
 		tagline: '奶油纸底 + 赤陶珊瑚的书房气质',
 		nameStyle:
-			"font-family:Georgia,'Songti SC',serif;font-weight:400;letter-spacing:-0.01em;color:#29261b",
+			"font-family:Georgia,'Songti SC',serif;font-weight:400;letter-spacing:-0.01em;color:#141413",
 		heroTitle: 'Claude：AI 品类里最暖的一张纸',
 		lede: '当所有 AI 品牌都在用冷灰和科技蓝时，Claude 选了一张暖调奶油纸 #faf9f5。衬线体 Copernicus 只用 400 字重排大标题，珊瑚色 #cc785c 在单个按钮上稀缺、在整幅 callout 卡上慷慨。奶油与深色产品卡交替铺排，是整个页面的呼吸节奏。',
 		philosophy: [
@@ -529,7 +529,7 @@ export const designBrands: DesignBrand[] = [
 			bg: '#000000',
 			headline: 'Titanium. So strong. So light. So Pro.',
 			headlineStyle:
-				'color:#f5f5f7;font-weight:600;font-size:clamp(24px,3.4vw,38px);letter-spacing:-0.015em;line-height:1.1',
+				'color:#ffffff;font-weight:600;font-size:clamp(24px,3.4vw,38px);letter-spacing:-0.015em;line-height:1.1',
 			spec: 'SF Pro Display 600 · 深色瓦片 · 一点行动蓝',
 			specColor: '#86868b',
 		},
@@ -574,7 +574,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Body hovers at weight 320–340 of the same variable family.',
 				spec: 'body · figmaSans 330 · 层次靠字重不靠灰度',
-				style: 'font-size:15px;color:#333333',
+				style: 'font-size:15px;color:#000000',
 			},
 			{
 				sample: 'DESIGN SYSTEMS',
@@ -1188,7 +1188,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Powering AI factories worldwide.',
 				spec: 'body · 16px / 400',
-				style: 'font-size:16px;color:#333333',
+				style: 'font-size:16px;color:#1a1a1a',
 			},
 			{
 				sample: '■  Developer Resources',
@@ -1252,7 +1252,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Frontier AI in your hands.',
 				spec: 'body · Inter · 奶油纸上仍保持清晰',
-				style: 'font-size:15px;color:#44403c',
+				style: 'font-size:15px;color:#1f1f1f',
 			},
 		],
 		dos: [
@@ -1310,7 +1310,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'One color per product line.',
 				spec: 'body · DM Sans / Inter fallback',
-				style: 'font-size:15px;color:#3f4650',
+				style: 'font-size:15px;color:#222222',
 			},
 		],
 		dos: ['每条产品线只用它的专属色', '渐变卡是颜色的合法居所', 'UI 元素尽量 pill 化'],
@@ -1419,7 +1419,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Longform reporting on technology and culture.',
 				spec: 'body · BreveText serif · 18px',
-				style: "font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#333333",
+				style: "font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#757575",
 			},
 		],
 		dos: [
@@ -1467,7 +1467,7 @@ export const designBrands: DesignBrand[] = [
 				sample: 'Understand the universe',
 				spec: 'display-xl · 96px / 400 / -2.4px · Universal Sans',
 				style:
-					'font-weight:400;font-size:clamp(32px,5vw,52px);letter-spacing:-0.025em;color:#f4f4f6;line-height:1.05',
+					'font-weight:400;font-size:clamp(32px,5vw,52px);letter-spacing:-0.025em;color:#ffffff;line-height:1.05',
 			},
 			{
 				sample: 'GROK 4 · NOW AVAILABLE',
@@ -1490,7 +1490,7 @@ export const designBrands: DesignBrand[] = [
 			bg: '#0a0a0a',
 			headline: 'Understand the universe',
 			headlineStyle:
-				'color:#f4f4f6;font-weight:400;font-size:clamp(30px,4.3vw,48px);letter-spacing:-0.025em;line-height:1.05',
+				'color:#ffffff;font-weight:400;font-size:clamp(30px,4.3vw,48px);letter-spacing:-0.025em;line-height:1.05',
 			spec: 'Universal Sans 400 · 白描边药丸 · Geist Mono 标签',
 			specColor: '#a0a0a0',
 		},
@@ -1544,7 +1544,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'Together AI',
 		category: 'AI 模型',
 		tagline: '一颗黑色按钮与三色渐变的推理云',
-		nameStyle: 'font-weight:500;letter-spacing:-0.03em;color:#0a0a0a',
+		nameStyle: 'font-weight:500;letter-spacing:-0.03em;color:#000000',
 		heroTitle: 'Together AI：所有转化都指向同一颗黑色按钮',
 		lede: '定价、注册、footer——所有转化目标都由同一颗黑色 4px 圆角矩形按钮承担；而整站唯一的装饰是一支橙→洋红→长春花的品牌渐变。等宽全大写眉题覆盖每个区块入口，4px 小圆角卡配暗亮交替的画布节奏，开发者气质拿摇得很稳。',
 		philosophy: [
@@ -1565,7 +1565,7 @@ export const designBrands: DesignBrand[] = [
 				sample: 'The fastest inference cloud',
 				spec: 'display · 64px / 500 / -1.92px · The Future',
 				style:
-					'font-weight:500;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.03em;color:#0a0a0a;line-height:1.08',
+					'font-weight:500;font-size:clamp(28px,4.2vw,46px);letter-spacing:-0.03em;color:#000000;line-height:1.08',
 			},
 			{
 				sample: 'OPEN SOURCE MODELS',
@@ -1585,7 +1585,7 @@ export const designBrands: DesignBrand[] = [
 			strip: 'linear-gradient(90deg,#fc4c02,#ef2cc1 55%,#bdbbff 100%)',
 			headline: 'Inference for open models',
 			headlineStyle:
-				'color:#0a0a0a;font-weight:500;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;line-height:1.08',
+				'color:#000000;font-weight:500;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;line-height:1.08',
 			spec: 'The Future 500 · 黑色 4px 按钮 · 三色渐变 · mono 眉题',
 			specColor: '#6b6b6b',
 		},
@@ -1596,7 +1596,7 @@ export const designBrands: DesignBrand[] = [
 		name: 'Ollama',
 		category: 'AI 模型',
 		tagline: '一张连续白纸上的圆润力量：curl 安装条即门面',
-		nameStyle: 'font-weight:500;color:#111111',
+		nameStyle: 'font-weight:500;color:#000000',
 		heroTitle: 'Ollama：本地模型的极简主义郑重感',
 		lede: '全页是一张没有分区切换的连续白纸，居中的 SF Pro Rounded 标题不扛大字压力——36px 就够，亲切但不幼稚。黑色药丸包办一切行动，最抢眼的位置给了那条 curl 安装命令：对开源工具而言，一行能复制的终端命令比任何文案都有说服力。',
 		philosophy: [
@@ -1613,13 +1613,13 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Get up and running with large language models',
 				spec: 'display-xl · 36px / 500 / 0 · SF Pro Rounded',
-				style: 'font-weight:500;font-size:clamp(24px,3.4vw,34px);color:#111111;line-height:1.12',
+				style: 'font-weight:500;font-size:clamp(24px,3.4vw,34px);color:#000000;line-height:1.12',
 			},
 			{
 				sample: 'curl -fsSL https://ollama.com/install.sh | sh',
 				spec: 'install pill · 首页视觉中心',
 				style:
-					'font-family:ui-monospace,monospace;font-size:14px;color:#111111;background:#f5f5f4;border:1px solid #e7e5e4;padding:6px 16px;border-radius:999px;display:inline-block',
+					'font-family:ui-monospace,monospace;font-size:14px;color:#000000;background:#f5f5f4;border:1px solid #e7e5e4;padding:6px 16px;border-radius:999px;display:inline-block',
 			},
 		],
 		dos: ['保持单张白面的连续性', '标题用 SF Pro Rounded 但控制字号', '给安装命令药丸最高展示位'],
@@ -1628,7 +1628,7 @@ export const designBrands: DesignBrand[] = [
 			bg: '#ffffff',
 			headline: 'Run models locally',
 			headlineStyle:
-				'color:#111111;font-weight:500;font-size:clamp(26px,3.7vw,40px);line-height:1.1',
+				'color:#000000;font-weight:500;font-size:clamp(26px,3.7vw,40px);line-height:1.1',
 			spec: 'SF Pro Rounded 500 · 黑药丸 · curl 安装条即门面',
 			specColor: '#78716c',
 		},
@@ -1812,7 +1812,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Analytics you might actually enjoy.',
 				spec: 'body · 同一字族不同字重',
-				style: 'font-size:15px;color:#4a4a45',
+				style: 'font-size:15px;color:#4d4f46',
 			},
 		],
 		dos: [
@@ -1919,8 +1919,8 @@ export const designBrands: DesignBrand[] = [
 			},
 			{
 				sample: 'Explore journeys →',
-				spec: 'orbit link · 橙色常伴',
-				style: 'font-size:15px;color:#f37338',
+				spec: 'orbit link · Link Blue 链接语义',
+				style: 'font-size:15px;color:#3860BE',
 			},
 		],
 		dos: [
