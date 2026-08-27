@@ -289,6 +289,13 @@ h3 {
 	transform: none;
 }
 
+.rail-controls > .rail-github-link {
+	width: 38px;
+	padding: 0;
+	font-size: 1.1rem;
+	justify-content: center;
+}
+
 .rail-controls .auth-panel {
 	top: calc(100% + 10px);
 	right: 0;
