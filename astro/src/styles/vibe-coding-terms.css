@@ -303,6 +303,52 @@
 	letter-spacing: 0.14em;
 }
 
+.vibe-terms-chip-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.vibe-term-chip {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 7px;
+	padding: 8px 14px;
+	border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+	border-radius: 999px;
+	scroll-margin-top: 96px;
+	text-decoration: none;
+	transition:
+		border-color 0.2s ease,
+		translate 0.2s ease;
+}
+
+.vibe-term-chip strong {
+	color: var(--ink);
+	font-family: var(--sans);
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	transition: color 0.2s ease;
+}
+
+.vibe-term-chip span {
+	color: var(--ink-faint);
+	font-size: 0.68rem;
+	font-weight: 600;
+}
+
+.vibe-term-chip:hover,
+.vibe-term-chip:focus-visible {
+	border-color: var(--blue-strong);
+	translate: 0 -2px;
+}
+
+.vibe-term-chip:hover strong,
+.vibe-term-chip:focus-visible strong {
+	color: var(--blue-strong);
+}
+
 @media (prefers-reduced-motion: reduce) {
 	.vibe-term-category {
 		animation: none;

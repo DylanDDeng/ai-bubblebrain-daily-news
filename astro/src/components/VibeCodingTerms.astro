@@ -1,6 +1,20 @@
 ---
-import { vibeCodingTermCategories, type VibeCodingTerm } from '../data/vibeCodingTerms';
+import {
+	vibeCodingTermCategories,
+	type VibeCodingTerm,
+	type VibeCodingTermCategory,
+} from '../data/vibeCodingTerms';
 import '../styles/vibe-coding-terms.css';
+
+/**
+ * 超过该数量的分类在索引页只展示紧凑预览，
+ * 完整列表由分类详情页（/vibe-coding/terms/{categoryId}/）承接。
+ */
+const PREVIEW_TERM_LIMIT = 12;
+
+function isOversized(category: VibeCodingTermCategory): boolean {
+	return category.terms.length > PREVIEW_TERM_LIMIT;
+}
 
 function groupTerms(terms: VibeCodingTerm[]): { name: string | null; terms: VibeCodingTerm[] }[] {
 	const groups: { name: string | null; terms: VibeCodingTerm[] }[] = [];
@@ -37,41 +51,68 @@ function groupTerms(terms: VibeCodingTerm[]): { name: string | null; terms: Vibe
 
 	<div class="vibe-term-categories">
 		{
-			vibeCodingTermCategories.map((category, categoryIndex) => (
-				<section class="vibe-term-category" id={category.id}>
-					<header class="vibe-category-header">
-						<span class="vibe-category-index" aria-hidden="true">
-							{String(categoryIndex + 1).padStart(2, '0')}
-						</span>
-						<h2>{category.label}</h2>
-						<p>{category.description}</p>
-						<a href={`/vibe-coding/terms/${category.id}/`}>
-							查看图解
-							<i class="ph ph-arrow-up-right" aria-hidden="true" />
-						</a>
-					</header>
+			vibeCodingTermCategories.map((category, categoryIndex) => {
+				const oversized = isOversized(category);
+				return (
+					<section class="vibe-term-category" id={category.id}>
+						<header class="vibe-category-header">
+							<span class="vibe-category-index" aria-hidden="true">
+								{String(categoryIndex + 1).padStart(2, '0')}
+							</span>
+							<h2>{category.label}</h2>
+							<p>{category.description}</p>
+							<a href={`/vibe-coding/terms/${category.id}/`}>
+								{oversized ? `查看全部 ${category.terms.length} 个模式` : '查看图解'}
+								<i class="ph ph-arrow-up-right" aria-hidden="true" />
+							</a>
+						</header>
 
-					<div class="vibe-terms-groups">
-						{groupTerms(category.terms).map((group) => (
-							<div class="vibe-terms-group">
-								{group.name ? <h3 class="vibe-term-group-title">{group.name}</h3> : null}
-								<div class="vibe-terms-list">
-									{group.terms.map((term) => (
-										<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
-											<h3>
-												{term.name}
-												<span>{term.chineseName}</span>
-												<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
-											</h3>
-											<p>{term.description}</p>
-										</a>
-									))}
+						<div class="vibe-terms-groups">
+							{groupTerms(category.terms).map((group) => (
+								<div class="vibe-terms-group">
+									{group.name ? (
+										<h3 class="vibe-term-group-title">{group.name}</h3>
+									) : null}
+									{oversized ? (
+										<div class="vibe-terms-chip-list">
+											{group.terms.map((term) => (
+												<a
+													class="vibe-term-chip"
+													id={term.id}
+													href={`/vibe-coding/terms/${term.id}/`}
+												>
+													<strong>{term.name}</strong>
+													<span>{term.chineseName}</span>
+												</a>
+											))}
+										</div>
+									) : (
+										<div class="vibe-terms-list">
+											{group.terms.map((term) => (
+												<a
+													class="vibe-term"
+													id={term.id}
+													href={`/vibe-coding/terms/${term.id}/`}
+												>
+													<h3>
+														{term.name}
+														<span>{term.chineseName}</span>
+														<i
+															class="ph ph-arrow-up-right vibe-term-arrow"
+															aria-hidden="true"
+														/>
+													</h3>
+													<p>{term.description}</p>
+												</a>
+											))}
+										</div>
+									)}
 								</div>
-							</div>
-						))}
-					</div>
-				</section>
-			))
+							))}
+						</div>
+					</section>
+				);
+			})
 		}
 	</div>
 </section>
