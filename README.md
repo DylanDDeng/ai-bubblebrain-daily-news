@@ -9,8 +9,9 @@ Bubble's Brain 是一个面向 AI 实践者的个人知识库，沉淀值得长�
 ## 站点栏目
 
 - **Codex 教程**（`codex-tutorials/`）：从安装入门到真实工作流的系统指南。
-- **DeepSeek Harness 教程**（`deepseek-harness-tutorials/`）：从 Web UI 到 CLI、SDK 与插件开发的分篇指南。
+- **Pi Agent 教程**（`pi-agent-tutorials/`）：Pi Agent 的安装、会话存储与工具系统实践指南。
 - **WorkBuddy 教程**（`workbuddy-tutorials/`）：从安装入门到办公自动化的实用指南。
+- **Vibe Coding**（`vibe-coding/`）：术语表、Skills 与 Design 三个子栏目。
 - **X 热门 AI 内容精选**（`x-trending/`）：亲选的 X 热门博主 AI 内容。
 - **精选阅读**（`highlights/`）：一手资料、官方文章与深度解读。
 - **关于**（`about/`）：站点与作者介绍。
