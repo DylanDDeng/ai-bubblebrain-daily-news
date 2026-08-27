@@ -937,6 +937,113 @@ describe("automatic code release boundary", () => {
     ).toHaveLength(releasePaths.length);
   });
 
+  it("accepts the design gallery release change set", () => {
+    const added = [
+      "astro/src/components/DesignBrandPlate.astro",
+      ...[
+        "airbnb",
+        "apple",
+        "claude",
+        "cohere",
+        "coinbase",
+        "cursor",
+        "figma",
+        "framer",
+        "ibm",
+        "linear",
+        "mastercard",
+        "minimax",
+        "mintlify",
+        "mistral",
+        "nike",
+        "notion",
+        "nvidia",
+        "ollama",
+        "posthog",
+        "raycast",
+        "resend",
+        "shopify",
+        "spotify",
+        "stripe",
+        "supabase",
+        "theverge",
+        "together",
+        "vercel",
+        "warp",
+        "wired",
+        "xai",
+      ].map((brand) => `astro/src/data/design-md/${brand}.md`),
+      "astro/src/data/designBrands.ts",
+      "astro/src/pages/vibe-coding/design/[brand].astro",
+      "astro/src/pages/vibe-coding/design/index.astro",
+      "astro/src/styles/design-gallery.css",
+      "docs/archive/README.md",
+      "static/js/design-gallery.js",
+      "static/js/design-tabs.js",
+      "static/js/vibe-coding-patterns.js",
+    ];
+    const modified = [
+      "astro/AGENTS.md",
+      "astro/package-lock.json",
+      "astro/src/components/KnowledgeIndexHome.astro",
+      "astro/src/components/VibeCodingConceptVisual.astro",
+      "astro/src/components/VibeCodingFlowLab.astro",
+      "astro/src/components/VibeCodingPatternDetail.astro",
+      "astro/src/components/VibeCodingTerms.astro",
+      "astro/src/data/vibeCodingPatternDetails.ts",
+      "astro/src/data/vibeCodingTermDetails.ts",
+      "astro/src/data/vibeCodingTerms.ts",
+      "astro/src/layouts/BaseLayout.astro",
+      "astro/src/lib/legacyContent.ts",
+      "astro/src/lib/searchIndex.test.ts",
+      "astro/src/lib/siteManifest.test.ts",
+      "astro/src/lib/siteManifest.ts",
+      "astro/src/styles/vibe-coding-flow-lab.css",
+      "astro/src/styles/vibe-coding-pattern-detail.css",
+      "astro/src/styles/vibe-coding-terms.css",
+      "content/pi-agent-tutorials/_index.md",
+      "README.md",
+      "scripts/verify-site.mjs",
+    ];
+    const renamed = [
+      ["CF-PAGES-DOMAIN.md", "docs/archive/CF-PAGES-DOMAIN.md"],
+      ["CF-PAGES-QUICK.md", "docs/archive/CF-PAGES-QUICK.md"],
+      ["CLOUDFLARE-PAGES-SETUP.md", "docs/archive/CLOUDFLARE-PAGES-SETUP.md"],
+      ["DOMAIN-QUICK-GUIDE.md", "docs/archive/DOMAIN-QUICK-GUIDE.md"],
+      ["DOMAIN-SETUP.md", "docs/archive/DOMAIN-SETUP.md"],
+      ["ENV-SETUP.md", "docs/archive/ENV-SETUP.md"],
+      ["HUGO-DEBUG.md", "docs/archive/HUGO-DEBUG.md"],
+      ["HUGO-README.md", "docs/archive/HUGO-README.md"],
+      ["hugo.toml.bak", "docs/archive/hugo.toml.bak"],
+      ["SSL-FIX.md", "docs/archive/SSL-FIX.md"],
+      ["WORKFLOW-OPTIMIZATION.md", "docs/archive/WORKFLOW-OPTIMIZATION.md"],
+      ["WORKFLOW.md", "docs/archive/WORKFLOW.md"],
+    ];
+    const removed = ["astro/src/lib/deepseekHarnessTutorials.test.ts"];
+
+    const files = [
+      ...added.map((filename) => ({ filename, status: "added" })),
+      ...modified.map((filename) => ({ filename, status: "modified" })),
+      ...renamed.map(([previous_filename, filename]) => ({
+        filename,
+        status: "renamed",
+        previous_filename,
+      })),
+      ...removed.map((filename) => ({ filename, status: "removed" })),
+    ];
+
+    expect(
+      validateCodeReleaseChangeSet(
+        comparison(files),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).toHaveLength(files.length);
+  });
+
   it.each([
     "assets/daily.json",
     "data/daily/.gitkeep",
