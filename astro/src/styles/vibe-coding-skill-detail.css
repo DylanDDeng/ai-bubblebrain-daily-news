@@ -1,0 +1,115 @@
+/* Vibe Coding Skills 详情页：hero 元信息与安装命令块。
+   结构类名（concept-detail 等）复用 vibe-coding-term-detail.css；
+   原文代码块直接复用 design-gallery.css 的 design-rawfile 样式。 */
+
+.skill-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 22px;
+	margin-top: 26px;
+}
+
+.skill-meta a {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	color: var(--ink-faint);
+	font-size: 0.78rem;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.skill-meta a:hover {
+	color: var(--blue-strong);
+}
+
+/* 安装命令条：浅色，与 design-rawfile 代码块一致 */
+.skill-install-box {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	max-width: 720px;
+	margin-top: 28px;
+	padding: 14px 18px;
+	background: var(--paper-muted);
+	border: 1px solid var(--rule);
+	border-radius: 14px;
+	overflow-x: auto;
+}
+
+.skill-install-box code {
+	flex: 1;
+	color: var(--ink);
+	font-family: ui-monospace, 'SF Mono', monospace;
+	font-size: 0.8rem;
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+}
+
+.skill-install-copy {
+	flex-shrink: 0;
+	border: 0;
+	background: none;
+	padding: 0;
+	font-family: ui-monospace, 'SF Mono', monospace;
+	font-size: 0.75rem;
+	color: var(--ink);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}
+
+.skill-install-copy:hover,
+.skill-install-copy:focus-visible {
+	color: var(--blue-strong);
+}
+
+.skill-install-copy:focus-visible {
+	outline: 3px solid var(--blue-strong);
+	outline-offset: 3px;
+}
+
+.skill-install-copy.is-copied {
+	color: var(--blue-strong);
+	text-decoration: none;
+}
+
+.skill-doc {
+	max-width: 820px;
+}
+
+.skill-credit {
+	max-width: 820px;
+	margin: 40px 0 0;
+	padding-top: 18px;
+	border-top: 1px solid var(--rule);
+	color: var(--ink-faint);
+	font-size: 0.72rem;
+	line-height: 1.8;
+}
+
+.skill-credit a {
+	color: var(--ink-soft);
+	font-weight: 650;
+}
+
+.skill-credit a:hover {
+	color: var(--blue-strong);
+}
+
+@media (max-width: 720px) {
+	.skill-install-box {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 10px;
+	}
+
+	.skill-install-box code {
+		white-space: normal;
+		word-break: break-all;
+	}
+
+	.skill-install-copy {
+		align-self: flex-end;
+	}
+}

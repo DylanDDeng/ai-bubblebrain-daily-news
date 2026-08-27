@@ -23,6 +23,22 @@ const highlights = defineCollection({
 	}),
 });
 
+const skills = defineCollection({
+	loader: glob({
+		base: '../content/skills',
+		pattern: '**/*.md',
+		generateId: ({ entry }) => entry.replace(/\.md$/, ''),
+	}),
+	schema: z.object({
+		name: z.string().min(1),
+		author: z.string().min(1),
+		sourceUrl: z.url(),
+		install: z.string().min(1),
+		category: z.string().min(1),
+		order: z.number().optional().default(0),
+	}),
+});
+
 const legacy = defineCollection({
 	loader: glob({
 		base: '../content',
@@ -59,4 +75,4 @@ const legacy = defineCollection({
 		.loose(),
 });
 
-export const collections = { highlights, legacy };
+export const collections = { highlights, skills, legacy };

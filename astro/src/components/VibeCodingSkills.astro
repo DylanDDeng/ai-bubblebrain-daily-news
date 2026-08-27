@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import { vibeCodingSkillCategories, vibeCodingSkillMeta } from '../data/vibeCodingSkills';
+import '../styles/vibe-coding-terms.css';
+
+const entries = await getCollection('skills');
+
+const categories = vibeCodingSkillCategories
+	.map((category) => ({
+		...category,
+		skills: entries
+			.filter((entry) => entry.data.category === category.id)
+			.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0)),
+	}))
+	.filter((category) => category.skills.length > 0);
+---
+
+<section class="vibe-terms" data-vibe-coding-skills>
+	<header class="vibe-terms-header">
+		<p>VIBE CODING</p>
+		<h1>Skills</h1>
+		<span>可直接装进 AI 编码工具的技能包，按用途分类整理。</span>
+	</header>
+
+	<nav class="vibe-category-nav" aria-label="技能分类">
+		{
+			categories.map((category) => (
+				<a href={`#${category.id}`}>
+					<span data-label={category.label}>{category.label}</span>
+					<small>{category.skills.length}</small>
+				</a>
+			))
+		}
+	</nav>
+
+	<div class="vibe-term-categories">
+		{
+			categories.map((category, categoryIndex) => (
+				<section class="vibe-term-category" id={category.id}>
+					<header class="vibe-category-header">
+						<span class="vibe-category-index" aria-hidden="true">
+							{String(categoryIndex + 1).padStart(2, '0')}
+						</span>
+						<h2>{category.label}</h2>
+						<p>{category.description}</p>
+					</header>
+
+					<div class="vibe-terms-groups">
+						<div class="vibe-terms-group">
+							<div class="vibe-terms-list">
+								{category.skills.map((entry) => (
+									<a class="vibe-term" id={entry.id} href={`/vibe-coding/skills/${entry.id}/`}>
+										<h3>
+											{entry.data.name}
+											<span>{entry.data.author}</span>
+											<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
+										</h3>
+										<p>{vibeCodingSkillMeta[entry.id]?.description ?? ''}</p>
+									</a>
+								))}
+							</div>
+						</div>
+					</div>
+				</section>
+			))
+		}
+	</div>
+</section>
+
+<script is:inline type="module" src="/js/vibe-coding-skills.js"></script>
