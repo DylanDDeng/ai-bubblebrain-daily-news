@@ -92,7 +92,7 @@ GROK_X_HANDLES = "9hills,aigclink,aiwarts,AnthropicAI,blankwebdev,dotey,gdb,Gord
 PROJECTS_API_URL = "https://git-trending.justlikemaki.vip/topone/?since=daily"
 # GITHUB_TOKEN 在环境变量中设置
 GITHUB_REPO_OWNER = "DylanDDeng"  # 请替换为你的 GitHub 用户名
-GITHUB_REPO_NAME = "ai-bubblebrain-daily-news"  # 请替换为你的仓库名
+GITHUB_REPO_NAME = "bubbles-brain"  # 请替换为你的仓库名
 GITHUB_BRANCH = "main"
 GITHUB_PUBLISH_STRATEGY = "pull_request"
 GITHUB_PUBLISH_BRANCH_PREFIX = "automation/daily"
