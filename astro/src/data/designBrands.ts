@@ -1684,14 +1684,14 @@ export const designBrands: DesignBrand[] = [
 		id: 'resend',
 		name: 'Resend',
 		category: '基础设施',
-		tagline: '纯黑夜空上的六彩辉光：衬线压阵的开发者品牌',
+		tagline: '纯黑夜空上的五彩辉光：衬线压阵的开发者品牌',
 		nameStyle:
 			"font-family:Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-0.02em;color:#000000",
 		heroTitle: 'Resend：发送邮件的公司做出了最好看的暗色官网',
-		lede: 'Domaine Display 衬线以 76–96px 压在全黑画布上，ABC Favorit 管营销正文，Inter 管 UI——三层分工严格。六个辉光强调色只以低透明度大气晕染的方式存在，从不当实色用；半透明的发丝描边取代了全部阴影。',
+		lede: 'Domaine Display 衬线以 76–96px 压在全黑画布上，ABC Favorit 管营销正文，Inter 管 UI——三层分工严格。五个辉光强调色只以低透明度大气晕染的方式存在，从不当实色用；半透明的发丝描边取代了全部阴影。',
 		philosophy: [
 			'衬线领导力：最大号的字永远是衬线体。',
-			'辉光不上实色：六种彩只做低透明度的环境晕染。',
+			'辉光不上实色：五种彩只做低透明度的环境晕染。',
 			'半透明发丝线体制：边界用 alpha 边框表达，零投影。',
 			'邮件 mockup 是主角：产品可视化始终围绕收件箱场景。',
 		],
@@ -1725,7 +1725,7 @@ export const designBrands: DesignBrand[] = [
 			headline: 'The best API to reach humans',
 			headlineStyle:
 				"font-family:Georgia,'Times New Roman',serif;color:#fcfdff;font-weight:400;font-size:clamp(29px,4.2vw,47px);letter-spacing:-0.02em;line-height:1.02",
-			spec: 'Domaine Display · 六彩辉光晕染 · 半透明 hairline · 零投影',
+			spec: 'Domaine Display · 五彩辉光晕染 · 半透明 hairline · 零投影',
 			specColor: '#11ff99',
 		},
 		sourceFile: 'resend',
@@ -1780,9 +1780,9 @@ export const designBrands: DesignBrand[] = [
 		name: 'PostHog',
 		category: '数据分析',
 		tagline: '奶油纸上的一粒芥末黄与手绘刺猬军团',
-		nameStyle: 'font-weight:800;letter-spacing:-0.02em;color:#1d1db4',
+		nameStyle: 'font-weight:800;letter-spacing:-0.02em;color:#23251d',
 		heroTitle: 'PostHog：数据分析也可以很好玩',
-		lede: '#eeefe9 的暖奶油画布从头铺到尾，唯一的强色是一粒芥末黄 CTA #f7a501 配上橄榄深字的药丸。IBM Plex Sans 包揽全部字重从 400 到 800，手绘刺猬吉祥物是整个网站的装饰系统——在讲究效率的分析工具行业里，它选择了幽默。',
+		lede: '#eeefe9 的暖奶油画布从头铺到尾，唯一的强色是一粒芥末黄 CTA #f7a501 配上深橄榄黑 #23251d 的标题字。IBM Plex Sans 包揽全部字重从 400 到 800，手绘刺猬吉祥物是整个网站的装饰系统——在讲究效率的分析工具行业里，它选择了幽默。',
 		philosophy: [
 			'一张暖纸不分段：整页连续，没有章节之间的拼接感。',
 			'芥末黄单点爆发：唯一的主色只出现在 CTA 上。',
@@ -1803,7 +1803,7 @@ export const designBrands: DesignBrand[] = [
 				sample: 'Seriously useful. Not boring.',
 				spec: 'display · IBM Plex Sans · 800 加粗语气',
 				style:
-					'font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;color:#1d1db4;line-height:1.15',
+					'font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;color:#23251d;line-height:1.15',
 			},
 			{
 				sample: 'Analytics you might actually enjoy.',
@@ -1822,7 +1822,7 @@ export const designBrands: DesignBrand[] = [
 			bg: '#eeefe9',
 			headline: 'The only product toolkit you need',
 			headlineStyle:
-				'color:#1d1db4;font-weight:800;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.025em;line-height:1.15',
+				'color:#23251d;font-weight:800;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.025em;line-height:1.15',
 			spec: 'IBM Plex Sans 800 · 芥末黄药丸 · 手绘刺猬们',
 			specColor: '#cd4239',
 		},

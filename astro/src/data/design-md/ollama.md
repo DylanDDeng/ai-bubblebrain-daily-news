@@ -130,8 +130,8 @@ components:
     textColor: "{colors.on-primary}"
     typography: "{typography.button-md}"
     rounded: "{rounded.full}"
-    padding: 8px 20px
-    height: 36px
+    padding: 12px 20px
+    height: 44px
   button-primary-active:
     backgroundColor: "{colors.ink-deep}"
     textColor: "{colors.on-primary}"
@@ -142,8 +142,8 @@ components:
     textColor: "{colors.ink}"
     typography: "{typography.button-md}"
     rounded: "{rounded.full}"
-    padding: 8px 20px
-    height: 36px
+    padding: 12px 20px
+    height: 44px
   button-pill-on-dark:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
@@ -506,7 +506,7 @@ There is no photography. The only image-like elements are:
 | mobile | 640px | Hero headline drops from `{typography.display-xl}` (36px) to ~28px; install-snippet wraps; section padding tightens |
 
 ### Touch Targets
-All interactive elements meet WCAG AA at the 36–40px height range. `{component.button-primary}` and `{component.button-secondary}` sit at 36px height with 20px horizontal padding, giving an effective tappable area of ~36×80px which exceeds the 44×44px AAA threshold via the inline padding. `{component.text-input}` sits at 40px. `{component.search-pill}` sits at 36px height with 16px padding. Footer links use `{typography.caption-sm}` (12px) but receive ~12px line-height + ~8px vertical padding for a tappable row of ~32–36px.
+All interactive elements meet WCAG AA at the 40–44px height range. `{component.button-primary}` and `{component.button-secondary}` sit at 44px height (12px vertical padding) with 20px horizontal padding, giving an effective tappable area of ~44×80px which meets the 44×44px AAA threshold. `{component.text-input}` sits at 40px. `{component.search-pill}` sits at 36px height with 16px padding. Footer links use `{typography.caption-sm}` (12px) but receive ~12px line-height + ~8px vertical padding for a tappable row of ~32–36px.
 
 ### Collapsing Strategy
 - **Primary nav:** desktop horizontal → tablet-narrow hamburger drawer at 768px. The black "Download" CTA stays visible at all widths; it never collapses into the menu.
