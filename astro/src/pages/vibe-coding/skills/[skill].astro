@@ -1,0 +1,195 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import {
+	vibeCodingSkillCategories,
+	vibeCodingSkillFamilies,
+	vibeCodingSkillMeta,
+} from '../../../data/vibeCodingSkills';
+import '../../../styles/vibe-coding-term-detail.css';
+import '../../../styles/design-gallery.css';
+import '../../../styles/vibe-coding-skill-detail.css';
+
+interface Props {
+	entry: Awaited<ReturnType<typeof getCollection<'skills'>>>[number];
+	previousEntry: Awaited<ReturnType<typeof getCollection<'skills'>>>[number] | null;
+	nextEntry: Awaited<ReturnType<typeof getCollection<'skills'>>>[number] | null;
+}
+
+export async function getStaticPaths() {
+	const entries = await getCollection('skills');
+	const categoryOrder = new Map(
+		vibeCodingSkillCategories.map((category, index) => [category.id, index]),
+	);
+	const sorted = [...entries].sort((a, b) => {
+		const categoryDiff =
+			(categoryOrder.get(a.data.category) ?? categoryOrder.size) -
+			(categoryOrder.get(b.data.category) ?? categoryOrder.size);
+		if (categoryDiff !== 0) return categoryDiff;
+		return (a.data.order ?? 0) - (b.data.order ?? 0);
+	});
+	return sorted.map((entry, index) => ({
+		params: { skill: entry.id },
+		props: {
+			entry,
+			previousEntry: sorted[index - 1] ?? null,
+			nextEntry: sorted[index + 1] ?? null,
+		},
+	}));
+}
+
+const { entry, previousEntry, nextEntry } = Astro.props;
+const meta = vibeCodingSkillMeta[entry.id];
+const category = vibeCodingSkillCategories.find(
+	(candidate) => candidate.id === entry.data.category,
+);
+const rawBody = entry.body ?? '';
+const rawLineCount = rawBody ? rawBody.trimEnd().split('\n').length : 0;
+const family = vibeCodingSkillFamilies.find((candidate) => candidate.skillIds.includes(entry.id));
+const companions = (family?.skillIds ?? [])
+	.filter((id) => id !== entry.id)
+	.map((id) => ({
+		id,
+		meta: vibeCodingSkillMeta[id],
+		isEntry: family?.skillIds[0] === id,
+	}));
+---
+
+<BaseLayout
+	title={meta
+		? `${meta.chineseName}（${entry.data.name}）· Vibe Coding Skills`
+		: `${entry.data.name} · Vibe Coding Skills`}
+	description={meta?.description ?? entry.data.name}
+	canonicalPath={`/vibe-coding/skills/${entry.id}/`}
+	section="vibe-coding"
+>
+	<article class="concept-detail skill-detail">
+		<a class="concept-detail-back" href="/vibe-coding/skills/">
+			<i class="ph ph-arrow-left" aria-hidden="true"></i>
+			返回 Skills
+		</a>
+
+		<header class="concept-detail-hero">
+			<p>{category?.label ?? 'Skill'}</p>
+			<h1>
+				{meta?.chineseName ?? entry.data.name}
+				<span>{entry.data.name}</span>
+			</h1>
+			<div class="skill-meta">
+				<a href={`https://github.com/${entry.data.author}/`} rel="noopener" target="_blank">
+					<i class="ph ph-user" aria-hidden="true"></i>
+					{entry.data.author}
+				</a>
+				<a href={entry.data.sourceUrl} rel="noopener" target="_blank">
+					<i class="ph ph-globe" aria-hidden="true"></i>
+					{new URL(entry.data.sourceUrl).host}
+				</a>
+			</div>
+			{
+				meta && (
+					<div class="concept-detail-qa">
+						<div class="concept-qa-row concept-qa-question">
+							<span class="concept-qa-glyph" aria-hidden="true">
+								Q
+							</span>
+							<div class="concept-qa-body">
+								<span class="concept-qa-label">这是什么技能</span>
+								<p>
+									<em>{entry.data.name}</em>能干什么？
+								</p>
+							</div>
+						</div>
+						<div class="concept-qa-row concept-qa-answer">
+							<span class="concept-qa-glyph" aria-hidden="true">
+								A
+							</span>
+							<div class="concept-qa-body">
+								<span class="concept-qa-label">简单来说</span>
+								<p>{meta.description}</p>
+							</div>
+						</div>
+					</div>
+				)
+			}
+		</header>
+
+		<section class="concept-section skill-install" aria-labelledby="skill-install-title">
+			<div class="concept-section-heading">
+				<p class="concept-section-index">01 · 安装</p>
+				<h2 id="skill-install-title">装进你的 AI 编码工具</h2>
+			</div>
+			<div class="skill-install-box">
+				<code>{entry.data.install}</code>
+				<button type="button" class="skill-install-copy" data-copy-install> 复制 </button>
+			</div>
+		</section>
+
+		<section class="concept-section skill-doc" aria-labelledby="skill-doc-title">
+			<div class="concept-section-heading">
+				<p class="concept-section-index">02 · 原文</p>
+				<h2 id="skill-doc-title">SKILL.md</h2>
+			</div>
+			<p class="design-raw-note">
+				装好之后，AI 编码工具就照这份说明书行事：审计、找证据、写计划，全按它来。
+			</p>
+			<div class="design-rawfile">
+				<div class="design-raw-head">
+					<code>skills/{entry.id}/SKILL.md</code>
+					<span class="design-raw-lines">{rawLineCount} 行</span>
+					<button type="button" class="design-raw-copy" data-copy-raw>复制全文</button>
+				</div>
+				<details class="design-raw-details">
+					<summary>展开原文</summary>
+					<pre tabindex="0" data-raw-content>{rawBody}</pre>
+				</details>
+			</div>
+		</section>
+
+		<p class="skill-credit">
+			出处：<a href={entry.data.sourceUrl} rel="noopener" target="_blank">
+				{new URL(entry.data.sourceUrl).host}
+			</a>（作者 {entry.data.author}）。正文为未经删改的英文 SKILL.md 原文，中文导读为本站原创。
+		</p>
+
+		{
+			companions.length > 0 && (
+				<nav class="design-others skill-companions" aria-label="同套件技能">
+					<p class="concept-section-index">同套件技能</p>
+					<ol>
+						{companions.map((member) => (
+							<li>
+								<a href={`/vibe-coding/skills/${member.id}/`}>
+									<span class="design-other-name">{member.meta?.chineseName ?? member.id}</span>
+									<span class="design-other-cat">{member.isEntry ? '套件入口' : '配套技能'}</span>
+								</a>
+							</li>
+						))}
+					</ol>
+				</nav>
+			)
+		}
+
+		<nav class="concept-detail-pagination" aria-label="相邻技能">
+			{
+				previousEntry && (
+					<a href={`/vibe-coding/skills/${previousEntry.id}/`} rel="prev">
+						<span>上一个</span>
+						<strong>
+							{vibeCodingSkillMeta[previousEntry.id]?.chineseName ?? previousEntry.data.name}
+						</strong>
+					</a>
+				)
+			}
+			{
+				nextEntry && (
+					<a href={`/vibe-coding/skills/${nextEntry.id}/`} rel="next">
+						<span>下一个</span>
+						<strong>{vibeCodingSkillMeta[nextEntry.id]?.chineseName ?? nextEntry.data.name}</strong>
+					</a>
+				)
+			}
+		</nav>
+	</article>
+	<script is:inline type="module" src="/js/design-gallery.js"></script>
+	<script is:inline type="module" src="/js/vibe-coding-skills.js"></script>
+</BaseLayout>

@@ -51,6 +51,7 @@ const tutorialLinks: NavLink[] = [
 ];
 const vibeCodingLinks: NavLink[] = [
 	{ kind: 'link', href: '/vibe-coding/terms/', label: '术语' },
+	{ kind: 'link', href: '/vibe-coding/skills/', label: 'Skills' },
 	{ kind: 'link', href: '/vibe-coding/design/', label: 'Design' },
 ];
 const navItems: NavItem[] = isEnglish
@@ -196,6 +197,7 @@ const navItemIsActive = (item: NavItem) =>
 							{!isEnglish && <a href="/pi-agent-tutorials/">Pi Agent 教程</a>}
 							{!isEnglish && <a href="/workbuddy-tutorials/">WorkBuddy 教程</a>}
 							{!isEnglish && <a href="/vibe-coding/terms/">Vibe Coding 术语</a>}
+							{!isEnglish && <a href="/vibe-coding/skills/">Vibe Coding Skills</a>}
 							{!isEnglish && <a href="/vibe-coding/design/">Vibe Coding Design</a>}
 							<a href={isEnglish ? '/en/highlights/' : '/highlights/'}
 								>{isEnglish ? 'Highlights' : '精选阅读'}</a
