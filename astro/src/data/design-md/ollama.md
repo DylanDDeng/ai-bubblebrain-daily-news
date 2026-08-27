@@ -165,6 +165,7 @@ components:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     rounded: "{rounded.full}"
+    border: "1px solid {colors.ink}"
   text-input:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
@@ -176,6 +177,7 @@ components:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     rounded: "{rounded.full}"
+    border: "1px solid {colors.ink}"
   install-snippet:
     backgroundColor: "{colors.surface-soft}"
     textColor: "{colors.ink}"

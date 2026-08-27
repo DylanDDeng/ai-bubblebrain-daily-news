@@ -171,12 +171,14 @@ components:
     typography: "{typography.body-md}"
     rounded: "{rounded.pill}"
     padding: 12px 26px
+    border: "2px solid {colors.on-primary}"
   button-outline-on-light:
     backgroundColor: "{colors.canvas-light}"
     textColor: "{colors.ink}"
     typography: "{typography.body-md}"
     rounded: "{rounded.pill}"
     padding: 12px 24px
+    border: "1px solid {colors.ink}"
   button-aloe-pill:
     backgroundColor: "{colors.aloe-10}"
     textColor: "{colors.ink}"

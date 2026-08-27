@@ -282,12 +282,12 @@ components:
     textColor: "{colors.steel}"
     typography: "{typography.body-sm-medium}"
     padding: "{spacing.sm} {spacing.md}"
-    border: "0 0 2px transparent solid"
+    borderBottom: "2px solid transparent"
   segmented-tab-active:
     backgroundColor: "transparent"
     textColor: "{colors.ink}"
     typography: "{typography.body-sm-medium}"
-    border: "0 0 2px {colors.ink} solid"
+    borderBottom: "2px solid {colors.ink}"
   pill-tab:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.steel}"
@@ -345,7 +345,7 @@ components:
     textColor: "{colors.on-dark-muted}"
     typography: "{typography.caption}"
     padding: "{spacing.xs} {spacing.md}"
-    border: "0 0 1px {colors.hairline-dark} solid"
+    borderBottom: "1px solid {colors.hairline-dark}"
   code-inline:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.charcoal}"
@@ -358,7 +358,7 @@ components:
     textColor: "{colors.ink}"
     typography: "{typography.body-sm}"
     padding: "{spacing.md} 0"
-    border: "0 0 1px {colors.hairline-soft} solid"
+    borderBottom: "1px solid {colors.hairline-soft}"
   feature-comparison-table:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
@@ -369,7 +369,7 @@ components:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     padding: "{spacing.md} {spacing.lg}"
-    border: "0 0 1px {colors.hairline-soft} solid"
+    borderBottom: "1px solid {colors.hairline-soft}"
   sidebar-nav-item:
     backgroundColor: "transparent"
     textColor: "{colors.steel}"

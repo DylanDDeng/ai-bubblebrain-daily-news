@@ -1379,7 +1379,7 @@ export const designBrands: DesignBrand[] = [
 			bg: '#ffffff',
 			headline: 'Update your portfolio',
 			headlineStyle:
-				'color:#0a0b0d;font-weight:500;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;line-height:1.05',
+				'color:#0a0b0d;font-weight:400;font-size:clamp(28px,4vw,44px);letter-spacing:-0.025em;line-height:1.05',
 			spec: 'Coinbase Display · 100px 药丸 · 24px 卡片 · 涨跌仅文字色',
 			specColor: '#0052ff',
 		},
@@ -1585,7 +1585,7 @@ export const designBrands: DesignBrand[] = [
 			strip: 'linear-gradient(90deg,#fc4c02,#ef2cc1 55%,#bdbbff 100%)',
 			headline: 'Inference for open models',
 			headlineStyle:
-				'color:#0a0a0a;font-weight:600;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;line-height:1.08',
+				'color:#0a0a0a;font-weight:500;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;line-height:1.08',
 			spec: 'The Future 500 · 黑色 4px 按钮 · 三色渐变 · mono 眉题',
 			specColor: '#6b6b6b',
 		},
@@ -1628,7 +1628,7 @@ export const designBrands: DesignBrand[] = [
 			bg: '#ffffff',
 			headline: 'Run models locally',
 			headlineStyle:
-				'color:#111111;font-weight:600;font-size:clamp(26px,3.7vw,40px);line-height:1.1',
+				'color:#111111;font-weight:500;font-size:clamp(26px,3.7vw,40px);line-height:1.1',
 			spec: 'SF Pro Rounded 500 · 黑药丸 · curl 安装条即门面',
 			specColor: '#78716c',
 		},
@@ -1775,7 +1775,7 @@ export const designBrands: DesignBrand[] = [
 			headlineStyle:
 				'color:#0a0a0a;font-weight:600;font-size:clamp(27px,3.9vw,43px);letter-spacing:-0.027em;line-height:1.1',
 			spec: 'Inter 600 · 天蓝奶油渐变带 · 薄荷绿语义 · Geist Mono',
-			specColor: '#00d4a4',
+			specColor: '#00856b',
 		},
 		sourceFile: 'mintlify',
 	},
@@ -1882,7 +1882,7 @@ export const designBrands: DesignBrand[] = [
 			bg: '#000000',
 			headline: 'Making commerce better',
 			headlineStyle:
-				'color:#ffffff;font-weight:300;font-size:clamp(30px,4.4vw,48px);letter-spacing:0.015em;line-height:1.06',
+				'color:#ffffff;font-weight:330;font-size:clamp(30px,4.4vw,48px);letter-spacing:0.015em;line-height:1.06',
 			spec: 'Neue Haas Grotesk 330 · 双画布切换 · 药丸贯穿全球',
 			specColor: '#c1fbd4',
 		},

@@ -219,6 +219,8 @@ components:
     backgroundColor: "{colors.surface-card}"
     textColor: "{colors.ink}"
     rounded: "{rounded.md}"
+    border: "2px solid {colors.accent-blue}"
+    outline: "2px solid {colors.focus-ring}"
   search-input:
     backgroundColor: "{colors.surface-card}"
     textColor: "{colors.ink}"
