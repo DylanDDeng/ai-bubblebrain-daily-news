@@ -1,12 +1,18 @@
 ---
 import '../../../styles/design-gallery.css';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { designBrandById, designBrandGroups, designBrands } from '../../../data/designBrands';
+import {
+	type DesignBrand,
+	designBrandById,
+	designBrandGroups,
+} from '../../../data/designBrands';
 
 const groups = designBrandGroups
 	.map((group) => ({
 		...group,
-		brands: group.brandIds.map((id) => designBrandById.get(id)).filter(Boolean),
+		brands: group.brandIds
+			.map((id) => designBrandById.get(id))
+			.filter((brand): brand is DesignBrand => brand !== undefined),
 	}))
 	.filter((group) => group.brands.length > 0);
 ---
