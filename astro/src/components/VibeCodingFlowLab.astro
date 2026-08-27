@@ -34,6 +34,27 @@ const isHarnessLab = concept.id === 'harness';
 const isMcpLab = concept.id === 'mcp';
 const isSkillLab = concept.id === 'skill';
 const isRagLab = concept.id === 'rag';
+const isDbLab = concept.id === 'database';
+const isSchemaLab = concept.id === 'schema';
+const isMigrationLab = concept.id === 'migration';
+const isCacheLab = concept.id === 'cache';
+const isVectorLab = concept.id === 'vector-database';
+const isDataLab = concept.id === 'data-storage';
+const isGitLab = concept.id === 'git';
+const isDiffLab = concept.id === 'diff';
+const isCommitLab = concept.id === 'commit';
+const isBranchLab = concept.id === 'branch';
+const isWorktreeLab = concept.id === 'worktree';
+const isForkLab = concept.id === 'fork';
+const isPrLab = concept.id === 'pull-request';
+const isCheckpointLab = concept.id === 'checkpoint';
+const isBuildLab = concept.id === 'build';
+const isCiLab = concept.id === 'ci-cd';
+const isServerlessLab = concept.id === 'serverless';
+const isEdgeLab = concept.id === 'edge-runtime';
+const isObsLab = concept.id === 'observability';
+const isEngLab = concept.id === 'engineering-workflow';
+const isDeployLab = concept.id === 'deployment-runtime';
 const customLabIds = new Set([
 	'prompt',
 	'agent',
@@ -43,6 +64,27 @@ const customLabIds = new Set([
 	'mcp',
 	'skill',
 	'rag',
+	'database',
+	'schema',
+	'migration',
+	'cache',
+	'vector-database',
+	'data-storage',
+	'git',
+	'diff',
+	'commit',
+	'branch',
+	'worktree',
+	'fork',
+	'pull-request',
+	'checkpoint',
+	'engineering-workflow',
+	'build',
+	'ci-cd',
+	'serverless',
+	'edge-runtime',
+	'observability',
+	'deployment-runtime',
 	'backend',
 	'api',
 	'endpoint',
@@ -90,10 +132,28 @@ const labTitles: Record<string, string> = {
 	mcp: '接入一个工单系统，要写几遍代码？',
 	skill: '每周都要发的周报，怎么不用每次重新教？',
 	rag: '模型没学过的问题，怎么答对？',
+	database: '重启服务器，注册的用户还在吗？',
+	schema: '同一批数据，为什么有结构才算得动？',
+	migration: 'users 表要加一列，怎么改才不出事故？',
+	cache: '同一个榜单被打开一万次，都要现算吗？',
+	'vector-database': '换个说法提问，库里的答案还找得到吗？',
+	git: '让 AI 大改代码之前，你的退路在哪？',
+	diff: 'AI 说「只改了按钮」，事实是吗？',
+	commit: '一天的修改，怎么提交才不给自己埋雷？',
+	branch: 'AI 重构到一半，线上要修急 bug，怎么办？',
+	worktree: '你和 Agent 同时要改代码，一个目录够用吗？',
+	fork: '别人的仓库你没有写权限，想改怎么办？',
+	'pull-request': 'AI 的大改动，直接进主线还是先过评审？',
+	checkpoint: '让 Agent 连干三小时，你最多会亏掉多少？',
+	build: '写好的代码，怎么变成线上能跑的东西？',
+	'ci-cd': '每次发布五道工序，漏一步就出事，怎么办？',
+	serverless: '一个小工具要上线，服务器谁来操心？',
+	'edge-runtime': '同一个网站，东京用户为什么慢出两秒？',
+	observability: '凌晨两点支付挂了，你什么时候能知道？',
 	'ai-agent': 'AI 工具怎样把目标变成结果？',
-	'data-storage': '一条数据怎样被保存和取回？',
-	'engineering-workflow': '一次改动怎样安全进入主线？',
-	'deployment-runtime': '代码怎样一步步变成线上服务？',
+	'data-storage': '一杯拿铁的订单，怎样被存进去、又取回来？',
+	'engineering-workflow': 'AI 修了一个登录 bug，这笔改动怎样安全进入主线？',
+	'deployment-runtime': '一个作品集网站，怎样从你的电脑走到线上？',
 };
 
 const stageNames: Record<string, string[]> = {
@@ -123,6 +183,24 @@ const stageNames: Record<string, string[]> = {
 	mcp: ['封装', '连接', '发现', '调用'],
 	skill: ['沉淀', '打包', '触发', '复用'],
 	rag: ['提问', '检索', '组装', '作答'],
+	database: ['写入', '落盘', '查询', '更新'],
+	schema: ['定义', '写入', '校验', '使用'],
+	migration: ['变化', '成稿', '执行', '回退'],
+	cache: ['请求', '查缓存', '回源', '命中'],
+	'vector-database': ['嵌入', '入库', '提问', '匹配'],
+	git: ['看管', '存档', '对比', '回退'],
+	diff: ['修改', '对比', '标记', '审查'],
+	commit: ['挑选', '说明', '入册', '回溯'],
+	branch: ['开出', '修改', '验证', '汇入'],
+	worktree: ['开辟', '分工', '并行', '收拢'],
+	fork: ['复刻', '修改', '同步', '回馈'],
+	'pull-request': ['发起', '检查', '评审', '合入'],
+	checkpoint: ['稳定', '固定', '推进', '回退'],
+	build: ['备料', '转换', '打包', '产出'],
+	'ci-cd': ['触发', '测试', '构建', '部署'],
+	serverless: ['编写', '托管', '伸缩', '计费'],
+	'edge-runtime': ['分发', '接入', '执行', '响应'],
+	observability: ['记录', '度量', '报警', '追查'],
 	'ai-agent': ['目标', '上下文', '工具', '验证'],
 	'data-storage': ['定义', '写入', '查询', '返回'],
 	'engineering-workflow': ['编辑', '差异', '测试', '提交'],
@@ -828,6 +906,1784 @@ const labels =
 											<span>单日上限 800 元（手册 3.2）</span>
 											<small>答案可核对，资料更新后回答跟着更新</small>
 										</div>
+									</div>
+								) : null}
+
+								{isDbLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="db" data-choice-db="mem">
+										<div class="concept-props-choices" role="group" aria-label="选择数据存在哪里">
+											<button
+												type="button"
+												data-flow-choice="mem"
+												data-flow-choice-group="db"
+												aria-pressed="true"
+											>
+												存在内存
+											</button>
+											<button
+												type="button"
+												data-flow-choice="db"
+												data-flow-choice-group="db"
+												aria-pressed="false"
+											>
+												存进数据库
+											</button>
+										</div>
+										<div class="db-when-mem concept-component-def">
+											<small>新用户注册</small>
+											<p>
+												<code>写法</code>
+												<span>users.push(amy)</span>
+											</p>
+											<p>
+												<code>去向</code>
+												<span>进程里的一个数组</span>
+											</p>
+										</div>
+										<div class="db-when-db concept-component-def">
+											<small>新用户注册</small>
+											<p>
+												<code>写法</code>
+												<span>INSERT INTO users …</span>
+											</p>
+											<p>
+												<code>去向</code>
+												<span>交给数据库保存</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isDbLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="db" data-choice-db="mem">
+										<div class="db-when-mem concept-bk-skip">
+											这一步不存在——
+											<br />
+											数据只活在进程的内存里
+										</div>
+										<div class="db-when-db concept-js-preview">
+											<p>记录写入磁盘</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>断电重启也不丢</p>
+										</div>
+									</div>
+								) : null}
+
+								{isDbLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="db" data-choice-db="mem">
+										<div class="db-when-mem concept-js-preview">
+											<p>半夜服务器重启过一次</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>users = [] · amy 已经不在了</p>
+										</div>
+										<div class="db-when-db concept-component-def">
+											<small>按条件查询</small>
+											<p>
+												<code>条件</code>
+												<span>email = amy@x.com</span>
+											</p>
+											<p>
+												<code>结果</code>
+												<span>✓ 命中 1 条</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isDbLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="db" data-choice-db="mem">
+										<div class="db-when-mem concept-bk-resp is-400">
+											<b>数据丢了</b>
+											<span>重启一次，注册用户全没了</span>
+											<small>内存是临时的，不是存储</small>
+										</div>
+										<div class="db-when-db concept-bk-resp is-200">
+											<b>一直都在</b>
+											<span>改昵称、查订单，都基于同一条记录</span>
+											<small>持久保存，才支撑得起真实业务</small>
+										</div>
+									</div>
+								) : null}
+
+								{isSchemaLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sc" data-choice-sc="loose">
+										<div class="concept-props-choices" role="group" aria-label="选择存数据的方式">
+											<button
+												type="button"
+												data-flow-choice="loose"
+												data-flow-choice-group="sc"
+												aria-pressed="true"
+											>
+												想到啥存啥
+											</button>
+											<button
+												type="button"
+												data-flow-choice="schema"
+												data-flow-choice-group="sc"
+												aria-pressed="false"
+											>
+												先定结构
+											</button>
+										</div>
+										<div class="sc-when-loose concept-bk-skip">
+											这一步不存在——
+											<br />
+											没有约定，什么都塞得进去
+										</div>
+										<div class="sc-when-schema concept-component-def">
+											<small>users 表的 schema</small>
+											<p>
+												<code>email</code>
+												<span>文本 · 必填 · 唯一</span>
+											</p>
+											<p>
+												<code>age</code>
+												<span>数字 · 可选</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isSchemaLab && index === 1 ? (
+									<div class="concept-component-def">
+										<small>注册表单递来一条</small>
+										<p>
+											<code>email</code>
+											<span>（用户漏填了）</span>
+										</p>
+										<p>
+											<code>age</code>
+											<span>"25 岁" · 手滑打成文字</span>
+										</p>
+									</div>
+								) : null}
+
+								{isSchemaLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sc" data-choice-sc="loose">
+										<div class="sc-when-loose concept-js-preview">
+											<p>没有校验这道关</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>"25 岁"、空邮箱，原样进了库</p>
+										</div>
+										<div class="sc-when-schema concept-js-preview">
+											<p>age 要数字、email 必填 → 都不合规</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>✗ 当场退回表单，请用户改正</p>
+										</div>
+									</div>
+								) : null}
+
+								{isSchemaLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sc" data-choice-sc="loose">
+										<div class="sc-when-loose concept-bk-resp is-400">
+											<b>用的时候炸</b>
+											<span>平均年龄 NaN，群发邮件半路失败</span>
+											<small>脏数据的账，总在读取时来算</small>
+										</div>
+										<div class="sc-when-schema concept-bk-resp is-200">
+											<b>闭眼可用</b>
+											<span>每条数据形状一致，统计一次算对</span>
+											<small>写入时把关，换来读取时省心</small>
+										</div>
+									</div>
+								) : null}
+
+								{isMigrationLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>新需求</small>
+										<p>
+											<code>功能</code>
+											<span>支持手机号登录</span>
+										</p>
+										<p>
+											<code>前提</code>
+											<span>users 表加 phone 列</span>
+										</p>
+									</div>
+								) : null}
+
+								{isMigrationLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mg" data-choice-mg="hand">
+										<div class="concept-props-choices" role="group" aria-label="选择改结构的方式">
+											<button
+												type="button"
+												data-flow-choice="hand"
+												data-flow-choice-group="mg"
+												aria-pressed="true"
+											>
+												直接上库改
+											</button>
+											<button
+												type="button"
+												data-flow-choice="script"
+												data-flow-choice-group="mg"
+												aria-pressed="false"
+											>
+												写成迁移
+											</button>
+										</div>
+										<div class="mg-when-hand concept-js-preview">
+											<p>打开数据库控制台，手动 ALTER TABLE</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>敲完就完了，没留任何记录</p>
+										</div>
+										<div class="mg-when-script concept-component-def">
+											<small>003_add_phone.sql</small>
+											<p>
+												<code>up</code>
+												<span>给 users 加 phone 列</span>
+											</p>
+											<p>
+												<code>down</code>
+												<span>删掉 phone 列（回退用）</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isMigrationLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mg" data-choice-mg="hand">
+										<div class="mg-when-hand concept-js-preview">
+											<p>只有你连的那个库变了</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>本地 ✓ · 测试 ✗ · 同事本地 ✗</p>
+										</div>
+										<div class="mg-when-script concept-component-def">
+											<small>部署时按编号执行</small>
+											<p>
+												<code>测试环境</code>
+												<span>✓ 已跑到 003</span>
+											</p>
+											<p>
+												<code>生产环境</code>
+												<span>✓ 已跑到 003</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isMigrationLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="mg" data-choice-mg="hand">
+										<div class="mg-when-hand concept-bk-resp is-400">
+											<b>事故现场</b>
+											<span>线上没这列，接口 500；想回退，全凭回忆</span>
+											<small>改了什么、在哪改的，只有你知道</small>
+										</div>
+										<div class="mg-when-script concept-bk-resp is-200">
+											<b>有备无患</b>
+											<span>出问题按 down 脚本撤销，环境永远对得上</span>
+											<small>结构变化有版本，才敢放心改</small>
+										</div>
+									</div>
+								) : null}
+
+								{isCacheLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>高频请求</small>
+										<p>
+											<code>接口</code>
+											<span>热门文章榜</span>
+										</p>
+										<p>
+											<code>特点</code>
+											<span>读得多 · 变得少</span>
+										</p>
+									</div>
+								) : null}
+
+								{isCacheLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ca" data-choice-ca="none">
+										<div class="concept-props-choices" role="group" aria-label="选择是否使用缓存">
+											<button
+												type="button"
+												data-flow-choice="none"
+												data-flow-choice-group="ca"
+												aria-pressed="true"
+											>
+												不加缓存
+											</button>
+											<button
+												type="button"
+												data-flow-choice="cache"
+												data-flow-choice-group="ca"
+												aria-pressed="false"
+											>
+												加上缓存
+											</button>
+										</div>
+										<div class="ca-when-none concept-bk-skip">
+											这一步不存在——
+											<br />
+											每个请求都直奔数据库
+										</div>
+										<div class="ca-when-cache concept-js-preview">
+											<p>先问缓存：hot-articles 有吗？</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>第一次没有（MISS），去数据库算</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCacheLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ca" data-choice-ca="none">
+										<div class="ca-when-none concept-js-preview">
+											<p>一万次请求 = 一万次大查询</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>每次 800ms，数据库越来越喘</p>
+										</div>
+										<div class="ca-when-cache concept-component-def">
+											<small>算完顺手存一份</small>
+											<p>
+												<code>key</code>
+												<span>hot-articles</span>
+											</p>
+											<p>
+												<code>有效期</code>
+												<span>5 分钟</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCacheLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ca" data-choice-ca="none">
+										<div class="ca-when-none concept-bk-resp is-400">
+											<b>全员现算</b>
+											<span>高峰期一到，数据库先被拖垮</span>
+											<small>重复的问题，答了一万遍</small>
+										</div>
+										<div class="ca-when-cache concept-bk-resp is-200">
+											<b>直接命中</b>
+											<span>之后的请求 5ms 返回，库只算了一次</span>
+											<small>有效期内，一次劳动万次复用</small>
+										</div>
+									</div>
+								) : null}
+
+								{isVectorLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vd" data-choice-vd="kw">
+										<div class="concept-props-choices" role="group" aria-label="选择检索方式">
+											<button
+												type="button"
+												data-flow-choice="kw"
+												data-flow-choice-group="vd"
+												aria-pressed="true"
+											>
+												关键词搜索
+											</button>
+											<button
+												type="button"
+												data-flow-choice="vec"
+												data-flow-choice-group="vd"
+												aria-pressed="false"
+											>
+												向量检索
+											</button>
+										</div>
+										<div class="vd-when-kw concept-bk-skip">
+											这一步不存在——
+											<br />
+											文档按原文存，等着被逐字匹配
+										</div>
+										<div class="vd-when-vec concept-js-preview">
+											<p>《幼猫喂养指南》→ 嵌入模型</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>[0.82, -0.15, …] · 语义变成坐标</p>
+										</div>
+									</div>
+								) : null}
+
+								{isVectorLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vd" data-choice-vd="kw">
+										<div class="vd-when-kw concept-component-def">
+											<small>词 → 文档对照表</small>
+											<p>
+												<code>「幼猫」</code>
+												<span>指向这篇指南</span>
+											</p>
+											<p>
+												<code>「喂养」</code>
+												<span>指向这篇指南</span>
+											</p>
+										</div>
+										<div class="vd-when-vec concept-component-def">
+											<small>向量库里</small>
+											<p>
+												<code>指南</code>
+												<span>安放在坐标 A</span>
+											</p>
+											<p>
+												<code>相近内容</code>
+												<span>就住在它附近</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isVectorLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vd" data-choice-vd="kw">
+										<div class="vd-when-kw concept-js-preview">
+											<p>搜「小猫吃什么」→ 拆词：小猫 / 吃 / 什么</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>去找含这些字的文档</p>
+										</div>
+										<div class="vd-when-vec concept-js-preview">
+											<p>「小猫吃什么」→ 同一个模型转向量</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>落在地图上，看看谁住得近</p>
+										</div>
+									</div>
+								) : null}
+
+								{isVectorLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="vd" data-choice-vd="kw">
+										<div class="vd-when-kw concept-bk-resp is-400">
+											<b>0 结果</b>
+											<span>文档里没有「小猫」俩字，擦肩而过</span>
+											<small>字面不同，就当不存在</small>
+										</div>
+										<div class="vd-when-vec concept-bk-resp is-200">
+											<b>命中</b>
+											<span>幼猫喂养指南 · 相似度 0.92</span>
+											<small>意思相近，坐标就近</small>
+										</div>
+									</div>
+								) : null}
+
+								{isDataLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>orders 表 · 先定形状</small>
+										<p>
+											<code>商品</code>
+											<span>文本 · 必填</span>
+										</p>
+										<p>
+											<code>数量</code>
+											<span>数字 · 至少 1</span>
+										</p>
+										<p>
+											<code>用户</code>
+											<span>关联 users 表</span>
+										</p>
+									</div>
+								) : null}
+
+								{isDataLab && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>amy 下单：拿铁 × 1</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>校验通过 · 落盘为订单 #1024</p>
+									</div>
+								) : null}
+
+								{isDataLab && index === 2 ? (
+									<div class="concept-component-def">
+										<small>amy 打开「我的订单」</small>
+										<p>
+											<code>条件</code>
+											<span>user = amy</span>
+										</p>
+										<p>
+											<code>结果</code>
+											<span>✓ 命中 #1024</span>
+										</p>
+									</div>
+								) : null}
+
+								{isDataLab && index === 3 ? (
+									<div class="concept-bk-resp is-200">
+										<b>取回成功</b>
+										<span>订单页显示：拿铁 × 1 · 配送中</span>
+										<small>换台设备登录，看到的还是这一单</small>
+									</div>
+								) : null}
+
+								{isGitLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="gt" data-choice-gt="none">
+										<div
+											class="concept-props-choices"
+											role="group"
+											aria-label="选择是否使用版本控制"
+										>
+											<button
+												type="button"
+												data-flow-choice="none"
+												data-flow-choice-group="gt"
+												aria-pressed="true"
+											>
+												裸奔开干
+											</button>
+											<button
+												type="button"
+												data-flow-choice="git"
+												data-flow-choice-group="gt"
+												aria-pressed="false"
+											>
+												先交给 Git
+											</button>
+										</div>
+										<div class="gt-when-none concept-bk-skip">
+											这一步不存在——
+											<br />
+											项目没人看管，改了就是改了
+										</div>
+										<div class="gt-when-git concept-js-preview">
+											<p>git init · 存下第一个版本</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>从此每个变化都有案可查</p>
+										</div>
+									</div>
+								) : null}
+
+								{isGitLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="gt" data-choice-gt="none">
+										<div class="gt-when-none concept-bk-skip">
+											没有存档——
+											<br />
+											只有编辑器里「当前的样子」
+										</div>
+										<div class="gt-when-git concept-component-def">
+											<small>存一个节点</small>
+											<p>
+												<code>说明</code>
+												<span>「登录功能完成」</span>
+											</p>
+											<p>
+												<code>内容</code>
+												<span>此刻全部代码的快照</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isGitLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="gt" data-choice-gt="none">
+										<div class="gt-when-none concept-js-preview">
+											<p>今天页面突然坏了</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>改过哪里？全靠回忆</p>
+										</div>
+										<div class="gt-when-git concept-component-def">
+											<small>和昨天的节点对比</small>
+											<p>
+												<code>login.js</code>
+												<span>改了 3 行</span>
+											</p>
+											<p>
+												<code>utils.js</code>
+												<span>删了 1 个函数</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isGitLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="gt" data-choice-gt="none">
+										<div class="gt-when-none concept-bk-resp is-400">
+											<b>回不去了</b>
+											<span>AI 改乱的 30 个文件，只能手动一点点撤</span>
+											<small>没有历史，就没有退路</small>
+										</div>
+										<div class="gt-when-git concept-bk-resp is-200">
+											<b>读档成功</b>
+											<span>一条命令回到「登录功能完成」</span>
+											<small>有存档，才敢放手让 AI 改</small>
+										</div>
+									</div>
+								) : null}
+
+								{isDiffLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>你对 AI 说</small>
+										<p>
+											<code>需求</code>
+											<span>「只把按钮改成蓝色」</span>
+										</p>
+										<p>
+											<code>AI</code>
+											<span>「已完成 ✓」</span>
+										</p>
+									</div>
+								) : null}
+
+								{isDiffLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="df" data-choice-df="trust">
+										<div class="concept-props-choices" role="group" aria-label="选择如何核对改动">
+											<button
+												type="button"
+												data-flow-choice="trust"
+												data-flow-choice-group="df"
+												aria-pressed="true"
+											>
+												信它的汇报
+											</button>
+											<button
+												type="button"
+												data-flow-choice="check"
+												data-flow-choice-group="df"
+												aria-pressed="false"
+											>
+												打开 Diff
+											</button>
+										</div>
+										<div class="df-when-trust concept-bk-skip">
+											这一步被跳过——
+											<br />
+											「看起来能用就行」
+										</div>
+										<div class="df-when-check concept-js-preview">
+											<p>新旧版本逐行对比</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>发现有两个文件被改动</p>
+										</div>
+									</div>
+								) : null}
+
+								{isDiffLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="df" data-choice-df="trust">
+										<div class="df-when-trust concept-js-preview">
+											<p>页面上按钮确实蓝了</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>其他改动？没人知道</p>
+										</div>
+										<div class="df-when-check concept-component-def">
+											<small>改动清单</small>
+											<p>
+												<code>button.css</code>
+												<span>+2 行 · 预期内</span>
+											</p>
+											<p>
+												<code>login.js</code>
+												<span>−5 行 · 没让它动！</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isDiffLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="df" data-choice-df="trust">
+										<div class="df-when-trust concept-bk-resp is-400">
+											<b>三天后爆雷</b>
+											<span>用户反馈登录失效，排查半天才想起这次修改</span>
+											<small>没审的改动，迟早找上门</small>
+										</div>
+										<div class="df-when-check concept-bk-resp is-200">
+											<b>当场拦下</b>
+											<span>让 AI 恢复 login.js，只保留按钮改动</span>
+											<small>Diff 在手，AI 干了什么心里有数</small>
+										</div>
+									</div>
+								) : null}
+
+								{isCommitLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cm" data-choice-cm="lump">
+										<div class="concept-props-choices" role="group" aria-label="选择提交方式">
+											<button
+												type="button"
+												data-flow-choice="lump"
+												data-flow-choice-group="cm"
+												aria-pressed="true"
+											>
+												攒一大包
+											</button>
+											<button
+												type="button"
+												data-flow-choice="small"
+												data-flow-choice-group="cm"
+												aria-pressed="false"
+											>
+												按任务拆开
+											</button>
+										</div>
+										<div class="cm-when-lump concept-component-def">
+											<small>一天攒到晚上全提</small>
+											<p>
+												<code>范围</code>
+												<span>20 个文件</span>
+											</p>
+											<p>
+												<code>内容</code>
+												<span>登录 + 支付 + 样式混在一起</span>
+											</p>
+										</div>
+										<div class="cm-when-small concept-component-def">
+											<small>只挑这一步相关的</small>
+											<p>
+												<code>范围</code>
+												<span>3 个文件</span>
+											</p>
+											<p>
+												<code>内容</code>
+												<span>只有登录相关</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCommitLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cm" data-choice-cm="lump">
+										<div class="cm-when-lump concept-js-preview">
+											<p>说明：「更新」</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>改了什么？说明里看不出来</p>
+										</div>
+										<div class="cm-when-small concept-js-preview">
+											<p>说明：「修复登录超时」</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>一句话，讲清一件事</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCommitLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cm" data-choice-cm="lump">
+										<div class="cm-when-lump concept-component-def">
+											<small>历史长这样</small>
+											<p>
+												<code>今天</code>
+												<span>「更新」· 巨大一包</span>
+											</p>
+											<p>
+												<code>前天</code>
+												<span>「更新」· 又一包</span>
+											</p>
+										</div>
+										<div class="cm-when-small concept-component-def">
+											<small>历史长这样</small>
+											<p>
+												<code>#c3d4</code>
+												<span>「修复登录超时」</span>
+											</p>
+											<p>
+												<code>#e5f6</code>
+												<span>「支付页样式微调」</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCommitLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cm" data-choice-cm="lump">
+										<div class="cm-when-lump concept-bk-resp is-400">
+											<b>牵一发动全身</b>
+											<span>想撤支付改动，登录和样式跟着陪葬</span>
+											<small>混装的历史，退无可退</small>
+										</div>
+										<div class="cm-when-small concept-bk-resp is-200">
+											<b>精准回退</b>
+											<span>只撤支付那笔，其他毫发无损</span>
+											<small>一个提交一件事，历史才有用</small>
+										</div>
+									</div>
+								) : null}
+
+								{isBranchLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="br" data-choice-br="main">
+										<div class="concept-props-choices" role="group" aria-label="选择在哪里改">
+											<button
+												type="button"
+												data-flow-choice="main"
+												data-flow-choice-group="br"
+												aria-pressed="true"
+											>
+												直接改主线
+											</button>
+											<button
+												type="button"
+												data-flow-choice="branch"
+												data-flow-choice-group="br"
+												aria-pressed="false"
+											>
+												先开分支
+											</button>
+										</div>
+										<div class="br-when-main concept-bk-skip">
+											这一步不存在——
+											<br />
+											所有修改直接落在主线上
+										</div>
+										<div class="br-when-branch concept-js-preview">
+											<p>开出分支 rewrite-pay</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>主线复制出一条平行路径</p>
+										</div>
+									</div>
+								) : null}
+
+								{isBranchLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="br" data-choice-br="main">
+										<div class="br-when-main concept-component-def">
+											<small>主线上</small>
+											<p>
+												<code>支付模块</code>
+												<span>改到一半 · 跑不起来</span>
+											</p>
+											<p>
+												<code>急 bug</code>
+												<span>偏偏这时来了！</span>
+											</p>
+										</div>
+										<div class="br-when-branch concept-component-def">
+											<small>分支上</small>
+											<p>
+												<code>支付模块</code>
+												<span>放手重构中</span>
+											</p>
+											<p>
+												<code>主线</code>
+												<span>原样 · 随时可用</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isBranchLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="br" data-choice-br="main">
+										<div class="br-when-main concept-js-preview">
+											<p>想先修急 bug</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>主线全是半成品，发不了版</p>
+										</div>
+										<div class="br-when-branch concept-js-preview">
+											<p>急 bug 另开小分支，修好先上线</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>重构分支测试跑绿</p>
+										</div>
+									</div>
+								) : null}
+
+								{isBranchLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="br" data-choice-br="main">
+										<div class="br-when-main concept-bk-resp is-400">
+											<b>进退两难</b>
+											<span>撤掉半天的重构，才能腾出手修 bug</span>
+											<small>主线被半成品绑架了</small>
+										</div>
+										<div class="br-when-branch concept-bk-resp is-200">
+											<b>各自归位</b>
+											<span>急 bug 已上线，重构验证完汇入主线</span>
+											<small>隔离得开，才推进得快</small>
+										</div>
+									</div>
+								) : null}
+
+								{isWorktreeLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="wt" data-choice-wt="one">
+										<div class="concept-props-choices" role="group" aria-label="选择目录怎么用">
+											<button
+												type="button"
+												data-flow-choice="one"
+												data-flow-choice-group="wt"
+												aria-pressed="true"
+											>
+												一个目录来回切
+											</button>
+											<button
+												type="button"
+												data-flow-choice="many"
+												data-flow-choice-group="wt"
+												aria-pressed="false"
+											>
+												多开一个工作树
+											</button>
+										</div>
+										<div class="wt-when-one concept-bk-skip">
+											这一步不存在——
+											<br />
+											所有分支挤在同一个目录里轮流上
+										</div>
+										<div class="wt-when-many concept-js-preview">
+											<p>git worktree add ../fix-login</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>仓库旁多出一个目录，检出 fix-login 分支</p>
+										</div>
+									</div>
+								) : null}
+
+								{isWorktreeLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="wt" data-choice-wt="one">
+										<div class="wt-when-one concept-component-def">
+											<small>同一个目录</small>
+											<p>
+												<code>你</code>
+												<span>重构改到一半</span>
+											</p>
+											<p>
+												<code>Agent</code>
+												<span>也要在这改 · 排队等</span>
+											</p>
+										</div>
+										<div class="wt-when-many concept-component-def">
+											<small>两个目录 · 各站一条分支</small>
+											<p>
+												<code>主目录</code>
+												<span>你 · 继续重构</span>
+											</p>
+											<p>
+												<code>../fix-login</code>
+												<span>Agent · 放手修 bug</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isWorktreeLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="wt" data-choice-wt="one">
+										<div class="wt-when-one concept-js-preview">
+											<p>想让 Agent 先上，得先收拾现场</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>藏起半成品、切分支，它改完再换回来</p>
+										</div>
+										<div class="wt-when-many concept-js-preview">
+											<p>两边同时改、同时跑测试</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>文件互不可见，提交都进同一份历史</p>
+										</div>
+									</div>
+								) : null}
+
+								{isWorktreeLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="wt" data-choice-wt="one">
+										<div class="wt-when-one concept-bk-resp is-400">
+											<b>并行变串行</b>
+											<span>两个任务轮流占用一个目录，切来切去</span>
+											<small>藏起来的半成品，总有一次忘了取回</small>
+										</div>
+										<div class="wt-when-many concept-bk-resp is-200">
+											<b>合并后一删就净</b>
+											<span>fix-login 合回主线，工作树目录移除</span>
+											<small>历史都在仓库里，目录只是工位</small>
+										</div>
+									</div>
+								) : null}
+
+								{isForkLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
+										<div class="concept-props-choices" role="group" aria-label="选择怎么改别人的仓库">
+											<button
+												type="button"
+												data-flow-choice="direct"
+												data-flow-choice-group="fk"
+												aria-pressed="true"
+											>
+												直接改原仓库
+											</button>
+											<button
+												type="button"
+												data-flow-choice="fork"
+												data-flow-choice-group="fk"
+												aria-pressed="false"
+											>
+												先 Fork 一份
+											</button>
+										</div>
+										<div class="fk-when-direct concept-bk-skip">
+											这一步不存在——
+											<br />
+											push 被拒绝：你没有原仓库的写权限
+										</div>
+										<div class="fk-when-fork concept-js-preview">
+											<p>点下 Fork</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>整个仓库连同历史，复制到你的账号下</p>
+										</div>
+									</div>
+								) : null}
+
+								{isForkLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
+										<div class="fk-when-direct concept-component-def">
+											<small>原仓库 · 别人的地盘</small>
+											<p>
+												<code>修复</code>
+												<span>只能提 issue 描述 bug</span>
+											</p>
+											<p>
+												<code>你</code>
+												<span>等作者有空 · 遥遥无期</span>
+											</p>
+										</div>
+										<div class="fk-when-fork concept-component-def">
+											<small>你的副本 · 你做主</small>
+											<p>
+												<code>fix-date</code>
+												<span>开分支放手改，不用问任何人</span>
+											</p>
+											<p>
+												<code>原仓库</code>
+												<span>毫不知情 · 不受影响</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isForkLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
+										<div class="fk-when-direct concept-js-preview">
+											<p>几周过去</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>bug 还在，每次用都得绕着走</p>
+										</div>
+										<div class="fk-when-fork concept-js-preview">
+											<p>上游又前进了 20 个提交</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>同步进你的副本，改动不掉队</p>
+										</div>
+									</div>
+								) : null}
+
+								{isForkLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
+										<div class="fk-when-direct concept-bk-resp is-400">
+											<b>只能干等</b>
+											<span>修复看不到日期，热情使不上劲</span>
+											<small>没有权限，想帮忙也没有入口</small>
+										</div>
+										<div class="fk-when-fork concept-bk-resp is-200">
+											<b>改进回到上游</b>
+											<span>向原仓库发起 PR，评审通过后合入</span>
+											<small>下个版本，所有人都用上你的修复</small>
+										</div>
+									</div>
+								) : null}
+
+								{isPrLab && index === 0 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="pu"
+										data-choice-pu="direct"
+									>
+										<div class="concept-props-choices" role="group" aria-label="选择如何合入主线">
+											<button
+												type="button"
+												data-flow-choice="direct"
+												data-flow-choice-group="pu"
+												aria-pressed="true"
+											>
+												直接推主线
+											</button>
+											<button
+												type="button"
+												data-flow-choice="pr"
+												data-flow-choice-group="pu"
+												aria-pressed="false"
+											>
+												先发 PR
+											</button>
+										</div>
+										<div class="pu-when-direct concept-bk-skip">
+											这一步不存在——
+											<br />
+											改完直接 push，没人知道改了什么
+										</div>
+										<div class="pu-when-pr concept-component-def">
+											<small>PR #42</small>
+											<p>
+												<code>标题</code>
+												<span>重构支付模块</span>
+											</p>
+											<p>
+												<code>内容</code>
+												<span>完整 Diff + 改动说明</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isPrLab && index === 1 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="pu"
+										data-choice-pu="direct"
+									>
+										<div class="pu-when-direct concept-js-preview">
+											<p>没有闸门</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>改动已经躺在主线上了</p>
+										</div>
+										<div class="pu-when-pr concept-component-def">
+											<small>自动检查</small>
+											<p>
+												<code>测试</code>
+												<span>✓ 通过</span>
+											</p>
+											<p>
+												<code>构建</code>
+												<span>✓ 通过</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isPrLab && index === 2 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="pu"
+										data-choice-pu="direct"
+									>
+										<div class="pu-when-direct concept-js-preview">
+											<p>第一个「评审」是线上用户</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>老账户的余额显示成了 0</p>
+										</div>
+										<div class="pu-when-pr concept-component-def">
+											<small>同事的评论</small>
+											<p>
+												<code>第 87 行</code>
+												<span>「老账户没这个字段吧？」</span>
+											</p>
+											<p>
+												<code>你</code>
+												<span>补上兼容逻辑 ✓</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isPrLab && index === 3 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="pu"
+										data-choice-pu="direct"
+									>
+										<div class="pu-when-direct concept-bk-resp is-400">
+											<b>半夜回滚</b>
+											<span>事故报告加熬夜修复，代价最大化</span>
+											<small>问题总会被发现，差别在时机和代价</small>
+										</div>
+										<div class="pu-when-pr concept-bk-resp is-200">
+											<b>干净合入</b>
+											<span>兼容问题在评审里就解决了</span>
+											<small>多等一晚，省一场事故</small>
+										</div>
+									</div>
+								) : null}
+
+								{isCheckpointLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>此刻的状态</small>
+										<p>
+											<code>功能</code>
+											<span>登录已可用</span>
+										</p>
+										<p>
+											<code>测试</code>
+											<span>✓ 全绿</span>
+										</p>
+									</div>
+								) : null}
+
+								{isCheckpointLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cp" data-choice-cp="none">
+										<div class="concept-props-choices" role="group" aria-label="选择是否打检查点">
+											<button
+												type="button"
+												data-flow-choice="none"
+												data-flow-choice-group="cp"
+												aria-pressed="true"
+											>
+												不存 · 继续冲
+											</button>
+											<button
+												type="button"
+												data-flow-choice="point"
+												data-flow-choice-group="cp"
+												aria-pressed="false"
+											>
+												打个检查点
+											</button>
+										</div>
+										<div class="cp-when-none concept-bk-skip">
+											这一步被跳过——
+											<br />
+											「等全做完再说」
+										</div>
+										<div class="cp-when-point concept-js-preview">
+											<p>提交「登录完成」</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>这个状态被钉住了</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCheckpointLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cp" data-choice-cp="none">
+										<div class="cp-when-none concept-component-def">
+											<small>Agent 继续干</small>
+											<p>
+												<code>第 2 小时</code>
+												<span>又改了 40 个文件</span>
+											</p>
+											<p>
+												<code>第 3 小时</code>
+												<span>项目跑不起来了</span>
+											</p>
+										</div>
+										<div class="cp-when-point concept-component-def">
+											<small>Agent 继续干</small>
+											<p>
+												<code>每完成一步</code>
+												<span>又打一个点</span>
+											</p>
+											<p>
+												<code>跑不起来时</code>
+												<span>也不慌</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCheckpointLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="cp" data-choice-cp="none">
+										<div class="cp-when-none concept-bk-resp is-400">
+											<b>摔回山脚</b>
+											<span>只能回到 3 小时前，一下午白干</span>
+											<small>没有锚点，摔就摔到底</small>
+										</div>
+										<div class="cp-when-point concept-bk-resp is-200">
+											<b>退一小步</b>
+											<span>回到 10 分钟前的检查点，重来一轮</span>
+											<small>检查点的密度，决定你最多亏多少</small>
+										</div>
+									</div>
+								) : null}
+
+								{isEngLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>AI 的修改</small>
+										<p>
+											<code>文件</code>
+											<span>login.js</span>
+										</p>
+										<p>
+											<code>内容</code>
+											<span>超时从 5s 改到 30s</span>
+										</p>
+									</div>
+								) : null}
+
+								{isEngLab && index === 1 ? (
+									<div class="concept-component-def">
+										<small>打开 Diff 核对</small>
+										<p>
+											<code>login.js</code>
+											<span>+2 −1 · 都和本次相关</span>
+										</p>
+										<p>
+											<code>其他文件</code>
+											<span>✓ 没被乱动</span>
+										</p>
+									</div>
+								) : null}
+
+								{isEngLab && index === 2 ? (
+									<div class="concept-js-preview">
+										<p>npm test</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>登录用例全绿 · 老功能没回归</p>
+									</div>
+								) : null}
+
+								{isEngLab && index === 3 ? (
+									<div class="concept-bk-resp is-200">
+										<b>安全入册</b>
+										<span>提交「修复登录超时」，历史多了个可回退的节点</span>
+										<small>看过、测过、记录在案，这才算改完</small>
+									</div>
+								) : null}
+
+								{isBuildLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>这次要上线的</small>
+										<p>
+											<code>源码</code>
+											<span>改了 5 个文件</span>
+										</p>
+										<p>
+											<code>新依赖</code>
+											<span>装了一个图表库</span>
+										</p>
+									</div>
+								) : null}
+
+								{isBuildLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="bd" data-choice-bd="rush">
+										<div class="concept-props-choices" role="group" aria-label="选择是否先构建">
+											<button
+												type="button"
+												data-flow-choice="rush"
+												data-flow-choice-group="bd"
+												aria-pressed="true"
+											>
+												直接推上线
+											</button>
+											<button
+												type="button"
+												data-flow-choice="build"
+												data-flow-choice-group="bd"
+												aria-pressed="false"
+											>
+												先本地构建
+											</button>
+										</div>
+										<div class="bd-when-rush concept-js-preview">
+											<p>跳过本地构建</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>问题被原样带向线上</p>
+										</div>
+										<div class="bd-when-build concept-js-preview">
+											<p>构建报错：图表库没进依赖清单</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>✓ 上线前就被拦下</p>
+										</div>
+									</div>
+								) : null}
+
+								{isBuildLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="bd" data-choice-bd="rush">
+										<div class="bd-when-rush concept-js-preview">
+											<p>线上构建到一半失败</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>部署中断 · 网站还是旧版</p>
+										</div>
+										<div class="bd-when-build concept-component-def">
+											<small>修好后重新构建</small>
+											<p>
+												<code>产物</code>
+												<span>dist/ · 3 个文件</span>
+											</p>
+											<p>
+												<code>体积</code>
+												<span>压缩后只剩零头</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isBuildLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="bd" data-choice-bd="rush">
+										<div class="bd-when-rush concept-bk-resp is-400">
+											<b>发布推迟</b>
+											<span>半夜排查依赖问题，新版没上去</span>
+											<small>构建这关迟早要过，别留到最后</small>
+										</div>
+										<div class="bd-when-build concept-bk-resp is-200">
+											<b>产物就绪</b>
+											<span>dist/ 可以直接部署，错误早已修完</span>
+											<small>本地先过构建关，上线才顺</small>
+										</div>
+									</div>
+								) : null}
+
+								{isCiLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>改动合入主线</small>
+										<p>
+											<code>提交</code>
+											<span>「新增导出功能」</span>
+										</p>
+										<p>
+											<code>接下来</code>
+											<span>把它发上线</span>
+										</p>
+									</div>
+								) : null}
+
+								{isCiLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ci" data-choice-ci="hand">
+										<div class="concept-props-choices" role="group" aria-label="选择发布方式">
+											<button
+												type="button"
+												data-flow-choice="hand"
+												data-flow-choice-group="ci"
+												aria-pressed="true"
+											>
+												人肉走流程
+											</button>
+											<button
+												type="button"
+												data-flow-choice="auto"
+												data-flow-choice-group="ci"
+												aria-pressed="false"
+											>
+												交给流水线
+											</button>
+										</div>
+										<div class="ci-when-hand concept-js-preview">
+											<p>「小改动，测试就不跑了吧」</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>一个老功能被悄悄改坏</p>
+										</div>
+										<div class="ci-when-auto concept-js-preview">
+											<p>全量测试自动跑</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>214 个用例 · 全绿才放行</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCiLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ci" data-choice-ci="hand">
+										<div class="ci-when-hand concept-component-def">
+											<small>在自己电脑上打包</small>
+											<p>
+												<code>环境</code>
+												<span>装过一堆全局依赖</span>
+											</p>
+											<p>
+												<code>产物</code>
+												<span>「在我电脑上是好的」</span>
+											</p>
+										</div>
+										<div class="ci-when-auto concept-component-def">
+											<small>干净环境从头构建</small>
+											<p>
+												<code>环境</code>
+												<span>每次全新</span>
+											</p>
+											<p>
+												<code>产物</code>
+												<span>跟谁的电脑都无关</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isCiLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ci" data-choice-ci="hand">
+										<div class="ci-when-hand concept-bk-resp is-400">
+											<b>手一抖</b>
+											<span>传错目录，线上挂了半小时</span>
+											<small>五道工序，每道都可能出人祸</small>
+										</div>
+										<div class="ci-when-auto concept-bk-resp is-200">
+											<b>稳定上线</b>
+											<span>和上次一模一样的流程，几分钟完成</span>
+											<small>机器不嫌烦，也不会漏步骤</small>
+										</div>
+									</div>
+								) : null}
+
+								{isServerlessLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>你的小工具</small>
+										<p>
+											<code>功能</code>
+											<span>输入网址生成二维码</span>
+										</p>
+										<p>
+											<code>代码</code>
+											<span>一个处理函数</span>
+										</p>
+									</div>
+								) : null}
+
+								{isServerlessLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sl" data-choice-sl="own">
+										<div class="concept-props-choices" role="group" aria-label="选择托管方式">
+											<button
+												type="button"
+												data-flow-choice="own"
+												data-flow-choice-group="sl"
+												aria-pressed="true"
+											>
+												自建服务器
+											</button>
+											<button
+												type="button"
+												data-flow-choice="less"
+												data-flow-choice-group="sl"
+												aria-pressed="false"
+											>
+												Serverless
+											</button>
+										</div>
+										<div class="sl-when-own concept-component-def">
+											<small>上线前的清单</small>
+											<p>
+												<code>服务器</code>
+												<span>买 · 装系统 · 配环境</span>
+											</p>
+											<p>
+												<code>还有</code>
+												<span>证书 · 防火墙 · 监控…</span>
+											</p>
+										</div>
+										<div class="sl-when-less concept-js-preview">
+											<p>一条命令部署函数</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>平台接管运行环境</p>
+										</div>
+									</div>
+								) : null}
+
+								{isServerlessLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sl" data-choice-sl="own">
+										<div class="sl-when-own concept-js-preview">
+											<p>被论坛转发 · 流量 ×100</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>单台扛不住 · 网站卡死</p>
+										</div>
+										<div class="sl-when-less concept-js-preview">
+											<p>流量 ×100</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>平台自动扩出上百个实例</p>
+										</div>
+									</div>
+								) : null}
+
+								{isServerlessLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="sl" data-choice-sl="own">
+										<div class="sl-when-own concept-bk-resp is-400">
+											<b>两头吃亏</b>
+											<span>平时机器闲着烧钱，爆了又扛不住</span>
+											<small>容量是猜的，怎么猜都不对</small>
+										</div>
+										<div class="sl-when-less concept-bk-resp is-200">
+											<b>按量结算</b>
+											<span>平时几乎免费，爆点那天多花几块钱</span>
+											<small>弹性和运维，都是平台的事</small>
+										</div>
+									</div>
+								) : null}
+
+								{isEdgeLab && index === 0 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="ed"
+										data-choice-ed="center"
+									>
+										<div class="concept-props-choices" role="group" aria-label="选择部署位置">
+											<button
+												type="button"
+												data-flow-choice="center"
+												data-flow-choice-group="ed"
+												aria-pressed="true"
+											>
+												只部署中心机房
+											</button>
+											<button
+												type="button"
+												data-flow-choice="edge"
+												data-flow-choice-group="ed"
+												aria-pressed="false"
+											>
+												部署到边缘
+											</button>
+										</div>
+										<div class="ed-when-center concept-component-def">
+											<small>部署完成</small>
+											<p>
+												<code>位置</code>
+												<span>美国弗吉尼亚 × 1</span>
+											</p>
+											<p>
+												<code>全球用户</code>
+												<span>都得绕到这来</span>
+											</p>
+										</div>
+										<div class="ed-when-edge concept-js-preview">
+											<p>一次部署</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>自动分发到全球 300+ 节点</p>
+										</div>
+									</div>
+								) : null}
+
+								{isEdgeLab && index === 1 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="ed"
+										data-choice-ed="center"
+									>
+										<div class="ed-when-center concept-js-preview">
+											<p>东京用户发起请求</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>跨太平洋 · 往返上万公里</p>
+										</div>
+										<div class="ed-when-edge concept-js-preview">
+											<p>东京用户发起请求</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>接入东京节点 · 就在城里</p>
+										</div>
+									</div>
+								) : null}
+
+								{isEdgeLab && index === 2 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="ed"
+										data-choice-ed="center"
+									>
+										<div class="ed-when-center concept-component-def">
+											<small>在弗吉尼亚执行</small>
+											<p>
+												<code>鉴权</code>
+												<span>一次跨洋往返</span>
+											</p>
+											<p>
+												<code>取页面</code>
+												<span>再一次跨洋往返</span>
+											</p>
+										</div>
+										<div class="ed-when-edge concept-component-def">
+											<small>在东京节点执行</small>
+											<p>
+												<code>鉴权</code>
+												<span>就地完成</span>
+											</p>
+											<p>
+												<code>页面</code>
+												<span>就地返回</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isEdgeLab && index === 3 ? (
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="ed"
+										data-choice-ed="center"
+									>
+										<div class="ed-when-center concept-bk-resp is-400">
+											<b>2.1 秒</b>
+											<span>页面还没出来，用户已经想关了</span>
+											<small>每次往返都在付距离的账</small>
+										</div>
+										<div class="ed-when-edge concept-bk-resp is-200">
+											<b>0.1 秒</b>
+											<span>东京用户像在访问本地网站</span>
+											<small>近了，一切都快了</small>
+										</div>
+									</div>
+								) : null}
+
+								{isObsLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ob" data-choice-ob="dark">
+										<div class="concept-props-choices" role="group" aria-label="选择是否接入观测">
+											<button
+												type="button"
+												data-flow-choice="dark"
+												data-flow-choice-group="ob"
+												aria-pressed="true"
+											>
+												什么都不记
+											</button>
+											<button
+												type="button"
+												data-flow-choice="obs"
+												data-flow-choice-group="ob"
+												aria-pressed="false"
+											>
+												装上观测
+											</button>
+										</div>
+										<div class="ob-when-dark concept-bk-skip">
+											这一步不存在——
+											<br />
+											系统在裸奔，出了事也无痕
+										</div>
+										<div class="ob-when-obs concept-component-def">
+											<small>每个请求留痕</small>
+											<p>
+												<code>23:58</code>
+												<span>下单 ✓ 200</span>
+											</p>
+											<p>
+												<code>02:03</code>
+												<span>支付 ✗ 超时</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isObsLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ob" data-choice-ob="dark">
+										<div class="ob-when-dark concept-js-preview">
+											<p>系统健康吗？</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>不知道，只能「感觉还行」</p>
+										</div>
+										<div class="ob-when-obs concept-component-def">
+											<small>仪表盘</small>
+											<p>
+												<code>错误率</code>
+												<span>0.1% → 46%！</span>
+											</p>
+											<p>
+												<code>响应</code>
+												<span>200ms → 8s</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isObsLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ob" data-choice-ob="dark">
+										<div class="ob-when-dark concept-js-preview">
+											<p>凌晨 2 点支付挂了</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>没有任何人知道</p>
+										</div>
+										<div class="ob-when-obs concept-js-preview">
+											<p>错误率超过阈值</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p>02:05 报警电话叫醒你</p>
+										</div>
+									</div>
+								) : null}
+
+								{isObsLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="ob" data-choice-ob="dark">
+										<div class="ob-when-dark concept-bk-resp is-400">
+											<b>一夜事故</b>
+											<span>早上被投诉淹没，没日志只能瞎猜</span>
+											<small>不是没出事，是出了你不知道</small>
+										</div>
+										<div class="ob-when-obs concept-bk-resp is-200">
+											<b>半小时止血</b>
+											<span>日志直指支付网关超时，回滚搞定</span>
+											<small>报警比用户早，事故就小十倍</small>
+										</div>
+									</div>
+								) : null}
+
+								{isDeployLab && index === 0 ? (
+									<div class="concept-component-def">
+										<small>准备就绪</small>
+										<p>
+											<code>代码</code>
+											<span>作品集网站 · 最新版本</span>
+										</p>
+										<p>
+											<code>配置</code>
+											<span>环境变量已备好</span>
+										</p>
+									</div>
+								) : null}
+
+								{isDeployLab && index === 1 ? (
+									<div class="concept-js-preview">
+										<p>npm run build</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>测试通过 · 产出 dist/</p>
+									</div>
+								) : null}
+
+								{isDeployLab && index === 2 ? (
+									<div class="concept-js-preview">
+										<p>产物推到云平台</p>
+										<i class="ph ph-arrow-down" aria-hidden="true" />
+										<p>新版本开始接收真实请求</p>
+									</div>
+								) : null}
+
+								{isDeployLab && index === 3 ? (
+									<div class="concept-bk-resp is-200">
+										<b>确认上线</b>
+										<span>真实 URL 打得开，日志没有报错</span>
+										<small>看到运行证据，发布才算完成</small>
 									</div>
 								) : null}
 

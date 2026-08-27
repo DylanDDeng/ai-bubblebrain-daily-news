@@ -467,13 +467,6 @@ const specializedMarkers = new Map([
     ['id="codex-tutorials-search"', "content-directory--codex-tutorials"],
   ],
   [
-    "deepseek-harness-tutorials/index.html",
-    [
-      'id="deepseek-harness-tutorials-search"',
-      "content-directory--deepseek-harness-tutorials",
-    ],
-  ],
-  [
     "workbuddy-tutorials/index.html",
     [
       'id="workbuddy-tutorials-search"',

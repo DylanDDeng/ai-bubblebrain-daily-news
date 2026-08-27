@@ -308,3 +308,105 @@
 		animation: none;
 	}
 }
+
+/* 「组即页」分页预览器：仅超大分类启用 */
+
+.vibe-pattern-pages {
+	display: grid;
+	gap: 34px;
+}
+
+.vibe-pattern-page {
+	display: block;
+}
+
+.vibe-pattern-page[hidden] {
+	display: none;
+}
+
+.vibe-pager-controls {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px;
+	margin-top: 8px;
+	padding-top: 22px;
+	border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.vibe-pager-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	padding: 9px 16px;
+	border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--ink);
+	font-family: var(--sans);
+	font-size: 0.78rem;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	transition:
+		border-color 0.2s ease,
+		color 0.2s ease,
+		translate 0.2s ease;
+}
+
+.vibe-pager-btn i {
+	font-size: 0.85rem;
+	color: var(--blue-strong);
+}
+
+.vibe-pager-btn:hover:not(:disabled),
+.vibe-pager-btn:focus-visible {
+	border-color: var(--blue-strong);
+	color: var(--blue-strong);
+	translate: 0 -1px;
+}
+
+.vibe-pager-prev:hover:not(:disabled) i {
+	translate: -2px 0;
+}
+
+.vibe-pager-next:hover:not(:disabled) i {
+	translate: 2px 0;
+}
+
+.vibe-pager-btn i {
+	transition: translate 0.2s ease;
+}
+
+.vibe-pager-btn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.vibe-pager-indicator {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 10px;
+	min-width: 0;
+}
+
+.vibe-pager-name {
+	color: var(--blue-strong);
+	font-size: 0.67rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+}
+
+.vibe-pager-count {
+	color: var(--ink-faint);
+	font-size: 0.62rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+}
+
+@media (max-width: 680px) {
+	.vibe-pager-controls {
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+}

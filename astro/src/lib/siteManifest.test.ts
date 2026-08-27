@@ -23,6 +23,24 @@ describe('site feeds', () => {
 		);
 	});
 
+	it('publishes the Vibe Coding design routes', async () => {
+		const records = await loadSiteManifest();
+
+		expect(records).toContainEqual(
+			expect.objectContaining({
+				route: '/vibe-coding/design/',
+				title: 'Design 设计理念库',
+				section: 'vibe-coding',
+			}),
+		);
+		expect(records).toContainEqual(
+			expect.objectContaining({
+				route: '/vibe-coding/design/stripe/',
+				section: 'vibe-coding',
+			}),
+		);
+	});
+
 	it('keeps every dated compatibility record instead of silently truncating the feed', () => {
 		const records: SiteRecord[] = Array.from({ length: 150 }, (_, index) => ({
 			route: `/daily/2026/01/item-${index}/`,

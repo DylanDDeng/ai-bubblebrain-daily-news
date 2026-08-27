@@ -1772,4 +1772,999 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		promptTip: '用它做定位词：「哪个 section 的什么位置」——AI 改页面几乎不会跑偏。',
 		warning: 'Section 越多页面越长，但用户的耐心不会跟着变长。每加一段先问：删了它，页面会缺什么吗？',
 	},
+	table: {
+		question: '到底是什么？和一堆卡片摆在一起有什么区别？',
+		spot: {
+			title: '这个页面里，哪一块是数据表？',
+			intro: '三块都在列东西，但只有一块是「行对行、列对列」地摆。',
+			regions: [
+				{
+					id: 'cards',
+					name: '卡片墙',
+					en: 'Card Grid',
+					correct: false,
+					note: '不是它。一张张独立的小方块，各说各的，没法沿着一列往下比。',
+				},
+				{
+					id: 'table',
+					name: '数据表',
+					en: 'Table',
+					correct: true,
+					note: '就是它！表头定列、每行一条记录，金额对着金额、状态对着状态，一眼能比。',
+				},
+				{
+					id: 'list',
+					name: '列表',
+					en: 'List',
+					correct: false,
+					note: '不是它。一行一条没错，但每行只有一段话，没有可对齐的列。',
+				},
+			],
+		},
+		quiz: {
+			question: '五十个订单，用户要按金额排序、按状态筛选。用什么摆最合适？',
+			options: [
+				{
+					key: 'A',
+					text: '数据表——列对齐了才好比',
+					correct: true,
+					feedback: '对。排序和筛选都是在「同一列」上做文章，只有表格把同类数据摆在了同一列。',
+				},
+				{
+					key: 'B',
+					text: '卡片墙——每单一张，看着好看',
+					correct: false,
+					feedback: '好看是好看，但五十张卡片没法沿着一列比金额，排序也失去了视觉意义。',
+				},
+				{
+					key: 'C',
+					text: '长列表——一行一条往下滚',
+					correct: false,
+					feedback: '列表只有一段文字一行，金额藏在句子里，没法对齐比较，更别说筛选。',
+				},
+			],
+		},
+		anatomyIntro:
+			'表格是最古老的界面零件——账本就是它的祖先。它的本事只有一个：把同类数据按行和列对齐，让眼睛沿着一列扫下去就能比较。拆开看：',
+		parts: [
+			{ name: '表头', en: 'Header', note: '第一行，给每一列起名字，点它通常能排序。' },
+			{ name: '数据行', en: 'Row', note: '一行就是一条记录：一个订单、一个用户。' },
+			{ name: '单元格', en: 'Cell', note: '行列交叉的小格子，数字靠右、文字靠左。' },
+			{ name: '行操作', en: 'Row Actions', note: '行尾的「···」或按钮，对这一条做点什么。' },
+			{ name: '工具条', en: 'Toolbar', note: '表格上方的搜索、筛选、导出，管整张表。' },
+		],
+		variants: [
+			{ title: '基础型', description: '横线分隔，行数少的时候最清爽。', sketch: 'tb-plain' },
+			{ title: '斑马纹', description: '隔行浅灰，行多列宽时眼睛不串行。', sketch: 'tb-striped' },
+			{ title: '带选择列', description: '最左一列复选框，批量操作的前提。', sketch: 'tb-select' },
+		],
+		usage: {
+			fit: ['同类记录成批比较、排序、筛选', '后台管理页的订单、用户、日志', '数字多、要对齐小数点的数据'],
+			unfit: [
+				'每条内容差异很大、有图有长文——用卡片',
+				'手机屏幕上超过四列',
+				'只有三五条、不需要比较的信息',
+			],
+		},
+		prompts: [
+			'订单列表改成数据表，列是订单号、客户、金额、状态',
+			'表头点一下按金额排序，再点一下反过来',
+			'表格每行右边加「查看」和「删除」两个操作',
+			'手机上表格改成横向可滚动，别挤成一团',
+		],
+		promptTip: '把列名一个个说出来，AI 就不会自己发明字段；顺手说清要不要排序和筛选。',
+		warning:
+			'表格不是万能容器。每行长得都不一样的内容硬塞进表格，用户会看得头晕——列越多越要问自己一句「真的需要比较吗」。',
+	},
+	accordion: {
+		question: '到底是什么？和标签页有什么不一样？',
+		spot: {
+			title: '这个页面里，哪一块是折叠面板？',
+			intro: '三块都在「分段」，但只有一块是上下叠着、点标题才展开的。',
+			regions: [
+				{
+					id: 'tabs',
+					name: '标签页',
+					en: 'Tabs',
+					correct: false,
+					note: '不是它。标签横着排一行，一次只能看一个视图——它是「切换」，不是「展开」。',
+				},
+				{
+					id: 'accordion',
+					name: '折叠面板',
+					en: 'Accordion',
+					correct: true,
+					note: '就是它！标题一条条竖着叠，点哪条哪条展开，像手风琴的风箱一样拉开合上。',
+				},
+				{
+					id: 'list',
+					name: '链接列表',
+					en: 'Link List',
+					correct: false,
+					note: '不是它。点一条会跳走，页面上什么都不展开。',
+				},
+			],
+		},
+		quiz: {
+			question: '页面上要放十二条常见问题，每条答案两三句话。怎么摆？',
+			options: [
+				{
+					key: 'A',
+					text: '折叠面板——先看问题，想看再点开',
+					correct: true,
+					feedback: '对。十二个问题一眼扫完，用户只展开自己关心的那条，页面也不会拉得老长。',
+				},
+				{
+					key: 'B',
+					text: '标签页——一个问题一个标签',
+					correct: false,
+					feedback: '十二个标签一行根本排不下，而且标签页适合平级视图，不适合「问题 → 答案」这种结构。',
+				},
+				{
+					key: 'C',
+					text: '全部展开——省得用户多点一下',
+					correct: false,
+					feedback: '十二条问答全铺开，用户找自己那条得滚三屏。折叠的意义就是让目录先出来。',
+				},
+			],
+		},
+		anatomyIntro:
+			'名字来自手风琴：风箱一格一格，拉开哪格哪格出声。它把长内容折成一排标题，用户按标题「点播」——不点，就只占一行。拆开看：',
+		parts: [
+			{ name: '标题行', en: 'Header', note: '可点的那一条，写清里面是什么，整行都能点。' },
+			{ name: '展开图标', en: 'Chevron', note: '右侧的小箭头或加号，转个方向告诉你开没开。' },
+			{ name: '内容区', en: 'Panel', note: '展开后露出来的正文，收起时完全不占地方。' },
+			{ name: '分隔线', en: 'Divider', note: '条与条之间的细线，让一排标题看起来是一组。' },
+		],
+		variants: [
+			{ title: '单开型', description: '打开一条，别的自动收起，页面始终短。', sketch: 'ac-single' },
+			{ title: '多开型', description: '可以同时展开好几条，方便对照着看。', sketch: 'ac-multi' },
+			{ title: '贴合型', description: '去掉边框只留分隔线，嵌在文章里不突兀。', sketch: 'ac-flush' },
+		],
+		usage: {
+			fit: ['FAQ、条款这类「问 → 答」的长内容', '设置页里不常用的高级选项', '手机上节省纵向空间'],
+			unfit: [
+				'用户需要同时对照两段内容——用平铺',
+				'只有一两段，折起来反而多一步',
+				'重要信息——折起来等于藏起来',
+			],
+		},
+		prompts: [
+			'FAQ 改成折叠面板，默认全部收起',
+			'一次只能展开一条，点开新的就把旧的收起',
+			'折叠面板标题右侧加一个会旋转的小箭头',
+			'把「高级设置」折进一个折叠面板里，默认收起',
+		],
+		promptTip: '说清「单开还是多开」和「默认开哪条」——这两件事 AI 最爱替你拍板。',
+		warning:
+			'折叠是在藏东西。用户得先猜里面有什么才会点开——标题写不清，里面的内容就等于不存在。',
+	},
+	button: {
+		question: '到底是什么？一个按钮还能分出主次？',
+		spot: {
+			title: '这个页面里，哪一个是按钮？',
+			intro: '三个都能引起注意，但只有一个是「按下去会发生一件事」。',
+			regions: [
+				{
+					id: 'link',
+					name: '文字链接',
+					en: 'Link',
+					correct: false,
+					note: '不是它。带下划线的蓝字是链接——点它是「去别处」，不是「做件事」。',
+				},
+				{
+					id: 'tag',
+					name: '标签',
+					en: 'Tag',
+					correct: false,
+					note: '不是它。小圆角的「新」是标签，只负责贴个标记，按下去什么都不会发生。',
+				},
+				{
+					id: 'button',
+					name: '按钮',
+					en: 'Button',
+					correct: true,
+					note: '就是它！一个动词加一块实心的形状，按下去就触发一个动作。',
+				},
+			],
+		},
+		quiz: {
+			question: '表单底部有「提交」和「取消」两个按钮，怎么摆最合适？',
+			options: [
+				{
+					key: 'A',
+					text: '提交做实心主按钮，取消做文字按钮',
+					correct: true,
+					feedback: '对。一个页面只留一个最重的按钮，用户一眼知道「主要的那一步」在哪。',
+				},
+				{
+					key: 'B',
+					text: '两个都实心，看起来对称',
+					correct: false,
+					feedback: '两个一样重等于没有重点，用户得先读字才知道按哪个——按钮的层级就白设计了。',
+				},
+				{
+					key: 'C',
+					text: '取消做成红色实心，醒目一点',
+					correct: false,
+					feedback: '红色实心是留给「危险动作」的（删除、清空）。取消不危险，抢眼反而误导。',
+				},
+			],
+		},
+		anatomyIntro:
+			'按钮是界面上最老的零件——它把「做件事」压缩成一个可以按的形状。看似简单，但主次、状态、图标，每一样都在替用户省判断。拆开看：',
+		parts: [
+			{ name: '标签文字', en: 'Label', note: '一个动词：保存、发送、删除。别写「确定」，说清做什么。' },
+			{ name: '图标', en: 'Icon', note: '可选，帮文字加一个直觉线索，不该单独扛意思。' },
+			{ name: '容器', en: 'Container', note: '颜色、圆角、重量决定它是主是次——实心最重，文字最轻。' },
+			{ name: '状态', en: 'States', note: '悬停、按下、禁用、加载中——同一个按钮的四副面孔。' },
+		],
+		variants: [
+			{ title: '主按钮', description: '实心、最重，一屏只留一个。', sketch: 'bt-primary' },
+			{ title: '次按钮', description: '描边或幽灵，和主按钮站一起不抢戏。', sketch: 'bt-secondary' },
+			{ title: '图标按钮', description: '只有图标不带字，适合工具条里的常用动作。', sketch: 'bt-icon' },
+		],
+		usage: {
+			fit: ['触发一个动作：保存、提交、删除', '一个页面一个主按钮，定出主次', '需要禁用、加载中这些状态的操作'],
+			unfit: [
+				'跳转到另一个页面——那是链接',
+				'一排七八个全做成实心',
+				'只是想让一段文字看着醒目',
+			],
+		},
+		prompts: [
+			'提交做成主按钮，取消改成文字按钮',
+			'按钮点击后显示加载中并禁用，防止重复提交',
+			'删除按钮用红色描边，别用实心',
+			'所有按钮统一 8px 圆角和 40px 高度',
+		],
+		promptTip: '把「主 / 次 / 危险」说出来，比说颜色好用——AI 会按层级配色，而不是随手涂一个。',
+		warning:
+			'一屏里的实心按钮只能有一个。全都最重，等于没有重点，用户不知道先按哪个。',
+	},
+	checkbox: {
+		question: '到底是什么？方框和圆点为什么不能混用？',
+		spot: {
+			title: '这个页面里，哪一组是复选框？',
+			intro: '三组都在让你「选」，但只有一组是方的、能同时勾好几个。',
+			regions: [
+				{
+					id: 'checkbox',
+					name: '复选框',
+					en: 'Checkbox',
+					correct: true,
+					note: '就是它！方框、能勾好几个——邮件、短信、推送想要哪个勾哪个。',
+				},
+				{
+					id: 'radio',
+					name: '单选框',
+					en: 'Radio',
+					correct: false,
+					note: '不是它。圆点是单选：浅色、深色、跟随系统，只能三选一。形状就是在提醒你。',
+				},
+				{
+					id: 'toggle',
+					name: '开关',
+					en: 'Toggle',
+					correct: false,
+					note: '不是它。开关是「拨一下立刻生效」，不用点保存；复选框勾了之后通常还要提交。',
+				},
+			],
+		},
+		quiz: {
+			question: '「选择配送方式：快递 / 自提 / 同城闪送」，用哪种控件？',
+			options: [
+				{
+					key: 'A',
+					text: '单选圆点——三个里只能挑一个',
+					correct: true,
+					feedback: '对。一个订单只能有一种配送方式，圆点的形状就在告诉用户「只能选一个」。',
+				},
+				{
+					key: 'B',
+					text: '复选框——万一用户想两个都要',
+					correct: false,
+					feedback: '方框暗示可以多勾，用户真勾了两个，系统就得处理一个不该存在的组合。',
+				},
+				{
+					key: 'C',
+					text: '三个开关——每个都能开关',
+					correct: false,
+					feedback: '三个开关互不相干，用户能全开也能全关，「必须选一个」这条规则就没人守了。',
+				},
+			],
+		},
+		anatomyIntro:
+			'它们是一对：方框叫复选框，能勾好几个；圆点叫单选框，一组里只能亮一个。形状本身就是说明书——用户还没读字，就已经知道能选几个了。拆开看：',
+		parts: [
+			{ name: '选框', en: 'Box', note: '方的能多选、圆的只能单选，形状就是规则。' },
+			{ name: '标签', en: 'Label', note: '旁边那行字，点它也能选中，别只让用户点小方块。' },
+			{ name: '选中态', en: 'Checked', note: '方框里打勾、圆点里填实，一眼看出哪个选了。' },
+			{ name: '分组标题', en: 'Group Label', note: '这一组在问什么——「兴趣」「配送方式」——单选尤其需要。' },
+		],
+		variants: [
+			{ title: '竖排', description: '一行一个，选项多、标签长时最好读。', sketch: 'ck-stack' },
+			{ title: '横排', description: '几个短选项并排一行，省纵向空间。', sketch: 'ck-inline' },
+			{ title: '卡片式', description: '整块区域都能点，适合带说明的重要选项。', sketch: 'ck-card' },
+		],
+		usage: {
+			fit: ['多选题用方框，单选题用圆点', '同意条款这类只有一项的勾选', '选项少于七个、要一眼看全的时候'],
+			unfit: [
+				'选项超过七八个——改用下拉选择',
+				'一拨即生效的设置——那是开关',
+				'只有一个选项却用单选圆点（选了就取消不掉）',
+			],
+		},
+		prompts: [
+			'「兴趣标签」改成复选框，可以多选',
+			'配送方式用单选，默认选中快递',
+			'同意条款的复选框没勾之前，提交按钮保持禁用',
+			'复选框做成点整行都能选中的，不只是点小方块',
+		],
+		promptTip: '先说「多选还是单选」，再说默认值——AI 拿到这两句，就不会把圆点画成方框。',
+		warning:
+			'形状是承诺：方框告诉用户「可以多勾」，圆点告诉用户「只能选一个」。形状用错了，用户按形状的预期去操作，就一定会出错。',
+	},
+	spinner: {
+		question: '到底是什么？转圈的那个小图标，为什么不直接显示进度？',
+		spot: {
+			title: '这个页面里，哪一个是 Spinner？',
+			intro: '四块都在「等」或「提示」，只有一个在转圈、什么也不承诺。',
+			regions: [
+				{
+					id: 'badge',
+					name: '徽标',
+					en: 'Badge',
+					correct: false,
+					note: '不是它。铃铛角上的数字是徽标——常驻计数，和等待无关。',
+				},
+				{
+					id: 'skeleton',
+					name: '骨架屏',
+					en: 'Skeleton',
+					correct: false,
+					note: '不是它。骨架屏先按内容的形状画出灰块，是「内容马上来」的占位。',
+				},
+				{
+					id: 'empty',
+					name: '空状态',
+					en: 'Empty State',
+					correct: false,
+					note: '不是它。空状态是加载完了但确实没内容——等待已经结束。',
+				},
+				{
+					id: 'spinner',
+					name: '加载指示',
+					en: 'Spinner',
+					correct: true,
+					note: '就是它！一个转个不停的圈，只说「还在忙」，不说还要多久。',
+				},
+			],
+		},
+		quiz: {
+			question: '用户要上传一个 2GB 的视频，大概要一分钟。等待期间用什么提示？',
+			options: [
+				{
+					key: 'A',
+					text: 'Spinner——转着圈就行',
+					correct: false,
+					feedback: '一分钟盯着转圈，用户会怀疑卡死了然后刷新。超过几秒的等待，spinner 就不够用了。',
+				},
+				{
+					key: 'B',
+					text: '进度条——显示上传到了百分之几',
+					correct: true,
+					feedback: '对。总量已知、时间够长，就该告诉用户「还剩多少」，进度条正是干这个的。',
+				},
+				{
+					key: 'C',
+					text: '骨架屏——先画出视频播放器的轮廓',
+					correct: false,
+					feedback: '骨架屏是给「即将显示的内容」占位，上传是把东西送出去，形状占位帮不上忙。',
+				},
+			],
+		},
+		anatomyIntro:
+			'名字来自 spin——转个不停。它是最省事的等待提示：不知道要多久、也不承诺多久，只说一句「我还活着，别刷新」。零件很少：',
+		parts: [
+			{ name: '转圈图形', en: 'Ring', note: '一个缺口的圆环在转，缺口是运动感的来源。' },
+			{ name: '说明文字', en: 'Label', note: '可选的「加载中…」，告诉用户在等什么。' },
+			{ name: '所在位置', en: 'Host', note: '它长在哪：按钮里、区域中央，还是盖住整页。' },
+		],
+		variants: [
+			{ title: '按钮内', description: '点下去后按钮变「提交中」，同时禁用。', sketch: 'spn-inline' },
+			{ title: '区域中央', description: '只有这一块在转，页面其他部分照常用。', sketch: 'spn-block' },
+			{ title: '整页遮罩', description: '半透明盖住全页，什么都不能点。', sketch: 'spn-page' },
+		],
+		usage: {
+			fit: ['几秒钟内就能结束的等待', '点提交之后的「正在处理」', '不知道总量、也没法算进度的请求'],
+			unfit: [
+				'超过十秒的等待——用进度条',
+				'首屏内容加载——用骨架屏',
+				'每个小组件各转各的圈，满屏转圈',
+			],
+		},
+		prompts: [
+			'点提交后按钮里显示一个 spinner，同时禁用按钮',
+			'列表加载时在区域中央放一个 spinner，别整页遮罩',
+			'请求超过 8 秒还没回来，就把 spinner 换成一句提示',
+			'全站用同一个 spinner 组件，别每处画一个',
+		],
+		promptTip: '说清放在哪、什么时候出现、什么时候消失——spinner 最常见的 bug 是转个不停。',
+		warning:
+			'Spinner 只能撑几秒。超过十秒还在转，用户会以为卡死了——要么换成进度条，要么给一句「大约需要一分钟」。还有：请求失败后一定要把它收掉，转圈加报错是最让人抓狂的组合。',
+	},
+	'progress-bar': {
+		question: '到底是什么？和转圈圈的 Spinner 到底差在哪？',
+		spot: {
+			title: '这个页面里，哪一个是进度条？',
+			intro: '三条横的东西，只有一条在告诉你「完成了几成」。',
+			regions: [
+				{
+					id: 'spinner',
+					name: '加载指示',
+					en: 'Spinner',
+					correct: false,
+					note: '不是它。转圈只说「还在忙」，从不说还剩多少。',
+				},
+				{
+					id: 'progress',
+					name: '进度条',
+					en: 'Progress Bar',
+					correct: true,
+					note: '就是它！轨道加填充，62% 是真实进度，用户能估出还要等多久。',
+				},
+				{
+					id: 'slider',
+					name: '滑块',
+					en: 'Slider',
+					correct: false,
+					note: '不是它。滑块长得像，但那个圆点是给你拖的——它是输入，不是反馈。',
+				},
+			],
+		},
+		quiz: {
+			question: '导出一份 PDF 报告大约要 30 秒。等待期间怎么提示最合适？',
+			options: [
+				{
+					key: 'A',
+					text: 'Spinner——转着圈等就好',
+					correct: false,
+					feedback: '30 秒对着转圈太长了，用户会怀疑卡死。超过十秒的等待，请告诉他还剩多少。',
+				},
+				{
+					key: 'B',
+					text: '进度条——显示「正在生成 第 3 / 8 页」',
+					correct: true,
+					feedback: '对。总量已知（8 页），就该把几成画出来，用户看得到在往前走。',
+				},
+				{
+					key: 'C',
+					text: 'Toast——弹一句「正在导出」',
+					correct: false,
+					feedback: 'Toast 几秒就消失，之后的 25 秒用户面对的是一片沉默。',
+				},
+			],
+		},
+		anatomyIntro:
+			'一条从空到满的横条。它比 Spinner 多说了一件关键的事：还剩多少。名字直白，形状也直白——轨道、填充、数字，再配一句说明：',
+		parts: [
+			{ name: '轨道', en: 'Track', note: '浅色的底，代表全部工作量。' },
+			{ name: '填充', en: 'Fill', note: '深色的那段，代表已经完成的部分。' },
+			{ name: '数值', en: 'Value', note: '62% 或 3 / 5，把比例说成数字。' },
+			{ name: '说明', en: 'Label', note: '一句「正在上传 report.pdf」，告诉用户在等什么。' },
+		],
+		variants: [
+			{ title: '带百分比', description: '进度真实可算，直接给数字。', sketch: 'pb-percent' },
+			{ title: '不定长', description: '算不出进度时，一小段来回跑。', sketch: 'pb-indeterminate' },
+			{ title: '分段式', description: '五步任务走完三步，一格一格亮。', sketch: 'pb-steps' },
+		],
+		usage: {
+			fit: ['上传、下载这种知道总量的任务', '多步骤任务的整体进度', '超过十秒的等待'],
+			unfit: [
+				'一两秒的等待——Spinner 就够了',
+				'完全算不出进度——用不定长模式或 Spinner',
+				'拿它当装饰，进度是编出来的',
+			],
+		},
+		prompts: [
+			'上传文件时显示进度条和百分比，完成后变成绿色对勾',
+			'进度条用不定长模式，因为接口不返回进度',
+			'把三个步骤的完成情况画成分段进度条',
+			'进度条别倒退，失败时变红并停在原地',
+		],
+		promptTip: '说清进度从哪来（真实数据还是估算）和走到 100% 之后怎么办——AI 经常做出走到 99% 就卡住的假进度。',
+		warning:
+			'进度条一定要诚实。用假数据匀速走到 90% 然后干等，比 Spinner 更让人恼火——用户会盯着它数秒。没有真实进度就用不定长模式，别编。',
+	},
+	stepper: {
+		question: '到底是什么？和标签页、面包屑长得都有点像，怎么分？',
+		spot: {
+			title: '这个页面里，哪一个是步骤条？',
+			intro: '四条横着排的东西，只有一条在说「你走到第几步了」。',
+			regions: [
+				{
+					id: 'tabs',
+					name: '标签页',
+					en: 'Tabs',
+					correct: false,
+					note: '不是它。标签页是几个平级视图，想先看哪个都行，没有先后。',
+				},
+				{
+					id: 'breadcrumb',
+					name: '面包屑',
+					en: 'Breadcrumb',
+					correct: false,
+					note: '不是它。面包屑说的是「你在站点的第几层」，是位置，不是流程。',
+				},
+				{
+					id: 'stepper',
+					name: '步骤条',
+					en: 'Stepper',
+					correct: true,
+					note: '就是它！三个节点串成一线，前面打了勾、中间点亮、后面还灰着——这就是流程的进度。',
+				},
+				{
+					id: 'progress',
+					name: '进度条',
+					en: 'Progress Bar',
+					correct: false,
+					note: '不是它。进度条是一段连续的量（62%），步骤条是几个离散的站。',
+				},
+			],
+		},
+		quiz: {
+			question: '注册流程是「填资料 → 验证邮箱 → 设置密码」，必须按顺序来。顶部导航用什么？',
+			options: [
+				{
+					key: 'A',
+					text: 'Tabs——三个标签，点哪个看哪个',
+					correct: false,
+					feedback: '标签页可以乱序跳，用户会直接跳过验证邮箱。有先后依赖的流程不能用它。',
+				},
+				{
+					key: 'B',
+					text: 'Stepper——三步排开，走到哪亮到哪',
+					correct: true,
+					feedback: '对。步骤条既显示进度，又通过「未到达的步骤不能点」把顺序锁住了。',
+				},
+				{
+					key: 'C',
+					text: 'Breadcrumb——首页 / 注册 / 验证邮箱',
+					correct: false,
+					feedback: '面包屑表示层级位置，不表示流程进度——它不会告诉用户还剩几步。',
+				},
+			],
+		},
+		anatomyIntro:
+			'名字来自 step——一步一步来。它把一条长流程切成几段，每段一个节点，告诉你走到哪、还剩几步、能不能回头。组成：',
+		parts: [
+			{ name: '节点', en: 'Node', note: '一个圆圈，里面是序号或对勾。' },
+			{ name: '连线', en: 'Connector', note: '节点之间的那条线，走过的部分会变色。' },
+			{ name: '标签', en: 'Label', note: '每一步叫什么：填资料、验证邮箱。' },
+			{ name: '状态', en: 'State', note: '已完成、进行中、未到达——三种样子一眼分得清。' },
+		],
+		variants: [
+			{ title: '横向', description: '桌面端最常见，节点一字排开。', sketch: 'stp-horizontal' },
+			{ title: '竖向', description: '每步下面可以放说明和表单。', sketch: 'stp-vertical' },
+			{ title: '点状', description: '手机 onboarding 常用，只剩几个小点。', sketch: 'stp-dots' },
+		],
+		usage: {
+			fit: ['三步以上的线性流程：注册、下单、配置向导', '步骤之间有先后依赖', '用户需要知道「还要多久才填完」'],
+			unfit: [
+				'只有两步——直接放两个按钮',
+				'步骤可以任意顺序——那是标签页',
+				'表示网站的层级位置——那是面包屑',
+			],
+		},
+		prompts: [
+			'把注册表单拆成三步的 stepper，顶部显示当前第几步',
+			'已完成的步骤显示对勾，可以点回去修改',
+			'未到达的步骤不能点，灰掉',
+			'手机上把 stepper 改成小圆点，只显示当前步骤名',
+		],
+		promptTip: '说清能不能回头、能不能跳步——这两条规则决定了它是向导还是标签页。',
+		warning:
+			'步骤条是承诺：写了「共 3 步」就别在第 3 步之后突然冒出第 4 步。还有，步数超过 5 个就该合并了——没人想看到「第 2 步，共 9 步」。',
+	},
+	'infinite-scroll': {
+		question: '到底是什么？滚到底自动加载，和翻页比到底谁更好？',
+		spot: {
+			title: '这三个列表里，哪一个是无限滚动？',
+			intro: '三个列表都到底了，只有一个不用你动手就会继续长。',
+			regions: [
+				{
+					id: 'pagination',
+					name: '分页',
+					en: 'Pagination',
+					correct: false,
+					note: '不是它。底部一排页码，要看下一页得自己点——每一页都有名字，能回得去。',
+				},
+				{
+					id: 'loadmore',
+					name: '加载更多',
+					en: 'Load More',
+					correct: false,
+					note: '不是它。一个按钮，点一下才多一批——它是无限滚动的「手动挡」。',
+				},
+				{
+					id: 'infinite',
+					name: '无限滚动',
+					en: 'Infinite Scroll',
+					correct: true,
+					note: '就是它！底部只有一个转圈，快滚到时下一批就自己接上来，没有「下一页」这回事。',
+				},
+			],
+		},
+		quiz: {
+			question: '电商站的搜索结果有 2000 件商品，用户会反复比较、也会把结果发给朋友。列表怎么翻？',
+			options: [
+				{
+					key: 'A',
+					text: '无限滚动——刷起来最顺手',
+					correct: false,
+					feedback: '顺手，但用户找不回「刚才第 37 件」，也没法把「第 3 页」发给朋友，页脚更是永远够不着。',
+				},
+				{
+					key: 'B',
+					text: '分页——每页 40 件，带页码',
+					correct: true,
+					feedback: '对。要比较、要回看、要分享链接的场景，页码给了每一屏一个固定地址。',
+				},
+				{
+					key: 'C',
+					text: '一次全部加载，反正只有 2000 件',
+					correct: false,
+					feedback: '2000 张商品图一次塞进页面，手机会卡到怀疑人生。',
+				},
+			],
+		},
+		anatomyIntro:
+			'没有「下一页」按钮，页面自己在你快滚到底时偷偷把下一批接上。看起来什么都没有，其实藏了几个机关：',
+		parts: [
+			{ name: '内容列表', en: 'List', note: '已经加载的条目，越刷越长。' },
+			{ name: '触发线', en: 'Sentinel', note: '一条看不见的哨兵线，滚到它就去请求下一批。' },
+			{ name: '加载指示', en: 'Loader', note: '底部转一下圈，告诉你新的一批在路上。' },
+			{ name: '结束提示', en: 'End', note: '真到底时说一声「没有更多了」，别让人一直等。' },
+		],
+		variants: [
+			{ title: '信息流', description: '全自动，快到底就接上一批。', sketch: 'inf-feed' },
+			{ title: '半自动', description: '滚到底出一个「加载更多」，点了才继续。', sketch: 'inf-loadmore' },
+			{ title: '到底了', description: '显示结束语，顺手给个回到顶部。', sketch: 'inf-end' },
+		],
+		usage: {
+			fit: ['信息流、瀑布流这种「随便刷」的场景', '内容没有固定终点，比如时间线', '手机端不想让人去点小页码'],
+			unfit: [
+				'用户要找「第几条」或分享某一页——用分页',
+				'页面底部有页脚和重要链接',
+				'列表会长到几千条，浏览器吃不消',
+			],
+		},
+		prompts: [
+			'列表改成无限滚动，离底部 200px 时自动加载下一批',
+			'加载到第 5 批后改成「加载更多」按钮，别一直自动',
+			'没有更多内容时显示「到底了」，并给一个回到顶部',
+			'从详情页返回时记住滚动位置和已加载的内容',
+		],
+		promptTip: '说清触发距离、每批多少条、到底了怎么办——这三项 AI 默认都会随便定。',
+		warning:
+			'无限滚动会吞掉页脚——用户永远够不到底部的链接。另一个大坑是「回不到原位」：点进详情再返回，列表从头加载，刚才刷到的那条找不着了。这两点没解决，别上它。',
+	},
+	'dropdown-menu': {
+		question: '到底是什么？它和下拉选择（Select）不是一回事吗？',
+		spot: {
+			title: '这个页面里，哪一个是 Dropdown Menu？',
+			intro: '三个都能「点开选一个」，但只有一个选完就会替你做事。',
+			regions: [
+				{
+					id: 'select',
+					name: '下拉选择',
+					en: 'Select',
+					correct: false,
+					note: '不是它。它选的是一个「值」，选完留在那儿等你提交，什么都不会替你做。',
+				},
+				{
+					id: 'tabs',
+					name: '标签页',
+					en: 'Tabs',
+					correct: false,
+					note: '不是它。标签页的选项一直摆在外面，不需要点开；切换的是视图，不是执行动作。',
+				},
+				{
+					id: 'menu',
+					name: '下拉菜单',
+					en: 'Dropdown Menu',
+					correct: true,
+					note: '就是它！点「···」摊开一列动作，点「复制」立刻复制、点「删除」立刻删除，然后自己收起。',
+				},
+			],
+		},
+		quiz: {
+			question: '表格每一行右侧要放「编辑、复制、删除」三个动作，怎么摆最合适？',
+			options: [
+				{
+					key: 'A',
+					text: '收进一个「···」下拉菜单里',
+					correct: true,
+					feedback: '对。一行里三个动作太吵，收进菜单，主界面干净，动作也一个不少。',
+				},
+				{
+					key: 'B',
+					text: '用一个 Select 让用户选一个动作',
+					correct: false,
+					feedback: 'Select 是选值用的，选了「删除」到底删不删？语义拧巴，用户也不敢点。',
+				},
+				{
+					key: 'C',
+					text: '三个按钮全部摆出来',
+					correct: false,
+					feedback: '每一行都摆三个按钮，整张表都在喊「点我」。只有一个高频动作时才值得露在外面。',
+				},
+			],
+		},
+		anatomyIntro:
+			'它是「一个按钮 + 一列动作」：平时只露出触发器，点开才把选项摊出来，选完立刻执行并收起。跟 Select 最大的区别——Select 选的是「值」，留在表单里等提交；菜单选的是「做什么」，点了就干。组成：',
+		parts: [
+			{ name: '触发器', en: 'Trigger', note: '一个按钮或「···」图标，点它才打开菜单。' },
+			{ name: '菜单面板', en: 'Panel', note: '浮在触发器下方的一小块，带阴影，点外面就关。' },
+			{ name: '菜单项', en: 'Item', note: '每一行是一个动作，动词开头：编辑、复制、导出。' },
+			{ name: '分隔与危险项', en: 'Divider', note: '删除这类不可逆的动作放最后，一条线隔开、标成红色。' },
+		],
+		variants: [
+			{ title: '图标触发', description: '「···」或齿轮，最省地方，表格行末常见。', sketch: 'dd-icon' },
+			{ title: '按钮触发', description: '「新建 ▾」——主动作旁边挂几个近亲。', sketch: 'dd-button' },
+			{ title: '右键菜单', description: '在光标位置弹出，桌面软件的老习惯。', sketch: 'dd-context' },
+		],
+		usage: {
+			fit: ['一行数据后面的「更多操作」', '把次要动作收起来，给主界面减负', '同一目标的多种做法（导出为 PDF / CSV）'],
+			unfit: ['让用户填一个值——那是 Select', '只有一个动作——直接放按钮', '高频动作藏进菜单，每次多点一下'],
+		},
+		prompts: [
+			'表格每一行末尾加一个「···」按钮，点开是编辑、复制、删除的下拉菜单',
+			'下拉菜单里的「删除」放最后，用分隔线隔开并标成红色',
+			'菜单选完自动关闭，点击外部或按 Esc 也关闭',
+			'这个下拉菜单在移动端改成从底部弹出的面板',
+		],
+		promptTip: '先说清是「动作菜单」还是「取值下拉」，AI 才不会拿一个 <select> 交差。',
+		warning:
+			'菜单是用来藏东西的——藏得越深，越没人用。高频动作别塞进「···」，露在外面才有人点。',
+	},
+	tooltip: {
+		question: '到底是什么？它和 Popover、Toast 都是「冒出来的小框」，怎么分？',
+		spot: {
+			title: '这个页面里，哪一个是 Tooltip？',
+			intro: '三个小框都在说话，但只有一个是「鼠标停上去才冒出来」的。',
+			regions: [
+				{
+					id: 'popover',
+					name: '弹出层',
+					en: 'Popover',
+					correct: false,
+					note: '不是它。它要点一下才打开，里面还放了按钮——能操作的不是 tooltip，是 popover。',
+				},
+				{
+					id: 'tooltip',
+					name: '气泡提示',
+					en: 'Tooltip',
+					correct: true,
+					note: '就是它！鼠标停在「?」上就冒一句解释，移开就没，只说明、不操作。',
+				},
+				{
+					id: 'toast',
+					name: '轻提示',
+					en: 'Toast',
+					correct: false,
+					note: '不是它。Toast 是系统主动弹给你的反馈，几秒后自己消失，跟鼠标在哪儿没关系。',
+				},
+			],
+		},
+		quiz: {
+			question: '工具栏上一个只有图标、没有文字的按钮，怎么让人知道它是干嘛的？',
+			options: [
+				{
+					key: 'A',
+					text: 'Tooltip——悬停时显示「复制链接」',
+					correct: true,
+					feedback: '对。停一下就知道是什么，不占版面，也不打断操作。',
+				},
+				{
+					key: 'B',
+					text: 'Toast——点下去之后弹一句说明',
+					correct: false,
+					feedback: '点完才知道它是干嘛的，已经晚了——万一是「删除」呢？',
+				},
+				{
+					key: 'C',
+					text: 'Modal——点开一个弹窗解释用法',
+					correct: false,
+					feedback: '为一个按钮的名字拦住整页，太重了。弹窗留给需要做决定的事。',
+				},
+			],
+		},
+		anatomyIntro:
+			'名字就是「小工具的提示」：鼠标停上去冒一句、移开就没，永远不占版面。它只解释、不承载操作——里面要放按钮的，那叫 Popover。组成：',
+		parts: [
+			{ name: '触发目标', en: 'Target', note: '被悬停或键盘聚焦的那个东西：图标、缩略文字、问号。' },
+			{ name: '气泡', en: 'Bubble', note: '深色小框，一两句话，不换行最好。' },
+			{ name: '小箭头', en: 'Arrow', note: '指向目标，说明「我在解释的是它」。' },
+			{ name: '出现延迟', en: 'Delay', note: '停留两三百毫秒才出现，鼠标扫过时不会一路乱闪。' },
+		],
+		variants: [
+			{ title: '上方', description: '默认位置，箭头朝下指着目标。', sketch: 'tt-top' },
+			{ title: '侧边', description: '目标贴着屏幕上沿时，改从右边冒出来。', sketch: 'tt-side' },
+			{ title: '带快捷键', description: '文字旁附一个 ⌘C，顺手教一招。', sketch: 'tt-rich' },
+		],
+		usage: {
+			fit: ['图标按钮的名字', '被截断文字的完整版', '字段旁边的一句解释'],
+			unfit: ['移动端——手指没有「悬停」', '必须看到的信息——藏在悬停里等于没写', '里面要放按钮、链接——那是 Popover'],
+		},
+		prompts: [
+			'给工具栏所有图标按钮加 tooltip，悬停 300 毫秒后显示名字',
+			'tooltip 默认出现在按钮上方，贴近屏幕边缘时自动翻到下方',
+			'这个「?」图标的 tooltip 改成一句话说明扣费规则',
+			'表格里被截断的单元格，悬停时用 tooltip 显示完整内容',
+		],
+		promptTip: '说清触发方式和位置，再补一句「键盘聚焦也要能显示」，无障碍就不会漏。',
+		warning:
+			'手机上没有鼠标，也就没有「悬停」——tooltip 里的信息在移动端会直接消失。关键信息别只靠它。',
+	},
+	'command-palette': {
+		question: '到底是什么？它和页面上普通的搜索框有什么不一样？',
+		spot: {
+			title: '这个页面里，哪一个是 Command Palette？',
+			intro: '三个都能「打字然后选一个」，但只有一个能直接替你做事。',
+			regions: [
+				{
+					id: 'search',
+					name: '搜索框',
+					en: 'Search',
+					correct: false,
+					note: '不是它。普通搜索框只找内容，找到了还得自己点进去；它也不会跳出来盖住页面。',
+				},
+				{
+					id: 'select',
+					name: '下拉选择',
+					en: 'Select',
+					correct: false,
+					note: '不是它。Select 只在预设的几个值里挑一个，没有输入框，更不会执行动作。',
+				},
+				{
+					id: 'palette',
+					name: '命令面板',
+					en: 'Command Palette',
+					correct: true,
+					note: '就是它！按 ⌘K 浮出来，打两个字，页面和动作混在一列里，回车直接到位。',
+				},
+			],
+		},
+		quiz: {
+			question: '你想让熟手在三秒内跳到任何一页、执行任何动作，用什么？',
+			options: [
+				{
+					key: 'A',
+					text: 'Command Palette——⌘K 打字回车',
+					correct: true,
+					feedback: '对。键盘不离手，页面和动作全在一列里，这就是它存在的意义。',
+				},
+				{
+					key: 'B',
+					text: '把所有入口都摆进导航栏',
+					correct: false,
+					feedback: '入口越多导航越挤，最后谁也找不到谁。导航栏只该放最主要的几个。',
+				},
+				{
+					key: 'C',
+					text: '在页面上放一个搜索框',
+					correct: false,
+					feedback: '普通搜索只找内容，不能「切换深色模式」「新建文档」——它执行不了动作。',
+				},
+			],
+		},
+		anatomyIntro:
+			'它从代码编辑器来：按一下快捷键，弹出一个输入框，打几个字，页面、设置、动作全在一列里等你回车。你正在看的这个站，按 ⌘K 就能试到。跟普通搜索框的区别——它不只找内容，还能直接「做事」。组成：',
+		parts: [
+			{ name: '快捷键', en: 'Shortcut', note: '⌘K 或 Ctrl+K 唤起，键盘不用离开。' },
+			{ name: '输入框', en: 'Input', note: '打开就自动聚焦，边打边筛。' },
+			{ name: '结果列表', en: 'Results', note: '页面、动作、最近访问混排，每项带图标说明类型。' },
+			{ name: '高亮项', en: 'Active', note: '上下键移动、回车执行，鼠标只是备选。' },
+			{ name: '按键提示', en: 'Hints', note: '底部一行「↑↓ 选择 · ↵ 打开 · esc 关闭」，新手也能上手。' },
+		],
+		variants: [
+			{ title: '搜索型', description: '只列页面和内容，本质是浮起来的站内搜索。', sketch: 'cp-search' },
+			{ title: '动作型', description: '每项都是动词，输入「>」进入命令模式。', sketch: 'cp-action' },
+			{ title: '分组型', description: '最近访问、页面、动作分段列出，一眼分清。', sketch: 'cp-group' },
+		],
+		usage: {
+			fit: ['页面多、动作多的工具型产品', '给熟手一条键盘快车道', '把散落各处的入口收成一个'],
+			unfit: ['内容站的主搜索——普通搜索框更直观', '新手的唯一入口——没人知道要按 ⌘K', '只有三五个页面的小站'],
+		},
+		prompts: [
+			'加一个 ⌘K 命令面板，能搜索所有页面并跳转',
+			'命令面板里除了页面，也列出「新建文档」「切换深色模式」这类动作',
+			'结果列表支持上下键选择、回车打开、Esc 关闭',
+			'导航栏右侧放一个「搜索 ⌘K」按钮，点它也能打开命令面板',
+		],
+		promptTip: '把「能搜什么」列清楚——页面？动作？最近访问？——再要求键盘操作完整，AI 就不会只给你一个会跳转的搜索框。',
+		warning:
+			'⌘K 是隐藏入口，新用户根本不知道它存在。页面上一定要留一个看得见的按钮或提示，否则再好用也是白做。',
+	},
+	alert: {
+		question: '到底是什么？它和 Toast 都是「提示」，凭什么它不会消失？',
+		spot: {
+			title: '这个页面里，哪一条是 Alert？',
+			intro: '三个都在提醒你，但只有一个既不拦路、也不会自己走。',
+			regions: [
+				{
+					id: 'alert',
+					name: '警告横幅',
+					en: 'Alert',
+					correct: true,
+					note: '就是它！钉在页面顶上，说清「邮箱没验证」，给个出口，你不处理它就一直在。',
+				},
+				{
+					id: 'modal',
+					name: '弹窗',
+					en: 'Modal',
+					correct: false,
+					note: '不是它。弹窗把整页拦住要你先表态——分量重得多，只留给非做不可的决定。',
+				},
+				{
+					id: 'toast',
+					name: '轻提示',
+					en: 'Toast',
+					correct: false,
+					note: '不是它。角落弹一下、几秒就消失的是 Toast，适合「保存成功」这种看过即忘的事。',
+				},
+			],
+		},
+		quiz: {
+			question: '用户的付款方式下周就过期了，怎么提醒最合适？',
+			options: [
+				{
+					key: 'A',
+					text: 'Alert——页面顶部挂一条，处理完才消失',
+					correct: true,
+					feedback: '对。这件事会持续存在，提示也该持续存在；给个「去更新」的出口，处理了就撤。',
+				},
+				{
+					key: 'B',
+					text: 'Toast——登录时弹一下',
+					correct: false,
+					feedback: '三秒就没了，错过就错过。等真的扣款失败，用户才发现你「提醒过」。',
+				},
+				{
+					key: 'C',
+					text: 'Modal——每次打开都拦住，直到更新',
+					correct: false,
+					feedback: '事情还没到非做不可，天天拦路只会招烦，还会让人养成无脑点关闭的习惯。',
+				},
+			],
+		},
+		anatomyIntro:
+			'它是「钉在页面上的提示条」：说一件需要你注意的事，不拦路，也不会自己溜走——要么你处理了，要么你关掉。比 Toast 重，比 Modal 轻。组成：',
+		parts: [
+			{ name: '状态图标', en: 'Icon', note: '蓝色告知、琥珀提醒、红色出错，颜色先定性。' },
+			{ name: '标题与正文', en: 'Message', note: '一句话说清发生了什么、有什么影响。' },
+			{ name: '操作', en: 'Action', note: '「去验证」「了解更多」——给一条能处理掉它的路。' },
+			{ name: '关闭', en: 'Dismiss', note: '可选的 ×。能关的才给，关键报错不该能关。' },
+		],
+		variants: [
+			{ title: '告知型', description: '蓝色调：新功能上线、维护通知。', sketch: 'al-info' },
+			{ title: '提醒型', description: '琥珀色调：试用剩三天、邮箱未验证。', sketch: 'al-warning' },
+			{ title: '报错型', description: '红色调：提交失败、支付被拒，通常不能关。', sketch: 'al-error' },
+		],
+		usage: {
+			fit: ['会持续存在的状态（未验证、试用到期）', '表单提交后的整体报错', '影响整页的系统通知（维护中）'],
+			unfit: ['一次性操作反馈——用 Toast', '必须马上决定的事——用 Modal', '页面顶上同时挂三条——没人会读'],
+		},
+		prompts: [
+			'表单顶部加一条红色 Alert，列出提交失败的原因',
+			'试用期剩 3 天时，在页面顶部显示一条琥珀色横幅，带「立即升级」按钮',
+			'Alert 右侧加关闭按钮，关掉后本次会话不再显示',
+			'这条 Alert 改成告知型：蓝色图标，不带关闭',
+		],
+		promptTip: '说清它属于哪个范围（整页还是某个表单）和会不会消失，这两点决定了 AI 该用 Alert 还是 Toast。',
+		warning:
+			'常驻横幅最怕「常驻」：一条挂了三个月的提示，用户早当它是墙纸。要么给出口让人处理掉，要么到时间就撤。',
+	},
 };

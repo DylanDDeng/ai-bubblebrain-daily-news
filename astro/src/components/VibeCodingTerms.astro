@@ -2,6 +2,12 @@
 import { vibeCodingTermCategories, type VibeCodingTerm } from '../data/vibeCodingTerms';
 import '../styles/vibe-coding-terms.css';
 
+/**
+ * 超过该数量的分类启用「组即页」分页预览器：
+ * 每个用途分组独占一页，右下角箭头翻页，完整列表仍在分类页。
+ */
+const PATTERN_PAGER_THRESHOLD = 12;
+
 function groupTerms(terms: VibeCodingTerm[]): { name: string | null; terms: VibeCodingTerm[] }[] {
 	const groups: { name: string | null; terms: VibeCodingTerm[] }[] = [];
 	for (const term of terms) {
@@ -37,43 +43,116 @@ function groupTerms(terms: VibeCodingTerm[]): { name: string | null; terms: Vibe
 
 	<div class="vibe-term-categories">
 		{
-			vibeCodingTermCategories.map((category, categoryIndex) => (
-				<section class="vibe-term-category" id={category.id}>
-					<header class="vibe-category-header">
-						<span class="vibe-category-index" aria-hidden="true">
-							{String(categoryIndex + 1).padStart(2, '0')}
-						</span>
-						<h2>{category.label}</h2>
-						<p>{category.description}</p>
-						<a href={`/vibe-coding/terms/${category.id}/`}>
-							查看图解
-							<i class="ph ph-arrow-up-right" aria-hidden="true" />
-						</a>
-					</header>
+			vibeCodingTermCategories.map((category, categoryIndex) => {
+				const oversized = category.terms.length > PATTERN_PAGER_THRESHOLD;
+				return (
+					<section class="vibe-term-category" id={category.id}>
+						<header class="vibe-category-header">
+							<span class="vibe-category-index" aria-hidden="true">
+								{String(categoryIndex + 1).padStart(2, '0')}
+							</span>
+							<h2>{category.label}</h2>
+							<p>{category.description}</p>
+							<a href={`/vibe-coding/terms/${category.id}/`}>
+								查看图解
+								<i class="ph ph-arrow-up-right" aria-hidden="true" />
+							</a>
+						</header>
 
-					<div class="vibe-terms-groups">
-						{groupTerms(category.terms).map((group) => (
-							<div class="vibe-terms-group">
-								{group.name ? <h3 class="vibe-term-group-title">{group.name}</h3> : null}
-								<div class="vibe-terms-list">
-									{group.terms.map((term) => (
-										<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
-											<h3>
-												{term.name}
-												<span>{term.chineseName}</span>
-												<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
-											</h3>
-											<p>{term.description}</p>
-										</a>
+						<div class="vibe-terms-groups">
+							{oversized ? (
+								<div class="vibe-pattern-pages" data-pattern-pager>
+									{groupTerms(category.terms).map((group, groupIndex) => (
+										<div
+											class="vibe-pattern-page"
+											data-page-name={group.name ?? ''}
+											hidden={groupIndex > 0}
+										>
+											<h3 class="vibe-term-group-title">{group.name}</h3>
+											<div class="vibe-terms-list">
+												{group.terms.map((term) => (
+													<a
+														class="vibe-term"
+														id={term.id}
+														href={`/vibe-coding/terms/${term.id}/`}
+													>
+														<h3>
+															{term.name}
+															<span>{term.chineseName}</span>
+															<i
+																class="ph ph-arrow-up-right vibe-term-arrow"
+																aria-hidden="true"
+															/>
+														</h3>
+														<p>{term.description}</p>
+													</a>
+												))}
+											</div>
+										</div>
 									))}
+									<nav class="vibe-pager-controls" aria-label={`${category.label}翻页`}>
+										<button
+											type="button"
+											class="vibe-pager-btn vibe-pager-prev"
+											aria-label="上一页"
+										>
+											<i class="ph ph-arrow-left" aria-hidden="true" />
+											<span>上一页</span>
+										</button>
+										<div class="vibe-pager-indicator" aria-live="polite">
+											<span class="vibe-pager-name">布局骨架</span>
+											<small class="vibe-pager-count">01 / 05</small>
+										</div>
+										<button
+											type="button"
+											class="vibe-pager-btn vibe-pager-next"
+											aria-label="下一页"
+										>
+											<span>下一页</span>
+											<i class="ph ph-arrow-right" aria-hidden="true" />
+										</button>
+									</nav>
 								</div>
-							</div>
-						))}
-					</div>
-				</section>
-			))
+							) : (
+								groupTerms(category.terms).map((group) => (
+									<div class="vibe-terms-group">
+										{group.name ? (
+											<h3 class="vibe-term-group-title">{group.name}</h3>
+										) : null}
+										<div class="vibe-terms-list">
+											{group.terms.map((term) => (
+												<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
+													<h3>
+														{term.name}
+														<span>{term.chineseName}</span>
+														<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
+													</h3>
+													<p>{term.description}</p>
+												</a>
+											))}
+										</div>
+									</div>
+								))
+							)}
+						</div>
+					</section>
+				);
+			})
 		}
 	</div>
 </section>
 
+<noscript>
+	<style>
+		.vibe-pattern-page[hidden] {
+			display: block !important;
+		}
+
+		.vibe-pager-controls {
+			display: none !important;
+		}
+	</style>
+</noscript>
+
 <script is:inline type="module" src="/js/vibe-coding-terms.js"></script>
+<script is:inline type="module" src="/js/vibe-coding-patterns.js"></script>
