@@ -122,14 +122,14 @@ components:
   button-outline-on-dark:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    borderColor: "{colors.hairline}"
+    borderColor: "rgba(255,255,255,0.35)"
     typography: "{typography.button-md}"
     rounded: "{rounded.pill}"
     padding: "{spacing.sm} {spacing.lg}"
   button-outline-sm:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    borderColor: "{colors.hairline}"
+    borderColor: "rgba(255,255,255,0.35)"
     typography: "{typography.button-md}"
     rounded: "{rounded.pill}"
     padding: "{spacing.xs} {spacing.md}"

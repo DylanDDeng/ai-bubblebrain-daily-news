@@ -298,6 +298,7 @@ components:
   ex-data-table-cell:
     description: "Mirrors the brand's pricing-page table. Header uses mono-caps-eyebrow uppercase; body uses body-md."
     headerBackground: "{colors.hairline}"
+    headerTextColor: "{colors.ink}"
     headerTypography: "{typography.mono-caps-eyebrow}"
     bodyTypography: "{typography.body-md}"
     cellPadding: "{spacing.md} {spacing.lg}"

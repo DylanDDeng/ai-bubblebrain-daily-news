@@ -1419,7 +1419,7 @@ export const designBrands: DesignBrand[] = [
 			{
 				sample: 'Longform reporting on technology and culture.',
 				spec: 'body · BreveText serif · 18px',
-				style: "font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#757575",
+				style: "font-family:Georgia,'Times New Roman',serif;font-size:16px;color:#000000",
 			},
 		],
 		dos: [

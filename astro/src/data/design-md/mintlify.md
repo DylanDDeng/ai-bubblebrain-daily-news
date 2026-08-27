@@ -403,7 +403,7 @@ components:
     border: "1px solid {colors.hairline-dark}"
   hero-band-sky:
     backgroundColor: "{colors.hero-sky-from}"
-    textColor: "{colors.on-dark}"
+    textColor: "{colors.ink}"
     rounded: "0"
     padding: "{spacing.hero}"
   hero-band-dark:
