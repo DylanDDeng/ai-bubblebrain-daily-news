@@ -116,6 +116,29 @@ idempotency key creates one new dispatch for the same immutable release. Both ac
 Access plus fresh TOTP, an incident reason and an Owner binding, and both are audited. Neither path
 replaces the fenced `/v1/reconcile` flow once production upload has begun.
 
+## Changing the Deployer Worker
+
+The `bubble-content-deployer` Worker (source: `workers/content/deployer/`) is the release
+gatekeeper, and it is NOT deployed by GitHub Actions. Merging a PR that changes it only updates
+the repository; the running production Worker keeps the previous validation logic until someone
+deploys it manually.
+
+After merging any PR that touches `workers/content/deployer/`:
+
+1. Sync local main: `git checkout main && git pull origin main`.
+2. Run the deployer test suite: `npx vitest run workers/content/deployer/index.test.ts`.
+3. Validate the build without publishing:
+   `npx wrangler deploy --dry-run -c wrangler.content-deployer.toml`.
+4. Deploy to production: `npx wrangler deploy -c wrangler.content-deployer.toml`.
+5. If a release was already rejected under the old rules, re-run the failed
+   `Automatic Code Release` run: `gh run rerun <run_id> --failed`.
+
+Symptom when step 4 is missed: `Automatic Code Release` keeps failing with
+`unsafe_code_release ... forbidden or unknown path: <path>` even though the allowlist fix is
+already merged. Reference incidents (2026-08-28): #342/#343 added `LICENSE`, `content/about/`
+and `static/_headers` allowlist entries; production stayed broken until the Worker was manually
+redeployed.
+
 ## Automated recovery
 
 The Broker runs every five minutes. For an interrupted `deploying`, `verifying`, `rolling_back` or `reconciling` slot it:
