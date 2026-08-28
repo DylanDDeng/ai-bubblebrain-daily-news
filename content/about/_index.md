@@ -1,27 +1,24 @@
+---
+title: "关于"
+description: "关于 Bubble's Brain 与作者"
+---
 
- 这里主要作为AI领域的信息集合地，放置着我看到的比较不错且有用的资讯。 也希望你能在这里找到对你有用的资讯。 
+Bubble's Brain 是一个个人 AI 知识库，沉淀值得长期检索和复用的内容：不追逐每日信息流，而是把值得留下的东西整理成结构化的知识。
 
-## 关于我     
+本站由 AI 日报站点转型而来，目前主要维护这些栏目：
+
+- **Codex 教程 / Pi Agent 教程 / WorkBuddy 教程**：从安装入门到真实工作流的实践指南。
+- **Vibe Coding**：术语表、Skills 与 Design，帮你和 AI 协作时说同一种语言。
+- **精选阅读**：一手资料、官方文章与深度解读。
+
+## 关于我
 
 - 做过数据分析师、当过产品、搞过点运营，现在是算法工程师。
-- 有一只猫，叫 **Bubble**
-- 摩羯座、ISFJ、科比死忠粉
-- 自媒体创作者 ，<u>公众号：BubbleBrain 主理人</u>，专注于 AI 模型、产品的评测和体验，有时也会分享很多有意思的内容   
+- 自媒体创作者，公众号 **BubbleBrain** 主理人，专注 AI 模型与产品的评测和体验，偶尔分享些有意思的内容。
 
-## 更多信息： 
+## 找到我
 
-- 个人站点: https://bubblebrain.me/  
-- Twitter/X: https://x.com/dylandddeng   
-- 公众号：BubbleBrain 
-- 小红书：Bubble Brain(有空格) 
-
-
-
-
-
-
-
-
-
-
-
+- 个人站点：<https://bubblebrain.me/>
+- Twitter/X：<https://x.com/dylandddeng>
+- 公众号：BubbleBrain
+- 小红书：Bubble Brain（有空格）

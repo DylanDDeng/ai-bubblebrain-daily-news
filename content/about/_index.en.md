@@ -1,20 +1,24 @@
 ---
 title: "About"
-description: "About Bubble's Brain"
+description: "About Bubble's Brain and its author"
 ---
 
-This site is a curated collection of information in the AI space — things I find useful and worth saving. I hope you can also find resources here that help you.
+Bubble's Brain is a personal AI knowledge base — a home for content worth revisiting and reusing. Not the daily feed, but structured knowledge that lasts.
+
+The site began as an AI daily-news project. Today it maintains:
+
+- **Codex / Pi Agent / WorkBuddy tutorials**: hands-on guides from installation to real-world workflows.
+- **Vibe Coding**: a glossary, Skills, and Design notes — a shared language for working with AI.
+- **Highlights**: primary sources, official articles, and in-depth commentary.
 
 ## About me
 
-- I’ve worked as a data analyst, product, and in ops — now I’m an ML/algorithm engineer.
-- I have a cat named **Bubble**.
-- Capricorn, ISFJ, and a long-time Kobe fan.
-- I write as a creator: WeChat public account **BubbleBrain**, focusing on AI models and product evaluations, plus interesting finds.
+- I've worked as a data analyst, a product manager, and in ops — now I'm an ML/algorithm engineer.
+- I create content as **BubbleBrain** on WeChat, focusing on AI model and product reviews, with the occasional interesting find.
 
-## More
+## Find me
 
-- Website: https://bubblebrain.me/
-- Twitter/X: https://x.com/dylandddeng
+- Website: <https://bubblebrain.me/>
+- Twitter/X: <https://x.com/dylandddeng>
 - WeChat public account: BubbleBrain
 - Xiaohongshu: Bubble Brain (with a space)
