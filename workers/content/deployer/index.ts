@@ -415,6 +415,7 @@ function classifyCodeReleasePath(
       "astro/src/scripts/",
       "astro/src/lib/",
       "content/codex-tutorials/",
+      "content/about/",
       "content/deepseek-harness-tutorials/",
       "content/highlights/",
       "content/pi-agent-tutorials/",

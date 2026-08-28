@@ -825,7 +825,7 @@ describe("automatic code release boundary", () => {
     ]);
   });
 
-  it.each(["content/about/index.md", "unknown/release-input.json"])(
+  it.each(["unknown/release-input.json"])(
     "rejects a mixed release containing %s",
     (forbiddenPath) => {
       expect(() =>
@@ -1026,6 +1026,8 @@ describe("automatic code release boundary", () => {
       "astro/src/styles/vibe-coding-pattern-detail.css",
       "astro/src/styles/vibe-coding-terms.css",
       "content/pi-agent-tutorials/_index.md",
+      "content/about/_index.md",
+      "content/about/_index.en.md",
       "LICENSE",
       "README.md",
       "scripts/verify-site.mjs",
