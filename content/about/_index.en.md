@@ -5,7 +5,7 @@ description: "About Bubble's Brain and its author"
 
 Bubble's Brain is a personal AI knowledge base — a home for content worth revisiting and reusing. Not the daily feed, but structured knowledge that lasts.
 
-The site began as an AI daily-news project. Today it maintains:
+The site currently maintains:
 
 - **Codex / Pi Agent / WorkBuddy tutorials**: hands-on guides from installation to real-world workflows.
 - **Vibe Coding**: a glossary, Skills, and Design notes — a shared language for working with AI.

@@ -5,7 +5,7 @@ description: "关于 Bubble's Brain 与作者"
 
 Bubble's Brain 是一个个人 AI 知识库，沉淀值得长期检索和复用的内容：不追逐每日信息流，而是把值得留下的东西整理成结构化的知识。
 
-本站由 AI 日报站点转型而来，目前主要维护这些栏目：
+站点目前主要维护这些栏目：
 
 - **Codex 教程 / Pi Agent 教程 / WorkBuddy 教程**：从安装入门到真实工作流的实践指南。
 - **Vibe Coding**：术语表、Skills 与 Design，帮你和 AI 协作时说同一种语言。

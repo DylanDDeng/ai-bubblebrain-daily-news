@@ -374,7 +374,7 @@ const libraryApi =
 							<strong data-directory-count>{directoryItems.length}</strong>
 							<span>{isEnglish ? 'picks · updated continually' : '篇 · 持续收录中'}</span>
 						</p>
-					) : (
+					) : record.section === 'about' ? null : (
 						<p class="directory-count">
 							<>
 								<strong data-directory-count>{directoryItems.length || children.length}</strong>
