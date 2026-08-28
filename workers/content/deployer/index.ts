@@ -444,6 +444,7 @@ function classifyCodeReleasePath(
       "cloudflare-pages.toml",
       "data/knowledge/taxonomy.json",
       "static/css/daily-timeline.css",
+      "static/_headers",
       "static/js/ai-infographic.js",
       "static/js/daily-timeline.js",
       "static/js/knowledge-home-v2.js",
