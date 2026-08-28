@@ -392,6 +392,7 @@ function classifyCodeReleasePath(
       "astro/prettier.config.mjs",
       "astro/vitest.config.ts",
       "package.json",
+      "LICENSE",
       "start.sh",
       "vitest.config.js",
       "wrangler.content-broker.toml",
