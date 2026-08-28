@@ -40,6 +40,12 @@ export const vibeCodingSkillCategories: VibeCodingSkillCategory[] = [
 		label: '工程',
 		description: '开发工作流里的技能：设计拷问、架构决策、文档沉淀。',
 	},
+	{
+		id: 'writing',
+		name: 'Writing',
+		label: '写作',
+		description: '让 AI 生成与改写的文字读起来像具体的人：去 AI 味、语气档案与文风打磨。',
+	},
 ];
 
 export const vibeCodingSkillMeta: Record<string, VibeCodingSkillMeta> = {
@@ -141,5 +147,10 @@ export const vibeCodingSkillMeta: Record<string, VibeCodingSkillMeta> = {
 		chineseName: '浏览器自动化',
 		description:
 			'给 AI agent 的浏览器自动化 CLI：导航、填表、点击、截图、抓数据、测 Web 应用都能干，支持无头/真实 Chrome/云浏览器与会话保持。',
+	},
+	humanizer: {
+		chineseName: '去 AI 味改写',
+		description:
+			'检测 55 种 AI 写作痕迹并按五种语气档案重写，让文本读起来像具体的人写的：支持 0-100 AI 味打分、收敛迭代与 Markdown 原地编辑。',
 	},
 };
