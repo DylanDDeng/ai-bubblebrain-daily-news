@@ -12,7 +12,7 @@ routes = [
 crons = ["* * * * *"]
 
 [vars]
-GITHUB_REPOSITORY = "DylanDDeng/ai-bubblebrain-daily-news"
+GITHUB_REPOSITORY = "DylanDDeng/bubbles-brain"
 GITHUB_WORKFLOW_REF = "main"
 CONTENT_RELEASE_RESUME_ENABLED = "true"
 CONTENT_RELEASE_INCREMENTAL_REUSE_ENABLED = "false"
