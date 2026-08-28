@@ -1,6 +1,8 @@
+# > **[已归档]** 本文档描述的是 mdBook 日报站点时代的部署方式（`cron-docker/`、`book.toml`、`build-daily-book.yml` 均已移除，见 commit 812b64d）。现役发布流程见 [内容生产发布 Runbook](../runbooks/CONTENT_PRODUCTION_RELEASE.md)。
+
 ## 项目部署与维护
 
-> 结构化日报切换后必须使用 [v4.1 fenced production release](runbooks/CONTENT_PRODUCTION_RELEASE.md)。
+> 结构化日报切换后必须使用 [v4.1 fenced production release](../runbooks/CONTENT_PRODUCTION_RELEASE.md)。
 > 下方遗留部署说明不得用于绕过 Production Deploy Broker。
 
 ### 🏗️ 项目架构
