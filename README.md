@@ -1,48 +1,50 @@
 # Bubble's Brain
 
-Bubble's Brain 是一个面向 AI 实践者的个人知识库，沉淀值得长期检索和复用的内容，而不是追逐每日信息流。
+English | [简体中文](README.zh-CN.md)
 
-线上站点：<https://bubblenews.today>
+Bubble's Brain is a personal knowledge base for AI practitioners — curating content worth revisiting and reusing over the long term, rather than chasing the daily feed.
 
-本项目由 AI 日报站点转型而来：自动抓取和日报发布链路已停用，历史日报只保留在 Git 历史中，不会进入当前构建、搜索、RSS 或路由。
+Live site: <https://bubblenews.today>
 
-## 站点栏目
+This project began as an AI daily-news site. The automated crawling and daily publishing pipeline has been retired; historical dailies live only in Git history and never enter the current build, search, RSS, or routes.
 
-- **Codex 教程**（`codex-tutorials/`）：从安装入门到真实工作流的系统指南。
-- **Pi Agent 教程**（`pi-agent-tutorials/`）：Pi Agent 的安装、会话存储与工具系统实践指南。
-- **WorkBuddy 教程**（`workbuddy-tutorials/`）：从安装入门到办公自动化的实用指南。
-- **Vibe Coding**（`vibe-coding/`）：术语表、Skills 与 Design 三个子栏目。
-- **精选阅读**（`highlights/`）：一手资料、官方文章与深度解读。
-- **关于**（`about/`）：站点与作者介绍。
+## Sections
 
-## 内容原则
+- **Codex Tutorials** (`codex-tutorials/`): systematic guides from installation to real-world workflows.
+- **Pi Agent Tutorials** (`pi-agent-tutorials/`): hands-on guides to installation, session storage, and the tool system.
+- **WorkBuddy Tutorials** (`workbuddy-tutorials/`): practical guides from installation to office automation.
+- **Vibe Coding** (`vibe-coding/`): three sub-sections — Terms, Skills, and Design.
+- **Highlights** (`highlights/`): primary sources, official articles, and in-depth commentary.
+- **About** (`about/`): the site and its author.
 
-- 优先收录长期有效、来源清晰的内容。
-- Markdown 是完整文章的主要内容源，`content/` 是唯一内容目录。
-- 内容按栏目、标签和关联主题组织，不按日期制造更新压力。
+## Content principles
 
-## 技术栈
+- Favor evergreen content with clear provenance.
+- Markdown is the primary source for full articles; `content/` is the single content directory.
+- Content is organized by section, tags, and related topics — never by date-driven pressure.
 
-- Astro 7 静态输出 + `@astrojs/cloudflare` adapter（Cloudflare 发布）
+## Tech stack
+
+- Astro 7 static output + `@astrojs/cloudflare` adapter (deployed on Cloudflare)
 - Markdown content collections
-- 中英双语路由（zh-CN 默认，`en/` 前缀），canonical 与 hreflang
-- 静态全文搜索、RSS、Sitemap、无 JavaScript 可读性
-- 构建期校验：路由契约、CSP、内部链接
+- Bilingual routing (zh-CN default, `en/` prefix) with canonical and hreflang
+- Static full-text search, RSS, sitemap, and readable pages without JavaScript
+- Build-time validation: route contract, CSP, internal links
 
-## 项目结构
+## Project structure
 
 ```text
-astro/     Astro 展示层：页面、组件、搜索索引与测试（见 astro/README.md）
-content/   Markdown 内容源，站点内容的唯一来源
-static/    全站静态资源（作为 Astro publicDir 引用）
-workers/   内容发布管线 Worker，配合 GitHub Actions 完成发布
-scripts/   校验脚本（verify-site.mjs 等被 astro verify 复用）
-docs/      设计文档与 runbook；docs/archive/ 存放旧日报时代归档文档
+astro/     Astro presentation layer: pages, components, search index, and tests (see astro/README.md)
+content/   Markdown content source — the single source of site content
+static/    Site-wide static assets (referenced as the Astro publicDir)
+workers/   Content publishing pipeline Workers, working with GitHub Actions
+scripts/   Validation scripts (verify-site.mjs and friends, reused by astro verify)
+docs/      Design docs and runbooks; docs/archive/ holds archives from the daily-news era
 ```
 
-## 本地开发
+## Local development
 
-需要 Node.js ^22.17 或 >=24：
+Requires Node.js ^22.17 or >=24:
 
 ```sh
 cd astro
@@ -50,14 +52,14 @@ npm install
 npm run dev
 ```
 
-## 验证与构建
+## Verify and build
 
 ```sh
 cd astro
-npm run verify   # astro check + eslint + vitest + build + CSP + 站点校验
+npm run verify   # astro check + eslint + vitest + build + CSP + site validation
 ```
 
-构建产物位于 `astro/dist/`。
+Build output lives in `astro/dist/`.
 
 ## License
 
