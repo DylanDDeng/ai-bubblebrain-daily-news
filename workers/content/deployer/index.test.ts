@@ -825,6 +825,39 @@ describe("automatic code release boundary", () => {
     ]);
   });
 
+  it("accepts the Hugo/mdBook cleanup change set", () => {
+    expect(() =>
+      validateCodeReleaseChangeSet(
+        comparison([
+          { filename: ".gitignore", status: "modified" },
+          { filename: ".gitmodules", status: "removed" },
+          { filename: "book.toml", status: "removed" },
+          { filename: "cron-docker/Dockerfile", status: "removed" },
+          { filename: "cron-docker/entrypoint.sh", status: "removed" },
+          { filename: "cron-docker/scripts/build.sh", status: "removed" },
+          { filename: "cron-docker/scripts/work/book.toml", status: "removed" },
+          { filename: ".github/workflows/unzip_and_commit.yml", status: "removed" },
+          { filename: "scripts/check-dns.sh", status: "removed" },
+          { filename: "scripts/check-github-pages.sh", status: "removed" },
+          { filename: "scripts/fix-dns.sh", status: "removed" },
+          { filename: "scripts/cleanup-dns-for-pages.sh", status: "removed" },
+          { filename: "scripts/diagnose-ssl-issue.sh", status: "removed" },
+          { filename: "scripts/content-route-build-contract.mjs", status: "modified" },
+          { filename: "astro/package.json", status: "modified" },
+          { filename: "astro/route-ownership.json", status: "modified" },
+          { filename: "astro/scripts/build-legacy-compat.mjs", status: "removed" },
+          { filename: "docs/archive/DEPLOYMENT.md", status: "added" },
+          { filename: "workers/content/broker/index.ts", status: "modified" },
+        ]),
+        {
+          baseCodeSha,
+          targetCodeSha,
+          structuredCutoverDate: "2026-07-16",
+        },
+      ),
+    ).not.toThrow();
+  });
+
   it.each(["unknown/release-input.json"])(
     "rejects a mixed release containing %s",
     (forbiddenPath) => {

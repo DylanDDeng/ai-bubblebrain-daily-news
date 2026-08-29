@@ -257,8 +257,14 @@ type CodeReleasePathClass = "publishable" | "inert" | "db_owned";
 const INERT_ROOT_SCRIPTS = new Set([
   "scripts/check-content-observability.mjs",
   "scripts/check-content-observation-window.mjs",
+  "scripts/check-dns.sh",
+  "scripts/check-github-pages.sh",
+  "scripts/cleanup-dns-for-pages.sh",
+  "scripts/content-route-build-contract.mjs",
   "scripts/create-content-addressed-artifact.mjs",
   "scripts/daily-localization-contract.mjs",
+  "scripts/diagnose-ssl-issue.sh",
+  "scripts/fix-dns.sh",
   "scripts/html-local-references.mjs",
   "scripts/materialize-content-addressed-artifact.mjs",
   "scripts/preview-media-types.mjs",
@@ -279,6 +285,8 @@ const RETIRED_HUGO_PATHS = new Set([
   "archetypes/daily.md",
   "hugo.toml",
   "hugo.toml.bak",
+  ".gitmodules",
+  "book.toml",
   "scripts/auto-sync-and-cleanup.sh",
   "scripts/fix-github-dirs.sh",
   "scripts/migrate-to-cf-pages.sh",
@@ -291,7 +299,7 @@ const RETIRED_HUGO_PATHS = new Set([
   "view-site.sh",
 ]);
 
-const RETIRED_HUGO_PREFIXES = ["i18n/", "layouts/", "themes/"];
+const RETIRED_HUGO_PREFIXES = ["i18n/", "layouts/", "themes/", "cron-docker/"];
 const RETIRED_HIGHLIGHT_INDEXES = new Set([
   "static/highlights.json",
   "static/en/highlights.json",
@@ -382,6 +390,7 @@ function classifyCodeReleasePath(
     path.startsWith("src/") ||
     INERT_ROOT_SCRIPTS.has(path) ||
     [
+      ".gitignore",
       "astro/.editorconfig",
       "astro/.gitignore",
       "astro/.nvmrc",
