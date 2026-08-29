@@ -155,6 +155,13 @@ export const vibeCodingTermCategories: VibeCodingTermCategory[] = [
 					'模型此刻能看到的全部内容和它的容量上限。窗口装满后，较早的细节可能被压缩或移出。',
 			},
 			{
+				id: 'token',
+				name: 'Token',
+				chineseName: '词元',
+				description:
+					'模型读写文本的最小单位，约等于一个汉字或半个英文单词。窗口容量和调用费用都按它计算。',
+			},
+			{
 				id: 'rag',
 				name: 'RAG',
 				chineseName: '检索增强生成',
