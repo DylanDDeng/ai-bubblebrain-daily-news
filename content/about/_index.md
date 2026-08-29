@@ -19,6 +19,9 @@ Bubble's Brain 是一个个人 AI 知识库，沉淀值得长期检索和复用�
 ## 找到我
 
 - 个人站点：<https://bubblebrain.me/>
-- Twitter/X：<https://x.com/dylandddeng>
+- Twitter/X：<https://x.com/BubbleBrain>
 - 公众号：BubbleBrain
 - 小红书：Bubble Brain（有空格）
+- 微信：**BubbleBrain小助手**
+
+<img src="/images/wechat-qrcode.jpg" alt="微信二维码：BubbleBrain小助手" width="220" />
