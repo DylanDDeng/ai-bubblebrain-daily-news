@@ -468,6 +468,7 @@ function classifyCodeReleasePath(
       "static/js/vibe-coding-skills.js",
       "static/js/vibe-coding-terms.js",
       "static/images/brain-cat.jpg",
+      "static/images/wechat-qrcode.jpg",
       "static/images/cat-pose-1.jpg",
       "static/images/cat-pose-2.jpg",
       "static/images/cat-pose-3.jpg",
