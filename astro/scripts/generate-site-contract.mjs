@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
-import { relative, resolve } from 'node:path';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { dirname, relative, resolve } from 'node:path';
 
 import {
 	assertRouteBuildContract,
@@ -16,9 +16,6 @@ const astroRoot = process.cwd();
 const distRoot = resolve(astroRoot, 'dist', 'client');
 const manifestRelativePath = 'release-manifests/site-route-manifest.json';
 const ownership = JSON.parse(await readFile(resolve(astroRoot, 'route-ownership.json'), 'utf8'));
-const legacyManifest = JSON.parse(
-	await readFile(resolve(distRoot, 'release-manifests', 'legacy-compat-manifest.json'), 'utf8'),
-);
 
 async function walk(directory) {
 	const files = [];
@@ -165,7 +162,6 @@ for (const file of await walk(distRoot)) {
 	if (file.endsWith('/.DS_Store')) await rm(file, { force: true });
 }
 
-const legacyPaths = new Set(legacyManifest.copied.map((entry) => entry.path));
 const records = [];
 for (const file of await walk(distRoot)) {
 	const path = relative(distRoot, file).replaceAll('\\', '/');
@@ -173,8 +169,7 @@ for (const file of await walk(distRoot)) {
 	if (path === '_headers' || path === '_redirects' || path === '.assetsignore') continue;
 	const fileRoute = routeFromPath(path);
 	let owner;
-	if (legacyPaths.has(path)) owner = 'hugo_compat';
-	else if (matches(fileRoute, ownership.static ?? [])) owner = 'static';
+	if (matches(fileRoute, ownership.static ?? [])) owner = 'static';
 	else if (matches(fileRoute, ownership.astro ?? [])) owner = 'astro';
 	else throw new Error(`No declared route owner for ${fileRoute} (${path})`);
 
@@ -208,7 +203,7 @@ for (const file of await walk(distRoot)) {
 	}
 }
 
-for (const path of ['release-manifests/legacy-compat-manifest.json', manifestRelativePath]) {
+for (const path of [manifestRelativePath]) {
 	records.push({
 		route: `/${path}`,
 		status: 200,
@@ -255,14 +250,15 @@ const build = {
 	node_version: process.version,
 	npm_version: readNpmVersion(),
 	astro_version: PINNED_TOOLCHAIN.astro_version,
-	hugo_version: PINNED_TOOLCHAIN.hugo_version,
 	build_timezone: process.env.TZ || PINNED_BUILD_TIMEZONE,
 	build_locale: process.env.LC_ALL || process.env.LANG || PINNED_BUILD_LOCALE,
 };
 assertRouteBuildContract(build);
 
+const manifestPath = resolve(distRoot, manifestRelativePath);
+await mkdir(dirname(manifestPath), { recursive: true });
 await writeFile(
-	resolve(distRoot, manifestRelativePath),
+	manifestPath,
 	`${JSON.stringify(
 		{
 			schema_version: 3,
