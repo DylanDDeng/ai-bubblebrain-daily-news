@@ -43,6 +43,8 @@ const expectedArticleRoutes = [
 	'/highlights/2026-08-25-ai-engineering-skills-map-building-deploying-ai-applications/',
 	'/highlights/2026-08-25-build-a-long-running-agent-open-source-harness/',
 	'/en/highlights/2026-08-25-build-a-long-running-agent-open-source-harness/',
+	'/highlights/2026-08-27-what-it-takes-for-coding-agents-to-complete-large-software-tasks/',
+	'/en/highlights/2026-08-27-what-it-takes-for-coding-agents-to-complete-large-software-tasks/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -170,6 +172,25 @@ describe('unified highlights content', () => {
 			expect(entry.body).toContain(
 				'https://github.com/Sumanth077/Hands-On-AI-Engineering/tree/main/ai_agents/trueforge_web_research_briefer',
 			);
+		}
+	});
+
+	it('keeps the Coding Agent completion study complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) =>
+				entry.frontmatter.externalId ===
+				'what-it-takes-for-coding-agents-to-complete-large-software-tasks',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(11);
+			expect(entry.body.match(/https:\/\/pbs\.twimg\.com\/media\//g)).toHaveLength(9);
+			expect(entry.body).toContain('https://github.com/Factory-AI/pb-gdal-fable');
+			expect(entry.body).toContain('https://programbench.com/');
+			expect(entry.body).toContain('115,000');
+			expect(entry.body).toMatch(/90(?:%| percent)/);
+			expect(entry.body).toContain('pb-1.2.0');
 		}
 	});
 
