@@ -147,7 +147,6 @@ const PINNED_TOOLCHAIN: JsonRecord = {
   node_version: "v22.17.0",
   npm_version: "10.9.2",
   astro_version: "7.0.9",
-  hugo_version: "0.147.9",
 };
 
 function json(body: unknown, status = 200): Response {

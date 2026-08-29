@@ -4,7 +4,6 @@ export const PINNED_TOOLCHAIN = Object.freeze({
   node_version: "v22.17.0",
   npm_version: "10.9.2",
   astro_version: "7.0.9",
-  hugo_version: "0.147.9",
 });
 export const PINNED_BUILD_LOCALE = "C.UTF-8";
 export const PINNED_BUILD_TIMEZONE = "UTC";

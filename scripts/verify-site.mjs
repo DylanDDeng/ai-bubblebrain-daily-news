@@ -94,30 +94,17 @@ function cspDirectives(value) {
   );
 }
 
-const ownershipBytes = await readFile(
-  resolve(astroRoot, "route-ownership.json"),
-);
 const rawPolicy = JSON.parse(
   await readFile(resolve(astroRoot, "raw-html-policy.json"), "utf8"),
 );
 const contractRelativePath = "release-manifests/site-route-manifest.json";
 const contractPath = resolve(distRoot, contractRelativePath);
-const legacyManifestPath = resolve(
-  distRoot,
-  "release-manifests",
-  "legacy-compat-manifest.json",
-);
 invariant(
   await exists(contractPath),
   "Missing generated site route contract; run the Astro build first",
 );
-invariant(
-  await exists(legacyManifestPath),
-  "Missing generated Hugo compatibility manifest",
-);
 
 const contract = JSON.parse(await readFile(contractPath, "utf8"));
-const legacyManifest = JSON.parse(await readFile(legacyManifestPath, "utf8"));
 invariant(
   contract.schema_version === 3 && Array.isArray(contract.records),
   "Invalid site route contract",
@@ -131,10 +118,6 @@ invariant(
   contract.build?.artifact_sha256 ===
     (await artifactFingerprint(distRoot, contractRelativePath)),
   "Site contract artifact fingerprint does not match dist",
-);
-invariant(
-  legacyManifest.ownership_sha256 === sha256(ownershipBytes),
-  "Route ownership drifted after the compatibility build",
 );
 
 const byRoute = new Map();
@@ -432,23 +415,6 @@ invariant(
   `Broken internal references:\n${brokenReferences.slice(0, 30).join("\n")}`,
 );
 
-for (const entry of legacyManifest.copied) {
-  const path = resolve(distRoot, entry.path);
-  invariant(
-    await exists(path),
-    `Compatibility file disappeared: ${entry.path}`,
-  );
-  invariant(
-    sha256(await readFile(path)) === entry.sha256,
-    `Compatibility file hash drifted: ${entry.path}`,
-  );
-  if (entry.kind === "page")
-    invariant(
-      byRoute.get(entry.route)?.owner === "hugo_compat",
-      `Compatibility owner drifted: ${entry.route}`,
-    );
-}
-
 const specializedMarkers = new Map([
   [
     "vibe-coding/terms/index.html",
@@ -574,5 +540,5 @@ invariant(
 );
 
 console.log(
-  `Verified ${contract.records.length} knowledge-base routes, ${xmlRecords.length} XML endpoints, ${legacyManifest.copied.length} compatibility files, and no daily-news routes.`,
+  `Verified ${contract.records.length} knowledge-base routes, ${xmlRecords.length} XML endpoints, and no daily-news routes.`,
 );
