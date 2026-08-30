@@ -159,7 +159,7 @@ export const vibeCodingTermCategories: VibeCodingTermCategory[] = [
 				name: 'Token',
 				chineseName: '词元',
 				description:
-					'模型读写文本的最小单位，约等于一个汉字或半个英文单词。窗口容量和调用费用都按它计算。',
+					'模型切分和处理文本的最小单位，并非每个字就是一个词元：英文约 4 个字符合一个词元，中文一个字通常要占一到两个，视模型而定。上下文窗口容量和调用费用都按词元数计算。',
 			},
 			{
 				id: 'rag',

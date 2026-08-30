@@ -30,6 +30,7 @@ const isPromptLab = concept.id === 'prompt';
 const isAgentLab = concept.id === 'agent';
 const isVibeLab = concept.id === 'vibe-coding';
 const isWindowLab = concept.id === 'context-window';
+const isTokenLab = concept.id === 'token';
 const isHarnessLab = concept.id === 'harness';
 const isMcpLab = concept.id === 'mcp';
 const isSkillLab = concept.id === 'skill';
@@ -60,6 +61,7 @@ const customLabIds = new Set([
 	'agent',
 	'vibe-coding',
 	'context-window',
+	'token',
 	'harness',
 	'mcp',
 	'skill',
@@ -128,6 +130,7 @@ const labTitles: Record<string, string> = {
 	agent: 'Model 和 Harness，怎样搭档完成任务？',
 	'vibe-coding': '同样的需求，一口气说完还是一轮轮调？',
 	'context-window': '聊到第 60 轮，开头的约定还在吗？',
+	token: '「帮我总结这份报告」发出去，模型收到的是什么？',
 	harness: '模型说「删了它」，框架照做吗？',
 	mcp: '接入一个工单系统，要写几遍代码？',
 	skill: '每周都要发的周报，怎么不用每次重新教？',
@@ -179,6 +182,7 @@ const stageNames: Record<string, string[]> = {
 	agent: ['目标', '模型', '框架', '循环'],
 	'vibe-coding': ['意图', '生成', '运行', '反馈'],
 	'context-window': ['进入', '装满', '压缩', '固定'],
+	token: ['输入', '查表', '编号', '后果'],
 	harness: ['组装', '决策', '执行', '回填'],
 	mcp: ['封装', '连接', '发现', '调用'],
 	skill: ['沉淀', '打包', '触发', '复用'],
@@ -567,6 +571,105 @@ const labels =
 											<b>找回</b>
 											<span>重读项目文档，约定回到窗口</span>
 											<small>文件是窗外的锚点，随时能再读入</small>
+										</div>
+									</div>
+								) : null}
+
+								{isTokenLab && index === 0 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="tz" data-choice-tz="zh">
+										<div class="concept-props-choices" role="group" aria-label="选择发给模型的内容">
+											<button
+												type="button"
+												data-flow-choice="zh"
+												data-flow-choice-group="tz"
+												aria-pressed="true"
+											>
+												一句中文
+											</button>
+											<button
+												type="button"
+												data-flow-choice="en"
+												data-flow-choice-group="tz"
+												aria-pressed="false"
+											>
+												一个英文单词
+											</button>
+										</div>
+										<div class="tz-when-zh concept-component-def">
+											<small>你发给模型的</small>
+											<p>
+												<code>原文</code>
+												<span>「帮我总结这份报告」</span>
+											</p>
+											<p>
+												<code>你眼里</code>
+												<span>8 个字</span>
+											</p>
+										</div>
+										<div class="tz-when-en concept-component-def">
+											<small>你发给模型的</small>
+											<p>
+												<code>原文</code>
+												<span>strawberry 里有几个 r？</span>
+											</p>
+											<p>
+												<code>你眼里</code>
+												<span>10 个字母，一眼数出 3 个 r</span>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isTokenLab && index === 1 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="tz" data-choice-tz="zh">
+										<div class="tz-when-zh concept-js-preview">
+											<p>对着词表切：「总结」「报告」是常见词，各整个一条</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p class="concept-tk-chips">
+												<b>帮</b>
+												<b>我</b>
+												<b>总结</b>
+												<b>这</b>
+												<b>份</b>
+												<b>报告</b>
+											</p>
+										</div>
+										<div class="tz-when-en concept-js-preview">
+											<p>对着词表切：strawberry 整个不在词表里，拆成三段</p>
+											<i class="ph ph-arrow-down" aria-hidden="true" />
+											<p class="concept-tk-chips">
+												<b>str</b>
+												<b>aw</b>
+												<b>berry</b>
+											</p>
+										</div>
+									</div>
+								) : null}
+
+								{isTokenLab && index === 2 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="tz" data-choice-tz="zh">
+										<div class="tz-when-zh concept-bk-verdict is-pass">
+											<i class="ph ph-hash" aria-hidden="true" />
+											模型收到 6 个编号：6 · 13 · 1552 · 27 · 310 · 2087——从这里起它看不到字
+										</div>
+										<div class="tz-when-en concept-bk-verdict is-block">
+											<i class="ph ph-hash" aria-hidden="true" />
+											模型收到 3 个编号：496 · 1027 · 15717——里面没有任何一个字母 r
+										</div>
+									</div>
+								) : null}
+
+								{isTokenLab && index === 3 ? (
+									<div class="concept-lab-pick" data-flow-choice-target="tz" data-choice-tz="zh">
+										<div class="tz-when-zh concept-bk-resp is-200">
+											<b>6 词元</b>
+											<span>窗口扣 6 格，账单按 6 算，不按 8 个字</span>
+											<small>回答也是一个编号接一个蹦出来，再换回文字</small>
+										</div>
+										<div class="tz-when-en concept-bk-resp is-400">
+											<b>答错不奇怪</b>
+											<span>它只见过 str、aw、berry 三块，没见过字母</span>
+											<small>凡是要看字内部的活——数字母、倒着拼——词元都是天然障碍</small>
 										</div>
 									</div>
 								) : null}
@@ -1858,8 +1961,16 @@ const labels =
 								) : null}
 
 								{isForkLab && index === 0 ? (
-									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
-										<div class="concept-props-choices" role="group" aria-label="选择怎么改别人的仓库">
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="fk"
+										data-choice-fk="direct"
+									>
+										<div
+											class="concept-props-choices"
+											role="group"
+											aria-label="选择怎么改别人的仓库"
+										>
 											<button
 												type="button"
 												data-flow-choice="direct"
@@ -1891,7 +2002,11 @@ const labels =
 								) : null}
 
 								{isForkLab && index === 1 ? (
-									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="fk"
+										data-choice-fk="direct"
+									>
 										<div class="fk-when-direct concept-component-def">
 											<small>原仓库 · 别人的地盘</small>
 											<p>
@@ -1918,7 +2033,11 @@ const labels =
 								) : null}
 
 								{isForkLab && index === 2 ? (
-									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="fk"
+										data-choice-fk="direct"
+									>
 										<div class="fk-when-direct concept-js-preview">
 											<p>几周过去</p>
 											<i class="ph ph-arrow-down" aria-hidden="true" />
@@ -1933,7 +2052,11 @@ const labels =
 								) : null}
 
 								{isForkLab && index === 3 ? (
-									<div class="concept-lab-pick" data-flow-choice-target="fk" data-choice-fk="direct">
+									<div
+										class="concept-lab-pick"
+										data-flow-choice-target="fk"
+										data-choice-fk="direct"
+									>
 										<div class="fk-when-direct concept-bk-resp is-400">
 											<b>只能干等</b>
 											<span>修复看不到日期，热情使不上劲</span>

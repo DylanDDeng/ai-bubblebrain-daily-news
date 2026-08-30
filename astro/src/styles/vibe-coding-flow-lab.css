@@ -1602,6 +1602,11 @@
 	display: none;
 }
 
+[data-choice-tz='zh'] .tz-when-en,
+[data-choice-tz='en'] .tz-when-zh {
+	display: none;
+}
+
 [data-choice-hn='loose'] .hn-when-guard,
 [data-choice-hn='guard'] .hn-when-loose {
 	display: none;
