@@ -1208,6 +1208,51 @@
 	font-weight: 650;
 }
 
+.concept-tk-row {
+	align-items: flex-start;
+}
+
+.concept-tk-row > code {
+	white-space: nowrap;
+}
+
+.concept-tk-chips,
+.concept-tk-chips > i {
+	display: inline-flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 4px;
+}
+
+.concept-state-flip.concept-tk-chips > i {
+	grid-area: 1 / 1;
+}
+
+.concept-tk-chips > b,
+.concept-tk-chips > i > b {
+	padding: 2px 5px;
+	border: 1px solid rgb(44 138 68 / 0.35);
+	border-radius: 5px;
+	background: rgb(44 138 68 / 0.08);
+	color: #2c8a44;
+	font:
+		700 0.58rem ui-monospace,
+		SFMono-Regular,
+		Menlo,
+		monospace;
+	line-height: 1.4;
+}
+
+.concept-tk-chips > .concept-state-b > b {
+	border-color: rgb(196 66 58 / 0.35);
+	background: rgb(196 66 58 / 0.07);
+	color: #c4423a;
+}
+
+.concept-js-preview > p.concept-tk-chips {
+	justify-content: center;
+}
+
 .concept-rtm-yes {
 	color: #2c8a44;
 }

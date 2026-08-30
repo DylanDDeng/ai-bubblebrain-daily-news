@@ -29,6 +29,7 @@ const isPrompt = concept.id === 'prompt';
 const isAgentTerm = concept.id === 'agent';
 const isVibeCoding = concept.id === 'vibe-coding';
 const isContextWindow = concept.id === 'context-window';
+const isToken = concept.id === 'token';
 const isHarness = concept.id === 'harness';
 const isMcp = concept.id === 'mcp';
 const isSkillTerm = concept.id === 'skill';
@@ -1134,6 +1135,79 @@ const isDeployRuntime = concept.id === 'deployment-runtime';
 						<span>关键约定写进文件</span>
 					</div>
 					<strong>写进文件的，才是可靠记忆</strong>
+				</div>
+			</div>
+		) : isToken ? (
+			<div class="concept-instance-visual" aria-label={profile.visualTitle}>
+				<div class="concept-instance-source">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">你写的 · 帮我总结这份报告</i>
+						<i class="concept-state-b">你写的 · strawberry</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>你眼里</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">8 个字</i>
+							<i class="concept-state-b">10 个字母</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row concept-tk-row" aria-hidden="true">
+						<code>查词表</code>
+						<span class="concept-state-flip concept-tk-chips">
+							<i class="concept-state-a">
+								<b>帮</b>
+								<b>我</b>
+								<b>总结</b>
+								<b>这</b>
+								<b>份</b>
+								<b>报告</b>
+							</i>
+							<i class="concept-state-b">
+								<b>str</b>
+								<b>aw</b>
+								<b>berry</b>
+							</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row concept-tk-row" aria-hidden="true">
+						<code>换编号</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">6 · 13 · 1552 · 27 · 310 · 2087</i>
+							<i class="concept-state-b">496 · 1027 · 15717</i>
+						</span>
+					</div>
+					<strong>常见词整个一条，其余拆小块</strong>
+				</div>
+				<i class="concept-instance-wire" aria-hidden="true">
+					<b />
+				</i>
+				<div class="concept-instance-page">
+					<em class="concept-state-flip concept-rtm-head" aria-hidden="true">
+						<i class="concept-state-a">模型眼里 · 6 个编号</i>
+						<i class="concept-state-b">模型眼里 · 3 个编号</i>
+					</em>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>看得见</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-yes">「总结」「报告」各是一块</i>
+							<i class="concept-state-b concept-rtm-yes">str、aw、berry 三块</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>看不见</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a concept-rtm-no">「报」「告」两个单字</i>
+							<i class="concept-state-b concept-rtm-no">单个字母 r——所以数不清</i>
+						</span>
+					</div>
+					<div class="concept-rtm-row" aria-hidden="true">
+						<code>结算</code>
+						<span class="concept-state-flip">
+							<i class="concept-state-a">窗口、费用按 6 算</i>
+							<i class="concept-state-b">窗口、费用按 3 算</i>
+						</span>
+					</div>
+					<strong>它读的是编号，不是字</strong>
 				</div>
 			</div>
 		) : isHarness ? (
