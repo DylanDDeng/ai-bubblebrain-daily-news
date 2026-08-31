@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 500" role="img" aria-labelledby="title desc">
+  <title id="title">迷失在中间：同在桌上，待遇不同</title>
+  <desc id="desc">一排十三张消息卡代表一段长对话。两端的卡片颜色深，表示开头和最近的内容模型用得最牢；中间的卡片逐渐变浅，表示埋在中间的内容容易被漏掉。你的第 3 条要求恰好在正中间，被标了警告。下方结论：重要要求放开头，聊久了再重复一遍，让它同时占住两个好位置。</desc>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .card{fill:#fff;stroke:#b9b9b5;stroke-width:1.5}
+    .t{font-size:13px;font-weight:650;fill:#333}
+    .needle{fill:#fff0ec;stroke:#ff4d2e;stroke-width:1.8;stroke-dasharray:5 4}
+    .needle-t{font-size:15px;font-weight:700;fill:#d9341c}
+    .zone{font-size:14px;font-weight:700;fill:#2c8a44}
+    .zone-warn{font-size:14px;font-weight:700;fill:#d9341c}
+    .brk{fill:none;stroke:#dedede;stroke-width:1.5}
+    .note{font-size:15px;fill:#6c6c6c}
+    .fix{font-size:16px;font-weight:650;fill:#111}
+    .f30{opacity:0.55}.f60{opacity:0.3}
+  </style>
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">LOST IN THE MIDDLE</text>
+    <text x="40" y="92" class="headline">同在桌上，待遇也不一样</text>
+
+    <text x="40" y="134" class="note">一段长对话，从最早（左）到最近（右）——颜色越深，越容易被它用上：</text>
+
+    <rect class="card" x="40" y="186" width="72" height="100"/><text x="52" y="218" class="t">最早</text>
+    <rect class="card" x="118" y="186" width="72" height="100"/>
+    <rect class="card f30" x="196" y="186" width="72" height="100"/>
+    <rect class="card f30" x="274" y="186" width="72" height="100"/>
+    <rect class="card f60" x="352" y="186" width="72" height="100"/>
+    <rect class="card f60" x="430" y="186" width="72" height="100"/>
+    <rect class="needle" x="508" y="186" width="72" height="100"/><text x="518" y="218" class="t">要求 3</text>
+    <rect class="card f60" x="586" y="186" width="72" height="100"/>
+    <rect class="card f60" x="664" y="186" width="72" height="100"/>
+    <rect class="card f30" x="742" y="186" width="72" height="100"/>
+    <rect class="card f30" x="820" y="186" width="72" height="100"/>
+    <rect class="card" x="898" y="186" width="72" height="100"/>
+    <rect class="card" x="976" y="186" width="72" height="100"/><text x="988" y="218" class="t">最近</text>
+
+    <text x="544" y="172" text-anchor="middle" class="needle-t">你的第 3 条要求埋在这里 ↓</text>
+
+    <path class="brk" d="M40 306v10h150v-10"/>
+    <text x="115" y="342" text-anchor="middle" class="zone">开头 · 记得牢</text>
+    <path class="brk" d="M352 306v10h306v-10"/>
+    <text x="505" y="342" text-anchor="middle" class="zone-warn">中间 · 容易被淹没</text>
+    <path class="brk" d="M898 306v10h150v-10"/>
+    <text x="973" y="342" text-anchor="middle" class="zone">最近 · 记得牢</text>
+
+    <text x="40" y="400" class="note">研究者把这叫「迷失在中间」：内容明明都在窗口里，开头和结尾的更容易被用上，</text>
+    <text x="40" y="426" class="note">埋在中间的细节常常被漏掉。塞得越满，中间那片沼泽就越大。</text>
+    <text x="40" y="470" class="fix">所以：重要要求放开头；聊久了，把它再说一遍——让它同时占住两个好位置。</text>
+  </g>
+</svg>

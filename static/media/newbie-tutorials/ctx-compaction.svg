@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 640" role="img" aria-labelledby="title desc">
+  <title id="title">桌子快满时，它会偷偷做总结</title>
+  <desc id="desc">三步。第一步：原对话八条，包含具体细节——全程用中文、预算 3 万 5、主色深蓝色号 1B3A6B、周四下午 3 点评审、对接人林工。第二步：桌子快满时，这八条被压缩成一段摘要：「用户在推进官网改版，已确定预算、主色与评审安排，后续用中文沟通」，原文被替换掉。第三步清点细节存活情况：全程用中文保住了；预算数字、色号、评审时间都只剩模糊说法；对接人林工完全消失。结论：压缩保大意、丢细节，之后再问细节，它要么答不上，要么现编一个。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .coltitle{font-size:21px;font-weight:700;letter-spacing:-0.3px;fill:#111}
+    .sub{font-size:13.5px;fill:#6c6c6c}
+    .msg{font-size:13.5px;fill:#333}
+    .hl{font-size:13.5px;font-weight:700;fill:#d9341c}
+    .sum{font-size:15px;font-weight:600;fill:#111}
+    .keep{font-size:14px;font-weight:650;fill:#2c8a44}
+    .lost{font-size:14px;font-weight:650;fill:#d9341c}
+    .lost-s{font-size:12.5px;fill:#6c6c6c}
+    .doc{fill:#fff;stroke:#b9b9b5;stroke-width:1.5}
+    .strip{fill:#f5f5f2;stroke:#dedede;stroke-width:1}
+    .sumcard{fill:#fff;stroke:#111;stroke-width:1.5}
+    .row{fill:#fff;stroke:#dedede;stroke-width:1}
+    .row-lost{fill:#fff0ec;stroke:#ff4d2e;stroke-width:1.2}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .note{font-size:15px;fill:#6c6c6c}
+  </style>
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">COMPACTION</text>
+    <text x="40" y="92" class="headline">桌子快满时，它会偷偷做总结</text>
+
+    <text x="40" y="140" class="mono num">01</text>
+    <text x="76" y="141" class="coltitle">原对话 · 细节都在</text>
+    <rect class="doc" x="40" y="160" width="310" height="392"/>
+    <rect class="strip" x="56" y="176" width="278" height="40"/><text x="66" y="201" class="msg">你：官网改版，<tspan class="hl">全程用中文</tspan></text>
+    <rect class="strip" x="56" y="222" width="278" height="40"/><text x="66" y="247" class="msg">你：预算 <tspan class="hl">3 万 5</tspan>，不能超</text>
+    <rect class="strip" x="56" y="268" width="278" height="40"/><text x="66" y="293" class="msg">它：两种方案对比是……</text>
+    <rect class="strip" x="56" y="314" width="278" height="40"/><text x="66" y="339" class="msg">你：主色深蓝，<tspan class="hl">#1B3A6B</tspan></text>
+    <rect class="strip" x="56" y="360" width="278" height="40"/><text x="66" y="385" class="msg">它：按深蓝出了三版配色……</text>
+    <rect class="strip" x="56" y="406" width="278" height="40"/><text x="66" y="431" class="msg">你：<tspan class="hl">周四下午 3 点</tspan>评审</text>
+    <rect class="strip" x="56" y="452" width="278" height="40"/><text x="66" y="477" class="msg">你：对接人是<tspan class="hl">林工</tspan></text>
+    <rect class="strip" x="56" y="498" width="278" height="40"/><text x="66" y="523" class="msg">它：都记下了……</text>
+
+    <path class="wire" d="M356 356H400"/>
+
+    <text x="406" y="140" class="mono num">02</text>
+    <text x="442" y="141" class="coltitle">压缩：一段摘要换掉原文</text>
+    <rect class="sumcard" x="406" y="200" width="300" height="200"/>
+    <text x="424" y="232" class="mono sub">SUMMARY · 约 60 token</text>
+    <text x="424" y="266" class="sum">用户在推进官网改版，</text>
+    <text x="424" y="292" class="sum">已确定预算、主色与</text>
+    <text x="424" y="318" class="sum">评审安排，后续用中文</text>
+    <text x="424" y="344" class="sum">沟通。</text>
+    <text x="424" y="380" class="sub">原来的 8 条被这段替换，桌面腾出来了</text>
+    <text x="406" y="440" class="sub">好处：不至于把最早的内容整条挤掉；</text>
+    <text x="406" y="462" class="sub">代价：总结的时候，细节没跟过来。</text>
+
+    <path class="wire" d="M712 356H756"/>
+
+    <text x="762" y="140" class="mono num">03</text>
+    <text x="798" y="141" class="coltitle">清点：细节还剩多少</text>
+    <rect class="row" x="762" y="160" width="290" height="56"/>
+    <text x="778" y="184" class="keep">✓ 全程用中文</text>
+    <text x="778" y="204" class="lost-s">摘要里保住了</text>
+    <rect class="row-lost" x="762" y="224" width="290" height="56"/>
+    <text x="778" y="248" class="lost">✗ 预算 3 万 5</text>
+    <text x="778" y="268" class="lost-s">只剩「已确定预算」，数字丢了</text>
+    <rect class="row-lost" x="762" y="288" width="290" height="56"/>
+    <text x="778" y="312" class="lost">✗ 色号 #1B3A6B</text>
+    <text x="778" y="332" class="lost-s">只剩「主色」</text>
+    <rect class="row-lost" x="762" y="352" width="290" height="56"/>
+    <text x="778" y="376" class="lost">✗ 周四下午 3 点</text>
+    <text x="778" y="396" class="lost-s">只剩「评审安排」</text>
+    <rect class="row-lost" x="762" y="416" width="290" height="56"/>
+    <text x="778" y="440" class="lost">✗ 对接人林工</text>
+    <text x="778" y="460" class="lost-s">摘要里完全没提</text>
+
+    <text x="40" y="600" class="note">压缩保大意、丢细节。之后你再问「预算多少」，它手里只有摘要——要么答不上，要么现编一个数（第一篇的老毛病）。</text>
+  </g>
+</svg>
