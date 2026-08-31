@@ -26,6 +26,7 @@ import {
 import ArticleOutline from './ArticleOutline.astro';
 import { commentThreadId } from '../lib/comments/threadId';
 import '../styles/legacy-pages.css';
+import '../styles/newbie-lab.css';
 import '../styles/ai-infographic.css';
 
 interface Props {
@@ -106,6 +107,7 @@ type DirectoryKind =
 	| 'codex-tutorials'
 	| 'deepseek-harness-tutorials'
 	| 'pi-agent-tutorials'
+	| 'newbie-tutorials'
 	| 'workbuddy-tutorials';
 
 const { record, markdownId, markdownCollection } = Astro.props;
@@ -161,6 +163,11 @@ const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 		en: 'Pi Agent Tutorials',
 		kicker: 'PI AGENT GUIDE',
 	},
+	'newbie-tutorials': {
+		zh: '新手村',
+		en: 'Newbie Village',
+		kicker: 'NEWBIE VILLAGE',
+	},
 	'workbuddy-tutorials': {
 		zh: 'WorkBuddy 教程',
 		en: 'WorkBuddy Tutorials',
@@ -204,6 +211,7 @@ if (
 		'codex-tutorials',
 		'deepseek-harness-tutorials',
 		'pi-agent-tutorials',
+		'newbie-tutorials',
 		'workbuddy-tutorials',
 	].includes(record.section)
 ) {
@@ -216,6 +224,7 @@ if (
 			'codex-tutorials',
 			'deepseek-harness-tutorials',
 			'pi-agent-tutorials',
+			'newbie-tutorials',
 			'workbuddy-tutorials',
 		].includes(record.section)
 	) {
@@ -242,6 +251,7 @@ const tutorialKinds = [
 	'codex-tutorials',
 	'deepseek-harness-tutorials',
 	'pi-agent-tutorials',
+	'newbie-tutorials',
 	'workbuddy-tutorials',
 ];
 const isTutorialIndex = record.isIndex && tutorialKinds.includes(record.section);
@@ -390,6 +400,7 @@ const libraryApi =
 						'codex-tutorials',
 						'deepseek-harness-tutorials',
 						'pi-agent-tutorials',
+						'newbie-tutorials',
 						'workbuddy-tutorials',
 					].includes(directoryKind ?? '') && (
 						<div class="directory-intro">
@@ -677,4 +688,5 @@ const libraryApi =
 	import '../scripts/legacy-directory.js';
 	import '../scripts/article-outline.ts';
 	import '../scripts/article-image-zoom.ts';
+	import '../scripts/newbie-lab.ts';
 </script>

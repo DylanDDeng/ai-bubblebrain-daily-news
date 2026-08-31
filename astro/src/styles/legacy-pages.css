@@ -130,7 +130,9 @@
 
 .content-directory:not(.content-directory--highlights):not(.content-directory--codex-tutorials):not(
 		.content-directory--deepseek-harness-tutorials
-	):not(.content-directory--pi-agent-tutorials):not(.content-directory--workbuddy-tutorials)
+	):not(.content-directory--pi-agent-tutorials):not(.content-directory--newbie-tutorials):not(
+		.content-directory--workbuddy-tutorials
+	)
 	article:not(:has(> img)) {
 	grid-template-columns: 1fr;
 }
@@ -187,6 +189,7 @@
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='pi-agent-tutorials'],
+		[data-directory-page='newbie-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-hero {
@@ -199,6 +202,7 @@
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='pi-agent-tutorials'],
+		[data-directory-page='newbie-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar {
@@ -212,6 +216,7 @@
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='pi-agent-tutorials'],
+		[data-directory-page='newbie-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -226,6 +231,7 @@
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='pi-agent-tutorials'],
+		[data-directory-page='newbie-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -242,6 +248,7 @@
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='pi-agent-tutorials'],
+		[data-directory-page='newbie-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -258,6 +265,7 @@
 		[data-directory-page='codex-tutorials'],
 		[data-directory-page='deepseek-harness-tutorials'],
 		[data-directory-page='pi-agent-tutorials'],
+		[data-directory-page='newbie-tutorials'],
 		[data-directory-page='workbuddy-tutorials']
 	)
 	.directory-toolbar
@@ -271,6 +279,7 @@
 .content-directory--codex-tutorials,
 .content-directory--deepseek-harness-tutorials,
 .content-directory--pi-agent-tutorials,
+.content-directory--newbie-tutorials,
 .content-directory--workbuddy-tutorials {
 	display: block;
 	margin-top: 28px;
@@ -282,6 +291,7 @@
 .content-directory--codex-tutorials article,
 .content-directory--deepseek-harness-tutorials article,
 .content-directory--pi-agent-tutorials article,
+.content-directory--newbie-tutorials article,
 .content-directory--workbuddy-tutorials article {
 	display: grid;
 	grid-template-columns: 112px minmax(0, 1fr);
@@ -295,6 +305,7 @@
 .content-directory--codex-tutorials article > img,
 .content-directory--deepseek-harness-tutorials article > img,
 .content-directory--pi-agent-tutorials article > img,
+.content-directory--newbie-tutorials article > img,
 .content-directory--workbuddy-tutorials article > img {
 	display: none;
 }
@@ -303,6 +314,7 @@
 .content-directory--codex-tutorials article > div,
 .content-directory--deepseek-harness-tutorials article > div,
 .content-directory--pi-agent-tutorials article > div,
+.content-directory--newbie-tutorials article > div,
 .content-directory--workbuddy-tutorials article > div {
 	display: contents;
 }
@@ -311,6 +323,7 @@
 .content-directory--codex-tutorials .directory-item-meta,
 .content-directory--deepseek-harness-tutorials .directory-item-meta,
 .content-directory--pi-agent-tutorials .directory-item-meta,
+.content-directory--newbie-tutorials .directory-item-meta,
 .content-directory--workbuddy-tutorials .directory-item-meta {
 	grid-column: 1;
 	grid-row: 1;
@@ -326,6 +339,7 @@
 .content-directory--codex-tutorials article > div > ul,
 .content-directory--deepseek-harness-tutorials article > div > ul,
 .content-directory--pi-agent-tutorials article > div > ul,
+.content-directory--newbie-tutorials article > div > ul,
 .content-directory--workbuddy-tutorials article > div > ul {
 	display: none;
 }
@@ -334,6 +348,7 @@
 .content-directory--codex-tutorials h2,
 .content-directory--deepseek-harness-tutorials h2,
 .content-directory--pi-agent-tutorials h2,
+.content-directory--newbie-tutorials h2,
 .content-directory--workbuddy-tutorials h2 {
 	grid-column: 2;
 	grid-row: 1;
@@ -348,6 +363,7 @@
 .content-directory--codex-tutorials h2 + p,
 .content-directory--deepseek-harness-tutorials h2 + p,
 .content-directory--pi-agent-tutorials h2 + p,
+.content-directory--newbie-tutorials h2 + p,
 .content-directory--workbuddy-tutorials h2 + p {
 	display: block;
 	grid-column: 2;
@@ -363,6 +379,7 @@
 .content-directory--codex-tutorials article:hover h2 a,
 .content-directory--deepseek-harness-tutorials article:hover h2 a,
 .content-directory--pi-agent-tutorials article:hover h2 a,
+.content-directory--newbie-tutorials article:hover h2 a,
 .content-directory--workbuddy-tutorials article:hover h2 a {
 	color: var(--blue-strong);
 }
@@ -947,6 +964,7 @@
 	.content-directory--codex-tutorials article,
 	.content-directory--deepseek-harness-tutorials article,
 	.content-directory--pi-agent-tutorials article,
+	.content-directory--newbie-tutorials article,
 	.content-directory--workbuddy-tutorials article {
 		grid-template-columns: 1fr;
 		gap: 8px;
@@ -956,6 +974,7 @@
 	.content-directory--codex-tutorials :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--deepseek-harness-tutorials :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--pi-agent-tutorials :is(.directory-item-meta, h2, h2 + p),
+	.content-directory--newbie-tutorials :is(.directory-item-meta, h2, h2 + p),
 	.content-directory--workbuddy-tutorials :is(.directory-item-meta, h2, h2 + p) {
 		grid-column: 1;
 	}
@@ -964,6 +983,7 @@
 	.content-directory--codex-tutorials .directory-item-meta,
 	.content-directory--deepseek-harness-tutorials .directory-item-meta,
 	.content-directory--pi-agent-tutorials .directory-item-meta,
+	.content-directory--newbie-tutorials .directory-item-meta,
 	.content-directory--workbuddy-tutorials .directory-item-meta {
 		grid-row: 1;
 	}
@@ -972,6 +992,7 @@
 	.content-directory--codex-tutorials h2,
 	.content-directory--deepseek-harness-tutorials h2,
 	.content-directory--pi-agent-tutorials h2,
+	.content-directory--newbie-tutorials h2,
 	.content-directory--workbuddy-tutorials h2 {
 		grid-row: 2;
 	}
@@ -980,6 +1001,7 @@
 	.content-directory--codex-tutorials h2 + p,
 	.content-directory--deepseek-harness-tutorials h2 + p,
 	.content-directory--pi-agent-tutorials h2 + p,
+	.content-directory--newbie-tutorials h2 + p,
 	.content-directory--workbuddy-tutorials h2 + p {
 		grid-row: 3;
 	}
@@ -1054,6 +1076,7 @@
 	.content-directory--codex-tutorials article,
 	.content-directory--deepseek-harness-tutorials article,
 	.content-directory--pi-agent-tutorials article,
+	.content-directory--newbie-tutorials article,
 	.content-directory--workbuddy-tutorials article {
 		grid-template-columns: 1fr;
 		padding: 28px 0;

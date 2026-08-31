@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 620" role="img" aria-labelledby="title desc">
+  <title id="title">资料是怎么被找到的：切块、变成点、找最近的点</title>
+  <desc id="desc">三步。第一步切块：一份差旅管理制度被切成第 1 条审批、第 3 条住宿标准、第 4 条一线城市定义、第 5 条报销时限等小段。第二步：每一小段被变成一张语义地图上的一个点，意思相近的点挨得近，差旅相关的段落聚在一起，员工手册里的年假条款离得很远。第三步：问题「住酒店能报多少」也变成一个点，落在住宿标准附近，离它最近的两三个点就是检索结果，哪怕它们和问题没有一个字相同。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .coltitle{font-size:21px;font-weight:700;letter-spacing:-0.3px;fill:#111}
+    .sub{font-size:13.5px;fill:#6c6c6c}
+    .chunk{font-size:14px;fill:#333}
+    .chunk-src{font-size:12px;fill:#6c6c6c}
+    .dot-label{font-size:13px;fill:#333}
+    .dot-label-far{font-size:13px;fill:#6c6c6c}
+    .q-label{font-size:14px;font-weight:700;fill:#d9341c}
+    .hit{font-size:14px;font-weight:650;fill:#2c8a44}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .doc{fill:#fff;stroke:#b9b9b5;stroke-width:1.5}
+    .strip{fill:#f5f5f2;stroke:#dedede;stroke-width:1}
+    .strip-hit{fill:#fff0ec;stroke:#ff4d2e;stroke-width:1.2}
+    .map{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .grid{stroke:#eeeeeb;stroke-width:1}
+    .dot{fill:#b9b9b5}
+    .dot-hit{fill:#ff4d2e}
+    .dot-q{fill:none;stroke:#d9341c;stroke-width:2.5}
+    .ring{fill:none;stroke:#ff4d2e;stroke-width:1.5;stroke-dasharray:4 5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+  </style>
+
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">CHUNK · EMBED · SEARCH</text>
+    <text x="40" y="92" class="headline">资料是怎么被「找到」的</text>
+
+    <!-- column 1: chunking -->
+    <text x="40" y="140" class="mono num">01</text>
+    <text x="76" y="141" class="coltitle">先切成小段</text>
+    <text x="40" y="166" class="sub">一整份文件太长，切成一条一条的「块」</text>
+
+    <rect class="doc" x="40" y="184" width="300" height="360"/>
+    <text x="58" y="210" class="chunk-src">差旅管理制度（2025 版）.docx</text>
+    <rect class="strip" x="58" y="224" width="264" height="54"/>
+    <text x="70" y="246" class="chunk-src">第 1 条</text>
+    <text x="70" y="266" class="chunk">出差需提前 3 个工作日在 OA 审批</text>
+    <rect class="strip-hit" x="58" y="288" width="264" height="54"/>
+    <text x="70" y="310" class="chunk-src">第 3 条</text>
+    <text x="70" y="330" class="chunk">住宿标准：一线 500 元/晚，其他 350</text>
+    <rect class="strip-hit" x="58" y="352" width="264" height="54"/>
+    <text x="70" y="374" class="chunk-src">第 4 条</text>
+    <text x="70" y="394" class="chunk">一线城市指北京、上海、广州、深圳</text>
+    <rect class="strip" x="58" y="416" width="264" height="54"/>
+    <text x="70" y="438" class="chunk-src">第 5 条</text>
+    <text x="70" y="458" class="chunk">出差结束后 10 个工作日内提交发票</text>
+    <text x="58" y="500" class="chunk-src">员工手册.pdf</text>
+    <rect class="strip" x="58" y="508" width="264" height="26"/>
+    <text x="70" y="526" class="chunk">第 8 章 年假按工龄计算……</text>
+
+    <path class="wire" d="M346 364H394"/>
+
+    <!-- column 2: semantic map -->
+    <text x="400" y="140" class="mono num">02</text>
+    <text x="436" y="141" class="coltitle">每一块变成地图上的一个点</text>
+    <text x="400" y="166" class="sub">意思相近的点挨得近，这一步叫「向量化」</text>
+
+    <rect class="map" x="400" y="184" width="300" height="360"/>
+    <line class="grid" x1="400" y1="274" x2="700" y2="274"/><line class="grid" x1="400" y1="364" x2="700" y2="364"/><line class="grid" x1="400" y1="454" x2="700" y2="454"/>
+    <line class="grid" x1="475" y1="184" x2="475" y2="544"/><line class="grid" x1="550" y1="184" x2="550" y2="544"/><line class="grid" x1="625" y1="184" x2="625" y2="544"/>
+    <circle class="dot" cx="470" cy="300" r="7"/><text x="484" y="296" class="dot-label">第 1 条 审批</text>
+    <circle class="dot" cx="520" cy="362" r="7"/><text x="534" y="358" class="dot-label">第 3 条 住宿标准</text>
+    <circle class="dot" cx="560" cy="404" r="7"/><text x="574" y="400" class="dot-label">第 4 条 一线城市</text>
+    <circle class="dot" cx="600" cy="316" r="7"/><text x="614" y="312" class="dot-label">第 5 条 报销</text>
+    <circle class="dot" cx="446" cy="500" r="7"/><text x="460" y="520" class="dot-label-far">第 8 章 年假</text>
+    <text x="416" y="210" class="chunk-src">差旅相关的挤在一起，年假条款离得远</text>
+
+    <path class="wire" d="M706 364H754"/>
+
+    <!-- column 3: query -->
+    <text x="760" y="140" class="mono num">03</text>
+    <text x="796" y="141" class="coltitle">问题也变成点，找最近的</text>
+    <text x="760" y="166" class="sub">一个字不重合也能找到，因为比的是「意思」</text>
+
+    <rect class="map" x="760" y="184" width="292" height="360"/>
+    <line class="grid" x1="760" y1="274" x2="1052" y2="274"/><line class="grid" x1="760" y1="364" x2="1052" y2="364"/><line class="grid" x1="760" y1="454" x2="1052" y2="454"/>
+    <line class="grid" x1="833" y1="184" x2="833" y2="544"/><line class="grid" x1="906" y1="184" x2="906" y2="544"/><line class="grid" x1="979" y1="184" x2="979" y2="544"/>
+    <circle class="ring" cx="890" cy="380" r="58"/>
+    <circle class="dot" cx="830" cy="300" r="7"/>
+    <circle class="dot-hit" cx="880" cy="362" r="7"/><text x="894" y="358" class="dot-label">第 3 条</text>
+    <circle class="dot-hit" cx="920" cy="404" r="7"/><text x="934" y="400" class="dot-label">第 4 条</text>
+    <circle class="dot" cx="960" cy="316" r="7"/>
+    <circle class="dot" cx="806" cy="500" r="7"/>
+    <circle class="dot-q" cx="900" cy="386" r="8"/>
+    <text x="776" y="210" class="q-label">✱ 问：住酒店能报多少？</text>
+    <text x="776" y="526" class="hit">命中：第 3 条、第 4 条 → 交给模型</text>
+
+    <text x="40" y="588" class="chunk">「住酒店能报多少」和「住宿标准」没有一个字相同，关键词搜不到，语义地图上却是邻居。</text>
+  </g>
+</svg>

@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 560" role="img" aria-labelledby="title desc">
+  <title id="title">一个问题在知识库里走一遍</title>
+  <desc id="desc">动画分五步：一，你提问「出差住宿能报多少」；二，检索，在知识库里找出最相关的几段资料；三，拼装，把问题和找到的段落拼成一份输入；四，模型阅读这几段并据此作答；五，回答附上出处。右侧演示模型实际看到的内容依次出现：问题、两段资料、回答和出处。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .step{font-size:19px;font-weight:600;fill:#111}
+    .check{font-size:16px;font-weight:700;fill:#2c8a44}
+    .ptitle{font-size:13.5px;letter-spacing:3px;font-weight:700;fill:#6c6c6c}
+    .chip{font-size:14px;fill:#333}
+    .chip-src{font-size:12.5px;fill:#6c6c6c}
+    .chip-q{font-size:15px;font-weight:650;fill:#111}
+    .chip-ans{font-size:14px;font-weight:650;fill:#2c8a44}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .panel{fill:#f5f5f2;stroke:#dedede;stroke-width:1.5}
+    .qbox{fill:#fff;stroke:#111;stroke-width:1.2}
+    .chunkbox{fill:#fff;stroke:#ff4d2e;stroke-width:1.2}
+    .ansbox{fill:#fff;stroke:#2c8a44;stroke-width:1.2}
+    .r1{animation:pulse1 12s linear infinite}.r2{animation:pulse2 12s linear infinite}
+    .r3{animation:pulse3 12s linear infinite}.r4{animation:pulse4 12s linear infinite}
+    .r5{animation:pulse5 12s linear infinite}
+    .a1{animation:show1 12s linear infinite}.a2{animation:show2 12s linear infinite}
+    .a3{animation:show3 12s linear infinite}.a4{animation:show4 12s linear infinite}
+    .a5{animation:show5 12s linear infinite}
+    @keyframes pulse1{0%,2%{stroke:#dedede}4%,16%{stroke:#ff4d2e}19%,100%{stroke:#dedede}}
+    @keyframes pulse2{0%,22%{stroke:#dedede}24%,36%{stroke:#ff4d2e}39%,100%{stroke:#dedede}}
+    @keyframes pulse3{0%,42%{stroke:#dedede}44%,56%{stroke:#ff4d2e}59%,100%{stroke:#dedede}}
+    @keyframes pulse4{0%,62%{stroke:#dedede}64%,76%{stroke:#ff4d2e}79%,100%{stroke:#dedede}}
+    @keyframes pulse5{0%,82%{stroke:#dedede}84%,96%{stroke:#ff4d2e}99%,100%{stroke:#dedede}}
+    @keyframes show1{0%,12%{opacity:0}15%,97%{opacity:1}100%{opacity:0}}
+    @keyframes show2{0%,32%{opacity:0}35%,97%{opacity:1}100%{opacity:0}}
+    @keyframes show3{0%,52%{opacity:0}55%,97%{opacity:1}100%{opacity:0}}
+    @keyframes show4{0%,72%{opacity:0}75%,97%{opacity:1}100%{opacity:0}}
+    @keyframes show5{0%,92%{opacity:0}94%,97%{opacity:1}100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){
+      .r1,.r2,.r3,.r4,.r5,.a1,.a2,.a3,.a4,.a5{animation:none}
+    }
+  </style>
+
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">RETRIEVAL · AUGMENTED · GENERATION</text>
+    <text x="40" y="92" class="headline">一个问题在知识库里走一遍</text>
+
+    <!-- steps -->
+    <rect class="card r1" x="40" y="126" width="560" height="60"/>
+    <text x="62" y="163" class="mono num">01</text>
+    <text x="104" y="164" class="step">你提问：「出差住宿能报多少？」</text>
+    <text x="566" y="164" text-anchor="middle" class="mono check a1">✓</text>
+
+    <rect class="card r2" x="40" y="200" width="560" height="60"/>
+    <text x="62" y="237" class="mono num">02</text>
+    <text x="104" y="238" class="step">检索：在知识库里找出最相关的几段</text>
+    <text x="566" y="238" text-anchor="middle" class="mono check a2">✓</text>
+
+    <rect class="card r3" x="40" y="274" width="560" height="60"/>
+    <text x="62" y="311" class="mono num">03</text>
+    <text x="104" y="312" class="step">拼装：问题 + 找到的段落 = 交给模型的输入</text>
+    <text x="566" y="312" text-anchor="middle" class="mono check a3">✓</text>
+
+    <rect class="card r4" x="40" y="348" width="560" height="60"/>
+    <text x="62" y="385" class="mono num">04</text>
+    <text x="104" y="386" class="step">模型只读这几段，据此作答</text>
+    <text x="566" y="386" text-anchor="middle" class="mono check a4">✓</text>
+
+    <rect class="card r5" x="40" y="422" width="560" height="60"/>
+    <text x="62" y="459" class="mono num">05</text>
+    <text x="104" y="460" class="step">回答附上出处，可以点开核对</text>
+    <text x="566" y="460" text-anchor="middle" class="mono check a5">✓</text>
+
+    <!-- what the model sees -->
+    <rect class="panel" x="640" y="126" width="412" height="356"/>
+    <text x="662" y="154" class="mono ptitle">模型实际看到的</text>
+
+    <g class="a1">
+      <rect class="qbox" x="662" y="170" width="368" height="40"/>
+      <text x="676" y="196" class="chip-q">问：出差住宿能报多少？</text>
+    </g>
+    <g class="a2">
+      <rect class="chunkbox" x="662" y="222" width="368" height="56"/>
+      <text x="676" y="242" class="chip-src">差旅管理制度（2025 版）· 第 3 条</text>
+      <text x="676" y="264" class="chip">住宿：一线城市 500 元/晚，其他 350 元/晚</text>
+      <rect class="chunkbox" x="662" y="288" width="368" height="56"/>
+      <text x="676" y="308" class="chip-src">差旅管理制度（2025 版）· 第 4 条</text>
+      <text x="676" y="330" class="chip">一线城市指北京、上海、广州、深圳</text>
+    </g>
+    <g class="a3">
+      <text x="846" y="368" text-anchor="middle" class="mono chip-src">↓ 三样东西一起交给模型</text>
+    </g>
+    <g class="a4">
+      <rect class="ansbox" x="662" y="382" width="368" height="84"/>
+      <text x="676" y="406" class="chip-ans">答：北上广深 500 元/晚，其他城市 350 元/晚，</text>
+      <text x="676" y="428" class="chip-ans">超出部分自理。</text>
+    </g>
+    <g class="a5">
+      <text x="676" y="454" class="chip-src">出处：差旅管理制度（2025 版）第 3、4 条 ↗</text>
+    </g>
+
+    <text x="40" y="530" class="chip">模型本身没有变。变的是：作答之前，有人先把对的那几页翻给它看。</text>
+  </g>
+</svg>

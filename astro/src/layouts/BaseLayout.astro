@@ -45,6 +45,7 @@ const languageHref = alternateHref ?? (isEnglish ? '/' : '/en/');
 const canonicalUrl = new URL(canonicalPath, Astro.site);
 const alternateUrl = alternateHref ? new URL(alternateHref, Astro.site) : null;
 const tutorialLinks: NavLink[] = [
+	{ kind: 'link', href: '/newbie-tutorials/', label: '新手村' },
 	{ kind: 'link', href: '/codex-tutorials/', label: 'Codex 教程' },
 	{ kind: 'link', href: '/pi-agent-tutorials/', label: 'Pi Agent 教程' },
 	{ kind: 'link', href: '/workbuddy-tutorials/', label: 'WorkBuddy 教程' },
@@ -103,7 +104,11 @@ const navItemIsActive = (item: NavItem) =>
 		<title>{title}</title>
 		<ClientRouter fallback="swap" />
 		<script is:inline type="module" src="/js/navigation.js"></script>
-		<script is:inline defer src="https://cloud.umami.is/script.js" data-website-id="2a4e6219-c7bc-4336-96e3-5d1dc2f0b330"></script>
+		<script
+			is:inline
+			defer
+			src="https://cloud.umami.is/script.js"
+			data-website-id="2a4e6219-c7bc-4336-96e3-5d1dc2f0b330"></script>
 	</head>
 	<body>
 		<a class="skip-link" href="#main-content">{isEnglish ? 'Skip to content' : '跳到正文'}</a>
@@ -204,6 +209,7 @@ const navItemIsActive = (item: NavItem) =>
 					<div class="site-footer-links">
 						<nav aria-label={isEnglish ? 'Knowledge collections' : '知识栏目'}>
 							<strong>{isEnglish ? 'Library' : '知识库'}</strong>
+							{!isEnglish && <a href="/newbie-tutorials/">新手村</a>}
 							{!isEnglish && <a href="/codex-tutorials/">Codex 教程</a>}
 							{!isEnglish && <a href="/pi-agent-tutorials/">Pi Agent 教程</a>}
 							{!isEnglish && <a href="/workbuddy-tutorials/">WorkBuddy 教程</a>}
