@@ -18,6 +18,17 @@ const chapters = [
 		phrases: ['猜下一个词', 'https://arxiv.org/abs/2509.04664'],
 	},
 	{
+		route: '/newbie-tutorials/why-ai-forgets/',
+		weight: 3,
+		visuals: ['ctx-desk.svg', 'ctx-lost-middle.svg', 'ctx-compaction.svg'],
+		labs: ['desk', 'compact', 'risk'],
+		phrases: [
+			'上下文窗口',
+			'/vibe-coding/terms/context-window/',
+			'/newbie-tutorials/why-llms-hallucinate/',
+		],
+	},
+	{
 		route: '/newbie-tutorials/what-is-a-knowledge-base/',
 		weight: 2,
 		visuals: ['kb-pipeline.svg', 'kb-chunks-and-embeddings.svg', 'kb-failure-points.svg'],

@@ -599,6 +599,100 @@
 	font-weight: 700;
 }
 
+/* Context-window labs: desk bar, transcript, summary card */
+.article-content .nb-desk {
+	display: flex;
+	gap: 2px;
+	height: 52px;
+	margin-top: 10px;
+	padding: 4px;
+	border: 2px solid #b9b9b5;
+	background: var(--paper-muted);
+}
+
+.article-content .nb-desk-block {
+	position: relative;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	min-width: 0;
+	border: 1px solid var(--rule);
+	background: var(--paper);
+	transition: width 240ms ease;
+}
+
+.article-content .nb-desk-block i {
+	overflow: hidden;
+	padding-inline: 8px;
+	color: var(--ink-soft);
+	font-size: 0.66rem;
+	font-style: normal;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.article-content .nb-desk-block.is-req {
+	border-color: var(--blue);
+	background: var(--blue-soft);
+}
+
+.article-content .nb-desk-block.is-req i {
+	color: var(--blue-strong);
+	font-weight: 700;
+}
+
+.article-content .nb-desk-evicted {
+	margin-top: 8px;
+	color: var(--blue-strong);
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	letter-spacing: 0.04em;
+}
+
+.article-content .nb-lab-hint + .nb-choices,
+.article-content .nb-desk + .nb-lab-hint {
+	margin-top: 14px;
+}
+
+.article-content .nb-transcript {
+	display: grid;
+	gap: 6px;
+	transition: opacity 240ms ease;
+}
+
+.article-content .nb-transcript.is-compacted {
+	opacity: 0.3;
+}
+
+.article-content .nb-transcript.is-compacted .nb-msg {
+	text-decoration: line-through;
+	text-decoration-color: var(--ink-faint);
+}
+
+.article-content .nb-msg {
+	padding: 8px 12px;
+	border: 1px solid var(--rule);
+	font-size: 0.85rem;
+	line-height: 1.6;
+}
+
+.article-content .nb-summary {
+	margin-top: 14px;
+	padding: 12px 14px;
+	border: 1px solid var(--ink);
+	background: var(--paper);
+}
+
+.article-content .nb-summary p {
+	font-size: 0.92rem;
+	font-weight: 600;
+	line-height: 1.7;
+}
+
+.article-content .nb-lab-result[data-tone='meh'] .nb-kb-answer {
+	color: var(--ink);
+}
+
 /* Quality meter variant: high is the good end. */
 .article-content .nb-risk-meter[data-nb-good][data-level='low'] .nb-risk-level {
 	color: var(--blue-strong);

@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 600" role="img" aria-labelledby="title desc">
+  <title id="title">桌面只有这么大：上下文窗口</title>
+  <desc id="desc">动画分五幕：桌面代表大小固定的上下文窗口。第一幕，你的要求「全程中文、预算 3 万 5」放上桌面，占用 18%。第二幕，几轮问答加进来，34%。第三幕，你贴的十几页长合同占掉一大块，72%。第四幕，它的长回答也占地方，90%。第五幕，新消息进来，桌子满了，最早的那条要求被挤出桌面，彻底消失，而且它不会提醒你。</desc>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .ptitle{font-size:13.5px;letter-spacing:3px;font-weight:700;fill:#6c6c6c}
+    .blabel{font-size:17px;font-weight:650;fill:#111}
+    .bsub{font-size:12.5px;fill:#6c6c6c}
+    .cap{font-size:14px;letter-spacing:1px;font-weight:700;fill:#6c6c6c}
+    .cap-warn{font-size:14px;letter-spacing:1px;font-weight:700;fill:#d9341c}
+    .caption{font-size:16px;font-weight:600;fill:#333}
+    .caption-warn{font-size:16px;font-weight:700;fill:#d9341c}
+    .note{font-size:15px;fill:#6c6c6c}
+    .desk{fill:#f5f5f2;stroke:#b9b9b5;stroke-width:2}
+    .block{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .block-req{fill:#fff0ec;stroke:#ff4d2e;stroke-width:1.8}
+    .ghost{fill:none;stroke:#b9b9b5;stroke-width:1.5;stroke-dasharray:5 5}
+    .ghost-t{font-size:15px;font-weight:650;fill:#9c9c98}
+    .a1{animation:s1 15s linear infinite}.a2{animation:s2 15s linear infinite}
+    .a3{animation:s3 15s linear infinite}.a4{animation:s4 15s linear infinite}
+    .a5{animation:s5 15s linear infinite}
+    .b1{animation:k1 15s linear infinite}.b2{animation:k2 15s linear infinite}
+    .b3{animation:k3 15s linear infinite}.b4{animation:k4 15s linear infinite}
+    .b1,.b2,.b3,.b4,.a1,.a2,.a3,.a4{opacity:0}
+    @keyframes k1{0%,1%{opacity:0}3%,77%{opacity:1}80%,100%{opacity:0}}
+    @keyframes k2{0%,21%{opacity:0}23%,77%{opacity:1}80%,100%{opacity:0}}
+    @keyframes k3{0%,41%{opacity:0}43%,77%{opacity:1}80%,100%{opacity:0}}
+    @keyframes k4{0%,61%{opacity:0}63%,77%{opacity:1}80%,100%{opacity:0}}
+    @keyframes s1{0%,1%{opacity:0}3%,18%{opacity:1}21%,100%{opacity:0}}
+    @keyframes s2{0%,21%{opacity:0}23%,38%{opacity:1}41%,100%{opacity:0}}
+    @keyframes s3{0%,41%{opacity:0}43%,58%{opacity:1}61%,100%{opacity:0}}
+    @keyframes s4{0%,61%{opacity:0}63%,78%{opacity:1}81%,100%{opacity:0}}
+    @keyframes s5{0%,81%{opacity:0}83%,98%{opacity:1}100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){
+      .a1,.a2,.a3,.a4,.a5,.b1,.b2,.b3,.b4{animation:none}
+      .a1,.a2,.a3,.a4,.b1,.b2,.b3,.b4{opacity:0}
+      .a5{opacity:1}
+    }
+  </style>
+
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">CONTEXT WINDOW</text>
+    <text x="40" y="92" class="headline">每次作答，都要把一切重新摊上这张桌</text>
+
+    <rect class="desk" x="40" y="140" width="1012" height="156"/>
+    <text x="64" y="168" class="mono ptitle">桌面 = 上下文窗口 · 大小固定</text>
+    <text x="1028" y="168" text-anchor="end" class="mono cap a1">已用 18%</text>
+    <text x="1028" y="168" text-anchor="end" class="mono cap a2">已用 34%</text>
+    <text x="1028" y="168" text-anchor="end" class="mono cap a3">已用 72%</text>
+    <text x="1028" y="168" text-anchor="end" class="mono cap a4">已用 90%</text>
+    <text x="1028" y="168" text-anchor="end" class="mono cap-warn a5">满了 · 有东西掉下去了</text>
+
+    <!-- phases 1-4 layout -->
+    <g class="b1">
+      <rect class="block-req" x="60" y="182" width="170" height="94"/>
+      <text x="76" y="216" class="blabel">你的要求</text>
+      <text x="76" y="240" class="bsub">全程中文</text>
+      <text x="76" y="258" class="bsub">预算 3 万 5</text>
+    </g>
+    <g class="b2">
+      <rect class="block" x="238" y="182" width="180" height="94"/>
+      <text x="254" y="216" class="blabel">几轮问答</text>
+      <text x="254" y="240" class="bsub">方案讨论……</text>
+    </g>
+    <g class="b3">
+      <rect class="block" x="426" y="182" width="330" height="94"/>
+      <text x="442" y="216" class="blabel">你贴的长合同</text>
+      <text x="442" y="240" class="bsub">十几页，一口气占掉三分之一</text>
+    </g>
+    <g class="b4">
+      <rect class="block" x="764" y="182" width="220" height="94"/>
+      <text x="780" y="216" class="blabel">它的长回答</text>
+      <text x="780" y="240" class="bsub">它说的话也占桌面</text>
+    </g>
+
+    <!-- phase 5 layout: requirement evicted -->
+    <g class="a5">
+      <rect class="block" x="60" y="182" width="180" height="94"/>
+      <text x="76" y="216" class="blabel">几轮问答</text>
+      <rect class="block" x="248" y="182" width="330" height="94"/>
+      <text x="264" y="216" class="blabel">你贴的长合同</text>
+      <rect class="block" x="586" y="182" width="220" height="94"/>
+      <text x="602" y="216" class="blabel">它的长回答</text>
+      <rect class="block-req" x="814" y="182" width="170" height="94" style="fill:#fff;stroke:#dedede"/>
+      <text x="830" y="216" class="blabel">你的新消息</text>
+      <rect class="ghost" x="60" y="330" width="200" height="76"/>
+      <text x="78" y="362" class="ghost-t">你的要求</text>
+      <text x="78" y="386" class="bsub">全程中文 · 预算 3 万 5</text>
+      <text x="280" y="372" class="caption-warn">⚠ 被挤出桌面 = 彻底消失，它再也看不见这条</text>
+    </g>
+
+    <text x="40" y="470" class="caption a1">对话开始：你的要求最先放上桌面</text>
+    <text x="40" y="470" class="caption a2">几轮问答加进来，还很宽裕</text>
+    <text x="40" y="470" class="caption a3">你贴了一份长合同——大文件是吃桌面的大户</text>
+    <text x="40" y="470" class="caption a4">它写的长回答同样占地方，桌子快满了</text>
+    <text x="40" y="470" class="caption-warn a5">新消息进来，放不下了：最早的内容被挤出去，腾出位置</text>
+
+    <text x="40" y="530" class="note">被挤出去的内容不是「存档」了，而是对它彻底不存在——并且它不会提醒你。</text>
+    <text x="40" y="558" class="note">于是聊到后面，它开始违反你最早提的要求。它不是变笨了，是那条要求已经不在桌上。</text>
+  </g>
+</svg>

@@ -457,6 +457,166 @@ function setupSearchLab(lab: HTMLElement): void {
 	render();
 }
 
+// LAB (context) 01 — a tiny 8000-token desk; the opening requirement gets
+// evicted from the front once the desk overflows.
+const DESK_CAPACITY = 8000;
+const DESK_ITEMS: Record<string, { label: string; size: number }> = {
+	ask: { label: '你的问题', size: 300 },
+	chat: { label: '闲聊', size: 500 },
+	long: { label: '它的长回答', size: 1500 },
+	doc: { label: '长合同', size: 5200 },
+};
+const DESK_REQ = { key: 'req', label: '你的要求', size: 600 };
+
+function setupDeskLab(lab: HTMLElement): void {
+	const bar = lab.querySelector<HTMLElement>('[data-nb-desk-bar]');
+	const used = lab.querySelector<HTMLElement>('[data-nb-desk-used]');
+	const evictedBox = lab.querySelector<HTMLElement>('[data-nb-desk-evicted]');
+	const ask = lab.querySelector<HTMLButtonElement>('[data-nb-desk-ask]');
+	const reset = lab.querySelector<HTMLButtonElement>('[data-nb-reset]');
+	const result = lab.querySelector<HTMLElement>('[data-nb-result]');
+	const adders = lab.querySelectorAll<HTMLButtonElement>('[data-nb-desk-add]');
+	if (!bar || !used || !evictedBox || !ask || !reset || !result) return;
+
+	let blocks: Array<{ key: string; label: string; size: number }> = [];
+	let evicted: string[] = [];
+
+	const render = () => {
+		const total = blocks.reduce((sum, block) => sum + block.size, 0);
+		used.textContent = `已用 ${total} / ${DESK_CAPACITY} token`;
+		bar.replaceChildren();
+		for (const block of blocks) {
+			const span = document.createElement('span');
+			span.className = block.key === 'req' ? 'nb-desk-block is-req' : 'nb-desk-block';
+			span.style.width = `${(block.size / DESK_CAPACITY) * 100}%`;
+			span.title = `${block.label} · ${block.size} token`;
+			const text = document.createElement('i');
+			text.textContent = block.label;
+			span.append(text);
+			bar.append(span);
+		}
+		if (evicted.length > 0) {
+			evictedBox.hidden = false;
+			const hasReq = evicted.includes(DESK_REQ.label);
+			evictedBox.textContent = `⚠ 已被挤出桌面：${evicted.join('、')}${hasReq ? '——包括你开头的要求' : ''}`;
+		} else {
+			evictedBox.hidden = true;
+		}
+	};
+
+	const start = () => {
+		blocks = [{ ...DESK_REQ }];
+		evicted = [];
+		result.hidden = true;
+		render();
+	};
+
+	const add = (kind: string) => {
+		const item = DESK_ITEMS[kind];
+		if (!item) return;
+		blocks.push({ key: kind, label: item.label, size: item.size });
+		let total = blocks.reduce((sum, block) => sum + block.size, 0);
+		while (total > DESK_CAPACITY && blocks.length > 1) {
+			const gone = blocks.shift()!;
+			evicted.push(gone.label);
+			total -= gone.size;
+		}
+		result.hidden = true;
+		render();
+	};
+
+	const answer = () => {
+		const reqAlive = blocks.some((block) => block.key === 'req');
+		result.replaceChildren();
+		result.dataset.tone = reqAlive ? 'good' : 'bad';
+		const line = document.createElement('p');
+		line.className = 'nb-kb-answer';
+		line.textContent = reqAlive
+			? '回答：「你要求全程用中文，预算 3 万 5，不能超。」'
+			: '回答：「从当前对话里，我没有看到你提过整体要求。需要我们现在定一个吗？」';
+		const verdict = document.createElement('p');
+		verdict.className = 'nb-kb-verdict';
+		verdict.textContent = reqAlive
+			? '那块橙色的要求还在桌上，它当然答得一字不差。再往桌上塞点大东西试试。'
+			: '它没有撒谎，也没有装傻。那条消息已经被挤出桌面，对它来说等于从未存在过——这就是「聊着聊着忘了」的真相。';
+		result.append(line, verdict);
+		result.hidden = false;
+	};
+
+	for (const button of adders) {
+		button.addEventListener('click', () => add(button.dataset.nbDeskAdd ?? ''));
+	}
+	ask.addEventListener('click', answer);
+	reset.addEventListener('click', start);
+	start();
+}
+
+// LAB (context) 02 — compaction keeps the gist and drops the details.
+const COMPACT_ANSWERS: Record<
+	string,
+	{ answer: string; note: string; tone: 'good' | 'bad' | 'meh' }
+> = {
+	budget: {
+		answer: '回答：「预算之前已经确定过了。如果需要，我先按 3 万左右来规划？」',
+		note: '具体数字在压缩时丢了，摘要里只剩「已确定预算」。它嘴里那个「3 万左右」是现编的——语气很稳，数字是错的。长对话后期的数字错误，多半就是这么来的。',
+		tone: 'bad',
+	},
+	color: {
+		answer: '回答：「主色是深蓝色系。」',
+		note: '大方向保住了，但色号 #1B3A6B 没了。设计稿会照着「深蓝」跑偏一点点——这种半对不对的答案最难被发现。',
+		tone: 'meh',
+	},
+	lang: {
+		answer: '回答：「后续全程用中文沟通。」',
+		note: '这条在摘要里完整活了下来，答得没问题。压缩不是全丢，是保大意、丢细节。',
+		tone: 'good',
+	},
+};
+
+function setupCompactLab(lab: HTMLElement): void {
+	const transcript = lab.querySelector<HTMLElement>('[data-nb-transcript]');
+	const compact = lab.querySelector<HTMLButtonElement>('[data-nb-compact]');
+	const summary = lab.querySelector<HTMLElement>('[data-nb-summary]');
+	const questions = lab.querySelector<HTMLElement>('[data-nb-compact-questions]');
+	const result = lab.querySelector<HTMLElement>('[data-nb-result]');
+	const reset = lab.querySelector<HTMLButtonElement>('[data-nb-reset]');
+	if (!transcript || !compact || !summary || !questions || !result || !reset) return;
+
+	compact.addEventListener('click', () => {
+		transcript.classList.add('is-compacted');
+		compact.hidden = true;
+		summary.hidden = false;
+		questions.hidden = false;
+		reset.hidden = false;
+	});
+
+	for (const button of questions.querySelectorAll<HTMLButtonElement>('[data-nb-q]')) {
+		button.addEventListener('click', () => {
+			const outcome = COMPACT_ANSWERS[button.dataset.nbQ ?? ''];
+			if (!outcome) return;
+			result.replaceChildren();
+			result.dataset.tone = outcome.tone;
+			const answer = document.createElement('p');
+			answer.className = 'nb-kb-answer';
+			answer.textContent = outcome.answer;
+			const note = document.createElement('p');
+			note.className = 'nb-kb-verdict';
+			note.textContent = outcome.note;
+			result.append(answer, note);
+			result.hidden = false;
+		});
+	}
+
+	reset.addEventListener('click', () => {
+		transcript.classList.remove('is-compacted');
+		compact.hidden = false;
+		summary.hidden = true;
+		questions.hidden = true;
+		result.hidden = true;
+		reset.hidden = true;
+	});
+}
+
 function setupNewbieLabs(): void {
 	for (const lab of document.querySelectorAll<HTMLElement>('[data-nb-lab]')) {
 		if (lab.dataset.nbReady === 'true') continue;
@@ -468,6 +628,8 @@ function setupNewbieLabs(): void {
 		else if (kind === 'risk') setupRiskLab(lab);
 		else if (kind === 'retrieve') setupRetrieveLab(lab);
 		else if (kind === 'search') setupSearchLab(lab);
+		else if (kind === 'desk') setupDeskLab(lab);
+		else if (kind === 'compact') setupCompactLab(lab);
 	}
 }
 
