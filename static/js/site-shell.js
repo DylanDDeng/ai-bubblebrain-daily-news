@@ -33,6 +33,20 @@ function initSiteShell() {
     });
   }
 
+  // Exclusive accordion for the rail nav groups: opening one collapses the
+  // others so the sidebar keeps a single expanded submenu at a time.
+  const navGroups = document.querySelectorAll("details[data-nav-group]");
+  for (const group of navGroups) {
+    if (group.dataset.shellBound === "true") continue;
+    group.dataset.shellBound = "true";
+    group.addEventListener("toggle", () => {
+      if (!group.open) return;
+      for (const other of navGroups) {
+        if (other !== group && other.open) other.open = false;
+      }
+    });
+  }
+
   syncThemeIcons();
 }
 
