@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 700" role="img" aria-labelledby="title desc">
+  <title id="title">一个问题会不会踩到幻觉：三个岔路口</title>
+  <desc id="desc">从「你的问题」出发经过三个岔路口。岔路口一：问题要的是想法还是事实？要想法或创作的走低风险出口。要具体事实的继续。岔路口二：有没有给它资料、或它能不能联网查？能查资料的走「先查再答」低风险出口。不能的继续。岔路口三：这件事在训练资料里常见吗？常见的多半正确；冷门、最新、涉及数字日期引用链接的进入幻觉高发区。底部是三条护栏：允许它说不知道、要求给出处、换个问法再问一次。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .label{font-size:20px;font-weight:650;fill:#111}
+    .sub{font-size:13.5px;fill:#6c6c6c}
+    .edge{font-size:13.5px;font-weight:650;fill:#333}
+    .ok{font-size:14px;font-weight:700;fill:#2c8a44}
+    .warn{font-size:14px;font-weight:700;fill:#d9341c}
+    .ptitle{font-size:13.5px;letter-spacing:3px;font-weight:700;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .q{fill:#f5f5f2;stroke:#dedede;stroke-width:1.5}
+    .card-ok{fill:#fff;stroke:#2c8a44;stroke-width:1.5}
+    .card-warn{fill:#fff0ec;stroke:#ff4d2e;stroke-width:1.8}
+    .guard{fill:#fff;stroke:#dedede;stroke-width:1.5;stroke-dasharray:4 6}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+  </style>
+
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">RISK MAP</text>
+    <text x="40" y="92" class="headline">一个问题会不会踩到幻觉：三个岔路口</text>
+
+    <!-- start -->
+    <rect class="q" x="40" y="126" width="240" height="60"/>
+    <text x="60" y="162" class="label">你的问题</text>
+    <path class="wire" d="M280 156H330"/>
+
+    <!-- fork 1 -->
+    <rect class="card" x="334" y="126" width="280" height="60"/>
+    <text x="352" y="150" class="mono num">岔路口 01</text>
+    <text x="352" y="174" class="label">要的是想法，还是事实？</text>
+
+    <path class="wire" d="M614 156H764"/>
+    <text x="689" y="146" text-anchor="middle" class="edge">想法 / 创作</text>
+    <path class="wire" d="M474 186V246"/>
+    <text x="488" y="222" class="edge">要具体事实</text>
+
+    <rect class="card-ok" x="768" y="126" width="284" height="60"/>
+    <text x="786" y="156" class="label">低风险</text>
+    <text x="786" y="176" class="ok">✓ 没有标准答案，也就无所谓编</text>
+
+    <!-- fork 2 -->
+    <rect class="card" x="334" y="250" width="280" height="60"/>
+    <text x="352" y="274" class="mono num">岔路口 02</text>
+    <text x="352" y="298" class="label">它能翻书吗？</text>
+
+    <path class="wire" d="M614 280H764"/>
+    <text x="689" y="270" text-anchor="middle" class="edge">能查资料</text>
+    <path class="wire" d="M474 310V370"/>
+    <text x="488" y="346" class="edge">只能靠记忆</text>
+
+    <rect class="card-ok" x="768" y="250" width="284" height="60"/>
+    <text x="786" y="280" class="label">先查证，再作答</text>
+    <text x="786" y="300" class="ok">✓ 答案有出处，可以点开核对</text>
+
+    <!-- fork 3 -->
+    <rect class="card" x="334" y="374" width="280" height="60"/>
+    <text x="352" y="398" class="mono num">岔路口 03</text>
+    <text x="352" y="422" class="label">这件事在训练资料里常见吗？</text>
+
+    <path class="wire" d="M614 404H764"/>
+    <text x="689" y="394" text-anchor="middle" class="edge">常见事实</text>
+    <path class="wire" d="M474 434V494"/>
+    <text x="488" y="470" class="edge">冷门 · 最新 · 细节</text>
+
+    <rect class="card-ok" x="768" y="374" width="284" height="60"/>
+    <text x="786" y="404" class="label">多半正确</text>
+    <text x="786" y="424" class="ok">✓ 印象深，错的概率小</text>
+
+    <!-- danger zone -->
+    <rect class="card-warn" x="334" y="498" width="718" height="70"/>
+    <text x="352" y="528" class="label">幻觉高发区</text>
+    <text x="352" y="552" class="warn">⚠ 具体数字 · 日期 · 引用 · 链接 · 函数名 · 小众人物 · 最近几个月的事</text>
+
+    <!-- guardrails -->
+    <text x="40" y="614" class="mono ptitle">三条护栏 · 任何时候都能加</text>
+    <rect class="guard" x="40" y="626" width="324" height="50"/>
+    <text x="58" y="657" class="label" style="font-size:17px">允许它说「不知道」</text>
+    <rect class="guard" x="384" y="626" width="324" height="50"/>
+    <text x="402" y="657" class="label" style="font-size:17px">要求给出处，并点开核对</text>
+    <rect class="guard" x="728" y="626" width="324" height="50"/>
+    <text x="746" y="657" class="label" style="font-size:17px">换个问法再问一次，看是否一致</text>
+  </g>
+</svg>

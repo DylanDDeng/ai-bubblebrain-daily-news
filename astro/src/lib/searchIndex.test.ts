@@ -11,6 +11,7 @@ describe('knowledge search index', () => {
 		expect(index.sections).toContain('highlights');
 		expect(index.sections).toContain('codex-tutorials');
 		expect(index.sections).toContain('pi-agent-tutorials');
+		expect(index.sections).toContain('newbie-tutorials');
 		expect(index.sections).toContain('workbuddy-tutorials');
 		expect(index.items).toEqual(
 			expect.arrayContaining([
@@ -25,6 +26,10 @@ describe('knowledge search index', () => {
 				expect.objectContaining({
 					href: '/codex-tutorials/codex-app-practical-tips/',
 					section_label: 'Codex 教程',
+				}),
+				expect.objectContaining({
+					href: '/newbie-tutorials/why-llms-hallucinate/',
+					section_label: '新手村',
 				}),
 				expect.objectContaining({
 					href: '/pi-agent-tutorials/pi-agent-overview/',

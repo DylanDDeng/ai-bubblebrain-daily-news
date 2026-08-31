@@ -48,6 +48,7 @@ const legacy = defineCollection({
 			'codex-tutorials/**/*.md',
 			'deepseek-harness-tutorials/**/*.md',
 			'pi-agent-tutorials/**/*.md',
+			'newbie-tutorials/**/*.md',
 			'workbuddy-tutorials/**/*.md',
 			'curations/**/*.md',
 			'highlights/_index*.md',

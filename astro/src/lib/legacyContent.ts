@@ -9,6 +9,7 @@ export const LEGACY_SECTIONS = [
 	'codex-tutorials',
 	'deepseek-harness-tutorials',
 	'pi-agent-tutorials',
+	'newbie-tutorials',
 	'workbuddy-tutorials',
 	'curations',
 	'highlights',

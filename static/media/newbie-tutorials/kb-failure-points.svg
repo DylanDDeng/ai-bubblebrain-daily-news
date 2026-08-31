@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 470" role="img" aria-labelledby="title desc">
+  <title id="title">知识库答错时，多半坏在哪一步</title>
+  <desc id="desc">流水线四步：资料、检索、拼装、模型作答。每一步下面标出一种典型故障：资料这一步是过期、冲突或根本没写进去；检索这一步是问法不同或切块不好导致没找到；拼装这一步是段落太多太杂互相干扰；模型作答这一步是资料里没有它还是编了。底部提示：答错时先问是哪一步坏了，再修那一步。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .label{font-size:22px;font-weight:700;letter-spacing:-0.3px;fill:#111}
+    .sub{font-size:13.5px;fill:#6c6c6c}
+    .warn-t{font-size:15px;font-weight:700;fill:#d9341c}
+    .warn-s{font-size:13.5px;fill:#333}
+    .fix{font-size:13.5px;font-weight:650;fill:#2c8a44}
+    .note{font-size:15px;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .warn{fill:#fff0ec;stroke:#ff4d2e;stroke-width:1.5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .drop{fill:none;stroke:#ff4d2e;stroke-width:1.5;stroke-dasharray:3 5}
+  </style>
+
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">WHERE IT BREAKS</text>
+    <text x="40" y="92" class="headline">答错时，多半坏在哪一步</text>
+
+    <rect class="card" x="40" y="130" width="228" height="76"/>
+    <text x="58" y="156" class="mono num">01</text>
+    <text x="58" y="186" class="label">资料</text>
+    <path class="wire" d="M268 168H310"/>
+
+    <rect class="card" x="314" y="130" width="228" height="76"/>
+    <text x="332" y="156" class="mono num">02</text>
+    <text x="332" y="186" class="label">检索</text>
+    <path class="wire" d="M542 168H584"/>
+
+    <rect class="card" x="588" y="130" width="228" height="76"/>
+    <text x="606" y="156" class="mono num">03</text>
+    <text x="606" y="186" class="label">拼装</text>
+    <path class="wire" d="M816 168H858"/>
+
+    <rect class="card" x="862" y="130" width="190" height="76"/>
+    <text x="880" y="156" class="mono num">04</text>
+    <text x="880" y="186" class="label">模型作答</text>
+
+    <line class="drop" x1="154" y1="206" x2="154" y2="240"/>
+    <line class="drop" x1="428" y1="206" x2="428" y2="240"/>
+    <line class="drop" x1="702" y1="206" x2="702" y2="240"/>
+    <line class="drop" x1="957" y1="206" x2="957" y2="240"/>
+
+    <rect class="warn" x="40" y="244" width="228" height="128"/>
+    <text x="58" y="272" class="warn-t">⚠ 资料本身有问题</text>
+    <text x="58" y="298" class="warn-s">旧版没下线、两份打架、</text>
+    <text x="58" y="318" class="warn-s">或者根本没人写进去</text>
+    <text x="58" y="352" class="fix">修法：定期清理，有人负责</text>
+
+    <rect class="warn" x="314" y="244" width="228" height="128"/>
+    <text x="332" y="272" class="warn-t">⚠ 没找到</text>
+    <text x="332" y="298" class="warn-s">问法和文档用词不同、</text>
+    <text x="332" y="318" class="warn-s">切块把一句话切成两半</text>
+    <text x="332" y="352" class="fix">修法：语义检索、调整切块</text>
+
+    <rect class="warn" x="588" y="244" width="228" height="128"/>
+    <text x="606" y="272" class="warn-t">⚠ 找到太多太杂</text>
+    <text x="606" y="298" class="warn-s">十几段一起塞给模型，</text>
+    <text x="606" y="318" class="warn-s">新旧混在一起互相干扰</text>
+    <text x="606" y="352" class="fix">修法：只给最相关的几段</text>
+
+    <rect class="warn" x="862" y="244" width="190" height="128"/>
+    <text x="880" y="272" class="warn-t">⚠ 资料里没有</text>
+    <text x="880" y="298" class="warn-s">模型还是硬答了，</text>
+    <text x="880" y="318" class="warn-s">回到上一篇的幻觉</text>
+    <text x="880" y="352" class="fix">修法：要求「没有就说没有」</text>
+
+    <text x="40" y="424" class="note">知识库答错，先别怪模型。顺着这四步问一句「是哪一步坏了」，通常前三步就能找到原因。</text>
+  </g>
+</svg>

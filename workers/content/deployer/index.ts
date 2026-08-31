@@ -428,6 +428,7 @@ function classifyCodeReleasePath(
       "content/deepseek-harness-tutorials/",
       "content/highlights/",
       "content/pi-agent-tutorials/",
+      "content/newbie-tutorials/",
       "content/skills/",
       "astro/src/data/design-md/",
       "content/workbuddy-tutorials/",

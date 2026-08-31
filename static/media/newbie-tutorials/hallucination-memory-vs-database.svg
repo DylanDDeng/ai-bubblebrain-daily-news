@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 640" role="img" aria-labelledby="title desc">
+  <title id="title">数据库会说「没有结果」，语言模型不会</title>
+  <desc id="desc">左边是数据库或搜索引擎：拿到问题后在记录里查找，命中就返回那条记录，没命中就返回「没有结果」。右边是语言模型：拿到问题后在几百亿个参数里找印象，印象清晰时多半正确，印象模糊时会拼凑细节，没有印象时会凭空编造，但三种情况最后都会生成一段通顺的回答，没有「返回空」这个选项。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .coltitle{font-size:26px;font-weight:720;letter-spacing:-0.5px;fill:#111}
+    .label{font-size:19px;font-weight:650;fill:#111}
+    .sub{font-size:13.5px;fill:#6c6c6c}
+    .ok{font-size:14px;font-weight:700;fill:#2c8a44}
+    .warn{font-size:14px;font-weight:700;fill:#d9341c}
+    .note{font-size:15px;fill:#6c6c6c}
+    .note-strong{font-size:15px;font-weight:700;fill:#d9341c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .card-ok{fill:#fff;stroke:#2c8a44;stroke-width:1.5}
+    .card-warn{fill:#fff;stroke:#ff4d2e;stroke-width:1.5}
+    .q{fill:#f5f5f2;stroke:#dedede;stroke-width:1.5}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    .divider{stroke:#e6e6e2;stroke-width:1.5;stroke-dasharray:4 8}
+  </style>
+
+  <line class="divider" x1="546" y1="40" x2="546" y2="600"/>
+
+  <g class="sans">
+    <!-- LEFT: database -->
+    <text x="40" y="52" class="mono eyebrow">A · 数据库 / 搜索引擎</text>
+    <text x="40" y="92" class="coltitle">查得到就答，查不到就说没有</text>
+
+    <rect class="q" x="40" y="118" width="466" height="60"/>
+    <text x="60" y="154" class="label">问：这本书的作者是谁？</text>
+    <path class="wire" d="M273 178V210"/>
+
+    <rect class="card" x="40" y="214" width="466" height="60"/>
+    <text x="60" y="250" class="label">在记录里逐条查找</text>
+
+    <path class="wire" d="M273 274V296H150V318"/>
+    <path class="wire" d="M273 274V296H396V318"/>
+
+    <rect class="card" x="40" y="322" width="220" height="60"/>
+    <text x="60" y="352" class="label">命中</text>
+    <text x="60" y="372" class="sub">记录里确实有这本书</text>
+
+    <rect class="card" x="286" y="322" width="220" height="60"/>
+    <text x="306" y="352" class="label">没命中</text>
+    <text x="306" y="372" class="sub">记录里没有这本书</text>
+
+    <path class="wire" d="M150 382V414"/>
+    <path class="wire" d="M396 382V414"/>
+
+    <rect class="card-ok" x="40" y="418" width="220" height="60"/>
+    <text x="60" y="448" class="label">返回那条记录</text>
+    <text x="60" y="468" class="ok">✓ 答案来自记录</text>
+
+    <rect class="card-ok" x="286" y="418" width="220" height="60"/>
+    <text x="306" y="448" class="label">返回「没有结果」</text>
+    <text x="306" y="468" class="ok">✓ 它有「空」这个选项</text>
+
+    <text x="40" y="540" class="note">答案只有两种来源：一条真实记录，或者一个诚实的「空」。</text>
+
+    <!-- RIGHT: language model -->
+    <text x="586" y="52" class="mono eyebrow">B · 语言模型</text>
+    <text x="586" y="92" class="coltitle">不管印象深浅，都会接着说</text>
+
+    <rect class="q" x="586" y="118" width="466" height="60"/>
+    <text x="606" y="154" class="label">问：这本书的作者是谁？</text>
+    <path class="wire" d="M819 178V210"/>
+
+    <rect class="card" x="586" y="214" width="466" height="60"/>
+    <text x="606" y="242" class="label">在几百亿个参数里找「印象」</text>
+    <text x="606" y="262" class="sub">存的是词与词的关联强度，不是一条条记录</text>
+
+    <path class="wire" d="M819 274V296H660V318"/>
+    <path class="wire" d="M819 274V318"/>
+    <path class="wire" d="M819 274V296H978V318"/>
+
+    <rect class="card" x="586" y="322" width="148" height="72"/>
+    <text x="602" y="350" class="label">印象清晰</text>
+    <text x="602" y="372" class="sub">高频事实</text>
+    <text x="602" y="388" class="sub">见过成千上万次</text>
+
+    <rect class="card" x="745" y="322" width="148" height="72"/>
+    <text x="761" y="350" class="label">印象模糊</text>
+    <text x="761" y="372" class="sub">只见过几次</text>
+    <text x="761" y="388" class="sub">人名、数字、日期</text>
+
+    <rect class="card" x="904" y="322" width="148" height="72"/>
+    <text x="920" y="350" class="label">没有印象</text>
+    <text x="920" y="372" class="sub">训练之后的事</text>
+    <text x="920" y="388" class="sub">或根本不存在</text>
+
+    <path class="wire" d="M660 394V416H819V438"/>
+    <path class="wire" d="M819 394V438"/>
+    <path class="wire" d="M978 394V416H819V438"/>
+
+    <rect class="card-warn" x="586" y="442" width="466" height="60"/>
+    <text x="606" y="478" class="label">无论如何，生成一段通顺的回答</text>
+
+    <text x="602" y="530" class="ok">✓ 多半正确</text>
+    <text x="761" y="530" class="warn">⚠ 拼凑细节</text>
+    <text x="920" y="530" class="warn">⚠ 凭空编造</text>
+
+    <text x="586" y="574" class="note-strong">没有「返回空」这个选项。</text>
+    <text x="586" y="598" class="note">三条路最后都汇进同一个出口：一段像模像样的话。</text>
+  </g>
+</svg>

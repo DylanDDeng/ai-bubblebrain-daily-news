@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 580" role="img" aria-labelledby="title desc">
+  <title id="title">大模型每一步只做一件事：猜下一个词</title>
+  <desc id="desc">动画分四步演示：句子开头是「今天天气真」，模型算出候选词的概率（好 62%、不错 21%、热 9%），选中概率最高的「好」接到句子后面；接着再算一次，依次接上「，」「适合」「出去」。每一步都只是在选最像话的下一个词，从未检查这句话是不是真的。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .ptitle{font-size:13.5px;letter-spacing:3px;font-weight:700;fill:#6c6c6c}
+    .sent{font-size:30px;font-weight:650;fill:#111}
+    .tok{font-size:30px;font-weight:650;fill:#d9341c}
+    .cand{font-size:22px;font-weight:650;fill:#111}
+    .cand-top{font-size:22px;font-weight:700;fill:#d9341c}
+    .pct{font-size:14px;letter-spacing:1px;fill:#6c6c6c}
+    .pct-top{font-size:14px;letter-spacing:1px;font-weight:700;fill:#d9341c}
+    .note{font-size:15px;fill:#6c6c6c}
+    .warn{font-size:15px;font-weight:700;fill:#d9341c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .bar{fill:#e6e6e2}
+    .bar-top{fill:#ff4d2e}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;marker-end:url(#arrow)}
+    .caret{fill:#ff4d2e}
+    .p1{animation:show1 12s linear infinite}.p2{animation:show2 12s linear infinite}
+    .p3{animation:show3 12s linear infinite}.p4{animation:show4 12s linear infinite}
+    .t1{animation:tok1 12s linear infinite}.t2{animation:tok2 12s linear infinite}
+    .t3{animation:tok3 12s linear infinite}.t4{animation:tok4 12s linear infinite}
+    .p1,.p2,.p3{opacity:0}
+    @keyframes show1{0%,1%{opacity:0}3%,22%{opacity:1}25%,100%{opacity:0}}
+    @keyframes show2{0%,26%{opacity:0}28%,47%{opacity:1}50%,100%{opacity:0}}
+    @keyframes show3{0%,51%{opacity:0}53%,72%{opacity:1}75%,100%{opacity:0}}
+    @keyframes show4{0%,76%{opacity:0}78%,97%{opacity:1}100%{opacity:0}}
+    @keyframes tok1{0%,17%{opacity:0}19%,97%{opacity:1}100%{opacity:0}}
+    @keyframes tok2{0%,42%{opacity:0}44%,97%{opacity:1}100%{opacity:0}}
+    @keyframes tok3{0%,67%{opacity:0}69%,97%{opacity:1}100%{opacity:0}}
+    @keyframes tok4{0%,91%{opacity:0}93%,97%{opacity:1}100%{opacity:0}}
+    @media(prefers-reduced-motion:reduce){
+      .p1,.p2,.p3,.p4,.t1,.t2,.t3,.t4{animation:none}
+      .p1,.p2,.p3{opacity:0}.p4,.t1,.t2,.t3,.t4{opacity:1}
+    }
+  </style>
+
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">NEXT TOKEN</text>
+    <text x="40" y="92" class="headline">每一步只做一件事：猜下一个词</text>
+
+    <!-- sentence so far -->
+    <rect class="card" x="40" y="126" width="1012" height="100"/>
+    <text x="64" y="154" class="mono ptitle">已经写出来的</text>
+    <text x="64" y="200" class="sent">今天天气真</text>
+    <text x="216" y="200" class="tok t1">好</text>
+    <text x="248" y="200" class="tok t2">，</text>
+    <text x="280" y="200" class="tok t3">适合</text>
+    <text x="342" y="200" class="tok t4">出去</text>
+    <rect class="caret p1" x="218" y="176" width="3" height="30"/>
+    <rect class="caret p2" x="250" y="176" width="3" height="30"/>
+    <rect class="caret p3" x="282" y="176" width="3" height="30"/>
+    <rect class="caret p4" x="404" y="176" width="3" height="30"/>
+
+    <path class="wire" d="M546 226V262"/>
+
+    <!-- candidates panel -->
+    <rect class="card" x="40" y="266" width="1012" height="238"/>
+    <text x="64" y="294" class="mono ptitle">模型算出的下一个词候选</text>
+
+    <!-- phase 1: after 今天天气真 -->
+    <g class="p1">
+      <text x="64" y="342" class="cand-top">好</text>
+      <rect class="bar-top" x="200" y="322" width="496" height="24"/>
+      <text x="710" y="340" class="mono pct-top">62%</text>
+      <text x="64" y="398" class="cand">不错</text>
+      <rect class="bar" x="200" y="378" width="168" height="24"/>
+      <text x="382" y="396" class="mono pct">21%</text>
+      <text x="64" y="454" class="cand">热</text>
+      <rect class="bar" x="200" y="434" width="72" height="24"/>
+      <text x="286" y="452" class="mono pct">9%</text>
+      <text x="1028" y="482" text-anchor="end" class="mono note">第 1 步 · 选「好」</text>
+    </g>
+    <!-- phase 2: after 今天天气真好 -->
+    <g class="p2">
+      <text x="64" y="342" class="cand-top">，</text>
+      <rect class="bar-top" x="200" y="322" width="440" height="24"/>
+      <text x="654" y="340" class="mono pct-top">55%</text>
+      <text x="64" y="398" class="cand">啊</text>
+      <rect class="bar" x="200" y="378" width="240" height="24"/>
+      <text x="454" y="396" class="mono pct">30%</text>
+      <text x="64" y="454" class="cand">。</text>
+      <rect class="bar" x="200" y="434" width="80" height="24"/>
+      <text x="294" y="452" class="mono pct">10%</text>
+      <text x="1028" y="482" text-anchor="end" class="mono note">第 2 步 · 选「，」</text>
+    </g>
+    <!-- phase 3 -->
+    <g class="p3">
+      <text x="64" y="342" class="cand-top">适合</text>
+      <rect class="bar-top" x="200" y="322" width="352" height="24"/>
+      <text x="566" y="340" class="mono pct-top">44%</text>
+      <text x="64" y="398" class="cand">我们</text>
+      <rect class="bar" x="200" y="378" width="200" height="24"/>
+      <text x="414" y="396" class="mono pct">25%</text>
+      <text x="64" y="454" class="cand">要不</text>
+      <rect class="bar" x="200" y="434" width="96" height="24"/>
+      <text x="310" y="452" class="mono pct">12%</text>
+      <text x="1028" y="482" text-anchor="end" class="mono note">第 3 步 · 选「适合」</text>
+    </g>
+    <!-- phase 4 -->
+    <g class="p4">
+      <text x="64" y="342" class="cand-top">出去</text>
+      <rect class="bar-top" x="200" y="322" width="464" height="24"/>
+      <text x="678" y="340" class="mono pct-top">58%</text>
+      <text x="64" y="398" class="cand">晒</text>
+      <rect class="bar" x="200" y="378" width="160" height="24"/>
+      <text x="374" y="396" class="mono pct">20%</text>
+      <text x="64" y="454" class="cand">散步</text>
+      <rect class="bar" x="200" y="434" width="120" height="24"/>
+      <text x="334" y="452" class="mono pct">15%</text>
+      <text x="1028" y="482" text-anchor="end" class="mono note">第 4 步 · 选「出去」，再来一轮</text>
+    </g>
+
+    <text x="40" y="548" class="note">选中最像话的那个词 → 接到句子后面 → 再算一次。</text>
+    <text x="580" y="548" class="warn">全程没有一步在问：这句话是真的吗？</text>
+  </g>
+</svg>
