@@ -211,6 +211,10 @@ describe('unified highlights content', () => {
 			expect(entry.body).toContain('Please remove all mannered prose.');
 			expect(entry.body).toContain('The number of tokens used to edit files');
 		}
+
+		const chinese = records.find((entry) => entry.locale === 'zh-CN');
+		expect(chinese?.body).not.toContain('不是');
+		expect(chinese?.body).not.toContain('而是');
 	});
 
 	it('preserves every migrated Chinese and English record in Markdown', async () => {
