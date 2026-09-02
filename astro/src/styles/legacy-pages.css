@@ -673,12 +673,14 @@
 .article-content pre {
 	position: relative;
 	overflow: auto;
+	overflow-wrap: anywhere;
 	padding: 28px 22px 22px;
 	border: 1px solid var(--rule);
 	border-radius: 2px;
 	background: var(--paper-muted) !important;
 	font-size: 0.82rem;
 	line-height: 1.75;
+	white-space: pre-wrap;
 }
 
 /* Shiki stamps the language on the block — surface it as a quiet mono tag. */
