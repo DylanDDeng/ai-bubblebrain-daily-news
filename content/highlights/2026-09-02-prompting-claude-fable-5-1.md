@@ -10,7 +10,7 @@ featured: true
 draft: false
 ---
 
-[Anthropic 官方文档](https://platform.claude.com/docs/zh-CN/build-with-claude/prompt-engineering/prompting-claude-fable-5-1) · [English version](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1)
+[Anthropic 官方文档](https://platform.claude.com/docs/zh-CN/build-with-claude/prompt-engineering/prompting-claude-fable-5-1)
 
 Claude Fable 5 的现有提示通常无需修改，就能在 Claude Fable 5.1 上继续工作。这份指南的价值在于列出一组具体的“行为校准项”：什么时候该调整 `effort`，为什么长任务里用户看不到进度，怎样避免工具调用串行化，以及如何防止 Agent 提前收工或悄悄扩大范围。
 
