@@ -213,6 +213,10 @@ describe('unified highlights content', () => {
 		}
 
 		const chinese = records.find((entry) => entry.locale === 'zh-CN');
+		expect(chinese?.body).toContain(
+			'[Anthropic 官方文档](https://platform.claude.com/docs/zh-CN/build-with-claude/prompt-engineering/prompting-claude-fable-5-1)',
+		);
+		expect(chinese?.body).not.toContain('[English version]');
 		expect(chinese?.body).not.toContain('不是');
 		expect(chinese?.body).not.toContain('而是');
 	});
