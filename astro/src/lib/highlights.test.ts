@@ -45,6 +45,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-08-25-build-a-long-running-agent-open-source-harness/',
 	'/highlights/2026-08-27-what-it-takes-for-coding-agents-to-complete-large-software-tasks/',
 	'/en/highlights/2026-08-27-what-it-takes-for-coding-agents-to-complete-large-software-tasks/',
+	'/highlights/2026-09-02-prompting-claude-fable-5-1/',
+	'/en/highlights/2026-09-02-prompting-claude-fable-5-1/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -191,6 +193,23 @@ describe('unified highlights content', () => {
 			expect(entry.body).toContain('115,000');
 			expect(entry.body).toMatch(/90(?:%| percent)/);
 			expect(entry.body).toContain('pb-1.2.0');
+		}
+	});
+
+	it('keeps the Claude Fable 5.1 prompting guide complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'prompting-claude-fable-5-1',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(18);
+			expect(entry.body).toContain('thinking-display-updates-2026-08-18');
+			expect(entry.body).toContain('mid-conversation-system-clear-at-2026-08-21');
+			expect(entry.body).toContain('prefix_mismatch_behavior');
+			expect(entry.body).toContain('First privately list what you need next');
+			expect(entry.body).toContain('Please remove all mannered prose.');
+			expect(entry.body).toContain('The number of tokens used to edit files');
 		}
 	});
 
