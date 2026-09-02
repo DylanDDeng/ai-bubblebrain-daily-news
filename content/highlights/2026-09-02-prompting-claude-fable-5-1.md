@@ -12,7 +12,7 @@ draft: false
 
 [Anthropic 官方文档](https://platform.claude.com/docs/zh-CN/build-with-claude/prompt-engineering/prompting-claude-fable-5-1) · [English version](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5-1)
 
-Claude Fable 5 的现有提示通常无需修改，就能在 Claude Fable 5.1 上继续工作。这份指南真正有价值的地方，不是要求大家重写 Prompt，而是列出一组具体的“行为校准项”：什么时候该调整 `effort`，为什么长任务里用户看不到进度，怎样避免工具调用串行化，以及如何防止 Agent 提前收工或悄悄扩大范围。
+Claude Fable 5 的现有提示通常无需修改，就能在 Claude Fable 5.1 上继续工作。这份指南的价值在于列出一组具体的“行为校准项”：什么时候该调整 `effort`，为什么长任务里用户看不到进度，怎样避免工具调用串行化，以及如何防止 Agent 提前收工或悄悄扩大范围。
 
 如果你正在构建 Coding Agent、研究 Agent 或带工具的长程工作流，这是一份很实用的上线前检查表。
 
@@ -25,7 +25,7 @@ Claude Fable 5 的现有提示通常无需修改，就能在 Claude Fable 5.1 �
 - `xhigh` 与 `max` 的能力增益更明显，但长篇输出可能等待更久、消耗更多 token；
 - `low` 更可能凭记忆回答，减少搜索或检索工具调用。
 
-重点不是“永远用最高档”，而是用评测找到任务所需的最低可靠档位。
+应通过评测找到任务所需的最低可靠档位，无需默认选择最高档。
 
 ## 2. 明确要求面向用户的进度更新
 
@@ -61,8 +61,8 @@ First privately list what you need next; then request every item that doesn't de
 
 实践上应遵循三条规则：
 
-1. 每轮提醒使用 turn-scoped system message，而不是注入后再删除；
-2. 中途修改指令或工具时，使用 mid-conversation system message，而不是重写 `system` 或 `tools`；
+1. 每轮提醒使用 turn-scoped system message，避免注入后再删除；
+2. 中途修改指令或工具时，使用 mid-conversation system message，避免重写 `system` 或 `tools`；
 3. 优先使用服务端 Compaction 或 Context Editing。若必须在客户端压缩，就用“一条摘要 + 新用户轮次”替换整个历史，不要把旧思考块带过去。
 
 可以用 `prefix_mismatch_behavior: "drop_block"` 运行一次并记录 `input_transformations`，检查自己的 harness 是否暗中修改了历史前缀。
@@ -77,7 +77,7 @@ Fable 5.1 的套话和未解释术语更少，但有时句子会更长、段落�
 Please remove all mannered prose.
 ```
 
-这条指令的目标不是让文字失去风格，而是优先传达准确意思，避免为了修辞让读者额外费力。
+这条指令可以保留文字风格，同时优先传达准确意思，避免为了修辞让读者额外费力。
 
 ## 6. 让格式服务于内容
 
@@ -91,7 +91,7 @@ Fable 5.1 在总结文档时，比 Fable 5 更可能复述来源段落，却没�
 
 - 用户请求；
 - 搜索或检索工具输出；
-- 以比较和综合为主、而非逐篇复述的回答；
+- 以比较和综合为主，避免逐篇复述的回答；
 - 一句解释为什么这个回答是正确示范。
 
 示例应要求绝大多数信息使用模型自己的间接引语表达，只保留少量、明确加引号的原文短语。
@@ -115,8 +115,8 @@ You are operating autonomously. The user is not watching in real time and cannot
 - 普通歧义由 Agent 像谨慎的同事一样自行判断；
 - 不依赖答案的部分先全部完成；
 - 一部分受阻时，其他部分仍要做完，并准确说明遗漏项；
-- 发现无关的 Bug、性能问题或文档缺口时，把它作为后续建议，而不是顺手塞进当前改动；
-- 已经决定要做的步骤应真正执行，而不是只在结尾宣布。
+- 发现无关的 Bug、性能问题或文档缺口时，把它作为后续建议，别顺手塞进当前改动；
+- 已经决定要做的步骤应真正执行，不能只在结尾宣布。
 
 这组规则同时解决两个常见问题：Agent 过早停止，以及 Agent 热心地修改了用户没要求的东西。
 
@@ -137,7 +137,7 @@ You are operating autonomously. The user is not watching in real time and cannot
 
 面对开放式功能请求，Fable 5.1 有时会修复附近代码、扩展未被要求的行为，或提交比任务需要更多的测试文件。可以明确告诉它：
 
-- 预先存在的问题如果不是完成当前任务所必需，不要顺手修复；
+- 只有预先存在的问题会影响当前任务完成时才处理，其他情况不要顺手修复；
 - 歧义按措辞和周边代码最直接支持的解释实现，并在总结中说明假设；
 - 临时验证脚本不必加入仓库；
 - 只有任务要求，或仓库本来就为这类变更保留测试时，才提交规模相称的测试；
@@ -145,9 +145,9 @@ You are operating autonomously. The user is not watching in real time and cannot
 
 ## 12. 在 low effort 下主动触发搜索
 
-`low` effort 下，Fable 5.1 更可能凭记忆回答，较少调用搜索或检索工具。可以只提高受影响轮次的 effort，也可以在系统提示中强调：认识一个名称，不等于知道它当前的状态。
+`low` effort 下，Fable 5.1 更可能凭记忆回答，较少调用搜索或检索工具。可以只提高受影响轮次的 effort，也可以在系统提示中强调：认识一个名称，无法证明你了解它当前的状态。
 
-尤其当问题围绕陌生名称，或 AI 模型、开发者工具等几个月就会变化的领域时，应先搜索再回答，并至少一次按用户原样输入名称。对它“有些印象”反而是产生过时权威答案的高风险情况。
+尤其当问题围绕陌生名称，或 AI 模型、开发者工具等几个月就会变化的领域时，应先搜索再回答，并至少一次按用户原样输入名称。对它“有些印象”很容易催生带有权威口吻的过时答案。
 
 ## 13. 减少安全防护误报
 
@@ -191,13 +191,13 @@ The number of tokens used to edit files is best minimized, all else being equal.
 
 Fable 5.1 的视觉能力有所提升，但面对密集图表和复杂图片时，最好让它能够迭代分析、裁剪、放大并再次核对。
 
-理想配置是给 Agent 一个包含原始图片或视频、并预装 PIL、OpenCV 等基础图像处理库的容器。如果容器成本太高，单独提供一个“选区裁剪并放大后返回”的工具，也能带来大部分提升。视觉能力不仅取决于模型本身，也取决于 harness 是否让模型把注意力投到正确的局部。
+理想配置是给 Agent 一个包含原始图片或视频、并预装 PIL、OpenCV 等基础图像处理库的容器。如果容器成本太高，单独提供一个“选区裁剪并放大后返回”的工具，也能带来大部分提升。模型能力和 harness 的局部查看工具共同决定视觉任务的效果。
 
 ## 结论：这是一份 Agent 产品检查表
 
-这份官方指南最值得带走的，不是一段万能 System Prompt，而是四个设计原则：
+这份官方指南最终归纳出四个设计原则，比一段万能 System Prompt 更值得关注：
 
-1. **用评测选择 effort，而不是凭直觉追求最高档。**
+1. **用评测选择 effort，避免凭直觉追求最高档。**
 2. **让长任务对用户可见，并要求 Agent 真正完成已经承诺的步骤。**
 3. **把对话历史当作 append-only 日志，避免破坏思考块与 Prompt Cache。**
 4. **把范围、测试、并行工具调用和子 Agent 调度写进 harness 的行为契约。**
