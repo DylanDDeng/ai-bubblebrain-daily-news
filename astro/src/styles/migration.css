@@ -1073,12 +1073,14 @@ h1 {
 .legacy-content pre,
 .article-content pre {
 	overflow: auto;
+	overflow-wrap: anywhere;
 	padding: 20px;
 	border: 1px solid var(--rule);
 	background: var(--paper-muted);
 	font-family: var(--mono);
 	font-size: 0.82rem;
 	line-height: 1.7;
+	white-space: pre-wrap;
 }
 
 .legacy-content :not(pre) > code,
