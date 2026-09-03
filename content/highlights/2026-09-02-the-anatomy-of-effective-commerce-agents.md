@@ -10,7 +10,7 @@ featured: true
 draft: false
 ---
 
-[Claude 官方文章](https://claude.com/blog/the-anatomy-of-effective-commerce-agents)
+[Anthropic 官方原文](https://claude.com/blog/the-anatomy-of-effective-commerce-agents)
 
 过去一年，Anthropic 与零售、平台电商、旅行、娱乐和电信行业的团队共同构建了多种商业 Agent。这些系统已经投入生产，部分企业客户观察到客单量提升和商家运营效率改善。它们也逐渐收敛出一套共同结构：一个处于标准 Agent Loop 中的 Claude，配合一组 Skills、业务工具和完整的评测体系。
 

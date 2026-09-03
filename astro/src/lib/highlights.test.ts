@@ -244,6 +244,9 @@ describe('unified highlights content', () => {
 		}
 
 		const chinese = records.find((entry) => entry.locale === 'zh-CN');
+		expect(chinese?.body).toContain(
+			'[Anthropic 官方原文](https://claude.com/blog/the-anatomy-of-effective-commerce-agents)',
+		);
 		expect(chinese?.body).not.toMatch(/不是|而是|并非|而非|不像|不仅/u);
 	});
 
