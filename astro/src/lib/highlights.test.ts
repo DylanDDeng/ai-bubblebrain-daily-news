@@ -47,6 +47,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-08-27-what-it-takes-for-coding-agents-to-complete-large-software-tasks/',
 	'/highlights/2026-09-02-prompting-claude-fable-5-1/',
 	'/en/highlights/2026-09-02-prompting-claude-fable-5-1/',
+	'/highlights/2026-09-02-the-anatomy-of-effective-commerce-agents/',
+	'/en/highlights/2026-09-02-the-anatomy-of-effective-commerce-agents/',
 ];
 
 function highlightRecords(entries: LegacyContentEntry[]) {
@@ -219,6 +221,30 @@ describe('unified highlights content', () => {
 		expect(chinese?.body).not.toContain('[English version]');
 		expect(chinese?.body).not.toContain('不是');
 		expect(chinese?.body).not.toContain('而是');
+	});
+
+	it('keeps the commerce agents guide complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'the-anatomy-of-effective-commerce-agents',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(12);
+			expect(
+				entry.body.match(/https:\/\/claude\.com\/blog\/the-anatomy-of-effective-commerce-agents/g),
+			).toHaveLength(1);
+			expect(entry.body).toMatch(/90%?[–-]99%/);
+			expect(entry.body).toContain('13%');
+			expect(entry.body).toContain('50–100');
+			expect(entry.body).toContain('eager_input_streaming');
+			expect(entry.body).toContain('anthropics/commerce-agents');
+			expect(entry.body).toContain('Matthew Koen');
+			expect(entry.body).toContain('Ali Shazal');
+		}
+
+		const chinese = records.find((entry) => entry.locale === 'zh-CN');
+		expect(chinese?.body).not.toMatch(/不是|而是|并非|而非|不像|不仅/u);
 	});
 
 	it('preserves every migrated Chinese and English record in Markdown', async () => {
