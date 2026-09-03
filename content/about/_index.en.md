@@ -18,10 +18,11 @@ The site currently maintains:
 
 ## Find me
 
-- Website: <https://bubblebrain.me/>
-- Twitter/X: <https://x.com/BubbleBrain>
-- WeChat public account: BubbleBrain
-- Xiaohongshu: Bubble Brain (with a space)
-- WeChat: **BubbleBrain Assistant**
-
-<img src="/images/wechat-qrcode.jpg" alt="WeChat QR code: BubbleBrain Assistant" width="220" />
+| Channel               | Account / address                                                   |
+| --------------------- | ------------------------------------------------------------------- |
+| Website               | [bubblebrain.me](https://bubblebrain.me/)                           |
+| Twitter / X           | [@BubbleBrain](https://x.com/BubbleBrain)                           |
+| WeChat public account | **BubbleBrain**                                                     |
+| Xiaohongshu           | **Bubble Brain** (with a space)                                     |
+| WeChat                | **BubbleBrain Assistant**                                           |
+| WeChat QR code        | ![WeChat QR code: BubbleBrain Assistant](/images/wechat-qrcode.jpg) |

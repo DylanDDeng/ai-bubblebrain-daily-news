@@ -3,7 +3,9 @@ let cleanupOutline = () => {};
 function setupArticleTables(): void {
 	const isEnglish = document.documentElement.lang.toLowerCase().startsWith('en');
 
-	for (const table of document.querySelectorAll<HTMLTableElement>('.article-content table')) {
+	for (const table of document.querySelectorAll<HTMLTableElement>(
+		'.article-content table, .directory-intro table',
+	)) {
 		if (table.parentElement?.classList.contains('article-table-scroll')) continue;
 
 		const wrapper = document.createElement('div');

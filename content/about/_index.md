@@ -3,7 +3,7 @@ title: "关于"
 description: "关于 Bubble's Brain 与作者"
 ---
 
-Bubble's Brain 是一个个人 AI 知识库，沉淀值得长期检索和复用的内容：不追逐每日信息流，而是把值得留下的东西整理成结构化的知识。
+Bubble's Brain 是我的一个个人 AI 知识库，沉淀值得长期检索和复用的内容。里面包含了我写的教程内容，以及精选的一些各个AI公司以及值得关注的AI builder的博客内容。
 
 站点目前主要维护这些栏目：
 
@@ -18,10 +18,11 @@ Bubble's Brain 是一个个人 AI 知识库，沉淀值得长期检索和复用�
 
 ## 找到我
 
-- 个人站点：<https://bubblebrain.me/>
-- Twitter/X：<https://x.com/BubbleBrain>
-- 公众号：BubbleBrain
-- 小红书：Bubble Brain（有空格）
-- 微信：**BubbleBrain小助手**
-
-<img src="/images/wechat-qrcode.jpg" alt="微信二维码：BubbleBrain小助手" width="220" />
+| 渠道        | 账号 / 地址                                                 |
+| ----------- | ----------------------------------------------------------- |
+| 个人站点    | [bubblebrain.me](https://bubblebrain.me/)                   |
+| Twitter / X | [@BubbleBrain](https://x.com/BubbleBrain)                   |
+| 微信公众号  | **BubbleBrain**                                             |
+| 小红书      | **Bubble Brain**（名称中有空格）                            |
+| 微信        | **BubbleBrain小助手**                                       |
+| 微信二维码  | ![微信二维码：BubbleBrain小助手](/images/wechat-qrcode.jpg) |
