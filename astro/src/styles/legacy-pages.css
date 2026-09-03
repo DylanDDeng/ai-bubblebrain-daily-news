@@ -746,6 +746,16 @@
 	border-bottom: 0;
 }
 
+.directory-intro .article-table-scroll :is(th, td):first-child {
+	width: 132px;
+}
+
+.article-table-scroll td img {
+	width: min(180px, 100%);
+	max-width: 100%;
+	margin: 8px 0;
+}
+
 .article-content :is(h2, h3) {
 	scroll-margin-top: 104px;
 }
