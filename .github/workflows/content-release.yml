@@ -73,6 +73,7 @@ jobs:
       DEPLOYMENT_MODE: ${{ github.event.inputs.mode }}
       DEPLOYMENT_ATTEMPT_TOKEN: ${{ github.event.inputs.attempt_token }}
       DEPLOYMENT_EXECUTION_GENERATION: ${{ github.event.inputs.execution_generation }}
+      TRUSTED_RELEASE_CONTROL_SHA: ${{ github.workflow_sha }}
       CONTENT_BUILD_API_ORIGIN: ${{ vars.CONTENT_DEPLOYER_ORIGIN }}
       PUBLIC_CONTENT_API_ORIGIN: https://content-api.bubblenews.today
       PUBLIC_COMMENTS_WRITE_UI_ENABLED: ${{ vars.PUBLIC_COMMENTS_WRITE_UI_ENABLED || 'false' }}
@@ -243,6 +244,21 @@ jobs:
           fi
           echo "SERVER_RESUME_STAGE=$resume_stage" >> "$GITHUB_ENV"
           echo "stage=$resume_stage" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout protected release controls for resumed artifacts
+        if: ${{ steps.resume.outputs.stage == 'preview' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 0
+          path: release-control
+
+      - name: Verify protected release control ancestry
+        if: ${{ steps.resume.outputs.stage == 'preview' }}
+        shell: bash
+        run: |
+          test "$(git -C release-control rev-parse HEAD)" = "$TRUSTED_RELEASE_CONTROL_SHA"
+          git -C release-control merge-base --is-ancestor "$EXACT_CODE_SHA" "$TRUSTED_RELEASE_CONTROL_SHA"
 
       - name: Setup Node.js 22.17.0
         uses: actions/setup-node@v4
@@ -415,7 +431,13 @@ jobs:
 
       - name: Verify Preview route parity and exact bytes
         if: ${{ steps.resume.outputs.stage != 'promote' }}
-        run: node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/client/release-manifests/site-route-manifest.json
+        shell: bash
+        run: |
+          verifier="scripts/verify-preview.mjs"
+          if [[ "$SERVER_RESUME_STAGE" == "preview" ]]; then
+            verifier="release-control/scripts/verify-preview.mjs"
+          fi
+          node "$verifier" "$PREVIEW_URL" "$EXACT_CODE_SHA" astro/dist/client/release-manifests/site-route-manifest.json
 
       - name: Record Preview evidence
         if: ${{ steps.resume.outputs.stage != 'promote' }}
