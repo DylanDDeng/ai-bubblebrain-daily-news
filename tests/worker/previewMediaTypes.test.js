@@ -12,8 +12,10 @@ describe("Preview media-type contract", () => {
   });
 
   it.each([
+    "image/avif",
     "image/gif",
     "image/jpeg",
+    "image/webp",
   ])("accepts tutorial media type %s", (contentType) => {
     expect(expectedPreviewMediaType(contentType)).toBe(contentType);
   });
