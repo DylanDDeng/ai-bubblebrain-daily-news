@@ -14,7 +14,7 @@ jobs:
   build-and-deploy:
     name: build-and-deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     env:
       PUBLIC_COMMENTS_WRITE_UI_ENABLED: ${{ vars.PUBLIC_COMMENTS_WRITE_UI_ENABLED || 'false' }}
 
