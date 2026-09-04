@@ -1,15 +1,8 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import {
-  applyExternalLinkWaivers,
-  auditExternalLinks,
-  closeExternalLinkDispatchers,
-  DEFAULT_EXTERNAL_LINK_BUDGETS,
-  evaluateExternalLinkAudit,
-  probeExternalUrl,
-} from "./external-link-audit.mjs";
 import { expectedPreviewMediaType } from "./preview-media-types.mjs";
+import { verifyWithTargetedRetries } from "./preview-targeted-retry.mjs";
 import { assertRouteBuildContract } from "./content-route-build-contract.mjs";
 
 const argumentsList = process.argv.slice(2);
@@ -64,6 +57,8 @@ base.hash = "";
 function invariant(condition, message) {
   if (!condition) throw new Error(message);
 }
+
+class TransientPreviewError extends Error {}
 
 function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
@@ -183,14 +178,25 @@ const canonicalOrigins = new Set(
     .filter(Boolean)
     .map((value) => new URL(value).origin),
 );
-const failures = [];
 const externalUrls = new Set();
-let cursor = 0;
 const concurrency = Math.min(12, manifest.records.length);
 
-async function verifyRecord(record) {
+async function verifyRecord(record, failures) {
   try {
-    const response = await fetchManual(record.route);
+    let response;
+    try {
+      response = await fetchManual(record.route);
+    } catch (error) {
+      throw new TransientPreviewError(
+        `${record.route}: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+    if (response.status === 429 || response.status >= 500) {
+      await response.body?.cancel();
+      throw new TransientPreviewError(
+        `expected ${record.status}, received ${response.status}`,
+      );
+    }
     invariant(
       response.status === record.status,
       `${record.route}: expected ${record.status}, received ${response.status}`,
@@ -299,21 +305,36 @@ async function verifyRecord(record) {
       }
     }
   } catch (error) {
-    failures.push(
-      `${record.route}: ${error instanceof Error ? error.message : String(error)}`,
-    );
+    failures.set(record.route, {
+      message: `${record.route}: ${error instanceof Error ? error.message : String(error)}`,
+      retryable: error instanceof TransientPreviewError,
+    });
   }
 }
 
-async function routeWorker() {
-  while (true) {
-    const index = cursor++;
-    if (index >= manifest.records.length) return;
-    await verifyRecord(manifest.records[index]);
+async function verifyRecords(records) {
+  const failures = new Map();
+  let cursor = 0;
+  async function routeWorker() {
+    while (true) {
+      const index = cursor++;
+      if (index >= records.length) return;
+      await verifyRecord(records[index], failures);
+    }
   }
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, records.length) }, () =>
+      routeWorker(),
+    ),
+  );
+  return failures;
 }
 
-await Promise.all(Array.from({ length: concurrency }, () => routeWorker()));
+const routeFailures = await verifyWithTargetedRetries(
+  manifest.records,
+  verifyRecords,
+);
+const failures = [...routeFailures.values()].map((failure) => failure.message);
 
 const missingRoute = `/.well-known/phase4-missing-${Date.now()}`;
 const missingResponse = await fetchManual(missingRoute);
@@ -351,6 +372,14 @@ invariant(
 
 let externalEvaluation = null;
 if (checkExternal) {
+  const {
+    applyExternalLinkWaivers,
+    auditExternalLinks,
+    closeExternalLinkDispatchers,
+    DEFAULT_EXTERNAL_LINK_BUDGETS,
+    evaluateExternalLinkAudit,
+    probeExternalUrl,
+  } = await import("./external-link-audit.mjs");
   const urls = [...externalUrls].sort();
   const startedAt = new Date().toISOString();
   const waiverPolicyText = await readFile(externalWaiversPath, "utf8");

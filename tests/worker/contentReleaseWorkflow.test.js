@@ -42,7 +42,7 @@ describe("fenced content release workflow", () => {
       workflow.indexOf("Create immutable fenced release helper"),
     ).toBeLessThan(workflow.indexOf("Checkout exact code SHA"));
     expect(workflow).toContain(
-      "node scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client",
+      "node release-control/scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client",
     );
     expect(workflow).toMatch(
       /- name: Checkout protected release controls for resumed artifacts\n\s+if: \$\{\{ steps\.resume\.outputs\.stage == 'preview' \}\}/,
@@ -56,18 +56,27 @@ describe("fenced content release workflow", () => {
       'git -C release-control merge-base --is-ancestor "$EXACT_CODE_SHA" "$TRUSTED_RELEASE_CONTROL_SHA"',
     );
     expect(workflow).toMatch(
-      /- name: Materialize exact registered R2 artifact\n\s+if: \$\{\{ steps\.resume\.outputs\.stage == 'preview' \}\}/,
+      /- name: Materialize exact registered R2 artifact\n\s+if: \$\{\{ steps\.resume\.outputs\.stage == 'preview' && steps\.preview-reuse\.outputs\.reused != 'true' \}\}/,
     );
     expect(workflow).toContain(
       "if: ${{ steps.resume.outputs.stage == 'build' }}",
     );
     expect(workflow).toMatch(
-      /- name: Verify Preview route parity and exact bytes\n\s+if: \$\{\{ steps\.resume\.outputs\.stage != 'promote' \}\}/,
+      /- name: Verify Preview route parity and exact bytes\n\s+if: \$\{\{ steps\.resume\.outputs\.stage == 'build' \|\| \(steps\.resume\.outputs\.stage == 'preview' && steps\.preview-reuse\.outputs\.reused != 'true'\) \}\}/,
     );
     expect(workflow).toMatch(
       /- name: Record Preview evidence\n\s+if: \$\{\{ steps\.resume\.outputs\.stage != 'promote' \}\}/,
     );
-    expect(workflow).toContain('R2_MATERIALIZE_CONCURRENCY: "16"');
+    expect(workflow).toContain(
+      "Materialize trusted Preview verification baseline",
+    );
+    expect(workflow).toContain("--preview-verification-baseline");
+    expect(workflow).toContain("Reuse exact existing Pages Preview");
+    expect(workflow).toContain(
+      "https://release-$CONTENT_RELEASE_SEQUENCE.bubble-content-preview.pages.dev",
+    );
+    expect(workflow).toContain("steps.preview-reuse.outputs.reused != 'true'");
+    expect(workflow).toContain('R2_MATERIALIZE_CONCURRENCY: "32"');
     expect(workflow).toContain(
       'verifier="release-control/scripts/verify-preview.mjs"',
     );

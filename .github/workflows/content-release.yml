@@ -286,6 +286,7 @@ jobs:
         run: node scripts/validate-content-production-config.mjs workflow-release
 
       - name: Install root locked dependencies
+        if: ${{ steps.resume.outputs.stage == 'build' }}
         run: npm ci
 
       - name: Install Astro locked dependencies
@@ -406,20 +407,63 @@ jobs:
           evidence="$(jq -nc --arg object_key "$ARTIFACT_OBJECT_KEY" --arg hash "$ARTIFACT_SHA256" --arg fingerprint "$artifact_fingerprint" --arg algorithm "$ARTIFACT_HASH_ALGORITHM" --arg code "$EXACT_CODE_SHA" --arg source_code "$SOURCE_CODE_SHA" --arg content "$CONTENT_ROOT_SHA256" --arg env "$BUILD_ENVIRONMENT_VERSION" --arg profile "r2-full-get-sha256-indefinite-lock-v1" --arg verified_at "$r2_verified_at" --arg lock "$lock_evidence_sha256" --arg contract "$RESUME_CONTRACT_VERSION" --argjson bytes "$ARTIFACT_BYTES" '{object_key:$object_key,byte_length:$bytes,artifact_sha256:$hash,artifact_fingerprint_sha256:$fingerprint,hash_algorithm:$algorithm,code_sha:$code,source_code_sha:($source_code | if length > 0 then . else null end),content_sha256:$content,build_environment_version:$env,verification_profile:$profile,r2_verified_at:$verified_at,lock_evidence_sha256:$lock,resume_contract_version:($contract | if length > 0 then . else null end)}')"
           node "$RUNNER_TEMP/content-release-helper.mjs" callback artifact_registered "$evidence"
 
-      - name: Materialize exact registered R2 artifact
+      - name: Materialize trusted Preview verification baseline
         if: ${{ steps.resume.outputs.stage == 'preview' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ARTIFACT_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_ARTIFACT_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: auto
           R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
-          R2_MATERIALIZE_CONCURRENCY: "16"
+          R2_MATERIALIZE_CONCURRENCY: "32"
         run: |
-          node scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client > materialize-summary.json
+          node release-control/scripts/materialize-content-addressed-artifact.mjs \
+            server-resume-plan.json astro/dist/client \
+            --preview-verification-baseline > materialize-baseline-summary.json
+          jq -e \
+            '.site_release_id == env.SITE_RELEASE_ID
+              and .artifact_sha256 == env.ARTIFACT_SHA256
+              and .materialized_file_count < .file_count' \
+            materialize-baseline-summary.json >/dev/null
+
+      - name: Reuse exact existing Pages Preview
+        id: preview-reuse
+        if: ${{ steps.resume.outputs.stage == 'preview' }}
+        shell: bash
+        run: |
+          candidate_url="https://release-$CONTENT_RELEASE_SEQUENCE.bubble-content-preview.pages.dev"
+          set +e
+          node release-control/scripts/verify-preview.mjs \
+            "$candidate_url" "$EXACT_CODE_SHA" \
+            astro/dist/client/release-manifests/site-route-manifest.json \
+            | tee preview-reuse-verification.log
+          verify_status="${PIPESTATUS[0]}"
+          set -e
+          if [[ "$verify_status" == "0" ]]; then
+            echo "reused=true" >> "$GITHUB_OUTPUT"
+            echo "PREVIEW_URL=$candidate_url" >> "$GITHUB_ENV"
+          else
+            echo "reused=false" >> "$GITHUB_OUTPUT"
+            echo "Existing exact Preview is not reusable; redeploying the registered artifact." >&2
+          fi
+
+      - name: Install Preview deployment dependencies
+        if: ${{ steps.resume.outputs.stage == 'preview' && steps.preview-reuse.outputs.reused != 'true' }}
+        run: npm ci
+
+      - name: Materialize exact registered R2 artifact
+        if: ${{ steps.resume.outputs.stage == 'preview' && steps.preview-reuse.outputs.reused != 'true' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ARTIFACT_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_ARTIFACT_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ENDPOINT: https://${{ secrets.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com
+          R2_MATERIALIZE_CONCURRENCY: "32"
+        run: |
+          node release-control/scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client > materialize-summary.json
           jq -e '.site_release_id == env.SITE_RELEASE_ID and .artifact_sha256 == env.ARTIFACT_SHA256' materialize-summary.json >/dev/null
 
       - name: Deploy exact files to Pages Preview
-        if: ${{ steps.resume.outputs.stage != 'promote' }}
+        if: ${{ steps.resume.outputs.stage == 'build' || (steps.resume.outputs.stage == 'preview' && steps.preview-reuse.outputs.reused != 'true') }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_PREVIEW_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -430,7 +474,7 @@ jobs:
           echo "PREVIEW_URL=$preview_url" >> "$GITHUB_ENV"
 
       - name: Verify Preview route parity and exact bytes
-        if: ${{ steps.resume.outputs.stage != 'promote' }}
+        if: ${{ steps.resume.outputs.stage == 'build' || (steps.resume.outputs.stage == 'preview' && steps.preview-reuse.outputs.reused != 'true') }}
         shell: bash
         run: |
           verifier="scripts/verify-preview.mjs"
