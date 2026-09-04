@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 640" role="img" aria-labelledby="title desc">
+  <title id="title">人类来打分：模型的性格是挑出来的</title>
+  <desc id="desc">同一个问题「最近总失眠怎么办」，模型生成三个回答：A 是靠谱建议并提醒就医；B 是自信的偏方；C 是空洞的车轱辘话。标注员从中挑出更好的，这些选择被用来训练一个打分器（行话叫奖励模型，Reward Model），它学会人类口味后，模型再朝高分方向调整。底部警告：如果标注员总选听起来自信流畅的版本，模型学到的就是永远装作很确定——第一篇里的幻觉，就是在这一步被固化的。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .coltitle{font-size:20px;font-weight:700;letter-spacing:-0.3px;fill:#111}
+    .label{font-size:15px;font-weight:650;fill:#111}
+    .sub{font-size:13px;fill:#6c6c6c}
+    .good{font-size:13px;font-weight:700;fill:#2c8a44}
+    .bad{font-size:13px;font-weight:700;fill:#d9341c}
+    .warn-t{font-size:16px;font-weight:700;fill:#d9341c}
+    .warn-s{font-size:14px;fill:#333}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .q{fill:#f5f5f2;stroke:#dedede;stroke-width:1.5}
+    .pick{fill:#fff;stroke:#2c8a44;stroke-width:1.5}
+    .warnbox{fill:#fff0ec;stroke:#ff4d2e;stroke-width:1.8}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+  </style>
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">RLHF · HUMAN FEEDBACK</text>
+    <text x="40" y="92" class="headline">性格不是写出来的，是挑出来的</text>
+
+    <text x="40" y="140" class="mono num">01</text>
+    <text x="76" y="141" class="coltitle">同一个问题，生成多个回答</text>
+    <rect class="q" x="40" y="158" width="300" height="52"/>
+    <text x="58" y="190" class="label">问：最近总失眠，怎么办？</text>
+
+    <rect class="card" x="40" y="226" width="300" height="86"/>
+    <text x="58" y="252" class="mono num">A</text>
+    <text x="84" y="253" class="label">固定作息、睡前少看手机；</text>
+    <text x="84" y="276" class="label">持续几周就去看医生</text>
+    <text x="84" y="298" class="sub">靠谱，但听起来平平无奇</text>
+
+    <rect class="card" x="40" y="324" width="300" height="86"/>
+    <text x="58" y="350" class="mono num">B</text>
+    <text x="84" y="351" class="label">你这是肝火旺，每天三杯</text>
+    <text x="84" y="374" class="label">苦瓜汁，一周痊愈</text>
+    <text x="84" y="396" class="sub">非常自信，非常不靠谱</text>
+
+    <rect class="card" x="40" y="422" width="300" height="86"/>
+    <text x="58" y="448" class="mono num">C</text>
+    <text x="84" y="449" class="label">失眠有很多原因，因人而异，</text>
+    <text x="84" y="472" class="label">建议具体问题具体分析</text>
+    <text x="84" y="494" class="sub">全对，也全是废话</text>
+
+    <path class="wire" d="M346 330H400"/>
+
+    <text x="406" y="140" class="mono num">02</text>
+    <text x="442" y="141" class="coltitle">标注员挑出更好的</text>
+    <rect class="pick" x="406" y="226" width="300" height="86"/>
+    <text x="424" y="252" class="mono good">✓ 选 A</text>
+    <text x="424" y="278" class="label">「这个最有帮助，还知道</text>
+    <text x="424" y="301" class="label">提醒去看医生」</text>
+    <text x="406" y="350" class="sub">几十万道题，每道都这样比一比、挑一挑。</text>
+    <text x="406" y="372" class="sub">这些选择汇成一个「打分器」——</text>
+    <text x="406" y="394" class="sub">行话叫奖励模型（Reward Model）。</text>
+
+    <path class="wire" d="M712 330H766"/>
+
+    <text x="772" y="140" class="mono num">03</text>
+    <text x="808" y="141" class="coltitle">朝高分方向调</text>
+    <rect class="card" x="772" y="226" width="280" height="150"/>
+    <text x="790" y="256" class="label">模型反复练习：</text>
+    <text x="790" y="282" class="sub">怎么回答，打分器会给高分？</text>
+    <text x="790" y="308" class="sub">高分的路子拧进旋钮，</text>
+    <text x="790" y="330" class="sub">低分的路子拧掉。</text>
+    <text x="790" y="360" class="good">✓ 于是它越来越「像 A」</text>
+
+    <rect class="warnbox" x="40" y="536" width="1012" height="72"/>
+    <text x="58" y="566" class="warn-t">⚠ 这一步也有代价</text>
+    <text x="58" y="592" class="warn-s">如果挑的人总偏爱「听起来自信流畅」的版本，模型学到的就是永远装作很确定——第一篇里「宁可编也不说不知道」，就是在这里被一票一票固化的。</text>
+  </g>
+</svg>

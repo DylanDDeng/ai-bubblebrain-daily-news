@@ -18,6 +18,20 @@ const chapters = [
 		phrases: ['猜下一个词', 'https://arxiv.org/abs/2509.04664'],
 	},
 	{
+		route: '/newbie-tutorials/how-llms-are-trained/',
+		weight: 4,
+		visuals: ['train-loop.svg', 'train-rlhf.svg', 'train-pipeline.svg'],
+		labs: ['fill', 'basevs', 'rank'],
+		phrases: [
+			'Pretraining',
+			'SFT',
+			'RLHF',
+			'奖励模型',
+			'填空题',
+			'/newbie-tutorials/why-llms-hallucinate/',
+		],
+	},
+	{
 		route: '/newbie-tutorials/why-ai-forgets/',
 		weight: 3,
 		visuals: ['ctx-desk.svg', 'ctx-lost-middle.svg', 'ctx-compaction.svg'],

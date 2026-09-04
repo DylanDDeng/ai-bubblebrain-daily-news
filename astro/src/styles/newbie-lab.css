@@ -693,6 +693,60 @@
 	color: var(--ink);
 }
 
+/* Training labs: rank options */
+.article-content .nb-rank-q {
+	margin-top: 10px;
+	font-size: 1rem;
+	font-weight: 650;
+}
+
+.article-content .nb-rank-q + .nb-rank-option {
+	margin-top: 10px;
+}
+
+.article-content .nb-rank-option {
+	display: grid;
+	grid-template-columns: 24px minmax(0, 1fr);
+	column-gap: 12px;
+	align-items: start;
+	width: 100%;
+	margin-top: 8px;
+	padding: 12px 14px;
+	border: 1px solid var(--rule);
+	background: var(--paper);
+	color: var(--ink);
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.9rem;
+	line-height: 1.65;
+	text-align: left;
+	transition:
+		border-color 160ms ease,
+		background 160ms ease;
+}
+
+.article-content .nb-rank-option:hover,
+.article-content .nb-rank-option:focus-visible {
+	border-color: var(--blue);
+	background: var(--blue-soft);
+}
+
+.article-content .nb-rank-tag {
+	padding-top: 2px;
+	color: var(--blue-strong);
+	font-family: var(--mono);
+	font-size: 0.72rem;
+	font-weight: 700;
+}
+
+.article-content .nb-lab-result p + p {
+	margin-top: 8px;
+}
+
+.article-content .nb-lab-result .nb-kb-verdict {
+	margin-top: 12px;
+}
+
 /* Quality meter variant: high is the good end. */
 .article-content .nb-risk-meter[data-nb-good][data-level='low'] .nb-risk-level {
 	color: var(--blue-strong);
