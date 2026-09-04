@@ -11,6 +11,8 @@ const expectedArticleRoutes = [
 	'/highlights/2025-11-18-how-three-startups-use-claudecode/',
 	'/highlights/2026-07-15-lets-build-claude-code-harness-step-by-step/',
 	'/en/highlights/2026-07-15-lets-build-claude-code-harness-step-by-step/',
+	'/highlights/2026-07-18-the-complete-guide-to-pstack-part-1/',
+	'/en/highlights/2026-07-18-the-complete-guide-to-pstack-part-1/',
 	'/highlights/2026-07-24-why-software-factories-fail/',
 	'/en/highlights/2026-07-24-why-software-factories-fail/',
 	'/highlights/2026-07-25-claude-design/',
@@ -109,6 +111,28 @@ describe('unified highlights content', () => {
 			).toHaveLength(12);
 			expect(entry.body).toContain('npx skills add heygen-com/hyperframes --full-depth');
 		}
+	});
+
+	it('keeps the pstack verification guide complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) => entry.frontmatter.externalId === 'the-complete-guide-to-pstack-part-1',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(8);
+			expect(entry.body.match(/https:\/\/pbs\.twimg\.com\/media\//g)).toHaveLength(6);
+			expect(entry.body).toContain('2,000');
+			expect(entry.body).toContain('/create-verification-skill');
+			expect(entry.body).toContain('/maintain-verification-skill');
+			expect(entry.body).toContain('control-atlas.mjs');
+			expect(entry.body).toContain('https://github.com/poteto/verification-skill-example');
+			expect(entry.body).toContain('https://cursor.com/docs/cloud-agent');
+			expect(entry.body).toContain('https://github.com/cursor/plugins/tree/main/pstack');
+		}
+
+		const chinese = records.find((entry) => entry.locale === 'zh-CN');
+		expect(chinese?.body).not.toMatch(/不是|而是|并非|而非|不像|不仅/u);
 	});
 
 	it('keeps the LLM can jump argument complete in both languages', async () => {
