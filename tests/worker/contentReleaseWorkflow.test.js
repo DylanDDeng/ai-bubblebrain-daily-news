@@ -45,6 +45,17 @@ describe("fenced content release workflow", () => {
       "node scripts/materialize-content-addressed-artifact.mjs server-resume-plan.json astro/dist/client",
     );
     expect(workflow).toMatch(
+      /- name: Checkout protected release controls for resumed artifacts\n\s+if: \$\{\{ steps\.resume\.outputs\.stage == 'preview' \}\}/,
+    );
+    expect(workflow).toContain(
+      "TRUSTED_RELEASE_CONTROL_SHA: ${{ github.workflow_sha }}",
+    );
+    expect(workflow).toContain("ref: ${{ github.workflow_sha }}");
+    expect(workflow).toContain("path: release-control");
+    expect(workflow).toContain(
+      'git -C release-control merge-base --is-ancestor "$EXACT_CODE_SHA" "$TRUSTED_RELEASE_CONTROL_SHA"',
+    );
+    expect(workflow).toMatch(
       /- name: Materialize exact registered R2 artifact\n\s+if: \$\{\{ steps\.resume\.outputs\.stage == 'preview' \}\}/,
     );
     expect(workflow).toContain(
@@ -58,7 +69,10 @@ describe("fenced content release workflow", () => {
     );
     expect(workflow).toContain('R2_MATERIALIZE_CONCURRENCY: "16"');
     expect(workflow).toContain(
-      'node scripts/verify-preview.mjs "$PREVIEW_URL" "$EXACT_CODE_SHA"',
+      'verifier="release-control/scripts/verify-preview.mjs"',
+    );
+    expect(workflow).toContain(
+      'node "$verifier" "$PREVIEW_URL" "$EXACT_CODE_SHA"',
     );
     expect(workflow).toContain(
       "CONTENT_SCHEMA_VERSION: ${{ vars.CONTENT_SCHEMA_VERSION || '1' }}",
