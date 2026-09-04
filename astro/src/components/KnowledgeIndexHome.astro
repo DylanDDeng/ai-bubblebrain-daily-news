@@ -3,6 +3,7 @@ import { legacyEntryIsRoutable, loadLegacyContent, type LegacySection } from '..
 import { buildKnowledgeSearchIndex } from '../lib/searchIndex';
 import { designBrands } from '../data/designBrands';
 import { vibeCodingTermCategories } from '../data/vibeCodingTerms';
+import { changelog } from '../data/changelog';
 import '../styles/knowledge-home-v2.css';
 
 interface Props {
@@ -86,11 +87,45 @@ const dateFormatter = new Intl.DateTimeFormat(locale, {
 });
 const labelFor = (section: LegacySection) =>
 	sectionCopy.find((item) => item.section === section)?.label ?? section;
+const recentUpdates = changelog.slice(0, 5);
 ---
 
 <section class="kh">
 	<header class="kh-hero">
 		<div class="kh-hero-copy">
+			{
+				!isEnglish && recentUpdates.length > 0 && (
+					<div class="kh-broadcast" data-broadcast-banner role="region" aria-label="最新动态轮播">
+						<a href="/changelog/" class="kh-broadcast-badge" title="查看全部更新日志">
+							最新动态
+						</a>
+						<div class="kh-broadcast-viewport" id="kh-broadcast-viewport">
+							<ul class="kh-broadcast-track" id="kh-broadcast-track">
+								{recentUpdates.map((item, idx) => (
+									<li class="kh-broadcast-item" data-index={idx}>
+										<a
+											href={item.links?.[0]?.href || '/changelog/'}
+											class="kh-broadcast-link"
+											title={item.title}
+										>
+											<span class="kh-broadcast-date">{item.date.slice(5)}</span>
+											<span class="kh-broadcast-title">{item.title}</span>
+										</a>
+									</li>
+								))}
+							</ul>
+						</div>
+						<a
+							href="/changelog/"
+							class="kh-broadcast-arrow"
+							aria-label="查看全部更新"
+							title="查看全部更新"
+						>
+							<i class="ph ph-arrow-right" aria-hidden="true" />
+						</a>
+					</div>
+				)
+			}
 			<p class="kh-eyebrow">{isEnglish ? 'PERSONAL AI KNOWLEDGE BASE' : '个人 AI 知识库'}</p>
 			<h1>
 				Bubble's <em>Brain</em>

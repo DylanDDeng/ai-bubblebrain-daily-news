@@ -223,6 +223,7 @@ const navItemIsActive = (item: NavItem) =>
 						<nav aria-label={isEnglish ? 'Resources' : '更多资源'}>
 							<strong>{isEnglish ? 'More' : '更多'}</strong>
 							<a href={isEnglish ? '/en/about/' : '/about/'}>{isEnglish ? 'About' : '关于'}</a>
+							{!isEnglish && <a href="/changelog/">更新日志</a>}
 							<a href={isEnglish ? '/en/rss.xml' : '/rss.xml'}>RSS</a>
 						</nav>
 					</div>

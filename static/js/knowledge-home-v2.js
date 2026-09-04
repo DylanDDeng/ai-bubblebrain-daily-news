@@ -53,13 +53,7 @@ const mountCatLife = () => {
   const figure = document.getElementById("kh-cat-fig");
   const image = document.getElementById("kh-cat-img");
   const canvas = document.getElementById("kh-cat-canvas");
-  if (
-    !figure ||
-    !image ||
-    !canvas ||
-    figure.dataset.catLife === "true"
-  )
-    return;
+  if (!figure || !image || !canvas || figure.dataset.catLife === "true") return;
 
   const context = canvas.getContext("2d");
   if (!context) return;
@@ -114,19 +108,10 @@ const mountCatLife = () => {
     const deltaY = clientY - centerY;
     const length = Math.hypot(deltaX, deltaY) || 1;
     const strength = Math.min(1, length / 240);
-    drawEyes(
-      (deltaX / length) * strength,
-      (deltaY / length) * strength,
-    );
+    drawEyes((deltaX / length) * strength, (deltaY / length) * strength);
 
-    const horizontal = Math.max(
-      -1,
-      Math.min(1, deltaX / (rect.width * 0.9)),
-    );
-    const vertical = Math.max(
-      -1,
-      Math.min(1, deltaY / (rect.height * 0.9)),
-    );
+    const horizontal = Math.max(-1, Math.min(1, deltaX / (rect.width * 0.9)));
+    const vertical = Math.max(-1, Math.min(1, deltaY / (rect.height * 0.9)));
     figure.style.transform = `rotate(${(horizontal * 1.1).toFixed(2)}deg) translate(${(horizontal * 7).toFixed(1)}px, ${(vertical * 5).toFixed(1)}px)`;
   };
 
@@ -152,21 +137,102 @@ const mountCatLife = () => {
     if (reduceMotion.matches || Date.now() - lastMouse < 5000) return;
     const angle = Math.random() * Math.PI * 2;
     const amplitude = 0.6 + Math.random() * 0.4;
-    drawEyes(
-      Math.cos(angle) * amplitude,
-      Math.sin(angle) * amplitude * 0.6,
-    );
+    drawEyes(Math.cos(angle) * amplitude, Math.sin(angle) * amplitude * 0.6);
     window.setTimeout(() => {
       if (Date.now() - lastMouse >= 5000) drawEyes(0, 0);
     }, 900);
   }, 4200);
 };
 
+const mountBroadcastTicker = () => {
+  const banner = document.querySelector("[data-broadcast-banner]");
+  const track = document.getElementById("kh-broadcast-track");
+  if (!banner || !track || banner.dataset.tickerMounted === "true") return;
+
+  const items = Array.from(track.querySelectorAll(".kh-broadcast-item"));
+  if (items.length <= 1) return;
+
+  banner.dataset.tickerMounted = "true";
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (reduceMotion.matches) return;
+
+  // 克隆第 1 项挂到末尾，实现顺滑无限向上滚动
+  const firstClone = items[0].cloneNode(true);
+  firstClone.setAttribute("aria-hidden", "true");
+  track.appendChild(firstClone);
+
+  const totalCount = items.length;
+  let currentIndex = 0;
+  let timer = null;
+  let isTransitioning = false;
+
+  const getItemHeight = () => {
+    const rect = items[0].getBoundingClientRect();
+    return rect.height > 0 ? rect.height : 22;
+  };
+
+  const step = () => {
+    if (isTransitioning) return;
+    const itemHeight = getItemHeight();
+    currentIndex++;
+    isTransitioning = true;
+    track.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
+    track.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
+
+    if (currentIndex === totalCount) {
+      window.setTimeout(() => {
+        track.style.transition = "none";
+        currentIndex = 0;
+        track.style.transform = "translateY(0)";
+        void track.offsetHeight;
+        isTransitioning = false;
+      }, 460);
+    } else {
+      window.setTimeout(() => {
+        isTransitioning = false;
+      }, 460);
+    }
+  };
+
+  const start = () => {
+    if (timer) return;
+    timer = window.setInterval(step, 2000);
+  };
+
+  const stop = () => {
+    if (timer) {
+      window.clearInterval(timer);
+      timer = null;
+    }
+  };
+
+  banner.addEventListener("mouseenter", stop);
+  banner.addEventListener("mouseleave", start);
+  banner.addEventListener("focusin", stop);
+  banner.addEventListener("focusout", start);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stop();
+    } else {
+      start();
+    }
+  });
+
+  start();
+};
+
 const setupKnowledgeHome = () => {
   pickCat();
   mountCatLife();
+  mountBroadcastTicker();
 };
 
-setupKnowledgeHome();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", setupKnowledgeHome);
+} else {
+  setupKnowledgeHome();
+}
 document.addEventListener("astro:page-load", setupKnowledgeHome);
 document.addEventListener("astro:after-swap", pickCat);
