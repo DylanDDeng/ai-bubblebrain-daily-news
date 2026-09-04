@@ -47,9 +47,7 @@ async function fetchManifestReports(releaseId: string): Promise<ManifestReportEn
 	}
 }
 
-export async function fetchDailyReport(
-	dateKey: string,
-): Promise<Record<string, unknown> | null> {
+export async function fetchDailyReport(dateKey: string): Promise<Record<string, unknown> | null> {
 	const release = await fetchCurrentRelease();
 	if (!release) return null;
 	try {

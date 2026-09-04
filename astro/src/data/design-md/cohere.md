@@ -4,29 +4,29 @@ name: Cohere-design-analysis
 description: Cohere's 2026 web system is a controlled enterprise AI interface built from stark white editorial space, deep green-black product bands, soft mineral surfaces, rounded media cards, and a distinctive type split between monospaced-feeling display headlines and precise Unica77 UI text.
 
 colors:
-  primary: "#17171c"
-  cohere-black: "#000000"
-  ink: "#212121"
-  deep-green: "#003c33"
-  dark-navy: "#071829"
-  canvas: "#ffffff"
-  soft-stone: "#eeece7"
-  pale-green: "#edfce9"
-  pale-blue: "#f1f5ff"
-  hairline: "#d9d9dd"
-  border-light: "#e5e7eb"
-  card-border: "#f2f2f2"
-  muted: "#93939f"
-  slate: "#75758a"
-  body-muted: "#616161"
-  action-blue: "#1863dc"
-  focus-blue: "#4c6ee6"
-  coral: "#ff7759"
-  coral-soft: "#ffad9b"
-  form-focus: "#9b60aa"
-  on-primary: "#ffffff"
-  on-dark: "#ffffff"
-  error: "#b30000"
+  primary: '#17171c'
+  cohere-black: '#000000'
+  ink: '#212121'
+  deep-green: '#003c33'
+  dark-navy: '#071829'
+  canvas: '#ffffff'
+  soft-stone: '#eeece7'
+  pale-green: '#edfce9'
+  pale-blue: '#f1f5ff'
+  hairline: '#d9d9dd'
+  border-light: '#e5e7eb'
+  card-border: '#f2f2f2'
+  muted: '#93939f'
+  slate: '#75758a'
+  body-muted: '#616161'
+  action-blue: '#1863dc'
+  focus-blue: '#4c6ee6'
+  coral: '#ff7759'
+  coral-soft: '#ffad9b'
+  form-focus: '#9b60aa'
+  on-primary: '#ffffff'
+  on-dark: '#ffffff'
+  error: '#b30000'
 
 typography:
   hero-display:
@@ -123,75 +123,75 @@ spacing:
 
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 12px 24px
   button-secondary:
     backgroundColor: transparent
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xs}"
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.xs}'
     padding: 8px 0
   button-pill-outline:
     backgroundColor: transparent
-    textColor: "{colors.primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.xl}"
+    textColor: '{colors.primary}'
+    typography: '{typography.button}'
+    rounded: '{rounded.xl}'
     padding: 6px 12px
   announcement-bar:
-    backgroundColor: "{colors.cohere-black}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.micro}"
+    backgroundColor: '{colors.cohere-black}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.micro}'
     height: 36px
   hero-photo-card:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.canvas}'
+    rounded: '{rounded.lg}'
   agent-console-card:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-dark}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-dark}'
+    rounded: '{rounded.sm}'
     padding: 24px
   trust-logo-strip:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.caption}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.caption}'
   capability-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.xs}'
     padding: 24px
   dark-feature-band:
-    backgroundColor: "{colors.deep-green}"
-    textColor: "{colors.on-dark}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.deep-green}'
+    textColor: '{colors.on-dark}'
+    rounded: '{rounded.lg}'
     padding: 80px
   product-card:
-    backgroundColor: "{colors.soft-stone}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.sm}"
+    backgroundColor: '{colors.soft-stone}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.sm}'
     padding: 32px
   blog-filter-chip:
     backgroundColor: transparent
-    textColor: "{colors.coral}"
-    typography: "{typography.card-heading}"
-    rounded: "{rounded.sm}"
+    textColor: '{colors.coral}'
+    typography: '{typography.card-heading}'
+    rounded: '{rounded.sm}'
     padding: 8px 14px
   research-table:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-large}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-large}'
   contact-form-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.lg}'
     padding: 32px
   footer-newsletter:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.micro}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.micro}'
 ---
 
 ## Overview
@@ -201,6 +201,7 @@ Cohere's current web presence feels like a sober enterprise AI command center wi
 What makes the system distinctive is the mix of austere black-and-white UI with bursts of tactile brand imagery. The site avoids decorative chrome in the normal interface; color arrives through photography, abstract 3D media, coral blog taxonomy chips, blue research links, and dark product environments. Cards are rounded but not cute. Type is large, tight, and almost monospaced in spirit, creating a research-lab cadence across marketing, product, and editorial surfaces.
 
 **Key Characteristics:**
+
 - Monumental display headlines with very tight line height and negative tracking.
 - White editorial canvases interrupted by deep green, dark navy, and image-led CTA bands.
 - Rounded media cards and product cards, usually 8px to 22px.
@@ -258,20 +259,20 @@ Cohere does not use gradients as a generic UI fill. Gradients and color fields a
 
 ### Hierarchy
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
-|---|---|---:|---:|---:|---:|---|
-| Hero Display | CohereText | 96px | 400 | 1.00 | -1.92px | Home page declaration scale. |
-| Product Display | CohereText | 72px | 400 | 1.00 | -1.44px | Product and research hero headlines. |
-| Section Display | Unica77 | 60px | 400 | 1.00 | -1.2px | Large product-page headings. |
-| Section Heading | Unica77 | 48px | 400 | 1.20 | -0.48px | Split hero and CTA headings. |
-| Card Heading | Unica77 | 32px | 400 | 1.20 | -0.32px | Feature card and list section titles. |
-| Feature Heading | Unica77 | 24px | 400 | 1.30 | 0 | Cards, filters, and article titles. |
-| Body Large | Unica77 | 18px | 400 | 1.40 | 0 | Lead text and larger paragraphs. |
-| Body | Unica77 | 16px | 400 | 1.50 | 0 | Default copy and link text. |
-| Button | Unica77 | 14px | 500 | 1.71 | 0 | Compact CTA labels. |
-| Caption | Unica77 | 14px | 400 | 1.40 | 0 | Metadata and small explanatory text. |
-| Mono Label | CohereMono | 14px | 400 | 1.40 | 0.28px | Uppercase technical labels. |
-| Micro | Unica77 | 12px | 400 | 1.40 | 0 | Footer, nav microcopy, and small links. |
+| Role            | Font       | Size | Weight | Line Height | Letter Spacing | Notes                                   |
+| --------------- | ---------- | ---: | -----: | ----------: | -------------: | --------------------------------------- |
+| Hero Display    | CohereText | 96px |    400 |        1.00 |        -1.92px | Home page declaration scale.            |
+| Product Display | CohereText | 72px |    400 |        1.00 |        -1.44px | Product and research hero headlines.    |
+| Section Display | Unica77    | 60px |    400 |        1.00 |         -1.2px | Large product-page headings.            |
+| Section Heading | Unica77    | 48px |    400 |        1.20 |        -0.48px | Split hero and CTA headings.            |
+| Card Heading    | Unica77    | 32px |    400 |        1.20 |        -0.32px | Feature card and list section titles.   |
+| Feature Heading | Unica77    | 24px |    400 |        1.30 |              0 | Cards, filters, and article titles.     |
+| Body Large      | Unica77    | 18px |    400 |        1.40 |              0 | Lead text and larger paragraphs.        |
+| Body            | Unica77    | 16px |    400 |        1.50 |              0 | Default copy and link text.             |
+| Button          | Unica77    | 14px |    500 |        1.71 |              0 | Compact CTA labels.                     |
+| Caption         | Unica77    | 14px |    400 |        1.40 |              0 | Metadata and small explanatory text.    |
+| Mono Label      | CohereMono | 14px |    400 |        1.40 |         0.28px | Uppercase technical labels.             |
+| Micro           | Unica77    | 12px |    400 |        1.40 |              0 | Footer, nav microcopy, and small links. |
 
 ### Principles
 
@@ -306,26 +307,26 @@ Cohere uses whitespace as a trust signal. Large empty intervals separate the bra
 
 Cohere is mostly flat. Depth comes from surface alternation, media contrast, rounded corners, and thin borders rather than drop shadows.
 
-| Level | Treatment | Use |
-|---|---|---|
-| Flat | No shadow, white or dark field | Hero copy, research lists, editorial surfaces |
-| Bordered | 1px `#d9d9dd`, `#e5e7eb`, or dark translucent rules | Research rows, forms, pale cards, footer inputs |
-| Media Lift | Rounded image or video over contrasting section color | Hero photo cards, product videos, CTA imagery |
-| Dark Product Field | Deep green or navy full-width band | Command, North, financial services, security sections |
+| Level              | Treatment                                             | Use                                                   |
+| ------------------ | ----------------------------------------------------- | ----------------------------------------------------- |
+| Flat               | No shadow, white or dark field                        | Hero copy, research lists, editorial surfaces         |
+| Bordered           | 1px `#d9d9dd`, `#e5e7eb`, or dark translucent rules   | Research rows, forms, pale cards, footer inputs       |
+| Media Lift         | Rounded image or video over contrasting section color | Hero photo cards, product videos, CTA imagery         |
+| Dark Product Field | Deep green or navy full-width band                    | Command, North, financial services, security sections |
 
 ## Shapes
 
 ### Radius Scale
 
-| Token | Value | Role |
-|---|---:|---|
-| `xs` | 4px | Small images, search fields, article thumbnails, utility elements |
-| `sm` | 8px | Blog chips, cards, small media, dialogs |
-| `md` | 16px | Medium product cards and grouped blocks |
-| `lg` | 22px | Signature media-card and soft placeholder radius |
-| `xl` | 30px | Research/topic filter pills |
-| `pill` | 32px | Primary CTA buttons |
-| `full` | 9999px | Round status elements and fully pill-shaped controls |
+| Token  |  Value | Role                                                              |
+| ------ | -----: | ----------------------------------------------------------------- |
+| `xs`   |    4px | Small images, search fields, article thumbnails, utility elements |
+| `sm`   |    8px | Blog chips, cards, small media, dialogs                           |
+| `md`   |   16px | Medium product cards and grouped blocks                           |
+| `lg`   |   22px | Signature media-card and soft placeholder radius                  |
+| `xl`   |   30px | Research/topic filter pills                                       |
+| `pill` |   32px | Primary CTA buttons                                               |
+| `full` | 9999px | Round status elements and fully pill-shaped controls              |
 
 ### Image Treatment
 
@@ -415,14 +416,14 @@ Dark footer subscription block with coral "AI moves fast" label, white headline,
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|---|---:|---|
-| Small Mobile | <425px | Single-column cards, compact nav, reduced hero headline scale |
-| Mobile | 425-640px | Hero media stacks, card grids become one column, form rows stack |
-| Large Mobile | 640-768px | Wider one-column layouts with larger media cards |
-| Tablet | 768-1024px | Two-column cards begin, nav spacing tightens |
-| Desktop | 1024-1440px | Full nav, 3-column card grids, split hero compositions |
-| Large Desktop | 1440-2560px | Wide containers and large empty vertical intervals |
+| Name          |       Width | Key Changes                                                      |
+| ------------- | ----------: | ---------------------------------------------------------------- |
+| Small Mobile  |      <425px | Single-column cards, compact nav, reduced hero headline scale    |
+| Mobile        |   425-640px | Hero media stacks, card grids become one column, form rows stack |
+| Large Mobile  |   640-768px | Wider one-column layouts with larger media cards                 |
+| Tablet        |  768-1024px | Two-column cards begin, nav spacing tightens                     |
+| Desktop       | 1024-1440px | Full nav, 3-column card grids, split hero compositions           |
+| Large Desktop | 1440-2560px | Wide containers and large empty vertical intervals               |
 
 ### Touch Targets
 

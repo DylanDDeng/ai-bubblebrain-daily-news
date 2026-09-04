@@ -253,7 +253,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 				description: 'Logo 在左、链接随后、按钮收尾，最通用。',
 				sketch: 'nav-standard',
 			},
-			{ title: '居中式', description: '链接居中排布，品牌感强，内容站常用。', sketch: 'nav-center' },
+			{
+				title: '居中式',
+				description: '链接居中排布，品牌感强，内容站常用。',
+				sketch: 'nav-center',
+			},
 			{ title: '汉堡式', description: '窄屏形态：只留 Logo 和菜单按钮。', sketch: 'nav-burger' },
 		],
 		usage: {
@@ -343,7 +347,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		variants: [
 			{ title: '多列式', description: '品牌加三四列链接，内容站标配。', sketch: 'ft-columns' },
-			{ title: '极简式', description: '一行搞定：版权加几个链接，小站够用。', sketch: 'ft-minimal' },
+			{
+				title: '极简式',
+				description: '一行搞定：版权加几个链接，小站够用。',
+				sketch: 'ft-minimal',
+			},
 			{ title: '行动式', description: '收尾前再放一次行动召唤，落地页常用。', sketch: 'ft-cta' },
 		],
 		usage: {
@@ -440,7 +448,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ title: '纯文字卡', description: '没有图，靠边界和留白立住体面。', sketch: 'card-text' },
 		],
 		usage: {
-			fit: ['内容各自独立、可以单独点开时', '有封面图这类视觉元素时', '数量不定、需要自动换行的网格'],
+			fit: [
+				'内容各自独立、可以单独点开时',
+				'有封面图这类视觉元素时',
+				'数量不定、需要自动换行的网格',
+			],
 			unfit: [
 				'需要逐行对比数据——用表格',
 				'高密度信息查找——用列表',
@@ -454,7 +466,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'手机上卡片改成单列排布',
 		],
 		promptTip: '整张卡片都应该能点，别只让标题可点——这是最常见的体验坑之一。',
-		warning: '卡片的代价是密度：一屏放不下几条。当用户要的是快速扫一大堆条目时，朴素的列表反而更好用。',
+		warning:
+			'卡片的代价是密度：一屏放不下几条。当用户要的是快速扫一大堆条目时，朴素的列表反而更好用。',
 	},
 	modal: {
 		question: '到底是什么？它和角落里弹出来的小提示是一回事吗？',
@@ -523,7 +536,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ title: '全屏弹窗', description: '手机上常见：干脆占满整个屏幕。', sketch: 'md-full' },
 		],
 		usage: {
-			fit: ['危险或不可逆操作前的确认', '必须先完成的小任务（登录、选择）', '不想让用户跳走的快捷表单'],
+			fit: [
+				'危险或不可逆操作前的确认',
+				'必须先完成的小任务（登录、选择）',
+				'不想让用户跳走的快捷表单',
+			],
 			unfit: [
 				'「成功」「已保存」这类通知——用 Toast',
 				'大段内容浏览——直接开新页面',
@@ -607,11 +624,7 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		usage: {
 			fit: ['操作成功的确认（已保存、已复制）', '不需要回应的状态通知', '附带「撤销」的轻量后悔药'],
-			unfit: [
-				'需要用户做决定——用弹窗',
-				'重要报错——别让它三秒就消失',
-				'大量消息连环弹的时候',
-			],
+			unfit: ['需要用户做决定——用弹窗', '重要报错——别让它三秒就消失', '大量消息连环弹的时候'],
 		},
 		prompts: [
 			'保存成功后弹一个 Toast，两秒后自动消失',
@@ -703,7 +716,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'表单报错别用弹窗，就在对应输入框下面提示',
 		],
 		promptTip: '校验规则说得越具体（什么格式、什么时机提示），AI 做出来的表单越省心。',
-		warning: '表单是流失的重灾区：每多一个字段就劝退一批人。加字段前先问一句——这项现在真的必须要吗？',
+		warning:
+			'表单是流失的重灾区：每多一个字段就劝退一批人。加字段前先问一句——这项现在真的必须要吗？',
 	},
 	tabs: {
 		question: '到底是什么？它和顶部的导航栏有什么区别？',
@@ -784,7 +798,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'手机上标签放不下就允许横向滑动',
 		],
 		promptTip: '记得说默认选中哪个标签——这是最容易被 AI 猜错的细节。',
-		warning: '标签页会藏内容：用户不点，第二个标签就永远没被看见。放进去的内容，默认只有一半人会看到。',
+		warning:
+			'标签页会藏内容：用户不点，第二个标签就永远没被看见。放进去的内容，默认只有一半人会看到。',
 	},
 	slider: {
 		question: '到底是什么？什么时候该用它、什么时候千万别用？',
@@ -852,7 +867,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ title: '带刻度', description: '轨道有档位，拖起来一格一格跳。', sketch: 'sl-steps' },
 		],
 		usage: {
-			fit: ['模糊调节：音量、亮度、透明度', '边拖边看效果、立即生效的场景', '范围筛选：两个手柄框一段'],
+			fit: [
+				'模糊调节：音量、亮度、透明度',
+				'边拖边看效果、立即生效的场景',
+				'范围筛选：两个手柄框一段',
+			],
 			unfit: [
 				'需要精确数值——用输入框',
 				'范围极大（0 到 100 万）——每像素就跳几千',
@@ -1082,7 +1101,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		parts: [
 			{ name: '轨道', en: 'Track', note: '胶囊形的底座，颜色表示开或关。' },
 			{ name: '圆钮', en: 'Knob', note: '滑动的圆点，位置即状态。' },
-			{ name: '状态色', en: 'State', note: '开是品牌色、关是灰色——位置差异也要保留，照顾色弱用户。' },
+			{
+				name: '状态色',
+				en: 'State',
+				note: '开是品牌色、关是灰色——位置差异也要保留，照顾色弱用户。',
+			},
 		],
 		variants: [
 			{ title: '基础式', description: '一个开关管一件事。', sketch: 'tg-basic' },
@@ -1091,7 +1114,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		usage: {
 			fit: ['设置项的开与关：通知、深色模式', '拨动后立即生效的场景', '状态一目了然的二元选择'],
-			unfit: ['需要随表单提交——用复选框', '有中间态或多个选项——用单选、下拉', '「开」的含义说不清的时候'],
+			unfit: [
+				'需要随表单提交——用复选框',
+				'有中间态或多个选项——用单选、下拉',
+				'「开」的含义说不清的时候',
+			],
 		},
 		prompts: [
 			'通知设置加一个开关，拨动立即保存',
@@ -1165,7 +1192,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		variants: [
 			{ title: '右侧抽屉', description: '桌面端常用：筛选器、详情预览。', sketch: 'dw-right' },
 			{ title: '左侧抽屉', description: '手机导航菜单的标准位。', sketch: 'dw-left' },
-			{ title: '底部抽屉', description: '手机上从底部滑出，也叫 Bottom Sheet。', sketch: 'dw-bottom' },
+			{
+				title: '底部抽屉',
+				description: '手机上从底部滑出，也叫 Bottom Sheet。',
+				sketch: 'dw-bottom',
+			},
 		],
 		usage: {
 			fit: ['手机上的导航菜单', '筛选器面板（电商列表页）', '不离开当前页的详情预览'],
@@ -1253,7 +1284,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		usage: {
 			fit: ['首屏内容的加载等待', '结构稳定的列表和卡片流', '一到三秒量级的等待'],
-			unfit: ['超过几秒的等待——给进度和原因', '结构不确定的内容——骨架会和结果对不上', '瞬间完成的操作——闪一下更难受'],
+			unfit: [
+				'超过几秒的等待——给进度和原因',
+				'结构不确定的内容——骨架会和结果对不上',
+				'瞬间完成的操作——闪一下更难受',
+			],
 		},
 		prompts: [
 			'文章列表加载时显示三条卡片骨架',
@@ -1338,7 +1373,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		usage: {
 			fit: ['首次使用的引导', '搜索或筛选无结果时', '数据被清空后的兜底'],
-			unfit: ['还在加载中——那是骨架屏的活', '出错但可重试——错误态要带重试按钮', '拿空状态藏功能入口的时候'],
+			unfit: [
+				'还在加载中——那是骨架屏的活',
+				'出错但可重试——错误态要带重试按钮',
+				'拿空状态藏功能入口的时候',
+			],
 		},
 		prompts: [
 			'项目列表为空时显示空状态，带「创建第一个项目」按钮',
@@ -1347,7 +1386,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'请求失败的空状态加一个重试按钮',
 		],
 		promptTip: '把「为什么空」和「下一步做什么」都告诉 AI，它才不会只给你一行「暂无数据」。',
-		warning: '最偷懒的空状态是一行「暂无数据」——用户不知道是坏了、没权限还是真没有。空，是引导的机会。',
+		warning:
+			'最偷懒的空状态是一行「暂无数据」——用户不知道是坏了、没权限还是真没有。空，是引导的机会。',
 	},
 	badge: {
 		question: '到底是什么？图标角上的小红点凭什么让人忍不住去点？',
@@ -1560,7 +1600,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 					key: 'A',
 					text: '无限滚动——「逛」的场景不需要位置感',
 					correct: true,
-					feedback: '对。反过来，要定位回访的内容（搜索结果、订单）适合分页——「第 3 页」是记得住的位置。',
+					feedback:
+						'对。反过来，要定位回访的内容（搜索结果、订单）适合分页——「第 3 页」是记得住的位置。',
 				},
 				{
 					key: 'B',
@@ -1591,7 +1632,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		usage: {
 			fit: ['要定位回访：搜索结果、订单、表格', '数据量大且用户要跳页', '需要知道总量的场景'],
-			unfit: ['杀时间的信息流——无限滚动更顺', '内容一页放得下——别分', '手机长列表——「加载更多」更稳'],
+			unfit: [
+				'杀时间的信息流——无限滚动更顺',
+				'内容一页放得下——别分',
+				'手机长列表——「加载更多」更稳',
+			],
 		},
 		prompts: [
 			'文章列表分页，每页 12 条，底部页码',
@@ -1675,7 +1720,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ title: '图标折叠', description: '收起后只剩图标，桌面工具常用。', sketch: 'sb-icon' },
 		],
 		usage: {
-			fit: ['文档站、后台管理这类深层级界面', '导航项超过顶栏容量时', '需要常驻目录、频繁切换的场景'],
+			fit: [
+				'文档站、后台管理这类深层级界面',
+				'导航项超过顶栏容量时',
+				'需要常驻目录、频繁切换的场景',
+			],
 			unfit: ['内容站、落地页——顶栏足够', '手机上——收进抽屉', '层级很浅的小站'],
 		},
 		prompts: [
@@ -1730,7 +1779,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 					key: 'A',
 					text: '「在功能区块下面加一个用户评价 section，三列卡片」',
 					correct: true,
-					feedback: '对。位置（在哪个 section 下面）和形式（几列什么内容）都点到了——AI 几乎不会跑偏。',
+					feedback:
+						'对。位置（在哪个 section 下面）和形式（几列什么内容）都点到了——AI 几乎不会跑偏。',
 				},
 				{
 					key: 'B',
@@ -1761,7 +1811,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		usage: {
 			fit: ['落地页的每个主题段落', '长页面的内容分组', '需要锚点跳转的板块'],
-			unfit: ['零散的一两句话——并进相邻区块', '后台工具界面——那里是面板不是段落', '为了凑长度硬加的时候'],
+			unfit: [
+				'零散的一两句话——并进相邻区块',
+				'后台工具界面——那里是面板不是段落',
+				'为了凑长度硬加的时候',
+			],
 		},
 		prompts: [
 			'在 hero 下面加一个「功能」section，三列卡片',
@@ -1770,7 +1824,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'section 之间的留白统一成 96px',
 		],
 		promptTip: '用它做定位词：「哪个 section 的什么位置」——AI 改页面几乎不会跑偏。',
-		warning: 'Section 越多页面越长，但用户的耐心不会跟着变长。每加一段先问：删了它，页面会缺什么吗？',
+		warning:
+			'Section 越多页面越长，但用户的耐心不会跟着变长。每加一段先问：删了它，页面会缺什么吗？',
 	},
 	table: {
 		question: '到底是什么？和一堆卡片摆在一起有什么区别？',
@@ -1839,7 +1894,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ title: '带选择列', description: '最左一列复选框，批量操作的前提。', sketch: 'tb-select' },
 		],
 		usage: {
-			fit: ['同类记录成批比较、排序、筛选', '后台管理页的订单、用户、日志', '数字多、要对齐小数点的数据'],
+			fit: [
+				'同类记录成批比较、排序、筛选',
+				'后台管理页的订单、用户、日志',
+				'数字多、要对齐小数点的数据',
+			],
 			unfit: [
 				'每条内容差异很大、有图有长文——用卡片',
 				'手机屏幕上超过四列',
@@ -1898,7 +1957,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 					key: 'B',
 					text: '标签页——一个问题一个标签',
 					correct: false,
-					feedback: '十二个标签一行根本排不下，而且标签页适合平级视图，不适合「问题 → 答案」这种结构。',
+					feedback:
+						'十二个标签一行根本排不下，而且标签页适合平级视图，不适合「问题 → 答案」这种结构。',
 				},
 				{
 					key: 'C',
@@ -1919,7 +1979,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		variants: [
 			{ title: '单开型', description: '打开一条，别的自动收起，页面始终短。', sketch: 'ac-single' },
 			{ title: '多开型', description: '可以同时展开好几条，方便对照着看。', sketch: 'ac-multi' },
-			{ title: '贴合型', description: '去掉边框只留分隔线，嵌在文章里不突兀。', sketch: 'ac-flush' },
+			{
+				title: '贴合型',
+				description: '去掉边框只留分隔线，嵌在文章里不突兀。',
+				sketch: 'ac-flush',
+			},
 		],
 		usage: {
 			fit: ['FAQ、条款这类「问 → 答」的长内容', '设置页里不常用的高级选项', '手机上节省纵向空间'],
@@ -1936,8 +2000,7 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'把「高级设置」折进一个折叠面板里，默认收起',
 		],
 		promptTip: '说清「单开还是多开」和「默认开哪条」——这两件事 AI 最爱替你拍板。',
-		warning:
-			'折叠是在藏东西。用户得先猜里面有什么才会点开——标题写不清，里面的内容就等于不存在。',
+		warning: '折叠是在藏东西。用户得先猜里面有什么才会点开——标题写不清，里面的内容就等于不存在。',
 	},
 	button: {
 		question: '到底是什么？一个按钮还能分出主次？',
@@ -1994,23 +2057,39 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		anatomyIntro:
 			'按钮是界面上最老的零件——它把「做件事」压缩成一个可以按的形状。看似简单，但主次、状态、图标，每一样都在替用户省判断。拆开看：',
 		parts: [
-			{ name: '标签文字', en: 'Label', note: '一个动词：保存、发送、删除。别写「确定」，说清做什么。' },
+			{
+				name: '标签文字',
+				en: 'Label',
+				note: '一个动词：保存、发送、删除。别写「确定」，说清做什么。',
+			},
 			{ name: '图标', en: 'Icon', note: '可选，帮文字加一个直觉线索，不该单独扛意思。' },
-			{ name: '容器', en: 'Container', note: '颜色、圆角、重量决定它是主是次——实心最重，文字最轻。' },
+			{
+				name: '容器',
+				en: 'Container',
+				note: '颜色、圆角、重量决定它是主是次——实心最重，文字最轻。',
+			},
 			{ name: '状态', en: 'States', note: '悬停、按下、禁用、加载中——同一个按钮的四副面孔。' },
 		],
 		variants: [
 			{ title: '主按钮', description: '实心、最重，一屏只留一个。', sketch: 'bt-primary' },
-			{ title: '次按钮', description: '描边或幽灵，和主按钮站一起不抢戏。', sketch: 'bt-secondary' },
-			{ title: '图标按钮', description: '只有图标不带字，适合工具条里的常用动作。', sketch: 'bt-icon' },
+			{
+				title: '次按钮',
+				description: '描边或幽灵，和主按钮站一起不抢戏。',
+				sketch: 'bt-secondary',
+			},
+			{
+				title: '图标按钮',
+				description: '只有图标不带字，适合工具条里的常用动作。',
+				sketch: 'bt-icon',
+			},
 		],
 		usage: {
-			fit: ['触发一个动作：保存、提交、删除', '一个页面一个主按钮，定出主次', '需要禁用、加载中这些状态的操作'],
-			unfit: [
-				'跳转到另一个页面——那是链接',
-				'一排七八个全做成实心',
-				'只是想让一段文字看着醒目',
+			fit: [
+				'触发一个动作：保存、提交、删除',
+				'一个页面一个主按钮，定出主次',
+				'需要禁用、加载中这些状态的操作',
 			],
+			unfit: ['跳转到另一个页面——那是链接', '一排七八个全做成实心', '只是想让一段文字看着醒目'],
 		},
 		prompts: [
 			'提交做成主按钮，取消改成文字按钮',
@@ -2019,8 +2098,7 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'所有按钮统一 8px 圆角和 40px 高度',
 		],
 		promptTip: '把「主 / 次 / 危险」说出来，比说颜色好用——AI 会按层级配色，而不是随手涂一个。',
-		warning:
-			'一屏里的实心按钮只能有一个。全都最重，等于没有重点，用户不知道先按哪个。',
+		warning: '一屏里的实心按钮只能有一个。全都最重，等于没有重点，用户不知道先按哪个。',
 	},
 	checkbox: {
 		question: '到底是什么？方框和圆点为什么不能混用？',
@@ -2080,7 +2158,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ name: '选框', en: 'Box', note: '方的能多选、圆的只能单选，形状就是规则。' },
 			{ name: '标签', en: 'Label', note: '旁边那行字，点它也能选中，别只让用户点小方块。' },
 			{ name: '选中态', en: 'Checked', note: '方框里打勾、圆点里填实，一眼看出哪个选了。' },
-			{ name: '分组标题', en: 'Group Label', note: '这一组在问什么——「兴趣」「配送方式」——单选尤其需要。' },
+			{
+				name: '分组标题',
+				en: 'Group Label',
+				note: '这一组在问什么——「兴趣」「配送方式」——单选尤其需要。',
+			},
 		],
 		variants: [
 			{ title: '竖排', description: '一行一个，选项多、标签长时最好读。', sketch: 'ck-stack' },
@@ -2088,7 +2170,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ title: '卡片式', description: '整块区域都能点，适合带说明的重要选项。', sketch: 'ck-card' },
 		],
 		usage: {
-			fit: ['多选题用方框，单选题用圆点', '同意条款这类只有一项的勾选', '选项少于七个、要一眼看全的时候'],
+			fit: [
+				'多选题用方框，单选题用圆点',
+				'同意条款这类只有一项的勾选',
+				'选项少于七个、要一眼看全的时候',
+			],
 			unfit: [
 				'选项超过七八个——改用下拉选择',
 				'一拨即生效的设置——那是开关',
@@ -2148,7 +2234,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 					key: 'A',
 					text: 'Spinner——转着圈就行',
 					correct: false,
-					feedback: '一分钟盯着转圈，用户会怀疑卡死了然后刷新。超过几秒的等待，spinner 就不够用了。',
+					feedback:
+						'一分钟盯着转圈，用户会怀疑卡死了然后刷新。超过几秒的等待，spinner 就不够用了。',
 				},
 				{
 					key: 'B',
@@ -2172,8 +2259,16 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ name: '所在位置', en: 'Host', note: '它长在哪：按钮里、区域中央，还是盖住整页。' },
 		],
 		variants: [
-			{ title: '按钮内', description: '点下去后按钮变「提交中」，同时禁用。', sketch: 'spn-inline' },
-			{ title: '区域中央', description: '只有这一块在转，页面其他部分照常用。', sketch: 'spn-block' },
+			{
+				title: '按钮内',
+				description: '点下去后按钮变「提交中」，同时禁用。',
+				sketch: 'spn-inline',
+			},
+			{
+				title: '区域中央',
+				description: '只有这一块在转，页面其他部分照常用。',
+				sketch: 'spn-block',
+			},
 			{ title: '整页遮罩', description: '半透明盖住全页，什么都不能点。', sketch: 'spn-page' },
 		],
 		usage: {
@@ -2273,7 +2368,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'把三个步骤的完成情况画成分段进度条',
 			'进度条别倒退，失败时变红并停在原地',
 		],
-		promptTip: '说清进度从哪来（真实数据还是估算）和走到 100% 之后怎么办——AI 经常做出走到 99% 就卡住的假进度。',
+		promptTip:
+			'说清进度从哪来（真实数据还是估算）和走到 100% 之后怎么办——AI 经常做出走到 99% 就卡住的假进度。',
 		warning:
 			'进度条一定要诚实。用假数据匀速走到 90% 然后干等，比 Spinner 更让人恼火——用户会盯着它数秒。没有真实进度就用不定长模式，别编。',
 	},
@@ -2350,7 +2446,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ title: '点状', description: '手机 onboarding 常用，只剩几个小点。', sketch: 'stp-dots' },
 		],
 		usage: {
-			fit: ['三步以上的线性流程：注册、下单、配置向导', '步骤之间有先后依赖', '用户需要知道「还要多久才填完」'],
+			fit: [
+				'三步以上的线性流程：注册、下单、配置向导',
+				'步骤之间有先后依赖',
+				'用户需要知道「还要多久才填完」',
+			],
 			unfit: [
 				'只有两步——直接放两个按钮',
 				'步骤可以任意顺序——那是标签页',
@@ -2403,7 +2503,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 					key: 'A',
 					text: '无限滚动——刷起来最顺手',
 					correct: false,
-					feedback: '顺手，但用户找不回「刚才第 37 件」，也没法把「第 3 页」发给朋友，页脚更是永远够不着。',
+					feedback:
+						'顺手，但用户找不回「刚才第 37 件」，也没法把「第 3 页」发给朋友，页脚更是永远够不着。',
 				},
 				{
 					key: 'B',
@@ -2429,11 +2530,19 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		variants: [
 			{ title: '信息流', description: '全自动，快到底就接上一批。', sketch: 'inf-feed' },
-			{ title: '半自动', description: '滚到底出一个「加载更多」，点了才继续。', sketch: 'inf-loadmore' },
+			{
+				title: '半自动',
+				description: '滚到底出一个「加载更多」，点了才继续。',
+				sketch: 'inf-loadmore',
+			},
 			{ title: '到底了', description: '显示结束语，顺手给个回到顶部。', sketch: 'inf-end' },
 		],
 		usage: {
-			fit: ['信息流、瀑布流这种「随便刷」的场景', '内容没有固定终点，比如时间线', '手机端不想让人去点小页码'],
+			fit: [
+				'信息流、瀑布流这种「随便刷」的场景',
+				'内容没有固定终点，比如时间线',
+				'手机端不想让人去点小页码',
+			],
 			unfit: [
 				'用户要找「第几条」或分享某一页——用分页',
 				'页面底部有页脚和重要链接',
@@ -2508,16 +2617,36 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ name: '触发器', en: 'Trigger', note: '一个按钮或「···」图标，点它才打开菜单。' },
 			{ name: '菜单面板', en: 'Panel', note: '浮在触发器下方的一小块，带阴影，点外面就关。' },
 			{ name: '菜单项', en: 'Item', note: '每一行是一个动作，动词开头：编辑、复制、导出。' },
-			{ name: '分隔与危险项', en: 'Divider', note: '删除这类不可逆的动作放最后，一条线隔开、标成红色。' },
+			{
+				name: '分隔与危险项',
+				en: 'Divider',
+				note: '删除这类不可逆的动作放最后，一条线隔开、标成红色。',
+			},
 		],
 		variants: [
-			{ title: '图标触发', description: '「···」或齿轮，最省地方，表格行末常见。', sketch: 'dd-icon' },
+			{
+				title: '图标触发',
+				description: '「···」或齿轮，最省地方，表格行末常见。',
+				sketch: 'dd-icon',
+			},
 			{ title: '按钮触发', description: '「新建 ▾」——主动作旁边挂几个近亲。', sketch: 'dd-button' },
-			{ title: '右键菜单', description: '在光标位置弹出，桌面软件的老习惯。', sketch: 'dd-context' },
+			{
+				title: '右键菜单',
+				description: '在光标位置弹出，桌面软件的老习惯。',
+				sketch: 'dd-context',
+			},
 		],
 		usage: {
-			fit: ['一行数据后面的「更多操作」', '把次要动作收起来，给主界面减负', '同一目标的多种做法（导出为 PDF / CSV）'],
-			unfit: ['让用户填一个值——那是 Select', '只有一个动作——直接放按钮', '高频动作藏进菜单，每次多点一下'],
+			fit: [
+				'一行数据后面的「更多操作」',
+				'把次要动作收起来，给主界面减负',
+				'同一目标的多种做法（导出为 PDF / CSV）',
+			],
+			unfit: [
+				'让用户填一个值——那是 Select',
+				'只有一个动作——直接放按钮',
+				'高频动作藏进菜单，每次多点一下',
+			],
 		},
 		prompts: [
 			'表格每一行末尾加一个「···」按钮，点开是编辑、复制、删除的下拉菜单',
@@ -2526,8 +2655,7 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'这个下拉菜单在移动端改成从底部弹出的面板',
 		],
 		promptTip: '先说清是「动作菜单」还是「取值下拉」，AI 才不会拿一个 <select> 交差。',
-		warning:
-			'菜单是用来藏东西的——藏得越深，越没人用。高频动作别塞进「···」，露在外面才有人点。',
+		warning: '菜单是用来藏东西的——藏得越深，越没人用。高频动作别塞进「···」，露在外面才有人点。',
 	},
 	tooltip: {
 		question: '到底是什么？它和 Popover、Toast 都是「冒出来的小框」，怎么分？',
@@ -2584,7 +2712,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		anatomyIntro:
 			'名字就是「小工具的提示」：鼠标停上去冒一句、移开就没，永远不占版面。它只解释、不承载操作——里面要放按钮的，那叫 Popover。组成：',
 		parts: [
-			{ name: '触发目标', en: 'Target', note: '被悬停或键盘聚焦的那个东西：图标、缩略文字、问号。' },
+			{
+				name: '触发目标',
+				en: 'Target',
+				note: '被悬停或键盘聚焦的那个东西：图标、缩略文字、问号。',
+			},
 			{ name: '气泡', en: 'Bubble', note: '深色小框，一两句话，不换行最好。' },
 			{ name: '小箭头', en: 'Arrow', note: '指向目标，说明「我在解释的是它」。' },
 			{ name: '出现延迟', en: 'Delay', note: '停留两三百毫秒才出现，鼠标扫过时不会一路乱闪。' },
@@ -2596,7 +2728,11 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		],
 		usage: {
 			fit: ['图标按钮的名字', '被截断文字的完整版', '字段旁边的一句解释'],
-			unfit: ['移动端——手指没有「悬停」', '必须看到的信息——藏在悬停里等于没写', '里面要放按钮、链接——那是 Popover'],
+			unfit: [
+				'移动端——手指没有「悬停」',
+				'必须看到的信息——藏在悬停里等于没写',
+				'里面要放按钮、链接——那是 Popover',
+			],
 		},
 		prompts: [
 			'给工具栏所有图标按钮加 tooltip，悬停 300 毫秒后显示名字',
@@ -2667,16 +2803,36 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			{ name: '输入框', en: 'Input', note: '打开就自动聚焦，边打边筛。' },
 			{ name: '结果列表', en: 'Results', note: '页面、动作、最近访问混排，每项带图标说明类型。' },
 			{ name: '高亮项', en: 'Active', note: '上下键移动、回车执行，鼠标只是备选。' },
-			{ name: '按键提示', en: 'Hints', note: '底部一行「↑↓ 选择 · ↵ 打开 · esc 关闭」，新手也能上手。' },
+			{
+				name: '按键提示',
+				en: 'Hints',
+				note: '底部一行「↑↓ 选择 · ↵ 打开 · esc 关闭」，新手也能上手。',
+			},
 		],
 		variants: [
-			{ title: '搜索型', description: '只列页面和内容，本质是浮起来的站内搜索。', sketch: 'cp-search' },
-			{ title: '动作型', description: '每项都是动词，输入「>」进入命令模式。', sketch: 'cp-action' },
-			{ title: '分组型', description: '最近访问、页面、动作分段列出，一眼分清。', sketch: 'cp-group' },
+			{
+				title: '搜索型',
+				description: '只列页面和内容，本质是浮起来的站内搜索。',
+				sketch: 'cp-search',
+			},
+			{
+				title: '动作型',
+				description: '每项都是动词，输入「>」进入命令模式。',
+				sketch: 'cp-action',
+			},
+			{
+				title: '分组型',
+				description: '最近访问、页面、动作分段列出，一眼分清。',
+				sketch: 'cp-group',
+			},
 		],
 		usage: {
 			fit: ['页面多、动作多的工具型产品', '给熟手一条键盘快车道', '把散落各处的入口收成一个'],
-			unfit: ['内容站的主搜索——普通搜索框更直观', '新手的唯一入口——没人知道要按 ⌘K', '只有三五个页面的小站'],
+			unfit: [
+				'内容站的主搜索——普通搜索框更直观',
+				'新手的唯一入口——没人知道要按 ⌘K',
+				'只有三五个页面的小站',
+			],
 		},
 		prompts: [
 			'加一个 ⌘K 命令面板，能搜索所有页面并跳转',
@@ -2684,7 +2840,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'结果列表支持上下键选择、回车打开、Esc 关闭',
 			'导航栏右侧放一个「搜索 ⌘K」按钮，点它也能打开命令面板',
 		],
-		promptTip: '把「能搜什么」列清楚——页面？动作？最近访问？——再要求键盘操作完整，AI 就不会只给你一个会跳转的搜索框。',
+		promptTip:
+			'把「能搜什么」列清楚——页面？动作？最近访问？——再要求键盘操作完整，AI 就不会只给你一个会跳转的搜索框。',
 		warning:
 			'⌘K 是隐藏入口，新用户根本不知道它存在。页面上一定要留一个看得见的按钮或提示，否则再好用也是白做。',
 	},
@@ -2751,11 +2908,23 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 		variants: [
 			{ title: '告知型', description: '蓝色调：新功能上线、维护通知。', sketch: 'al-info' },
 			{ title: '提醒型', description: '琥珀色调：试用剩三天、邮箱未验证。', sketch: 'al-warning' },
-			{ title: '报错型', description: '红色调：提交失败、支付被拒，通常不能关。', sketch: 'al-error' },
+			{
+				title: '报错型',
+				description: '红色调：提交失败、支付被拒，通常不能关。',
+				sketch: 'al-error',
+			},
 		],
 		usage: {
-			fit: ['会持续存在的状态（未验证、试用到期）', '表单提交后的整体报错', '影响整页的系统通知（维护中）'],
-			unfit: ['一次性操作反馈——用 Toast', '必须马上决定的事——用 Modal', '页面顶上同时挂三条——没人会读'],
+			fit: [
+				'会持续存在的状态（未验证、试用到期）',
+				'表单提交后的整体报错',
+				'影响整页的系统通知（维护中）',
+			],
+			unfit: [
+				'一次性操作反馈——用 Toast',
+				'必须马上决定的事——用 Modal',
+				'页面顶上同时挂三条——没人会读',
+			],
 		},
 		prompts: [
 			'表单顶部加一条红色 Alert，列出提交失败的原因',
@@ -2763,7 +2932,8 @@ export const vibeCodingPatternProfiles: Record<string, VibeCodingPatternProfile>
 			'Alert 右侧加关闭按钮，关掉后本次会话不再显示',
 			'这条 Alert 改成告知型：蓝色图标，不带关闭',
 		],
-		promptTip: '说清它属于哪个范围（整页还是某个表单）和会不会消失，这两点决定了 AI 该用 Alert 还是 Toast。',
+		promptTip:
+			'说清它属于哪个范围（整页还是某个表单）和会不会消失，这两点决定了 AI 该用 Alert 还是 Toast。',
 		warning:
 			'常驻横幅最怕「常驻」：一条挂了三个月的提示，用户早当它是墙纸。要么给出口让人处理掉，要么到时间就撤。',
 	},

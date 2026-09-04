@@ -32,7 +32,9 @@ function trimSocialPrefix(value: string): string {
 }
 
 function compactLatinText(value: string, maxLength: number): string {
-	const clipped = codePoints(value).slice(0, maxLength + 1).join('');
+	const clipped = codePoints(value)
+		.slice(0, maxLength + 1)
+		.join('');
 	if (codePoints(value).length <= maxLength) return value;
 	const boundary = clipped.lastIndexOf(' ');
 	return (

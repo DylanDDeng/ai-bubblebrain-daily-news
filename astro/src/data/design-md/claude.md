@@ -4,113 +4,113 @@ name: Claude-design-analysis
 description: A warm-canvas editorial interface for Anthropic's Claude product. The system anchors on a tinted cream canvas with serif display headlines, warm coral CTAs, and dark navy product surfaces (code editor mockups, model showcase cards). Brand voltage comes from the cream/coral pairing — deliberately warm and humanist where most AI brands use cool blue + slate. Type voice runs a slab-serif display ("Copernicus" / Tiempos Headline) for h1/h2 and a humanist sans for body. The signature Anthropic black-radial-spike mark anchors the wordmark.
 
 colors:
-  primary: "#cc785c"
-  primary-active: "#a9583e"
-  primary-disabled: "#e6dfd8"
-  ink: "#141413"
-  body: "#3d3d3a"
-  body-strong: "#252523"
-  muted: "#6c6a64"
-  muted-soft: "#8e8b82"
-  hairline: "#e6dfd8"
-  hairline-soft: "#ebe6df"
-  canvas: "#faf9f5"
-  surface-soft: "#f5f0e8"
-  surface-card: "#efe9de"
-  surface-cream-strong: "#e8e0d2"
-  surface-dark: "#181715"
-  surface-dark-elevated: "#252320"
-  surface-dark-soft: "#1f1e1b"
-  on-primary: "#ffffff"
-  on-dark: "#faf9f5"
-  on-dark-soft: "#a09d96"
-  accent-teal: "#5db8a6"
-  accent-amber: "#e8a55a"
-  success: "#5db872"
-  warning: "#d4a017"
-  error: "#c64545"
+  primary: '#cc785c'
+  primary-active: '#a9583e'
+  primary-disabled: '#e6dfd8'
+  ink: '#141413'
+  body: '#3d3d3a'
+  body-strong: '#252523'
+  muted: '#6c6a64'
+  muted-soft: '#8e8b82'
+  hairline: '#e6dfd8'
+  hairline-soft: '#ebe6df'
+  canvas: '#faf9f5'
+  surface-soft: '#f5f0e8'
+  surface-card: '#efe9de'
+  surface-cream-strong: '#e8e0d2'
+  surface-dark: '#181715'
+  surface-dark-elevated: '#252320'
+  surface-dark-soft: '#1f1e1b'
+  on-primary: '#ffffff'
+  on-dark: '#faf9f5'
+  on-dark-soft: '#a09d96'
+  accent-teal: '#5db8a6'
+  accent-amber: '#e8a55a'
+  success: '#5db872'
+  warning: '#d4a017'
+  error: '#c64545'
 
 typography:
   display-xl:
-    fontFamily: "Copernicus, Tiempos Headline, serif"
+    fontFamily: 'Copernicus, Tiempos Headline, serif'
     fontSize: 64px
     fontWeight: 400
     lineHeight: 1.05
     letterSpacing: -1.5px
   display-lg:
-    fontFamily: "Copernicus, Tiempos Headline, serif"
+    fontFamily: 'Copernicus, Tiempos Headline, serif'
     fontSize: 48px
     fontWeight: 400
     lineHeight: 1.1
     letterSpacing: -1px
   display-md:
-    fontFamily: "Copernicus, Tiempos Headline, serif"
+    fontFamily: 'Copernicus, Tiempos Headline, serif'
     fontSize: 36px
     fontWeight: 400
     lineHeight: 1.15
     letterSpacing: -0.5px
   display-sm:
-    fontFamily: "Copernicus, Tiempos Headline, serif"
+    fontFamily: 'Copernicus, Tiempos Headline, serif'
     fontSize: 28px
     fontWeight: 400
     lineHeight: 1.2
     letterSpacing: -0.3px
   title-lg:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 22px
     fontWeight: 500
     lineHeight: 1.3
     letterSpacing: 0
   title-md:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 18px
     fontWeight: 500
     lineHeight: 1.4
     letterSpacing: 0
   title-sm:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 16px
     fontWeight: 500
     lineHeight: 1.4
     letterSpacing: 0
   body-md:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 16px
     fontWeight: 400
     lineHeight: 1.55
     letterSpacing: 0
   body-sm:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 14px
     fontWeight: 400
     lineHeight: 1.55
     letterSpacing: 0
   caption:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 13px
     fontWeight: 500
     lineHeight: 1.4
     letterSpacing: 0
   caption-uppercase:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 12px
     fontWeight: 500
     lineHeight: 1.4
     letterSpacing: 1.5px
   code:
-    fontFamily: "JetBrains Mono, ui-monospace, monospace"
+    fontFamily: 'JetBrains Mono, ui-monospace, monospace'
     fontSize: 14px
     fontWeight: 400
     lineHeight: 1.6
     letterSpacing: 0
   button:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 14px
     fontWeight: 500
     lineHeight: 1
     letterSpacing: 0
   nav-link:
-    fontFamily: "StyreneB, Inter, sans-serif"
+    fontFamily: 'StyreneB, Inter, sans-serif'
     fontSize: 14px
     fontWeight: 500
     lineHeight: 1.4
@@ -137,164 +137,164 @@ spacing:
 
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button}'
+    rounded: '{rounded.md}'
     padding: 12px 20px
     height: 40px
   button-primary-active:
-    backgroundColor: "{colors.primary-active}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.primary-active}'
+    textColor: '{colors.on-primary}'
+    rounded: '{rounded.md}'
   button-primary-disabled:
-    backgroundColor: "{colors.primary-disabled}"
-    textColor: "{colors.muted}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.primary-disabled}'
+    textColor: '{colors.muted}'
+    rounded: '{rounded.md}'
   button-secondary:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button}'
+    rounded: '{rounded.md}'
     padding: 12px 20px
     height: 40px
   button-secondary-on-dark:
-    backgroundColor: "{colors.surface-dark-elevated}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.button}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.surface-dark-elevated}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.button}'
+    rounded: '{rounded.md}'
     padding: 12px 20px
   button-text-link:
     backgroundColor: transparent
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
+    textColor: '{colors.ink}'
+    typography: '{typography.button}'
   button-icon-circular:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.full}'
     size: 36px
   text-link:
     backgroundColor: transparent
-    textColor: "{colors.primary}"
-    typography: "{typography.body-md}"
+    textColor: '{colors.primary}'
+    typography: '{typography.body-md}'
   top-nav:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.nav-link}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.nav-link}'
     height: 64px
   hero-band:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.display-xl}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.display-xl}'
     padding: 96px
   hero-illustration-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.xl}'
   feature-card:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.ink}"
-    typography: "{typography.title-md}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-card}'
+    textColor: '{colors.ink}'
+    typography: '{typography.title-md}'
+    rounded: '{rounded.lg}'
     padding: 32px
   product-mockup-card-dark:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.title-md}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.title-md}'
+    rounded: '{rounded.lg}'
     padding: 32px
   code-window-card:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.code}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.code}'
+    rounded: '{rounded.lg}'
     padding: 24px
   model-comparison-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.title-md}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.title-md}'
+    rounded: '{rounded.lg}'
     padding: 32px
   pricing-tier-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.title-lg}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.title-lg}'
+    rounded: '{rounded.lg}'
     padding: 32px
   pricing-tier-card-featured:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.title-lg}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.title-lg}'
+    rounded: '{rounded.lg}'
     padding: 32px
   callout-card-coral:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.title-md}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.title-md}'
+    rounded: '{rounded.lg}'
     padding: 32px
   connector-tile:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.title-sm}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.title-sm}'
+    rounded: '{rounded.lg}'
     padding: 20px
   text-input:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-md}'
+    rounded: '{rounded.md}'
     padding: 10px 14px
     height: 40px
   text-input-focused:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    rounded: '{rounded.md}'
   cookie-consent-card:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.lg}'
     padding: 24px
   category-tab:
     backgroundColor: transparent
-    textColor: "{colors.muted}"
-    typography: "{typography.nav-link}"
+    textColor: '{colors.muted}'
+    typography: '{typography.nav-link}'
     padding: 8px 14px
-    rounded: "{rounded.md}"
+    rounded: '{rounded.md}'
   category-tab-active:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.ink}"
-    typography: "{typography.nav-link}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.surface-card}'
+    textColor: '{colors.ink}'
+    typography: '{typography.nav-link}'
+    rounded: '{rounded.md}'
   badge-pill:
-    backgroundColor: "{colors.surface-card}"
-    textColor: "{colors.ink}"
-    typography: "{typography.caption}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.surface-card}'
+    textColor: '{colors.ink}'
+    typography: '{typography.caption}'
+    rounded: '{rounded.pill}'
     padding: 4px 12px
   badge-coral:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.caption-uppercase}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.caption-uppercase}'
+    rounded: '{rounded.pill}'
     padding: 4px 12px
   cta-band-coral:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.display-sm}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.display-sm}'
+    rounded: '{rounded.lg}'
     padding: 64px
   cta-band-dark:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.display-sm}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark}'
+    typography: '{typography.display-sm}'
+    rounded: '{rounded.lg}'
     padding: 64px
   footer:
-    backgroundColor: "{colors.surface-dark}"
-    textColor: "{colors.on-dark-soft}"
-    typography: "{typography.body-sm}"
+    backgroundColor: '{colors.surface-dark}'
+    textColor: '{colors.on-dark-soft}'
+    typography: '{typography.body-sm}'
     padding: 64px
 ---
 
@@ -305,6 +305,7 @@ Claude.com is the warmest, most editorial interface in the AI-product category. 
 Brand voltage comes from the **cream + coral pairing** — coral (`{colors.primary}` — #cc785c) is the signature Anthropic accent, used on every primary CTA, on the brand wordmark, and on full-bleed callout cards. The coral is warm, slightly muted, never cyan/blue — a deliberate counter-positioning against OpenAI's cool slate, Google's saturated blue, and Microsoft's corporate cyan.
 
 The system has three surface modes that alternate page-by-page:
+
 1. **Cream canvas** (`{colors.canvas}`) — default body floor
 2. **Light cream cards** (`{colors.surface-card}`) — feature card backgrounds
 3. **Dark navy product surfaces** (`{colors.surface-dark}`) — code editor mockups, model showcase cards, pre-footer CTAs, footer itself
@@ -312,6 +313,7 @@ The system has three surface modes that alternate page-by-page:
 The dark surfaces are where Claude shows its product chrome — code blocks, terminal output, model comparison tables, agentic-flow diagrams. The cream-to-dark contrast is the page's pacing rhythm.
 
 **Key Characteristics:**
+
 - Warm cream canvas (`{colors.canvas}` — #faf9f5) with dark warm-ink text (`{colors.ink}` — #141413). The brand's defining color choice.
 - Coral primary CTA (`{colors.primary}` — #cc785c). Used scarcely on individual buttons, generously on full-bleed coral callout cards.
 - Slab-serif display headlines via Copernicus / Tiempos Headline at weight 400 with negative letter-spacing. Pairs with humanist sans body for a literary editorial voice.
@@ -324,6 +326,7 @@ The dark surfaces are where Claude shows its product chrome — code blocks, ter
 ## Colors
 
 ### Brand & Accent
+
 - **Coral / Primary** (`{colors.primary}` — #cc785c): The signature Anthropic warm coral. Used on every primary CTA background, on full-bleed coral callout cards, on the brand wordmark accent. The most-recognized Anthropic color outside of the spike-mark logo.
 - **Coral Active** (`{colors.primary-active}` — #a9583e): The press / hover-darker variant.
 - **Coral Disabled** (`{colors.primary-disabled}` — #e6dfd8): A desaturated cream-tinted disabled state.
@@ -331,6 +334,7 @@ The dark surfaces are where Claude shows its product chrome — code blocks, ter
 - **Accent Amber** (`{colors.accent-amber}` — #e8a55a): A small companion warm-tone used on category badges and inline highlights.
 
 ### Surface
+
 - **Canvas** (`{colors.canvas}` — #faf9f5): The default page floor. Tinted cream — warm, deliberately not pure white.
 - **Surface Soft** (`{colors.surface-soft}` — #f5f0e8): Section dividers, very-soft band backgrounds.
 - **Surface Card** (`{colors.surface-card}` — #efe9de): Feature cards, content cards. One step darker than canvas.
@@ -342,6 +346,7 @@ The dark surfaces are where Claude shows its product chrome — code blocks, ter
 - **Hairline Soft** (`{colors.hairline-soft}` — #ebe6df): Barely-visible divider used inside the same band.
 
 ### Text
+
 - **Ink** (`{colors.ink}` — #141413): All headlines and primary text. Warm dark, slightly off-pure-black.
 - **Body Strong** (`{colors.body-strong}` — #252523): Emphasized paragraphs, lead text.
 - **Body** (`{colors.body}` — #3d3d3a): Default running-text color.
@@ -352,6 +357,7 @@ The dark surfaces are where Claude shows its product chrome — code blocks, ter
 - **On Dark Soft** (`{colors.on-dark-soft}` — #a09d96): Footer body text, secondary labels in dark mockups.
 
 ### Semantic
+
 - **Success** (`{colors.success}` — #5db872): Green status dots, "available" indicators.
 - **Warning** (`{colors.warning}` — #d4a017): Warning callouts (rare on marketing surfaces).
 - **Error** (`{colors.error}` — #c64545): Validation errors.
@@ -359,43 +365,48 @@ The dark surfaces are where Claude shows its product chrome — code blocks, ter
 ## Typography
 
 ### Font Family
+
 The system runs **Copernicus** (or **Tiempos Headline** as substitute) as the slab-serif display face for headlines, and **StyreneB** (or **Inter** as substitute) as the humanist sans for body, navigation, and UI labels. **JetBrains Mono** handles code blocks. The fallback stack walks `Tiempos Headline, Garamond, "Times New Roman", serif` for display and `Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif` for body.
 
 The display/body split is editorial:
+
 - Copernicus serif (weight 400, negative tracking) → h1, h2, h3, hero display
 - StyreneB sans (weight 400-500) → body, navigation, buttons, captions, labels
 - JetBrains Mono → all code blocks and terminal text
 
 ### Hierarchy
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.display-xl}` | 64px | 400 | 1.05 | -1.5px | Homepage h1 ("Meet your thinking partner") — Copernicus serif |
-| `{typography.display-lg}` | 48px | 400 | 1.1 | -1px | Section heads — Copernicus |
-| `{typography.display-md}` | 36px | 400 | 1.15 | -0.5px | Sub-section heads, model names — Copernicus |
-| `{typography.display-sm}` | 28px | 400 | 1.2 | -0.3px | Pricing tier names, callout headlines — Copernicus |
-| `{typography.title-lg}` | 22px | 500 | 1.3 | 0 | Pricing plan size labels — StyreneB |
-| `{typography.title-md}` | 18px | 500 | 1.4 | 0 | Feature card titles, intro paragraphs |
-| `{typography.title-sm}` | 16px | 500 | 1.4 | 0 | Connector tile titles, list labels |
-| `{typography.body-md}` | 16px | 400 | 1.55 | 0 | Default running-text — StyreneB |
-| `{typography.body-sm}` | 14px | 400 | 1.55 | 0 | Footer body, fine-print |
-| `{typography.caption}` | 13px | 500 | 1.4 | 0 | Badge labels, captions |
-| `{typography.caption-uppercase}` | 12px | 500 | 1.4 | 1.5px | Category tags, "NEW" badges |
-| `{typography.code}` | 14px | 400 | 1.6 | 0 | Code blocks — JetBrains Mono |
-| `{typography.button}` | 14px | 500 | 1.0 | 0 | Standard button labels |
-| `{typography.nav-link}` | 14px | 500 | 1.4 | 0 | Top-nav menu items |
+| Token                            | Size | Weight | Line Height | Letter Spacing | Use                                                           |
+| -------------------------------- | ---- | ------ | ----------- | -------------- | ------------------------------------------------------------- |
+| `{typography.display-xl}`        | 64px | 400    | 1.05        | -1.5px         | Homepage h1 ("Meet your thinking partner") — Copernicus serif |
+| `{typography.display-lg}`        | 48px | 400    | 1.1         | -1px           | Section heads — Copernicus                                    |
+| `{typography.display-md}`        | 36px | 400    | 1.15        | -0.5px         | Sub-section heads, model names — Copernicus                   |
+| `{typography.display-sm}`        | 28px | 400    | 1.2         | -0.3px         | Pricing tier names, callout headlines — Copernicus            |
+| `{typography.title-lg}`          | 22px | 500    | 1.3         | 0              | Pricing plan size labels — StyreneB                           |
+| `{typography.title-md}`          | 18px | 500    | 1.4         | 0              | Feature card titles, intro paragraphs                         |
+| `{typography.title-sm}`          | 16px | 500    | 1.4         | 0              | Connector tile titles, list labels                            |
+| `{typography.body-md}`           | 16px | 400    | 1.55        | 0              | Default running-text — StyreneB                               |
+| `{typography.body-sm}`           | 14px | 400    | 1.55        | 0              | Footer body, fine-print                                       |
+| `{typography.caption}`           | 13px | 500    | 1.4         | 0              | Badge labels, captions                                        |
+| `{typography.caption-uppercase}` | 12px | 500    | 1.4         | 1.5px          | Category tags, "NEW" badges                                   |
+| `{typography.code}`              | 14px | 400    | 1.6         | 0              | Code blocks — JetBrains Mono                                  |
+| `{typography.button}`            | 14px | 500    | 1.0         | 0              | Standard button labels                                        |
+| `{typography.nav-link}`          | 14px | 500    | 1.4         | 0              | Top-nav menu items                                            |
 
 ### Principles
+
 Display sizes use weight 400 (regular), never bold. Negative letter-spacing (-0.3 to -1.5px) is essential — Copernicus without it reads as off-brand. The serif character is what gives Anthropic its literary, considered voice; switching to a sans-serif display would make Claude feel like every other AI tool.
 
 Body type stays at weight 400 for paragraphs, weight 500 for labels and emphasized phrases. The sans body is humanist (StyreneB) — never geometric. Inter is an acceptable substitute because of its similar humanist proportions; Helvetica or Arial would be too neutral and break the warm-editorial feel.
 
 ### Note on Font Substitutes
+
 If Copernicus / Tiempos Headline is unavailable, **Cormorant Garamond** at weight 500 with -0.02em letter-spacing is the closest open-source approximation. **EB Garamond** is a fallback. For StyreneB, **Inter** is the closest match — both are humanist sans designed for screen reading. **Söhne** is another close alternative if licensed.
 
 ## Layout
 
 ### Spacing System
+
 - **Base unit:** 4px.
 - **Tokens:** `{spacing.xxs}` 4px · `{spacing.xs}` 8px · `{spacing.sm}` 12px · `{spacing.md}` 16px · `{spacing.lg}` 24px · `{spacing.xl}` 32px · `{spacing.xxl}` 48px · `{spacing.section}` 96px.
 - **Section padding:** `{spacing.section}` (96px) — modern-SaaS rhythm.
@@ -403,6 +414,7 @@ If Copernicus / Tiempos Headline is unavailable, **Cormorant Garamond** at weigh
 - **Callout / CTA bands:** `{spacing.xxl}` (48px) inside coral callout cards; 64px inside the larger dark CTA band.
 
 ### Grid & Container
+
 - **Max content width:** ~1200px centered.
 - **Editorial body:** Single 12-column grid; hero often uses 6/6 split (h1 left, illustration right).
 - **Feature card grids:** 3-up at desktop, 2-up at tablet, 1-up at mobile.
@@ -410,21 +422,23 @@ If Copernicus / Tiempos Headline is unavailable, **Cormorant Garamond** at weigh
 - **Pricing grid:** 3-up at desktop (Free / Pro / Team / Enterprise often), 1-up at mobile.
 
 ### Whitespace Philosophy
+
 The cream canvas + serif display + generous internal padding create an editorial pacing — Claude reads like a long-form magazine column rather than a marketing template. Whitespace between bands stays uniform at 96px; whitespace inside cards is generous (32px), letting type breathe.
 
 ## Elevation & Depth
 
-| Level | Treatment | Use |
-|---|---|---|
-| Flat | No shadow, no border | Body sections, top nav, hero bands |
-| Soft hairline | 1px `{colors.hairline}` border | Inputs, sub-nav, occasionally on cards |
-| Cream card | `{colors.surface-card}` background — no shadow | Feature cards, content cards |
-| Dark surface card | `{colors.surface-dark}` background — no shadow | Code editor mockups, model showcase cards |
-| Subtle drop shadow | Faint shadow at low alpha | Hover-elevated states (the system uses `0 1px 3px rgba(20,20,19,0.08)` rarely) |
+| Level              | Treatment                                      | Use                                                                            |
+| ------------------ | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| Flat               | No shadow, no border                           | Body sections, top nav, hero bands                                             |
+| Soft hairline      | 1px `{colors.hairline}` border                 | Inputs, sub-nav, occasionally on cards                                         |
+| Cream card         | `{colors.surface-card}` background — no shadow | Feature cards, content cards                                                   |
+| Dark surface card  | `{colors.surface-dark}` background — no shadow | Code editor mockups, model showcase cards                                      |
+| Subtle drop shadow | Faint shadow at low alpha                      | Hover-elevated states (the system uses `0 1px 3px rgba(20,20,19,0.08)` rarely) |
 
 The elevation philosophy is **color-block first, shadow rare**. Most depth comes from the cream-vs-dark surface contrast. Shadows are minimal. The dark surface mockups have their own internal product chrome (code editor scrollbars, line numbers, syntax highlighting) which adds detail without needing external shadows.
 
 ### Decorative Depth
+
 - The Anthropic spike-mark glyph (4-spoke radial asterisk) appears as a small black mark in the brand wordmark and inline as a content marker.
 - Code editor mockups carry their own internal depth: syntax-highlighted text in muted blues / oranges / grays, line numbers in `{colors.muted-soft}`, status bars at the bottom in `{colors.surface-dark-elevated}`.
 - Some hero illustrations use simple line-art with coral and dark-navy strokes on cream — minimal, hand-drawn-feeling, never photorealistic.
@@ -433,18 +447,20 @@ The elevation philosophy is **color-block first, shadow rare**. Most depth comes
 
 ### Border Radius Scale
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.xs}` | 4px | Reserved for badge accents and tiny dropdowns |
-| `{rounded.sm}` | 6px | Small inline buttons, dropdown items |
-| `{rounded.md}` | 8px | Standard CTA buttons, text inputs, category tabs |
-| `{rounded.lg}` | 12px | Content cards (feature, pricing, code-window, model-comparison) |
-| `{rounded.xl}` | 16px | Hero illustration container, the larger marquee components |
-| `{rounded.pill}` | 9999px | Badge pills, "NEW" tags |
-| `{rounded.full}` | 9999px / 50% | Avatar substitutes, icon buttons |
+| Token            | Value        | Use                                                             |
+| ---------------- | ------------ | --------------------------------------------------------------- |
+| `{rounded.xs}`   | 4px          | Reserved for badge accents and tiny dropdowns                   |
+| `{rounded.sm}`   | 6px          | Small inline buttons, dropdown items                            |
+| `{rounded.md}`   | 8px          | Standard CTA buttons, text inputs, category tabs                |
+| `{rounded.lg}`   | 12px         | Content cards (feature, pricing, code-window, model-comparison) |
+| `{rounded.xl}`   | 16px         | Hero illustration container, the larger marquee components      |
+| `{rounded.pill}` | 9999px       | Badge pills, "NEW" tags                                         |
+| `{rounded.full}` | 9999px / 50% | Avatar substitutes, icon buttons                                |
 
 ### Photography & Illustrations
+
 Claude's hero rarely uses photography. Instead it uses:
+
 - Simple line-art illustrations with coral + dark-navy strokes on the cream canvas
 - Code editor mockups (the dominant "hero" treatment on developer-focused pages)
 - Terminal output mockups with monospace text on dark
@@ -523,6 +539,7 @@ When photography is used (rare — mostly testimonials), avatars crop to perfect
 ## Do's and Don'ts
 
 ### Do
+
 - Anchor every page on the cream canvas. Pure white reads as "any other AI tool"; the warm tint is the brand differentiator.
 - Use Copernicus serif for every display headline. Pair with StyreneB sans body. Negative letter-spacing on display sizes is non-negotiable.
 - Reserve `{colors.primary}` (coral) for primary CTAs and full-bleed `{component.callout-card-coral}` moments. Don't paint accent moments coral elsewhere.
@@ -532,6 +549,7 @@ When photography is used (rare — mostly testimonials), avatars crop to perfect
 - Apply `{spacing.section}` (96px) between major bands.
 
 ### Don't
+
 - Don't use cool grays or pure white for canvas. Cream is the brand.
 - Don't bold serif display weight. Copernicus at 700 reads as bombastic; the system stays at 400.
 - Don't use cool blue or saturated cyan as a brand accent. The coral is the brand voltage.
@@ -544,20 +562,22 @@ When photography is used (rare — mostly testimonials), avatars crop to perfect
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Mobile | < 768px | Hamburger nav; hero h1 64→32px; hero-illustration-card stacks below content; feature grids 1-up; connector tiles 2-up; pricing 1-up; footer 4 cols → 1 |
-| Tablet | 768–1024px | Top nav stays horizontal but tightens; feature cards 2-up; connector tiles 3-up; pricing 2-up |
-| Desktop | 1024–1440px | Full top-nav with all menu items; 3-up feature cards; 4-up or 6-up connector tiles; 3-up pricing tiers |
-| Wide | > 1440px | Same as desktop with more outer breathing room; max content width caps at 1200px |
+| Name    | Width       | Key Changes                                                                                                                                            |
+| ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Mobile  | < 768px     | Hamburger nav; hero h1 64→32px; hero-illustration-card stacks below content; feature grids 1-up; connector tiles 2-up; pricing 1-up; footer 4 cols → 1 |
+| Tablet  | 768–1024px  | Top nav stays horizontal but tightens; feature cards 2-up; connector tiles 3-up; pricing 2-up                                                          |
+| Desktop | 1024–1440px | Full top-nav with all menu items; 3-up feature cards; 4-up or 6-up connector tiles; 3-up pricing tiers                                                 |
+| Wide    | > 1440px    | Same as desktop with more outer breathing room; max content width caps at 1200px                                                                       |
 
 ### Touch Targets
+
 - `{component.button-primary}` at minimum 40 × 40px.
 - `{component.button-icon-circular}` at exactly 36 × 36 — slightly under WCAG 44 but visually centered.
 - `{component.text-input}` height is 40px.
 - Connector tile entire card area is tappable; effective tap area >> 44px.
 
 ### Collapsing Strategy
+
 - Top nav collapses to hamburger at < 768px; menu opens as a full-screen cream sheet.
 - Hero band's 6-6 grid collapses to single-column on mobile — h1 + sub-head + buttons first, then the illustration / mockup card below.
 - Feature grids reduce columns rather than scaling cards down.
@@ -565,6 +585,7 @@ When photography is used (rare — mostly testimonials), avatars crop to perfect
 - Code-window cards retain code legibility at every breakpoint by allowing horizontal scroll within the card rather than wrapping code lines.
 
 ### Image Behavior
+
 - Code blocks inside dark mockups stay at fixed font-size; horizontal scroll on mobile rather than wrapping.
 - Hero illustrations scale proportionally; line-art strokes thin slightly on mobile.
 - Avatar photos in testimonials crop to circles at every breakpoint.

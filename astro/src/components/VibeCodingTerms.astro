@@ -71,18 +71,11 @@ function groupTerms(terms: VibeCodingTerm[]): { name: string | null; terms: Vibe
 											<h3 class="vibe-term-group-title">{group.name}</h3>
 											<div class="vibe-terms-list">
 												{group.terms.map((term) => (
-													<a
-														class="vibe-term"
-														id={term.id}
-														href={`/vibe-coding/terms/${term.id}/`}
-													>
+													<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
 														<h3>
 															{term.name}
 															<span>{term.chineseName}</span>
-															<i
-																class="ph ph-arrow-up-right vibe-term-arrow"
-																aria-hidden="true"
-															/>
+															<i class="ph ph-arrow-up-right vibe-term-arrow" aria-hidden="true" />
 														</h3>
 														<p>{term.description}</p>
 													</a>
@@ -116,9 +109,7 @@ function groupTerms(terms: VibeCodingTerm[]): { name: string | null; terms: Vibe
 							) : (
 								groupTerms(category.terms).map((group) => (
 									<div class="vibe-terms-group">
-										{group.name ? (
-											<h3 class="vibe-term-group-title">{group.name}</h3>
-										) : null}
+										{group.name ? <h3 class="vibe-term-group-title">{group.name}</h3> : null}
 										<div class="vibe-terms-list">
 											{group.terms.map((term) => (
 												<a class="vibe-term" id={term.id} href={`/vibe-coding/terms/${term.id}/`}>
