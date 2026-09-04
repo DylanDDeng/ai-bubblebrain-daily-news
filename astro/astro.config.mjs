@@ -1,6 +1,12 @@
 // @ts-check
 import cloudflare from '@astrojs/cloudflare';
+import { unified } from '@astrojs/markdown-remark';
 import { defineConfig } from 'astro/config';
+import { fileURLToPath, URL } from 'node:url';
+
+import { rehypeArticleFigures } from './src/lib/articleFigures.ts';
+
+const staticRoot = fileURLToPath(new URL('../static', import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,6 +17,7 @@ export default defineConfig({
 	output: 'static',
 	trailingSlash: 'always',
 	markdown: {
+		processor: unified({ rehypePlugins: [[rehypeArticleFigures, { staticRoot }]] }),
 		shikiConfig: {
 			theme: 'min-light',
 		},

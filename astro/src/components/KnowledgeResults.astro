@@ -33,7 +33,16 @@ const { items, filterable = false } = Astro.props;
 						<span>{item.section_label}</span>
 					</p>
 					<h2>
-						<a href={item.href}>{item.title}</a>
+						<a
+							href={item.href}
+							target={item.external ? '_blank' : undefined}
+							rel={item.external ? 'noopener noreferrer' : undefined}
+						>
+							{item.title}
+							{item.external && (
+								<i class="ph ph-arrow-up-right knowledge-result-external" aria-hidden="true" />
+							)}
+						</a>
 					</h2>
 					{item.summary && <p class="knowledge-result-summary">{item.summary}</p>}
 					{item.tags.length > 0 && (

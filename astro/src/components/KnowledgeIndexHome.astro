@@ -1,6 +1,7 @@
 ---
 import { legacyEntryIsRoutable, loadLegacyContent, type LegacySection } from '../lib/legacyContent';
-import { buildKnowledgeSearchIndex } from '../lib/searchIndex';
+import { highlightArchiveFor } from '../lib/highlightsArchive';
+import { buildKnowledgeSearchIndex, knowledgeReadingCount } from '../lib/searchIndex';
 import { designBrands } from '../data/designBrands';
 import { vibeCodingTermCategories } from '../data/vibeCodingTerms';
 import { changelog } from '../data/changelog';
@@ -22,6 +23,7 @@ const entries = (await loadLegacyContent()).filter(
 		legacyEntryIsRoutable(entry),
 );
 const searchIndex = await buildKnowledgeSearchIndex({ locale });
+const { items: highlightItems } = await highlightArchiveFor(locale);
 
 const sectionCopy: Array<{
 	section: LegacySection;
@@ -64,14 +66,19 @@ const sectionCopy: Array<{
 		];
 
 const countFor = (section: LegacySection) =>
-	searchIndex.items.filter((entry) => entry.section === section).length;
+	section === 'highlights'
+		? highlightItems.length
+		: searchIndex.items.filter((entry) => entry.section === section).length;
 const designBrandCount = designBrands.length;
 const termCount = vibeCodingTermCategories.reduce(
 	(sum, category) => sum + category.terms.length,
 	0,
 );
-const articleCount = searchIndex.items.length;
-const collectionCount = sectionCopy.length + (isEnglish ? 0 : 1);
+// The archive also contains bookmark-only picks that open their original source.
+// Count every visible reading once, while the search index remains limited to
+// locally routable full articles.
+const articleCount = knowledgeReadingCount(searchIndex);
+const collectionCount = sectionCopy.length + (isEnglish ? 0 : 2);
 const featured = [...entries]
 	.sort((left, right) => {
 		const featuredOrder =

@@ -237,18 +237,40 @@ const searchIndex = JSON.parse(
   await readFile(resolve(distRoot, "search", "index.json"), "utf8"),
 );
 invariant(
-  searchIndex.schema_version === 2,
+  searchIndex.schema_version === 3,
   "Knowledge search uses an obsolete schema",
 );
 invariant(
   searchIndex.item_count === searchIndex.items.length,
   "Knowledge search count drifted",
 );
+for (const section of [
+  "highlights",
+  "codex-tutorials",
+  "pi-agent-tutorials",
+  "newbie-tutorials",
+  "workbuddy-tutorials",
+  "vibe-coding-terms",
+  "vibe-coding-skills",
+  "vibe-coding-design",
+  "about",
+  "x-trending",
+]) {
+  invariant(
+    searchIndex.sections.includes(section),
+    `Knowledge search is missing section: ${section}`,
+  );
+}
+invariant(
+  searchIndex.items.some((item) => item.href === "/vibe-coding/terms/token/"),
+  "Knowledge search is missing Vibe Coding terms",
+);
 invariant(
   searchIndex.items.every(
     (item) =>
       item.href &&
       !item.href.startsWith("/daily/") &&
+      !item.href.startsWith("/changelog/") &&
       item.section !== "ai-tools" &&
       item.section !== "curations" &&
       item.section !== "model-evals" &&
@@ -264,6 +286,13 @@ for (const route of ["/curations.json", "/en/curations.json"]) {
   );
 }
 for (const item of searchIndex.items) {
+  if (item.external) {
+    invariant(
+      /^https:\/\//.test(item.href),
+      `Knowledge search external target is unsafe: ${item.href}`,
+    );
+    continue;
+  }
   invariant(
     byRoute.get(item.href)?.status === 200,
     `Knowledge search target is not published: ${item.href}`,

@@ -700,6 +700,13 @@
 	letter-spacing: -0.025em;
 }
 
+.knowledge-result-external {
+	margin-left: 0.28em;
+	color: var(--ink-faint);
+	font-size: 0.72em;
+	vertical-align: 0.08em;
+}
+
 .knowledge-search .knowledge-result-date time,
 .knowledge-search .knowledge-result-meta {
 	color: var(--blue-strong);

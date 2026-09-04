@@ -117,6 +117,8 @@ function contentType(path) {
 	if (path.endsWith('.js')) return 'application/javascript';
 	if (path.endsWith('.mp4')) return 'video/mp4';
 	if (path.endsWith('.png')) return 'image/png';
+	if (path.endsWith('.avif')) return 'image/avif';
+	if (path.endsWith('.webp')) return 'image/webp';
 	if (path.endsWith('.jpg') || path.endsWith('.jpeg')) return 'image/jpeg';
 	if (path.endsWith('.gif')) return 'image/gif';
 	if (path.endsWith('.svg')) return 'image/svg+xml';

@@ -1,0 +1,75 @@
+---
+interface Props {
+	locale: 'zh-CN' | 'en';
+}
+
+const { locale } = Astro.props;
+const isEnglish = locale === 'en';
+---
+
+<dialog
+	class="article-lightbox"
+	data-article-lightbox-dialog
+	aria-label={isEnglish ? 'Image viewer' : '图片查看器'}
+>
+	<div class="article-lightbox__chrome">
+		<div class="article-lightbox__toolbar">
+			<div
+				class="article-lightbox__zoom-controls"
+				aria-label={isEnglish ? 'Zoom controls' : '缩放控制'}
+			>
+				<button
+					type="button"
+					data-lightbox-action="out"
+					aria-label={isEnglish ? 'Zoom out' : '缩小'}
+				>
+					<i class="ph ph-minus" aria-hidden="true"></i>
+				</button>
+				<button type="button" class="article-lightbox__scale" data-lightbox-action="reset">
+					<span data-lightbox-scale>100%</span>
+					<span class="sr-only">{isEnglish ? 'Reset zoom' : '重置缩放'}</span>
+				</button>
+				<button type="button" data-lightbox-action="in" aria-label={isEnglish ? 'Zoom in' : '放大'}>
+					<i class="ph ph-plus" aria-hidden="true"></i>
+				</button>
+			</div>
+			<a
+				href="/"
+				target="_blank"
+				rel="noopener noreferrer"
+				data-lightbox-original
+				aria-label={isEnglish ? 'Open original image' : '查看原图'}
+			>
+				<span>{isEnglish ? 'Original' : '查看原图'}</span>
+				<i class="ph ph-arrow-up-right" aria-hidden="true"></i>
+			</a>
+			<button
+				type="button"
+				data-lightbox-close
+				aria-label={isEnglish ? 'Close viewer' : '关闭图片'}
+			>
+				<i class="ph ph-x" aria-hidden="true"></i>
+			</button>
+		</div>
+		<div class="article-lightbox__stage" data-lightbox-stage data-loading="true">
+			<img src="" alt="" draggable="false" data-lightbox-image />
+			<div class="article-lightbox__loader" role="status">
+				<span aria-hidden="true"></span>
+				<span class="sr-only">{isEnglish ? 'Loading image' : '正在加载图片'}</span>
+			</div>
+			<p class="article-lightbox__error" data-lightbox-error>
+				{isEnglish ? 'This image could not be loaded.' : '这张图片暂时无法加载。'}
+			</p>
+		</div>
+		<footer class="article-lightbox__footer">
+			<p data-lightbox-caption></p>
+			<span
+				>{
+					isEnglish
+						? 'Scroll to zoom · drag to move · Esc to close'
+						: '滚轮缩放 · 拖动查看 · Esc 关闭'
+				}</span
+			>
+		</footer>
+	</div>
+</dialog>
