@@ -4,7 +4,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { createContentAddressedArtifact } from "../../scripts/create-content-addressed-artifact.mjs";
-import { materializeContentAddressedArtifact } from "../../scripts/materialize-content-addressed-artifact.mjs";
+import {
+  isPreviewVerificationBaselinePath,
+  materializeContentAddressedArtifact,
+} from "../../scripts/materialize-content-addressed-artifact.mjs";
 
 const RELEASE_ID = "22222222-2222-4222-8222-222222222222";
 const CODE_SHA = "b".repeat(40);
@@ -32,11 +35,18 @@ async function fixture() {
   temporaryDirectories.push(root);
   const source = join(root, "source");
   await mkdir(join(source, "release-manifests"), { recursive: true });
+  await mkdir(join(source, "data/daily"), { recursive: true });
   const page = Buffer.from("<h1>release</h1>\n");
+  const daily = Buffer.from('{"date":"2026-09-04"}\n');
   await writeFile(join(source, "index.html"), page);
-  const fingerprint = sha256(
-    Buffer.from(`index.html\0${sha256(page)}\n`, "utf8"),
-  );
+  await writeFile(join(source, "data/daily/2026-09-04.json"), daily);
+  const fingerprintSource = [
+    ["data/daily/2026-09-04.json", daily],
+    ["index.html", page],
+  ]
+    .map(([path, bytes]) => `${path}\0${sha256(bytes)}\n`)
+    .join("");
+  const fingerprint = sha256(Buffer.from(fingerprintSource, "utf8"));
   await writeFile(
     join(source, "release-manifests/site-route-manifest.json"),
     `${JSON.stringify({
@@ -99,12 +109,42 @@ describe("content-addressed artifact materialization", () => {
     expect(result).toMatchObject({
       site_release_id: RELEASE_ID,
       artifact_sha256: value.artifact.artifact_sha256,
-      file_count: 2,
-      unique_object_reads: 2,
+      file_count: 3,
+      unique_object_reads: 3,
     });
     expect(await readFile(join(value.target, "index.html"), "utf8")).toBe(
       "<h1>release</h1>\n",
     );
+    expect(value.store.reads).toHaveLength(4);
+  });
+
+  it("can materialize only the trusted Preview verification baseline", async () => {
+    const value = await fixture();
+    const result = await materializeContentAddressedArtifact({
+      descriptor: value.descriptor,
+      expectedSiteReleaseId: RELEASE_ID,
+      expectedCodeSha: CODE_SHA,
+      expectedContentSha256: CONTENT_SHA,
+      targetRoot: value.target,
+      store: value.store,
+      includeFile: isPreviewVerificationBaselinePath,
+    });
+
+    expect(result).toMatchObject({
+      file_count: 3,
+      materialized_file_count: 2,
+      unique_object_reads: 2,
+    });
+    await expect(readFile(join(value.target, "index.html"))).rejects.toThrow();
+    expect(
+      await readFile(
+        join(value.target, "release-manifests/site-route-manifest.json"),
+        "utf8",
+      ),
+    ).toContain(RELEASE_ID);
+    expect(
+      await readFile(join(value.target, "data/daily/2026-09-04.json"), "utf8"),
+    ).toBe('{"date":"2026-09-04"}\n');
     expect(value.store.reads).toHaveLength(3);
   });
 

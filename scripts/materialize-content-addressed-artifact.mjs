@@ -42,6 +42,13 @@ function positiveInteger(value) {
   return parsed;
 }
 
+export function isPreviewVerificationBaselinePath(path) {
+  return (
+    path === ROUTE_MANIFEST ||
+    /^data\/daily\/\d{4}-\d{2}-\d{2}\.json$/.test(path)
+  );
+}
+
 async function runPool(entries, concurrency, worker) {
   let cursor = 0;
   await Promise.all(
@@ -159,6 +166,7 @@ export async function materializeContentAddressedArtifact({
   targetRoot,
   store,
   concurrency = DEFAULT_CONCURRENCY,
+  includeFile,
 }) {
   validateDescriptor(descriptor, {
     siteReleaseId: expectedSiteReleaseId,
@@ -171,32 +179,36 @@ export async function materializeContentAddressedArtifact({
   const temporary = `${target}.materializing-${randomUUID()}`;
   const backup = `${target}.previous-${randomUUID()}`;
   const objectReads = new Map();
+  const selectedFiles = includeFile
+    ? manifest.files.filter((file) => includeFile(file.path))
+    : manifest.files;
+  if (!selectedFiles.some((file) => file.path === ROUTE_MANIFEST)) {
+    throw new Error(
+      "Materialized artifact selection must include the route manifest",
+    );
+  }
   let targetMoved = false;
   try {
     await mkdir(temporary, { recursive: true });
-    await runPool(
-      manifest.files,
-      positiveInteger(concurrency),
-      async (file) => {
-        let pending = objectReads.get(file.object_key);
-        if (!pending) {
-          pending = store.get(file.object_key);
-          objectReads.set(file.object_key, pending);
-        }
-        const bytes = await pending;
-        if (
-          bytes.byteLength !== file.byte_length ||
-          sha256(bytes) !== file.sha256
-        ) {
-          throw new Error(
-            `Resume artifact asset identity mismatch: ${file.path}`,
-          );
-        }
-        const destination = resolve(temporary, file.path);
-        await mkdir(dirname(destination), { recursive: true });
-        await writeFile(destination, bytes, { flag: "wx" });
-      },
-    );
+    await runPool(selectedFiles, positiveInteger(concurrency), async (file) => {
+      let pending = objectReads.get(file.object_key);
+      if (!pending) {
+        pending = store.get(file.object_key);
+        objectReads.set(file.object_key, pending);
+      }
+      const bytes = await pending;
+      if (
+        bytes.byteLength !== file.byte_length ||
+        sha256(bytes) !== file.sha256
+      ) {
+        throw new Error(
+          `Resume artifact asset identity mismatch: ${file.path}`,
+        );
+      }
+      const destination = resolve(temporary, file.path);
+      await mkdir(dirname(destination), { recursive: true });
+      await writeFile(destination, bytes, { flag: "wx" });
+    });
     const existing = await stat(target).catch(() => null);
     if (existing) {
       await rename(target, backup);
@@ -209,6 +221,7 @@ export async function materializeContentAddressedArtifact({
       artifact_sha256: descriptor.artifact_sha256,
       artifact_fingerprint_sha256: descriptor.artifact_fingerprint_sha256,
       file_count: manifest.file_count,
+      materialized_file_count: selectedFiles.length,
       total_asset_bytes: manifest.total_asset_bytes,
       unique_object_reads: objectReads.size,
       target_root: target,
@@ -227,9 +240,16 @@ const isMain =
   process.argv[1] &&
   resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
+  const argumentsList = process.argv.slice(2);
+  const verificationBaseline = argumentsList.includes(
+    "--preview-verification-baseline",
+  );
+  const positional = argumentsList.filter(
+    (argument) => argument !== "--preview-verification-baseline",
+  );
   const plan = JSON.parse(
     await readFile(
-      process.argv[2] || resolve(process.cwd(), "server-resume-plan.json"),
+      positional[0] || resolve(process.cwd(), "server-resume-plan.json"),
       "utf8",
     ),
   );
@@ -244,9 +264,12 @@ if (isMain) {
     expectedSiteReleaseId: process.env.SITE_RELEASE_ID,
     expectedCodeSha: process.env.EXACT_CODE_SHA,
     expectedContentSha256: process.env.CONTENT_ROOT_SHA256,
-    targetRoot: process.argv[3] || "astro/dist/client",
+    targetRoot: positional[1] || "astro/dist/client",
     store,
     concurrency: process.env.R2_MATERIALIZE_CONCURRENCY || DEFAULT_CONCURRENCY,
+    includeFile: verificationBaseline
+      ? isPreviewVerificationBaselinePath
+      : undefined,
   });
   process.stdout.write(`${JSON.stringify(result)}\n`);
 }
