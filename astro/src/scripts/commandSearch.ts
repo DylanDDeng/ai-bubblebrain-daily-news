@@ -38,6 +38,10 @@ function createResultRow(item: KnowledgeSearchItem, index: number): HTMLAnchorEl
 	const row = document.createElement('a');
 	row.className = 'command-search-result';
 	row.href = item.href;
+	if (item.external) {
+		row.target = '_blank';
+		row.rel = 'noopener noreferrer';
+	}
 	row.setAttribute('role', 'option');
 	row.setAttribute('aria-selected', 'false');
 

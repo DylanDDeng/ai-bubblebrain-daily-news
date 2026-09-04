@@ -47,6 +47,8 @@ const expectedArticleRoutes = [
 	'/en/highlights/2026-08-25-build-a-long-running-agent-open-source-harness/',
 	'/highlights/2026-08-27-what-it-takes-for-coding-agents-to-complete-large-software-tasks/',
 	'/en/highlights/2026-08-27-what-it-takes-for-coding-agents-to-complete-large-software-tasks/',
+	'/highlights/2026-08-31-how-our-agents-build-on-brand-pages-with-design-md/',
+	'/en/highlights/2026-08-31-how-our-agents-build-on-brand-pages-with-design-md/',
 	'/highlights/2026-09-02-prompting-claude-fable-5-1/',
 	'/en/highlights/2026-09-02-prompting-claude-fable-5-1/',
 	'/highlights/2026-09-02-the-anatomy-of-effective-commerce-agents/',
@@ -271,6 +273,33 @@ describe('unified highlights content', () => {
 		expect(chinese?.body).toContain(
 			'[Anthropic 官方原文](https://claude.com/blog/the-anatomy-of-effective-commerce-agents)',
 		);
+		expect(chinese?.body).not.toMatch(/不是|而是|并非|而非|不像|不仅/u);
+	});
+
+	it('keeps the Vercel design.md article complete in both languages', async () => {
+		const records = highlightRecords(await loadLegacyContent()).filter(
+			(entry) =>
+				entry.frontmatter.externalId ===
+				'how-our-agents-build-on-brand-pages-with-design-md',
+		);
+
+		expect(records).toHaveLength(2);
+		for (const entry of records) {
+			expect(entry.body.match(/^## /gm)).toHaveLength(7);
+			expect(entry.body.match(/https:\/\/assets\.vercel\.com\/image\/upload/g)).toHaveLength(5);
+			expect(entry.body).toContain('https://assets.vercel.com/video/upload');
+			expect(entry.body).toContain('https://vercel.com/design.md');
+			expect(entry.body).toContain('https://vercel.com/geist/vercel-brand.css');
+			expect(entry.body).toContain('Claude Opus 4.8');
+			expect(entry.body).toContain('GPT-5.5');
+			expect(entry.body).toContain('39');
+			expect(entry.body).toContain('91');
+			expect(entry.body).toContain('57%');
+			expect(entry.body).toContain('John Phamous');
+			expect(entry.body).toContain('Kevin Corbett');
+		}
+
+		const chinese = records.find((entry) => entry.locale === 'zh-CN');
 		expect(chinese?.body).not.toMatch(/不是|而是|并非|而非|不像|不仅/u);
 	});
 

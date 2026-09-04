@@ -13,6 +13,7 @@ const items: KnowledgeSearchItem[] = [
 		section_label: '精选阅读',
 		date: '2026-08-19',
 		tags: ['Cursor', '设计系统'],
+		external: false,
 		search_text: 'cursor 图标是怎样做出来的 一套图标设计系统的完整复盘 精选阅读 设计系统',
 	},
 	{
@@ -24,6 +25,7 @@ const items: KnowledgeSearchItem[] = [
 		section_label: 'Codex 教程',
 		date: '2026-05-04',
 		tags: ['Codex'],
+		external: false,
 		search_text: 'codex app 新手入门 从界面到第一次任务 codex 教程',
 	},
 ];

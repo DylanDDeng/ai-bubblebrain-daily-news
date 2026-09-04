@@ -15,6 +15,27 @@ export interface ChangelogItem {
 
 export const changelog: ChangelogItem[] = [
 	{
+		date: '2026-09-04',
+		tag: '搜索与阅读体验',
+		type: 'feature',
+		title: '全站知识搜索与文章阅读体验升级',
+		summary:
+			'知识搜索现已覆盖教程、精选阅读、术语、Skills、Design 与关于页；文章页同步升级图片呈现、阅读尺度和内容统计，并收录 Vercel 的 design.md 设计评测实践。',
+		highlights: [
+			'知识搜索扩展至 213 条全站内容，保留更新日志在索引之外',
+			'文章正文采用更舒适的阅读宽度，图片与正文对齐并支持响应式加载和大图查看',
+			'首页内容数字改为根据实际可阅读页面实时统计',
+			'精选阅读新增 Vercel《Agent 如何用 design.md 构建符合品牌的页面》中英双语全文',
+		],
+		links: [
+			{ label: '体验知识搜索', href: '/search/' },
+			{
+				label: '阅读 Vercel design.md 实践',
+				href: '/highlights/2026-08-31-how-our-agents-build-on-brand-pages-with-design-md/',
+			},
+		],
+	},
+	{
 		date: '2026-09-02',
 		tag: '精选阅读',
 		type: 'content',

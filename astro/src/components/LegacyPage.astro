@@ -24,6 +24,7 @@ import {
 	type HighlightArchiveItem,
 } from '../lib/highlightsArchive';
 import ArticleOutline from './ArticleOutline.astro';
+import ArticleImageLightbox from './ArticleImageLightbox.astro';
 import { commentThreadId } from '../lib/comments/threadId';
 import '../styles/legacy-pages.css';
 import '../styles/newbie-lab.css';
@@ -181,12 +182,14 @@ const pageLabels: Record<string, { zh: string; en: string; kicker: string }> = {
 	'x-trending': { zh: 'X 热门内容', en: 'X Trending', kicker: 'SOCIAL SIGNALS' },
 };
 const label = pageLabels[record.section];
+const explicitTitle =
+	typeof record.frontmatter.title === 'string' ? record.frontmatter.title.trim() : '';
 const title = record.isIndex
 	? isEnglish
 		? label.en
 		: label.zh
-	: record.title && !record.title.includes('-')
-		? record.title
+	: explicitTitle
+		? explicitTitle
 		: isEnglish
 			? label.en
 			: label.zh;
@@ -677,6 +680,7 @@ const libraryApi =
 			</article>
 		)
 	}
+	{!record.isIndex && !isStandaloneHtml && <ArticleImageLightbox locale={record.locale} />}
 </BaseLayout>
 
 {
@@ -687,6 +691,6 @@ const libraryApi =
 <script>
 	import '../scripts/legacy-directory.js';
 	import '../scripts/article-outline.ts';
-	import '../scripts/article-image-zoom.ts';
+	import '../scripts/article-image-lightbox.ts';
 	import '../scripts/newbie-lab.ts';
 </script>
