@@ -437,6 +437,7 @@ function classifyCodeReleasePath(
     ].some((prefix) => path.startsWith(prefix)) ||
     [
       "astro/src/content.config.ts",
+      "astro/src/data/changelog.ts",
       "astro/src/data/designBrands.ts",
       "astro/src/data/vibeCodingPatternDetails.ts",
       "astro/src/data/vibeCodingSkills.ts",
