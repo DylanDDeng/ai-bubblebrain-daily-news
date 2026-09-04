@@ -230,8 +230,10 @@ async function verifyRecord(record) {
     if (
       [
         "application/octet-stream",
+        "image/avif",
         "image/png",
         "image/vnd.microsoft.icon",
+        "image/webp",
         "video/mp4",
       ].includes(record.content_type)
     ) {
