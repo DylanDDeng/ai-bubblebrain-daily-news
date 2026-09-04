@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 560" role="img" aria-labelledby="title desc">
+  <title id="title">训练循环：一道填空题的四步</title>
+  <desc id="desc">左侧是训练循环的四步：从图书馆里抽一段文字「今天天气真好」；遮住最后一个词变成填空题；让模型猜被遮住的词；对答案，猜错了就把几百亿个旋钮微调一点点，然后换下一段文字再来。右侧显示同一道题上它的进步：刚开始猜「香蕉」完全乱来，训练一阵后猜「热」已经像话，最后稳定猜出「好」。底部结论：重复数万亿次之后，「接得像话」就刻进了旋钮里。</desc>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .step{font-size:19px;font-weight:600;fill:#111}
+    .stepsub{font-size:13.5px;fill:#6c6c6c}
+    .check{font-size:16px;font-weight:700;fill:#2c8a44}
+    .ptitle{font-size:13.5px;letter-spacing:3px;font-weight:700;fill:#6c6c6c}
+    .day{font-size:13px;letter-spacing:1px;fill:#6c6c6c}
+    .guess-bad{font-size:20px;font-weight:700;fill:#d9341c}
+    .guess-mid{font-size:20px;font-weight:700;fill:#a8770a}
+    .guess-good{font-size:20px;font-weight:700;fill:#2c8a44}
+    .mark-bad{font-size:13.5px;fill:#d9341c}
+    .mark-mid{font-size:13.5px;fill:#a8770a}
+    .mark-good{font-size:13.5px;fill:#2c8a44}
+    .q{font-size:16px;font-weight:650;fill:#111}
+    .note{font-size:15px;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .panel{fill:#f5f5f2;stroke:#dedede;stroke-width:1.5}
+    .row{fill:#fff;stroke:#dedede;stroke-width:1}
+    .loop{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round}
+    .r1{animation:p1 10s linear infinite}.r2{animation:p2 10s linear infinite}
+    .r3{animation:p3 10s linear infinite}.r4{animation:p4 10s linear infinite}
+    @keyframes p1{0%,2%{stroke:#dedede}4%,21%{stroke:#ff4d2e}25%,100%{stroke:#dedede}}
+    @keyframes p2{0%,27%{stroke:#dedede}29%,46%{stroke:#ff4d2e}50%,100%{stroke:#dedede}}
+    @keyframes p3{0%,52%{stroke:#dedede}54%,71%{stroke:#ff4d2e}75%,100%{stroke:#dedede}}
+    @keyframes p4{0%,77%{stroke:#dedede}79%,96%{stroke:#ff4d2e}100%{stroke:#dedede}}
+    @media(prefers-reduced-motion:reduce){.r1,.r2,.r3,.r4{animation:none}}
+  </style>
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">PRETRAINING LOOP</text>
+    <text x="40" y="92" class="headline">训练，就是重复做这四步</text>
+
+    <rect class="card r1" x="40" y="126" width="560" height="72"/>
+    <text x="62" y="156" class="mono num">01</text>
+    <text x="104" y="157" class="step">从「图书馆」里抽一段文字</text>
+    <text x="104" y="182" class="stepsub">「今天天气真好」——网页、书、代码，数万亿词</text>
+
+    <rect class="card r2" x="40" y="212" width="560" height="72"/>
+    <text x="62" y="242" class="mono num">02</text>
+    <text x="104" y="243" class="step">遮住最后一个词，变成填空题</text>
+    <text x="104" y="268" class="stepsub">「今天天气真 ____」</text>
+
+    <rect class="card r3" x="40" y="298" width="560" height="72"/>
+    <text x="62" y="328" class="mono num">03</text>
+    <text x="104" y="329" class="step">让模型猜被遮住的词</text>
+    <text x="104" y="354" class="stepsub">刚出厂时全凭瞎蒙</text>
+
+    <rect class="card r4" x="40" y="384" width="560" height="72"/>
+    <text x="62" y="414" class="mono num">04</text>
+    <text x="104" y="415" class="step">对答案，把旋钮微调一点点</text>
+    <text x="104" y="440" class="stepsub">几百亿个旋钮各拧一丝丝，让下次更接近「好」</text>
+
+    <path class="loop" d="M20 162H40M20 420V162M20 420h20"/>
+    <text x="40" y="492" class="note">然后放回去，换下一段文字，再来——数万亿次。</text>
+
+    <!-- progress panel -->
+    <rect class="panel" x="640" y="126" width="412" height="330"/>
+    <text x="662" y="154" class="mono ptitle">同一道题，它的进步</text>
+    <text x="662" y="186" class="q">今天天气真 ____</text>
+
+    <rect class="row" x="662" y="204" width="368" height="66"/>
+    <text x="678" y="230" class="mono day">刚开始</text>
+    <text x="678" y="258" class="guess-bad">「香蕉」</text>
+    <text x="790" y="258" class="mark-bad">✗ 完全乱来</text>
+
+    <rect class="row" x="662" y="278" width="368" height="66"/>
+    <text x="678" y="304" class="mono day">练了一阵</text>
+    <text x="678" y="332" class="guess-mid">「热」</text>
+    <text x="790" y="332" class="mark-mid">△ 已经像句人话</text>
+
+    <rect class="row" x="662" y="352" width="368" height="66"/>
+    <text x="678" y="378" class="mono day">练了很久</text>
+    <text x="678" y="406" class="guess-good">「好」</text>
+    <text x="790" y="406" class="mark-good">✓ 和原文对上了</text>
+
+    <text x="662" y="444" class="stepsub">没有人教过它任何一条规则</text>
+
+    <text x="40" y="532" class="note">「接得像话」这个本事，就是这样一丝一丝刻进旋钮里的——包括真话，也包括像真话的话（见第一篇）。</text>
+  </g>
+</svg>

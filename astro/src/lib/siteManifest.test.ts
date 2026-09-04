@@ -41,6 +41,18 @@ describe('site feeds', () => {
 		);
 	});
 
+	it('publishes the changelog route', async () => {
+		const records = await loadSiteManifest();
+
+		expect(records).toContainEqual(
+			expect.objectContaining({
+				route: '/changelog/',
+				title: '更新日志',
+				section: 'changelog',
+			}),
+		);
+	});
+
 	it('keeps every dated compatibility record instead of silently truncating the feed', () => {
 		const records: SiteRecord[] = Array.from({ length: 150 }, (_, index) => ({
 			route: `/daily/2026/01/item-${index}/`,

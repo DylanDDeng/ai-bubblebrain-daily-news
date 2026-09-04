@@ -72,6 +72,14 @@ export async function loadSiteManifest(): Promise<SiteRecord[]> {
 			section: 'vibe-coding',
 			lastmod: null,
 		},
+		{
+			route: '/changelog/',
+			title: '更新日志',
+			description: "记录 Bubble's Brain 知识库的每一次内容收录、功能迭代与体验演进",
+			locale: 'zh-CN',
+			section: 'changelog',
+			lastmod: null,
+		},
 	];
 
 	for (const concept of getVibeCodingConcepts()) {

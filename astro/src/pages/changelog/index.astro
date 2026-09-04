@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { changelog } from '../../data/changelog';
+import '../../styles/changelog.css';
+
+const title = "更新日志 · Bubble's Brain";
+const description = "记录 Bubble's Brain 个人 AI 知识库的最新内容收录、功能迭代与体验优化。";
+---
+
+<BaseLayout title={title} description={description} canonicalPath="/changelog/">
+	<div class="changelog-shell">
+		<header class="changelog-header">
+			<p class="changelog-eyebrow">CHANGELOG</p>
+			<h1>更新日志</h1>
+			<p class="changelog-lede">
+				记录 Bubble's Brain 知识库的每一次内容收录、功能迭代与体验演进。保持更新，持续沉淀。
+			</p>
+		</header>
+
+		<div class="changelog-timeline">
+			{
+				changelog.map((entry) => (
+					<article class="changelog-item">
+						<div class="changelog-marker" aria-hidden="true" />
+						<div class="changelog-meta">
+							<time class="changelog-date" datetime={entry.date}>
+								{entry.date}
+							</time>
+							<span class="changelog-tag" data-type={entry.type}>
+								{entry.tag}
+							</span>
+						</div>
+						<h2 class="changelog-title">{entry.title}</h2>
+						<p class="changelog-summary">{entry.summary}</p>
+						{entry.highlights && entry.highlights.length > 0 && (
+							<ul class="changelog-highlights">
+								{entry.highlights.map((item) => (
+									<li>{item}</li>
+								))}
+							</ul>
+						)}
+						{entry.links && entry.links.length > 0 && (
+							<div class="changelog-links">
+								{entry.links.map((link) => (
+									<a class="changelog-link-btn" href={link.href}>
+										<span>{link.label}</span>
+										<i class="ph ph-arrow-right" aria-hidden="true" />
+									</a>
+								))}
+							</div>
+						)}
+					</article>
+				))
+			}
+		</div>
+	</div>
+</BaseLayout>

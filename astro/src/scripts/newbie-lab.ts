@@ -617,6 +617,259 @@ function setupCompactLab(lab: HTMLElement): void {
 	});
 }
 
+// LAB (training) 01 — one fill-in-the-blank drill: each round nudges the
+// probabilities toward the correct word.
+const FILL_WORDS = ['垫子', '键盘', '月亮'];
+const FILL_ROUNDS = [
+	[28, 34, 38],
+	[52, 26, 22],
+	[71, 17, 12],
+	[85, 9, 6],
+];
+const FILL_LABELS = [
+	'还没开始训练 · 三个词差不多，纯瞎蒙',
+	'第 1 轮之后 · 「垫子」的旋钮被拧大了一点',
+	'第 2 轮之后 · 差距越拉越开',
+	'第 3 轮之后 · 它已经很有把握了',
+];
+
+function setupFillLab(lab: HTMLElement): void {
+	const bars = lab.querySelector<HTMLElement>('[data-nb-fill-bars]');
+	const roundLabel = lab.querySelector<HTMLElement>('[data-nb-fill-round]');
+	const step = lab.querySelector<HTMLButtonElement>('[data-nb-fill-step]');
+	const reset = lab.querySelector<HTMLButtonElement>('[data-nb-reset]');
+	const result = lab.querySelector<HTMLElement>('[data-nb-result]');
+	if (!bars || !roundLabel || !step || !reset || !result) return;
+
+	let round = 0;
+
+	const render = () => {
+		const probs = FILL_ROUNDS[round]!;
+		roundLabel.textContent = FILL_LABELS[round] ?? '';
+		bars.replaceChildren();
+		FILL_WORDS.forEach((word, index) => {
+			const row = document.createElement('div');
+			row.className = index === 0 && round > 0 ? 'nb-score-row is-leader' : 'nb-score-row';
+			const name = document.createElement('span');
+			name.className = 'nb-score-name';
+			name.textContent = word;
+			const bar = document.createElement('span');
+			bar.className = 'nb-score-bar';
+			const fill = document.createElement('i');
+			fill.style.width = `${probs[index]}%`;
+			bar.append(fill);
+			const num = document.createElement('span');
+			num.className = 'nb-score-num';
+			num.textContent = `${probs[index]}%`;
+			row.append(name, bar, num);
+			bars.append(row);
+		});
+	};
+
+	step.addEventListener('click', () => {
+		if (round >= FILL_ROUNDS.length - 1) return;
+		round += 1;
+		render();
+		if (round === FILL_ROUNDS.length - 1) {
+			step.hidden = true;
+			reset.hidden = false;
+			result.replaceChildren();
+			result.dataset.tone = 'good';
+			const line = document.createElement('p');
+			line.className = 'nb-kb-verdict';
+			line.textContent =
+				'三轮下来，「垫子」从 28% 涨到 85%。真实训练就是这一个动作重复数万亿次——每道题都把几百亿个旋钮朝正确答案的方向拧一丝丝。没有人告诉它「猫喜欢垫子」，这条知识是从题里自己长出来的。';
+			result.append(line);
+			result.hidden = false;
+		}
+	});
+	reset.addEventListener('click', () => {
+		round = 0;
+		step.hidden = false;
+		reset.hidden = true;
+		result.hidden = true;
+		render();
+	});
+	render();
+}
+
+// LAB (training) 02 — the same model before and after instruction tuning.
+const BASEVS_PROMPTS: Array<{ text: string; base: string; sft: string }> = [
+	{
+		text: '怎么煮出溏心蛋？',
+		base: '怎么煎出完美的牛排？怎么烤出松软的面包？怎么熬一锅不腥的鱼汤？——以上选自《厨房新手最常问的 100 个问题》目录。',
+		sft: '冷藏蛋回温后，水开下锅，中火煮 6 分半，捞出立刻过冰水，剥壳即可。想更溏心就 6 分钟，想更凝固就 7 分半。',
+	},
+	{
+		text: '帮我写一句生日祝福',
+		base: '帮我写一句道歉的话。帮我写一句毕业赠言。帮我写一句年会开场白。网友还搜索了：生日祝福文案大全、朋友圈生日九宫格……',
+		sft: '当然：「新的一岁，愿你被生活温柔以待，也有底气奔向想去的地方——生日快乐！」需要更正式或更俏皮的版本吗？',
+	},
+	{
+		text: '北京有什么好玩的？',
+		base: '上海有什么好玩的？成都有什么好吃的？这类问题在旅游论坛平均每天出现三千次。本文将分析「有什么好玩的」句式的传播规律……',
+		sft: '看你偏好：第一次来走故宫—景山—后海一线；喜欢逛展去 798 和国博；想遛弯儿选颐和园或地坛。需要我按天数排个路线吗？',
+	},
+];
+
+function setupBasevsLab(lab: HTMLElement): void {
+	const prompts = lab.querySelector<HTMLElement>('[data-nb-basevs-prompts]');
+	const out = lab.querySelector<HTMLElement>('[data-nb-basevs-out]');
+	const verdict = lab.querySelector<HTMLElement>('[data-nb-basevs-verdict]');
+	const modes = lab.querySelectorAll<HTMLInputElement>('input[name="nb-basevs-mode"]');
+	if (!prompts || !out || !verdict) return;
+
+	let active = 0;
+	const buttons: HTMLButtonElement[] = [];
+
+	const render = () => {
+		const prompt = BASEVS_PROMPTS[active]!;
+		const mode = [...modes].find((radio) => radio.checked)?.value ?? 'base';
+		buttons.forEach((button, index) =>
+			button.setAttribute('aria-pressed', String(index === active)),
+		);
+		out.replaceChildren();
+		const q = document.createElement('p');
+		q.textContent = `你：${prompt.text}`;
+		const a = document.createElement('p');
+		a.textContent = `它：${mode === 'base' ? prompt.base : prompt.sft}`;
+		out.append(q, a);
+		verdict.innerHTML =
+			mode === 'base'
+				? '它没有坏——它在做预训练教它的唯一一件事：<b>接着写</b>。你的问题对它来说不是问题，只是「一段开头」。'
+				: '同一个模型、同一肚子知识。几万条示范对话之后，它学会的是「这是提问，该回答」——微调教的是应对方式，不是新知识。';
+	};
+
+	BASEVS_PROMPTS.forEach((prompt, index) => {
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'nb-pill';
+		button.textContent = prompt.text;
+		button.addEventListener('click', () => {
+			active = index;
+			render();
+		});
+		buttons.push(button);
+		prompts.append(button);
+	});
+	for (const radio of modes) radio.addEventListener('change', render);
+	render();
+}
+
+// LAB (training) 03 — the reader labels preference pairs, then the traps are revealed.
+interface RankOption {
+	text: string;
+	trap: boolean;
+}
+const RANK_ROUNDS: Array<{ q: string; a: RankOption; b: RankOption; reveal: string }> = [
+	{
+		q: '地球到月球有多远？',
+		a: { text: '大约 38 万公里。', trap: false },
+		b: {
+			text: '平均约 38 万公里。月球轨道是椭圆的，最近约 36.3 万公里，最远约 40.6 万公里。',
+			trap: false,
+		},
+		reveal:
+			'这道没有陷阱，纯粹是口味题：简洁还是详尽。几十万道这样的选择，决定了模型日常「话多还是话少」。',
+	},
+	{
+		q: '《记忆之城》这本书的作者是谁？',
+		a: {
+			text: '《记忆之城》的作者是张远，2018 年由人民文学出版社出版，曾获茅盾文学奖提名。',
+			trap: true,
+		},
+		b: {
+			text: '我不确定有这本书，也可能它比较冷门。建议核对一下书名，或者告诉我更多信息。',
+			trap: false,
+		},
+		reveal:
+			'陷阱题：A 的书、作者、奖项全是编的，但它「长得」特别像好答案。选了 A，就是给「一本正经地编造」投了一票。',
+	},
+	{
+		q: '我最近总是失眠，怎么办？',
+		a: {
+			text: '固定作息、睡前一小时放下手机、下午之后别喝咖啡。持续几周没改善的话，建议看医生。',
+			trap: false,
+		},
+		b: { text: '失眠说明你肝火旺。每天三杯苦瓜汁，一周痊愈。', trap: true },
+		reveal: '陷阱题：B 说得斩钉截铁，可惜是危险的偏方。「自信」和「靠谱」经常不是一回事。',
+	},
+];
+
+function setupRankLab(lab: HTMLElement): void {
+	const stage = lab.querySelector<HTMLElement>('[data-nb-rank]');
+	const result = lab.querySelector<HTMLElement>('[data-nb-result]');
+	const reset = lab.querySelector<HTMLButtonElement>('[data-nb-reset]');
+	if (!stage || !result || !reset) return;
+
+	let picks: Array<'a' | 'b'> = [];
+
+	const renderRound = () => {
+		const round = RANK_ROUNDS[picks.length];
+		stage.replaceChildren();
+		if (!round) return;
+		const hint = document.createElement('p');
+		hint.className = 'nb-lab-hint';
+		hint.textContent = `第 ${picks.length + 1} / ${RANK_ROUNDS.length} 题 · 哪个回答更好？`;
+		const q = document.createElement('p');
+		q.className = 'nb-rank-q';
+		q.textContent = `问：${round.q}`;
+		stage.append(hint, q);
+		(['a', 'b'] as const).forEach((key) => {
+			const option = round[key];
+			const button = document.createElement('button');
+			button.type = 'button';
+			button.className = 'nb-rank-option';
+			const tag = document.createElement('span');
+			tag.className = 'nb-rank-tag';
+			tag.textContent = key.toUpperCase();
+			const text = document.createElement('span');
+			text.textContent = option.text;
+			button.append(tag, text);
+			button.addEventListener('click', () => {
+				picks.push(key);
+				if (picks.length >= RANK_ROUNDS.length) finish();
+				else renderRound();
+			});
+			stage.append(button);
+		});
+	};
+
+	const finish = () => {
+		stage.replaceChildren();
+		result.replaceChildren();
+		let traps = 0;
+		RANK_ROUNDS.forEach((round, index) => {
+			const pick = picks[index]!;
+			const picked = round[pick];
+			if (picked.trap) traps += 1;
+			const row = document.createElement('p');
+			const head = document.createElement('b');
+			head.textContent = `第 ${index + 1} 题你选了 ${pick.toUpperCase()}${picked.trap ? ' ⚠ ' : ' ✓ '}`;
+			row.append(head, round.reveal);
+			result.append(row);
+		});
+		const verdict = document.createElement('p');
+		verdict.className = 'nb-kb-verdict';
+		verdict.textContent =
+			traps === 0
+				? '两道陷阱题你都避开了——但真实标注现场没有「揭晓答案」这一步：几十万道题、按件计酬，没时间逐条查证，「看起来更专业」的版本天然占便宜。'
+				: `你有 ${traps} 票投给了「自信但有问题」的回答。别难过，真实标注员也常这样——而这些口味会被打分器原样学走，再放大进模型的每一次回答。第一篇里它「宁可编也不说不知道」，就是这么被一票一票教出来的。`;
+		result.dataset.tone = traps === 0 ? 'good' : 'bad';
+		result.append(verdict);
+		result.hidden = false;
+		reset.hidden = false;
+	};
+
+	reset.addEventListener('click', () => {
+		picks = [];
+		result.hidden = true;
+		reset.hidden = true;
+		renderRound();
+	});
+	renderRound();
+}
+
 function setupNewbieLabs(): void {
 	for (const lab of document.querySelectorAll<HTMLElement>('[data-nb-lab]')) {
 		if (lab.dataset.nbReady === 'true') continue;
@@ -630,6 +883,9 @@ function setupNewbieLabs(): void {
 		else if (kind === 'search') setupSearchLab(lab);
 		else if (kind === 'desk') setupDeskLab(lab);
 		else if (kind === 'compact') setupCompactLab(lab);
+		else if (kind === 'fill') setupFillLab(lab);
+		else if (kind === 'basevs') setupBasevsLab(lab);
+		else if (kind === 'rank') setupRankLab(lab);
 	}
 }
 

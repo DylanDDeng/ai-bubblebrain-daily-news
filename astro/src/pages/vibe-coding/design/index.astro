@@ -1,11 +1,7 @@
 ---
 import '../../../styles/design-gallery.css';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import {
-	type DesignBrand,
-	designBrandById,
-	designBrandGroups,
-} from '../../../data/designBrands';
+import { type DesignBrand, designBrandById, designBrandGroups } from '../../../data/designBrands';
 
 const groups = designBrandGroups
 	.map((group) => ({

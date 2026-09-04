@@ -1,26 +1,26 @@
 ---
 version: alpha
 name: Framer-design-analysis
-description: "A confident dark-canvas builder marketing site that treats the page like a working artboard — pure black surfaces, white display type set in GT Walsheim Medium with aggressive negative tracking, and a single confident blue (#0099ff) reserved for hyperlinks and selection states. The page rhythm is broken by oversized vibrant gradient atmosphere panels — magenta, violet, orange spotlights — that act as living showcase tiles, not decoration. Every CTA is a white pill on dark; every card is a translucent or charcoal surface; every section title pulls letter-spacing tight enough to feel like a poster."
+description: 'A confident dark-canvas builder marketing site that treats the page like a working artboard — pure black surfaces, white display type set in GT Walsheim Medium with aggressive negative tracking, and a single confident blue (#0099ff) reserved for hyperlinks and selection states. The page rhythm is broken by oversized vibrant gradient atmosphere panels — magenta, violet, orange spotlights — that act as living showcase tiles, not decoration. Every CTA is a white pill on dark; every card is a translucent or charcoal surface; every section title pulls letter-spacing tight enough to feel like a poster.'
 
 colors:
-  primary: "#ffffff"
-  on-primary: "#000000"
-  accent-blue: "#0099ff"
-  ink: "#ffffff"
-  ink-muted: "#999999"
-  canvas: "#090909"
-  surface-1: "#141414"
-  surface-2: "#1c1c1c"
-  hairline: "#262626"
-  hairline-soft: "#1a1a1a"
-  inverse-canvas: "#ffffff"
-  inverse-ink: "#000000"
-  gradient-magenta: "#d44df0"
-  gradient-violet: "#6a4cf5"
-  gradient-orange: "#ff7a3d"
-  gradient-coral: "#ff5577"
-  semantic-success: "#22c55e"
+  primary: '#ffffff'
+  on-primary: '#000000'
+  accent-blue: '#0099ff'
+  ink: '#ffffff'
+  ink-muted: '#999999'
+  canvas: '#090909'
+  surface-1: '#141414'
+  surface-2: '#1c1c1c'
+  hairline: '#262626'
+  hairline-soft: '#1a1a1a'
+  inverse-canvas: '#ffffff'
+  inverse-ink: '#000000'
+  gradient-magenta: '#d44df0'
+  gradient-violet: '#6a4cf5'
+  gradient-orange: '#ff7a3d'
+  gradient-coral: '#ff5577'
+  semantic-success: '#22c55e'
 
 typography:
   display-xxl:
@@ -129,127 +129,127 @@ spacing:
 
 components:
   button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 10px 15px
   button-primary-pressed:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.primary}'
+    textColor: '{colors.on-primary}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
   button-secondary:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.surface-1}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 10px 15px
   button-translucent:
-    backgroundColor: "{colors.surface-2}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
-    rounded: "{rounded.xxl}"
+    backgroundColor: '{colors.surface-2}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button}'
+    rounded: '{rounded.xxl}'
     padding: 8px 14px
   button-icon-circular:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
-    rounded: "{rounded.full}"
+    backgroundColor: '{colors.surface-1}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button}'
+    rounded: '{rounded.full}'
     size: 40px
   pricing-tab-default:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink-muted}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink-muted}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 8px 14px
   pricing-tab-selected:
-    backgroundColor: "{colors.surface-2}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
+    backgroundColor: '{colors.surface-2}'
+    textColor: '{colors.ink}'
+    typography: '{typography.button}'
+    rounded: '{rounded.pill}'
     padding: 8px 14px
   text-input:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.surface-1}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.md}'
     padding: 10px 14px
   text-input-focused:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.surface-1}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.md}'
     padding: 10px 14px
   pricing-card:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.surface-1}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.xl}'
     padding: 24px
   pricing-card-featured:
-    backgroundColor: "{colors.surface-2}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.surface-2}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.xl}'
     padding: 24px
   template-card:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.lg}"
+    backgroundColor: '{colors.surface-1}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.lg}'
     padding: 12px
   gradient-spotlight-card:
-    backgroundColor: "{colors.gradient-violet}"
-    textColor: "{colors.ink}"
-    typography: "{typography.subhead}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.gradient-violet}'
+    textColor: '{colors.ink}'
+    typography: '{typography.subhead}'
+    rounded: '{rounded.xl}'
     padding: 32px
   gradient-spotlight-card-magenta:
-    backgroundColor: "{colors.gradient-magenta}"
-    textColor: "{colors.ink}"
-    typography: "{typography.subhead}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.gradient-magenta}'
+    textColor: '{colors.ink}'
+    typography: '{typography.subhead}'
+    rounded: '{rounded.xl}'
     padding: 32px
   gradient-spotlight-card-orange:
-    backgroundColor: "{colors.gradient-orange}"
-    textColor: "{colors.ink}"
-    typography: "{typography.subhead}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.gradient-orange}'
+    textColor: '{colors.ink}'
+    typography: '{typography.subhead}'
+    rounded: '{rounded.xl}'
     padding: 32px
   product-mockup-tile:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.xl}"
+    backgroundColor: '{colors.surface-1}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.xl}'
     padding: 16px
   feature-row:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.xs}'
   comparison-row:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink-muted}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink-muted}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.xs}'
   top-nav:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body-sm}'
+    rounded: '{rounded.xs}'
     height: 56px
   faq-row:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body}"
-    rounded: "{rounded.md}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink}'
+    typography: '{typography.body}'
+    rounded: '{rounded.md}'
     padding: 24px
   footer:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink-muted}"
-    typography: "{typography.caption}"
-    rounded: "{rounded.xs}"
+    backgroundColor: '{colors.canvas}'
+    textColor: '{colors.ink-muted}'
+    typography: '{typography.caption}'
+    rounded: '{rounded.xs}'
     padding: 64px 32px
 ---
 
@@ -262,6 +262,7 @@ The single accent is `{colors.accent-blue}` — used scarcely, mostly for hyperl
 Body type is **Inter Variable**, with Framer leaning hard into Inter's character variants (`cv01`, `cv05`, `cv09`, `cv11`, `ss03`, `ss07`, `dlig`) — the result is a body voice that feels custom-tuned, with single-storey "a", straight-leg "l", and tabular figures. There's no light mode on the marketing site; the brand IS dark.
 
 **Key Characteristics:**
+
 - Black-canvas marketing system: `{colors.canvas}` is the surface for hero, body, pricing, FAQ, and footer alike — no light interludes.
 - Massive negative letter-spacing on display sizes (-5.5px / -4.25px / -3.1px) creates a poster-grade headline cadence.
 - White pill (`{components.button-primary}`) is the only primary CTA shape across the site; secondary actions live as charcoal pills (`{components.button-secondary}`) or text links.
@@ -275,10 +276,12 @@ Body type is **Inter Variable**, with Framer leaning hard into Inter's character
 > Source pages: framer.com (home), /ai/, /startups/, /marketplace/templates/nudge/, /gallery/a16z-speedrun-×-tonik, /pricing.
 
 ### Brand & Accent
+
 - **Pure White** ({colors.primary}): The brand primary surface. Every primary CTA pill, every display headline, every body line on canvas.
 - **Sky Blue** ({colors.accent-blue}): The single chromatic accent. Hyperlinks, focused-input rings, and a few selection states. Never used for backgrounds or as a brand fill.
 
 ### Surface
+
 - **Canvas** ({colors.canvas}): Default page background — near-black with a faint warmth. Footer, pricing, hero, and FAQ all sit on it.
 - **Surface 1** ({colors.surface-1}): One step above canvas — pricing cards, secondary buttons, mockup tiles.
 - **Surface 2** ({colors.surface-2}): Two steps above — featured pricing card, hero pill backdrop, selected pricing tab.
@@ -287,13 +290,16 @@ Body type is **Inter Variable**, with Framer leaning hard into Inter's character
 - **Inverse Canvas** ({colors.inverse-canvas}): Pure white — used as the surface of light-on-dark pill CTAs and a small set of light-mode template thumbnails embedded in the showcase grid.
 
 ### Text
+
 - **Ink** ({colors.ink}): All headline and emphasized body type — pure white.
 - **Ink Muted** ({colors.ink-muted}): Secondary type — gray (#999999) used for meta info, footer columns, comparison-row labels, deselected pricing tabs. Hierarchy on the dark canvas is carried by ink → ink-muted contrast, not by weight changes.
 
 ### Semantic
+
 - **Success Green** ({colors.semantic-success}): Pricing comparison-table checkmarks. Glyph fill, not surface.
 
 ### Brand Gradient (signature)
+
 - **Gradient Magenta** ({colors.gradient-magenta}): Spotlight card variant.
 - **Gradient Violet** ({colors.gradient-violet}): Spotlight card variant — most common.
 - **Gradient Orange** ({colors.gradient-orange}): Spotlight card variant — sunset wash.
@@ -311,20 +317,20 @@ These four sit as oversized atmospheric tiles inside otherwise monochrome card g
 
 ### Hierarchy
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.display-xxl}` | 110px | 500 | 0.85 | -5.5px | Largest hero headline (home, AI page) |
-| `{typography.display-xl}` | 85px | 500 | 0.95 | -4.25px | Section opener headlines |
-| `{typography.display-lg}` | 62px | 500 | 1.00 | -3.1px | Sub-section openers |
-| `{typography.display-md}` | 32px | 500 | 1.13 | -1.0px | Card titles, smaller display |
-| `{typography.headline}` | 22px | 700 | 1.20 | -0.8px | Pricing tier headlines, FAQ category titles |
-| `{typography.subhead}` | 24px | 400 | 1.30 | -0.01px | Lead body next to display headlines |
-| `{typography.body-lg}` | 18px | 400 | 1.30 | -0.18px | Hero subhead, lead paragraphs |
-| `{typography.body}` | 15px | 400 | 1.30 | -0.15px | Default body, card descriptions |
-| `{typography.body-sm}` | 14px | 500 | 1.40 | -0.14px | Pricing comparison rows, dense data |
-| `{typography.caption}` | 13px | 500 | 1.20 | -0.13px | Eyebrows, footer columns, meta |
-| `{typography.micro}` | 12px | 400 | 1.20 | -0.12px | Disclaimer, footnote |
-| `{typography.button}` | 14px | 500 | 1.0 | -0.14px | Pill buttons |
+| Token                      | Size  | Weight | Line Height | Letter Spacing | Use                                         |
+| -------------------------- | ----- | ------ | ----------- | -------------- | ------------------------------------------- |
+| `{typography.display-xxl}` | 110px | 500    | 0.85        | -5.5px         | Largest hero headline (home, AI page)       |
+| `{typography.display-xl}`  | 85px  | 500    | 0.95        | -4.25px        | Section opener headlines                    |
+| `{typography.display-lg}`  | 62px  | 500    | 1.00        | -3.1px         | Sub-section openers                         |
+| `{typography.display-md}`  | 32px  | 500    | 1.13        | -1.0px         | Card titles, smaller display                |
+| `{typography.headline}`    | 22px  | 700    | 1.20        | -0.8px         | Pricing tier headlines, FAQ category titles |
+| `{typography.subhead}`     | 24px  | 400    | 1.30        | -0.01px        | Lead body next to display headlines         |
+| `{typography.body-lg}`     | 18px  | 400    | 1.30        | -0.18px        | Hero subhead, lead paragraphs               |
+| `{typography.body}`        | 15px  | 400    | 1.30        | -0.15px        | Default body, card descriptions             |
+| `{typography.body-sm}`     | 14px  | 500    | 1.40        | -0.14px        | Pricing comparison rows, dense data         |
+| `{typography.caption}`     | 13px  | 500    | 1.20        | -0.13px        | Eyebrows, footer columns, meta              |
+| `{typography.micro}`       | 12px  | 400    | 1.20        | -0.12px        | Disclaimer, footnote                        |
+| `{typography.button}`      | 14px  | 500    | 1.0         | -0.14px        | Pill buttons                                |
 
 ### Principles
 
@@ -359,12 +365,12 @@ The dark canvas IS the whitespace. Where lighter brands lean on white air to sep
 
 ## Elevation & Depth
 
-| Level | Treatment | Use |
-|---|---|---|
-| 0 (flat) | No shadow, no border | Default for canvas-mounted display type, FAQ rows, footer |
-| 1 (charcoal) | `{colors.surface-1}` lift on canvas | Pricing cards, mockup tiles, secondary buttons |
-| 2 (light-edge) | `rgba(255,255,255,0.10)` 0.5px top edge + `rgba(0,0,0,0.25)` 0px 10px 30px drop | Floating product cards, modal cards |
-| 3 (selected) | `rgba(0,153,255,0.15)` 0px 0px 0px 1px ring | Focused inputs, selected option |
+| Level          | Treatment                                                                       | Use                                                       |
+| -------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| 0 (flat)       | No shadow, no border                                                            | Default for canvas-mounted display type, FAQ rows, footer |
+| 1 (charcoal)   | `{colors.surface-1}` lift on canvas                                             | Pricing cards, mockup tiles, secondary buttons            |
+| 2 (light-edge) | `rgba(255,255,255,0.10)` 0.5px top edge + `rgba(0,0,0,0.25)` 0px 10px 30px drop | Floating product cards, modal cards                       |
+| 3 (selected)   | `rgba(0,153,255,0.15)` 0px 0px 0px 1px ring                                     | Focused inputs, selected option                           |
 
 Four shadow signatures recur across the homepage: a 1px subtle drop, a translucent blue ring, a thick near-black 2px outline (used as the active-element marker on sub-nav), and the layered light-edge + drop-shadow used for floating cards.
 
@@ -380,16 +386,16 @@ Four shadow signatures recur across the homepage: a 1px subtle drop, a transluce
 
 Framer's extracted radius set is unusually granular (1px, 4px, 5px, 6px, 8px, 10px, 12px, 15px, 20px, 30px, 40px, 100px). The named scale below picks the levels the marketing surface actually consumes.
 
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.xs}` | 4px | Small chip / utility radius |
-| `{rounded.sm}` | 6px | Inline tag, badge |
-| `{rounded.md}` | 10px | Form input, list item |
-| `{rounded.lg}` | 15px | Template card thumbnails |
-| `{rounded.xl}` | 20px | Pricing cards, mockup tiles |
-| `{rounded.xxl}` | 30px | Gradient spotlight cards, oversized panels |
-| `{rounded.pill}` | 100px | All primary text CTAs |
-| `{rounded.full}` | 9999px | Circular icon buttons, avatar circles |
+| Token            | Value  | Use                                        |
+| ---------------- | ------ | ------------------------------------------ |
+| `{rounded.xs}`   | 4px    | Small chip / utility radius                |
+| `{rounded.sm}`   | 6px    | Inline tag, badge                          |
+| `{rounded.md}`   | 10px   | Form input, list item                      |
+| `{rounded.lg}`   | 15px   | Template card thumbnails                   |
+| `{rounded.xl}`   | 20px   | Pricing cards, mockup tiles                |
+| `{rounded.xxl}`  | 30px   | Gradient spotlight cards, oversized panels |
+| `{rounded.pill}` | 100px  | All primary text CTAs                      |
+| `{rounded.full}` | 9999px | Circular icon buttons, avatar circles      |
 
 ### Photography & Illustration Geometry
 
@@ -402,42 +408,52 @@ Framer's extracted radius set is unusually granular (1px, 4px, 5px, 6px, 8px, 10
 ### Buttons
 
 **`button-primary`** — White pill on dark canvas. The primary CTA across home, pricing, AI, and gallery pages.
+
 - Background `{colors.primary}`, text `{colors.on-primary}`, type `{typography.button}`, padding 10px 15px, rounded `{rounded.pill}`.
 - Pressed state lives in `button-primary-pressed` (the live site uses a transform-scale shrink rather than a darkened fill).
 
 **`button-secondary`** — Charcoal pill. Used for secondary navigation actions ("Sign in", "Talk to sales") and as the visual counterpart to the primary pill.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.button}`, padding 10px 15px, rounded `{rounded.pill}`.
 
 **`button-translucent`** — Translucent / lifted secondary used on top of busy backgrounds (gallery hero, gradient cards).
+
 - Background `{colors.surface-2}`, text `{colors.ink}`, type `{typography.button}`, rounded `{rounded.xxl}`, padding 8px 14px.
 
 **`button-icon-circular`** — 40px circle for inline icon actions (carousel arrows, social links).
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, rounded `{rounded.full}`, size 40px.
 
 ### Pricing Tabs
 
 **`pricing-tab-default`** + **`pricing-tab-selected`** — The pill-toggle that switches between Basic / Pro / Business / Enterprise on `/pricing`.
+
 - Default: `{colors.canvas}` background, `{colors.ink-muted}` text, rounded `{rounded.pill}`.
 - Selected: `{colors.surface-2}` background, `{colors.ink}` text — selected = lift, not color. Surface depth communicates "active" without needing a chromatic fill.
 
 ### Inputs & Forms
 
 **`text-input`** + **`text-input-focused`** — Form fields on `/pricing` (seat-count, currency switcher) and the in-product preview surfaces.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.md}`, padding 10px 14px.
 - Focused state retains the same surface; the focus ring is the level-3 blue-tinted shadow `rgba(0,153,255,0.15)` 0 0 0 1px.
 
 ### Cards & Containers
 
 **`pricing-card`** — Each tier on `/pricing`.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.xl}`, padding 24px.
 
 **`pricing-card-featured`** — The Pro tier (visually emphasized).
+
 - Background `{colors.surface-2}`, otherwise identical structure. The lift is one surface step up — no chromatic outline.
 
 **`template-card`** — Thumbnail tile in the home "Built with Framer" gallery and `/marketplace`.
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body-sm}`, rounded `{rounded.lg}`, padding 12px.
 
 **`product-mockup-tile`** — Larger tile that frames a live product UI mock (Framer canvas, Workshop video, AI translate panel).
+
 - Background `{colors.surface-1}`, text `{colors.ink}`, type `{typography.body-sm}`, rounded `{rounded.xl}`, padding 16px.
 
 ### Gradient Spotlight Cards (signature)
@@ -445,12 +461,15 @@ Framer's extracted radius set is unusually granular (1px, 4px, 5px, 6px, 8px, 10
 The defining decorative surface of Framer's marketing — oversized atmospheric tiles dropped into otherwise monochrome card grids. Variants:
 
 **`gradient-spotlight-card`** — violet ground (most common).
+
 - Background `{colors.gradient-violet}`, text `{colors.ink}`, type `{typography.subhead}`, rounded `{rounded.xl}`, padding 32px. (The on-site card often pushes to `{rounded.xxl}` 30px when it spans a wider tile.)
 
 **`gradient-spotlight-card-magenta`** — magenta-pink ground.
+
 - Background `{colors.gradient-magenta}`, otherwise identical.
 
 **`gradient-spotlight-card-orange`** — sunset-orange wash.
+
 - Background `{colors.gradient-orange}`, otherwise identical.
 
 (Coral pink follows the same shape with `{colors.gradient-coral}`.)
@@ -458,21 +477,25 @@ The defining decorative surface of Framer's marketing — oversized atmospheric 
 ### Comparison & FAQ
 
 **`feature-row`** + **`comparison-row`** — Single rows inside the pricing comparison table.
+
 - `feature-row`: `{colors.canvas}` background, `{colors.ink}` text. Header rows.
 - `comparison-row`: `{colors.canvas}` background, `{colors.ink-muted}` text. Data rows with `{typography.body-sm}` and 1px `{colors.hairline-soft}` underlines.
 
 **`faq-row`** — Each accordion line in the pricing-page FAQ.
+
 - Background `{colors.canvas}`, text `{colors.ink}`, type `{typography.body}`, rounded `{rounded.md}`, padding 24px.
 
 ### Navigation
 
 **`top-nav`** — Sticky bar on `{colors.canvas}` with the Framer wordmark left, primary nav links centered, and a `button-secondary` ("Sign in") + `button-primary` ("Get started for free") pair right.
+
 - Background `{colors.canvas}`, text `{colors.ink}`, type `{typography.body-sm}`, height 56px.
 - Mobile: collapses primary links into a hamburger; the two pill CTAs collapse into a single primary pill on the bar.
 
 ### Footer
 
 **`footer`** — Dense link grid on `{colors.canvas}` with the Framer wordmark left and 5–6 columns of caption-sized links.
+
 - Background `{colors.canvas}`, text `{colors.ink-muted}`, type `{typography.caption}`, padding 64px 32px.
 
 ## Do's and Don'ts
@@ -501,12 +524,12 @@ The defining decorative surface of Framer's marketing — oversized atmospheric 
 
 ### Breakpoints
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Desktop | 1199px | Default desktop layout |
-| Tablet | 810px | Card grids collapse 4-up → 2-up; nav becomes hamburger |
-| Mobile-Lg | 809px | Pricing comparison table becomes per-tier accordion |
-| Mobile-XS | 98px | Smallest documented breakpoint — single-column everything |
+| Name      | Width  | Key Changes                                               |
+| --------- | ------ | --------------------------------------------------------- |
+| Desktop   | 1199px | Default desktop layout                                    |
+| Tablet    | 810px  | Card grids collapse 4-up → 2-up; nav becomes hamburger    |
+| Mobile-Lg | 809px  | Pricing comparison table becomes per-tier accordion       |
+| Mobile-XS | 98px   | Smallest documented breakpoint — single-column everything |
 
 ### Touch Targets
 

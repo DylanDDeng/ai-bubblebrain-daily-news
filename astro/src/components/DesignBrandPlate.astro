@@ -10,7 +10,11 @@ const { plate } = brand;
 ---
 
 <figure class="design-plate" style={`background:${plate.bg}`}>
-	{plate.strip ? <i class="design-plate-strip" style={`background:${plate.strip}`} aria-hidden="true" /> : null}
+	{
+		plate.strip ? (
+			<i class="design-plate-strip" style={`background:${plate.strip}`} aria-hidden="true" />
+		) : null
+	}
 	<span class="design-plate-headline" style={plate.headlineStyle}>{plate.headline}</span>
 	<figcaption class="design-plate-spec" style={`color:${plate.specColor}`}>{plate.spec}</figcaption>
 	<span class="design-plate-palette" aria-hidden="true">

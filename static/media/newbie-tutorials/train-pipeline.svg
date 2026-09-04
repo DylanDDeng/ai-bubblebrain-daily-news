@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1092 560" role="img" aria-labelledby="title desc">
+  <title id="title">从原料到上线：一个大模型的一生</title>
+  <desc id="desc">四个阶段。原料：数万亿词的文本。预训练（Pretraining）：几个月、上万张显卡，产出一个只会接话茬的基座模型（Base Model）。监督微调（SFT）：几万条人写的示范对话，产出一个会回答、听指令的助手。人类偏好训练（RLHF）：标注员挑选打分，产出一个有分寸的助手。然后上线并冻结：旋钮不再变化，训练截止日期定格，你的聊天不会让它学到任何东西。想懂新知识，要么现场翻资料，要么等下一代模型重新走一遍这条流水线。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0l10 5-10 5z" fill="#b9b9b5"/>
+    </marker>
+  </defs>
+  <style>
+    .sans{font-family:-apple-system,'PingFang SC','Noto Sans SC',system-ui,sans-serif}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .eyebrow{font-size:14px;letter-spacing:4px;font-weight:700;fill:#d9341c}
+    .headline{font-size:36px;font-weight:720;letter-spacing:-1px;fill:#111}
+    .num{font-size:14px;letter-spacing:2px;font-weight:650;fill:#d9341c}
+    .stage{font-size:20px;font-weight:700;letter-spacing:-0.3px;fill:#111}
+    .cost{font-size:12.5px;fill:#6c6c6c}
+    .out{font-size:14px;font-weight:650;fill:#111}
+    .outsub{font-size:12.5px;fill:#6c6c6c}
+    .frozen-t{font-size:17px;font-weight:700;fill:#111}
+    .frozen-s{font-size:13.5px;fill:#333}
+    .note{font-size:15px;fill:#6c6c6c}
+    .card{fill:#fff;stroke:#dedede;stroke-width:1.5}
+    .prod{fill:#f5f5f2;stroke:#dedede;stroke-width:1.5}
+    .frozen{fill:#fff;stroke:#111;stroke-width:1.8}
+    .wire{fill:none;stroke:#c6c6c2;stroke-width:2;stroke-dasharray:0.1 9;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}
+    .back{fill:none;stroke:#e0c9c4;stroke-width:2;stroke-dasharray:2 7;stroke-linecap:round;marker-end:url(#arrow)}
+  </style>
+  <g class="sans">
+    <text x="40" y="46" class="mono eyebrow">THE PIPELINE</text>
+    <text x="40" y="92" class="headline">从原料到上线：把四步连起来</text>
+
+    <rect class="card" x="40" y="130" width="224" height="110"/>
+    <text x="58" y="158" class="mono num">原料</text>
+    <text x="58" y="188" class="stage">数万亿词文本</text>
+    <text x="58" y="216" class="cost">网页 · 书 · 代码</text>
+
+    <rect class="card" x="304" y="130" width="224" height="110"/>
+    <text x="322" y="158" class="mono num">01 预训练 · PRETRAINING</text>
+    <text x="322" y="188" class="stage">填空题马拉松</text>
+    <text x="322" y="216" class="cost">几个月 · 上万张显卡</text>
+
+    <rect class="card" x="568" y="130" width="224" height="110"/>
+    <text x="586" y="158" class="mono num">02 监督微调 · SFT</text>
+    <text x="586" y="188" class="stage">示范怎么应对</text>
+    <text x="586" y="216" class="cost">几万条人写的对话</text>
+
+    <rect class="card" x="832" y="130" width="220" height="110"/>
+    <text x="850" y="158" class="mono num">03 人类偏好 · RLHF</text>
+    <text x="850" y="188" class="stage">挑出好性格</text>
+    <text x="850" y="216" class="cost">标注员海量比较</text>
+
+    <path class="wire" d="M264 185H300"/>
+    <path class="wire" d="M528 185H564"/>
+    <path class="wire" d="M792 185H828"/>
+
+    <path class="wire" d="M416 240V276"/>
+    <rect class="prod" x="304" y="280" width="224" height="64"/>
+    <text x="322" y="306" class="out">产物：基座模型</text>
+    <text x="322" y="328" class="outsub">Base Model：只会接话茬</text>
+
+    <path class="wire" d="M680 240V276"/>
+    <rect class="prod" x="568" y="280" width="224" height="64"/>
+    <text x="586" y="306" class="out">产物：助手</text>
+    <text x="586" y="328" class="outsub">会回答、听指令</text>
+
+    <path class="wire" d="M942 240V276"/>
+    <rect class="prod" x="832" y="280" width="220" height="64"/>
+    <text x="850" y="306" class="out">产物：有分寸的助手</text>
+    <text x="850" y="328" class="outsub">知道怎么答更像样</text>
+
+    <path class="wire" d="M942 344V388"/>
+    <rect class="frozen" x="384" y="392" width="668" height="88"/>
+    <text x="402" y="424" class="frozen-t">上线 · 冻结 ❄</text>
+    <text x="402" y="452" class="frozen-s">旋钮从此不再变化：训练截止日期定格在这一天；你和它的聊天，一个旋钮也拧不动。</text>
+
+    <path class="back" d="M380 436H140V244"/>
+    <text x="60" y="470" class="note">想懂新东西？</text>
+    <text x="60" y="494" class="note">等下一代重走流水线，</text>
+    <text x="60" y="518" class="note">或者——现场翻资料（第二篇）。</text>
+  </g>
+</svg>

@@ -40,7 +40,11 @@ export const mountHeroLetter3d = (host: HTMLElement) => {
 	const camera = new THREE.PerspectiveCamera(25, 1, 0.1, 100);
 	camera.position.set(0.6, 0.05, 18.5);
 
-	const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
+	const renderer = new THREE.WebGLRenderer({
+		alpha: true,
+		antialias: true,
+		powerPreference: 'high-performance',
+	});
 	renderer.setClearColor(0xffffff, 0);
 	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
 	renderer.outputColorSpace = THREE.SRGBColorSpace;

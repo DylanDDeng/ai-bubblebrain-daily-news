@@ -46,6 +46,12 @@ export const vibeCodingSkillCategories: VibeCodingSkillCategory[] = [
 		label: '写作',
 		description: '让 AI 生成与改写的文字读起来像具体的人：去 AI 味、语气档案与文风打磨。',
 	},
+	{
+		id: 'visual',
+		name: 'Visual',
+		label: '视觉',
+		description: '把主题转化成可复用的视觉语言，用于文章头图、社交卡片与概念插画。',
+	},
 ];
 
 export const vibeCodingSkillMeta: Record<string, VibeCodingSkillMeta> = {
@@ -152,5 +158,10 @@ export const vibeCodingSkillMeta: Record<string, VibeCodingSkillMeta> = {
 		chineseName: '去 AI 味改写',
 		description:
 			'检测 55 种 AI 写作痕迹并按五种语气档案重写，让文本读起来像具体的人写的：支持 0-100 AI 味打分、收敛迭代与 Markdown 原地编辑。',
+	},
+	'anthropic-art': {
+		chineseName: 'Anthropic 手绘插画',
+		description:
+			'把任意主题提炼成一个清楚的视觉隐喻，再用满版柔和色彩、不规则象牙白承载形和粗黑手绘线条生成编辑插画；这是 HalfAI1102 独立制作的非官方 Skill。',
 	},
 };
